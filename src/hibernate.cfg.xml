@@ -1,0 +1,41 @@
+<!DOCTYPE hibernate-configuration PUBLIC
+	"-//Hibernate/Hibernate Configuration DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory>
+
+		<!-- Don't forget to copy your JDBC driver to the lib/ directory! -->
+
+		<!-- Settings for a local HSQL database, wrapped by P6Spy, see spy.properties -->
+
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="hibernate.connection.url">jdbc:mysql://localhost/demo_fish</property>
+		<property name="hibernate.connection.username">rods</property>
+		<property name="hibernate.connection.password">rods</property>
+
+		<!-- Use the Hibernate built-in pool for tests. -->
+		<property name="hibernate.connection.pool_size">1</property>
+
+		<!-- Use EHCache. -->
+		<!-- <property name="cache.provider_class">net.sf.hibernate.cache.EhCacheProvider</property>
+		<property name="cache.use_query_cache">false</property> -->
+
+		<!-- Specify mapping files. -->
+		<mapping resource="edu/ku/brc/specify/extfilerepos/impl/ExternalFileEntry.hbm.xml"/>
+
+        <!-- Settings for the second-level cache -->
+        <!--
+        <class-cache class="org.hibernate.auction.model.Item" usage="read-write"/>
+        <class-cache class="org.hibernate.auction.model.Category" usage="read-write"/>
+        <class-cache class="org.hibernate.auction.model.User" usage="read-write"/>
+        <class-cache class="org.hibernate.auction.model.Bid" usage="read-only"/>
+        <class-cache class="org.hibernate.auction.model.BillingDetails" usage="read-write"/>
+        <collection-cache collection="org.hibernate.auction.model.Category.items" usage="read-write"/>
+        <collection-cache collection="org.hibernate.auction.model.Item.bids" usage="read-write"/>
+        -->
+
+	</session-factory>
+
+</hibernate-configuration>

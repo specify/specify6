@@ -1,0 +1,36 @@
+activation           -> 1.0.2 (JAF Sun)
+mail                 -> 1.3.3 (JavaMail Sun)
+
+commons-beanutils    -> 1.7.0
+commons-betwixt      -> 0.7.0
+commons-collections  -> 3.1
+commons-configuration-> 1.1
+commons-dbcp         -> 1.2.1
+commons-digester     -> 1.7
+commons-httpclient   -> 3.0-rc3
+commons-jexl         -> 1.0
+commons-jxpath       -> 1.2
+commons-lang         -> 2.1
+commons-logging      -> 1.0.4
+commons-pool         -> 1.2
+log4j                -> 1.2.12
+
+forms                -> 1.0.5 (JGoodies)
+looks                -> 1.3.2 (JGoodies)
+itext                -> 1.3
+
+hibernate            -> 3.1 Beta 3
+
+jasperreports        -> 1.0.2
+
+mysql-connector-java -> 3.1.10
+
+poi                  -> 2.5.1-final (2004/08/04)
+
+xalan                -> 2.7.0
+xerces               -> 2.7.1 (resolver.jar, xercesImpl.jar, xml-apis.jar)
+
+--------------------------------------------------
+Notes:
+commons-pool depends on commons-collections
+jasperreports depends on itext

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<configuration>
+  <!-- <properties fileName="usergui.properties"/>
+  <xml fileName="gui.xml"/> -->
+
+  <xml fileName="preferences.xml"/>
+  
+  <name>users</name>
+
+</configuration>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<config>
+  <groups>
+    <group groupType="application" icon="general">
+      <name>Locations</name>
+      <prefs>
+        <pref name="external.file.repository.path" type="String">
+          <name>external.file.repository.path</name>
+          <type>/extfilerepos</type>
+        </pref>
+      </prefs>
+    </group>
+    <group groupType="application" icon="general">
+      <name>Formatting</name>
+      <prefs>
+        <pref>
+          <name>uid</name>
+          <type>long</type>
+        </pref>
+        <pref>
+          <name>uname</name>
+          <type>java.lang.String</type>
+        </pref>
+        <pref>
+          <name>firstName</name>
+          <type>java.lang.String</type>
+        </pref>
+        <pref>
+          <name>lastName</name>
+          <type>java.lang.String</type>
+        </pref>
+        <pref>
+          <name>email</name>
+          <type>java.lang.String</type>
+        </pref>
+      </prefs>
+    </group>
+    <group groupType="application" icon="gear">
+      <name>Colors</name>
+      <prefs>
+        <pref>
+          <name>docid</name>
+          <type>long</type>
+        </pref>
+        <pref>
+          <name>name</name>
+          <type>java.lang.String</type>
+        </pref>
+        <pref>
+          <name>creationDate</name>
+          <type>java.util.Date</type>
+        </pref>
+        <pref>
+          <name>authorID</name>
+          <type>long</type>
+        </pref>
+        <pref>
+          <name>version</name>
+          <type>int</type>
+        </pref>
+      </prefs>
+    </group>
+  </groups>
+</config>
