@@ -1,0 +1,7 @@
+<info primitiveTypes="element">
+  <element name="subgroup">
+    <attribute name="name" property="name"/>
+    <attribute name="iconName" property="iconName"/>
+    <element name="pref" property="preferences"/>
+  </element>
+</info>

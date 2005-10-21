@@ -30,7 +30,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.Specify;
-import edu.ku.brc.specify.exceptions.UIException;
+import edu.ku.brc.specify.exceptions.*;
+
+import org.apache.commons.digester.Digester;
+import org.apache.commons.digester.xmlrules.DigesterLoader;
+import org.apache.commons.betwixt.io.*;
+import org.apache.commons.betwixt.*;
+
+import java.io.*;
+import java.net.*;
 
 /**
  * Call Groups no matter of the level must have a unique Name
@@ -42,41 +50,94 @@ public class PreferencesMgr implements PreferencesIFace
     private static Log            log      = LogFactory.getLog(PreferencesMgr.class);
     private static PreferencesMgr prefsMgr = new PreferencesMgr();
     
-    private Hashtable<String, PrefGroupIFace> allGroups = new Hashtable<String, PrefGroupIFace>();
+    private Hashtable<String, PrefGroup> groups = new Hashtable<String, PrefGroup>();
+    
+    private boolean                      changed = false;
+    
 
-    private PrefGroupIFace topLevelGroup = null;
     /**
      * Default private constructor for singleton
      *
      */
     private PreferencesMgr()
     {
-        topLevelGroup = new PrefGroup("Root"); 
     }
     
     /**
      * 
      * @return
      */
-    public static PreferencesMgr getInstance()
+    public static PreferencesIFace getInstance()
     {
         return prefsMgr;
     }
     
     /**
-     * Adds a main level Group of preferences
-     * @param aGroup
+     * Loads Prefs from a file
+     * @return
      */
-    public void addRootGroup(PrefGroupIFace aGroup)
+    public boolean load()
     {
-        if (allGroups.get(aGroup.getName()) == null)
+        try
         {
+            List groupsList = new ArrayList();
+            File xmlFile    = new File("/home/rods/workspace/Specify/src/preferences.xml");
+            Digester digester = DigesterLoader.createDigester(getClass().getResource("preferences_digester.xml"));
+            digester.push(groupsList);
             
-        } else
+            Object root = digester.parse(xmlFile);
+
+            for (Iterator iter=groupsList.iterator();iter.hasNext();)
+            {
+                PrefGroup grp = (PrefGroup)iter.next();
+                groups.put(grp.getName(), grp);
+            }
+            //changed = true;
+            //save();
+            return true;
+        } catch (Exception ex)
         {
-            String msg = "Group by Name["+aGroup.getName()+"] already exists.";
-            log.error(msg);
-            throw new UIException(msg);
+            log.fatal(ex);
+        }
+        return false;
+        
+    }
+    
+    /**
+     * Can't use Betwixt
+     *
+     */
+    public void save()
+    {
+        if (changed)
+        {
+            try
+            {
+                Collection<PrefGroup> collection = new ArrayList<PrefGroup>(); 
+                for (Enumeration e=groups.elements();e.hasMoreElements();)
+                {
+                    collection.add((PrefGroup)e.nextElement());
+                }
+    
+                File       file = new File("/home/rods/workspace/Specify/src/preferencesNew.xml");
+                FileWriter fw   = new FileWriter(file);
+                
+                fw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+    
+                BeanWriter beanWriter = new BeanWriter(fw);            
+                XMLIntrospector introspector = beanWriter.getXMLIntrospector();
+                introspector.getConfiguration().setWrapCollectionsInElement(false);
+                beanWriter.getBindingConfiguration().setMapIDs(false);
+                
+                beanWriter.enablePrettyPrint();
+                beanWriter.write("groups", collection);
+                
+                fw.close();
+                
+            } catch(Exception ex)
+            {
+                log.error("error writing prefs", ex);
+            }
         }
     }
     
@@ -85,23 +146,74 @@ public class PreferencesMgr implements PreferencesIFace
      * @param aName name of group
      * @return group by name
      */
-    public PrefGroupIFace getGroup(String aName)
+    public PrefGroupIFace getGroupByName(String aName)
     {
-        return allGroups.get(aName);
+        for (Enumeration e=groups.elements();e.hasMoreElements();)
+        {
+            PrefGroupIFace grp = (PrefGroupIFace)e.nextElement();
+            if (grp != null && grp.getName().equals(aName))
+            {
+                return grp;
+            }
+        }
+        return null;
     }
     
     //----------------------------------------------------------------------------
     //-- PreferencesIFace Interface
     //----------------------------------------------------------------------------
-    public PrefIFace getPref(String aName)
+    public PrefIFace getPref(String aGroup, String aSubGroup, String aName)
     {
+        PrefGroupIFace grp = getGroupByName(aGroup);
+        if (grp != null)
+        {
+            PrefSubGroupIFace subGroup = grp.getSubGroupByName(aSubGroup);
+            if (subGroup != null)
+            {
+                PrefIFace pref = subGroup.getPrefByName(aName);
+                if (pref != null)
+                {
+                    return pref;
+                }
+                log.error("Couldn't find pref ["+aName+"] for Group["+aGroup+"] Subgroup["+aSubGroup+"]");
+            } else
+            {
+                log.error("Couldn't find Subgroup["+aSubGroup+"] Group["+aGroup+"]");
+            }
+            
+        } else
+        {
+            log.error("Couldn't find Group["+aGroup+"]");
+        }
         return null;
     }
     
-    public boolean setPref(PrefIFace aPref)
+    /**
+     * 
+     */
+    public PrefIFace getPrefByPath(String aPath)
     {
-        return false;
+        StringTokenizer st = new StringTokenizer(aPath, "/");
+        if (st.countTokens() != 3)
+        {
+            log.error("The path ["+aPath+"] didn't have exactly three segments.");
+            return null;
+        }
+        
+        String group    = st.nextToken();
+        String subgroup = st.nextToken();
+        String pref     = st.nextToken();
+        return getPref(group, subgroup, pref);
     }
-
+    
+    public void setPrefsChanged()
+    {
+        changed = true;
+    }
+    
+    public void persist()
+    {
+        
+    }
     
 }

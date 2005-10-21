@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: PrefChangeListener.java,v $
+/* Filename:    $RCSfile: PrefChangeListenerIFace.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2005/10/19 19:59:54 $
@@ -19,7 +19,7 @@
  */
 package edu.ku.brc.specify.prefs;
 
-public interface PrefChangeListener
+public interface PrefChangeListenerIFace
 {
 
     public void prefsChanged(PrefIFace aPref);

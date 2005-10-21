@@ -26,12 +26,36 @@ public interface PreferencesIFace
      * @param aName name of group
      * @return group by name
      */
-    public PrefGroupIFace getGroup(String aName);
+    public PrefGroupIFace getGroupByName(String aName);
     
 
-    public PrefIFace getPref(String aName);
+    /**
+     * 
+     * @param aGroup
+     * @param aSubGroup
+     * @param aName
+     * @return
+     */
+    public PrefIFace getPref(String aGroup, String aSubGroup, String aName);
     
-    public boolean setPref(PrefIFace aPref);
+    /**
+     * 
+     * @param aPath
+     * @return
+     */
+    public PrefIFace getPrefByPath(String aPath);
+    
+    /**
+     * 
+     *
+     */
+    public void setPrefsChanged();
+    
+    /**
+     * 
+     *
+     */
+    public void persist();
     
     
 }

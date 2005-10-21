@@ -19,23 +19,27 @@
  */
 package edu.ku.brc.specify.prefs;
 
-import java.util.Set;
-
 import edu.ku.brc.specify.exceptions.UIException;
 
 public interface PrefIFace
 {
     /**
      * 
-     * @return name of group
+     * @return name of pref
      */
     public String getName();
     
     /**
      * 
-     * @return whether it is a group or not
+     * @return class of value
      */
-    public boolean isGroup();
+    public String getValueType();
+    
+    /**
+     * 
+     * @return pref's value
+     */
+    public String getValue();
     
     /**
      * 
@@ -43,7 +47,7 @@ public interface PrefIFace
      * @param aPCL
      * @throws UIException
      */
-    public void registerPrefChangeListener(String aName, PrefChangeListener aPCL) throws UIException;
+    public void registerPrefChangeListener(String aName, PrefChangeListenerIFace aPCL) throws UIException;
     
     /**
      * 
@@ -51,12 +55,6 @@ public interface PrefIFace
      * @param aPCL
      * @throws UIException
      */
-    public void unregisterPrefChangeListener(String aName, PrefChangeListener aPCL) throws UIException;
+    public void unregisterPrefChangeListener(String aName, PrefChangeListenerIFace aPCL) throws UIException;
    
-    /**
-     * 
-     * @return
-     */
-    public PrefGroupIFace getGroup();
-
 }

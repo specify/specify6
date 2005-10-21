@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<digester-rules>
+    <pattern value="groups/group">
+        <object-create-rule classname="edu.ku.brc.specify.prefs.PrefGroup"/>
+        <set-next-rule methodname="add" paramtype="java.lang.Object"/>
+        <set-properties-rule/>
+        <pattern value="subgroup">
+            <object-create-rule classname="edu.ku.brc.specify.prefs.PrefSubGroup"/>
+            <set-properties-rule/>
+            <set-next-rule methodname="addSubGroup" paramtype="edu.ku.brc.specify.prefs.PrefSubGroup"/>
+	        <pattern value="pref">
+	            <object-create-rule classname="edu.ku.brc.specify.prefs.Preference"/>
+	            <set-properties-rule/>
+	            <set-next-rule methodname="addPreference" paramtype="edu.ku.brc.specify.prefs.Preference"/>
+	        </pattern>
+        </pattern>
+    </pattern>
+</digester-rules>

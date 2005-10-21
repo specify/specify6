@@ -1,0 +1,6 @@
+<info primitiveTypes="element">
+  <element name="group">
+    <attribute name="name" property="name"/>
+    <element name="subgroup" property="subGroups"/>
+  </element>
+</info>

@@ -1,0 +1,7 @@
+<info primitiveTypes="element">
+  <element name="preference">
+    <attribute name="name" property="name"/>
+    <attribute name="value" property="value"/>
+    <attribute name="valueType" property="valueType"/>
+  </element>
+</info>

@@ -1,64 +1,16 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-<config>
+<?xml version="1.0" encoding="UTF-8"?>
   <groups>
-    <group groupType="application" icon="general">
-      <name>Locations</name>
-      <prefs>
-        <pref name="external.file.repository.path" type="String">
-          <name>external.file.repository.path</name>
-          <type>/extfilerepos</type>
-        </pref>
-      </prefs>
+    <group name="user">
+      <subgroup name="locations" iconName="location">
+        <pref name="external.file.repository.path" value="/extfilerepos" valueType="String"/>
+        <pref name="two" value="2" valueType="String"/>
+      </subgroup>
     </group>
-    <group groupType="application" icon="general">
-      <name>Formatting</name>
-      <prefs>
-        <pref>
-          <name>uid</name>
-          <type>long</type>
-        </pref>
-        <pref>
-          <name>uname</name>
-          <type>java.lang.String</type>
-        </pref>
-        <pref>
-          <name>firstName</name>
-          <type>java.lang.String</type>
-        </pref>
-        <pref>
-          <name>lastName</name>
-          <type>java.lang.String</type>
-        </pref>
-        <pref>
-          <name>email</name>
-          <type>java.lang.String</type>
-        </pref>
-      </prefs>
-    </group>
-    <group groupType="application" icon="gear">
-      <name>Colors</name>
-      <prefs>
-        <pref>
-          <name>docid</name>
-          <type>long</type>
-        </pref>
-        <pref>
-          <name>name</name>
-          <type>java.lang.String</type>
-        </pref>
-        <pref>
-          <name>creationDate</name>
-          <type>java.util.Date</type>
-        </pref>
-        <pref>
-          <name>authorID</name>
-          <type>long</type>
-        </pref>
-        <pref>
-          <name>version</name>
-          <type>int</type>
-        </pref>
-      </prefs>
+    <group name="application">
+      <subgroup name="general" iconName="general">
+        <pref name="three" value="3" valueType="String"/>
+        <pref name="main.separator.position" value="300" valueType="int"/>
+      </subgroup>
     </group>
   </groups>
-</config>
+

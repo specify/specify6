@@ -21,7 +21,7 @@ package edu.ku.brc.specify.prefs;
 
 import java.util.Collection;
 
-public interface PrefGroupIFace
+public interface PrefSubGroupIFace
 {
     /**
      * 
@@ -29,16 +29,24 @@ public interface PrefGroupIFace
      */
     public String getName();
     
+    /**
+     * 
+     * @return name of group
+     */
+    public String getIconName();
+    
 
      /**
      * 
      * @return a set of prefs that could be groups or prefs
      */
-    public Collection<PrefSubGroup> getSubGroups();
-   
+    public Collection<Preference> getPreferences();
+    
     /**
      * 
-     * @return
+     * @param aName name of pref
+     * @return pref by name
      */
-    public PrefSubGroupIFace getSubGroupByName(String aName);
+    public PrefIFace getPrefByName(String aName);
+    
 }
