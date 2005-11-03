@@ -1,0 +1,6 @@
+<info primitiveTypes="element">
+  <element name="column">
+    <attribute name="name" property="name"/>
+    <attribute name="label" property="label"/>
+  </element>
+</info>

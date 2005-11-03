@@ -1,0 +1,8 @@
+<info primitiveTypes="element">
+  <element name="cell">
+    <attribute name="type" property="type"/>
+    <attribute name="name" property="name"/>
+    <attribute name="id" property="id"/>
+    <attribute name="class" property="classDesc"/>
+  </element>
+</info>
