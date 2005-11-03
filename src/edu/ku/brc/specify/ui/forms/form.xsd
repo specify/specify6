@@ -1,93 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <xs:import namespace="http://www.w3.org/2001/XMLSchema-instance" schemaLocation="xsi.xsd"/>
-  <xs:element name="views">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element maxOccurs="unbounded" ref="view"/>
-      </xs:sequence>
-      <xs:attribute ref="xsi:noNamespaceSchemaLocation" use="required"/>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="view">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element minOccurs="0" ref="altviews"/>
-        <xs:choice>
-          <xs:element ref="columns"/>
-          <xs:sequence>
-            <xs:element ref="columnDef"/>
-            <xs:element ref="rowDef"/>
-            <xs:element ref="rows"/>
-          </xs:sequence>
-        </xs:choice>
-      </xs:sequence>
-      <xs:attribute name="id" use="required" type="xs:integer"/>
-      <xs:attribute name="type" use="required" type="xs:NCName"/>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="altviews">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element maxOccurs="unbounded" ref="alt"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="alt">
-    <xs:complexType>
-      <xs:attribute name="id" use="required" type="xs:integer"/>
-      <xs:attribute name="label" use="required"/>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="columns">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element maxOccurs="unbounded" ref="column"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="column">
-    <xs:complexType>
-      <xs:attribute name="label" use="required"/>
-      <xs:attribute name="name" use="required" type="xs:NCName"/>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="columnDef">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element maxOccurs="unbounded" ref="cellDef"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="rowDef">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element maxOccurs="unbounded" ref="cellDef"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="rows">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element maxOccurs="unbounded" ref="row"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="row">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element maxOccurs="unbounded" ref="cell"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="cell">
-    <xs:complexType>
-      <xs:attribute name="type" use="required" type="xs:NCName"/>
-      <xs:attribute name="id" use="required" type="xs:integer"/>
-      <xs:attribute name="class" type="xs:NCName"/>
-      <xs:attribute name="label"/>
-      <xs:attribute name="name" type="xs:NCName"/>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="cellDef" type="xs:string"/>
+    <xs:element name="views">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="view"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="view">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" ref="altviews"/>
+                <xs:choice>
+                    <xs:element ref="columns"/>
+                    <xs:sequence>
+                        <xs:element ref="columnDef"/>
+                        <xs:element ref="rowDef"/>
+                        <xs:element ref="rows"/>
+                    </xs:sequence>
+                </xs:choice>
+            </xs:sequence>
+            <xs:attribute name="id" use="required" type="xs:integer"/>
+            <xs:attribute name="type" use="required" type="xs:NCName"/>
+            <xs:attribute name="resourceLabels" type="xs:boolean"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="altviews">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="alt"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="alt">
+        <xs:complexType>
+            <xs:attribute name="id" use="required" type="xs:integer"/>
+            <xs:attribute name="label" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="columns">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="column"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="column">
+        <xs:complexType>
+            <xs:attribute name="label" use="required"/>
+            <xs:attribute name="name" use="required" type="xs:NCName"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="columnDef">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="cellDef"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="rowDef">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="cellDef"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="rows">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="row"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="row">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="cell"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="cell">
+        <xs:complexType>
+            <xs:attribute name="type" use="required" type="xs:NCName"/>
+            <xs:attribute name="id" type="xs:integer"/>
+            <xs:attribute name="class" type="xs:NCName"/>
+            <xs:attribute name="label"  type="xs:string"/>
+            <xs:attribute name="name" type="xs:NCName"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="cellDef" type="xs:string"/>
 </xs:schema>
