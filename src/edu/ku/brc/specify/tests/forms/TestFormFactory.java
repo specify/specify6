@@ -1,19 +1,37 @@
+/* Filename:    $RCSfile: FormAltView.java,v $
+ * Author:      $Author: rods $
+ * Revision:    $Revision: 1.1 $
+ * Date:        $Date: 2005/10/12 16:52:27 $
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package edu.ku.brc.specify.tests.forms;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.util.Vector;
+
+import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import edu.ku.brc.specify.helpers.XMLHelper;
-import edu.ku.brc.specify.tests.PreferenceTest;
-import junit.framework.TestCase;
-import java.util.Vector;
-
-import java.io.*;
-import edu.ku.brc.specify.ui.forms.persist.*;
+import edu.ku.brc.specify.ui.forms.persist.FormView;
+import edu.ku.brc.specify.ui.forms.persist.FormViewFactory;
 
 public class TestFormFactory extends TestCase
 {
