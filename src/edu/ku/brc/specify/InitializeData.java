@@ -27,14 +27,16 @@ import edu.ku.brc.specify.prefs.*;
 import edu.ku.brc.specify.dbsupport.*;
 
 /**
- * Create more sample data, letting Hibernate persist it for us.
+ * This is a helper class that is used for initializing data for testing 
+ *
+ * @author Rod Spears <rods@ku.edu>
  */
 public class InitializeData 
 {
     protected static Hashtable prepTypeMapper    = new Hashtable();
     protected static int       attrsId           = 0;
     protected static boolean   classesWereLoaded = false;
-    final static Logger   _logger = Logger.getLogger(InitializeData.class);
+    protected final static Logger   log = Logger.getLogger(InitializeData.class);
     public static int getIndex(String[] aOldNames, String aNewName)
     {
         for (int i=0;i<aOldNames.length;i++)
@@ -92,7 +94,7 @@ public class InitializeData
              
         } catch (Exception e)
         {
-            _logger.error("loadAttr - ", e);
+            log.error("loadAttr - ", e);
         }
         
     }
@@ -124,7 +126,7 @@ public class InitializeData
             
             // Clean up after ourselves
             sessionFactory.close();
-            _logger.info("Done.");
+            log.info("Done.");
         } else
         {
             loadAttrs();

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <xs:element name="views">
-        <xs:complexType>
-            <xs:sequence>
+    <xs:element name="viewset">
+       <xs:complexType>
+           <xs:sequence>
                 <xs:element maxOccurs="unbounded" ref="view"/>
             </xs:sequence>
-        </xs:complexType>
+           <xs:attribute name="name" use="required" type="xs:string"/>
+       </xs:complexType>
     </xs:element>
     <xs:element name="view">
         <xs:complexType>
@@ -82,6 +83,7 @@
     <xs:element name="cell">
         <xs:complexType>
             <xs:attribute name="type" use="required" type="xs:NCName"/>
+            <xs:attribute name="viewsetname" type="xs:string"/>
             <xs:attribute name="id" type="xs:integer"/>
             <xs:attribute name="class" type="xs:NCName"/>
             <xs:attribute name="label"  type="xs:string"/>

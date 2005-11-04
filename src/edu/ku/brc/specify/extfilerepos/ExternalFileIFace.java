@@ -24,6 +24,12 @@ package edu.ku.brc.specify.extfilerepos;
 import java.sql.Date;
 import java.io.File;
 
+/**
+ * Interface representing a single external file in the repository
+ *
+ * @author Rod Spears <rods@ku.edu>
+ */
+
 public interface ExternalFileIFace
 {
     // Mime TYpe Enumerations
@@ -60,7 +66,7 @@ public interface ExternalFileIFace
     
     /**
      * 
-     * @returnlogical name of file
+     * @return logical name of file
      */
     public String getName();
     

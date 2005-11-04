@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<views xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="form.xsd">
+<viewset name="missing subview id" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="form.xsd">
     <view id="1" type="form" resourceLabels="false">
         <altviews>
             <alt id="3" label="Table"/>
@@ -30,4 +30,4 @@
             </row>
         </rows>
     </view>
-</views>
+</viewset>

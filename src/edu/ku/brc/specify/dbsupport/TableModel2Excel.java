@@ -20,20 +20,26 @@
  */
 package edu.ku.brc.specify.dbsupport;
 
-import javax.swing.table.*;
-import javax.swing.*;
+import java.io.File;
+import java.io.FileOutputStream;
+
+import javax.swing.table.TableModel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import edu.ku.brc.specify.ui.db.SQLQueryPane;
-
-import java.io.*;
-import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
+/**
+ * Helper that converts a Swing TableModel to an MS-Excel Spreadsheet
+ *
+ * @author Rod Spears <rods@ku.edu>
+ */
 
 public class TableModel2Excel
 {

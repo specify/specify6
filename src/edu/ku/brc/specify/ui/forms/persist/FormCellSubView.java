@@ -23,6 +23,7 @@ public class FormCellSubView extends FormCell
 {
 
     protected int    id;
+    protected String viewSetName;
     protected String classDesc;
     
     /**
@@ -36,15 +37,17 @@ public class FormCellSubView extends FormCell
     
     /**
      * Constructor
-     * @param aName
-     * @param aId
-     * @param aClass
+     * @param aName name of field for this view
+     * @param aViewSetName name of view set that this subview is referencing
+     * @param aId the id of the view within the view set
+     * @param aClass the class of of the field
      */
-    public FormCellSubView(String aName, int aId, String aClass)
+    public FormCellSubView(String aName, String aViewSetName, int aId, String aClass)
     {
         super(CellType.subview, aName);
-        id        = aId;
-        classDesc = aClass;
+        id          = aId;
+        classDesc   = aClass;
+        viewSetName = aViewSetName;
     }
     
     public String getClassDesc()
@@ -66,4 +69,15 @@ public class FormCellSubView extends FormCell
     {
         this.id = id;
     }
+
+    public String getViewSetName()
+    {
+        return viewSetName;
+    }
+
+    public void setViewSetName(String viewSetName)
+    {
+        this.viewSetName = viewSetName;
+    }
+    
 }

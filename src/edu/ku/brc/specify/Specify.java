@@ -21,11 +21,6 @@
 
 package edu.ku.brc.specify;
 
-/**
- * @author Rod Spears
- *
- * The main Specify application
- */
 import java.awt.*;
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -84,7 +79,9 @@ import edu.ku.brc.specify.exceptions.UIException;
 
 
 /**
- * The Query Builder app which extends a JPanel. This enables it to be embedded in an applet or an application.
+ * Specify Main Application Class
+ *
+ * @author Rod Spears <rods@ku.edu>
  */
 public class Specify extends JPanel implements MainPaneMgrIFace
 {
@@ -168,8 +165,8 @@ public class Specify extends JPanel implements MainPaneMgrIFace
       
         try
         {
-            //config = SpecifyConfig.getInstance();
-            //config.init(this); // do this once
+            config = SpecifyConfig.getInstance();
+            config.init(this); // do this once
         } catch (Exception e)
         {
             log.error("Error with Configuration", e);

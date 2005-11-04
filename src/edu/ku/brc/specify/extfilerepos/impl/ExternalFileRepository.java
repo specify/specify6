@@ -33,20 +33,25 @@ import java.util.NoSuchElementException;
 import edu.ku.brc.specify.helpers.AskForDirectory;
 import java.util.*;
 
+/**
+ * Implementation of the ExternalFileRepositoryIFace for a local directory/disk based external repository
+ *
+ * @author Rod Spears <rods@ku.edu>
+ */
 public class ExternalFileRepository implements ExternalFileRepositoryIFace
 {
     private static final String EXTERNAL_FILE_REPOS_PATH = "external.file.repository.path";
     
     private static Log log = LogFactory.getLog(ExternalFileRepository.class);
     
-    protected static ExternalFileRepository singleton = null;
+    protected static ExternalFileRepository instance = null;
     
     
     protected File reposDir = null;
     
     /**
      * 
-     * @param aPath
+     * @param aPath path of the repository
      */
     protected ExternalFileRepository(String aPath)
     {
@@ -55,13 +60,17 @@ public class ExternalFileRepository implements ExternalFileRepositoryIFace
     
     /**
      * 
-     * @return the singleton for the repository
+     * @return the instance for the repository
      */
     public static ExternalFileRepository getInstance()
     {
-        return singleton;
+        return instance;
     }
     
+    /**
+     * 
+     * @return the valid path to the repository (not implemented)
+     */
     protected static String getValidPath()
     {
         return null;
@@ -89,9 +98,9 @@ public class ExternalFileRepository implements ExternalFileRepositoryIFace
    
     /**
      * 
-     * @param aAskForDir
-     * @param aConfig
-     * @throws NoSuchElementException
+     * @param aAskForDir Can be null, a class that is used as the UI to get a valid directory path for the repository
+     * @param aConfig config object
+     * @throws NoSuchElementException throws expection if ultimately no path is found or given
      */
     public static void createInstance(AskForDirectory aAskForDir, 
                                       org.apache.commons.configuration.Configuration aConfig) throws NoSuchElementException
@@ -140,7 +149,7 @@ public class ExternalFileRepository implements ExternalFileRepositoryIFace
             throw new NoSuchElementException(msg);
         }
 
-        singleton = new ExternalFileRepository(path);
+        instance = new ExternalFileRepository(path);
     }
     
     /**
@@ -150,6 +159,7 @@ public class ExternalFileRepository implements ExternalFileRepositoryIFace
      * @param aMimeType the mime type of the file, it can be null then it will assume it is a octet-stream
      *                   (see http://www.iana.org/assignments/media-types/application/)
      * @param aLocation the external file location
+     * @return returns true if file is put in repos, false if not
      */
     public boolean put(String aName, String aDesc, String aMimeType, String aLocation)
     {
@@ -179,8 +189,8 @@ public class ExternalFileRepository implements ExternalFileRepositoryIFace
     
     /**
      * Removes a ExternalFileEntry
-     * @param aId
-     * @return
+     * @param aId ID of file to be deleted
+     * @return true is file is deleted, false if not or if it couldn't be found
      */
     public boolean remove(Long aId)
     {
@@ -207,7 +217,7 @@ public class ExternalFileRepository implements ExternalFileRepositoryIFace
 
     
     /**
-     * Returns an image by logical name
+     * Returns an image by logical name (not implemented)
      * @param aLogicalName
      * @return the image or null if it wasn't found
      */
@@ -217,7 +227,7 @@ public class ExternalFileRepository implements ExternalFileRepositoryIFace
     }
     
     /**
-     * Returns an image by records ID
+     * Returns an image by records ID (not implemented)
      * @param aImageID
      * @return the image or null if it wasn't found
      */

@@ -23,6 +23,12 @@ package edu.ku.brc.specify.extfilerepos;
 
 import java.awt.Dimension;
 
+/**
+ * Interface representing an Image file in the repository
+ *
+ * @author Rod Spears <rods@ku.edu>
+ */
+
 public interface ExternalImageFileIFace
 {
     /**

@@ -16,15 +16,37 @@ import javax.mail.internet.*;
 
 import com.sun.mail.smtp.*;
 
+/**
+ * Sends an email with optional attachment
+ *
+ * @author Rod Spears <rods@ku.edu>
+ */
+
 public class EMailHelper
 {
 
+    /**
+     * Default Constructor
+     *
+     */
     public EMailHelper()
     {
         super();
         // TODO Auto-generated constructor stub
     }
     
+    /**
+     * Send an email
+     * @param aHost host of SMTP server
+     * @param aUserName username of email account
+     * @param aPassword password of email account
+     * @param aFrom the email address of who the email is coming from typically this is the same as the user's email
+     * @param aTo the email addr of who this is going to
+     * @param aSubject the Textual subject line of the email
+     * @param aBodyText the body text of the email (plain text???)
+     * @param aFileAttachment and optional file to be attached to the email
+     * @return true if the msg was sent, false if not
+     */
     public static boolean sendMsg(String aHost,
                                   String aUserName, 
                                   String aPassword, 

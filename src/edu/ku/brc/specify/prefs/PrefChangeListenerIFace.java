@@ -19,8 +19,19 @@
  */
 package edu.ku.brc.specify.prefs;
 
+/**
+ * Interface for a listener of Pref Changes, consumers listen for one or more prefernce changes. 
+ * NOTE: They only receive chnages for individual prefs, not for all prefs in the system.
+ *
+ * @author Rod Spears <rods@ku.edu>
+ */
+
 public interface PrefChangeListenerIFace
 {
 
+    /**
+     * Notification that a Pref was changed
+     * @param aPref the pref that was changes
+     */
     public void prefsChanged(PrefIFace aPref);
 }

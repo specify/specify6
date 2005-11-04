@@ -41,10 +41,9 @@ import org.xml.sax.InputSource;
 
 
 /**
+ * An XML Helper, this currently is for w3c DOM, probably won't need this since we will be switch to DOM4J
+ * 
  * @author Rod Spears
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class XMLHelper
 {

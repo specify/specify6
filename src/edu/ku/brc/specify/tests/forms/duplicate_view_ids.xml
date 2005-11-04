@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<views xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="form.xsd">
+<viewset name="duplicate view ids" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="form.xsd">
     <view id="1" type="form" resourceLabels="false">
         <columnDef>
             <cellDef>right:max(50dlu;p)</cellDef>
@@ -27,4 +27,4 @@
             </row>
         </rows>
     </view>
-</views>
+</viewset>

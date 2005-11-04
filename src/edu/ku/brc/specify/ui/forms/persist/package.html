@@ -1,0 +1,10 @@
+<html>
+<body>
+This package contains all the data classes that are needed to read and write form definitions. The UI forms definitions are kept in one or more 
+"View Set" files (See the forms.xsd for the XML Schema.) Each file has a View Set name and each form in the View Set has an integer ID. 
+This means any form can reference and other form in the system with the View Set name and the Id.
+<br><br>Note that SubView can reference Forms outside of it's own View Set, but Alternative Forms can only reference forms within its View Set. 
+This could easily be changed if necessary.<br><br>n this case a "form" is really the definition of a form. The form's object hierarchy
+is used to creates the forms using Swing UI objects. 
+</body>
+</html>

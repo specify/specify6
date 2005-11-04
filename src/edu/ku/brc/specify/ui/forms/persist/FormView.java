@@ -21,7 +21,7 @@ package edu.ku.brc.specify.ui.forms.persist;
 
 import java.util.Vector;
 
-public class FormView
+public class FormView implements Comparable<FormView>
 {
     public enum ViewType {form, table, field};
     
@@ -29,6 +29,9 @@ public class FormView
     protected int                  id;
     protected Vector<FormAltView>  altViews       = new Vector<FormAltView>();
     protected boolean              resourceLabels = false;
+    
+    protected String               viewSetName    = null;
+    
     /**
      * Default Constructor
      *
@@ -55,6 +58,19 @@ public class FormView
         return aAltView;
     }
 
+    
+    public int compareTo(FormView obj)
+    {
+        if (id == obj.getId())
+        {
+            return 0;
+            
+        } else
+        {
+           return id > obj.getId() ? 1 : -1;
+        }
+    }
+    
     public int getId()
     {
         return id;
@@ -94,6 +110,16 @@ public class FormView
     {
         this.resourceLabels = resourceLabels;
     }
-    
-    
+
+    public String getViewSetName()
+    {
+        return viewSetName;
+    }
+
+    public void setViewSetName(String viewSetName)
+    {
+        this.viewSetName = viewSetName;
+    }
+
+     
 }

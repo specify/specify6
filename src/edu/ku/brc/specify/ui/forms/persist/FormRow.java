@@ -58,9 +58,9 @@ public class FormRow
     //-------------------------------------------------------------------
     // Helpers
     //-------------------------------------------------------------------
-    public FormCell createSubView(String aName, int aId, String aClass)
+    public FormCell createSubView(String aName, String aViewSetName, int aId, String aClass)
     {
-        return addCell(new FormCellSubView(aName, aId, aClass));
+        return addCell(new FormCellSubView(aName, aViewSetName, aId, aClass));
     }
     
     public FormCell createField(String aName, String aLabel)

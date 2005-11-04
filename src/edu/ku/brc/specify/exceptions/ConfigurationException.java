@@ -22,9 +22,9 @@ package edu.ku.brc.specify.exceptions;
 
 
 /**
- * This exception is used to mark (fatal) failures in infrastructure and system code.
+ * This exception is used to mark (fatal) failures in the initialization and configuration
  *
- * @author Christian Bauer <christian@hibernate.org>
+ * @author Rod Spears <rods@ku.edu>
  */
 public class ConfigurationException extends RuntimeException 
 {

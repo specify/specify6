@@ -37,11 +37,17 @@ import java.util.NoSuchElementException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+/**
+ * This class is responsible for reading and writing all application specific properties to and from the "specify/properties" file.
+ * This class is a singleton
+ *
+ * @author Rod Spears <rods@ku.edu>
+ */
 public class SpecifyConfig
 {
-    private static Log log = LogFactory.getLog(SpecifyConfig.class);
+    private static Log           log           = LogFactory.getLog(SpecifyConfig.class);
     private static SpecifyConfig specifyConfig = new SpecifyConfig();
-    
+
     private Configuration config = null;
     
     /**
@@ -71,14 +77,33 @@ public class SpecifyConfig
     }
     
     /**
+     * 
+     * @return the absolute path to a the user's home directory where we will store the specify.properties file.
+     */
+    protected File getUserHomeConfigPath()
+    {
+        File configPath = null;
+        try {
+            return new File(System.getProperty("user.home") + System.getProperty("file.separator") + "specify.properties");
+            
+        } catch (SecurityException ex) {
+            log.fatal("Unable to build user home path to Specify config file", ex);
+        }
+        return null;
+    }
+    
+    /**
      * Initializes this object and singletons that require a UI component for error dialogs and such
      * @param aParent a parent for the dialogs
+     * @throws NoSuchElementException if it can't find the file
      */
     public void init(JComponent aParent) throws NoSuchElementException
     {
+        File specifyConfigFile = getUserHomeConfigPath();
+        
         try
         {
-            config = new PropertiesConfiguration("specify.properties" );
+            config = new PropertiesConfiguration(specifyConfigFile);
             for (Iterator iter=config.getKeys();iter.hasNext();)
             {
                 Object key = iter.next();

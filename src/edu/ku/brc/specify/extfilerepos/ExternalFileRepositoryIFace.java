@@ -23,6 +23,12 @@ package edu.ku.brc.specify.extfilerepos;
 
 import java.io.File;
 
+/**
+ * Interface representing the external file repository
+ *
+ * @author Rod Spears <rods@ku.edu>
+ */
+
 public interface ExternalFileRepositoryIFace
 {
     /**
@@ -32,13 +38,14 @@ public interface ExternalFileRepositoryIFace
      * @param aMimeType the mime type of the file, it can be null then it will assume it is a octet-stream
      *                   (see http://www.iana.org/assignments/media-types/application/)
      * @param aLocation the external file location
+     * @return true if the file was successfully put into the repository
      */
     public boolean put(String aName, String aDesc, String aMimeType, String aLocation);
     
     /**
      * Removes a ExternalFileEntry
      * @param aId
-     * @return
+     * @return true if the file with the Id was remove, false it it wasn't
      */
     public boolean remove(Long aId);
     

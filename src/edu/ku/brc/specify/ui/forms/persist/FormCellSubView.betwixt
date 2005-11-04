@@ -3,6 +3,7 @@
     <attribute name="type" property="type"/>
     <attribute name="name" property="name"/>
     <attribute name="id" property="id"/>
+    <attribute name="viewsetname" property="viewSetName"/>
     <attribute name="class" property="classDesc"/>
   </element>
 </info>
