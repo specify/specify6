@@ -43,7 +43,7 @@ public class ReportsTask extends BaseTask
 
     public ReportsTask()
     {
-        super(UICacheManager.getResourceString("Reports"));
+        super(getResourceString("Reports"));
         
         // Temporary
         NavBox navBox = new NavBox(getResourceString("Actions"));

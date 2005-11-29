@@ -20,6 +20,8 @@
 
 package edu.ku.brc.specify.core.subpane;
 
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
@@ -38,7 +40,6 @@ import edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.specify.dbsupport.QueryResultsListener;
 import edu.ku.brc.specify.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.UICacheManager;
 
 public class BarChartPane extends BaseSubPane implements QueryResultsListener, QueryResultsProcessable
 {
@@ -69,7 +70,7 @@ public class BarChartPane extends BaseSubPane implements QueryResultsListener, Q
      */
     public Icon getIcon()
     {
-        return IconManager.getInstance().getIcon(UICacheManager.getResourceString("Bar_Chart"), IconManager.IconSize.Std16);
+        return IconManager.getInstance().getIcon(getResourceString("Bar_Chart"), IconManager.IconSize.Std16);
     }
     
 

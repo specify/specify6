@@ -19,6 +19,8 @@
  */
 package edu.ku.brc.specify.core;
 
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -61,7 +63,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable
                                                      final String imageName,
                                                      final String hint)
     {
-        String name = UICacheManager.getResourceString(catName);
+        String name = getResourceString(catName);
         
         ImageIcon icon32 = IconManager.getInstance().register(name, imageName, IconManager.IconSize.Std32);
         ImageIcon icon24 = IconManager.getInstance().getIcon(name, IconManager.IconSize.Std24);
@@ -70,7 +72,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable
         icon = icon16;
         
         ToolBarDropDownBtn btn = new ToolBarDropDownBtn(name, icon24, JButton.BOTTOM);
-        btn.setStatusBarHintText(UICacheManager.getResourceString(hint));
+        btn.setStatusBarHintText(getResourceString(hint));
         
         btn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) 

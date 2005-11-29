@@ -46,7 +46,7 @@ public class DataEntryTask extends BaseTask
      */
     public DataEntryTask()
     {
-        super(UICacheManager.getResourceString("Data_Entry"));
+        super(getResourceString("Data_Entry"));
         
         // Temporary
         NavBox navBox = new NavBox(getResourceString("Actions"));

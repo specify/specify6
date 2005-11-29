@@ -21,6 +21,8 @@
 
 package edu.ku.brc.specify;
 
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
@@ -49,6 +51,7 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,6 +59,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+
+import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 
 import edu.ku.brc.specify.config.SpecifyConfig;
 import edu.ku.brc.specify.core.DataEntryTask;
@@ -72,7 +77,6 @@ import edu.ku.brc.specify.ui.MainPanel;
 import edu.ku.brc.specify.ui.PropertyViewer;
 import edu.ku.brc.specify.ui.ToolbarLayoutManager;
 import edu.ku.brc.specify.ui.UICacheManager;
-
 
 /**
  * Specify Main Application Class
@@ -140,9 +144,10 @@ public class Specify extends JPanel
         
         try 
         { 
-            //UIManager.setLookAndFeel(new Plastic3DLookAndFeel()); 
+            UIManager.setLookAndFeel(new Plastic3DLookAndFeel()); 
             //UIManager.setLookAndFeel(new PlasticLookAndFeel()); 
-
+            //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+            //UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
         } 
         catch (Exception e) 
         { 
@@ -612,7 +617,7 @@ public class Specify extends JPanel
                                 "Bar_Chart",        "barchart.gif"};
         for (int i=0;i<iconsToLoad.length;i+=2)
         {
-            String name = UICacheManager.getResourceString(iconsToLoad[i]);
+            String name = getResourceString(iconsToLoad[i]);
             Icon icon = IconManager.getInstance().register(name, iconsToLoad[i+1], IconManager.IconSize.Std32);
             icon = IconManager.getInstance().getIcon(name, IconManager.IconSize.Std24);
             icon = IconManager.getInstance().getIcon(name, IconManager.IconSize.Std16);
@@ -630,7 +635,7 @@ public class Specify extends JPanel
         JPanel     searchPanel = new JPanel(gridbag);
         JLabel     spacer      = new JLabel(" ");
         JTextField searchText  = new JTextField(10);
-        JButton    searchBtn   = new JButton(UICacheManager.getResourceString("Search"));
+        JButton    searchBtn   = new JButton(getResourceString("Search"));
         
         searchText.setMinimumSize(new Dimension(50, searchText.getPreferredSize().height));
         

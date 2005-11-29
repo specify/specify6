@@ -49,6 +49,17 @@ public class ResultSetTableModel extends AbstractTableModel
      */
     public ResultSetTableModel(ResultSet aRS)
     {
+        if (resultSet != null)
+        {
+            try
+            {
+                resultSet.close();
+            } catch (SQLException ex)
+            {
+                log.error(ex);
+            }
+        }
+        
         resultSet = aRS;
         try
         {
@@ -57,10 +68,7 @@ public class ResultSetTableModel extends AbstractTableModel
                 metaData = resultSet.getMetaData();
                 for (int i=1;i<=metaData.getColumnCount();i++)
                 {
-                    //System.out.println(i);
-                    //System.out.println(metaData.getColumnClassName(i));
-                    
-                    classNames.addElement(Class.forName(metaData.getColumnClassName(i)));
+                     classNames.addElement(Class.forName(metaData.getColumnClassName(i)));
                 }
                 
                 if (resultSet.last())
@@ -103,7 +111,7 @@ public class ResultSetTableModel extends AbstractTableModel
      */
     public Class getColumnClass(int aColumn)
     {
-        return (Class)classNames.elementAt(aColumn);
+        return classNames.size() == 0 ? String.class : (Class)classNames.elementAt(aColumn);
     }
 
     /**
@@ -112,6 +120,11 @@ public class ResultSetTableModel extends AbstractTableModel
      */
     public String getColumnName(int aColumn)
     {
+        if (metaData == null)
+        {
+            return "N/A";
+        }
+        
         try
         {
             return metaData.getColumnName(aColumn+1);
@@ -198,6 +211,32 @@ public class ResultSetTableModel extends AbstractTableModel
     public int getRowCount()
     {
       return numRows;
+    }
+    
+    /**
+     * Clears all the data from the model
+     *
+     */
+    public void clear()
+    {
+        if (resultSet != null)
+        {
+            try
+            {
+                resultSet.close();
+            } catch (SQLException ex)
+            {
+                log.error(ex);
+            }
+            resultSet  = null;
+        }
+        
+        metaData   = null;
+        classNames.clear();
+        
+        currentRow = 0;   
+        numRows    = 0;   
+       
     }
 
 }

@@ -20,6 +20,8 @@
 
 package edu.ku.brc.specify.core.subpane;
 
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -27,6 +29,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -40,9 +43,14 @@ import edu.ku.brc.specify.dbsupport.SQLExecutionListener;
 import edu.ku.brc.specify.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 
+/**
+ * 
+ * @author rods
+ *
+ */
 public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
 {
-    private static Log log = LogFactory.getLog(SQLQueryPane.class);
+    //private static Log log = LogFactory.getLog(SQLQueryPane.class);
 
     private JTextField           queryField;
     private JTable               table;
@@ -77,10 +85,20 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
         table = new JTable();
         
         JPanel sqlPanel = new JPanel(new BorderLayout());
-        queryField = new JTextField("Select * from picklist");
+        queryField = new JTextField();
+        queryField.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (queryField.getText().length() > 0)
+                {
+                    doQuery();
+                }
+                
+            }
+          });
+        
         sqlPanel.add(new JLabel("SQL:"), BorderLayout.WEST);
         sqlPanel.add(queryField, BorderLayout.CENTER);
-        exeBtn = new JButton("Execute");
+        exeBtn = new JButton(getResourceString("Execute"));
         
         exeBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) 
@@ -117,7 +135,21 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
     public void doQuery()
     {
         enableUI(false);
+        if (sqlExecutor != null)
+        {
+            sqlExecutor.close();
+        }
+        
+        if (table.getModel() instanceof ResultSetTableModel)
+        {
+            ResultSetTableModel model = (ResultSetTableModel)table.getModel();
+            if (model != null)
+            {
+                model.clear();
+            }
+        }
         sqlExecutor = new SQLExecutionProcessor(this, queryField.getText());
+        sqlExecutor.setAutoCloseConnection(false);
         sqlExecutor.start();
     }
     
@@ -130,20 +162,44 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
         queryField.setText(sqlStr);
     }
     
+    /**
+     * 
+     */
+    public void finalize()
+    {
+        if (sqlExecutor != null)
+        {
+            sqlExecutor.close();
+        }
+        sqlExecutor = null;
+    }
+    
     //-----------------------------------------------------
     //-- SQLExecutionListener
     //-----------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.dbsupport.SQLExecutionListener#exectionDone(edu.ku.brc.specify.dbsupport.SQLExecutionProcessor, java.sql.ResultSet)
+     */
     public void exectionDone(final SQLExecutionProcessor process, final java.sql.ResultSet resultSet)
     {
+        
         table.setModel(new ResultSetTableModel(resultSet));
         sqlExecutor = null;
         enableUI(true);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.dbsupport.SQLExecutionListener#executionError(edu.ku.brc.specify.dbsupport.SQLExecutionProcessor, java.lang.Exception)
+     */
     public void executionError(final SQLExecutionProcessor process, final Exception ex)
     {
         sqlExecutor = null;
         enableUI(true);
+        
+        JOptionPane.showMessageDialog(this, ex.toString(), "SQL Error", JOptionPane.ERROR_MESSAGE); // XXX LOCALIZE
+
+
     }
 
     

@@ -55,7 +55,7 @@ public class StatsPane extends BaseSubPane
 
         StatGroup group = new StatGroup("Specimen");
         group.addItem(new StatItem("Total Number of Items:", "select count(*) from collectionobj"));
-        group.addItem(new StatItem("Number of Different Species: ", "select count(*) from (select count(txid) as namecnt, tn from (select Determination.TaxonNameId, taxonname.TaxonNameID as txid, taxonname.TaxonName as tn from taxonname,determination where Determination.TaxonNameId = taxonname.taxonnameid) as newTable group by txid) as newTable2;"));
+        group.addItem(new StatItem("Number of Different Species: ", "select count(*) from (select count(txid) as namecnt, tn from (select determination.TaxonNameId, taxonname.TaxonNameID as txid, taxonname.TaxonName as tn from taxonname,determination where determination.TaxonNameId = taxonname.taxonnameid) as newTable group by txid) as newTable2;"));
         builder.add(group, cc.xy(1,1));
         
         group = new StatGroup("Locality/Geography");

@@ -30,10 +30,11 @@ import  com.jgoodies.looks.plastic.*;
 import edu.ku.brc.specify.core.NavBoxItemIFace;
 
 /**
- * @author Rod Spears
+ * Creates a button with a focus "ring" when the mouse is hovering.
+ * (This class is currently NOT USED!)
+ * 
+ * @author rods
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class RolloverCmdButton extends JButton implements NavBoxItemIFace
 {
@@ -42,13 +43,13 @@ public class RolloverCmdButton extends JButton implements NavBoxItemIFace
     
     
     /**
-     * 
-     * @param aLabel
-     * @param aImgIcon
+     * Constructs a button with a label and an icon
+     * @param label the label 
+     * @param imgIcon the icon
      */
-    public RolloverCmdButton(String aLabel, Icon aImgIcon)
+    public RolloverCmdButton(String label, Icon imgIcon)
     {
-        super(aLabel, aImgIcon);
+        super(label, imgIcon);
         
         //UIManager.getLookAndFeel().
         MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {
@@ -67,8 +68,8 @@ public class RolloverCmdButton extends JButton implements NavBoxItemIFace
           addMouseMotionListener(mouseInputAdapter);
     }
     
-    /**
-     * paints the component
+    /* (non-Javadoc)
+     * @see java.awt.Component#paint(java.awt.Graphics)
      */
     public void paint(Graphics g)
     {
@@ -83,7 +84,9 @@ public class RolloverCmdButton extends JButton implements NavBoxItemIFace
         }
     }
     
-    // NavBoxItemIFace
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.NavBoxItemIFace#getUIComponent()
+     */
     public Component getUIComponent()
     {
         return this;

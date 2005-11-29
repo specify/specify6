@@ -30,7 +30,6 @@ import com.jgoodies.forms.builder.*;
 
 import edu.ku.brc.specify.core.NavBoxIFace.Scope;
 import edu.ku.brc.specify.ui.*;
-import edu.ku.brc.specify.ui.RolloverCmdButton;
 import edu.ku.brc.specify.ui.IconManager.IconSize;
 
 public class NavBox extends JPanel implements NavBoxIFace
@@ -49,12 +48,7 @@ public class NavBox extends JPanel implements NavBoxIFace
         this.name = name;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         
-        //setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
         setBorder(BorderFactory.createEmptyBorder(15, 2, 2, 2));
-        //add(Box.createHorizontalGlue());
-        //setBorder(BorderFactory.createCompoundBorder(
-        //        BorderFactory.createLineBorder(new Color(160,160,160)), getBorder()));
-        //setBorder(BorderFactory.createCompoundBorder(new LineBorder(new Color(160,160,160), 3, true), getBorder()));
         setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
     }
     
@@ -67,47 +61,45 @@ public class NavBox extends JPanel implements NavBoxIFace
         return scope;
     }
     
-    /**
-     * 
-     * @param scope
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.NavBoxIFace#setScope(edu.ku.brc.specify.core.NavBoxIFace.Scope)
      */
     public void setScope(final NavBoxIFace.Scope scope)
     {
         this.scope = scope;
     }
-    
-    
-    /**
-     * Returns the name of the tab (localized)
-     * @return the localized name of the tab
+
+
+    /* (non-Javadoc)
+     * @see java.awt.Component#getName()
      */
     public String getName()
     {
         return name;
     }
-    
-    /**
-     * 
-     * @param name
+
+    /* (non-Javadoc)
+     * @see java.awt.Component#setName(java.lang.String)
      */
     public void setName(final String name)
     {
         this.name = name;
     }
-    
-    /**
-     * Returns the UI component for this tab
-     * @return returns the UI component for this tab
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.NavBoxIFace#getUIComponent()
      */
     public JComponent getUIComponent()
     {
         return this;
     }
-    
+
     /**
-     * 
-     * @param item
-     * @return
+     * Adds a NavBoxItemIFace item to the box and returns the UI component for that item
+     * @param item the NavBoxItemIFace item to be added
+     * @param notify whether to have it relayout or not (true -> does layout)
+     * @return the UI component for this item
      */
     public Component add(final NavBoxItemIFace item, boolean notify)
     {
@@ -121,17 +113,18 @@ public class NavBox extends JPanel implements NavBoxIFace
     }
        
     /**
-     * 
-     * @param item
-     * @return
+     * Adds a NavBoxItemIFace item to the box and returns the UI component for that item and does not perform a doLayout of the box
+     * @param item NavBoxItemIFace to be added
+     * @return the ui component for the item
      */
     public Component add(final NavBoxItemIFace item)
     {
         return add(item, false);
     }
         
-    /**
-     * 
+
+    /* (non-Javadoc)
+     * @see java.awt.Component#paint(java.awt.Graphics)
      */
     public void paint(Graphics g)
     {
@@ -163,19 +156,22 @@ public class NavBox extends JPanel implements NavBoxIFace
         g.drawLine(x, y,   x+lineW, y);
     }
     
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.NavBoxIFace#setMgr(edu.ku.brc.specify.core.NavBoxMgr)
+     */
     public void setMgr(NavBoxMgr mgr)
     {
         this.mgr = mgr;
     }
 
     /**
-     * Herlp method for creating Nav Buttons
-     * @param label The 
-     * @param iconName
-     * @param fileName
-     * @param iconSize
-     * @param addGap
-     * @return
+     * Returns a NavBoxItemIFace item built from a RolloverCommand
+     * @param label the text label
+     * @param iconName the icon name, not the image filename, but the IconManager name for the icon
+     * @param fileName the file name for the icon
+     * @param iconSize the size  to use
+     * @return Returns a NavBoxItemIFace item built from a RolloverCommand
      */
     public static NavBoxItemIFace createBtn(final String label, 
                                             final String iconName, 
@@ -195,6 +191,13 @@ public class NavBox extends JPanel implements NavBoxIFace
         return btn; 
     }
     
+    /**
+     * Returns a NavBoxItemIFace item built from a RolloverCommand
+     * @param label the text label
+     * @param iconName the icon name, not the image filename, but the IconManager name for the icon
+     * @param iconSize the size  to use
+     * @return Returns a NavBoxItemIFace item built from a RolloverCommand
+     */
     public static NavBoxItemIFace createBtn(final String label, 
                                             final String iconName, 
                                             final IconManager.IconSize iconSize)
@@ -202,6 +205,14 @@ public class NavBox extends JPanel implements NavBoxIFace
         return createBtn(label, iconName, null, iconSize, null);
     }
     
+    /**
+     * Returns a NavBoxItemIFace item built from a RolloverCommand
+     * @param label the text label
+     * @param iconName the icon name, not the image filename, but the IconManager name for the icon
+     * @param iconSize the size  to use
+     * @param al the action listener that will be added the item 
+     * @return Returns a NavBoxItemIFace item built from a RolloverCommand
+     */
     public static NavBoxItemIFace createBtn(final String label,
                                             final String iconName, 
                                             final IconManager.IconSize iconSize,

@@ -23,6 +23,10 @@ import java.awt.Component;
 
 public interface NavBoxItemIFace
 {    
+    /**
+     * Return the UI Component that is used to display the contents of the navigation box 
+     * @return Return the UI Component that is used to display the contents of the navigation box 
+     */
     public Component getUIComponent();
     
 }

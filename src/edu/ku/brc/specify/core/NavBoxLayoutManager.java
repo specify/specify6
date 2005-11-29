@@ -27,7 +27,7 @@ import java.util.Vector;
 import java.util.List;
 
 /**
- * The layout manager for laying out NavBoxes in a vertical fashion.
+ * The layout manager for laying out NavBoxes in a vertical fashion (only)
  * 
  * @author rods
  *
@@ -119,7 +119,7 @@ public class NavBoxLayoutManager implements LayoutManager
     /**
      * Calculates the preferred size of the contain. It lays out all the NavBoxes vertically 
      * and uses the 'ySeparator' as the spacing in between the boxes. It uses borderPadding as a 'margin'
-     * aroound all the boxes
+     * around all the boxes
      *
      */
     protected void calcPreferredSize()

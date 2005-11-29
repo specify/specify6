@@ -44,10 +44,10 @@ public class ViewMgr
     private FormViewFactory  formViewFactory = FormViewFactory.getInstance();
     
     /**
-     * Private Constructor
+     * protected Constructor
      *
      */
-    private ViewMgr()
+    protected ViewMgr()
     {
     }
     

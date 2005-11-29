@@ -5,7 +5,7 @@
         <title>Percentage Grow Last 5 Years</title>
       </chartinfo>
       <sql type="text">
-        <![CDATA[select tn,count(tx) as namecnt from (select Determination.TaxonNameId, taxonname.TaxonNameID as tx, taxonname.TaxonName as tn from taxonname,determination where Determination.TaxonNameId = taxonname.taxonnameid) as newTable group by tx order by namecnt DESC;]]>
+        <![CDATA[select tn,count(tx) as namecnt from (select determination.TaxonNameId, taxonname.TaxonNameID as tx, taxonname.TaxonName as tn from taxonname,determination where determination.TaxonNameId = taxonname.taxonnameid) as newTable group by tx order by namecnt DESC;]]>
       </sql>
       <slice>
         <desc row="1" col="1"/>

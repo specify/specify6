@@ -21,11 +21,20 @@
 package edu.ku.brc.specify.dbsupport;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
+
+import javax.swing.JOptionPane;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+
+/**
+ * @author rods
+ * Constructs a an object to execute an SQL staement and then notify the listener and it is done. Any exception in the
+ * SQL processing are passed back to the listener instead of being thrown. This class is running in its own thread.
+ */
 public class SQLExecutionProcessor implements Runnable
 {
     private static Log log = LogFactory.getLog(SQLExecutionProcessor.class);
@@ -33,13 +42,15 @@ public class SQLExecutionProcessor implements Runnable
     protected Thread               thread;
     protected SQLExecutionListener listener;
     protected String               sqlStr;
-    protected Connection           dbConnection;    
-    protected Statement            dbStatement;
+    
+    protected Connection           dbConnection          = null;    
+    protected Statement            dbStatement           = null;
+    protected boolean              isAutoCloseConnection = true;  
 
     /**
-     * 
-     * @param listener
-     * @param sqlStr
+     * Constructs a an object to execute an SQL staement and then notify the listener
+     * @param listener the listener
+     * @param sqlStr the SQL statement to be executed.
      */
     public SQLExecutionProcessor(final SQLExecutionListener listener, final String sqlStr)
     {
@@ -48,7 +59,51 @@ public class SQLExecutionProcessor implements Runnable
     }
     
     /**
-     * 
+     * Returns whether the connection and statement should be automatically close.
+     * @return Returns whether the connection and statement should be automatically close.
+     */
+    public boolean isAutoCloseConnection()
+    {
+        return isAutoCloseConnection;
+    }
+
+    /**
+     * Sets whether the connection and statement should be automatically close.
+     * @param isAutoCloseConnection true - auto close, false do not auto close
+     */
+    public void setAutoCloseConnection(boolean isAutoCloseConnection)
+    {
+        this.isAutoCloseConnection = isAutoCloseConnection;
+    }
+    
+    /**
+     * Close the DB Connection for this SQL statement
+     *
+     */
+    public void close() 
+    {            
+        try
+        {
+            if (dbStatement != null)
+            {
+                dbStatement.close();
+                dbStatement = null;
+            }
+            
+            if (dbConnection != null)
+            {
+                dbConnection.close();
+                dbConnection = null;   
+            }
+        } catch (SQLException ex)
+        {
+            log.error(ex);
+        }
+
+     }
+
+    /**
+     * Starts the thread to make the SQL call
      *
      */
     public void start()
@@ -58,7 +113,7 @@ public class SQLExecutionProcessor implements Runnable
     }
     
     /**
-     * 
+     * Stops the thread making the call
      *
      */
     public synchronized void stop()
@@ -72,7 +127,7 @@ public class SQLExecutionProcessor implements Runnable
     }
     
     /**
-     * 
+     * Creates a connection, makes the call and returns the results
      */
     public void run()
     {
@@ -83,22 +138,22 @@ public class SQLExecutionProcessor implements Runnable
             
             log.info("SQL["+sqlStr+"]");
             listener.exectionDone(this, dbStatement.executeQuery(sqlStr));
-            
-            dbStatement.close();
-            dbStatement = null;
-            dbConnection.close();
-            dbConnection = null;
+
+            if (isAutoCloseConnection)
+            {
+                close();
+            }
 
         } catch (java.sql.SQLException ex)
         {
             ex.printStackTrace();
-            log.error("Error in special", ex);
+            log.error("Error in run", ex);
             listener.executionError(this, ex);
-            
+                  
         } catch (Exception ex)
         {
             ex.printStackTrace();
-            log.error("Error in special", ex);
+            log.error("Error in run", ex);
             listener.executionError(this, ex);
             
         }

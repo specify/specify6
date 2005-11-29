@@ -19,62 +19,77 @@
  */
 package edu.ku.brc.specify.ui;
 
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Vector;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseMotionListener;
-
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.*;
-import  com.jgoodies.looks.plastic.*;
-import java.util.*;
+import javax.swing.event.MouseInputAdapter;
+
+import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+
 import edu.ku.brc.specify.core.NavBoxItemIFace;
 
 /**
  * @author Rod Spears
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ *  
+ * Creates a panel containing an icon and button with a focus "ring" when the mouse is hovering.
+ * This class is used mostly in NavBoxes
  */
 public class RolloverCommand extends JPanel implements NavBoxItemIFace
 {
-    protected JTextField   txtFld = null;
+    protected JTextField             txtFld     = null;   
+    protected JLabel                 iconLabel;
+    protected JButton                btn;
     
-    protected boolean      isOver     = false;
-    protected static Color focusColor = Color.BLUE;
-    protected Vector<ActionListener> actions = new Vector<ActionListener>();
-    protected JLabel       iconLabel;
-    //protected JLabel       label;
-    protected JButton      btn;
+    protected boolean                isOver     = false;
+    protected static Color           focusColor = Color.BLUE;
+    protected Vector<ActionListener> actions    = new Vector<ActionListener>();
 
     
     /**
-     * 
-     * @param aLabel
-     * @param aImgIcon
+     * Constructs a UI component with a label and an icon which can be clicked to execute an action
+     * @param label the text label for the UI
+     * @param imgIcon the icon for the UI
      */
-    public RolloverCommand(String aLabel, Icon aImgIcon)
+    public RolloverCommand(String label, Icon imgIcon)
     {
         super(new BorderLayout());
         setBorder(new EmptyBorder(new Insets(1,1,1,1)));
         
-        iconLabel = new JLabel(aImgIcon);        
-        btn       = new JButton(aLabel, aImgIcon);
+        iconLabel = new JLabel(imgIcon);        
+        btn       = new JButton(label, imgIcon);
+        
         btn.setBorder(new EmptyBorder(new Insets(1,1,1,1)));
         btn.setHorizontalTextPosition(SwingConstants.RIGHT);
         btn.setHorizontalAlignment(SwingConstants.LEFT);
         btn.setRolloverEnabled(true);
 
         
-        //add(iconLabel, BorderLayout.WEST);
         add(btn, BorderLayout.CENTER);
-        
-        //this.setFocusable(true);
 
         
-        //UIManager.getLookAndFeel().
         MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {
             public void mouseEntered(MouseEvent e) 
             {
@@ -126,6 +141,12 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace
           
     }
     
+    /**
+     * Stops the editting of the name. 
+     * It will accept any input that has already been typed, but it will not allow for a zero length string.
+     * It sawps out the text field and swpas in the label.
+     *
+     */
     protected void stopEditting()
     {
         if (txtFld != null)
@@ -143,6 +164,10 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace
         }
     }
     
+    /**
+     * Start the editing of the name. It swaps out the label with a text field to enable the user to type in a new name.
+     *
+     */
     protected void startEditting()
     {
         btn.setVisible(false);
@@ -175,8 +200,8 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace
         
     }
     
-    /**
-     * paints the component
+    /* (non-Javadoc)
+     * @see java.awt.Component#paint(java.awt.Graphics)
      */
     public void paint(Graphics g)
     {
@@ -199,17 +224,27 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace
         }*/
     }
     
+    /**
+     * 
+     * @param al
+     */
     public void addActionListener(ActionListener al)
     {
         btn.addActionListener(al);
     }
     
+    /**
+     * 
+     * @param al
+     */
     public void removeActionListener(ActionListener al)
     {
         btn.removeActionListener(al);
     }
    
-    // NavBoxItemIFace
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.NavBoxItemIFace#getUIComponent()
+     */
     public Component getUIComponent()
     {
         return this;

@@ -83,6 +83,10 @@ public class TestFormFactory extends TestCase
         return readFile(new File(aFileName), aDoValidate);
     }
     
+    /**
+     * Tests reading in a file that is assumed to be valid
+     *
+     */
     public void testReadValidViewFile()
     {
         log.info("Running Test testReadValidViewFile");
@@ -93,6 +97,10 @@ public class TestFormFactory extends TestCase
         FormViewFactory.getInstance().save(ViewMgr.getInstance().getViews("view valid"), getPath("view_valid_new.xml"));
     }
     
+    /**
+     * Two forms have same ID (in the same file)
+     *
+     */
     public void testDuplicateViewIds()
     {
         log.info("Running Test testDuplicateViewIds");
@@ -100,6 +108,9 @@ public class TestFormFactory extends TestCase
         assertFalse(readFile(getPath("duplicate_view_ids.xml"), true));
     }
     
+    /*
+     * A form's subview element references a non-existent form ID
+     */
     public void testMissingSubViewId()
     {
         log.info("Running Test testMissingSubViewId");
@@ -107,6 +118,10 @@ public class TestFormFactory extends TestCase
         assertFalse(readFile(getPath("missing_subview_id.xml"), true));
     }
     
+    /**
+     * 
+     * Tests looking up a form
+     */
     public void testLookups()
     {
         log.info("Running Test testLookups");
@@ -123,11 +138,15 @@ public class TestFormFactory extends TestCase
         assertTrue(rs);
     }
     
+    /**
+     * The second document reference a form in the first document
+     *
+     */
     public void testSubViewReference()
     {
-        log.info("Running Test tstSubViewReference");
+        log.info("Running Test testSubViewReference");
         ViewMgr.getInstance().clearAll();
-        readFile(getPath("view_valid.xml"), false);
-        assertTrue(getPath("view_valid2.xml"), true);
+        readFile(getPath("view_valid.xml"), false);    // don't validate
+        assertTrue(getPath("view_valid2.xml"), true);  // asks the ViewManager to validate the entire set of forms
     }
 }

@@ -20,6 +20,8 @@
 
 package edu.ku.brc.specify.core.subpane;
 
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+
 import java.awt.BorderLayout;
 
 import javax.swing.Icon;
@@ -38,7 +40,6 @@ import edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.specify.dbsupport.QueryResultsListener;
 import edu.ku.brc.specify.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.UICacheManager;
 
 public class PieChartPane extends BaseSubPane implements QueryResultsListener, QueryResultsProcessable
 {
@@ -46,9 +47,9 @@ public class PieChartPane extends BaseSubPane implements QueryResultsListener, Q
     private static Log log = LogFactory.getLog(BarChartPane.class);
     
     // Data Members
-    private QueryResultsGetter    getter;
-    private QueryResultsContainer qrContainer;
-    private QueryResultsHandlerIFace     processor = null;
+    private QueryResultsGetter       getter;
+    private QueryResultsContainer    qrContainer;
+    private QueryResultsHandlerIFace processor = null;
     
 
     /**
@@ -72,7 +73,7 @@ public class PieChartPane extends BaseSubPane implements QueryResultsListener, Q
      */
     public Icon getIcon()
     {
-        return IconManager.getInstance().getIcon(UICacheManager.getResourceString("Pie_Chart"), IconManager.IconSize.Std16);
+        return IconManager.getInstance().getIcon(getResourceString("Pie_Chart"), IconManager.IconSize.Std16);
     }
     
     

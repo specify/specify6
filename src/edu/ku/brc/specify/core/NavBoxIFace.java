@@ -22,9 +22,10 @@ package edu.ku.brc.specify.core;
 import javax.swing.JComponent;
 
 /**
- * Describes a Navigation Box (container) of objects. The objects can be commands, queries, recordsets, anything that can be shown and acts or acts upon.
  * @author rods
  *
+ * Describes a Navigation Box (container) of objects. The objects can be commands, queries, 
+ * recordsets, anything that can be shown and acts or acts upon.
  */
 public interface NavBoxIFace
 {
@@ -66,8 +67,8 @@ public interface NavBoxIFace
     public JComponent getUIComponent();
     
     /**
-     * 
-     * @param mgr
+     * Sets the manager into the object
+     * @param mgr the NavBox Manager
      */
     public void setMgr(NavBoxMgr mgr);
     
