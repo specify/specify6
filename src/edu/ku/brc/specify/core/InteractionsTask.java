@@ -37,16 +37,20 @@ import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.UICacheManager;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
-
+/**
+ * 
+ * @author rods
+ * This task manages Loans, Gifts, Exchanges and provide actions and forms to do the interactions
+ */
 public class InteractionsTask extends BaseTask
 {
     /**
-     * 
+     * Default Constructor
      *
      */
     public InteractionsTask()
     {
-        super(UICacheManager.getResourceString("Interactions"));
+        super(getResourceString("Interactions"));
         
         // Temporary
         NavBox navBox = new NavBox(getResourceString("Actions"));
@@ -63,8 +67,8 @@ public class InteractionsTask extends BaseTask
         navBoxes.addElement(navBox);
     }
     
-    /**
-     * @return the initial pane
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
     public SubPaneIFace getStarterPane()
     {
@@ -75,8 +79,7 @@ public class InteractionsTask extends BaseTask
     // Plugin Interface
     //-------------------------------------------------------
     
-    /*
-     *  (non-Javadoc)
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getToolBarItems()
      */
     public List<ToolBarItemDesc> getToolBarItems()
@@ -89,8 +92,7 @@ public class InteractionsTask extends BaseTask
         return list;
     }
     
-    /*
-     *  (non-Javadoc)
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getMenuItems()
      */
     public List<MenuItemDesc> getMenuItems()

@@ -84,10 +84,14 @@ public abstract class BaseTask implements Taskable, TaskPluginable
         
     }
     
+    /**
+     * Returns the initial pane for this task, may be a blank (empty) pane, but shouldn't null
+     * @return
+     */
     public abstract SubPaneIFace getStarterPane();
 
     /**
-     * 
+     * Requests the context for this task
      *
      */
     protected void requestContext()

@@ -284,11 +284,19 @@ public class UICacheManager
         
     }
 
+    /**
+     * 
+     * @return
+     */
     public SubPaneMgr getSubPaneMgr()
     {
         return subPaneMgr;
     }
 
+    /**
+     * 
+     * @param subPaneMgr
+     */
     public void setSubPaneMgr(SubPaneMgr subPaneMgr)
     {
         this.subPaneMgr = subPaneMgr;

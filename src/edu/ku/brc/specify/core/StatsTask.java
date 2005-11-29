@@ -105,22 +105,63 @@ public class StatsTask extends BaseTask
         }    
     }
     
-    /**
-     * @return the initial pane
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
     public SubPaneIFace getStarterPane()
     {
-        //return new SimpleDescPane(name, this, "This is the Statistics Pane");
         return new StatsPane(name, this);
     }
     
+    /**
+     * 
+     * @param element
+     * @param name
+     * @return
+     */
+    protected String getChartInfo(final org.dom4j.Element element, final String name)
+    {
+        org.dom4j.Element el = (org.dom4j.Element)element.selectSingleNode("chartinfo/"+name);
+        if (el != null)
+        {
+            return el.getText();
+        }
+        return "";
+    }
+    
+    /**
+     * 
+     * @param chartPane
+     */
+    protected void fillWithChartInfo(final org.dom4j.Element element, final ChartPane chartPane)
+    {
+        chartPane.setTitle(getChartInfo(element, "title"));
+        chartPane.setXAxis(getChartInfo(element, "xaxis"));
+        chartPane.setYAxis(getChartInfo(element, "yaxis"));
+    }
+
+    /**
+     * Helper method for adding row/col desc and values to a container
+     * @param qrc the QueryResultsContainer that will be added to
+     * @param descRow the textual description's row position
+     * @param descCol the textual description's column position
+     * @param valueRow the value's row position
+     * @param valueCol the value's column position
+     */
     public void add(final QueryResultsContainer qrc, final int descRow, final int descCol, final int valueRow, final int valueCol)
     {
         qrc.add(new QueryResultsDataObj(descRow, descCol));
         qrc.add(new QueryResultsDataObj(valueRow, valueCol));
     }
 
-    
+    /**
+     * Creates a chart from an XML definition. The query may be defined in the XML for it could be a custom query
+     * that comes from an instance of a class.
+     * @param actionName the action name (this is the name of the statistic to look up in the XML)
+     * @param qrProcessable the processor to take care of the results
+     * @param subPane the sub pane to be added to the UI
+     * @param listener the listener who nneds to know when the query is done and all the results are available
+     */
     public void createChart(final String                  actionName, 
                             final QueryResultsProcessable qrProcessable,
                             final BaseSubPane             subPane, 
@@ -129,6 +170,12 @@ public class StatsTask extends BaseTask
         org.dom4j.Element element = (org.dom4j.Element)statDOM.selectSingleNode("/statistics/stat[@name='"+actionName+"']");
         if (element != null)
         {
+            String displayType = element.attributeValue("display");
+            
+            if (subPane instanceof ChartPane)
+            {
+                fillWithChartInfo(element, (ChartPane)subPane);
+            }
             
             org.dom4j.Element sqlElement = (org.dom4j.Element)element.selectSingleNode("sql");
             if (sqlElement == null)
@@ -146,8 +193,8 @@ public class StatsTask extends BaseTask
                 
                 container.setSql(sqlElement.getText().trim());
                 
-                List slices = element.selectNodes("slice");
-                for ( Iterator iter = slices.iterator(); iter.hasNext(); ) {
+                List parts = element.selectNodes(displayType.equals("Pie Chart") ? "slice" : "bar");
+                for ( Iterator iter = parts.iterator(); iter.hasNext(); ) {
                     org.dom4j.Element slice = (org.dom4j.Element) iter.next();
                     int descRow  = Integer.parseInt(slice.valueOf( "desc/@row" ));
                     int descCol  = Integer.parseInt(slice.valueOf( "desc/@col" ));
@@ -185,41 +232,8 @@ public class StatsTask extends BaseTask
                 throw new RuntimeException("unrecognizable type for sql element["+sqlType+"]");
             }
             
-           
             UICacheManager.getInstance().getSubPaneMgr().addPane(subPane);
         }
-    }
-    
-    /**
-     * 
-     * @param actionName
-     */
-    public void createPieChart(final String actionName)
-    {
-        /*org.dom4j.Element element = (org.dom4j.Element)statDOM.selectSingleNode("/statistics/stat[@name='"+actionName+"']");
-        if (element != null)
-        {
-            PieChartPane pieChart = new PieChartPane("Pie Chart", this);
-            org.dom4j.Element sqlElement = (org.dom4j.Element)element.selectSingleNode("sql");
-            if (sqlElement != null)
-            {
-                pieChart.setSql(sqlElement.getText().trim());
-            }
-            List slices = element.selectNodes("slice");
-            for ( Iterator iter = slices.iterator(); iter.hasNext(); ) {
-                org.dom4j.Element slice = (org.dom4j.Element) iter.next();
-                int descRow  = Integer.parseInt(slice.valueOf( "desc/@row" ));
-                int descCol  = Integer.parseInt(slice.valueOf( "desc/@col" ));
-                int valueRow = Integer.parseInt(slice.valueOf( "value/@row" ));
-                int valueCol = Integer.parseInt(slice.valueOf( "value/@col" ));
-                pieChart.add(descRow, descCol, valueRow, valueCol);
-            }
-        
-            pieChart.initDone();
-           
-            UICacheManager.getInstance().getSubPaneMgr().addPane(pieChart);
-        }*/
-
     }
     
     //-------------------------------------------------------
@@ -233,7 +247,7 @@ public class StatsTask extends BaseTask
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        ToolBarDropDownBtn btn = createToolbarButton(name, "stats.gif", "stats_hint");      
+        ToolBarDropDownBtn      btn  = createToolbarButton(name, "stats.gif", "stats_hint");      
 
         
         list.add(new ToolBarItemDesc(btn.getCompleteComp()));
@@ -277,6 +291,11 @@ public class StatsTask extends BaseTask
         }
     }
    
+    /**
+     * 
+     * @author rods
+     *
+     */
     class PieChartAction implements ActionListener 
     {
         private String   actionName;

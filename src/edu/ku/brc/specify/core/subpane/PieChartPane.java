@@ -41,7 +41,7 @@ import edu.ku.brc.specify.dbsupport.QueryResultsListener;
 import edu.ku.brc.specify.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.specify.ui.IconManager;
 
-public class PieChartPane extends BaseSubPane implements QueryResultsListener, QueryResultsProcessable
+public class PieChartPane extends ChartPane implements QueryResultsListener, QueryResultsProcessable
 {
     // Static Data Members
     private static Log log = LogFactory.getLog(BarChartPane.class);
@@ -61,8 +61,6 @@ public class PieChartPane extends BaseSubPane implements QueryResultsListener, Q
     {
         super(name, task);
         
-        setLayout(new BorderLayout());
-
         getter      = new QueryResultsGetter(this); 
         qrContainer = new QueryResultsContainer(name);
     }
@@ -112,22 +110,6 @@ public class PieChartPane extends BaseSubPane implements QueryResultsListener, Q
         // create a dataset... 
         DefaultPieDataset dataset = new DefaultPieDataset(); 
         
-        /*
-        for (QueryResultsContainer container : getter.getQueryResultsContainers())
-        {
-            java.util.List<QueryResultsDataObj> dataObjs = container.getQueryResultsDataObjs();
-           
-            for (int i=0;i<dataObjs.size();i++)
-            {
-                QueryResultsDataObj dataObj = dataObjs.get(i++);
-                Object descObj = dataObj.getResult();
-                
-                dataObj = dataObjs.get(i);
-                Object valObj = dataObj.getResult();
-                
-                dataset.setValue(BarChartPane.getString(descObj), BarChartPane.getInt(valObj));
-            }
-        }*/
         java.util.List<Object> list = processor.getDataObjects();
         for (int i=0;i<list.size();i++)
         {         
@@ -139,7 +121,7 @@ public class PieChartPane extends BaseSubPane implements QueryResultsListener, Q
         
         // create a chart... 
         JFreeChart chart = ChartFactory.createPieChart( 
-                "Top 5 Species", 
+                title, 
                 dataset, 
                 false, // legend? 
                 true, // tooltips? 
@@ -189,6 +171,8 @@ public class PieChartPane extends BaseSubPane implements QueryResultsListener, Q
 
         //outerPanel.setLayout(new BorderLayout());
         //outerPanel.add(panel);
+        
+        removeAll(); // remove progress bar
 
         add(panel, BorderLayout.CENTER);
 
@@ -197,6 +181,10 @@ public class PieChartPane extends BaseSubPane implements QueryResultsListener, Q
         
     }
 
+    //--------------------------------------
+    // QueryResultsListener
+    //--------------------------------------
+    
 
     
 }

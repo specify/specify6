@@ -59,7 +59,7 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
     private SQLExecutionProcessor sqlExecutor;
     
     /**
-     * 
+     * Default Constructor
      *
      */
     public SQLQueryPane(final String name, 
@@ -119,7 +119,7 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
     }
     
     /**
-     * 
+     * Enables the Text Field and the Execute Button
      *
      */
     public void enableUI(boolean enabled)
@@ -129,7 +129,7 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
     }
     
     /**
-     * 
+     * Creates an sql executor and has it execute the query on a separate thread
      *
      */
     public void doQuery()
@@ -154,8 +154,8 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
     }
     
     /**
-     * 
-     * @param sqlStr
+     * Sests a SQL string to be executed
+     * @param sqlStr the sql string to be executed
      */
     public void setSQLStr(final String sqlStr)
     {
@@ -163,7 +163,7 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
     }
     
     /**
-     * 
+     * Cleans up any remaining data objects
      */
     public void finalize()
     {
@@ -198,8 +198,6 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
         enableUI(true);
         
         JOptionPane.showMessageDialog(this, ex.toString(), "SQL Error", JOptionPane.ERROR_MESSAGE); // XXX LOCALIZE
-
-
     }
 
     

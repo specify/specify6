@@ -2,7 +2,7 @@
   <statistics>
     <stat name="Top Five Species" display="Pie Chart">
       <chartinfo>
-        <title>Percentage Grow Last 5 Years</title>
+        <title>Top Five Species</title>
       </chartinfo>
       <sql type="text">
         <![CDATA[select tn,count(tx) as namecnt from (select determination.TaxonNameId, taxonname.TaxonNameID as tx, taxonname.TaxonName as tn from taxonname,determination where determination.TaxonNameId = taxonname.taxonnameid) as newTable group by tx order by namecnt DESC;]]>

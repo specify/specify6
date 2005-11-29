@@ -19,34 +19,38 @@
  */
 package edu.ku.brc.specify.core;
 
-import java.awt.event.*;
-import java.awt.*;
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.*;
-import javax.swing.JButton;
-
-import edu.ku.brc.specify.core.subpane.*;
+import edu.ku.brc.specify.core.subpane.DataEntryPane;
+import edu.ku.brc.specify.core.subpane.SimpleDescPane;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
-import edu.ku.brc.specify.plugins.TaskPluginable;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.UICacheManager;
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 
+/**
+ * @author rods
+ * This task controls the data entry forms
+ */
 public class DataEntryTask extends BaseTask
 {
+    public static final String DATA_ENTRY = "Data_Entry";
+    
     /**
-     * 
+     * Default Constructor
      *
      */
     public DataEntryTask()
     {
-        super(getResourceString("Data_Entry"));
+        super(getResourceString(DATA_ENTRY));
         
         // Temporary
         NavBox navBox = new NavBox(getResourceString("Actions"));
@@ -60,8 +64,8 @@ public class DataEntryTask extends BaseTask
     }
     
     /**
-     * 
-     * @param sqlStr
+     * OPens a pane with a form
+     * @param formName the name of the form to be opened
      */
     public void openForm(final String formName)
     {
@@ -70,8 +74,8 @@ public class DataEntryTask extends BaseTask
 
     }
     
-    /**
-     * @return the initial pane
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
     public SubPaneIFace getStarterPane()
     {
@@ -88,7 +92,7 @@ public class DataEntryTask extends BaseTask
      */
     public String getName()
     {
-        return "Data_Entry"; // XXX Localize
+        return DATA_ENTRY; // XXX Localize, Hmmm maybe not????
     }
     
     /*
@@ -99,7 +103,7 @@ public class DataEntryTask extends BaseTask
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
         
-        ToolBarDropDownBtn btn = createToolbarButton("Data_Entry",   "dataentry.gif",    "dataentry_hint");
+        ToolBarDropDownBtn btn = createToolbarButton(DATA_ENTRY,   "dataentry.gif",    "dataentry_hint");
        
         list.add(new ToolBarItemDesc(btn.getCompleteComp()));
         

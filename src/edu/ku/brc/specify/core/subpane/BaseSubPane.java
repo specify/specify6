@@ -25,9 +25,14 @@ import java.awt.BorderLayout;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.ui.SubPaneIFace;
@@ -50,6 +55,16 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
         this.task = task;
         
         setLayout(new BorderLayout());
+        
+        JProgressBar bar = new JProgressBar();
+        bar.setIndeterminate(true);
+        FormLayout      formLayout = new FormLayout("center:100px:g", "center:p:g");
+        PanelBuilder    builder    = new PanelBuilder(formLayout);
+        CellConstraints cc         = new CellConstraints();
+       
+        builder.add(bar, cc.xy(1,1));
+        
+        add(builder.getPanel(), BorderLayout.CENTER);
         
     }
     

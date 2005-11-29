@@ -76,7 +76,7 @@ import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.MainPanel;
 import edu.ku.brc.specify.ui.PropertyViewer;
 import edu.ku.brc.specify.ui.ToolbarLayoutManager;
-import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.*;
 
 /**
  * Specify Main Application Class
@@ -705,6 +705,7 @@ public class Specify extends JPanel
         JMenuItem mi2;
         JMenu fileMenu2 = (JMenu) mb.add(new JMenu("Log off"));
         
+
         fileMenu2.setMnemonic('O');       
         mi2 = createMenuItem(fileMenu2, "Log off", "O", "Log off database", false, null);
         mi2.addActionListener(new ActionListener()
@@ -735,7 +736,27 @@ public class Specify extends JPanel
                     }
                 });  
         
-        
+        JMenuItem mi3;
+        JMenu fileMenu3 = (JMenu) mb.add(new JMenu("Windows"));
+        fileMenu3.setMnemonic('W');       
+        mi3 = createMenuItem(fileMenu3, "Close All", "A", "Close All", false, null);
+        mi3.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        UICacheManager.getInstance().getSubPaneMgr().closeAll();
+                    }
+                });  
+
+        mi3 = createMenuItem(fileMenu3, "Close Current", "C", "Close C", false, null);
+        mi3.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        UICacheManager.getInstance().getSubPaneMgr().closeCurrent();
+                    }
+                });  
+
         return mb;
     }
    

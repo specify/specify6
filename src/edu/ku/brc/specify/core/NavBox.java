@@ -19,19 +19,29 @@
  */
 package edu.ku.brc.specify.core;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Insets;
+import java.awt.event.ActionListener;
 
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
 
-import com.jgoodies.forms.builder.*;
+import edu.ku.brc.specify.ui.CurvedBorder;
+import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.specify.ui.RolloverCommand;
 
-import edu.ku.brc.specify.core.NavBoxIFace.Scope;
-import edu.ku.brc.specify.ui.*;
-import edu.ku.brc.specify.ui.IconManager.IconSize;
-
+/**
+ * 
+ * @author rods
+ *
+ */
 public class NavBox extends JPanel implements NavBoxIFace
 {
     private String             name;

@@ -32,9 +32,8 @@ import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 
 /**
- * A task to manage Labels and response to Label Commands
  * @author rods
- *
+ * A task to manage Labels and response to Label Commands
  */
 public class LabelsTask extends BaseTask
 {
@@ -54,8 +53,8 @@ public class LabelsTask extends BaseTask
         navBoxes.addElement(navBox);
     }
     
-    /**
-     * @return the initial pane
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
     public SubPaneIFace getStarterPane()
     {

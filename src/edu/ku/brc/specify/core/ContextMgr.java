@@ -20,19 +20,16 @@
 package edu.ku.brc.specify.core;
 
 import java.util.Vector;
-
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import edu.ku.brc.specify.ui.*;
-import edu.ku.brc.specify.core.subpane.*;
 
 /**
  * 
  * @author rods
- * Status: Work In Progress
- *
+ * Status: Finished
+ * 
+ * Manages the task context of the UI. The task context is controlled by what tab is visible in the main pane
+ * When tasks are registered they are asked for the NavBoxes and those are placed in the NavBox Manager. when
+ * they are unregistered the NavBoxes are removed
  */
 public class ContextMgr
 {
@@ -48,8 +45,7 @@ public class ContextMgr
      *
      */
     protected ContextMgr()
-    {
-        
+    { 
     }
     
     /**
@@ -72,19 +68,36 @@ public class ContextMgr
             NavBoxMgr.getInstance().unregister(currentContext);
         }
         
-        NavBoxMgr.getInstance().register(task);
+        if (task != null)
+        {
+            NavBoxMgr.getInstance().register(task);
+            register(task);
+        }
+        
         currentContext = task;
- 
+        
     }
     
-    public void register(Taskable task)
+    /**
+     * Registers a task
+     * @param task the task to be register
+     */
+    protected void register(Taskable task)
     {
         tasks.addElement(task);
     }
     
+    /**
+     *  Unregisters a task. Checks to see if it is the current task, if so then it unregisters the NavBoxes
+     * @param task the task to be unregistered
+     */
     public void unregister(Taskable task)
     {
+        if (currentContext == task)
+        {    
+            NavBoxMgr.getInstance().unregister(currentContext);
+            currentContext = null;
+        }
         tasks.removeElement(task);
     }
-    
 }

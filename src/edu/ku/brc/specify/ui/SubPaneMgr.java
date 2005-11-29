@@ -164,7 +164,37 @@ public class SubPaneMgr extends JTabbedPane implements ChangeListener
         return getSubPaneForComponent(getComponentAt(index));
     }
     
+    /**
+     * Removes all the Tabs
+     *
+     */
+    public void closeAll()
+    {
+        SubPaneIFace subPane = this.getCurrentSubPane();
+        if (subPane != null)
+        {
+            ContextMgr.getInstance().unregister(subPane.getTask());
+            panes.clear();
+        }
+        this.removeAll();
+    }
+    
+    /*
+     * Removes the current tab
+     */
+    public void closeCurrent()
+    {
+        SubPaneIFace subPane = this.getCurrentSubPane();
+        this.remove(subPane.getUIComponent());
+    }
+    
+    //--------------------------------------------------------
     // ChangeListener
+    //--------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+     */
     public void stateChanged(ChangeEvent e) 
     {
         int index = getSelectedIndex();
@@ -176,6 +206,9 @@ public class SubPaneMgr extends JTabbedPane implements ChangeListener
             {
                 ContextMgr.getInstance().requestContext(subPane.getTask());
             }
+        } else 
+        {
+            ContextMgr.getInstance().requestContext(null);
         }
         
     }

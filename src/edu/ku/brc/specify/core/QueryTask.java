@@ -55,7 +55,7 @@ public class QueryTask extends BaseTask
         navBoxes.addElement(navBox);
         
         navBox = new NavBox(getResourceString("Saved_Searches"));
-        navBox.add(NavBox.createBtn("Picklist", name, IconManager.IconSize.Std16, new QueryAction("select * from picklist where picklist_id = 3")));
+        navBox.add(NavBox.createBtn("Species Counts", name, IconManager.IconSize.Std16, new QueryAction("select SpeciesName,count(tx) as SpeciesCount from (select determination.TaxonNameId, taxonname.TaxonNameID as tx, taxonname.TaxonName as SpeciesName from taxonname,determination where determination.TaxonNameId = taxonname.taxonnameid) as newTable group by tx order by SpeciesCount DESC;")));
         navBox.add(NavBox.createBtn("Picklist", name, IconManager.IconSize.Std16));
         navBoxes.addElement(navBox);
     }

@@ -23,9 +23,11 @@ package edu.ku.brc.specify.core.subpane;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.Icon;
+import javax.swing.JProgressBar;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,13 +37,17 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.specify.dbsupport.QueryResultsListener;
 import edu.ku.brc.specify.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.specify.ui.IconManager;
 
-public class BarChartPane extends BaseSubPane implements QueryResultsListener, QueryResultsProcessable
+public class BarChartPane extends ChartPane implements QueryResultsListener, QueryResultsProcessable
 {
     // Static Data Members
     private static Log log = LogFactory.getLog(BarChartPane.class);
@@ -59,9 +65,6 @@ public class BarChartPane extends BaseSubPane implements QueryResultsListener, Q
                         final Taskable task)
     {
         super(name, task);
-        
-        setLayout(new BorderLayout());
-        
     }
     
     /*
@@ -73,7 +76,6 @@ public class BarChartPane extends BaseSubPane implements QueryResultsListener, Q
         return IconManager.getInstance().getIcon(getResourceString("Bar_Chart"), IconManager.IconSize.Std16);
     }
     
-
     //--------------------------------------
     // QueryResultsProcessable
     //--------------------------------------
@@ -107,7 +109,7 @@ public class BarChartPane extends BaseSubPane implements QueryResultsListener, Q
     public synchronized void allResultsBack()
     {
         // create a dataset... 
-        String cat = "Years";
+        String cat = "";
         DefaultCategoryDataset dataset = new DefaultCategoryDataset(); 
         
         java.util.List<Object> list = processor.getDataObjects();
@@ -119,23 +121,23 @@ public class BarChartPane extends BaseSubPane implements QueryResultsListener, Q
         }
         list.clear();
 
-        // create a chart... 
-         
         // create the chart... 
         JFreeChart chart = ChartFactory.createBarChart3D( 
-                "Cataloged By Year", // chart title 
-                null, // domain axis label 
-                "Number of Specimens", // range axis label 
-                dataset, // data 
+                title,      // chart title 
+                xAxisTitle, // domain axis label 
+                yAxisTitle, // range axis label 
+                dataset,    // data 
                 PlotOrientation.VERTICAL, 
-                true, // include legend 
-                true, // tooltips? 
-                false // URLs? 
+                true,       // include legend 
+                true,       // tooltips? 
+                false       // URLs? 
             ); 
         // create and display a frame... 
         ChartPanel panel = new ChartPanel(chart, true, true, true, true, true); 
         panel.setMaximumSize(new Dimension(100,100));
         panel.setPreferredSize(new Dimension(100,100));
+        
+        removeAll(); // remove progress bar
         add(panel, BorderLayout.CENTER);
         
         processor.cleanUp();
@@ -148,82 +150,5 @@ public class BarChartPane extends BaseSubPane implements QueryResultsListener, Q
 
     }
 
-    //-----------------------------------------------
-    //-- Static Helpers
-    //-----------------------------------------------
-    public static float getFloat(Object valObj)
-    {
-        float value = 0.0f;
-        if (valObj != null)
-        {
-            if (valObj instanceof Integer)
-            {
-                value = ((Integer)valObj).floatValue();
-            } else if (valObj instanceof Long)
-            {
-                value = ((Long)valObj).floatValue();
-            } else if (valObj instanceof Float)
-            {
-                value = ((Float)valObj).floatValue();
-            } else if (valObj instanceof Double)
-            {
-                value = ((Double)valObj).floatValue();
-            } else
-            {
-                System.out.println("getFloat - Class type is "+valObj.getClass().getName());
-            }
-        } else
-        {
-            log.error("getFloat - Result Object is null for["+valObj+"]");
-        }
-        return value;
-    }
-    
-    public static int getInt(Object valObj)
-    {
-        int value = 0;
-        if (valObj != null)
-        {
-            if (valObj instanceof Integer)
-            {
-                value = ((Integer)valObj).intValue();
-            } else if (valObj instanceof Long)
-            {
-                value = ((Long)valObj).intValue();
-            } else if (valObj instanceof Float)
-            {
-                value = ((Float)valObj).intValue();
-            } else if (valObj instanceof Double)
-            {
-                value = ((Double)valObj).intValue();
-            } else
-            {
-                System.out.println("getInt - Class type is "+valObj.getClass().getName());
-            }
-        } else
-        {
-            log.error("getInt - Result Object is null for["+valObj+"]");
-        }
-        return value;
-    }
-    
-    public static String getString(Object valObj)
-    {
-        if (valObj != null)
-        {
-            if (valObj instanceof String)
-            {
-                return (String)valObj;
-            } else
-            {
-                System.out.println("getString - Class type is "+valObj.getClass().getName()+" should be String");
-            }
-        } else
-        {
-            log.error("getString - Result Object is null for["+valObj+"] in getString");
-        }
-        return "";
-   }
-    
    
 }
