@@ -19,6 +19,7 @@
  */
 package edu.ku.brc.specify.ui;
 
+import java.awt.Component;
 import java.util.Hashtable;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -29,21 +30,30 @@ import javax.swing.JTextField;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.exceptions.UIException;
 
 public class UICacheManager
 {
+    // Static Data Members
+    public static final String FRAME     = "frame";
+    public static final String MENUBAR   = "menubar";
+    public static final String TOOLBAR   = "toolbar";
+    public static final String STATUSBAR = "statusbar";
+    
     private static Log log               = LogFactory.getLog(UICacheManager.class);
     private static UICacheManager cmdMgr = new UICacheManager();
     
-    private Hashtable<String, ActionChangedListener>         actionChangedListeners = new Hashtable<String, ActionChangedListener>();
-    private Hashtable<String, Hashtable<String, JComponent>> uiItems                = new Hashtable<String, Hashtable<String, JComponent>>();
+    // Data Members
+    protected Hashtable<String, Component> components = new Hashtable<String, Component>();
     
-    private ResourceBundle resourceBundle = null;
-    private String         resourceName   = "resources";
+    protected Hashtable<String, ActionChangedListener>         actionChangedListeners = new Hashtable<String, ActionChangedListener>();
+    protected Hashtable<String, Hashtable<String, JComponent>> uiItems                = new Hashtable<String, Hashtable<String, JComponent>>();
     
-    private JTextField     statusBarTextField  = null;
+    protected ResourceBundle resourceBundle = null;
+    protected String         resourceName   = "resources";
+    
+    protected SubPaneMgr     subPaneMgr     = null;
+    
     /**
      * Default private constructor for singleton
      *
@@ -193,19 +203,95 @@ public class UICacheManager
     }
 
     /**
-     * @return Returns the statusBarTextField.
+     * Registers a uiComp into the applications
+     * @param name the name of the UI component to be registered
+     * @param uiComp the UI component to be registered
      */
-    public JTextField getStatusBarTextField()
+    public void register(final String name, final Component uiComp)
     {
-        return statusBarTextField;
+        if (uiComp != null)
+        {
+            if (components.get(name) == null)
+            {
+                components.put(name, uiComp);
+            } else
+            {
+                throw new RuntimeException("Registering a uiComp with an existing name["+ name+"]");
+            }
+        } else
+        {
+            throw new NullPointerException("Trying to register a null UI Component!");
+        }
+    }
+    
+    /**
+     * Unregisters a uiComp from the application
+     * @param name the name of the UI component to be unregistered
+     */
+    public void unregister(final String name)
+    {
+        if (name != null)
+        {
+            if (components.get(name) != null)
+            {
+                components.remove(name);
+            } else
+            {
+                throw new RuntimeException("Unregistering a uiComp that has been registered ["+name+"]");
+            }
+        } else
+        {
+            throw new NullPointerException("Trying to unregister with a null name!");
+        }
     }
 
     /**
-     * @param statusBarTextField The statusBarTextField to set.
+     * Returns a UI component by name
+     * @param name the name of the component to be retrieved 
+     * @return a UI component by name
      */
-    public void setStatusBarTextField(JTextField statusBarTextField)
+    public Component get(final String name)
     {
-        this.statusBarTextField = statusBarTextField;
+        return components.get(name);
+    }
+    
+    /**
+     * Displays a message in the status bar
+     * @param text
+     */
+    public static void displayStatusBarText(final String text)
+    {
+        JTextField txtField = ((JTextField)UICacheManager.getInstance().get(STATUSBAR));
+        assert txtField != null : "No statusbar has been created!";
+       
+        txtField.setText(text == null ? "" : text);
+       
+    }
+
+    /**
+     * Displays a message in the status bar
+     * @param text
+     */
+    public static void displayLocalizedStatusBarText(final String key)
+    {
+        if (key == null) throw new NullPointerException("Call to displayLocalizedStatusBarText cannot be null!");
+        
+        String localizedStr = UICacheManager.getInstance().getResourceStringInternal(key);
+        assert localizedStr != null : "Localized String for key["+key+"]";
+        
+        displayStatusBarText(localizedStr);
+        
+        
+    }
+
+    public SubPaneMgr getSubPaneMgr()
+    {
+        return subPaneMgr;
+    }
+
+    public void setSubPaneMgr(SubPaneMgr subPaneMgr)
+    {
+        this.subPaneMgr = subPaneMgr;
     }
 
 

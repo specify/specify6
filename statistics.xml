@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <statistics>
+    <stat name="Top Five Species" display="Pie Chart">
+      <chartinfo>
+        <title>Percentage Grow Last 5 Years</title>
+      </chartinfo>
+      <sql type="text">
+        <![CDATA[select tn,count(tx) as namecnt from (select Determination.TaxonNameId, taxonname.TaxonNameID as tx, taxonname.TaxonName as tn from taxonname,determination where Determination.TaxonNameId = taxonname.taxonnameid) as newTable group by tx order by namecnt DESC;]]>
+      </sql>
+      <slice>
+        <desc row="1" col="1"/>
+        <value row="1" col="2"/>
+      </slice>
+      <slice>
+        <desc row="2" col="1"/>
+        <value row="2" col="2"/>
+      </slice>
+      <slice>
+        <desc row="3" col="1"/>
+        <value row="3" col="2"/>
+      </slice>
+      <slice>
+        <desc row="4" col="1"/>
+        <value row="4" col="2"/>
+      </slice>
+      <slice>
+        <desc row="5" col="1"/>
+        <value row="6" col="2"/>
+      </slice>
+    </stat>
+    
+    <stat name="Items Cataloged Last 5 Years" display="Bar Chart">
+       <chartinfo>
+         <title>Items Cataloged Last 5 Years</title>
+         <xaxis>Years</xaxis>
+         <yaxis>Number of Specimens</yaxis>
+       </chartinfo>
+      <sql type="builtin" className="edu.ku.brc.specify.dbsupport.CatalogedByYearCustomQuery"/>
+    </stat>
+    
+    <stat name="Percentage Grow Last 5 Years" display="Bar Chart">
+       <chartinfo>
+         <title>Percentage Grow Last 5 Years</title>
+         <xaxis>Years</xaxis>
+         <yaxis>Percentage</yaxis>
+       </chartinfo>
+       <sql type="builtin" className="edu.ku.brc.specify.dbsupport.PercentageGrowthCustomQuery"/>
+    </stat>
+  </statistics>
+  

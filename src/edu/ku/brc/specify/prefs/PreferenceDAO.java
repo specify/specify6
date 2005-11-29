@@ -1,15 +1,13 @@
 package edu.ku.brc.specify.prefs;
 
-import edu.ku.brc.specify.dbsupport.*;
-import edu.ku.brc.specify.exceptions.*;
-import org.hibernate.*;
+import java.util.Collection;
+
+import org.hibernate.HibernateException;
+import org.hibernate.LockMode;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.criterion.Projections;
-import org.hibernate.FetchMode;
-import org.hibernate.cache.*;
-import java.util.*;
+
+import edu.ku.brc.specify.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.exceptions.ConfigurationException;
 
 public class PreferenceDAO
 {

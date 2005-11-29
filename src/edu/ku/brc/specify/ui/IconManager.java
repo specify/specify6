@@ -19,10 +19,9 @@
  */
 package edu.ku.brc.specify.ui;
 
-import java.awt.Image;
+import java.net.URL;
 import java.util.Hashtable;
 
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import org.apache.commons.logging.Log;
@@ -39,13 +38,50 @@ public class IconManager
 {
     private static Log log = LogFactory.getLog(IconManager.class);
     
-    public enum ICON_SIZE {ICON_NORMAL32, ICON_NORMAL_FADE32, ICON_NORMAL16, ICON_NORMAL_FADE16};
+    // Icon Size Enumerations
+    public enum IconSize {
+        Std32(32, false, false),
+        Std24(24, false, false),
+        Std16(16, false, false),
+        Custom(0, false, false),
+        Std32Fade(32, true, false),
+        Std24Fade(24, true, false),
+        Std16Fade(16, true, false),     
+        CustomFade(0, false, false),
+        Std32BW(32, false, true),
+        Std24BW(24, false, true),
+        Std16BW(16, false, true),
+        CustomBW(0, false, false),
+        Std32FadeBW(32, true, true),
+        Std24FadeBW(24, true, true),
+        Std16FadeBW(16, true, true),
+        CustomFadeBW(0, false, false);
+        
+        IconSize(final int size, final boolean faded, final boolean blackWhite)
+        { 
+            this.size = size;
+            this.faded = faded;
+            this.blackWhite = blackWhite;
+        }
+        
+        private int     size;
+        private boolean faded;
+        private boolean blackWhite;
+        
+        public Integer size()         { return size; }
+        public boolean faded()        { return faded; }
+        public boolean blackWhite()   { return blackWhite; }
+        public String  toString()     { return Integer.toString(size) + (faded ? "f":"") + (blackWhite ? "BW":""); }
+        public void setSize(int size) { this.size = size; }
+        public void setFaded(boolean faded) { this.faded = faded; }
+        public void setBlackWhite(boolean bw) { blackWhite = bw; }
+        
+    };
     
     protected static String      relativePath = "images/";
     private   static IconManager iconMgr      = new IconManager();
     
-    protected Hashtable<String, ImageIcon> icons       = new Hashtable<String, ImageIcon>();
-    //protected Hashtable<ICON_SIZE, String>   postfixName = new Hashtable<ICON_SIZE, String>();
+    protected Hashtable<String, IconEntry> entries       = new Hashtable<String, IconEntry>();
     
   
     /**
@@ -57,108 +93,86 @@ public class IconManager
          return iconMgr;
     }
     
-    
-    private IconManager()
-    {
-    }
-    
     /**
      * 
-     * @param aName
-     * @param aId
-     * @return
+     *
      */
-    public ImageIcon getIcon(String aName, ICON_SIZE aId)
+    protected IconManager()
     {
-        return icons.get(aName + aId.toString());
     }
+
 
     /**
      * 
-     * @param aName
+     * @param iconName
+     * @param fileName
+     * @param id
      * @return
      */
-    public ImageIcon getIcon(String aName)
+    public ImageIcon register(final String iconName, final String fileName, final IconSize id)
     {
-        return icons.get(aName);
+        ImageIcon icon = getIcon(iconName, id);
+        if (icon == null)
+        {
+            IconEntry entry = new IconEntry(iconName);
+            URL url = Specify.class.getResource(relativePath+fileName);
+            
+            assert url != null : "Couldn't find URL for resource path: ["+(relativePath+fileName)+"]";
+            
+            icon = new ImageIcon(url);
+            if (icon != null)
+            {
+                
+                entry.add(id.size(), icon);
+                entries.put(iconName, entry);
+                return icon;
+                
+            } else
+            {
+                log.error("Can't load icon ["+iconName+"]["+fileName+"]");
+            }
+            return null;
+        } else
+        {
+            return icon;
+        }
     }
+
 
     /**
      * 
-     * @param aIconName
-     * @param aFileName
-     * @param aId
+     * @param iconName
+     * @param id
+     * @return
      */
-    public Icon createAndPutIcon(String aIconName, String aFileName, ICON_SIZE aId)
+    public ImageIcon getIcon(final String iconName, final IconSize id)
     {
         
-        String name = aIconName + aId.toString();
-        ImageIcon icon = icons.get(name);
-        if (icon == null)
+        IconEntry entry = entries.get(iconName);
+        if (entry != null)
         {
-            icon = new ImageIcon(Specify.class.getResource(relativePath+aFileName));
-            if (icon != null)
+            ImageIcon icon = entry.getIcon(id.size());
+            if (icon == null)
             {
-                icons.put(name + aId.toString(), icon);
+                if (id.size() != 32)
+                {
+                    IconManager.IconSize.Custom.setSize(32);
+                    IconManager.IconSize.Custom.setFaded(id.faded());
+                    IconManager.IconSize.Custom.setBlackWhite(id.blackWhite());
+                    return entry.getScaledIcon(IconManager.IconSize.Custom, id);
+                } else
+                {
+                    log.error("Couldn't find Std size for icon ["+ iconName+"] is not registered.");
+                }
             } else
             {
-                log.error("Can't load icon ["+aIconName+"]["+aFileName+"]");
+                return icon;
             }
         } else
         {
-            
+            // It is ok that it isn't registered
         }
-        return icon;
+        return null;
     }
     
-    /**
-     * 
-     * @param aIconName
-     * @param aFileName
-     */
-    public Icon createAndPutIcon(String aIconName, String aFileName)
-    {
-        String name = aIconName + ICON_SIZE.ICON_NORMAL32.toString();
-        ImageIcon icon = icons.get(name);
-        if (icon == null)
-        {
-            icon = new ImageIcon(Specify.class.getResource(relativePath+aFileName));
-            if (icon != null)
-            {
-                icons.put(name, icon);
-            } else
-            {
-                log.error("Can't load icon ["+aIconName+"]["+aFileName+"]");
-            }
-        } else
-        {
-            return icon;
-        }
-        return icon;
-    }
-    
-    public Icon createAndPutIconAndScale(String aIconName, String aFileName)
-    {
-        String name = aIconName + ICON_SIZE.ICON_NORMAL32.toString();
-        ImageIcon icon = icons.get(name);
-        if (icon == null)
-        {
-            icon = new ImageIcon(Specify.class.getResource(relativePath+aFileName));
-            if (icon != null)
-            {
-                icons.put(name, icon);
-                Image image = icon.getImage().getScaledInstance(24,24, Image.SCALE_SMOOTH);
-                icons.put(aIconName + ICON_SIZE.ICON_NORMAL16.toString(), new ImageIcon(image));
-            } else
-            {
-                log.error("Can't load icon ["+aIconName+"]["+aFileName+"]");
-            }
-            
-        } else
-        {
-            return icon;
-        }
-        return icon;
-    }
-
 }

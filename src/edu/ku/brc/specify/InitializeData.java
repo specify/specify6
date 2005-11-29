@@ -1,30 +1,13 @@
 package edu.ku.brc.specify;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.*;
-import java.util.HashSet;
+import java.util.Hashtable;
 
-import org.hibernate.*;
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.criterion.Projections;
-import org.hibernate.FetchMode;
-import org.hibernate.cache.*;
 
-
-// Straight JDBC
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.sql.DriverManager;
-
-import org.apache.log4j.Logger;
-import edu.ku.brc.specify.prefs.*;
-import edu.ku.brc.specify.dbsupport.*;
+import edu.ku.brc.specify.dbsupport.HibernateUtil;
 
 /**
  * This is a helper class that is used for initializing data for testing 

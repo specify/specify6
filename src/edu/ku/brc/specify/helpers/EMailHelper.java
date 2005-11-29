@@ -1,20 +1,44 @@
+/* Filename:    $RCSfile: EMailHelper.java,v $
+ * Author:      $Author: rods $
+ * Revision:    $Revision: 1.1 $
+ * Date:        $Date: 2005/10/19 19:59:54 $
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package edu.ku.brc.specify.helpers;
 
-import java.util.*;
-import java.io.*;
-import javax.mail.*;
-import javax.mail.internet.*;
-import javax.mail.internet.*;
-import javax.activation.*;
-import java.io.*;
-import java.net.InetAddress;
-import java.util.Properties;
+import java.io.File;
 import java.util.Date;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
-import javax.mail.*;
-import javax.mail.internet.*;
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
-import com.sun.mail.smtp.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.sun.mail.smtp.SMTPTransport;
 
 /**
  * Sends an email with optional attachment
@@ -24,15 +48,14 @@ import com.sun.mail.smtp.*;
 
 public class EMailHelper
 {
-
+    private static Log log  = LogFactory.getLog(EMailHelper.class);
+    
     /**
      * Default Constructor
      *
      */
     public EMailHelper()
     {
-        super();
-        // TODO Auto-generated constructor stub
     }
     
     /**
@@ -120,11 +143,11 @@ public class EMailHelper
                 
                 t.sendMessage(msg, msg.getAllRecipients());
                 
-            } finally {
-            //if (verbose)
-                System.out.println("Response: " +
-                            t.getLastServerResponse());
-              t.close();
+            } finally 
+            {
+                  
+                 log.info("Response: " + t.getLastServerResponse());
+                 t.close();
             }
 
             

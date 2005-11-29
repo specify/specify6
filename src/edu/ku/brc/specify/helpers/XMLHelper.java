@@ -21,6 +21,7 @@ package edu.ku.brc.specify.helpers;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.StringReader;
 import java.util.StringTokenizer;
@@ -33,11 +34,15 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 
 import org.apache.log4j.Logger;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+
+import edu.ku.brc.specify.ui.forms.persist.FormViewFactory;
 
 
 /**
@@ -569,5 +574,33 @@ public class XMLHelper
      return sb.toString();
    }
 
+   
+   /**
+    * 
+    * @param fileinputStream
+    */
+    public static org.dom4j.Element readFileToDOM4J(final File aFile) throws Exception
+    {
+        return readFileToDOM4J(new FileInputStream(aFile));
+    }
+   
+   /**
+    * 
+    * @param aFile
+    * @return
+    */
+   public static org.dom4j.Element readFileToDOM4J(final FileInputStream fileinputStream) throws Exception
+   {
+       SAXReader saxReader= new SAXReader();
+        
+       saxReader.setValidation(false);
+       //saxReader.setFeature("http://apache.org/xml/features/validation/schema", false);
+       //saxReader.setFeature("http://xml.org/sax/features/validation", false);
+       //saxReader.setProperty("http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation", 
+       //                   (FormViewFactory.class.getResource("../form.xsd")).getPath());
+       
+       org.dom4j.Document document = saxReader.read( fileinputStream );
+       return document.getRootElement();
+   }
 
 }

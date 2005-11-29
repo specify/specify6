@@ -27,10 +27,10 @@ import javax.swing.table.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import edu.ku.brc.specify.core.subpane.SQLQueryPane;
+
 import java.lang.reflect.Field;
-import java.sql.Connection;
 import java.sql.*;
-import java.sql.Statement;
 import java.util.*;
 
 public class ResultSetTableModel extends AbstractTableModel
@@ -57,8 +57,8 @@ public class ResultSetTableModel extends AbstractTableModel
                 metaData = resultSet.getMetaData();
                 for (int i=1;i<=metaData.getColumnCount();i++)
                 {
-                    System.out.println(i);
-                    System.out.println(metaData.getColumnClassName(i));
+                    //System.out.println(i);
+                    //System.out.println(metaData.getColumnClassName(i));
                     
                     classNames.addElement(Class.forName(metaData.getColumnClassName(i)));
                 }

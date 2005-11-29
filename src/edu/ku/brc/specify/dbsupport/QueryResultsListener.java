@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: MainPanel.java,v $
+/* Filename:    $RCSfile: QueryResultsListener.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2005/10/19 19:59:54 $
@@ -17,16 +17,21 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.ui;
 
-import javax.swing.*;
-import java.awt.*;
+package edu.ku.brc.specify.dbsupport;
 
-public class TabHolderPane extends JPanel
+/**
+ * 
+ * @author rods
+ *
+ */
+public interface QueryResultsListener
 {
 
-    public TabHolderPane()
-    {
-        
-    }
+    /**
+     * Notifies the consumer that all the results are back
+     *
+     */
+    public void allResultsBack();
+    
 }

@@ -19,16 +19,17 @@
  */
 package edu.ku.brc.specify.ui;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 
-import java.awt.*;
+import edu.ku.brc.specify.core.NavBoxMgr;
 
-public class MainPanel
+public class MainPanel extends JSplitPane
 {
 
-    private JSplitPane    splitPane;
-    private TabHolderPane tabHolderPane  = new TabHolderPane();
-    private JTabbedPane   tabbedPane     = new JTabbedPane();
+    private NavBoxMgr     navBoxMgr;
+    private SubPaneMgr    subPaneMgr;
     
     /**
      * Default Constructor
@@ -36,40 +37,58 @@ public class MainPanel
      */
     public MainPanel()
     {
-        setTabPlacement(JTabbedPane.BOTTOM); // default placement
+        super(JSplitPane.HORIZONTAL_SPLIT);
         
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tabHolderPane, tabbedPane);
+        navBoxMgr  =  NavBoxMgr.getInstance();
+        subPaneMgr = new SubPaneMgr();
+        UICacheManager.getInstance().setSubPaneMgr(subPaneMgr);
+        
+        this.setLeftComponent(navBoxMgr);
+        this.setRightComponent(subPaneMgr);
+        
+        setTabPlacement(JTabbedPane.BOTTOM);  // PREF
+        this.setDividerLocation(175);         // PREF
     }
     
     /**
      * Enables the tab place to be set externally (like from prefs)
      * @param aPlacement the placement of the tabs Top, Bottom, Left or Right (SwingConstants)
      */
-    public void setTabPlacement(int aPlacement)
+    public void setTabPlacement(int placement)
     {
-        tabbedPane.setTabPlacement(aPlacement);
+        subPaneMgr.setTabPlacement(placement);
     }
     
     /**
      * Adds a panel to the tab control and then the panel is asked to regiester all of it's Command tabs
-     * @param aComp the component being added
+     * @param comp the component being added
      * @return the same panel
      */
-    public JComponent addSubPanel(SubPaneIFace aComp)
+    public JComponent addSubPanel(SubPaneIFace comp)
     {
-        tabHolderPane.add(aComp.getName(), aComp.getUIComponent());
+        subPaneMgr.addPane(comp);
         
-        return aComp.getUIComponent();
+        navBoxMgr.invalidate();
+        subPaneMgr.invalidate();
+
+        return comp.getUIComponent();
     }
     
     /**
      * Removes a Panel from the Tab control, the Panel is then asked to un register it's Command Tabs (boxes)
-     * @param aComp
+     * @param comp
      */
-    public void removeSubPanel(SubPaneIFace aComp)
+    public void removeSubPanel(SubPaneIFace comp)
     {
-        tabHolderPane.remove(aComp.getUIComponent());
+        subPaneMgr.removePane(comp);
     }
+    
+    public void showPane(String name)
+    {
+        subPaneMgr.showPane(name);
+    }
+    
+    
     
     
 }

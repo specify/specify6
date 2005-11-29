@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<boxes>
+  <box name="Statistics">
+    <item name="Top Five Species" type="Pie Chart" icon="Pie Chart"/>
+    <item name="Items Cataloged Last 5 Years" type="Bar Chart" icon="Bar Chart"/> 
+  </box>
+</boxes>

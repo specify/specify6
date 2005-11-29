@@ -175,7 +175,7 @@ public class PropertyViewer extends JPanel
             Document doc = ((XMLConfiguration)config).getDocument();
             XMLHelper.printNode(doc, 0);
             NodeList groups = XPathAPI.selectNodeList(doc, "config/groups/group");
-            System.out.println(groups.getLength());
+            //System.out.println(groups.getLength());
             for (int i=0;i<groups.getLength();i++)
             {
                 Node group = groups.item(i);

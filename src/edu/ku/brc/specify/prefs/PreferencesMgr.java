@@ -19,26 +19,22 @@
  */
 package edu.ku.brc.specify.prefs;
 
-import java.util.*;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.io.File;
+import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
-import javax.swing.JComponent;
-import javax.swing.JTextField;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import edu.ku.brc.specify.Specify;
-import edu.ku.brc.specify.exceptions.*;
-
+import org.apache.commons.betwixt.XMLIntrospector;
+import org.apache.commons.betwixt.io.BeanWriter;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.xmlrules.DigesterLoader;
-import org.apache.commons.betwixt.io.*;
-import org.apache.commons.betwixt.*;
-
-import java.io.*;
-import java.net.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Call Groups no matter of the level must have a unique Name

@@ -41,7 +41,7 @@ public class GenericFrame extends JFrame
         item.setMnemonic(KeyEvent.VK_C);
         item.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Close window");
+                //System.out.println("Close window");
                 GenericFrame.this.setVisible(false);
                 GenericFrame.this.dispose();
             }

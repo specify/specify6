@@ -15,6 +15,9 @@ commons-logging      -> 1.0.4
 commons-pool         -> 1.2
 log4j                -> 1.2.12
 
+jfreechart           -> 1.0.0 rc1
+jcommon              => 1.0.0 rc1
+
 dom4j                -> 1.6.1
 jaxen                -> 1.1-beta-7
 

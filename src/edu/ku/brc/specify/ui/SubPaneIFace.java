@@ -19,19 +19,40 @@
  */
 package edu.ku.brc.specify.ui;
 
-import javax.swing.JComponent;
+import java.util.List;
+
+import javax.swing.*;
+import edu.ku.brc.specify.core.*;
 
 public interface SubPaneIFace
 {
-    public void registerCommandTabs(TabHolderPane aTHP);
-    
+    /**
+     * 
+     * @return
+     */
     public String getName();
     
+    /**
+     * 
+     * @return
+     */
     public String getTitle();
     
+    /**
+     * 
+     * @return
+     */
+    public Icon getIcon();
+    
+    /**
+     * 
+     * @return
+     */
     public JComponent getUIComponent();
     
-    public void aboutToShow();
-    
-    public void aboutToHide();
+    /**
+     * 
+     * @return
+     */
+    public Taskable getTask();
 }

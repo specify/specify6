@@ -1,3 +1,22 @@
+/* Filename:    $RCSfile: DropDownButton.java,v $
+ * Author:      $Author: rods $
+ * Revision:    $Revision: 1.1 $
+ * Date:        $Date: 2005/10/19 19:59:54 $
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package edu.ku.brc.specify.ui;
 
 import java.awt.GridBagConstraints;
@@ -23,14 +42,12 @@ import javax.swing.event.PopupMenuListener;
 public abstract class DropDownButton extends JButton implements ChangeListener,
         PopupMenuListener, ActionListener, PropertyChangeListener
 {
-    private final JButton mainButton   = this;
-
-    private JButton arrowButton  = null;
-
-    private boolean popupVisible = false;
+    private final JButton mainButton        = this;
+    private JButton       arrowButton       = null;
+    private boolean       popupVisible      = false;
+    private String        statusBarHintText = null;
     
-    private String statusBarHintText = null;
-    
+    // this class needs a mouse tracker to pop down the menu when the mouse isn't over it or the button
 
     public DropDownButton()
     {
@@ -54,7 +71,7 @@ public abstract class DropDownButton extends JButton implements ChangeListener,
 
     protected void init()
     {
-        arrowButton  = new JButton(IconManager.getInstance().createAndPutIcon("dropdownarrow", "dropdownarrow.gif"));
+        arrowButton  = new JButton(IconManager.getInstance().register("dropdownarrow", "dropdownarrow.gif", IconManager.IconSize.Std32));
         
         Insets insets = new Insets(4,4,4,4);//mainButton.getBorder().getBorderInsets(mainButton);
         mainButton.setBorder(new EmptyBorder(insets));
@@ -92,10 +109,8 @@ public abstract class DropDownButton extends JButton implements ChangeListener,
                 mainButton.getModel().setRollover(true);
                 return;
             }
-            arrowButton.getModel().setRollover(
-                    mainButton.getModel().isRollover());
-            arrowButton.setSelected(mainButton.getModel().isArmed()
-                    && mainButton.getModel().isPressed());
+            arrowButton.getModel().setRollover(mainButton.getModel().isRollover());
+            arrowButton.setSelected(mainButton.getModel().isArmed() && mainButton.getModel().isPressed());
         } else
         {
             if (popupVisible && !arrowButton.getModel().isSelected())
@@ -103,8 +118,7 @@ public abstract class DropDownButton extends JButton implements ChangeListener,
                 arrowButton.getModel().setSelected(true);
                 return;
             }
-            mainButton.getModel().setRollover(
-                    arrowButton.getModel().isRollover());
+            mainButton.getModel().setRollover(arrowButton.getModel().isRollover());
         }
     }
 
@@ -147,7 +161,7 @@ public abstract class DropDownButton extends JButton implements ChangeListener,
 
     protected abstract JPopupMenu getPopupMenu();
 
-    public JButton addToToolBar(JToolBar toolbar)
+    public JPanel getCompleteComp()
     {
         GridBagLayout      gridbag = new GridBagLayout();
         GridBagConstraints c       = new GridBagConstraints();
@@ -159,8 +173,17 @@ public abstract class DropDownButton extends JButton implements ChangeListener,
         
         gridbag.setConstraints(arrowButton, c);
         panel.add(arrowButton);
-        
-        toolbar.add(panel);
+        return panel;       
+    }
+    
+    /**
+     * 
+     * @param toolbar
+     * @return
+     */
+    public JButton addToToolBar(JToolBar toolbar)
+    {   
+        toolbar.add(getCompleteComp());
         return mainButton;
     }
     
@@ -183,18 +206,30 @@ public abstract class DropDownButton extends JButton implements ChangeListener,
             emptyBorder  = new EmptyBorder(raisedBorder.getBorderInsets(this));
             setBorder(emptyBorder);
             
-            MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {
+            MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() 
+            {
                 public void mouseEntered(MouseEvent e) 
                 {
                     setBorder(raisedBorder);
-                    displayHintText(statusBarHintText);
+                    if (statusBarHintText != null)
+                        UICacheManager.displayStatusBarText(statusBarHintText);
                     repaint();
                 }
                 public void mouseExited(MouseEvent e) 
                 {
                     setBorder(emptyBorder);
-                    displayHintText("");
+                    UICacheManager.displayStatusBarText(null);
                     repaint();
+                    
+                    if (popupVisible)
+                    {
+                        popupVisible = false;
+    
+                        mainButton.getModel().setRollover(false);
+                        arrowButton.getModel().setSelected(false);
+                    }
+
+                    
                 }
               };
               addMouseListener(mouseInputAdapter);
@@ -205,16 +240,7 @@ public abstract class DropDownButton extends JButton implements ChangeListener,
               aArrowBtn.addMouseListener(mouseInputAdapter);
               aArrowBtn.addMouseMotionListener(mouseInputAdapter);
         }
-        
-        protected void displayHintText(String aText)
-        {
-            JTextField hint = UICacheManager.getInstance().getStatusBarTextField();
-            if (hint != null)
-            {
-                hint.setText(aText != null ? aText : "");
-            }
-        }
-        
+                
         public int getPreferredWidth()
         {
             return getPreferredSize().width;
@@ -244,25 +270,37 @@ public abstract class DropDownButton extends JButton implements ChangeListener,
             super.setBounds(r);
         }
         
-        public void paintComponent(Graphics g) 
+
+        public void paint(Graphics g) 
         {
             mainBtn.setMargin(new Insets(0,0,0,0));
             
-            super.paintComponent(g);
+            super.paint(g);
+            
             if (getBorder() == raisedBorder)
             {
+                //Dimension dim = getSize();
+                //g.setClip(0,0,dim.width,dim.height);
+                
                 Color highlight = raisedBorder.getHighlightInnerColor(mainBtn);
                 Color shadow    = raisedBorder.getShadowInnerColor(mainBtn);
                 
                 g.setColor(shadow);
                 Rectangle r = mainBtn.getBounds();
+
                 int x = r.x + r.width ;
                 int shrink = 0;
-                g.drawLine(x, r.y+shrink, x, r.y+r.height-(shrink*2));
+                int y1 = r.y+shrink;
+                int y2 = r.y+r.height-(shrink*2);
+                g.drawLine(x-1, y1,   x,   y1+1);
+                g.drawLine(x,   y1+1, x,   y2-1);
+                g.drawLine(x,   y2-1, x-1, y2);
                 x++;
                 g.setColor(highlight);
-                g.drawLine(x, r.y+shrink, x, r.y+r.height-(shrink*2));
-            }
+                g.drawLine(x-1, y1,   x,   y1+1);
+                g.drawLine(x,   y1+1, x,   y2-1);
+                g.drawLine(x,   y2-1, x-1, y2);
+             }
         }
     }
 

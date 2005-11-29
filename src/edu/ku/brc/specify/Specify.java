@@ -21,61 +21,57 @@
 
 package edu.ku.brc.specify;
 
-import java.awt.*;
-import java.awt.CardLayout;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.*;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JToolBar;
+import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
-import javax.swing.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Logger;
-import org.apache.xpath.XPathAPI;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-
-import edu.ku.brc.specify.config.SpecifyConfig;
-import edu.ku.brc.specify.ui.db.*;
-
-import org.hibernate.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.criterion.Projections;
-import org.hibernate.FetchMode;
-import org.hibernate.cache.*;
 
-
-import edu.ku.brc.specify.ui.*;
-
-import com.jgoodies.forms.layout.*;
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.looks.plastic.PlasticLookAndFeel;
-import com.jgoodies.looks.plastic.PlasticTheme;
-import com.jgoodies.looks.plastic.*;
-import edu.ku.brc.specify.exceptions.UIException;
+import edu.ku.brc.specify.config.SpecifyConfig;
+import edu.ku.brc.specify.core.DataEntryTask;
+import edu.ku.brc.specify.core.InteractionsTask;
+import edu.ku.brc.specify.core.LabelsTask;
+import edu.ku.brc.specify.core.QueryTask;
+import edu.ku.brc.specify.core.ReportsTask;
+import edu.ku.brc.specify.core.StatsTask;
+import edu.ku.brc.specify.dbsupport.DBConnection;
+import edu.ku.brc.specify.plugins.PluginMgr;
+import edu.ku.brc.specify.ui.GenericFrame;
+import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.specify.ui.MainPanel;
+import edu.ku.brc.specify.ui.PropertyViewer;
+import edu.ku.brc.specify.ui.ToolbarLayoutManager;
+import edu.ku.brc.specify.ui.UICacheManager;
 
 
 /**
@@ -83,7 +79,7 @@ import edu.ku.brc.specify.exceptions.UIException;
  *
  * @author Rod Spears <rods@ku.edu>
  */
-public class Specify extends JPanel implements MainPaneMgrIFace
+public class Specify extends JPanel
 {
     private static Log log = LogFactory.getLog(Specify.class);
 
@@ -92,11 +88,12 @@ public class Specify extends JPanel implements MainPaneMgrIFace
     private static final int    PREFERRED_HEIGHT = 750;
 
     // Status Bar
-    private JTextField          mStatusField       = null;
-    private JMenuBar            mMenuBar           = null;
-    private JFrame              mFrame             = null;
-  
-    protected  boolean          mHasChanged        = false;
+    private JTextField          statusField       = null;
+    private JMenuBar            menuBar          = null;
+    private JFrame              topFrame            = null;
+    private MainPanel           mainPanel         = null;
+    
+    protected  boolean          hasChanged        = false;
   
     protected Configuration     mConfig            = null;
     protected SessionFactory    mSessionFactory    = null;
@@ -117,18 +114,21 @@ public class Specify extends JPanel implements MainPaneMgrIFace
     private GraphicsConfiguration grc;
   
     private boolean useLogonDialog = false;
-    final static Logger   _logger = Logger.getLogger(Specify.class);
+
   
     private SpecifyConfig config;
-    //private JSplitPane    splitPane;
-  
-    //private CardLayout                       cardLayout  = new CardLayout();
-    //private JPanel                           layoutPanel = null;
-    private Hashtable<String, MainPaneIFace> panels      = new Hashtable<String, MainPaneIFace>();
-    
-    private JTabbedPane  tabbedPane = new JTabbedPane();
-  
+     
     private static Specify  specifyApp       = null;
+    
+    /*static {
+        System.setProperty ("apple.awt.antialiasing", "true");
+        System.setProperty ("apple.awt.textantialiasing", "true");
+        System.setProperty ("apple.laf.useScreenMenuBar", "true");
+        System.setProperty ("apple.awt.brushMetalLook", "true");
+        System.setProperty ("com.apple.mrj.application.apple.menu.about.name", "Specify");
+        
+    }*/
+
   
      /**
      * Constructor with Applet
@@ -140,20 +140,23 @@ public class Specify extends JPanel implements MainPaneMgrIFace
         
         try 
         { 
-            UIManager.setLookAndFeel(new Plastic3DLookAndFeel()); 
+            //UIManager.setLookAndFeel(new Plastic3DLookAndFeel()); 
             //UIManager.setLookAndFeel(new PlasticLookAndFeel()); 
 
         } 
         catch (Exception e) 
         { 
-            _logger.error("Can't change L&F: ", e); 
+            log.error("Can't change L&F: ", e); 
         }    
       
         grc = gc;
         initialize(gc);
       
-        frame = createFrame(gc);
+        frame = new JFrame(gc);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         createSplashScreen();
+        
+        UICacheManager.getInstance().register(UICacheManager.FRAME, frame);
       
         // do the following on the gui thread
         SwingUtilities.invokeLater(new Runnable() {
@@ -166,7 +169,7 @@ public class Specify extends JPanel implements MainPaneMgrIFace
         try
         {
             config = SpecifyConfig.getInstance();
-            config.init(this); // do this once
+            //config.init(this); // do this once
         } catch (Exception e)
         {
             log.error("Error with Configuration", e);
@@ -184,7 +187,10 @@ public class Specify extends JPanel implements MainPaneMgrIFace
         }
        */
       
-      
+        DBConnection.getInstance().setUsernamePassword("rods", "rods");
+        DBConnection.getInstance().setDriver("com.mysql.jdbc.Driver");
+        DBConnection.getInstance().setDBName("jdbc:mysql://localhost/demo_fish");
+        
         // Create and throw the splash screen up. Since this will
         // physically throw bits on the screen, we need to do this
         // on the GUI thread using invokeLater.
@@ -192,7 +198,7 @@ public class Specify extends JPanel implements MainPaneMgrIFace
         
       
       
-        _logger.info("Creating configuration "); 
+        log.info("Creating configuration "); 
         
         // Create a configuration based on the properties file we've put
         // in the standard place.
@@ -205,7 +211,7 @@ public class Specify extends JPanel implements MainPaneMgrIFace
             // the way we've named their mapping documents.
             //mConfig.addClass(Accession.class).addClass(CollectingEvent.class).addClass(CollectionObject.class);
             //mConfig.addClass(Geography.class).addClass(TaxonName.class).addClass(Locality.class);
-            //_logger.info("Adding mapped classes "); 
+            //log.info("Adding mapped classes "); 
             
             /*
             mConfig.addClass(Accession.class);
@@ -274,7 +280,7 @@ public class Specify extends JPanel implements MainPaneMgrIFace
             mConfig.addClass(TaxonomicUnitType.class);
             mConfig.addClass(TaxonomyType.class);
             
-            _logger.info("-----------");
+            log.info("-----------");
             // New Parts of the Schema
             mConfig.addClass(CollectionObj.class);
             mConfig.addClass(PrepsObj.class);
@@ -326,7 +332,7 @@ public class Specify extends JPanel implements MainPaneMgrIFace
                 {
                     //try{mSession.flush();}
                     //catch(Exception e){
-                    //  _logger.error("Error:", e);
+                    //  log.error("Error:", e);
                         /////////////meg added
                     //}
                     showCard("Main");
@@ -343,7 +349,7 @@ public class Specify extends JPanel implements MainPaneMgrIFace
                 doc = XMLHelper.readXMLFile2DOM("main_ui.xml");
             } catch (Exception e)
             {
-                _logger.error("Error Loading main_ui.xml - "+e);
+                log.error("Error Loading main_ui.xml - "+e);
             }
             
             // Load the view files
@@ -387,7 +393,7 @@ public class Specify extends JPanel implements MainPaneMgrIFace
                     viewPanel.validate();
                 } else 
                 {
-                    _logger.error("Couldn't locate cache item["+cacheName+"]");
+                    log.error("Couldn't locate cache item["+cacheName+"]");
                 }
 
             }
@@ -404,20 +410,21 @@ public class Specify extends JPanel implements MainPaneMgrIFace
                     {
                         public void run()
                         {
-                            showApp();
 
                             //showCard("Main");
                             validate();
                             hideSplash();
                             
-                            add(tabbedPane, BorderLayout.CENTER);
+                            add(mainPanel, BorderLayout.CENTER);
+                             //mainPanel.showPane(SQLQueryPane.paneName);
+                            showApp();
                             
-                            showPane(SQLQueryPane.paneName);
                         }
                     });         
+         
         } catch (Exception e)
         {
-            _logger.error("Error",e);
+            log.error("Error",e);
         }
 
     
@@ -505,31 +512,6 @@ public class Specify extends JPanel implements MainPaneMgrIFace
     }
 
     /**
-     * Create a frame for SwingSet2 to reside in if brought up as an
-     * application.
-     */
-    public static JFrame createFrame(GraphicsConfiguration gc)
-    {
-        JFrame frame = new JFrame(gc);
-        /*if (numSSs == 0)
-        {
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        } else
-        {
-            WindowListener l = new WindowAdapter()
-            {
-                public void windowClosing(WindowEvent e)
-                {
-                    numSSs--;
-                    swingSets.remove(this);
-                }
-            };
-            frame.addWindowListener(l);
-        }*/
-        return frame;
-    }
-    
-    /**
      * General Method for initializing the class
      *
      */
@@ -557,33 +539,37 @@ public class Specify extends JPanel implements MainPaneMgrIFace
     // *******************************************************
     // *************** Load UI ******************
     // *******************************************************
-    public void initializeUI(GraphicsConfiguration gc)
-    {
-        tabbedPane.setTabPlacement(JTabbedPane.BOTTOM);
-        
-        mFrame = new JFrame(gc);
+    public void initializeUI(final GraphicsConfiguration gc)
+    {        
+        topFrame = new JFrame(gc);
         JPanel top = new JPanel();
         top.setLayout(new BorderLayout());
         add(top, BorderLayout.NORTH);
         
-        mMenuBar = createMenus();
-        if (mMenuBar != null)
+        menuBar = createMenus();
+        if (menuBar != null)
         {
-            top.add(mMenuBar, BorderLayout.NORTH);
+            //top.add(menuBar, BorderLayout.NORTH);
+            topFrame.setJMenuBar(menuBar);
         }
+        UICacheManager.getInstance().register(UICacheManager.MENUBAR, menuBar);
+
         
         JToolBar toolBar = createToolBar();
         if (toolBar != null)
         {
             top.add(toolBar, BorderLayout.CENTER);
         }
+        UICacheManager.getInstance().register(UICacheManager.TOOLBAR, toolBar);
         
         //layoutPanel = new JPanel(cardLayout);
         //layoutPanel.setBackground(Color.WHITE);
         //add(layoutPanel, BorderLayout.CENTER);
         
         // Special Temp code
-        addPane(SQLQueryPane.paneName, new SQLQueryPane());
+        //addPane(SQLQueryPane.paneName, new SQLQueryPane());
+        mainPanel = new MainPanel();
+        //mainPanel.addSubPanel(new SQLQueryPane());
         
         /*GenericFrame frame = new GenericFrame();
         frame.setTitle("Preferences");
@@ -591,11 +577,18 @@ public class Specify extends JPanel implements MainPaneMgrIFace
         centerAndShow(frame);
          */
         
-        mStatusField = new JTextField("");
-        mStatusField.setEditable(false);
-        UICacheManager.getInstance().setStatusBarTextField(mStatusField);
+        statusField = new JTextField("");
+        statusField.setEditable(false);
+        UICacheManager.getInstance().register(UICacheManager.STATUSBAR, statusField);
         
-        add(mStatusField, BorderLayout.SOUTH);
+        add(statusField, BorderLayout.SOUTH);
+        
+        PluginMgr.getInstance().register(new DataEntryTask());
+        PluginMgr.getInstance().register(new LabelsTask());
+        PluginMgr.getInstance().register(new ReportsTask());
+        PluginMgr.getInstance().register(new InteractionsTask());
+        PluginMgr.getInstance().register(new StatsTask());
+        PluginMgr.getInstance().register(new QueryTask());
         
     }
     
@@ -606,20 +599,26 @@ public class Specify extends JPanel implements MainPaneMgrIFace
     public JToolBar createToolBar()
     {
         JToolBar toolBar = new JToolBar();
-        String[] iconsToLoad = {"Work_Bench",   "newworkbench.gif", "workbench_hint",
-                                "Data_Entry",   "dataentry.gif",    "dataentry_hint",
-                                "Labels",       "labels.gif",       "labels_hint",
-                                "Reports",      "reports.gif",      "reports_hint",
-                                "Interactions", "loans.gif",        "interactions_hint",
-                                "Search",        "queryIt.gif",     "search_hint"};
-        for (int i=0;i<iconsToLoad.length;i+=3)
+        toolBar.setLayout(new ToolbarLayoutManager(2,2));
+        
+        String[] iconsToLoad = {"Work_Bench",   "newworkbench.gif",
+                                "Data_Entry",   "dataentry.gif",   
+                                "Labels",       "labels.gif",       
+                                "Reports",      "reports.gif",      
+                                "Interactions", "loans.gif",        
+                                "Search",        "queryIt.gif",    
+                                "Statistics",        "stats.gif", 
+                                "Pie_Chart",        "piechart.gif",
+                                "Bar_Chart",        "barchart.gif"};
+        for (int i=0;i<iconsToLoad.length;i+=2)
         {
-            IconManager.getInstance().createAndPutIconAndScale(iconsToLoad[i], iconsToLoad[i+1]);
-            ToolBarDropDownBtn btn = new ToolBarDropDownBtn(UICacheManager.getResourceString(iconsToLoad[i]), IconManager.getInstance().getIcon(iconsToLoad[i], IconManager.ICON_SIZE.ICON_NORMAL16), JButton.BOTTOM);
-            btn.setStatusBarHintText(UICacheManager.getResourceString(iconsToLoad[i+2]));
-            btn.addToToolBar(toolBar);
+            String name = UICacheManager.getResourceString(iconsToLoad[i]);
+            Icon icon = IconManager.getInstance().register(name, iconsToLoad[i+1], IconManager.IconSize.Std32);
+            icon = IconManager.getInstance().getIcon(name, IconManager.IconSize.Std24);
+            icon = IconManager.getInstance().getIcon(name, IconManager.IconSize.Std16);
         }
         
+        /*
         
         toolBar.addSeparator();
         toolBar.add(new JLabel(" "));
@@ -647,7 +646,7 @@ public class Specify extends JPanel implements MainPaneMgrIFace
         searchPanel.add(searchBtn);
         
         toolBar.add(searchPanel);
-        
+        */
         
         return toolBar;
     }
@@ -672,10 +671,10 @@ public class Specify extends JPanel implements MainPaneMgrIFace
      */
     public JMenuBar createMenus()
     {
-        JMenuBar menuBar = null;
-        menuBar = new JMenuBar();
+        JMenuBar mb = null;
+        mb = new JMenuBar();
         JMenuItem mi;
-        JMenu fileMenu = (JMenu) menuBar.add(new JMenu("File"));
+        JMenu fileMenu = (JMenu) mb.add(new JMenu("File"));
         fileMenu.setMnemonic('F');
         mi = createMenuItem(fileMenu, "Exit", "x", "Exit Appication", false, null);
         mi.addActionListener(new ActionListener()
@@ -686,7 +685,7 @@ public class Specify extends JPanel implements MainPaneMgrIFace
                     }
                 });   
         
-        JMenu editMenu = (JMenu) menuBar.add(new JMenu("Edit"));
+        JMenu editMenu = (JMenu) mb.add(new JMenu("Edit"));
         editMenu.setMnemonic('E');
         mi = createMenuItem(editMenu, "Preferences", "P", "Preferences", false, null);
         mi.addActionListener(new ActionListener()
@@ -699,7 +698,7 @@ public class Specify extends JPanel implements MainPaneMgrIFace
 
         
         JMenuItem mi2;
-        JMenu fileMenu2 = (JMenu) menuBar.add(new JMenu("Log off"));
+        JMenu fileMenu2 = (JMenu) mb.add(new JMenu("Log off"));
         
         fileMenu2.setMnemonic('O');       
         mi2 = createMenuItem(fileMenu2, "Log off", "O", "Log off database", false, null);
@@ -707,7 +706,7 @@ public class Specify extends JPanel implements MainPaneMgrIFace
                 {
                     public void actionPerformed(ActionEvent ae)
                     {
-                        if (mHasChanged) 
+                        if (hasChanged) 
                         {
 
                         }
@@ -722,7 +721,7 @@ public class Specify extends JPanel implements MainPaneMgrIFace
                             }
                         } catch (Exception e)
                         {
-                            _logger.error("createMenus - ", e);
+                            log.error("createMenus - ", e);
                         }                       
                         //frame.dispose();
                         final Window parentWindow = SwingUtilities.getWindowAncestor(Specify.this);
@@ -732,7 +731,7 @@ public class Specify extends JPanel implements MainPaneMgrIFace
                 });  
         
         
-        return menuBar;
+        return mb;
     }
    
     /**
@@ -741,7 +740,7 @@ public class Specify extends JPanel implements MainPaneMgrIFace
      */
     protected void doExit()
     {
-        if (mHasChanged) 
+        if (hasChanged) 
         {
             if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, "The Cache has changed, do you wish to save?", "Cache has changed.", JOptionPane.YES_NO_OPTION))
             {
@@ -759,7 +758,7 @@ public class Specify extends JPanel implements MainPaneMgrIFace
             }
         } catch (Exception e)
         {
-            _logger.error("doExit - ",e);
+            log.error("doExit - ",e);
         }
         System.exit(0);
     }
@@ -768,14 +767,13 @@ public class Specify extends JPanel implements MainPaneMgrIFace
      * @param b
      * @return
      */
-    protected PropertyChangeListener createActionChangeListener(JMenuItem b)
+    protected PropertyChangeListener createActionChangeListener(final JMenuItem b)
     {
         return new ActionChangedListener(b);
     }
     
     /**
      * 
-     * @author globus
      *
      * TODO To change the template for this generated type comment go to
      * Window - Preferences - Java - Code Generation - Code and Comments
@@ -806,12 +804,12 @@ public class Specify extends JPanel implements MainPaneMgrIFace
   /**
    * Creates a generic menu item
    */
-    public JMenuItem createMenuItem(JMenu aMenu,
-                                    String aLabel,
-                                    String aMnemonic,
-                                    String aAccessibleDescription,
-                                    boolean aEnabled,
-                                    AbstractAction aAction)
+    public JMenuItem createMenuItem(final JMenu aMenu,
+                                    final String aLabel,
+                                    final String aMnemonic,
+                                    final String aAccessibleDescription,
+                                    final boolean aEnabled,
+                                    final AbstractAction aAction)
     {
         JMenuItem mi = (JMenuItem) aMenu.add(new JMenuItem(aLabel));
         if (aMnemonic.length() > 0)
@@ -839,14 +837,18 @@ public class Specify extends JPanel implements MainPaneMgrIFace
     {
         // put PPApp in a frame and show it
         JFrame f = getFrame();
-        f.setTitle("Hyla Test App");
+        f.setTitle("Specify 6.0");
         f.getContentPane().add(this, BorderLayout.CENTER);
         f.pack();
 
         centerAndShow(f);
     }
   
-    protected void centerAndShow(JFrame aFrame)
+    /**
+     * Center and make the frame visible
+     * @param aFrame
+     */
+    public static void centerAndShow(JFrame aFrame)
     {
         Rectangle screenRect = aFrame.getGraphicsConfiguration().getBounds();
         Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(aFrame.getGraphicsConfiguration());
@@ -868,7 +870,7 @@ public class Specify extends JPanel implements MainPaneMgrIFace
      */
     public JFrame getFrame()
     {
-      return mFrame;
+      return topFrame;
     }
 
     /**
@@ -876,20 +878,20 @@ public class Specify extends JPanel implements MainPaneMgrIFace
      */
     public JMenuBar getMenuBar()
     {
-      return mMenuBar;
+      return menuBar;
     }
 
     /**
      * Set the status
      */
-    public void setStatus(String s)
+    public void setStatus(final String s)
     {
         // do the following on the gui thread
         SwingUtilities.invokeLater(new SpecifyRunnable(this, s)
         {
           public void run()
           {
-            mApp.mStatusField.setText((String) obj);
+            mApp.statusField.setText((String) obj);
           }
         });
     }
@@ -907,64 +909,12 @@ public class Specify extends JPanel implements MainPaneMgrIFace
         return specifyApp;
     }
   
-    /**
-     * 
-     * @return
-     */
-    public static MainPaneMgrIFace getMainPanelMgr()
-    {
-        return specifyApp;
-    }
-  
-  
 
     // *******************************************************
     // *****************   Interfaces  ***********************
     // *******************************************************
 
-    //-------------------------------
-    // MainPaneMgrIFace
-    //-------------------------------
-    
-    /**
-     * 
-     */
-    public MainPaneIFace addPane(String aName, MainPaneIFace aPanel) throws UIException
-    {
-        MainPaneIFace panel = panels.get(aName);
-        if (panel != null)
-        {
-            throw new UIException("Duplicate Pane name["+aName+"]");
-        }
-        panels.put(aName, aPanel);
-        tabbedPane.addTab(aName, (JComponent)aPanel);
-        return aPanel;
-    }
-  
-    public MainPaneIFace removePane(String aName, MainPaneIFace aPanel) throws UIException
-    {
-        MainPaneIFace panel = panels.get(aName);
-        if (panel == null)
-        {
-            throw new UIException("Pane name["+aName+"] does not exist.");
-        }
-        panels.remove(aName);
-        return aPanel;
-    }
-  
-    public MainPaneIFace showPane(String aName) throws UIException
-    {
-        MainPaneIFace panel = panels.get(aName);
-        if (panel == null)
-        {
-            throw new UIException("Pane name["+aName+"] does not exist.");
-        }
-        ((JPanel)panel).setVisible(true);
-        //tabbedPane.show(layoutPanel, aName);
-        
-        return panel;
-    }
-  
+   
     //-------------------------------
     // SaveDataObjectIFace
     //-------------------------------
@@ -980,11 +930,11 @@ public class Specify extends JPanel implements MainPaneMgrIFace
               //Criteria criteria = mSession.createCriteria(Accession.class);
               //_data = criteria.list();//session.find("from collev");
               //accession = (Accession)_data.get(0);
-              //_logger.info("XXX:"+accession.getLastEditedBy());
+              //log.info("XXX:"+accession.getLastEditedBy());
               return true;
         } catch (Exception e)
         {
-            _logger.error("save - ", e);
+            log.error("save - ", e);
         }
         return false;
     }
