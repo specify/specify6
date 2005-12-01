@@ -60,12 +60,11 @@ public class StatsTask extends BaseTask
         super(getResourceString("Statistics"));
         
         org.dom4j.Element panelDOM = null;
-        java.io.File f = new java.io.File(".");
-        String cwd = f.getAbsolutePath() +  File.separator + "statistics.xml";
+        
         try
         {
-            statDOM = XMLHelper.readFileToDOM4J(new File(cwd));
-            panelDOM = XMLHelper.readFileToDOM4J(new File(f.getAbsolutePath() +  File.separator + "statistics_panel.xml"));
+            statDOM = XMLHelper.readDOMFromConfigDir("statistics.xml");
+            panelDOM = XMLHelper.readDOMFromConfigDir("statistics_panel.xml");
             
         } catch (Exception ex)
         {
@@ -138,6 +137,11 @@ public class StatsTask extends BaseTask
         chartPane.setTitle(getChartInfo(element, "title"));
         chartPane.setXAxis(getChartInfo(element, "xaxis"));
         chartPane.setYAxis(getChartInfo(element, "yaxis"));
+        String vert = getChartInfo(element, "vertical");
+        if (vert != null && vert.length() > 0)
+        {
+            chartPane.setVertical(vert.toLowerCase().equals("true"));
+        }
     }
 
     /**

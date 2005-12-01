@@ -21,21 +21,31 @@
 package edu.ku.brc.specify.core.subpane;
 
 import java.awt.BorderLayout;
+import java.util.List;
+
+import javax.swing.JPanel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Element;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.core.Taskable;
+import edu.ku.brc.specify.dbsupport.QueryResultsContainer;
+import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.stats.StatGroup;
+import edu.ku.brc.specify.stats.StatGroupFromQuery;
 import edu.ku.brc.specify.stats.StatItem;
 
 public class StatsPane extends BaseSubPane
 {
-    //private static Log log = LogFactory.getLog(StatsPane.class);
+    // Static Data Members
+    private static Log log = LogFactory.getLog(StatsPane.class);
+    
+    // Data Members
 
     /**
      * 
@@ -49,35 +59,156 @@ public class StatsPane extends BaseSubPane
         
         setLayout(new BorderLayout());
 
-        FormLayout      formLayout = new FormLayout("f:p,15dlu,f:p", "top:p,15dlu,top:p");
-        PanelBuilder    builder    = new PanelBuilder(formLayout);
-        CellConstraints cc         = new CellConstraints();
+        loadUI();
+    }
+    
+    /**
+     * Helper - Needs to be moved
+     * @param element
+     * @param attrName
+     * @param defaultValue
+     * @return
+     */
+    public static int getIntFromAttr(Element element, String attrName, int defaultValue)
+    {
+        String attr = element.attributeValue(attrName);
+        if (attr != null)
+        {
+            try
+            {
+                return Integer.parseInt(attr);
+            } catch (Exception e){}
+        }
+        return defaultValue;
+    }
+    
+    /**
+     * 
+     *
+     */
+    protected void loadUI()
+    {
+        Element rootElement = null;
+        try
+        {
+            rootElement = XMLHelper.readDOMFromConfigDir("stats_summary_panel.xml");
+            
+            // count up rows and column
+            StringBuffer rowsDef = new StringBuffer();
+                
+            List rows = rootElement.selectNodes("/panel/row");
+            int maxCols = 0;
+            for (Object obj : rows) 
+            {
+                Element rowElement = (Element)obj;
+                List boxes = rowElement.selectNodes("box");
+                maxCols = Math.max(maxCols, boxes.size());
+                if (rowsDef.length() > 0)
+                {
+                    rowsDef.append(",15dlu,");
+                }
+                rowsDef.append("top:p");
+            }
+            
+            StringBuffer colsDef = new StringBuffer();
+            for (int i=0;i<maxCols;i++)
+            {
+                if (colsDef.length() > 0)
+                {
+                    colsDef.append(",15dlu,");
+                }
+                colsDef.append("f:p");                
+            }
+            
+            log.info(rowsDef.toString()+", "+colsDef.toString());
+            FormLayout      formLayout = new FormLayout(colsDef.toString(), rowsDef.toString());
+            PanelBuilder    builder    = new PanelBuilder(formLayout);
+            CellConstraints cc         = new CellConstraints();
 
-        StatGroup group = new StatGroup("Specimen");
-        group.addItem(new StatItem("Total Number of Items:", "select count(*) from collectionobj"));
-        group.addItem(new StatItem("Number of Different Species: ", "select count(*) from (select count(txid) as namecnt, tn from (select determination.TaxonNameId, taxonname.TaxonNameID as txid, taxonname.TaxonName as tn from taxonname,determination where determination.TaxonNameId = taxonname.taxonnameid) as newTable group by txid) as newTable2;"));
-        builder.add(group, cc.xy(1,1));
-        
-        group = new StatGroup("Locality/Geography");
-        group.addItem(new StatItem("Number of Localities:", "select count(*) from locality"));
-        group.addItem(new StatItem("Number of Geographies:", "select count(*) from geography"));
-        builder.add(group, cc.xy(3,1));
+            int y = 1;
+            for (Object obj : rows) 
+            {
+                Element rowElement = (Element)obj;
+                
+                int x = 1;
+                List boxes = rowElement.selectNodes("box");
+                for (Object bo : boxes) 
+                {
+                    Element boxElement = (Element)bo;
+                    
+                    int descCol = getIntFromAttr(boxElement, "descCol", -1);
+                    int valCol  = getIntFromAttr(boxElement, "valCol", -1);
+                    Element sqlElement = (Element)boxElement.selectSingleNode("sql");
+                    
+                    StatGroup group = null;
+                    if (descCol > -1 && valCol > -1 && sqlElement != null)
+                    {
+                        group = new StatGroupFromQuery(boxElement.attributeValue("title"), sqlElement.getText(), descCol, valCol);
+                        
+                    } else
+                    {
+                        group = new StatGroup(boxElement.attributeValue("title"));
+                        
+                        
+                        
+                        List items = boxElement.selectNodes("item");
+                        for (Object io : items)
+                        {
+                            Element itemElement = (Element)io;
+                            
+                            StatItem statItem = new StatItem(itemElement.attributeValue("title"));
+                            List statements = itemElement.selectNodes("sql/statement");
+                            
+                            if (statements.size() == 1)
+                            {
+                                statItem.add(((Element)statements.get(0)).getText(), 1, 1, StatItem.VALUE_TYPE.Value);  
+                                
+                            } else if (statements.size() > 0)
+                            {
+                                int cnt = 0;
+                                QueryResultsContainer qrc = null;
+                                for (Object stObj : statements) 
+                                {
+                                    Element stElement = (Element)stObj;
+                                    int vRowInx = getIntFromAttr(stElement, "row", -1);
+                                    int vColInx = getIntFromAttr(stElement, "col", -1);
+                                    if (vRowInx == -1 || vColInx == -1)
+                                    {
+                                        qrc = statItem.add(stElement.getText());
+                                    } else
+                                    {
+                                        qrc = statItem.add(stElement.getText(), vRowInx, vColInx, StatItem.VALUE_TYPE.Value);
+                                    }
+                                    cnt++;
+                                }
+                            }
+                            group.add(statItem);
+                            statItem.startUp();
+                        }
+                    }
+                    log.info(boxElement.attributeValue("title")+" "+x+","+y);
+                    builder.add(group, cc.xy(x, y));
+                    x += 2;
+                }
+                y += 2;
+            }
+            
+            JPanel statPanel = builder.getPanel();
+            
+            builder    = new PanelBuilder(new FormLayout("C:P:G", "p"));
+            builder.add(statPanel, cc.xy(1,1));
+ 
+            add(builder.getPanel(), BorderLayout.CENTER);
+            
+            builder.getPanel().invalidate();
+            doLayout();
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            ex.printStackTrace();
+        }
 
-        group = new StatGroup("Taxonomic Tree Information");
-        group.addItem(new StatItem("Class: ",    "select count(*) from taxonname where taxonname.rankid = 60;"));
-        group.addItem(new StatItem("Order: ",    "select count(*) from taxonname where taxonname.rankid = 100;"));
-        group.addItem(new StatItem("Families: ", "select count(*) from taxonname where taxonname.rankid = 140;"));
-        group.addItem(new StatItem("Genus: ",    "select count(*) from taxonname where taxonname.rankid = 180;"));
-        group.addItem(new StatItem("Species: ",  "select count(*) from taxonname where taxonname.rankid = 220;"));
-        builder.add(group, cc.xy(1,3));
-        
-        /*
-        group = new StatGroup("Top Species");
-        group.addItem(new StatItem("Alotus Animalus", "#9,544"));
-        builder.add(group, cc.xy(3,3));
-        */
-        
-        add(builder.getPanel(), BorderLayout.CENTER);
     }
     
 }

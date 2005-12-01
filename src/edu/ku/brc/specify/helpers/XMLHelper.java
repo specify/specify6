@@ -53,7 +53,7 @@ import edu.ku.brc.specify.ui.forms.persist.FormViewFactory;
 public class XMLHelper
 {
     private static boolean _printAll = false; // indicates whether compareDOMS should print all the node info
-    final static Logger   _logger = Logger.getLogger(XMLHelper.class);
+    final static Logger   log = Logger.getLogger(XMLHelper.class);
     /**
      * Returns the String representation of the Node Type
      * @param aType Node type to get the string description of
@@ -109,7 +109,7 @@ public class XMLHelper
 		         }
            }
        } else {
-         //_logger.info("For Node "+aNode.getNodeName()+" Num Child: "+list.getLength());
+         //log.info("For Node "+aNode.getNodeName()+" Num Child: "+list.getLength());
        }
      }
      return value;
@@ -324,9 +324,9 @@ public class XMLHelper
        spaces += "..";
      }
 
-     _logger.info(spaces+"Name:  " + aNode.getNodeName());
-     _logger.info(spaces+"Type:  " + aNode.getNodeType());
-     _logger.info(spaces+"Value: [" + aNode.getNodeValue()+"]");
+     log.info(spaces+"Name:  " + aNode.getNodeName());
+     log.info(spaces+"Type:  " + aNode.getNodeType());
+     log.info(spaces+"Value: [" + aNode.getNodeValue()+"]");
      NodeList list = aNode.getChildNodes();
      if (list != null) {
        for (int i=0;i<list.getLength();i++) 
@@ -357,7 +357,7 @@ public class XMLHelper
      } // try
      catch (Exception e) 
      {
-    	 _logger.error("readXMLFile2Str - Exception: ", e);
+    	 log.error("readXMLFile2Str - Exception: ", e);
      }
      return null;
    }
@@ -370,20 +370,20 @@ public class XMLHelper
    {
        if (aFileName == null)
        {
-    	   _logger.error("***  readXMLFile2DOM file name is null!");
+    	   log.error("***  readXMLFile2DOM file name is null!");
            return null;
        }
        
        if (aFileName.length() == 0)
        {
-    	   _logger.error("***  readXMLFile2DOM file name is null!");
+    	   log.error("***  readXMLFile2DOM file name is null!");
            return null;
        }
        
        File file = new File(aFileName);
        if (file == null || !file.exists() || file.length() == 0)
        {
-    	   _logger.error("***  readXMLFile2DOM - file "+aFileName+" does not exist or is zero length!");
+    	   log.error("***  readXMLFile2DOM - file "+aFileName+" does not exist or is zero length!");
            return null;
        }
        
@@ -411,17 +411,17 @@ public class XMLHelper
          }
        } // try
        catch (org.xml.sax.SAXParseException e) {
-    	   _logger.error("Tried Reading["+aFileName+"]");
-    	   _logger.error("readXMLFile2DOM - Exception: ", e);
+    	   log.error("Tried Reading["+aFileName+"]");
+    	   log.error("readXMLFile2DOM - Exception: ", e);
          //String xmlString = readXMLFile2Str(aFileName);
-         //_logger.error("XML Dump " + aFileName);
-         //_logger.error("------------------------------------------");
+         //log.error("XML Dump " + aFileName);
+         //log.error("------------------------------------------");
          //logger.error(xmlString);
          //logger.error("------------------------------------------");
        }
        catch (Exception e) {
-    	   _logger.error("Tried Reading["+aFileName+"]");
-    	   _logger.error("readXMLFile2DOM - Exception: ", e);
+    	   log.error("Tried Reading["+aFileName+"]");
+    	   log.error("readXMLFile2DOM - Exception: ", e);
        }
        return null;
    }
@@ -458,11 +458,11 @@ public class XMLHelper
 	      }
      } // try
      catch (Exception e) {
-    	 _logger.error("convertXMLStr2DOM - Exception: ", e);
-    	 _logger.error("XML Dump");
-    	 _logger.error("------------------------------------------");
-    	 _logger.error(aXMLStr);
-    	 _logger.error("------------------------------------------");
+    	 log.error("convertXMLStr2DOM - Exception: ", e);
+    	 log.error("XML Dump");
+    	 log.error("------------------------------------------");
+    	 log.error(aXMLStr);
+    	 log.error("------------------------------------------");
        //e.printStackTrace();
      }
      return null;
@@ -594,6 +594,8 @@ public class XMLHelper
        SAXReader saxReader= new SAXReader();
         
        saxReader.setValidation(false);
+       saxReader.setStripWhitespaceText(true);
+       
        //saxReader.setFeature("http://apache.org/xml/features/validation/schema", false);
        //saxReader.setFeature("http://xml.org/sax/features/validation", false);
        //saxReader.setProperty("http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation", 
@@ -601,6 +603,28 @@ public class XMLHelper
        
        org.dom4j.Document document = saxReader.read( fileinputStream );
        return document.getRootElement();
+   }
+   
+   /**
+     * Reads file from the config directory
+     * @param fileName the name of the file to be read
+     * @return the root DOM lement
+     * @throws Exception any file io exceptions
+     */
+   public static org.dom4j.Element readDOMFromConfigDir(final String fileName) throws Exception
+   {
+       try
+       {
+           java.io.File f = new java.io.File(".");
+           String cwd = f.getAbsolutePath() +  File.separator + "config" + File.separator + fileName;
+           
+           return XMLHelper.readFileToDOM4J(new File(cwd));
+           
+       } catch (Exception ex)
+       {
+           log.error(ex);
+       }
+       return null;
    }
 
 }

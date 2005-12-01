@@ -62,6 +62,18 @@ public class QueryResultsGetter implements SQLExecutionListener
     }
     
     /**
+     * Adds a QueryResultsContainer and starts its execution on a separate thread 
+     * @param qrc the container to be executed
+     */
+    public void add(final List<QueryResultsContainer> qrcs)
+    {
+        for (QueryResultsContainer qrc : qrcs)
+        {
+            add(qrc); // this needs to be done after everything has been added to the qrc
+        }
+    }
+   
+   /**
      * 
      * @return
      */

@@ -181,9 +181,14 @@ public class PieChartPane extends ChartPane implements QueryResultsListener, Que
         
     }
 
-    //--------------------------------------
-    // QueryResultsListener
-    //--------------------------------------
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.dbsupport.QueryResultsListener#resultsInError(edu.ku.brc.specify.dbsupport.QueryResultsContainer)
+     */
+    public void resultsInError(final QueryResultsContainer qrc)
+    {
+        
+    }
+
     
 
     

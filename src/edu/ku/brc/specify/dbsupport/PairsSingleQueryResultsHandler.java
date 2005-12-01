@@ -36,17 +36,27 @@ public class PairsSingleQueryResultsHandler implements QueryResultsHandlerIFace
     //-------------------------------------------
     // QueryResultsHandlerIFace
     //-------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#init(edu.ku.brc.specify.dbsupport.QueryResultsListener, java.util.List)
+     */
     public void init(final QueryResultsListener listener, final java.util.List<QueryResultsContainer> list)
     {
         throw new RuntimeException("PairsSingleQueryResultsHandler can't handle more than one QueryResultsContainer!");
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#init(edu.ku.brc.specify.dbsupport.QueryResultsListener, edu.ku.brc.specify.dbsupport.QueryResultsContainer)
+     */
     public void init(final QueryResultsListener listener, final QueryResultsContainer container)
     {
         this.listener = listener;
         this.container = container;   
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#startUp()
+     */
     public void startUp()
     {
        getter = new QueryResultsGetter(listener);   
@@ -54,14 +64,19 @@ public class PairsSingleQueryResultsHandler implements QueryResultsHandlerIFace
                            // by adding it, it starts the processing
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#cleanUp()
+     */
     public void cleanUp()
     {
-
         listener = null;
         container.clear();
         container = null;
     }
    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#getContainers()
+     */
     public List<QueryResultsContainer> getContainers()
     {
         Vector<QueryResultsContainer> list = new Vector<QueryResultsContainer>();
@@ -69,6 +84,9 @@ public class PairsSingleQueryResultsHandler implements QueryResultsHandlerIFace
         return list;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#getDataObjects()
+     */
     public List<Object> getDataObjects()
     {
         Vector<Object> list = new Vector<Object>();
@@ -81,6 +99,9 @@ public class PairsSingleQueryResultsHandler implements QueryResultsHandlerIFace
         return list;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#isPairs()
+     */
     public boolean isPairs()
     {
         return true;

@@ -34,4 +34,10 @@ public interface QueryResultsListener
      */
     public void allResultsBack();
     
+    /**
+     * Notifies the consumer that an error occurred
+     *
+     */
+    public void resultsInError(final QueryResultsContainer qrc);
+    
 }

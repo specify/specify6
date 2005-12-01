@@ -35,36 +35,43 @@ public class QueryResultsContainer
     protected Vector<QueryResultsDataObj> qrdos = new Vector<QueryResultsDataObj>();
     
     /**
-     * 
-     * 
+     * Default constuctor
      */
     public QueryResultsContainer()
     {
+        
     }
     
     /**
-     * 
-     * @param name
-     * @param sql
+     * Constructs it with the SQL statment to be executed
+     * @param sql the SQL statement to be executed
      */
     public QueryResultsContainer(final String sql)
     {
         this.sql  = sql;
     }
     
+    /**
+     * Returns a list of QueryResultsDataObj objects
+     * @return Returns a list of QueryResultsDataObj objects
+     */
     public List<QueryResultsDataObj> getQueryResultsDataObjs()
     {
         return qrdos;
     }
 
+    /**
+     * Adds a QueryResultsDataObj to be processed
+     * @param qrdo
+     */
     public void add(final QueryResultsDataObj qrdo)
     {
         qrdos.addElement(qrdo);
     }
     
     /**
-     * 
-     * @param resultSet
+     * Process the SQL's Result Set and fill the QueryResultsDataObj with the results
+     * @param resultSet the SQL result set to be processes
      */
     protected void processResultSet(final java.sql.ResultSet resultSet)
     {
@@ -94,16 +101,28 @@ public class QueryResultsContainer
         }
     }
 
+    /**
+     * Returns the SQL string that is or was executed
+     * @return
+     */
     public String getSql()
     {
         return sql;
     }
 
+    /**
+     * Sets the SQL string to be executed
+     * @param sql the string of SQL
+     */
     public void setSql(String sql)
     {
         this.sql = sql;
     }
     
+    /**
+     * Clears all the data structures
+     *
+     */
     public void clear()
     {
         for (QueryResultsDataObj qrdo : qrdos) 

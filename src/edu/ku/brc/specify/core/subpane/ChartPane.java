@@ -30,9 +30,10 @@ public class ChartPane extends BaseSubPane implements Chartable
     private static Log log = LogFactory.getLog(ChartPane.class);
     
     // Data Members
-    protected String title      = "";
-    protected String xAxisTitle = "";
-    protected String yAxisTitle = "";
+    protected String title       = "";
+    protected String xAxisTitle  = "";
+    protected String yAxisTitle  = "";
+    protected boolean isVertical = true;
     
     public ChartPane(final String name, 
                      final Taskable task)
@@ -72,6 +73,14 @@ public class ChartPane extends BaseSubPane implements Chartable
        yAxisTitle = title;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.subpane.Chartable#setVertical(boolean)
+     */
+    public void setVertical(boolean isVertical)
+    {
+        this.isVertical = isVertical;
+    }
+
     //-----------------------------------------------
     //-- Static Helpers
     //-----------------------------------------------

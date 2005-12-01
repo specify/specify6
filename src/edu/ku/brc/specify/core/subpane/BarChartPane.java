@@ -42,6 +42,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.core.Taskable;
+import edu.ku.brc.specify.dbsupport.QueryResultsContainer;
 import edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.specify.dbsupport.QueryResultsListener;
 import edu.ku.brc.specify.dbsupport.QueryResultsProcessable;
@@ -127,7 +128,7 @@ public class BarChartPane extends ChartPane implements QueryResultsListener, Que
                 xAxisTitle, // domain axis label 
                 yAxisTitle, // range axis label 
                 dataset,    // data 
-                PlotOrientation.VERTICAL, 
+                isVertical ? PlotOrientation.VERTICAL : PlotOrientation.HORIZONTAL, 
                 true,       // include legend 
                 true,       // tooltips? 
                 false       // URLs? 
@@ -148,6 +149,14 @@ public class BarChartPane extends ChartPane implements QueryResultsListener, Que
         repaint();
         
 
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.dbsupport.QueryResultsListener#resultsInError(edu.ku.brc.specify.dbsupport.QueryResultsContainer)
+     */
+    public void resultsInError(final QueryResultsContainer qrc)
+    {
+        
     }
 
    

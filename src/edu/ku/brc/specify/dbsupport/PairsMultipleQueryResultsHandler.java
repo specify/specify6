@@ -42,8 +42,8 @@ public class PairsMultipleQueryResultsHandler implements QueryResultsHandlerIFac
     // QueryResultsHandlerIFace
     //-------------------------------------------
     
-    /**
-     * 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#init(edu.ku.brc.specify.dbsupport.QueryResultsListener, java.util.List)
      */
     public void init(final QueryResultsListener listener, final java.util.List<QueryResultsContainer> list)
     {
@@ -51,8 +51,8 @@ public class PairsMultipleQueryResultsHandler implements QueryResultsHandlerIFac
         qrcs          = list; // XXX should we copy to the list instead of just wacking it??
     }
     
-    /**
-     * 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#init(edu.ku.brc.specify.dbsupport.QueryResultsListener, edu.ku.brc.specify.dbsupport.QueryResultsContainer)
      */
     public void init(final QueryResultsListener listener, final QueryResultsContainer qrc)
     {
@@ -67,18 +67,17 @@ public class PairsMultipleQueryResultsHandler implements QueryResultsHandlerIFac
         qrcs.add(qrc);
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#startUp()
+     */
     public synchronized void startUp()
     {
         getter = new QueryResultsGetter(listener);
-        for (QueryResultsContainer qrc : qrcs)
-        {
-            getter.add(qrc); // this needs to be done after everything has been added to the qrc
-        }
-
+        getter.add(qrcs);// this needs to be done after everything has been added to the qrc in the qrcs
     }
      
-    /**
-     * 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#cleanUp()
      */
     public void cleanUp()
     {
@@ -89,11 +88,17 @@ public class PairsMultipleQueryResultsHandler implements QueryResultsHandlerIFac
     /**
      * 
      */
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#getContainers()
+     */
     public List<QueryResultsContainer> getContainers()
     {
         return qrcs;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#getDataObjects()
+     */
     public List<Object> getDataObjects()
     {
         Vector<Object> list = new Vector<Object>();
@@ -110,8 +115,8 @@ public class PairsMultipleQueryResultsHandler implements QueryResultsHandlerIFac
         return list;
     }
     
-    /**
-     * 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#isPairs()
      */
     public boolean isPairs()
     {

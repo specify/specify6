@@ -21,10 +21,9 @@
 package edu.ku.brc.specify.dbsupport;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import javax.swing.JOptionPane;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,7 +54,19 @@ public class SQLExecutionProcessor implements Runnable
     public SQLExecutionProcessor(final SQLExecutionListener listener, final String sqlStr)
     {
         this.listener = listener;
-        this.sqlStr   = sqlStr;
+        this.sqlStr   = trimStr(sqlStr);
+    }
+    
+    /**
+     * Constructs a an object to execute an SQL staement and then notify the listener
+     * @param listener the listener
+     * @param sqlStr the SQL statement to be executed.
+     */
+    public SQLExecutionProcessor(final Connection dbConnection, final SQLExecutionListener listener, final String sqlStr)
+    {
+        this.dbConnection = dbConnection;
+        this.listener     = listener;
+        this.sqlStr       = trimStr(sqlStr);
     }
     
     /**
@@ -77,6 +88,25 @@ public class SQLExecutionProcessor implements Runnable
     }
     
     /**
+     * trim the string of all whitespace and tabs
+     * @param str the string to be trimmed
+     * @return returns trimmed string
+     */
+    protected String trimStr(final String str)
+    {
+        return str.replace("\n", "").replace("\t", "").replace("\r", "").trim();
+    }
+    
+    /**
+     * Sets a new SQL string
+     * @param sqlStr the SQL string
+     */
+    public void setSqlStr(String sqlStr)
+    {
+        this.sqlStr = trimStr(sqlStr);
+    }
+
+    /**
      * Close the DB Connection for this SQL statement
      *
      */
@@ -95,6 +125,26 @@ public class SQLExecutionProcessor implements Runnable
                 dbConnection.close();
                 dbConnection = null;   
             }
+        } catch (SQLException ex)
+        {
+            log.error(ex);
+        }
+
+     }
+
+    /**
+     * Close the DB Connection for this SQL statement
+     *
+     */
+    public void closeStatement() 
+    {            
+        try
+        {
+            if (dbStatement != null)
+            {
+                dbStatement.close();
+                dbStatement = null;
+            }            
         } catch (SQLException ex)
         {
             log.error(ex);
@@ -133,31 +183,62 @@ public class SQLExecutionProcessor implements Runnable
     {
         try
         {
-            dbConnection = DBConnection.getInstance().getConnection();    
-            dbStatement = dbConnection.createStatement();
-            
-            log.info("SQL["+sqlStr+"]");
-            listener.exectionDone(this, dbStatement.executeQuery(sqlStr));
-
-            if (isAutoCloseConnection)
+            if (dbConnection == null)
             {
-                close();
+                dbConnection = DBConnection.getInstance().getConnection();
+            }
+            
+            if (dbConnection != null)
+            {
+                if (dbStatement != null)
+                {
+                    dbStatement.close();
+                }
+                dbStatement = dbConnection.createStatement();
+                
+                log.info("SQL ["+sqlStr+"]");
+                if (sqlStr.toLowerCase().indexOf("select") == 0)
+                {
+                    ResultSet rs = dbStatement.executeQuery(sqlStr);
+                    log.info("SQL*["+sqlStr+"]");
+                    listener.exectionDone(this, rs);
+                } else
+                {
+                    int result = dbStatement.executeUpdate(sqlStr);
+                    log.info("SQL*["+sqlStr+"]");
+                    listener.exectionDone(this, null);
+                }
+                
+                if (isAutoCloseConnection)
+                {
+                    close();
+                }
             }
 
         } catch (java.sql.SQLException ex)
         {
             ex.printStackTrace();
-            log.error("Error in run", ex);
+            log.error("Error in run["+sqlStr+"]", ex);
             listener.executionError(this, ex);
                   
         } catch (Exception ex)
         {
             ex.printStackTrace();
-            log.error("Error in run", ex);
+            log.error("Error in run["+sqlStr+"]", ex);
             listener.executionError(this, ex);
             
         }
-
     }
+
+    /**
+     * 
+     * @return
+     */
+    public Connection getDbConnection()
+    {
+        return dbConnection;
+    }
+    
+    
     
 }

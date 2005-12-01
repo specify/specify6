@@ -45,6 +45,14 @@ public interface Chartable
      * @param title the title
      */
     public void setYAxis(final String title);
+    
+    /** 
+     * Set whether the chart is vertical or horizontal (vertical is the default)
+     * @param isVertical true if vertical 
+     */
+    public void setVertical(boolean isVertical);
+    
+
 
 
 }
