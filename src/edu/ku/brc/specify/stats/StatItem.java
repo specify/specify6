@@ -35,7 +35,7 @@ import edu.ku.brc.specify.dbsupport.QueryResultsContainer;
 import edu.ku.brc.specify.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.specify.dbsupport.QueryResultsListener;
 import edu.ku.brc.specify.dbsupport.QueryResultsSerializedGetter;
-import edu.ku.brc.specify.ui.InfiniteProgressPanel;
+//import edu.ku.brc.specify.ui.InfiniteProgressPanel;
 
 /**
  * 
@@ -57,7 +57,7 @@ public class StatItem extends JPanel implements QueryResultsListener
     // UI
     protected JLabel descLabel;
     protected JLabel resultsLabel;
-    protected InfiniteProgressPanel infProgress;
+    //protected InfiniteProgressPanel infProgress;
     
 
     
