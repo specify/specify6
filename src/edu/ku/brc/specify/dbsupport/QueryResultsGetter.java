@@ -23,11 +23,14 @@ import java.util.List;
 import java.util.Vector;
 
 /**
+ * This class contains a collection of QueryResultsContainers (each has their own SQL statement) and it creates
+ * SQLExecutionProcessors for each Container and has them execute all the Queries in parallel. If one returns an error
+ * then the listener is notified immediately, otherwise the listener is notified when they all complete.
  * 
  * @author rods
  *
  */
-public class QueryResultsGetter implements SQLExecutionListener
+public class QueryResultsGetter
 {
     // Static Data Members
     //private static Log log = LogFactory.getLog(QueryResultsGetter.class);
@@ -39,8 +42,8 @@ public class QueryResultsGetter implements SQLExecutionListener
     protected QueryResultsListener          listener;
     
     /**
-     * 
-     * @param listener
+     * Creates a getter to go get (in parallel) all the containers and their values
+     * @param listener the object that will be notified when all the queries are done
      */
     public QueryResultsGetter(final QueryResultsListener listener)
     {
@@ -49,21 +52,21 @@ public class QueryResultsGetter implements SQLExecutionListener
     }
     
     /**
-     * 
-     * @param ndbrc
+     * Adds a QueryResultsContainer to be processed
+     * @param qrc the QueryResultsContainer to be processed
      */
-    public void add(QueryResultsContainer ndbrc)
+    public void add(QueryResultsContainer qrc)
     {
-        qrcs.addElement(ndbrc);
+        qrcs.addElement(qrc);
         
-        SQLExec sqle = new SQLExec(ndbrc, this);
+        SQLExec sqle = new SQLExec(qrc, this);
         sqlExecList.addElement(sqle);
         sqle.init();
     }
     
     /**
      * Adds a QueryResultsContainer and starts its execution on a separate thread 
-     * @param qrc the container to be executed
+     * @param qrcs the collection of containers to be executed
      */
     public void add(final List<QueryResultsContainer> qrcs)
     {
@@ -74,8 +77,8 @@ public class QueryResultsGetter implements SQLExecutionListener
     }
    
    /**
-     * 
-     * @return
+     * Returns the collection of QueryResultsContainer
+     * @return Returns the collection of QueryResultsContainer
      */
     public List<QueryResultsContainer> getQueryResultsContainers()
     {
@@ -83,8 +86,8 @@ public class QueryResultsGetter implements SQLExecutionListener
     }
     
     /**
-     * 
-     * @return
+     * Checks to see of all of the paraellel queries are done
+     * @return true if all the parallel queries are done.
      */
     public boolean isDoneProcessing()
     {
@@ -99,24 +102,7 @@ public class QueryResultsGetter implements SQLExecutionListener
     }
     
     /**
-     * 
-     * @param processor
-     * @return
-     */
-    protected SQLExec getSQLExecByProcessor(final SQLExecutionProcessor processor)
-    {
-        for (SQLExec sqle : sqlExecList)
-        {
-            if (sqle.getSqlProc() == processor)
-            {
-                return sqle;
-            }
-        }
-        return null;
-    }
-    
-    /**
-     * 
+     * Cleans up all the data structures
      *
      */
     public void clear()
@@ -127,84 +113,129 @@ public class QueryResultsGetter implements SQLExecutionListener
         }
         sqlExecList.clear();
         
-        for (QueryResultsContainer ndbrc : qrcs)
+        for (QueryResultsContainer qrc : qrcs)
         {
-            ndbrc.clear();
+            qrc.clear();
         }
         qrcs.clear();
         
     }
     
-    //-----------------------------------------------------
-    //-- SQLExecutionListener
-    //-----------------------------------------------------
-    
-    public synchronized void exectionDone(final SQLExecutionProcessor processor, final java.sql.ResultSet resultSet)
+    /**
+     * Called when a container is done processing
+     *
+     */
+    protected synchronized void containerIsDone(QueryResultsContainer qrc)
     {
-        SQLExec sqle = getSQLExecByProcessor(processor);
-        sqle.setProcessed(true);
-        sqle.getNdbrc().processResultSet(resultSet);
         if (isDoneProcessing())
         {
-            listener.allResultsBack();
+            if (!hasFailed)
+            {
+                listener.allResultsBack();
+            }
         }
-     }
-    
-    public synchronized void executionError(final SQLExecutionProcessor processor, final Exception ex)
-    {
-        //SQLExec sqle = getSQLExecByProcessor(processor);
-        hasFailed = true;
     }
+    
+    /**
+     * Called when a container has an error
+     *
+     */
+    protected synchronized void containerIsInError(QueryResultsContainer qrc)
+    {
+        hasFailed = true;
+        listener.resultsInError(qrc);
+        
+        // XXX Maybe here we tell all remain queries to stop ?
+    }
+    
     
     
     //----------------------------------------------------------
     //-- Inner Classes
     //----------------------------------------------------------
-    class SQLExec
+    /**
+     * This is a class that associated the SQLExecutionProcessor and the Container and 
+     * provides the needed parallelism
+     */
+    class SQLExec implements SQLExecutionListener
     {
-        protected QueryResultsContainer ndbrc;
+        protected QueryResultsContainer  qrc;
         protected SQLExecutionProcessor  sqlProc;
         protected boolean                isProcessed = false;
-        protected SQLExecutionListener   listener    = null;
+        protected QueryResultsGetter     getter      = null;
         
-        public SQLExec(final QueryResultsContainer ndbrc, final SQLExecutionListener listener)
+        /**
+         * Creates a mini-processor that knows how to 
+         * @param qrc the container to be processed
+         * @param getter the getter that own this guy
+         */
+        public SQLExec(final QueryResultsContainer qrc, final QueryResultsGetter getter)
         {
-            this.ndbrc = ndbrc;
-            this.listener = listener;
+            this.qrc    = qrc;
+            this.getter = getter;
         }
         
+        /**
+         * Starts up the query
+         *
+         */
         public void init()
         {
-            sqlProc = new SQLExecutionProcessor(listener, ndbrc.getSql());
+            sqlProc = new SQLExecutionProcessor(this, qrc.getSql());
             sqlProc.start();
         }
 
-        public QueryResultsContainer getNdbrc()
+        /**
+         * @return return the container
+         */
+        public QueryResultsContainer getQueryResultsContainer()
         {
-            return ndbrc;
+            return qrc;
         }
         
-        public SQLExecutionProcessor getSqlProc()
-        {
-            return sqlProc;
-        }
-
+        /**
+         * @return returns whether it has been processed or not
+         */
         public boolean isProcessed()
         {
-            return isProcessed;
+            return
+            isProcessed;
         }
 
-        public void setProcessed(boolean isProcessed)
-        {
-            this.isProcessed = isProcessed;
-        }
         
+        /**
+         * Clean up all data 
+         */
         public void clear()
         {
-            ndbrc   = null;
+            qrc     = null;
             sqlProc = null;
+            getter  = null;
         }
         
+        //-----------------------------------------------------
+        //-- SQLExecutionListener
+        //-----------------------------------------------------
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.dbsupport.SQLExecutionListener#exectionDone(edu.ku.brc.specify.dbsupport.SQLExecutionProcessor, java.sql.ResultSet)
+         */
+        public synchronized void exectionDone(final SQLExecutionProcessor processor, final java.sql.ResultSet resultSet)
+        {
+            isProcessed = true;
+            qrc.processResultSet(resultSet);
+            getter.containerIsDone(qrc);
+         }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.dbsupport.SQLExecutionListener#executionError(edu.ku.brc.specify.dbsupport.SQLExecutionProcessor, java.lang.Exception)
+         */
+        public synchronized void executionError(final SQLExecutionProcessor processor, final Exception ex)
+        {
+            hasFailed = true;
+            getter.containerIsInError(qrc);
+        }
+       
     }
 
 

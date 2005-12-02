@@ -38,7 +38,7 @@ public class IconEntry
     
     /**
      * 
-     * @param name
+     * @param name the name of the icon entry
      */
     public IconEntry(final String name)
     {
@@ -47,9 +47,9 @@ public class IconEntry
 
 
     /**
-     * 
-     * @param size
-     * @return
+     * Returns an icon for a given size in pixels
+     * @param size the size of the icon
+     * @return the icon for that size in pixels
      */
     public ImageIcon getIcon(final Integer size)
     {
@@ -62,9 +62,9 @@ public class IconEntry
     }
     
     /**
-     * 
-     * @param size
-     * @param icon
+     * Adds an icon of a particular size
+     * @param size the size in pixels
+     * @param icon the icon to be added
      */
     public void add(final Integer size, final ImageIcon icon)
     {
@@ -73,10 +73,10 @@ public class IconEntry
 
 
     /**
-     * 
-     * @param iconSize
-     * @param scaledIconSize
-     * @return
+     * Gets a scaled icon and if it doesn't exist it creates one and scales it
+     * @param iconSize the standard size in pixels
+     * @param scaledIconSize the new scaled size in pixels
+     * @return the scaled icon
      */
     public ImageIcon getScaledIcon(final IconSize iconSize, final IconSize scaledIconSize)
     {

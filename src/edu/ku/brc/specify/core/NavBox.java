@@ -38,6 +38,7 @@ import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.RolloverCommand;
 
 /**
+ * This organized NavBoxItemIFace object in a vertical layout (via a layout manager)
  * 
  * @author rods
  *

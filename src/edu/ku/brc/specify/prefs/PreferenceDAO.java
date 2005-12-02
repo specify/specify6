@@ -12,17 +12,21 @@ import edu.ku.brc.specify.exceptions.ConfigurationException;
 public class PreferenceDAO
 {
 
+    /**
+     *  XXX
+     *
+     */
     public PreferenceDAO()
     {
         HibernateUtil.beginTransaction();
     }
     
     /**
-     * 
-     * @param itemId
-     * @param lock
-     * @return
-     * @throws ConfigurationException
+     *  XXX
+     * @param itemId XXX
+     * @param lock XXX
+     * @return XXX
+     * @throws ConfigurationException XXX
      */
     public Preference getPreferenceById(Long itemId, boolean lock) throws ConfigurationException
     {
@@ -46,9 +50,9 @@ public class PreferenceDAO
     }
     
     /**
-     * 
+     *  XXX
      * @return All the Preference items
-     * @throws ConfigurationException
+     * @throws ConfigurationException XXX
      */
     public Collection findAll() throws ConfigurationException
     {
@@ -66,8 +70,8 @@ public class PreferenceDAO
 
     /**
      * 
-     * @param item
-     * @throws ConfigurationException
+     * @param item XXXX
+     * @throws ConfigurationException XXX
      */
     public void makePersistent(Preference item) throws ConfigurationException 
     {
@@ -80,9 +84,9 @@ public class PreferenceDAO
     }
 
     /**
-     * 
-     * @param item
-     * @throws ConfigurationException
+     *  XXX
+     * @param item  XXX
+     * @throws ConfigurationException XXX
      */
     public void makeTransient(Preference item) throws ConfigurationException 
     {

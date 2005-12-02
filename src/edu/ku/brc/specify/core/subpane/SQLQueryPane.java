@@ -44,6 +44,7 @@ import edu.ku.brc.specify.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 
 /**
+ * A pane with a text field for entring in a query and then the results are displayed in a table.
  * 
  * @author rods
  *

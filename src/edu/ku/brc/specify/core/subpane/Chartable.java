@@ -21,9 +21,10 @@ package edu.ku.brc.specify.core.subpane;
 
 
 /**
+ * Interface that enables chart speciic informations to be set
  * 
  * @author rods
- * Interface that enables chart speciic informations to be set
+ * 
  */
 public interface Chartable
 {

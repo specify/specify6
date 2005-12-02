@@ -23,12 +23,11 @@ import java.util.List;
 import java.util.Vector;
 
 /**
- * 
- * @author rods
- *
  * Processes a list of QueryResultsContainer objects (Note: Each QueryResultsContainer contains an SQL statement)
  * in serialized fashion;
  * 
+ * @author rods
+ *
  */
 public class QueryResultsSerializedGetter implements SQLExecutionListener
 {
@@ -76,7 +75,7 @@ public class QueryResultsSerializedGetter implements SQLExecutionListener
     
     /**
      * Adds a QueryResultsContainer and starts its execution on a separate thread 
-     * @param qrc the container to be executed
+     * @param qrcs the collection of containers to be executed
      */
     public void add(final List<QueryResultsContainer> qrcs)
     {

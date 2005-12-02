@@ -37,8 +37,8 @@ public interface PrefGroupIFace
     public Collection<PrefSubGroup> getSubGroups();
    
     /**
-     * 
-     * @return
+     * @param name the name of the group to be returned
+     * @return the group by name
      */
-    public PrefSubGroupIFace getSubGroupByName(String aName);
+    public PrefSubGroupIFace getSubGroupByName(String name);
 }

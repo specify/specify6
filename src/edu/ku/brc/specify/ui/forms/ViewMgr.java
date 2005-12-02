@@ -69,12 +69,12 @@ public class ViewMgr
         viewsHash.clear();
     }
     
-     /**
-     * 
-     * @param aFile
-     * @return
+    /**
+     * Reads a DOM from a string and returns the root element of the DOM
+     * @param fileInputStream
+     * @return returns a document from a DOM file input stream
      */
-    public static org.dom4j.Document readFileToDOM4J(FileInputStream aFileInputStream) throws Exception
+    public static org.dom4j.Document readFileToDOM4J(FileInputStream fileInputStream) throws Exception
     {
         if (saxReader == null)
         {
@@ -87,82 +87,80 @@ public class ViewMgr
         saxReader.setProperty("http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation", 
                            (FormViewFactory.class.getResource("../form.xsd")).getPath());
         
-        return saxReader.read( aFileInputStream );
+        return saxReader.read( fileInputStream );
     }
 
     /**
-     * 
-     * @param aPath
-     * @throws Exception
+     * Loads a view file from a path
+     * @param path the path to the view file
+     * @throws Exception file io exceptions
      */
-    public void loadViewFile(String aPath) throws Exception
+    public void loadViewFile(final String path) throws Exception
     {
-        loadViewFile(new FileInputStream(aPath));
+        loadViewFile(new FileInputStream(path));
     }
     
     /**
-     * 
-     * @param aURL
-     * @throws Exception
+     * Loads a View file from an URL
+     * @param url the url location
+     * @throws Exception and errors
      */
-    public void loadViewFile(URL aURL) throws Exception
+    public void loadViewFile(URL url) throws Exception
     {
-        loadViewFile(new FileInputStream(aURL.getFile()));
+        loadViewFile(new FileInputStream(url.getFile()));
     }
     
     /**
      * Checks all the view "sets" to see if the name has already been used
-     * @param aViewSetName name of set of views (file of views)
+     * @param viewSetName name of set of views (file of views)
      * @return returns whether a a "set" of views have been read. A "set" of views come from a single file.
      */
-    public boolean isViewSetNameInUse(String aViewSetName)
+    public boolean isViewSetNameInUse(final String viewSetName)
     {
-        return viewsHash.get(aViewSetName) != null;
+        return viewsHash.get(viewSetName) != null;
     }
     
     /**
      * Checks to see a View Set and View's Id is already in use
-     * @param aViewSetName the name of a view set
-     * @param aViewId the id of an individual view
+     * @param viewSetName the name of a view set
+     * @param viewId the id of an individual view
      * @return return true if the ViewSet/ViewId has been registered
      */
-    public boolean isViewInUse(String aViewSetName, Integer aViewId)
+    public boolean isViewInUse(final String viewSetName, final Integer viewId)
     {
-         return getView(aViewSetName, aViewId) != null;
+         return getView(viewSetName, viewId) != null;
     }
     
     /**
-     * 
-     * @param aViewSetName the view set name of the view
-     * @param aViewId the id of the view
+     * Gets a FormView by set name and id
+     * @param viewSetName the view set name of the view
+     * @param viewId the id of the view
      * @return the FormView from a view set by id 
      */
-    public FormView getView(String aViewSetName, Integer aViewId)
+    public FormView getView(final String viewSetName, final Integer viewId)
     {
-        ViewSet viewSet = viewsHash.get(aViewSetName);
+        ViewSet viewSet = viewsHash.get(viewSetName);
         if (viewSet != null)
         {
-            return viewSet.getById(aViewId);
+            return viewSet.getById(viewId);
         }
         return null; 
     }
     
     /**
-     * 
-     * @param aViewSetName the name of the view set
+     * Returns a viewset by name
+     * @param viewSetName the name of the view set
      * @return ViewSet containing the hashtable of FormViews for this view set (this is not a copy)
      */
-    public ViewSet getViews(String aViewSetName)
+    public ViewSet getViews(final String viewSetName)
     {
-        return viewsHash.get(aViewSetName);        
+        return viewsHash.get(viewSetName);        
     }
 
     
     /**
-     * 
-     * @param aViewSetName
-     * @param aList
-     * @throws Exception
+     * Validates the views and subview
+     * @throws Exception XXX
      */
     public void validate() throws Exception
     {
@@ -219,12 +217,12 @@ public class ViewMgr
    
     /**
      * Load an XML View File from a stream if the ViewSet is not unique than it throws and exception
-     * @param aFIS a file input stream to read the DOM4J from
+     * @param fileInputStream a file input stream to read the DOM4J from
      * @throws Exception on various errors
      */
-    public void loadViewFile(FileInputStream aFIS) throws Exception
+    public void loadViewFile(FileInputStream fileInputStream) throws Exception
     {
-        org.dom4j.Document document = readFileToDOM4J(aFIS);
+        org.dom4j.Document document = readFileToDOM4J(fileInputStream);
         Element            root     = document.getRootElement();
         if (root != null)
         {

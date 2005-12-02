@@ -20,6 +20,12 @@
 
 package edu.ku.brc.specify.dbsupport;
 
+/**
+ * Simple factory for created customer queries. Since this is just instatiating a class we probably don't need it.
+ * 
+ * @author rods
+ * 
+ */
 public class CustomQueryFactory
 {
 

@@ -24,35 +24,42 @@ import java.util.List;
 import javax.swing.*;
 import edu.ku.brc.specify.core.*;
 
+/**
+ * 
+ * @author rods
+ *
+ * An interface for all pnaes that want to participate in the "main" panel of the UI.
+ * 
+ */
 public interface SubPaneIFace
 {
     /**
-     * 
-     * @return
+     * Returns the name of the sub pane
+     * @return Returns the name of the sub pane
      */
     public String getName();
     
     /**
-     * 
-     * @return
+     * Returns the title 
+     * @return Returns the title 
      */
     public String getTitle();
     
     /**
-     * 
-     * @return
+     * Returns the small icon used in the tab
+     * @return Returns the small icon used in the tab
      */
     public Icon getIcon();
     
     /**
-     * 
-     * @return
+     * Returns the UI component of the pane
+     * @return Returns the UI component of the pane
      */
     public JComponent getUIComponent();
     
     /**
-     * 
-     * @return
+     * Returns the task who owns this pane (needed for context)
+     * @return Returns the task who owns this pane (needed for context)
      */
     public Taskable getTask();
 }

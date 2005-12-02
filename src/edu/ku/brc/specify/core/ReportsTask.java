@@ -37,7 +37,12 @@ import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.TaskPluginable;import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
-
+/**
+ * This task will enable a user to create, and view reports.
+ * 
+ * @author rods
+ *
+ */
 public class ReportsTask extends BaseTask
 {
 

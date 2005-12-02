@@ -23,13 +23,14 @@ import java.util.Vector;
 import edu.ku.brc.specify.ui.*;
 
 /**
- * 
- * @author rods
- * Status: Finished
- * 
  * Manages the task context of the UI. The task context is controlled by what tab is visible in the main pane
  * When tasks are registered they are asked for the NavBoxes and those are placed in the NavBox Manager. when
  * they are unregistered the NavBoxes are removed
+ * 
+ * Status: Finished
+ * 
+ * @author rods
+ * 
  */
 public class ContextMgr
 {
@@ -59,7 +60,7 @@ public class ContextMgr
     
     /**
      * Request for a change in context
-     * @param the task requesting the context
+     * @param task the task requesting the context
      */
     public void requestContext(Taskable task)
     {

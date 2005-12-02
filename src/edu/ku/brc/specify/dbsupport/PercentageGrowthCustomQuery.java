@@ -22,6 +22,12 @@ package edu.ku.brc.specify.dbsupport;
 
 import java.util.Vector;
 
+/**
+ * A custom query for creating percentage of growth for each year
+ * 
+ * @author rods
+ *
+ */
 public class PercentageGrowthCustomQuery implements CustomQuery
 {
     public PercentageGrowthCustomQuery()

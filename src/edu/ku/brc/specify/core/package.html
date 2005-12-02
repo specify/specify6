@@ -1,5 +1,24 @@
 <html>
 <body>
-This package contains all the 'core' components for constructing the 'main' panel and the navigation panel.
+This package contains all the 'core' components functionality components for the application and the navigation panel.<br>
+A main functionality component is called a Task and must implement the Taskable interface.
+<br><br>
+
+<b>Overview</b>
+<p>
+The screen of the application is divided into two areas: 1) The Navigation pane 2) The 'main' pane area. The navigation area will contain
+one or more NavBoxes, each NavBox contains a set of logically grouped items. These items are usually command to perform some task or display
+information. Sometimes they represent a passive object like a set of references to records called RecordSets.</p>
+<p>
+A Task represents a main component of functionality in the system. When a Task is registered it is asked for any toolbar components, 
+menu items, and Nav Boxes. It will also create (vend) a 'default' or 'main' panel for itself that will appear in the main panel area, 
+which is typically on the right hand side of the screen. When a new task is created the "context" switches to the new task. The default 
+way of displaying (or allowing) multiple tasks is to have a TabbedPane for each task. Additional panes may be displayed when the user 
+clicks on a command in a NavBox, the "sub panes" have the same Task context as the Task that created them.
+</p>
+<p>
+As stated eariler, the NavBoxes are created by the task and typically call back to the Task to have their commands processed. For example, 
+the Statistics Task will create a NavBox with commands for creating and displaying various different Bar Charts. When the user clicks on 
+the command button the Stats Task receives the request and asks the ContextMgr
 </body>
 </html>

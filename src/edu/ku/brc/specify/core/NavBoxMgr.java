@@ -28,11 +28,12 @@ import javax.swing.JPanel;
 import edu.ku.brc.specify.exceptions.ConfigurationException;
 
 /**
- * @author rods
- *
  * A singleton that manages a list of NavBoxIFace items. The NavBoxIFace are layed out using a manager 
  * which typically lays them out in a vertical fashion. A Taskable object vends one or more NavBoxes.
- */
+ * 
+  * @author rods
+ *
+*/
 public class NavBoxMgr extends JPanel
 {
     // Static Data Members
@@ -83,7 +84,7 @@ public class NavBoxMgr extends JPanel
     
     /**
      * Registers a Task's NavBoxes into the Manager
-     * @param pane the pane to 
+     * @param task the task to be registered 
      */
     public void unregister(final Taskable task)
     {

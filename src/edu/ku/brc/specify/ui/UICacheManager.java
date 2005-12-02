@@ -74,7 +74,7 @@ public class UICacheManager
     
     /**
      * 
-     * @return
+     * @return the singleton instance
      */
     public static UICacheManager getInstance()
     {
@@ -180,7 +180,7 @@ public class UICacheManager
     }
 
     /**
-     * @param reourceName The reourceName to set.
+     * @param resourceName The reourceName to set.
      */
     public void setResourceName(String resourceName)
     {
@@ -270,7 +270,7 @@ public class UICacheManager
 
     /**
      * Displays a message in the status bar
-     * @param text
+     * @param key the key of the string that is to appear in the status bar. The resource string will be looked up
      */
     public static void displayLocalizedStatusBarText(final String key)
     {
@@ -286,7 +286,7 @@ public class UICacheManager
 
     /**
      * 
-     * @return
+     * @return the sub pane manager
      */
     public SubPaneMgr getSubPaneMgr()
     {

@@ -179,7 +179,7 @@ public abstract class DropDownButton extends JButton implements ChangeListener,
     /**
      * 
      * @param toolbar
-     * @return
+     * @return the main button of the control 
      */
     public JButton addToToolBar(JToolBar toolbar)
     {   

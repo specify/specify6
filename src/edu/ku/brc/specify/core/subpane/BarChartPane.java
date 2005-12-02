@@ -23,11 +23,11 @@ package edu.ku.brc.specify.core.subpane;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.Icon;
-import javax.swing.JProgressBar;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,10 +37,6 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.dbsupport.QueryResultsContainer;
 import edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace;
@@ -48,19 +44,26 @@ import edu.ku.brc.specify.dbsupport.QueryResultsListener;
 import edu.ku.brc.specify.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.specify.ui.IconManager;
 
+
+/**
+ * Creates a pane that can listener for Query Results and then create a Bar Chart
+ * 
+ * @author rods
+ *
+ */
 public class BarChartPane extends ChartPane implements QueryResultsListener, QueryResultsProcessable
 {
     // Static Data Members
     private static Log log = LogFactory.getLog(BarChartPane.class);
     
     // Data Members
-    private QueryResultsHandlerIFace processor = null;
+    private QueryResultsHandlerIFace handler = null;
     
 
     /**
-     * 
-     * @param name
-     * @param task
+     * Creates a BarChart pane with a name and a reference to the taskable that started it
+     * @param name the name of the BarChart
+     * @param task the starting task
      */
     public BarChartPane(final String name, 
                         final Taskable task)
@@ -83,25 +86,46 @@ public class BarChartPane extends ChartPane implements QueryResultsListener, Que
     
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.QueryResultsProcessable#setProcessor()
+     * @see edu.ku.brc.specify.dbsupport.QueryResultsProcessable#setHandler()
      */
-    public void setProcessor(final QueryResultsHandlerIFace processor)
+    public void setHandler(final QueryResultsHandlerIFace handler)
     {
-        this.processor = processor;
+        this.handler = handler;
     }
     
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.QueryResultsProcessable#getProcessor()
+     * @see edu.ku.brc.specify.dbsupport.QueryResultsProcessable#getHandler()
      */
-    public QueryResultsHandlerIFace getProcessor()
+    public QueryResultsHandlerIFace getHandler()
     {
-        return processor;
+        return handler;
     }
 
     //--------------------------------------
     // QueryResultsListener
     //--------------------------------------
+    
+    /**
+     * Helper method for methods below
+     */
+    protected void addCompletedComp(JComponent comp)
+    {
+        removeAll(); // remove progress bar
+        add(comp, BorderLayout.CENTER);
+        
+        if (handler != null)
+        {
+            handler.cleanUp();
+            handler = null;
+        }
+
+        doLayout();
+        repaint();
+        
+
+  
+    }
     
     /*
      *  (non-Javadoc)
@@ -113,7 +137,7 @@ public class BarChartPane extends ChartPane implements QueryResultsListener, Que
         String cat = "";
         DefaultCategoryDataset dataset = new DefaultCategoryDataset(); 
         
-        java.util.List<Object> list = processor.getDataObjects();
+        java.util.List<Object> list = handler.getDataObjects();
         for (int i=0;i<list.size();i++)
         {         
             Object descObj = list.get(i++);
@@ -138,16 +162,7 @@ public class BarChartPane extends ChartPane implements QueryResultsListener, Que
         panel.setMaximumSize(new Dimension(100,100));
         panel.setPreferredSize(new Dimension(100,100));
         
-        removeAll(); // remove progress bar
-        add(panel, BorderLayout.CENTER);
-        
-        processor.cleanUp();
-        processor = null;
-        
-
-        doLayout();
-        repaint();
-        
+        addCompletedComp(panel);
 
     }
     
@@ -156,7 +171,9 @@ public class BarChartPane extends ChartPane implements QueryResultsListener, Que
      */
     public void resultsInError(final QueryResultsContainer qrc)
     {
+        //JOptionPane.showMessageDialog(this, getResourceString("ERROR_CREATNG_BARCHART"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); // XXX LOCALIZE
         
+        addCompletedComp(new JLabel(getResourceString("ERROR_CREATNG_BARCHART"), JLabel.CENTER));
     }
 
    

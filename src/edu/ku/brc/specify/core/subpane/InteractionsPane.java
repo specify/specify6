@@ -25,9 +25,16 @@ import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.core.Taskable;
 
+/**
+ * This pane will be responsible for creating form for Gift/Exchanges and loans. We may end up
+ * getting rid of this and just using the Data Entry Pane 
+ *
+ * @author rods
+ * 
+ */
 public class InteractionsPane extends BaseSubPane
 {
-    private static Log log = LogFactory.getLog(InteractionsPane.class);
+    //private static Log log = LogFactory.getLog(InteractionsPane.class);
     
     /**
      * 

@@ -30,9 +30,10 @@ import org.apache.commons.logging.LogFactory;
 
 
 /**
- * @author rods
  * Constructs a an object to execute an SQL staement and then notify the listener and it is done. Any exception in the
  * SQL processing are passed back to the listener instead of being thrown. This class is running in its own thread.
+ * 
+ * @author rods
  */
 public class SQLExecutionProcessor implements Runnable
 {
@@ -232,7 +233,7 @@ public class SQLExecutionProcessor implements Runnable
 
     /**
      * 
-     * @return
+     * @return the java.sqlConnection object
      */
     public Connection getDbConnection()
     {

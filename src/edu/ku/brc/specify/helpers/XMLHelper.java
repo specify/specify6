@@ -289,10 +289,10 @@ public class XMLHelper
    }
    
    /**
-    * 
-    * @param aNode
-    * @param aAttrName
-    * @return
+    * Returns an int from a string attribute
+    * @param aNode the node
+    * @param aAttrName the attr name
+    * @return Returns an int from a string attribute
     */
    public static int getIntFromAttr(Node aNode, String aAttrName)
    {
@@ -576,18 +576,18 @@ public class XMLHelper
 
    
    /**
-    * 
-    * @param fileinputStream
+    * Reads a File and return the root element from the DOM
+    * @param file the file to be read
     */
-    public static org.dom4j.Element readFileToDOM4J(final File aFile) throws Exception
+    public static org.dom4j.Element readFileToDOM4J(final File file) throws Exception
     {
-        return readFileToDOM4J(new FileInputStream(aFile));
+        return readFileToDOM4J(new FileInputStream(file));
     }
    
    /**
-    * 
-    * @param aFile
-    * @return
+    * Reads a DOM from a stream
+    * @param fileinputStream the stream to be read
+    * @return the root element of the DOM
     */
    public static org.dom4j.Element readFileToDOM4J(final FileInputStream fileinputStream) throws Exception
    {

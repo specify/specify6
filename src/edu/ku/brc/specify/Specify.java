@@ -135,8 +135,8 @@ public class Specify extends JPanel
 
   
      /**
-     * Constructor with Applet
-     * @param aApplet
+     * Constructor with GraphicsConfiguration
+     * @param gc the GraphicsConfiguration
      */
     public Specify(GraphicsConfiguration gc)
     {
@@ -599,7 +599,7 @@ public class Specify extends JPanel
     
     /**
      * 
-     * @return
+     * @return the toolbar for the app
      */
     public JToolBar createToolBar()
     {
@@ -928,7 +928,7 @@ public class Specify extends JPanel
     
     /**
      * 
-     * @return
+     * @return the specify app object
      */
     public static Specify getSpecify()
     {

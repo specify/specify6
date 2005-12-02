@@ -25,6 +25,12 @@ import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.core.Taskable;
 
+/**
+ * The future reports pane
+ * 
+ * @author rods
+ *
+ */
 public class ReportsPane extends BaseSubPane
 {
     private static Log log = LogFactory.getLog(LabelsPane.class);

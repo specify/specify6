@@ -24,9 +24,22 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.core.Taskable;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.view.JRViewer;
+import edu.ku.brc.specify.core.Taskable;
+//import net.sf.jasperreports.engine.JasperPrintManager;
+//import net.sf.jasperreports.engine.JasperExportManager;
 
+/**
+ * This class will display Label previews and may eventually hold a labels editor
+ * 
+ * @author rods
+ * 
+ */
 public class LabelsPane extends BaseSubPane
 {
+    // Static Data Members
     private static Log log = LogFactory.getLog(LabelsPane.class);
     
     /**
@@ -39,5 +52,37 @@ public class LabelsPane extends BaseSubPane
         super(name, task);
         
     }
-    
+    public void doReport(String[] aArgs)
+    {
+        boolean design = false;
+        if (design)
+        {
+            //FrameDesigner designer = new FrameDesigner(new File(aArgs[1]), false);
+            //designer.show();
+            
+        } else
+        {
+            try {
+                //File file = new File(aArgs[1]);
+                //System.out.println("File:["+aArgs[1]+"] "+(file.exists() ? "exists" : "does not exist."));
+                
+                /* XXX
+                String compiledFileName = JasperCompileManager.compileReportToFile("/Dev/prototypes/Hyla3/reports_labels/andys_label2.jrxml");//aArgs[1]);
+                //String compiledFileName = JasperCompileManager.compileReportToFile("/Dev/prototypes/Hyla3/reports_labels/lichens_label.jrxml");//aArgs[1]);
+                //String compiledFileName = "/Dev/prototypes/Hyla3/Unnamed.jasper";
+                String filledReportName = JasperFillManager.fillReportToFile(compiledFileName, null, this.mSession.connection());
+                //String filledReportName = "/Dev/prototypes/Hyla3/Unnamed.jrprint";
+                
+                JRViewer jasperViewer = new JRViewer(filledReportName, false);
+                add(jasperViewer, BorderLayout.CENTER);
+                XXX */
+                
+            } catch (Exception ex)
+            {
+                System.out.println("Report file["+aArgs[1]+"]");
+                ex.printStackTrace();
+            }
+        }
+    }
+   
 }

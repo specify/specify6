@@ -38,9 +38,10 @@ import edu.ku.brc.specify.ui.UICacheManager;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 /**
+ * This task manages Loans, Gifts, Exchanges and provide actions and forms to do the interactions
  * 
  * @author rods
- * This task manages Loans, Gifts, Exchanges and provide actions and forms to do the interactions
+ * 
  */
 public class InteractionsTask extends BaseTask
 {

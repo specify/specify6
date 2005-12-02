@@ -86,7 +86,7 @@ public class IconManager
   
     /**
      * 
-     * @return
+     * @return the singleton instance
      */
     public static IconManager getInstance()
     {
@@ -103,11 +103,11 @@ public class IconManager
 
 
     /**
-     * 
-     * @param iconName
-     * @param fileName
-     * @param id
-     * @return
+     * Registers an icon (group or category), it creates an icon of "id" size and stores it
+     * @param iconName the group name of icons of various sizes
+     * @param fileName the file name of the icon
+     * @param id the size of the icon
+     * @return the icon that was created at the "id" size
      */
     public ImageIcon register(final String iconName, final String fileName, final IconSize id)
     {
@@ -140,10 +140,10 @@ public class IconManager
 
 
     /**
-     * 
-     * @param iconName
-     * @param id
-     * @return
+     * Returns an icon of a specified size
+     * @param iconName the name to find (really a category)
+     * @param id the size ID
+     * @return the icon
      */
     public ImageIcon getIcon(final String iconName, final IconSize id)
     {

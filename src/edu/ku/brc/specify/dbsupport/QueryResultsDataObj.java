@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: DBConnection.java,v $
+/* Filename:    $RCSfile: QueryResultsDataObj.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2005/10/19 19:59:54 $
@@ -20,15 +20,22 @@
 
 package edu.ku.brc.specify.dbsupport;
 
+/**
+ * A class that describes where the the desired piece of data is located (row/col) in the results set 
+ * and whether it has been processed, meaning: does it have it's value yet?
+ * 
+ * @author rods
+ *
+ */
 public class QueryResultsDataObj 
 {
-    protected Object  result = null;
-    protected int     row    = 0;
-    protected int     col    = 0;
+    protected Object  result        = null;
+    protected int     row           = 0;
+    protected int     col           = 0;
     protected boolean isProcessable = true;
     
     /**
-     * 
+     * COnstructs with row and column
      * @param row
      * @param col
      */
@@ -39,8 +46,8 @@ public class QueryResultsDataObj
     }
 
     /**
-     * 
-     * @param result
+     * Constructs with object. Sometimes it is convient for the owner to pre-seed the value.
+     * @param result the value of the object
      */
     public QueryResultsDataObj(Object result)
     {
@@ -49,8 +56,8 @@ public class QueryResultsDataObj
     }
 
     /**
-     * 
-     * @return
+     * Returns the processed result
+     * @return Returns the processed result
      */
     public Object getResult()
     {
@@ -58,8 +65,8 @@ public class QueryResultsDataObj
     }
 
     /**
-     * 
-     * @param result
+     * Sets the processed results
+     * @param result the new value
      */
     public void setResult(Object result)
     {
@@ -67,8 +74,8 @@ public class QueryResultsDataObj
     }
 
     /**
-     * 
-     * @return
+     * Returns the column wher the data is located in the resultset
+     * @return Returns the column where the data is located in the resultset
      */
     public int getCol()
     {
@@ -76,8 +83,8 @@ public class QueryResultsDataObj
     }
 
     /**
-     * 
-     * @param col
+     * Sest the column of where the data is located
+     * @param col the column
      */
     public void setCol(int col)
     {
@@ -85,8 +92,8 @@ public class QueryResultsDataObj
     }
 
     /**
-     * 
-     * @return
+     * Returns the row wher the data is located in the resultset
+     * @return Returns the row where the data is located in the resultset
      */
     public int getRow()
     {
@@ -94,8 +101,8 @@ public class QueryResultsDataObj
     }
 
     /**
-     * 
-     * @param row
+     * Sest the row of where the data is located
+     * @param row the column
      */
     public void setRow(int row)
     {
@@ -103,8 +110,8 @@ public class QueryResultsDataObj
     }
 
     /**
-     * 
-     * @return
+     * Returns whether it has been processed or not
+     * @return Returns whether it has been processed or not
      */
     public boolean isProcessable()
     {
@@ -112,7 +119,7 @@ public class QueryResultsDataObj
     }
     
     /**
-     * 
+     * Clear the result pointer so we can prevent memory leaks
      *
      */
     public void clear()

@@ -22,10 +22,11 @@ package edu.ku.brc.specify.core;
 import javax.swing.JComponent;
 
 /**
- * @author rods
- *
  * Describes a Navigation Box (container) of objects. The objects can be commands, queries, 
  * recordsets, anything that can be shown and acts or acts upon.
+ * 
+ * @author rods
+ *
  */
 public interface NavBoxIFace
 {

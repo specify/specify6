@@ -24,16 +24,23 @@ import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.core.Taskable;
 
+/**
+ * This base class implements the Chartable interface 
+ * that enables derived classes to easily accept and have access to information needed to decorate or describe the chart.
+ * 
+ * @author rods
+ *
+ */
 public class ChartPane extends BaseSubPane implements Chartable
 {
     // Static Data Members
     private static Log log = LogFactory.getLog(ChartPane.class);
     
     // Data Members
-    protected String title       = "";
-    protected String xAxisTitle  = "";
-    protected String yAxisTitle  = "";
-    protected boolean isVertical = true;
+    protected String  title       = "";
+    protected String  xAxisTitle  = "";
+    protected String  yAxisTitle  = "";
+    protected boolean isVertical  = true;
     
     public ChartPane(final String name, 
                      final Taskable task)

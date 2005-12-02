@@ -38,6 +38,12 @@ import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
+/**
+ * This task will enable the iuser to create queries, save them and execute them.
+ * 
+ * @author rods
+ *
+ */
 public class QueryTask extends BaseTask
 {
     public QueryTask()

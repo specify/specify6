@@ -38,7 +38,13 @@ import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.UICacheManager;
 
-
+/**
+ * Abstract class to provide a base level of functionality for implementing a task.
+ * It fully implements Taskable and partially implements TaskPluginable.
+ * 
+ * @author rods
+ *
+ */
 public abstract class BaseTask implements Taskable, TaskPluginable
 {
     // Data Members
@@ -47,6 +53,10 @@ public abstract class BaseTask implements Taskable, TaskPluginable
     protected Vector<NavBoxIFace> navBoxes = new Vector<NavBoxIFace>(); 
     protected Icon                icon     = null;
     
+    /**
+     * Constructor
+     * @param name the name of the task (already localized)
+     */
     public BaseTask(final String name)
     {
         this.name = name;
@@ -86,7 +96,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable
     
     /**
      * Returns the initial pane for this task, may be a blank (empty) pane, but shouldn't null
-     * @return
+     * @return Returns the initial pane for this task, may be a blank (empty) pane, but shouldn't null
      */
     public abstract SubPaneIFace getStarterPane();
 

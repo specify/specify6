@@ -23,12 +23,23 @@ package edu.ku.brc.specify.dbsupport;
 import java.util.List;
 import java.util.Vector;
 
+/**
+ * This class processes a single container and places all the results in a collection
+ * (This class morphed so it is missed named)
+ * 
+ * @author rods
+ *
+ */
 public class PairsSingleQueryResultsHandler implements QueryResultsHandlerIFace
 {
     private QueryResultsGetter    getter    = null;
     private QueryResultsContainer container = null;
     private QueryResultsListener  listener  = null;
 
+    /**
+     * Default Constructor
+     *
+     */
     public PairsSingleQueryResultsHandler()
     {
     }
@@ -61,7 +72,7 @@ public class PairsSingleQueryResultsHandler implements QueryResultsHandlerIFace
     {
        getter = new QueryResultsGetter(listener);   
        getter.add(container); // this needs to be done after everything has been added to the container
-                           // by adding it, it starts the processing
+                              // by adding it, it starts the processing
     }
 
     /* (non-Javadoc)
@@ -74,16 +85,6 @@ public class PairsSingleQueryResultsHandler implements QueryResultsHandlerIFace
         container = null;
     }
    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#getContainers()
-     */
-    public List<QueryResultsContainer> getContainers()
-    {
-        Vector<QueryResultsContainer> list = new Vector<QueryResultsContainer>();
-        list.addElement(container);
-        return list;
-    }
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#getDataObjects()
      */

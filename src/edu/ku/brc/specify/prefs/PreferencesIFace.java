@@ -19,42 +19,22 @@
  */
 package edu.ku.brc.specify.prefs;
 
+/**
+ * Needs to be Documented
+ * @author rods
+ *
+ */
 public interface PreferencesIFace
 {
-    /**
-     * 
-     * @param aName name of group
-     * @return group by name
-     */
     public PrefGroupIFace getGroupByName(String aName);
     
 
-    /**
-     * 
-     * @param aGroup
-     * @param aSubGroup
-     * @param aName
-     * @return
-     */
     public PrefIFace getPref(String aGroup, String aSubGroup, String aName);
     
-    /**
-     * 
-     * @param aPath
-     * @return
-     */
     public PrefIFace getPrefByPath(String aPath);
     
-    /**
-     * 
-     *
-     */
     public void setPrefsChanged();
     
-    /**
-     * 
-     *
-     */
     public void persist();
     
     

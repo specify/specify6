@@ -35,9 +35,9 @@ public class FormRow
     }
     
     /**
-     * 
-     * @param aCell
-     * @return
+     * Adds a FormCell and return the same FormCell
+     * @param aCell the cell to be added
+     * @return the same FormCell
      */
     public FormCell addCell(FormCell aCell)
     {
@@ -45,11 +45,17 @@ public class FormRow
         return aCell;
     }
     
-    public Vector<FormCell> getCells()
+    /**
+     * @return Return the collection of cells
+     */
+    public List<FormCell> getCells()
     {
         return cells;
     }
 
+    /**
+     * @param cells all the cells
+     */
     public void setCells(Vector<FormCell> cells)
     {
         this.cells = cells;
@@ -58,6 +64,7 @@ public class FormRow
     //-------------------------------------------------------------------
     // Helpers
     //-------------------------------------------------------------------
+    
     public FormCell createSubView(String aName, String aViewSetName, int aId, String aClass)
     {
         return addCell(new FormCellSubView(aName, aViewSetName, aId, aClass));

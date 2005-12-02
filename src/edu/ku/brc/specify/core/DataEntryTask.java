@@ -37,8 +37,10 @@ import edu.ku.brc.specify.ui.UICacheManager;
 
 
 /**
- * @author rods
  * This task controls the data entry forms
+ * 
+ * @author rods
+ * 
  */
 public class DataEntryTask extends BaseTask
 {

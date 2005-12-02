@@ -19,19 +19,19 @@
  */
 package edu.ku.brc.specify.ui;
 
-/**
- * This Border class draws a curved border
- */
 import java.awt.*;
 import javax.swing.border.*;
 
+/**
+ * This Border class draws a curved border
+ */
 public class CurvedBorder extends AbstractBorder
 {
     private Color borderColor = Color.gray;
     private int   borderWidth = 6;
 
     /**
-     * 
+     * Default Constructor
      *
      */
     public CurvedBorder()
@@ -40,7 +40,7 @@ public class CurvedBorder extends AbstractBorder
 
     /**
      * 
-     * @param borderWidth
+     * @param borderWidth the border width
      */
     public CurvedBorder(int borderWidth)
     {
@@ -49,7 +49,7 @@ public class CurvedBorder extends AbstractBorder
 
     /**
      * 
-     * @param borderColor
+     * @param borderColor the border color
      */
     public CurvedBorder(Color borderColor)
     {
@@ -57,9 +57,9 @@ public class CurvedBorder extends AbstractBorder
     }
 
     /**
-     * 
-     * @param borderWidth
-     * @param borderColor
+     * Constructor
+     * @param borderWidth the border width
+     * @param borderColor the border color
      */
     public CurvedBorder(int borderWidth, Color borderColor)
     {
@@ -67,8 +67,8 @@ public class CurvedBorder extends AbstractBorder
         this.borderColor = borderColor;
     }
 
-    /**
-     * 
+    /* (non-Javadoc)
+     * @see javax.swing.border.Border#paintBorder(java.awt.Component, java.awt.Graphics, int, int, int, int)
      */
     public void paintBorder(Component c, Graphics g, int x, int y, int w, int h)
     {
@@ -77,16 +77,16 @@ public class CurvedBorder extends AbstractBorder
 
     }
 
-    /**
-     * 
+    /* (non-Javadoc)
+     * @see javax.swing.border.Border#getBorderInsets(java.awt.Component)
      */
     public Insets getBorderInsets(Component c)
     {
         return new Insets(borderWidth, borderWidth, borderWidth, borderWidth);
     }
 
-    /**
-     * 
+    /* (non-Javadoc)
+     * @see javax.swing.border.AbstractBorder#getBorderInsets(java.awt.Component, java.awt.Insets)
      */
     public Insets getBorderInsets(Component c, Insets i)
     {
@@ -94,8 +94,8 @@ public class CurvedBorder extends AbstractBorder
         return i;
     }
 
-    /**
-     * 
+    /* (non-Javadoc)
+     * @see javax.swing.border.Border#isBorderOpaque()
      */
     public boolean isBorderOpaque()
     {
@@ -104,16 +104,16 @@ public class CurvedBorder extends AbstractBorder
 
     /**
      * 
-     * @return
+     * @return the border color
      */
-    public Color getBorderColor()
+     public Color getBorderColor()
     {
         return borderColor;
     }
 
     /**
      * 
-     * @param borderColor
+     * @param borderColor the new color
      */
     public void setBorderColor(Color borderColor)
     {
@@ -122,7 +122,7 @@ public class CurvedBorder extends AbstractBorder
 
     /**
      * 
-     * @return
+     * @return the border width
      */
     public int getBorderWidth()
     {
@@ -131,7 +131,7 @@ public class CurvedBorder extends AbstractBorder
 
     /**
      * 
-     * @param borderWidth
+     * @param borderWidth the new width
      */
     public void setBorderWidth(int borderWidth)
     {

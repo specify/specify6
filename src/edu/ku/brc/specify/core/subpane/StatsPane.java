@@ -40,6 +40,12 @@ import edu.ku.brc.specify.stats.StatGroup;
 import edu.ku.brc.specify.stats.StatGroupFromQuery;
 import edu.ku.brc.specify.stats.StatItem;
 
+/**
+ * A class that loads a page of statistics from an XML description
+ * 
+ * @author rods
+ *
+ */
 public class StatsPane extends BaseSubPane
 {
     // Static Data Members
@@ -64,10 +70,10 @@ public class StatsPane extends BaseSubPane
     
     /**
      * Helper - Needs to be moved
-     * @param element
-     * @param attrName
-     * @param defaultValue
-     * @return
+     * @param element XXX
+     * @param attrName XXX
+     * @param defaultValue XXX
+     * @return the int for the string
      */
     public static int getIntFromAttr(Element element, String attrName, int defaultValue)
     {

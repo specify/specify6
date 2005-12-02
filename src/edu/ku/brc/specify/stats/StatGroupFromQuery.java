@@ -13,6 +13,17 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.specify.dbsupport.SQLExecutionListener;
 import edu.ku.brc.specify.dbsupport.SQLExecutionProcessor;
 
+/**
+ * 
+ * Class to create an entire group from a single query.
+ * Groups are typically made up of individual StatItems where each statistic requires it's 
+ * own query and the usually just the right hand side comes from the query, although the 
+ * description part can come from the query also. With this class you describe whcih columns in the resultset
+ * that the description and value (left and right) comes from.
+ * 
+ * @author rods
+ *
+ */
 public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListener
 {
     // Static Data Members
@@ -25,6 +36,13 @@ public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListen
     protected int valCol;
     
     
+    /**
+     * Constructor that describes where we get everything from
+     * @param name the name or title
+     * @param sql the SQL statement to be executed
+     * @param descCol the column where the description comes form
+     * @param valCol the column where the value comes from
+     */
     public StatGroupFromQuery(final String name, final String sql, final int descCol, final int valCol)
     {
         super(name);

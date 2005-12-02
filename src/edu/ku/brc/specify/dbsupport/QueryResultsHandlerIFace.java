@@ -21,9 +21,13 @@
 package edu.ku.brc.specify.dbsupport;
 
 /**
- * Interface for starting the query and then processing the results.
- * The caller of this interface constrcuts a single or multiple QueryResultsContainers, then asks this 
- * to start the query process and then cololect the results and return them as a list of Objects.
+ * Interface for starting the query (starting the one or more Queries associated with the QueryResultsContainers) 
+ * and then processing the results.
+ * 
+ * The caller of this interface constructs a single or multiple QueryResultsContainers, then asks this 
+ * to start the query process and then collect the results and return them as a list of Objects.
+ * 
+ * (NOTE: I removed a method to pass back a list of QueryResultsContainers, we may need ot add this back)
  * 
  * @author rods
  *     
@@ -67,12 +71,6 @@ public interface QueryResultsHandlerIFace
       */
      public void cleanUp();
     
-     /**
-      * 
-      * @return
-      */
-     public java.util.List<QueryResultsContainer> getContainers();
-     
      /**
       * Returns the list of data Objects (String, Long, Float, Double, Ineger, etc.) from the one or more queries.
       * The order of the list is the same as the order of the QueryResultsContainer and it childeren (A flatten tree 

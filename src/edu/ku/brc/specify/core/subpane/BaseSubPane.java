@@ -37,6 +37,13 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 
+/**
+ * Class that implements the SubPanelIFace interface which enables derived classes to participate in the main pane.
+ * It also adds the progress indicator and it provide.
+ * 
+ * @author rods
+ *
+ */
 public class BaseSubPane extends JPanel implements SubPaneIFace
 {
     private static Log log = LogFactory.getLog(BaseSubPane.class);
@@ -45,7 +52,9 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     protected Taskable          task;
     
     /**
-     * 
+     * Constructsa base class that implements the SubPanelIFace interface
+     * which enables derived classes to participate in the main pane.
+     * It also adds the progress indicator and it provide 
      *
      */
     public BaseSubPane(final String name, 
@@ -71,26 +80,42 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     //----------------------------------
     // SubPaneIFace
     //----------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.SubPaneIFace#getTitle()
+     */
     public String getTitle()
     {
         return name;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.SubPaneIFace#getIcon()
+     */
     public Icon getIcon()
     {
         return task.getIcon();
     }
     
+    /* (non-Javadoc)
+     * @see java.awt.Component#getName()
+     */
     public String getName()
     {
         return name;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.SubPaneIFace#getUIComponent()
+     */
     public JComponent getUIComponent()
     {
         return this;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.SubPaneIFace#getTask()
+     */
     public Taskable getTask()
     {
         return task;

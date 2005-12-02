@@ -25,9 +25,9 @@ import javax.swing.*;
 
 
 /**
+ * Status: Work In Progress
  * 
  * @author rods
- * Status: Work In Progress
  *
  */
 public interface Taskable
@@ -35,10 +35,14 @@ public interface Taskable
 
     /**
      * 
-     * @return
+     * @return a collection of Nav Boxes
      */
     public List<NavBoxIFace> getNavBoxes();
     
+    /**
+     * Return the icon that represents the task
+     * @return Return the icon that represents the task
+     */
     public Icon getIcon();
 
 }

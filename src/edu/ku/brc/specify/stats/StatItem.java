@@ -38,12 +38,18 @@ import edu.ku.brc.specify.dbsupport.QueryResultsSerializedGetter;
 //import edu.ku.brc.specify.ui.InfiniteProgressPanel;
 
 /**
+ * A Single Statitem that creates a QueryResultsContainer and then gets the result and displays it.
+ * It is capable of getting both the descriptive part (label) and the the value.
  * 
  * @author rods
- *
+ * 
  */
 public class StatItem extends JPanel implements QueryResultsListener
 {
+    /**
+     * Describes which part of the UI an individual query results data object will be placed.
+     * The "Description" is the right side, the "Value" is the left side, and it can be asked to be ignored
+     */
     public enum VALUE_TYPE {Description, Value, Ignore};
     
     protected String  description;
@@ -94,6 +100,10 @@ public class StatItem extends JPanel implements QueryResultsListener
         startUp(); 
     }
     
+    /**
+     * Creates the two labels and lays them out left and right
+     *
+     */
     protected void initUI()
     {
         setLayout(new BorderLayout());
@@ -121,8 +131,8 @@ public class StatItem extends JPanel implements QueryResultsListener
     }
     
     /**
-     * 
-     * @param value
+     * sets a strin into the results label
+     * @param value the value to be set into the label
      */
     public void setValueText(final String value)
     {
@@ -130,10 +140,9 @@ public class StatItem extends JPanel implements QueryResultsListener
     }
     
     /**
-     * 
-     * @param sql
-     * @param row
-     * @param col
+     * Returns a QueryResultsContainer with a single QueryResultsDataObj initialized to 1,1
+     * @param sql the SQl statement
+     * @return Returns a QueryResultsContainer with a single QueryResultsDataObj initialized to row,col
      */
     public QueryResultsContainer add(final String sql)
     {
@@ -150,10 +159,11 @@ public class StatItem extends JPanel implements QueryResultsListener
     }
     
     /**
-     * 
-     * @param sql
-     * @param row
-     * @param col
+     * Returns a QueryResultsContainer with a single QueryResultsDataObj initialized to row,col
+     * @param sql the SQL to be executed
+     * @param row the QueryResultsDataObj row in the resultset
+     * @param col the QueryResultsDataObj column in the resultset
+     * @return Returns a QueryResultsContainer with a single QueryResultsDataObj initialized to row,col
      */
     public QueryResultsContainer add(final String sql, final int row, final int col, final VALUE_TYPE valType)
     {
@@ -170,11 +180,11 @@ public class StatItem extends JPanel implements QueryResultsListener
     }
     
     /**
-     * 
-     * @param qrc
-     * @param row
-     * @param col
-     * @param valType
+     * Returns a QueryResultsContainer with a single QueryResultsDataObj initialized to row,col
+     * @param qrc the QueryResultsContainer to be executed
+     * @param row the QueryResultsDataObj row in the resultset
+     * @param col the QueryResultsDataObj column in the resultset
+     * @param valType whether to ignore the value or indicate it is the description or value
      */
     public void add(final QueryResultsContainer qrc, final int row, final int col, final VALUE_TYPE valType)
     {

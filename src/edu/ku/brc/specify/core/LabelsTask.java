@@ -32,8 +32,10 @@ import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 
 /**
- * @author rods
  * A task to manage Labels and response to Label Commands
+ * 
+ * @author rods
+ * 
  */
 public class LabelsTask extends BaseTask
 {

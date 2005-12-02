@@ -21,9 +21,11 @@
 package edu.ku.brc.specify.dbsupport;
 
 /**
+ * These methods are called when the results are done being processed. allResultsBack is called when they are done, and 
+ * resultsInError as soon as one error occurs, the listener will not be notified again of other errors.
  * 
  * @author rods
- *
+ * 
  */
 public interface QueryResultsListener
 {

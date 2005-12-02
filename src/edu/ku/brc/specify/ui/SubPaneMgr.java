@@ -64,11 +64,9 @@ public class SubPaneMgr extends JTabbedPane implements ChangeListener
     }
     
     /**
-     * 
-     * @param aName
-     * @param aPanel
-     * @return
-     * @throws UIException
+     * Adds the sub pane and return the same one it added
+     * @param pane the pane to be added
+     * @return the same pane
      */
     public SubPaneIFace addPane(SubPaneIFace pane)
     {
@@ -95,11 +93,9 @@ public class SubPaneMgr extends JTabbedPane implements ChangeListener
     }
     
     /**
-     * 
-     * @param aName
-     * @param aPanel
-     * @return
-     * @throws UIException
+     * Removes a pane 
+     * @param pane the pane to be remoped
+     * @return the same pane as the one removed
      */
     public SubPaneIFace removePane(SubPaneIFace pane)
     {
@@ -108,11 +104,10 @@ public class SubPaneMgr extends JTabbedPane implements ChangeListener
     }
     
     /**
-     * 
-     * @param aName
-     * @return
-     * @throws UIException
-     */
+     * Show (makes visible) the pane by name
+     * @param name the name of the pane to be shown
+     * @return the pane that is now shown
+      */
     public SubPaneIFace showPane(String name) 
     {
         SubPaneIFace pane = panes.get(name);
@@ -126,10 +121,10 @@ public class SubPaneMgr extends JTabbedPane implements ChangeListener
         return pane;
     }
     
-     /**
-     * 
-     * @param comp
-     * @return
+    /**
+     * Returns a SubPane for the UI component that it represents
+     * @param comp the component to be looked up
+     * @return Returns a SubPane for the UI component that it represents
      */
     public SubPaneIFace getSubPaneForComponent(Component comp)
     {
@@ -146,8 +141,7 @@ public class SubPaneMgr extends JTabbedPane implements ChangeListener
     
     /**
      * 
-     * @param comp
-     * @return
+     * @return Return the current sub pane
      */
     public SubPaneIFace getCurrentSubPane()
     {
@@ -155,9 +149,9 @@ public class SubPaneMgr extends JTabbedPane implements ChangeListener
     }
     
     /**
-     * 
-     * @param comp
-     * @return
+     * Returns a sub pane at an index
+     * @param index the indes of the sub pane
+     * @return Returns a sub pane at an index
      */
     public SubPaneIFace getSubPaneAt(int index)
     {

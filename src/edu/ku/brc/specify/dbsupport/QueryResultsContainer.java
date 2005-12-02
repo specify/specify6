@@ -25,6 +25,14 @@ import java.util.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * A class that conatains a collection of QueryResultsDatObjects and a single SQL statement to be executed.
+ * The container will be asked for it's SQL and the statment will be executed on a thread. Once the results
+ * are back this clas is asked to process the results and fill the collection of QueryResultsDataObjects.
+ * 
+ * @author rods
+ *
+ */
 public class QueryResultsContainer
 {
     // Static Data Members
@@ -103,7 +111,7 @@ public class QueryResultsContainer
 
     /**
      * Returns the SQL string that is or was executed
-     * @return
+     * @return Returns the SQL string that is or was executed
      */
     public String getSql()
     {

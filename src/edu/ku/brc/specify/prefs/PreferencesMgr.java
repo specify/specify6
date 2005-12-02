@@ -60,17 +60,17 @@ public class PreferencesMgr implements PreferencesIFace
     }
     
     /**
-     * 
-     * @return
+     * the preferencemgr instance
+     * @return the preferencemgr instance
      */
     public static PreferencesIFace getInstance()
     {
         return prefsMgr;
     }
     
-    /**
+     /**
      * Loads Prefs from a file
-     * @return
+     * @return whether it was loaded
      */
     public boolean load()
     {

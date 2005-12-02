@@ -52,7 +52,7 @@ public class MainPanel extends JSplitPane
     
     /**
      * Enables the tab place to be set externally (like from prefs)
-     * @param aPlacement the placement of the tabs Top, Bottom, Left or Right (SwingConstants)
+     * @param placement the placement of the tabs Top, Bottom, Left or Right (SwingConstants)
      */
     public void setTabPlacement(int placement)
     {

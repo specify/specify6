@@ -23,6 +23,15 @@ package edu.ku.brc.specify.dbsupport;
 import java.util.List;
 import java.util.Vector;
 
+/**
+ * This class processes a collection container and places all the results in a collection. It makes it easy to process them in a single collection
+ * instead of having to understand how to traverse multiple QRCs and QRCDOs.
+ * (This class morphed so it is missed named)
+ * 
+ * @author rods
+ *
+ */
+
 public class PairsMultipleQueryResultsHandler implements QueryResultsHandlerIFace
 {
     private QueryResultsGetter                    getter   = null;
@@ -84,17 +93,7 @@ public class PairsMultipleQueryResultsHandler implements QueryResultsHandlerIFac
         getter = null;
         qrcs.clear(); 
     }
-    
-    /**
-     * 
-     */
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#getContainers()
-     */
-    public List<QueryResultsContainer> getContainers()
-    {
-        return qrcs;
-    }
+
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#getDataObjects()

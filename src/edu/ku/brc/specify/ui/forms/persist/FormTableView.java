@@ -19,6 +19,7 @@
  */
 package edu.ku.brc.specify.ui.forms.persist;
 
+import java.util.List;
 import java.util.Vector;
 
 public class FormTableView extends FormView
@@ -26,39 +27,25 @@ public class FormTableView extends FormView
 
     protected Vector<FormColumn> columns = new Vector<FormColumn>();
     
-    /**
-     * 
-     *
-     */
     public FormTableView()
     {
         super(ViewType.table, -1);
         
     }
 
-    /**
-     * 
-     * @param aType
-     * @param aId
-     */
-    public FormTableView(ViewType aType, int aId)
+    public FormTableView(ViewType type, int id)
     {
-        super(ViewType.table, aId);
+        super(ViewType.table, id);
         
     }
     
-    /**
-     * 
-     * @param aColumn
-     * @return
-     */
-    public FormColumn addColumn(FormColumn aColumn)
+    public FormColumn addColumn(FormColumn column)
     {
-        columns.add(aColumn);
-        return aColumn;
+        columns.add(column);
+        return column;
     }
     
-    public Vector<FormColumn> getColumns()
+    public List<FormColumn> getColumns()
     {
         return columns;
     }
@@ -71,9 +58,9 @@ public class FormTableView extends FormView
     //-------------------------------------------------------------------
     // Helpers
     //-------------------------------------------------------------------
-    public FormColumn createColumn(String aName, String aLabel)
+    public FormColumn createColumn(String name, String label)
     {
-        return addColumn(new FormColumn(aName, aLabel));
+        return addColumn(new FormColumn(name, label));
     }
     
    

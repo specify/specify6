@@ -21,7 +21,7 @@ public class PrefGroupDAO
      * 
      * @param itemId
      * @param lock
-     * @return
+     * @return XXX
      * @throws ConfigurationException
      */
     public PrefGroup getPrefGroupById(Long itemId, boolean lock) throws ConfigurationException

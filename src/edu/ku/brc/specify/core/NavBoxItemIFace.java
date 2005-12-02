@@ -21,6 +21,12 @@ package edu.ku.brc.specify.core;
 
 import java.awt.Component;
 
+/**
+ * Interface of an item to be organized by a NavBox
+ * 
+ * @author rods
+ *
+ */
 public interface NavBoxItemIFace
 {    
     /**

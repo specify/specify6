@@ -20,9 +20,19 @@
 
 package edu.ku.brc.specify.dbsupport;
 
+/**
+ * Custom Queries know how to vend a collection of QueryResultsContainers that need to be processed
+ * 
+ * @author rods
+ * 
+ */
 public interface CustomQuery
 {
 
+    /**
+     * Return a collection QueryResultsContainers that need to be processed
+     * @return Return a collection QueryResultsContainers that need to be processed
+     */
     public java.util.List<QueryResultsContainer> getQueryDefinition();
     
 }

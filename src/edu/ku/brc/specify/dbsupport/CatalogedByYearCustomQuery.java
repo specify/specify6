@@ -22,6 +22,12 @@ package edu.ku.brc.specify.dbsupport;
 
 import java.util.Vector;
 
+/**
+ * Custom Query for calculating the how many items were calculated for each year
+ * 
+ * @author rods
+ * 
+ */
 public class CatalogedByYearCustomQuery implements CustomQuery
 {
 

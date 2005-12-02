@@ -41,6 +41,12 @@ import edu.ku.brc.specify.dbsupport.QueryResultsListener;
 import edu.ku.brc.specify.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.specify.ui.IconManager;
 
+/**
+ * Creates a pane that can listener for Query Results and then create a Pie Chart
+ * 
+ * @author rods
+ *
+ */
 public class PieChartPane extends ChartPane implements QueryResultsListener, QueryResultsProcessable
 {
     // Static Data Members
@@ -49,7 +55,7 @@ public class PieChartPane extends ChartPane implements QueryResultsListener, Que
     // Data Members
     private QueryResultsGetter       getter;
     private QueryResultsContainer    qrContainer;
-    private QueryResultsHandlerIFace processor = null;
+    private QueryResultsHandlerIFace handler = null;
     
 
     /**
@@ -81,20 +87,20 @@ public class PieChartPane extends ChartPane implements QueryResultsListener, Que
     
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.QueryResultsProcessable#setProcessor()
+     * @see edu.ku.brc.specify.dbsupport.QueryResultsProcessable#setHandler()
      */
-    public void setProcessor(final QueryResultsHandlerIFace processor)
+    public void setHandler(final QueryResultsHandlerIFace handler)
     {
-        this.processor = processor;
+        this.handler = handler;
     }
     
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.QueryResultsProcessable#getProcessor()
+     * @see edu.ku.brc.specify.dbsupport.QueryResultsProcessable#getHandler()
      */
-    public QueryResultsHandlerIFace getProcessor()
+    public QueryResultsHandlerIFace getHandler()
     {
-        return processor;
+        return handler;
     }
 
     //--------------------------------------
@@ -110,7 +116,7 @@ public class PieChartPane extends ChartPane implements QueryResultsListener, Que
         // create a dataset... 
         DefaultPieDataset dataset = new DefaultPieDataset(); 
         
-        java.util.List<Object> list = processor.getDataObjects();
+        java.util.List<Object> list = handler.getDataObjects();
         for (int i=0;i<list.size();i++)
         {         
             Object descObj = list.get(i++);

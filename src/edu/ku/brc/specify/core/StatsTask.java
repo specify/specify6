@@ -42,7 +42,12 @@ import edu.ku.brc.specify.plugins.TaskPluginable;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
-
+/**
+ * The StatsTask is responsible gettng and displaying all various idfferent kinds of stats
+ * 
+ * @author rods
+ *
+ */
 public class StatsTask extends BaseTask
 {
     // Static Data Members
@@ -52,7 +57,7 @@ public class StatsTask extends BaseTask
     org.dom4j.Element statDOM;
 
     /**
-     * 
+     * Creates a Statistics Tasks
      *
      */
     public StatsTask()
@@ -63,8 +68,8 @@ public class StatsTask extends BaseTask
         
         try
         {
-            statDOM = XMLHelper.readDOMFromConfigDir("statistics.xml");
-            panelDOM = XMLHelper.readDOMFromConfigDir("statistics_panel.xml");
+            statDOM  = XMLHelper.readDOMFromConfigDir("statistics.xml");         // Describes each Statistic, its SQL and how it is to be displayed
+            panelDOM = XMLHelper.readDOMFromConfigDir("statistics_panel.xml");   // contains a description of the NavBoxes
             
         } catch (Exception ex)
         {
@@ -74,6 +79,9 @@ public class StatsTask extends BaseTask
         String pieChartStr = getResourceString("Pie_Chart");
         String barChartStr = getResourceString("Bar_Chart");
         
+        // Process the NavBox Panel and create all the commands
+        // XXX This needs to be made generic so everyone can use it
+        // 
         List boxes = panelDOM.selectNodes("/boxes/box");
         for ( Iterator iter = boxes.iterator(); iter.hasNext(); ) 
         {
@@ -113,10 +121,11 @@ public class StatsTask extends BaseTask
     }
     
     /**
-     * 
-     * @param element
-     * @param name
-     * @return
+     * Reads the Chart INfo from the DOM and sets it into a Chartable object. The info are string used to decorate the chart,
+     * like title, X Axis Title, Y Axis Title etc.
+     * @param element the 'chartinfo' element ot be processed
+     * @param name the name of the child element that needs to be looked up to get its value
+     * @return returns the string value for the info element or an empty string
      */
     protected String getChartInfo(final org.dom4j.Element element, final String name)
     {
@@ -129,8 +138,8 @@ public class StatsTask extends BaseTask
     }
     
     /**
-     * 
-     * @param chartPane
+     * Fills the ChartPane with any extra desxcription information
+     * @param chartPane the chart pane to be augmented
      */
     protected void fillWithChartInfo(final org.dom4j.Element element, final ChartPane chartPane)
     {
@@ -174,29 +183,33 @@ public class StatsTask extends BaseTask
         org.dom4j.Element element = (org.dom4j.Element)statDOM.selectSingleNode("/statistics/stat[@name='"+actionName+"']");
         if (element != null)
         {
-            String displayType = element.attributeValue("display");
-            
+            // FIll the chart with extra descirption and decoration info
             if (subPane instanceof ChartPane)
             {
                 fillWithChartInfo(element, (ChartPane)subPane);
             }
             
+            // It better have some SQL
             org.dom4j.Element sqlElement = (org.dom4j.Element)element.selectSingleNode("sql");
             if (sqlElement == null)
             {
                 throw new RuntimeException("sql element is null!");
             }
 
+            // The SQL can be of two types "text" or "builtin"
+            // Text is just a text string of SQL that will be executed
+            // Builtin is a class that will provide SQL
             String sqlType = sqlElement.attributeValue("type");
             if (sqlType.equals("text"))
             {
                 
-                QueryResultsContainer container = new QueryResultsContainer();
+                QueryResultsContainer    container   = new QueryResultsContainer();
                 QueryResultsHandlerIFace singlePairs = new PairsSingleQueryResultsHandler();
-                qrProcessable.setProcessor(singlePairs);
+                qrProcessable.setHandler(singlePairs);
                 
                 container.setSql(sqlElement.getText().trim());
                 
+                String displayType = element.attributeValue("display");               
                 List parts = element.selectNodes(displayType.equals("Pie Chart") ? "slice" : "bar");
                 for ( Iterator iter = parts.iterator(); iter.hasNext(); ) {
                     org.dom4j.Element slice = (org.dom4j.Element) iter.next();
@@ -215,7 +228,7 @@ public class StatsTask extends BaseTask
                 {
                     CustomQuery                  customQuery   = CustomQueryFactory.createCustomQuery(sqlElement.attributeValue("className"));
                     PairsMultipleQueryResultsHandler multiplePairs = new PairsMultipleQueryResultsHandler();
-                    qrProcessable.setProcessor(multiplePairs);
+                    qrProcessable.setHandler(multiplePairs);
                     
                     multiplePairs.init(listener, customQuery.getQueryDefinition());
                     multiplePairs.startUp();

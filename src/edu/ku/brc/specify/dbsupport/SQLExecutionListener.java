@@ -19,6 +19,13 @@
  */
 package edu.ku.brc.specify.dbsupport;
 
+/**
+ * Interface to notify the object that a query has completed. When it finishes successfully the resulset gets passed back.
+ * when it finishes in error the exception gets passed as a parameter.
+ * 
+ * @author rods
+ *
+ */
 public interface SQLExecutionListener
 {
     /**

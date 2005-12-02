@@ -27,6 +27,12 @@ import javax.swing.SwingConstants;
 
 import edu.ku.brc.specify.core.Taskable;
 
+/**
+ * A default pane for display a simple label telling what it is suppose to do
+ * 
+ * @author rods
+ *
+ */
 public class SimpleDescPane extends BaseSubPane
 {
     //private static Log log = LogFactory.getLog(SimpleDescPane.class);

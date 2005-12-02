@@ -25,6 +25,12 @@ import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.core.Taskable;
 
+/**
+ * This pane will be responsible for creating forms
+ * 
+ * @author rods
+ * 
+ */
 public class DataEntryPane extends BaseSubPane
 {
     private static Log log = LogFactory.getLog(DataEntryPane.class);
