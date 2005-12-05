@@ -42,10 +42,8 @@ import edu.ku.brc.specify.helpers.*;
 
 import org.apache.log4j.Logger;
 import org.apache.xpath.XPathAPI;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.apache.xpath.XPathAPI;
+
+import org.dom4j.*;
 
 public class PropertyViewer extends JPanel
 {
@@ -170,10 +168,10 @@ public class PropertyViewer extends JPanel
     protected DefaultMutableTreeNode createTreeFromPrefs()
     {
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Properties");
+        /* XXXX this needs to be re-done
         try
         {
             Document doc = ((XMLConfiguration)config).getDocument();
-            XMLHelper.printNode(doc, 0);
             NodeList groups = XPathAPI.selectNodeList(doc, "config/groups/group");
             //System.out.println(groups.getLength());
             for (int i=0;i<groups.getLength();i++)
@@ -195,7 +193,7 @@ public class PropertyViewer extends JPanel
         } catch (Exception e)
         {
             log.error("Can't create the tree.");
-        }
+        }*/
         return rootNode;
     }
     

@@ -20,21 +20,28 @@
 
 package edu.ku.brc.specify.core.subpane;
 
+import java.awt.BorderLayout;
+
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.core.Taskable;
+
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrintManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.view.*;
 import net.sf.jasperreports.view.JRViewer;
-import edu.ku.brc.specify.core.Taskable;
-//import net.sf.jasperreports.engine.JasperPrintManager;
-//import net.sf.jasperreports.engine.JasperExportManager;
 
 /**
  * This class will display Label previews and may eventually hold a labels editor
  * 
  * @author rods
+ * 
  * 
  */
 public class LabelsPane extends BaseSubPane
@@ -50,6 +57,28 @@ public class LabelsPane extends BaseSubPane
                       final Taskable task)
     {
         super(name, task);
+        
+        JLabel label = new JLabel("Labels Overview", SwingConstants.CENTER);
+        add(label, BorderLayout.CENTER);
+
+        /*
+        try
+        {
+            String fileName = XMLHelper.getConfigDirPath("andys_label.jrxml");
+            String compiledFileName = JasperCompileManager.compileReportToFile(fileName);
+            //String compiledFileName = JasperCompileManager.compileReportToFile("/Dev/prototypes/Hyla3/reports_labels/lichens_label.jrxml");
+            //String compiledFileName = "/Dev/prototypes/Hyla3/Unnamed.jasper";
+            String filledReportName = JasperFillManager.fillReportToFile(compiledFileName, null, DBConnection.getInstance().getConnection());
+            //String filledReportName = "/Dev/prototypes/Hyla3/Unnamed.jrprint";
+            
+            JRViewer jasperViewer = new JRViewer(filledReportName, false);
+            add(jasperViewer, BorderLayout.CENTER);
+            
+        }catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        */
         
     }
     public void doReport(String[] aArgs)

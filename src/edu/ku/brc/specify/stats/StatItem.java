@@ -20,11 +20,12 @@
 package edu.ku.brc.specify.stats;
 
 import java.awt.*;
+import java.awt.*;
 import java.awt.Dimension;
 import java.util.Vector;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.border.*;
+import javax.swing.*;
 import javax.swing.SwingUtilities;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -61,7 +62,7 @@ public class StatItem extends JPanel implements QueryResultsListener
     protected Vector<VALUE_TYPE>            valuesType = new Vector<VALUE_TYPE>();
     
     // UI
-    protected JLabel descLabel;
+    protected JButton descLabel;
     protected JLabel resultsLabel;
     //protected InfiniteProgressPanel infProgress;
     
@@ -108,7 +109,8 @@ public class StatItem extends JPanel implements QueryResultsListener
     {
         setLayout(new BorderLayout());
         
-        descLabel    = new JLabel(description, JLabel.LEFT);
+        descLabel    = new JButton(description);
+        descLabel.setBorder(new EmptyBorder(1,1,1,1));
         resultsLabel = new JLabel("?", JLabel.RIGHT);
                 
         FormLayout      formLayout = new FormLayout("left:p:g,4dlu,right:p:g", "p");

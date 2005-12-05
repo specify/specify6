@@ -24,7 +24,7 @@ import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 import java.util.List;
 import java.util.Vector;
 
-import edu.ku.brc.specify.core.subpane.SimpleDescPane;
+import edu.ku.brc.specify.core.subpane.LabelsPane;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.ui.IconManager;
@@ -60,7 +60,7 @@ public class LabelsTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        return new SimpleDescPane(name, this, "This is the Labels Pane");
+        return new LabelsPane(name, this);
     }
     
     //-------------------------------------------------------
