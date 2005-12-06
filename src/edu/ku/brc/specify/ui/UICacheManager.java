@@ -283,6 +283,15 @@ public class UICacheManager
         
         
     }
+    
+    /**
+     * Convience method for adding a subpane to the subpane manager
+     * @param subPane the sub pane to be added
+     */
+    public static void addSubPane(SubPaneIFace subPane)
+    {
+        UICacheManager.getInstance().getSubPaneMgr().addPane(subPane);
+    }
 
     /**
      * 

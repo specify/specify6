@@ -19,7 +19,7 @@
         <item title="Unique Families">
             <sql>
                 <statement>
-                  <![CDATA[create temporary table UniqueFamilies select (select lev.taxonnameid from taxonname as lev where lev.rankid = 140 and tax.nodenumber between lev.nodenumber and lev.HighestChildNodeNumber LIMIT 1)  as txids from taxonname as tax where tax.accepted <> 0 and tax.taxonnameid in (select taxonnameid from determination where current1 <> 0)]]>
+                  <![CDATA[xcreate temporary table UniqueFamilies select (select lev.taxonnameid from taxonname as lev where lev.rankid = 140 and tax.nodenumber between lev.nodenumber and lev.HighestChildNodeNumber LIMIT 1)  as txids from taxonname as tax where tax.accepted <> 0 and tax.taxonnameid in (select taxonnameid from determination where current1 <> 0)]]>
                 </statement>
                 <statement row="1" col="1">
                   <![CDATA[select count(taxonnameid) from taxonname,UniqueFamilies where taxonname.taxonnameid = UniqueFamilies.txids]]>
@@ -32,7 +32,7 @@
         <item title="Unique Genera">
             <sql>
                 <statement>
-                  <![CDATA[create temporary table UniqueGenera select (select lev.taxonnameid from taxonname as lev where lev.rankid = 180 and tax.nodenumber between lev.nodenumber and lev.HighestChildNodeNumber LIMIT 1)  as txids from taxonname as tax where tax.accepted <> 0 and tax.taxonnameid in (select taxonnameid from determination where current1 <> 0)]]>
+                  <![CDATA[xcreate temporary table UniqueGenera select (select lev.taxonnameid from taxonname as lev where lev.rankid = 180 and tax.nodenumber between lev.nodenumber and lev.HighestChildNodeNumber LIMIT 1)  as txids from taxonname as tax where tax.accepted <> 0 and tax.taxonnameid in (select taxonnameid from determination where current1 <> 0)]]>
                 </statement>
                 <statement row="1" col="1">
                   <![CDATA[select count(taxonnameid) from taxonname,UniqueGenera where taxonname.taxonnameid = UniqueGenera.txids]]>
@@ -45,7 +45,7 @@
         <item title="Unique Species">
             <sql>
                 <statement>
-                  <![CDATA[create temporary table UniqueSpecies select (select lev.taxonnameid from taxonname as lev where lev.rankid = 220 and tax.nodenumber between lev.nodenumber and lev.HighestChildNodeNumber LIMIT 1)  as txids from taxonname as tax where tax.accepted <> 0 and tax.taxonnameid in (select taxonnameid from determination where current1 <> 0)]]>
+                  <![CDATA[xcreate temporary table UniqueSpecies select (select lev.taxonnameid from taxonname as lev where lev.rankid = 220 and tax.nodenumber between lev.nodenumber and lev.HighestChildNodeNumber LIMIT 1)  as txids from taxonname as tax where tax.accepted <> 0 and tax.taxonnameid in (select taxonnameid from determination where current1 <> 0)]]>
                 </statement>
                 <statement row="1" col="1">
                   <![CDATA[select count(taxonnameid) from taxonname,UniqueSpecies where taxonname.taxonnameid = UniqueSpecies.txids]]>
@@ -73,14 +73,16 @@
   </row>
   <row>
       <box title="Loans">
-        <item title="On Loan">
+        <item title="Items On Loan">
             <sql><statement><![CDATA[select count(loanphysicalobjectid) AS ItemsOnLoanCount from loanphysicalobject as lpo inner join loan on loan.loanid = lpo.loanid where loan.category = 0 and quantityresolved < quantity and (closed = 0 or closed is null)]]></statement></sql>
         </item>
-        <item title="Over Due Loans">
-            <sql><statement><![CDATA[select count(loanid) as OpenLoanCount from loan where loanid in (select loanid from loan where (not (currentduedate is null)) and category = 0 and (closed = 0 or closed is null)) and datediff(CURDATE(), currentduedate) > 0]]></statement></sql>
+        <item title="Overdue Loans">
+            <sql><statement><![CDATA[select count(loanid) as OpenLoanCount from loan where loanid in (select loanid from loan where (not (currentduedate is null)) and category = 0 and (closed = 0 or closed is null) and datediff(CURDATE(), currentduedate) > 0)]]></statement></sql>
+            <link>OverdueLoansList</link>
         </item>
         <item title="Open Loans">
             <sql><statement><![CDATA[select count(loanid) as OpenLoanCount from loan where category = 0 and (closed = 0 or closed is null)]]></statement></sql>
+            <link>ListOnLoan</link>
         </item>
       </box>
       <box title="Locality/Geography">

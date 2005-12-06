@@ -20,6 +20,11 @@
 package edu.ku.brc.specify.core;
 
 import java.util.Vector;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import edu.ku.brc.specify.core.subpane.SQLQueryPane;
 import edu.ku.brc.specify.ui.*;
 
 /**
@@ -35,6 +40,7 @@ import edu.ku.brc.specify.ui.*;
 public class ContextMgr
 {
     // Static Data Members
+    private static Log         log     = LogFactory.getLog(SQLQueryPane.class);
     private static ContextMgr instance = new ContextMgr();
     
     // Data Members
@@ -72,8 +78,7 @@ public class ContextMgr
         if (task != null)
         {
             NavBoxMgr.getInstance().register(task);
-            register(task);
-        }
+         }
         
         currentContext = task;
         
@@ -94,11 +99,35 @@ public class ContextMgr
      */
     public void unregister(Taskable task)
     {
-        if (currentContext == task)
+        /*if (currentContext == task)
         {    
             NavBoxMgr.getInstance().unregister(currentContext);
             currentContext = null;
-        }
+        }*/
         tasks.removeElement(task);
+    }
+    
+    /**
+     * Returns a task by a given name 
+     * @param name name of task to be returned
+     * @return Returns a task by a given name
+     */
+    public Taskable getTaskByName(final String name)
+    {
+        if (name == null)
+        {
+            throw new NullPointerException("Name arg is null in getTaskByName");
+        }
+        
+        // Sequential search (Could use binary but list is short)
+        for (Taskable task : tasks)
+        {
+            if (name.equals(task.getName()))
+            {
+                return task;
+            }
+        }
+        log.info("Couldn't find task by name");
+        return null;
     }
 }

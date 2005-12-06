@@ -162,12 +162,19 @@ public class StatsPane extends BaseSubPane
                         {
                             Element itemElement = (Element)io;
                             
-                            StatItem statItem = new StatItem(itemElement.attributeValue("title"));
-                            List statements = itemElement.selectNodes("sql/statement");
+                            Element link = (Element)itemElement.selectSingleNode("link");
+                            String linkStr = null;
+                            if (link != null)
+                            {                               
+                                linkStr = link.getTextTrim();  
+                            }
                             
-                            if (statements.size() == 1)
+                            StatItem statItem   = new StatItem(itemElement.attributeValue("title"), linkStr);
+                            List     statements = itemElement.selectNodes("sql/statement");
+
+                             if (statements.size() == 1)
                             {
-                                statItem.add(((Element)statements.get(0)).getText(), 1, 1, StatItem.VALUE_TYPE.Value);  
+                                statItem.add(((Element)statements.get(0)).getText(), 1, 1, StatItem.VALUE_TYPE.Value);
                                 
                             } else if (statements.size() > 0)
                             {

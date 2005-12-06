@@ -167,7 +167,6 @@ public class SubPaneMgr extends JTabbedPane implements ChangeListener
         SubPaneIFace subPane = this.getCurrentSubPane();
         if (subPane != null)
         {
-            ContextMgr.getInstance().unregister(subPane.getTask());
             panes.clear();
         }
         this.removeAll();

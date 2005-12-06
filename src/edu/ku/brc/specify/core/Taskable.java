@@ -44,5 +44,11 @@ public interface Taskable
      * @return Return the icon that represents the task
      */
     public Icon getIcon();
+    
+    /**
+     * Returns the name of the task
+     * @return Returns the name of the task
+     */
+    public String getName();
 
 }

@@ -60,6 +60,16 @@ public abstract class BaseTask implements Taskable, TaskPluginable
     public BaseTask(final String name)
     {
         this.name = name;
+        
+        ContextMgr.getInstance().register(this);
+    }
+    
+    /**
+     * Remove self from ContextMgr
+     */
+    public void finalize()
+    {
+        ContextMgr.getInstance().unregister(this);
     }
     
      /**

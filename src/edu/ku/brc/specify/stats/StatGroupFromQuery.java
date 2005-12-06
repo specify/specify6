@@ -89,7 +89,7 @@ public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListen
                 
                 for (int i=0;i<data.size();i++)
                 {
-                    StatItem statItem = new StatItem(data.get(i++).toString());
+                    StatItem statItem = new StatItem(data.get(i++).toString(), null);
                     statItem.setValueText(data.get(i).toString());
                     addItem(statItem);
                     statItem.refreshUI();

@@ -19,24 +19,34 @@
  */
 package edu.ku.brc.specify.stats;
 
-import java.awt.*;
-import java.awt.*;
-import java.awt.Dimension;
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.util.Vector;
 
-import javax.swing.border.*;
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.MouseInputAdapter;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.specify.core.ContextMgr;
+import edu.ku.brc.specify.core.StatsTask;
 import edu.ku.brc.specify.dbsupport.QueryResultsContainer;
 import edu.ku.brc.specify.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.specify.dbsupport.QueryResultsListener;
 import edu.ku.brc.specify.dbsupport.QueryResultsSerializedGetter;
-//import edu.ku.brc.specify.ui.InfiniteProgressPanel;
 
 /**
  * A Single Statitem that creates a QueryResultsContainer and then gets the result and displays it.
@@ -55,6 +65,7 @@ public class StatItem extends JPanel implements QueryResultsListener
     
     protected String  description;
     protected String  sql;
+    protected String  link       = null;
     
     protected boolean hasStarted = false;
     
@@ -62,19 +73,29 @@ public class StatItem extends JPanel implements QueryResultsListener
     protected Vector<VALUE_TYPE>            valuesType = new Vector<VALUE_TYPE>();
     
     // UI
-    protected JButton descLabel;
-    protected JLabel resultsLabel;
-    //protected InfiniteProgressPanel infProgress;
+    protected JLabel  descLabel     = null;
+    protected JButton descBtn       = null;
     
+    protected JLabel  resultsLabel;
+    //protected InfiniteProgressPanel infProgress;
+
+    // XXX need to get Colors from L&F
+    protected Color      linkColor = Color.BLUE;
+    protected Color      defColor;
+
+    protected static final Cursor handCursor    = new Cursor(Cursor.HAND_CURSOR);
+    protected static final Cursor defCursor     = new Cursor(Cursor.DEFAULT_CURSOR);
+
 
     
     /**
      * Constructor for a single statistical item
      * @param description the textual description of the statistic
      */
-    public StatItem(final String description)
+    public StatItem(final String description, final String link)
     {
         this.description = description;
+        this.link        = link;
         initUI();
     }
 
@@ -83,11 +104,12 @@ public class StatItem extends JPanel implements QueryResultsListener
      * @param description the textual description of the statistic
      * @param sql the SQL string that returns a single number
      */
-    public StatItem(final String description, final String sql)
+    public StatItem(final String description, final String sql, final String link)
     {
         
         this.description = description;
         this.sql         = sql;
+        this.link        = link;
         
         initUI();
         
@@ -109,15 +131,50 @@ public class StatItem extends JPanel implements QueryResultsListener
     {
         setLayout(new BorderLayout());
         
-        descLabel    = new JButton(description);
-        descLabel.setBorder(new EmptyBorder(1,1,1,1));
+        JComponent descComp;
+        if (link != null)
+        {
+            descBtn    = new JButton(description);
+            descBtn.setBorder(new EmptyBorder(1,1,1,1));
+            descBtn.setCursor(handCursor);
+            
+            descBtn.addActionListener(new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            StatsTask statTask = (StatsTask)ContextMgr.getInstance().getTaskByName(getResourceString("Statistics"));
+                            statTask.createStatPane(link);
+                        }
+                    }); 
+            
+            MouseInputAdapter mouseMotionListener = new MouseInputAdapter() {
+                public void mouseEntered(MouseEvent e) 
+                {
+                    defColor = getForeground();
+                    descBtn.setForeground(linkColor); // XXX need to get highlight
+                    repaint();
+                }                
+                public void mouseExited(MouseEvent e) 
+                {
+                    descBtn.setForeground(defColor); // XXX need to get highlight
+                    repaint();
+               }
+            };
+            descBtn.addMouseListener(mouseMotionListener);        
+
+            descComp = descBtn;
+        } else
+        {
+            descLabel = new JLabel(description);
+            descComp = descLabel;
+        }
         resultsLabel = new JLabel("?", JLabel.RIGHT);
                 
         FormLayout      formLayout = new FormLayout("left:p:g,4dlu,right:p:g", "p");
         PanelBuilder    builder    = new PanelBuilder(formLayout);
         CellConstraints cc         = new CellConstraints();
        
-        builder.add(descLabel, cc.xy(1,1));
+        builder.add(descComp,     cc.xy(1,1));
         builder.add(resultsLabel, cc.xy(3,1));
         
         //infProgress = new InfiniteProgressPanel(); 
@@ -224,11 +281,31 @@ public class StatItem extends JPanel implements QueryResultsListener
             }
           });
     }
+
+    /**
+     * Returns the link string
+     * @return Returns the link string
+     */
+    public String getLink()
+    {
+        return link;
+    }
     
+    /**
+     * Set the appropriate control
+     * @param str the new title string
+     */
+    protected void setDesc(final String str)
+    {
+        if (descLabel != null)
+            descLabel.setText(str);
+        else
+            descBtn.setText(str);
+    }
+
     //--------------------------------------
     // QueryResultsListener
     //--------------------------------------
-    
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.QueryResultsListener#allResultsBack()
@@ -253,7 +330,7 @@ public class StatItem extends JPanel implements QueryResultsListener
                     throw new RuntimeException("Null data that isn't Ignore");
                 } else if (valType == VALUE_TYPE.Description)
                 {
-                    descLabel.setText(dataObj.toString());
+                    setDesc(dataObj.toString());
                     
                 } else if (valType == VALUE_TYPE.Value)
                 {

@@ -41,6 +41,7 @@ import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.TaskPluginable;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import org.dom4j.Element;
 
 /**
  * The StatsTask is responsible gettng and displaying all various idfferent kinds of stats
@@ -53,8 +54,15 @@ public class StatsTask extends BaseTask
     // Static Data Members
     private static Log log = LogFactory.getLog(StatsTask.class);
     
+    protected static final String DISPLAY   = "display";
+    protected static final String BAR_CHART = "bar chart";
+    protected static final String PIE_CHART = "pie chart";
+    protected static final String TABLE     = "table";
+    
+    
     // Data Members
     org.dom4j.Element statDOM;
+    org.dom4j.Element panelDOM;
 
     /**
      * Creates a Statistics Tasks
@@ -63,8 +71,6 @@ public class StatsTask extends BaseTask
     public StatsTask()
     {
         super(getResourceString("Statistics"));
-        
-        org.dom4j.Element panelDOM = null;
         
         try
         {
@@ -98,12 +104,12 @@ public class StatsTask extends BaseTask
                 if (type.equals(pieChartStr))
                 {
                     type = pieChartStr;
-                    action = new PieChartAction(this, boxName);
+                    action = new DisplayAction(this, boxName);
                     
                 } else if (type.equals(barChartStr))
                 {
                     type = barChartStr;
-                    action = new BarChartAction(this, boxName);
+                    action = new DisplayAction(this, boxName);
                 }
                 
                 navBox.add(NavBox.createBtn(boxName, type, IconManager.IconSize.Std16, action));
@@ -146,6 +152,7 @@ public class StatsTask extends BaseTask
         chartPane.setTitle(getChartInfo(element, "title"));
         chartPane.setXAxis(getChartInfo(element, "xaxis"));
         chartPane.setYAxis(getChartInfo(element, "yaxis"));
+        
         String vert = getChartInfo(element, "vertical");
         if (vert != null && vert.length() > 0)
         {
@@ -175,15 +182,14 @@ public class StatsTask extends BaseTask
      * @param subPane the sub pane to be added to the UI
      * @param listener the listener who nneds to know when the query is done and all the results are available
      */
-    public void createChart(final String                  actionName, 
+    public void createChart(final Element                 element, 
                             final QueryResultsProcessable qrProcessable,
                             final BaseSubPane             subPane, 
                             final QueryResultsListener    listener)
     {
-        org.dom4j.Element element = (org.dom4j.Element)statDOM.selectSingleNode("/statistics/stat[@name='"+actionName+"']");
         if (element != null)
         {
-            // FIll the chart with extra descirption and decoration info
+            // Fill the chart with extra descirption and decoration info
             if (subPane instanceof ChartPane)
             {
                 fillWithChartInfo(element, (ChartPane)subPane);
@@ -226,7 +232,7 @@ public class StatsTask extends BaseTask
             {
                 try
                 {
-                    CustomQuery                  customQuery   = CustomQueryFactory.createCustomQuery(sqlElement.attributeValue("className"));
+                    CustomQuery                      customQuery   = CustomQueryFactory.createCustomQuery(sqlElement.attributeValue("className"));
                     PairsMultipleQueryResultsHandler multiplePairs = new PairsMultipleQueryResultsHandler();
                     qrProcessable.setHandler(multiplePairs);
                     
@@ -249,8 +255,71 @@ public class StatsTask extends BaseTask
                 throw new RuntimeException("unrecognizable type for sql element["+sqlType+"]");
             }
             
-            UICacheManager.getInstance().getSubPaneMgr().addPane(subPane);
+            UICacheManager.addSubPane(subPane);
         }
+    }
+    
+    /**
+     * Looks up statName and creates the appropriate SubPane 
+     * @param statName the name of the stat to be displayed
+     */
+    public void createStatPane(final String statName)
+    {
+        org.dom4j.Element element = (org.dom4j.Element)statDOM.selectSingleNode("/statistics/stat[@name='"+statName+"']");
+        if (element != null)
+        {
+            String displayType = element.attributeValue(DISPLAY).toLowerCase();
+            
+
+            if (displayType.equals(BAR_CHART))
+            {
+                BarChartPane barChart = new BarChartPane("Bar Chart", this);
+                createChart(element, barChart, barChart, barChart);
+
+                
+            } else if (displayType.equals(PIE_CHART))
+            {
+                PieChartPane pieChart = new PieChartPane("Pie Chart", this);
+                createChart(element, pieChart, pieChart, pieChart);
+                
+            } else if (displayType.equals(TABLE))
+            {
+                org.dom4j.Element sqlElement = (org.dom4j.Element)element.selectSingleNode("sql");
+                if (sqlElement == null)
+                {
+                    throw new RuntimeException("sql element is null!");
+                }
+                
+                org.dom4j.Element titleElement = (org.dom4j.Element)element.selectSingleNode("title");
+                if (sqlElement == null)
+                {
+                    throw new RuntimeException("sql element is null!");
+                }
+                
+                SQLQueryPane queryPane = new SQLQueryPane(titleElement.getTextTrim(), this, true);
+                queryPane.setSQLStr(sqlElement.getTextTrim());
+                queryPane.doQuery();
+                UICacheManager.addSubPane(queryPane);
+                
+            } else 
+            {
+                // error
+            }
+                
+            
+        }
+        
+         
+    }
+    
+    /**
+     * Creates a pane using the SQL statement defined by 'link'
+     * @param link the sql statement to use to generate page
+     */
+    public void executeLink(final String link)
+    {
+        
+        //UICacheManager.addSubPane(subPane);        
     }
     
     //-------------------------------------------------------
@@ -286,47 +355,24 @@ public class StatsTask extends BaseTask
     // Inner Classes
     //--------------------------------------------------------------
  
-    /**
+     /**
      * 
      * @author rods
      *
      */
-    class BarChartAction implements ActionListener 
+    class DisplayAction implements ActionListener 
     {
-        private String   actionName;
         private Taskable taskable;
+        private String   statName;
         
-        public BarChartAction(final Taskable taskable, final String actionName)
+        public DisplayAction(final Taskable taskable, final String statName)
         {
             this.taskable = taskable;
-            this.actionName = actionName;
+            this.statName = statName;
         }
         public void actionPerformed(ActionEvent e) 
         {
-            BarChartPane barChart    = new BarChartPane("Bar Chart", taskable);
-            createChart(actionName, barChart, barChart, barChart);
-        }
-    }
-   
-    /**
-     * 
-     * @author rods
-     *
-     */
-    class PieChartAction implements ActionListener 
-    {
-        private String   actionName;
-        private Taskable taskable;
-        
-        public PieChartAction(final Taskable taskable, final String actionName)
-        {
-            this.taskable = taskable;
-            this.actionName = actionName;
-        }
-        public void actionPerformed(ActionEvent e) 
-        {
-            PieChartPane pieChart = new PieChartPane("Pie Chart", taskable);
-            createChart(actionName, pieChart, pieChart, pieChart);
+            createStatPane(statName);
         }
     }
    

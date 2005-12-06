@@ -623,6 +623,9 @@ public class Specify extends JPanel
             icon = IconManager.getInstance().getIcon(name, IconManager.IconSize.Std16);
         }
         
+        Icon icon = IconManager.getInstance().register("Green Arrow Down", "green_arrow_down.gif", IconManager.IconSize.Std16);
+        icon = IconManager.getInstance().register("Green Arrow Up", "green_arrow_up.gif", IconManager.IconSize.Std16);
+        
         /*
         
         toolBar.addSeparator();

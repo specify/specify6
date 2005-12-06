@@ -188,7 +188,7 @@ public class QueryResultsSerializedGetter implements SQLExecutionListener
      */
     public synchronized void executionError(final SQLExecutionProcessor processor, final Exception ex)
     {
-        listener.allResultsBack();
+        // XXX listener.allResultsBack(); // should we call this or not?????
         
         hasFailed = true;   
     }
