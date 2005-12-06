@@ -20,22 +20,32 @@
 
 package edu.ku.brc.specify.core.subpane;
 
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+
 import java.awt.BorderLayout;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JLabel;
-import javax.swing.SwingConstants;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.fill.AsynchronousFillHandle;
+import net.sf.jasperreports.engine.fill.AsynchronousFilllListener;
+import net.sf.jasperreports.view.JRViewer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.core.Taskable;
+import edu.ku.brc.specify.dbsupport.DBConnection;
+import edu.ku.brc.specify.helpers.XMLHelper;
 
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrintManager;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.view.*;
-import net.sf.jasperreports.view.JRViewer;
 
 /**
  * This class will display Label previews and may eventually hold a labels editor
@@ -44,10 +54,15 @@ import net.sf.jasperreports.view.JRViewer;
  * 
  * 
  */
-public class LabelsPane extends BaseSubPane
+public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 {
     // Static Data Members
     private static Log log = LogFactory.getLog(LabelsPane.class);
+    
+    // Data Members
+    protected AsynchronousFillHandle asyncFillHandler = null;
+    protected JLabel                 label            = null; 
+    protected JasperCompilerRunnable compiler         = null;
     
     /**
      * 
@@ -58,59 +73,190 @@ public class LabelsPane extends BaseSubPane
     {
         super(name, task);
         
-        JLabel label = new JLabel("Labels Overview", SwingConstants.CENTER);
-        add(label, BorderLayout.CENTER);
-
-        /*
-        try
-        {
-            String fileName = XMLHelper.getConfigDirPath("andys_label.jrxml");
-            String compiledFileName = JasperCompileManager.compileReportToFile(fileName);
-            //String compiledFileName = JasperCompileManager.compileReportToFile("/Dev/prototypes/Hyla3/reports_labels/lichens_label.jrxml");
-            //String compiledFileName = "/Dev/prototypes/Hyla3/Unnamed.jasper";
-            String filledReportName = JasperFillManager.fillReportToFile(compiledFileName, null, DBConnection.getInstance().getConnection());
-            //String filledReportName = "/Dev/prototypes/Hyla3/Unnamed.jrprint";
-            
-            JRViewer jasperViewer = new JRViewer(filledReportName, false);
-            add(jasperViewer, BorderLayout.CENTER);
-            
-        }catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-        */
-        
+        //label = new JLabel("Labels Overview", SwingConstants.CENTER);
+        //add(label, BorderLayout.CENTER);
     }
-    public void doReport(String[] aArgs)
+    
+    /**
+     * Set the text to the label (create the label if it doesn't exist)
+     * @param msg the message to be displayed
+     */
+    protected void setLabelText(final String msg)
     {
-        boolean design = false;
-        if (design)
+        if (label == null)
         {
-            //FrameDesigner designer = new FrameDesigner(new File(aArgs[1]), false);
-            //designer.show();
-            
+            removeAll();
+            label = new JLabel("", JLabel.CENTER);
+            add(label, BorderLayout.CENTER);
+        }
+        label.setText(msg);
+        invalidate();
+        doLayout();
+        repaint();
+    }
+    
+    /**
+     * Starts the report creation process
+     * @param fileName the XML file name of the report definition
+     */
+    public void createReport(final String fileName)
+    {
+        progressLabel.setText(getResourceString("JasperReportCompiling"));
+        compiler = new JasperCompilerRunnable(this, XMLHelper.getConfigDirPath(fileName));
+        compiler.start();
+    }
+    
+    /**
+     * The compiling of the report is complete
+     * @param report the completeed report, or null if there was a compiling error
+     */
+    protected void compileComplete(JasperReport report)
+    {
+        if (report != null)
+        {
+            try
+            {
+                // 28594
+                String itemnum = JOptionPane.showInputDialog(this, "Please Enter a Catalog Item");
+                if (itemnum == null)
+                {
+                    itemnum = "28594";
+                }
+                Map parameters = new HashMap();
+                parameters.put("itemnum", Integer.parseInt(itemnum));
+
+                progressLabel.setText(getResourceString("JasperReportFilling"));
+                asyncFillHandler = AsynchronousFillHandle.createHandle(report, parameters, DBConnection.getInstance().getConnection());
+                asyncFillHandler.addListener(this);
+                asyncFillHandler.startFill();
+                
+            } catch (JRException ex)
+            {
+                setLabelText(getResourceString("JasperReportCreatingViewer"));
+                log.error(ex);
+                ex.printStackTrace();                
+            }
         } else
         {
-            try {
-                //File file = new File(aArgs[1]);
-                //System.out.println("File:["+aArgs[1]+"] "+(file.exists() ? "exists" : "does not exist."));
-                
-                /* XXX
-                String compiledFileName = JasperCompileManager.compileReportToFile("/Dev/prototypes/Hyla3/reports_labels/andys_label2.jrxml");//aArgs[1]);
-                //String compiledFileName = JasperCompileManager.compileReportToFile("/Dev/prototypes/Hyla3/reports_labels/lichens_label.jrxml");//aArgs[1]);
-                //String compiledFileName = "/Dev/prototypes/Hyla3/Unnamed.jasper";
-                String filledReportName = JasperFillManager.fillReportToFile(compiledFileName, null, this.mSession.connection());
-                //String filledReportName = "/Dev/prototypes/Hyla3/Unnamed.jrprint";
-                
-                JRViewer jasperViewer = new JRViewer(filledReportName, false);
-                add(jasperViewer, BorderLayout.CENTER);
-                XXX */
+            setLabelText(getResourceString("JasperReportCompileError"));
+        }
+        compiler = null;        
+    }
+    
+    //------------------------------------------------------------
+    // AsynchronousFilllListener
+    //------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see net.sf.jasperreports.engine.fill.AsynchronousFilllListener#reportCancelled()
+     */
+    public void reportCancelled()
+    {
+
+    }
+
+    /* (non-Javadoc)
+     * @see net.sf.jasperreports.engine.fill.AsynchronousFilllListener#reportFillError(java.lang.Throwable)
+     */
+    public void reportFillError(java.lang.Throwable t)
+    {
+        removeAll();
+        setLabelText(getResourceString("JasperReportFillError"));
+        log.error(t);
+    }
+
+    /* (non-Javadoc)
+     * @see net.sf.jasperreports.engine.fill.AsynchronousFilllListener#reportFinished(net.sf.jasperreports.engine.JasperPrint)
+     */
+    public void reportFinished(JasperPrint jasperPrint)
+    {
+        try
+        {
+            removeAll();
+            label = null;
+            
+            JRViewer jasperViewer = new JRViewer(jasperPrint);
+            add(jasperViewer, BorderLayout.CENTER);
+            
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() 
+                {
+                    invalidate();
+                    doLayout();
+                    repaint();
+                    Specify.forceRepaint();
+                }
+              });
+           
+            
+        } catch (Exception ex)
+        {
+            setLabelText(getResourceString("JasperReportCreatingViewer"));
+            log.error(ex);
+            ex.printStackTrace();
+        }
+    }
+    
+    //------------------------------------------------------------
+    // Inner Classes
+    //------------------------------------------------------------
+    public class JasperCompilerRunnable implements Runnable
+    {
+        protected Thread               thread;
+        protected LabelsPane           listener;
+        protected String               fileName;
+        
+        /**
+         * Constructs a an object to execute an SQL staement and then notify the listener
+         * @param listener the listener
+         * @param sqlStr the SQL statement to be executed.
+         */
+        public JasperCompilerRunnable(final LabelsPane listener, final String fileName)
+        {
+            this.listener = listener;
+            this.fileName = fileName;
+        }
+        
+ 
+        /**
+         * Starts the thread to make the SQL call
+         *
+         */
+        public void start()
+        {
+            thread = new Thread(this);
+            thread.start();
+        }
+        
+        /**
+         * Stops the thread making the call
+         *
+         */
+        public synchronized void stop()
+        {
+            if (thread != null)
+            {
+                thread.interrupt();
+            }
+            thread = null;
+            notifyAll();
+        }
+        
+        /**
+         * Creates a connection, makes the call and returns the results
+         */
+        public void run()
+        {
+            try
+            {
+                JasperReport report = JasperCompileManager.compileReport(fileName);
+                listener.compileComplete(report);
                 
             } catch (Exception ex)
             {
-                System.out.println("Report file["+aArgs[1]+"]");
-                ex.printStackTrace();
-            }
+                log.error(ex);
+                listener.compileComplete(null);
+            } 
         }
     }
    

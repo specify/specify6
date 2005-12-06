@@ -21,15 +21,19 @@ package edu.ku.brc.specify.core;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
 
 import edu.ku.brc.specify.core.subpane.LabelsPane;
+import edu.ku.brc.specify.core.subpane.SimpleDescPane;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
+import edu.ku.brc.specify.ui.UICacheManager;
 
 /**
  * A task to manage Labels and response to Label Commands
@@ -50,17 +54,31 @@ public class LabelsTask extends BaseTask
         
         // Temporary
         NavBox navBox = new NavBox(name);
-        navBox.add(NavBox.createBtn(name, name, IconManager.IconSize.Std16));
+        navBox.add(NavBox.createBtn("Fish Label Example", name, IconManager.IconSize.Std16, new DisplayAction("fish_label.jrxml")));
         navBox.add(NavBox.createBtn(name, name, IconManager.IconSize.Std16));
         navBoxes.addElement(navBox);
     }
+    
+    /**
+     * Performs a command (to cfreate a label)
+     * @param name the XML file name for the label
+     */
+    public void doCommand(final String name)
+    {
+        LabelsPane labelsPane = new LabelsPane(getResourceString("Labels"), this);
+        UICacheManager.addSubPane(labelsPane);
+        
+        labelsPane.createReport(name);
+
+    }
+    
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
     public SubPaneIFace getStarterPane()
     {
-        return new LabelsPane(name, this);
+        return new SimpleDescPane(name, this, "Welcome to Specify's Label Maker");
     }
     
     //-------------------------------------------------------
@@ -74,7 +92,8 @@ public class LabelsTask extends BaseTask
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        ToolBarDropDownBtn btn = createToolbarButton(name, "labels.gif", "labels_hint");      
+        ToolBarDropDownBtn btn = createToolbarButton(name, "labels.gif", "labels_hint");   
+        
         list.add(new ToolBarItemDesc(btn.getCompleteComp()));
         return list;
     }
@@ -90,5 +109,27 @@ public class LabelsTask extends BaseTask
         
     }
     
-
+    //--------------------------------------------------------------
+    // Inner Classes
+    //--------------------------------------------------------------
+ 
+     /**
+     * 
+     * @author rods
+     *
+     */
+    class DisplayAction implements ActionListener 
+    {
+        private String   name;
+        
+        public DisplayAction(final String name)
+        {
+            this.name = name;
+        }
+        
+        public void actionPerformed(ActionEvent e) 
+        {
+            doCommand(name);
+        }
+    }
 }

@@ -29,12 +29,15 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.table.*;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.text.*;
 
 import org.apache.commons.logging.Log;
@@ -60,19 +63,12 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
 {
     //private static Log log = LogFactory.getLog(SQLQueryPane.class);
 
-    private JTextField            textField;
     private JTextArea             textArea;
     private JScrollPane           taScrollPane;
-    private JTextComponent        text;
     private JTable                table;
     private JButton               exeBtn;
-    
-    private JButton               toggleBtn;
-    private ImageIcon             upIcon;
-    private ImageIcon             dwnIcon;
-    
-    private JPanel                txtPanel;
-    private JPanel                btnPanel;
+    private JLabel                label;
+
     private boolean               hideSQLField;
     private SQLExecutionProcessor sqlExecutor;
     private String                sqlStr;
@@ -102,40 +98,20 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
         */
         
         table = new JTable();
-        
+
         if (!hideSQLField)
         {
-            btnPanel = new JPanel(new BorderLayout());
-            txtPanel = new JPanel(new BorderLayout());
-            
-            textField = new JTextField();
-            textField.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent actionEvent) {
-                    if (textField.getText().length() > 0)
-                    {
-                        doQuery();
-                    }
-                    
-                }
-              });
-            
-            textArea = new JTextArea(80,6);
+            textArea     = new JTextArea(80,6);
             taScrollPane = new JScrollPane(textArea);
 
             taScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             taScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
             taScrollPane.setPreferredSize(new Dimension(400,100));
             
-            text = textField;
-            
             FormLayout      formLayout = new FormLayout("p,2dlu,100dlu:g,2dlu,p", "center:p:g");
             PanelBuilder    builder    = new PanelBuilder(formLayout);
             CellConstraints cc         = new CellConstraints();
            
-            txtPanel.add(textField, BorderLayout.CENTER);
-            
-            JPanel sp = new JPanel(new BorderLayout());
-            
             exeBtn = new JButton(getResourceString("Execute"));
             exeBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) 
@@ -143,31 +119,10 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
                     doQuery();
                 }
             });
-            
-            upIcon    = IconManager.getInstance().getIcon("Green Arrow Down", IconManager.IconSize.Std16);
-            dwnIcon   = IconManager.getInstance().getIcon("Green Arrow Up", IconManager.IconSize.Std16);
-            toggleBtn = new JButton(dwnIcon);
-            toggleBtn.setBorder(new EmptyBorder(2,2,2,2));
-            toggleBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) 
-                {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() 
-                        {
-                   toggleTextControls();
 
-                        }
-                    });  
-                }
-            });
-            
-            sp.add(toggleBtn, BorderLayout.WEST);
-            sp.add(exeBtn, BorderLayout.EAST);
-            btnPanel.add(sp, BorderLayout.EAST);
-
-            builder.add(new JLabel("SQL:"), cc.xy(1,1));
-            builder.add(txtPanel, cc.xy(3,1));
-            builder.add(btnPanel, cc.xy(5,1));
+            builder.add(label = new JLabel("SQL:"), cc.xy(1,1));
+            builder.add(taScrollPane, cc.xy(3,1));
+            builder.add(exeBtn, cc.xy(5,1));
             
             add(builder.getPanel(), BorderLayout.NORTH);
             
@@ -185,87 +140,9 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
         if (!hideSQLField)
         {
             exeBtn.setEnabled(enabled);
-            toggleBtn.setEnabled(enabled);
-            text.setEnabled(enabled);
+            textArea.setEnabled(enabled);
+            label.setEnabled(enabled);
         }
-    }
-    
-    /**
-     * Enables the Text Field and the Execute Button
-     *
-     */
-    public void toggleTextControls()
-    {
-        if (text == textField)
-        {
-            text = textArea;
-            toggleBtn.setIcon(upIcon);
-            txtPanel.remove(textField);
-            txtPanel.add(taScrollPane, BorderLayout.CENTER);
-            
-        } else
-        {
-            text = textField;
-            toggleBtn.setIcon(dwnIcon);
-            txtPanel.remove(taScrollPane);
-            txtPanel.add(text, BorderLayout.CENTER);
-        }
-
-
-        text.invalidate();
-        doLayout();
-        
-        /*txtPanel.invalidate();
-        btnPanel.invalidate();
-        txtPanel.getParent().invalidate();
-        txtPanel.getParent().getParent().invalidate();
-        taScrollPane.invalidate();
-        invalidate();
-        
-        text.doLayout();
-        txtPanel.doLayout();
-        btnPanel.doLayout();
-        txtPanel.getParent().doLayout();
-        txtPanel.getParent().getParent().doLayout();
-        taScrollPane.doLayout();
-        doLayout();
-        
-        Rectangle rect = getBounds();
-        RepaintManager mgr = RepaintManager.currentManager(this);
-        mgr.addDirtyRegion((JComponent)this, rect.x, rect.y, rect.width, rect.height);
-
-        rect = taScrollPane.getBounds();
-        mgr = RepaintManager.currentManager(taScrollPane);
-        mgr.addDirtyRegion((JComponent)taScrollPane, rect.x, rect.y, rect.width, rect.height);*/
-
-        // do the following on the gui thread
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() 
-            {
-                
-                /*txtPanel.invalidate();
-                txtPanel.doLayout();
-                txtPanel.repaint();
-                btnPanel.doLayout();
-                btnPanel.repaint();
-                txtPanel.getParent().doLayout();
-                txtPanel.getParent().repaint();
-                */
-                //doLayout();
-                
-                text.repaint();
-                txtPanel.repaint();
-                btnPanel.repaint();
-                txtPanel.getParent().repaint();
-                txtPanel.getParent().getParent().repaint();
-                taScrollPane.repaint();
-                
-                
-                repaint();
-
-            }
-        });    
-
     }
     
     /**
@@ -305,11 +182,7 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
     public void setSQLStr(final String sqlStr)
     {
         this.sqlStr = sqlStr;
-        
-        if(text != null)
-        {
-            text.setText(sqlStr);
-        }
+        textArea.setText(sqlStr);
     }
     
     /**
@@ -318,7 +191,7 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
      */
     public String getSQLStr()
     {
-        return text == null ? sqlStr : text.getText();
+        return textArea == null ? sqlStr : textArea.getText();
     }
     
     /**
@@ -348,6 +221,17 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
             add(new JScrollPane(table), BorderLayout.CENTER);            
         }
         table.setModel(new ResultSetTableModel(resultSet));
+        
+        table.setRowSelectionAllowed(true);
+        //table.getSelectionModel().addListSelectionListener(this);
+        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        renderer.setHorizontalAlignment(JLabel.CENTER);
+        TableModel model = table.getModel();
+        for (int i=0;i<model.getColumnCount();i++) {
+            TableColumn column = table.getColumn(model.getColumnName(i));
+            column.setCellRenderer(renderer);
+        }
+
         sqlExecutor = null;
         enableUI(true);
         

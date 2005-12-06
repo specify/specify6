@@ -967,6 +967,13 @@ public class Specify extends JPanel
         }
         return false;
     }
+    
+    public static void forceRepaint()
+    {
+        //specifyApp.getFrame().pack();
+        specifyApp.getFrame().repaint();
+        
+    }
   
 
   // *******************************************************

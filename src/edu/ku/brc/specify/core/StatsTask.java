@@ -104,12 +104,12 @@ public class StatsTask extends BaseTask
                 if (type.equals(pieChartStr))
                 {
                     type = pieChartStr;
-                    action = new DisplayAction(this, boxName);
+                    action = new DisplayAction(boxName);
                     
                 } else if (type.equals(barChartStr))
                 {
                     type = barChartStr;
-                    action = new DisplayAction(this, boxName);
+                    action = new DisplayAction(boxName);
                 }
                 
                 navBox.add(NavBox.createBtn(boxName, type, IconManager.IconSize.Std16, action));
@@ -362,14 +362,13 @@ public class StatsTask extends BaseTask
      */
     class DisplayAction implements ActionListener 
     {
-        private Taskable taskable;
         private String   statName;
         
-        public DisplayAction(final Taskable taskable, final String statName)
+        public DisplayAction(final String statName)
         {
-            this.taskable = taskable;
             this.statName = statName;
         }
+        
         public void actionPerformed(ActionEvent e) 
         {
             createStatPane(statName);
