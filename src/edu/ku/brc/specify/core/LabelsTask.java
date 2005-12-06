@@ -54,8 +54,8 @@ public class LabelsTask extends BaseTask
         
         // Temporary
         NavBox navBox = new NavBox(name);
-        navBox.add(NavBox.createBtn("Fish Label Example", name, IconManager.IconSize.Std16, new DisplayAction("fish_label.jrxml")));
-        navBox.add(NavBox.createBtn(name, name, IconManager.IconSize.Std16));
+        navBox.add(NavBox.createBtn("Fish Label Example", name, IconManager.IconSize.Std16, new DisplayAction("fish_label.jrxml", "Fish Label Example")));
+        navBox.add(NavBox.createBtn("Lichens Label Example", name, IconManager.IconSize.Std16, new DisplayAction("lichens_label.jrxml", "Lichens Label Example")));
         navBoxes.addElement(navBox);
     }
     
@@ -63,9 +63,9 @@ public class LabelsTask extends BaseTask
      * Performs a command (to cfreate a label)
      * @param name the XML file name for the label
      */
-    public void doCommand(final String name)
+    public void doCommand(final String name, final String title)
     {
-        LabelsPane labelsPane = new LabelsPane(getResourceString("Labels"), this);
+        LabelsPane labelsPane = new LabelsPane(title, this);
         UICacheManager.addSubPane(labelsPane);
         
         labelsPane.createReport(name);
@@ -121,15 +121,17 @@ public class LabelsTask extends BaseTask
     class DisplayAction implements ActionListener 
     {
         private String   name;
+        private String   title;
         
-        public DisplayAction(final String name)
+        public DisplayAction(final String name, final String title)
         {
             this.name = name;
+            this.title = title;
         }
         
         public void actionPerformed(ActionEvent e) 
         {
-            doCommand(name);
+            doCommand(name, title);
         }
     }
 }

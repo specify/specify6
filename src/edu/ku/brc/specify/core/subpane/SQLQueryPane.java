@@ -182,7 +182,10 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
     public void setSQLStr(final String sqlStr)
     {
         this.sqlStr = sqlStr;
-        textArea.setText(sqlStr);
+        if (textArea != null)
+        {
+            textArea.setText(sqlStr);
+        }
     }
     
     /**
