@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+
+<hibernate-mapping package="edu.ku.brc.specify.datamodel" >
+
+<import class="RecordSetItem"/>
+	
+<class name="RecordSet"
+	   table="recordset"
+	   lazy="true">
+
+	<!-- Common id property. -->
+	<id name="id"
+		type="long"
+		column="rs_id"
+		unsaved-value="null">
+		<generator class="native"/>
+	</id>
+
+	<property   name="name"
+	            column="NAME"
+				update="true"
+				type="string">
+	</property>
+
+	<property   name="tableId"
+	            column="tableid"
+				update="true"
+				type="int">
+	</property>
+
+	<!-- We can't change the creation time, so map it with update="false". -->
+	<property   name="created"
+				column="CREATED"
+				type="java.util.Date"
+				update="false"
+				not-null="true"/>
+
+    <!-- Associations -->
+  
+
+    <!-- bi-directional one-to-many association to RecordSetItem -->
+    <set
+        name="items" table="recordset_items">
+    	<key column="rs_id"/>
+    	<composite-element class="RecordSetItem">
+    		<property name="recordId" not-null="true"/>
+        </composite-element>
+    </set>
+</class>
+</hibernate-mapping>
