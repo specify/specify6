@@ -52,7 +52,7 @@ public class DataEntryTask extends BaseTask
      */
     public DataEntryTask()
     {
-        super(getResourceString(DATA_ENTRY));
+        super(DATA_ENTRY, getResourceString(DATA_ENTRY));
         
         // Temporary
         NavBox navBox = new NavBox(getResourceString("Actions"));
@@ -60,7 +60,7 @@ public class DataEntryTask extends BaseTask
         navBoxes.addElement(navBox);
         
         navBox = new NavBox(getResourceString("Create"));
-        navBox.add(NavBox.createBtn(name, name, IconManager.IconSize.Std16));
+        navBox.add(NavBox.createBtn(title, name, IconManager.IconSize.Std16));
         navBoxes.addElement(navBox);
         
     }

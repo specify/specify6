@@ -21,7 +21,7 @@ package edu.ku.brc.specify.stats;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
@@ -137,6 +137,7 @@ public class StatItem extends JPanel implements QueryResultsListener
             descBtn    = new JButton(description);
             descBtn.setBorder(new EmptyBorder(1,1,1,1));
             descBtn.setCursor(handCursor);
+            descBtn.setForeground(linkColor);
             
             descBtn.addActionListener(new ActionListener()
                     {
@@ -147,7 +148,7 @@ public class StatItem extends JPanel implements QueryResultsListener
                         }
                     }); 
             
-            MouseInputAdapter mouseMotionListener = new MouseInputAdapter() {
+            /*MouseInputAdapter mouseMotionListener = new MouseInputAdapter() {
                 public void mouseEntered(MouseEvent e) 
                 {
                     defColor = getForeground();
@@ -160,7 +161,7 @@ public class StatItem extends JPanel implements QueryResultsListener
                     repaint();
                }
             };
-            descBtn.addMouseListener(mouseMotionListener);        
+            descBtn.addMouseListener(mouseMotionListener);   */     
 
             descComp = descBtn;
         } else

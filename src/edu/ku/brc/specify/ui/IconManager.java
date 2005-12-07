@@ -19,15 +19,25 @@
  */
 package edu.ku.brc.specify.ui;
 
-import java.net.URL;
-import java.util.Hashtable;
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
+import java.net.URL;
+import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import edu.ku.brc.specify.core.NavBox;
+import edu.ku.brc.specify.exceptions.*;
+import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
+import org.dom4j.Element;
+
 /**
  * @author Rod Spears
  *
@@ -99,8 +109,8 @@ public class IconManager
      */
     protected IconManager()
     {
+        loadIcons();
     }
-
 
     /**
      * Registers an icon (group or category), it creates an icon of "id" size and stores it
@@ -173,6 +183,65 @@ public class IconManager
             // It is ok that it isn't registered
         }
         return null;
+    }
+    
+    /**
+     * Returns the IconSize enum for an integer
+     * @param size the integer size
+     * @return Returns the IconSize enum for an integer
+     */
+    protected IconSize getSizeFromInt(int size)
+    {
+
+        switch (size)
+        {
+            case 16: return IconSize.Std16;
+            case 24:return IconSize.Std24;
+            case 32:return IconSize.Std32;
+        }
+        throw new ConfigurationException("Desired Icon size doesn't exist! ["+size+"]");
+    }
+    
+    /**
+     * Loads icons from config file
+     *
+     */
+    public void loadIcons()
+    {
+        
+        try
+        {
+            Element root  = XMLHelper.readDOMFromConfigDir("icons.xml");
+            
+            List boxes = root.selectNodes("/icons/icon");
+            for ( Iterator iter = boxes.iterator(); iter.hasNext(); ) 
+            {
+                org.dom4j.Element iconElement = (org.dom4j.Element) iter.next();
+                
+                String name  = iconElement.attributeValue("name");
+                String sizes = iconElement.attributeValue("sizes");
+                String file  = iconElement.attributeValue("file");
+                if (sizes == null || sizes.length() == 0 || sizes.toLowerCase().equals("all"))
+                {
+                    
+                    Icon icon = register(name, file, IconManager.IconSize.Std32);
+                    icon = getIcon(name, IconManager.IconSize.Std24);
+                    icon = getIcon(name, IconManager.IconSize.Std16);
+                    
+                } else
+                {
+                   StringTokenizer st = new StringTokenizer(sizes, ",");
+                   while (st.hasMoreTokens())
+                   {
+                       String sz = st.nextToken();
+                       register(name, file, getSizeFromInt(Integer.parseInt(sz)));
+                   }
+                }
+            }
+        } catch (Exception ex)
+        {
+            log.error(ex);
+        }
     }
     
 }

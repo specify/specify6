@@ -24,6 +24,8 @@
 
 		<!-- Specify mapping files. -->
 		<mapping resource="edu/ku/brc/specify/extfilerepos/impl/ExternalFileEntry.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/RecordSet.hbm.xml"/>
+		
 
         <!-- Settings for the second-level cache -->
         <!--

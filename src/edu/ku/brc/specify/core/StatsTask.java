@@ -19,29 +19,40 @@
  */
 package edu.ku.brc.specify.core;
 
-import java.util.List;
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
-import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Element;
 
-import edu.ku.brc.specify.helpers.*;
-import edu.ku.brc.specify.ui.*;
-import edu.ku.brc.specify.dbsupport.*;
+import edu.ku.brc.specify.core.subpane.BarChartPane;
+import edu.ku.brc.specify.core.subpane.BaseSubPane;
+import edu.ku.brc.specify.core.subpane.ChartPane;
+import edu.ku.brc.specify.core.subpane.PieChartPane;
+import edu.ku.brc.specify.core.subpane.SQLQueryPane;
+import edu.ku.brc.specify.core.subpane.StatsPane;
+import edu.ku.brc.specify.dbsupport.CustomQuery;
+import edu.ku.brc.specify.dbsupport.CustomQueryFactory;
+import edu.ku.brc.specify.dbsupport.PairsMultipleQueryResultsHandler;
+import edu.ku.brc.specify.dbsupport.PairsSingleQueryResultsHandler;
+import edu.ku.brc.specify.dbsupport.QueryResultsContainer;
+import edu.ku.brc.specify.dbsupport.QueryResultsDataObj;
+import edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace;
+import edu.ku.brc.specify.dbsupport.QueryResultsListener;
+import edu.ku.brc.specify.dbsupport.QueryResultsProcessable;
+import edu.ku.brc.specify.helpers.XMLHelper;
+import edu.ku.brc.specify.plugins.MenuItemDesc;
+import edu.ku.brc.specify.plugins.ToolBarItemDesc;
+import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.core.subpane.*;
-import edu.ku.brc.specify.dbsupport.QueryResultsGetter;
-import edu.ku.brc.specify.plugins.MenuItemDesc;
-import edu.ku.brc.specify.plugins.TaskPluginable;
-import edu.ku.brc.specify.plugins.ToolBarItemDesc;
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
-import org.dom4j.Element;
 
 /**
  * The StatsTask is responsible gettng and displaying all various idfferent kinds of stats
@@ -52,6 +63,8 @@ import org.dom4j.Element;
 public class StatsTask extends BaseTask
 {
     // Static Data Members
+    public static final String STATISTICS = "Statistics";
+    
     private static Log log = LogFactory.getLog(StatsTask.class);
     
     protected static final String DISPLAY   = "display";
@@ -70,7 +83,7 @@ public class StatsTask extends BaseTask
      */
     public StatsTask()
     {
-        super(getResourceString("Statistics"));
+        super(STATISTICS, getResourceString(STATISTICS));
         
         try
         {
@@ -82,9 +95,6 @@ public class StatsTask extends BaseTask
             log.error(ex);
         }
 
-        String pieChartStr = getResourceString("Pie_Chart");
-        String barChartStr = getResourceString("Bar_Chart");
-        
         // Process the NavBox Panel and create all the commands
         // XXX This needs to be made generic so everyone can use it
         // 
@@ -92,27 +102,28 @@ public class StatsTask extends BaseTask
         for ( Iterator iter = boxes.iterator(); iter.hasNext(); ) 
         {
             org.dom4j.Element box = (org.dom4j.Element) iter.next();
-            NavBox navBox = new NavBox(box.attributeValue("name"));
+            NavBox navBox = new NavBox(box.attributeValue("title"));
             
             List items = box.selectNodes("item");
             for ( Iterator iter2 = items.iterator(); iter2.hasNext(); ) 
             {
                 org.dom4j.Element item = (org.dom4j.Element) iter2.next();
-                String boxName = item.attributeValue("name");
-                String type    = item.attributeValue("type");
+                String boxName  = item.attributeValue("name");
+                String boxTitle = item.attributeValue("title");
+                String type     = item.attributeValue("type");
                 ActionListener action = null;
-                if (type.equals(pieChartStr))
+                if (type.toLowerCase().equals(PIE_CHART))
                 {
-                    type = pieChartStr;
+                    type = "Pie_Chart";
                     action = new DisplayAction(boxName);
                     
-                } else if (type.equals(barChartStr))
+                } else if (type.toLowerCase().equals(BAR_CHART))
                 {
-                    type = barChartStr;
+                    type = "Bar_Chart";
                     action = new DisplayAction(boxName);
                 }
                 
-                navBox.add(NavBox.createBtn(boxName, type, IconManager.IconSize.Std16, action));
+                navBox.add(NavBox.createBtn(boxTitle, type, IconManager.IconSize.Std16, action));
            } 
            navBoxes.addElement(navBox);
         }    

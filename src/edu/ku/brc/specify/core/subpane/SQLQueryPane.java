@@ -238,14 +238,7 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
         sqlExecutor = null;
         enableUI(true);
         
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() 
-            {
-                invalidate();
-                doLayout();
-                repaint();
-            }
-        });    
+        UICacheManager.forceTopFrameRepaint();    
         
     }
     

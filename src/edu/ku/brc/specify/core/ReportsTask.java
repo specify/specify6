@@ -45,19 +45,20 @@ import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
  */
 public class ReportsTask extends BaseTask
 {
+    public static final String REPORTS = "Reports";
 
     public ReportsTask()
     {
-        super(getResourceString("Reports"));
+        super(REPORTS, getResourceString(REPORTS));
         
         // Temporary
         NavBox navBox = new NavBox(getResourceString("Actions"));
         navBox.add(NavBox.createBtn(getResourceString("Create_New_Report"), name, IconManager.IconSize.Std16));
         navBoxes.addElement(navBox);
         
-        navBox = new NavBox(name);
-        navBox.add(NavBox.createBtn(name, name, IconManager.IconSize.Std16));
-        navBox.add(NavBox.createBtn(name, name, IconManager.IconSize.Std16));
+        //navBox = new NavBox(name);
+        //navBox.add(NavBox.createBtn(name, name, IconManager.IconSize.Std16));
+        //navBox.add(NavBox.createBtn(name, name, IconManager.IconSize.Std16));
         navBoxes.addElement(navBox);
     }
     

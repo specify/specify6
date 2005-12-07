@@ -35,6 +35,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -70,6 +76,7 @@ import edu.ku.brc.specify.core.QueryTask;
 import edu.ku.brc.specify.core.ReportsTask;
 import edu.ku.brc.specify.core.StatsTask;
 import edu.ku.brc.specify.dbsupport.DBConnection;
+import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.plugins.PluginMgr;
 import edu.ku.brc.specify.ui.GenericFrame;
 import edu.ku.brc.specify.ui.IconManager;
@@ -77,6 +84,10 @@ import edu.ku.brc.specify.ui.MainPanel;
 import edu.ku.brc.specify.ui.PropertyViewer;
 import edu.ku.brc.specify.ui.ToolbarLayoutManager;
 import edu.ku.brc.specify.ui.*;
+import edu.ku.brc.specify.dbsupport.*;
+
+
+import edu.ku.brc.specify.datamodel.*;
 
 /**
  * Specify Main Application Class
@@ -195,6 +206,31 @@ public class Specify extends JPanel
         DBConnection.getInstance().setUsernamePassword("rods", "rods");
         DBConnection.getInstance().setDriver("com.mysql.jdbc.Driver");
         DBConnection.getInstance().setDBName("jdbc:mysql://localhost/demo_fish");
+        
+        /*
+
+        HibernateUtil.beginTransaction();
+        
+        RecordSet recordSet = new RecordSet();
+        //recordSet.setId(1L);
+        
+        recordSet.setName("Catalog Items");
+        recordSet.setTableId(1);
+        recordSet.setCreated(new Date());
+        
+        Set items = new HashSet();
+        RecordSetItem rsi = new RecordSetItem();
+        rsi.setRecordId(1);
+        
+        items.add(rsi);
+        recordSet.setItems(items);
+        
+        HibernateUtil.getCurrentSession().saveOrUpdate(recordSet);
+        
+        //HibernateUtil.getCurrentSession().delete(recordSet);
+        
+        HibernateUtil.commitTransaction();
+        */
         
         // Create and throw the splash screen up. Since this will
         // physically throw bits on the screen, we need to do this
@@ -551,6 +587,8 @@ public class Specify extends JPanel
         top.setLayout(new BorderLayout());
         add(top, BorderLayout.NORTH);
         
+        UICacheManager.getInstance().register(UICacheManager.TOPFRAME, topFrame);
+        
         menuBar = createMenus();
         if (menuBar != null)
         {
@@ -605,26 +643,6 @@ public class Specify extends JPanel
     {
         JToolBar toolBar = new JToolBar();
         toolBar.setLayout(new ToolbarLayoutManager(2,2));
-        
-        String[] iconsToLoad = {"Work_Bench",   "newworkbench.gif",
-                                "Data_Entry",   "dataentry.gif",   
-                                "Labels",       "labels.gif",       
-                                "Reports",      "reports.gif",      
-                                "Interactions", "loans.gif",        
-                                "Search",        "queryIt.gif",    
-                                "Statistics",        "stats.gif", 
-                                "Pie_Chart",        "piechart.gif",
-                                "Bar_Chart",        "barchart.gif"};
-        for (int i=0;i<iconsToLoad.length;i+=2)
-        {
-            String name = getResourceString(iconsToLoad[i]);
-            Icon icon = IconManager.getInstance().register(name, iconsToLoad[i+1], IconManager.IconSize.Std32);
-            icon = IconManager.getInstance().getIcon(name, IconManager.IconSize.Std24);
-            icon = IconManager.getInstance().getIcon(name, IconManager.IconSize.Std16);
-        }
-        
-        Icon icon = IconManager.getInstance().register("Green Arrow Down", "green_arrow_down.gif", IconManager.IconSize.Std16);
-        icon = IconManager.getInstance().register("Green Arrow Up", "green_arrow_up.gif", IconManager.IconSize.Std16);
         
         /*
         
@@ -967,13 +985,7 @@ public class Specify extends JPanel
         }
         return false;
     }
-    
-    public static void forceRepaint()
-    {
-        //specifyApp.getFrame().pack();
-        specifyApp.getFrame().repaint();
-        
-    }
+
   
 
   // *******************************************************

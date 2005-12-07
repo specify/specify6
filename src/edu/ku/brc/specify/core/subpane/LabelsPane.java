@@ -28,7 +28,6 @@ import java.util.Map;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -41,10 +40,10 @@ import net.sf.jasperreports.view.JRViewer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.helpers.XMLHelper;
+import edu.ku.brc.specify.ui.UICacheManager;
 
 
 /**
@@ -122,7 +121,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                 {
                     itemnum = "28594";
                 }
-                Map parameters = new HashMap();
+                Map<Object, Object> parameters = new HashMap<Object, Object>();
                 parameters.put("itemnum", Integer.parseInt(itemnum));
 
                 progressLabel.setText(getResourceString("JasperReportFilling"));
@@ -178,15 +177,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
             JRViewer jasperViewer = new JRViewer(jasperPrint);
             add(jasperViewer, BorderLayout.CENTER);
             
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() 
-                {
-                    invalidate();
-                    doLayout();
-                    repaint();
-                    Specify.forceRepaint();
-                }
-              });
+            UICacheManager.forceTopFrameRepaint();
            
             
         } catch (Exception ex)

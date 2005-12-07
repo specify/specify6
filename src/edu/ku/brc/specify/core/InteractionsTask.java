@@ -45,13 +45,15 @@ import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
  */
 public class InteractionsTask extends BaseTask
 {
-    /**
+    public static final String INTERACTIONS = "Interactions";
+    
+   /**
      * Default Constructor
      *
      */
     public InteractionsTask()
     {
-        super(getResourceString("Interactions"));
+        super(INTERACTIONS, getResourceString("Interactions"));
         
         // Temporary
         NavBox navBox = new NavBox(getResourceString("Actions"));
@@ -60,11 +62,10 @@ public class InteractionsTask extends BaseTask
         navBox.add(NavBox.createBtn(getResourceString("New_Exchange"), name, IconManager.IconSize.Std16));
         navBoxes.addElement(navBox);
         
-        String reports = getResourceString("Reports");
-        navBox = new NavBox(reports);
-        navBox.add(NavBox.createBtn(getResourceString("All_Overdue_Loans_Report"), reports, IconManager.IconSize.Std16));
-        navBox.add(NavBox.createBtn(getResourceString("All_Open_Loans_Report"), reports, IconManager.IconSize.Std16));
-        navBox.add(NavBox.createBtn(getResourceString("All_Loans_Report"), reports, IconManager.IconSize.Std16));
+        navBox = new NavBox(getResourceString(ReportsTask.REPORTS));
+        navBox.add(NavBox.createBtn(getResourceString("All_Overdue_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
+        navBox.add(NavBox.createBtn(getResourceString("All_Open_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
+        navBox.add(NavBox.createBtn(getResourceString("All_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
         navBoxes.addElement(navBox);
     }
     

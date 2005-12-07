@@ -43,6 +43,7 @@ import edu.ku.brc.specify.ui.UICacheManager;
  */
 public class LabelsTask extends BaseTask
 {
+    public static final String LABELS = "Labels";
 
     /**
      * 
@@ -50,7 +51,7 @@ public class LabelsTask extends BaseTask
      */
     public LabelsTask()
     {
-        super(getResourceString("Labels"));
+        super(LABELS, getResourceString(LABELS));
         
         // Temporary
         NavBox navBox = new NavBox(name);

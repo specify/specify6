@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<icons>
+    <icon name="Work_Bench" file="newworkbench.gif" sizes="all"/>
+    <icon name="Data_Entry" file="dataentry.gif" sizes="all"/>
+    <icon name="Labels"     file="labels.gif" sizes="all"/>
+    <icon name="Reports"    file="reports.gif" sizes="all"/>
+    <icon name="Interactions" file="loans.gif" sizes="all"/>
+    <icon name="Search"     file="queryIt.gif" sizes="all"/>
+    <icon name="Statistics" file="stats.gif" sizes="all"/>
+    <icon name="Pie_Chart"  file="piechart.gif" sizes="all"/>
+    <icon name="Bar_Chart"  file="barchart.gif" sizes="all"/>
+    <icon name="Record_Set" file="recordset.gif" sizes="all"/>
+    
+    <icon name="Green Arrow Down" file="green_arrow_down.gif" sizes="16"/>
+    <icon name="Green Arrow Up" file="green_arrow_up.gif" sizes="16"/>
+</icons>
+ 

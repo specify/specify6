@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.core.subpane.SQLQueryPane;
-import edu.ku.brc.specify.ui.*;
 
 /**
  * Manages the task context of the UI. The task context is controlled by what tab is visible in the main pane
@@ -128,6 +127,30 @@ public class ContextMgr
             }
         }
         log.info("Couldn't find task by name");
+        return null;
+    }
+    
+    /**
+     * Returns a task by a given name 
+     * @param name name of task to be returned
+     * @return Returns a task by a given name
+     */
+    public Taskable getTaskByClass(final Class theClass)
+    {
+        if (theClass == null)
+        {
+            throw new NullPointerException("Class arg is null in getTaskByClass");
+        }
+        
+        // Sequential search (Could use binary but list is short)
+        for (Taskable task : tasks)
+        {
+            if (task.getClass() == theClass)
+            {
+                return task;
+            }
+        }
+        log.info("Couldn't find task by class");
         return null;
     }
 }

@@ -25,7 +25,9 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,6 +41,7 @@ public class UICacheManager
     public static final String MENUBAR   = "menubar";
     public static final String TOOLBAR   = "toolbar";
     public static final String STATUSBAR = "statusbar";
+    public static final String TOPFRAME  = "topframe";
     
     private static Log log               = LogFactory.getLog(UICacheManager.class);
     private static UICacheManager cmdMgr = new UICacheManager();
@@ -309,6 +312,22 @@ public class UICacheManager
     public void setSubPaneMgr(SubPaneMgr subPaneMgr)
     {
         this.subPaneMgr = subPaneMgr;
+    }
+    
+    /**
+     * repaints the top most frame
+     *
+     */
+    public static void forceTopFrameRepaint()
+    {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() 
+            {
+                JFrame frame = ((JFrame)UICacheManager.getInstance().get(TOPFRAME));
+                assert frame != null : "The top frame has not been registered";
+                frame.repaint();
+            }
+          });
     }
 
 

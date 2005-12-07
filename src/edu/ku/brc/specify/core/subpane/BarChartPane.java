@@ -77,7 +77,7 @@ public class BarChartPane extends ChartPane implements QueryResultsListener, Que
      */
     public Icon getIcon()
     {
-        return IconManager.getInstance().getIcon(getResourceString("Bar_Chart"), IconManager.IconSize.Std16);
+        return IconManager.getInstance().getIcon("Bar_Chart", IconManager.IconSize.Std16);
     }
     
     //--------------------------------------

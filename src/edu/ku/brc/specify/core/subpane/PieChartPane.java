@@ -77,7 +77,7 @@ public class PieChartPane extends ChartPane implements QueryResultsListener, Que
      */
     public Icon getIcon()
     {
-        return IconManager.getInstance().getIcon(getResourceString("Pie_Chart"), IconManager.IconSize.Std16);
+        return IconManager.getInstance().getIcon("Pie_Chart", IconManager.IconSize.Std16);
     }
     
     

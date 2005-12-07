@@ -218,13 +218,13 @@ public class SQLExecutionProcessor implements Runnable
 
         } catch (java.sql.SQLException ex)
         {
-            ex.printStackTrace();
+            //ex.printStackTrace();
             log.error("Error in run["+sqlStr+"]", ex);
             listener.executionError(this, ex);
                   
         } catch (Exception ex)
         {
-            ex.printStackTrace();
+            //ex.printStackTrace();
             log.error("Error in run["+sqlStr+"]", ex);
             listener.executionError(this, ex);
             

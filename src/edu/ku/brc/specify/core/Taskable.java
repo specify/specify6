@@ -46,9 +46,15 @@ public interface Taskable
     public Icon getIcon();
     
     /**
-     * Returns the name of the task
-     * @return Returns the name of the task
+     * Returns the name of the task (NOT Localized)
+     * @return Returns the name of the task (NOT Localized)
      */
     public String getName();
+    
+    /**
+     * Returns the title of the task (Localized)
+     * @return Returns the title of the task (Localized)
+     */
+    public String getTitle();
 
 }

@@ -46,9 +46,15 @@ import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
  */
 public class QueryTask extends BaseTask
 {
+    public static final String QUERY = "Search";
+    
+    /**
+     * Default Constructor
+     *
+     */
     public QueryTask()
     {
-        super(getResourceString("Search"));
+        super(QUERY, getResourceString(QUERY));
         
         // XXX Localize
         // Temporary

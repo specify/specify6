@@ -49,6 +49,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable
 {
     // Data Members
     protected final String        name;
+    protected final String        title;
     
     protected Vector<NavBoxIFace> navBoxes = new Vector<NavBoxIFace>(); 
     protected Icon                icon     = null;
@@ -57,9 +58,10 @@ public abstract class BaseTask implements Taskable, TaskPluginable
      * Constructor
      * @param name the name of the task (already localized)
      */
-    public BaseTask(final String name)
+    public BaseTask(final String name, final String title)
     {
         this.name = name;
+        this.title = title;
         
         ContextMgr.getInstance().register(this);
     }
@@ -154,6 +156,15 @@ public abstract class BaseTask implements Taskable, TaskPluginable
     public String getName()
     {
         return name;
+    }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.Taskable#getTitle()
+     */
+    public String getTitle()
+    {
+        return title;
     }
     
     /*
