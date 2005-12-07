@@ -44,6 +44,8 @@ import edu.ku.brc.specify.ui.UICacheManager;
 public class LabelsTask extends BaseTask
 {
     public static final String LABELS = "Labels";
+    
+    protected Vector<NavBoxIFace> extendedNavBoxes = new Vector<NavBoxIFace>(); 
 
     /**
      * 
@@ -80,6 +82,26 @@ public class LabelsTask extends BaseTask
     public SubPaneIFace getStarterPane()
     {
         return new SimpleDescPane(name, this, "Welcome to Specify's Label Maker");
+    }
+    
+    //-------------------------------------------------------
+    // Taskable
+    //-------------------------------------------------------
+    
+    /*
+     *  (non-Javadoc)
+     * @see edu.ku.brc.specify.core.Taskable#getNavBoxes()
+     */
+    public java.util.List<NavBoxIFace> getNavBoxes()
+    {
+        extendedNavBoxes.clear();
+        extendedNavBoxes.addAll(navBoxes);
+        
+        RecordSetTask rsTask = (RecordSetTask)ContextMgr.getInstance().getTaskByClass(RecordSetTask.class);
+        
+        extendedNavBoxes.addAll(rsTask.getNavBoxes());
+        
+        return extendedNavBoxes;
     }
     
     //-------------------------------------------------------

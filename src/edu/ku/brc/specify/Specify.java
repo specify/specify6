@@ -21,8 +21,6 @@
 
 package edu.ku.brc.specify;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
@@ -35,16 +33,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -73,21 +64,16 @@ import edu.ku.brc.specify.core.DataEntryTask;
 import edu.ku.brc.specify.core.InteractionsTask;
 import edu.ku.brc.specify.core.LabelsTask;
 import edu.ku.brc.specify.core.QueryTask;
+import edu.ku.brc.specify.core.RecordSetTask;
 import edu.ku.brc.specify.core.ReportsTask;
 import edu.ku.brc.specify.core.StatsTask;
 import edu.ku.brc.specify.dbsupport.DBConnection;
-import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.plugins.PluginMgr;
 import edu.ku.brc.specify.ui.GenericFrame;
-import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.MainPanel;
 import edu.ku.brc.specify.ui.PropertyViewer;
 import edu.ku.brc.specify.ui.ToolbarLayoutManager;
-import edu.ku.brc.specify.ui.*;
-import edu.ku.brc.specify.dbsupport.*;
-
-
-import edu.ku.brc.specify.datamodel.*;
+import edu.ku.brc.specify.ui.UICacheManager;
 
 /**
  * Specify Main Application Class
@@ -207,8 +193,9 @@ public class Specify extends JPanel
         DBConnection.getInstance().setDriver("com.mysql.jdbc.Driver");
         DBConnection.getInstance().setDBName("jdbc:mysql://localhost/demo_fish");
         
-        /*
+        
 
+        /*
         HibernateUtil.beginTransaction();
         
         RecordSet recordSet = new RecordSet();
@@ -632,6 +619,7 @@ public class Specify extends JPanel
         PluginMgr.getInstance().register(new InteractionsTask());
         PluginMgr.getInstance().register(new StatsTask());
         PluginMgr.getInstance().register(new QueryTask());
+        PluginMgr.getInstance().register(new RecordSetTask());
         
     }
     
@@ -643,36 +631,6 @@ public class Specify extends JPanel
     {
         JToolBar toolBar = new JToolBar();
         toolBar.setLayout(new ToolbarLayoutManager(2,2));
-        
-        /*
-        
-        toolBar.addSeparator();
-        toolBar.add(new JLabel(" "));
-        
-        // Create Search Panel
-        GridBagLayout gridbag = new GridBagLayout();
-        GridBagConstraints c = new GridBagConstraints();
-        
-        JPanel     searchPanel = new JPanel(gridbag);
-        JLabel     spacer      = new JLabel(" ");
-        JTextField searchText  = new JTextField(10);
-        JButton    searchBtn   = new JButton(getResourceString("Search"));
-        
-        searchText.setMinimumSize(new Dimension(50, searchText.getPreferredSize().height));
-        
-        c.weightx = 1.0;
-        gridbag.setConstraints(spacer, c);
-        searchPanel.add(spacer);
-        
-        c.weightx = 0.0;
-        gridbag.setConstraints(searchText, c);
-        searchPanel.add(searchText);
-        
-        gridbag.setConstraints(searchBtn, c);
-        searchPanel.add(searchBtn);
-        
-        toolBar.add(searchPanel);
-        */
         
         return toolBar;
     }
@@ -686,8 +644,6 @@ public class Specify extends JPanel
         GenericFrame frame = new GenericFrame();
         frame.setTitle("Preferences");
         frame.getContentPane().add(new PropertyViewer(), BorderLayout.CENTER);
-        //frame.pack();
-
         centerAndShow(frame);
 
     }
@@ -787,26 +743,6 @@ public class Specify extends JPanel
      */
     protected void doExit()
     {
-        if (hasChanged) 
-        {
-            if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, "The Cache has changed, do you wish to save?", "Cache has changed.", JOptionPane.YES_NO_OPTION))
-            {
-                //mCacheMgr.saveCache();
-            }
-        }
-        try {
-            if (mSessionFactory != null)
-            {
-                mSessionFactory.close();
-            }
-            if (mSession != null)
-            {
-                mSession.close();
-            }
-        } catch (Exception e)
-        {
-            log.error("doExit - ",e);
-        }
         System.exit(0);
     }
 
