@@ -32,14 +32,13 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.RolloverCommand;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.dnd.DataActionEvent;
 import edu.ku.brc.specify.ui.dnd.GhostActionable;
-import edu.ku.brc.specify.ui.dnd.GhostMouseDropAdapter;
 import edu.ku.brc.specify.ui.dnd.GhostActionableDropManager;
+import edu.ku.brc.specify.ui.dnd.GhostMouseDropAdapter;
 
 /**
  * A task to manage Labels and response to Label Commands

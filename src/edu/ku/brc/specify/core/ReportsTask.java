@@ -19,23 +19,17 @@
  */
 package edu.ku.brc.specify.core;
 
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+
 import java.util.List;
 import java.util.Vector;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.swing.*;
-
-import edu.ku.brc.specify.ui.GenericFrame;
+import edu.ku.brc.specify.core.subpane.SimpleDescPane;
+import edu.ku.brc.specify.plugins.MenuItemDesc;
+import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.core.subpane.SimpleDescPane;
-import edu.ku.brc.specify.plugins.MenuItemDesc;
-import edu.ku.brc.specify.plugins.TaskPluginable;import edu.ku.brc.specify.plugins.ToolBarItemDesc;
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 /**
  * This task will enable a user to create, and view reports.

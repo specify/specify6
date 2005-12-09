@@ -1,5 +1,3 @@
-
-
 /*
  * ============================================================================
  *                   GNU Lesser General Public License
@@ -42,31 +40,30 @@ import java.text.DecimalFormat;
 public class Scriptlet extends JRDefaultScriptlet
 {
 
-
     /**
-     *
+     * beforeReportInit
      */
     public void beforeReportInit() throws JRScriptletException
     {
-        System.out.println("call beforeReportInit");
+        //System.out.println("call beforeReportInit");
     }
 
 
     /**
-     *
+     * afterReportInit
      */
     public void afterReportInit() throws JRScriptletException
     {
-        System.out.println("call afterReportInit");
+        //System.out.println("call afterReportInit");
     }
 
 
     /**
-     *
+     * beforePageInit
      */
     public void beforePageInit() throws JRScriptletException
     {
-        System.out.println("call   beforePageInit : PAGE_NUMBER = " + this.getVariableValue("PAGE_NUMBER"));
+        //System.out.println("call   beforePageInit : PAGE_NUMBER = " + this.getVariableValue("PAGE_NUMBER"));
     }
 
 
@@ -75,7 +72,7 @@ public class Scriptlet extends JRDefaultScriptlet
      */
     public void afterPageInit() throws JRScriptletException
     {
-        System.out.println("call   afterPageInit  : PAGE_NUMBER = " + this.getVariableValue("PAGE_NUMBER"));
+        //System.out.println("call   afterPageInit  : PAGE_NUMBER = " + this.getVariableValue("PAGE_NUMBER"));
     }
 
 
@@ -84,37 +81,37 @@ public class Scriptlet extends JRDefaultScriptlet
      */
     public void beforeColumnInit() throws JRScriptletException
     {
-        System.out.println("call     beforeColumnInit");
+        //System.out.println("call     beforeColumnInit");
     }
 
 
     /**
-     *
+     * afterColumnInit
      */
     public void afterColumnInit() throws JRScriptletException
     {
-        System.out.println("call     afterColumnInit");
+        //System.out.println("call     afterColumnInit");
     }
 
 
     /**
-     *
+     * beforeGroupInit
      */
     public void beforeGroupInit(String groupName) throws JRScriptletException
     {
-        if (groupName.equals("CityGroup"))
+        /*if (groupName.equals("CityGroup"))
         {
             System.out.println("call       beforeGroupInit : City = " + this.getFieldValue("City"));
-        }
+        }*/
     }
 
 
     /**
-     *
+     * afterGroupInit
      */
     public void afterGroupInit(String groupName) throws JRScriptletException
     {
-        if (groupName.equals("CityGroup"))
+        /*if (groupName.equals("CityGroup"))
         {
             System.out.println("call       afterGroupInit  : City = " + this.getFieldValue("City"));
         
@@ -130,21 +127,21 @@ public class Scriptlet extends JRDefaultScriptlet
         
             sbuffer.append(city);
             this.setVariableValue("AllCities", sbuffer.toString());
-        }
+        }*/
     }
 
 
     /**
-     *
+     * beforeDetailEval
      */
     public void beforeDetailEval() throws JRScriptletException
     {
-        System.out.println("        detail");
+        //System.out.println("        detail");
     }
 
 
     /**
-     *
+     * afterDetailEval
      */
     public void afterDetailEval() throws JRScriptletException
     {
@@ -152,39 +149,65 @@ public class Scriptlet extends JRDefaultScriptlet
 
 
     /**
-     *
+     * Formats a String to a float to a String
+     * 
+     * @param floatStr the string with a Float value
+     * @return Formats a String to a float to a String
+     * @throws JRScriptletException xxx
      */
-    public String format(String aFloatStr) throws JRScriptletException
+    public String format(String floatStr) throws JRScriptletException
     {
-        return format(new Float(Float.parseFloat(aFloatStr)));
+        return format(new Float(Float.parseFloat(floatStr)));
     }
 
     /**
-     *
+     * Formats a float to a string
+     * @param floatVar the float variable
+     * @return Formats a float to a string
+     * @throws JRScriptletException
      */
-    public String format(Float aFloat) throws JRScriptletException
+    public String format(Float floatVar) throws JRScriptletException
     {
         DecimalFormat df = new DecimalFormat("#.####");
-        return df.format(aFloat.floatValue());
+        return df.format(floatVar.floatValue());
     }
 
-    public String getDirChar(Float aFloat, boolean isLat)
+    /**
+     * Formats a float to a string with "N","S","E", "W"
+     * @param floatVal the float value
+     * @param isLat whether it is a lat or lon
+     * @return Formats a float to a string with "N","S","E", "W"
+     */
+    public String getDirChar(Float floatVal, boolean isLat)
     {
         if (isLat)
-            return aFloat.floatValue() > 0.0 ? "N" : "S";
+            return floatVal.floatValue() > 0.0 ? "N" : "S";
         else
-            return aFloat.floatValue() > 0.0 ? "E" : "W";
+            return floatVal.floatValue() > 0.0 ? "E" : "W";
         
     }
     
-    public String getDirChar(String aFloatStr, boolean isLat)
+    /**
+     * Formats a String as a float with "N","S","E", "W"
+     * @param floatVal the float value
+     * @param isLat whether it is a lat or lon
+     * @return Formats a String as a float with "N","S","E", "W"
+     */
+    public String getDirChar(String floatVal, boolean isLat)
     {
-        return getDirChar(new Float(Float.parseFloat(aFloatStr)), isLat);
+        return getDirChar(new Float(Float.parseFloat(floatVal)), isLat);
     }
     
-    public String degrees(Float aFloatStr, boolean isLat) throws JRScriptletException
+    /**
+     * Formats a float string into a lat/lon with "N","S","E", "W"
+     * @param floatStr the float to be formatted
+     * @param isLat whether itis a lat or lon
+     * @return Formats a float string into a lat/lon with "N","S","E", "W"
+     * @throws JRScriptletException
+     */
+    public String degrees(Float floatStr, boolean isLat) throws JRScriptletException
     {
-        float coord = aFloatStr.floatValue();
+        float coord = floatStr.floatValue();
         DecimalFormat df = new DecimalFormat("#.####");
         String dir = "";
         if (isLat)
@@ -208,18 +231,34 @@ public class Scriptlet extends JRDefaultScriptlet
         //return "XXX";
     }
 
-    public String degrees(String aFloatStr, boolean isLat) throws JRScriptletException
+    /**
+     * Formats a String with a float value as a degrees
+     * @param floatStr
+     * @param isLat inidcates whether it is a latitude or a longitude
+     * @return Formats a String with a float value as a degrees
+     * @throws JRScriptletException XXX
+     */
+    public String degrees(String floatStr, boolean isLat) throws JRScriptletException
     {
-        return degrees(new Float(Float.parseFloat(aFloatStr)), isLat);
+        return degrees(new Float(Float.parseFloat(floatStr)), isLat);
     }
     
-    public String locality(String aDesc, Float aLat, Float aLon) throws JRScriptletException
+    
+    /**
+     * Formats a Lat,Lon into a single string where the values are separated by a comma
+     * @param desc a prefix of a description
+     * @param lat the latitude
+     * @param lon the longitude
+     * @return Formats a Lat,Lon into a single string where the values are separated by a comma
+     * @throws JRScriptletException XXX
+     */
+    public String locality(String desc, Float lat, Float lon) throws JRScriptletException
     {
-        StringBuffer strBuf = new StringBuffer(aDesc);
+        StringBuffer strBuf = new StringBuffer(desc);
         strBuf.append(" ");
-        strBuf.append(degrees(aLat, true));
+        strBuf.append(degrees(lat, true));
         strBuf.append(", ");
-        strBuf.append(degrees(aLon, false));
+        strBuf.append(degrees(lon, false));
         return strBuf.toString();
     }
 
