@@ -443,7 +443,6 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
 
         int shadowWidth  = bgBufImg.getWidth() - getItemWidth();
         int shadowHeight = bgBufImg.getHeight() - getItemHeight();
-        System.out.println("* "+shadowWidth+" "+shadowHeight);
 
         int left   = (int)(((double)shadowWidth) * 0.5);
         int top    = (int)(((double)shadowHeight)* 0.4);
@@ -495,7 +494,6 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
             ShadowFactory factory = new ShadowFactory(SHADOW_SIZE, 0.17f, Color.BLACK);
 
             BufferedImage image = new BufferedImage(getItemWidth(), getItemHeight(), BufferedImage.TYPE_INT_ARGB);
-            System.out.println(image.getWidth()+" "+image.getHeight());
 
             Graphics2D g2 = image.createGraphics();
             g2.setColor(Color.WHITE);
@@ -503,7 +501,6 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
             g2.dispose();
             
             shadowBuffer = factory.createShadow(image);
-            System.out.println(shadowBuffer.getWidth()+" "+shadowBuffer.getHeight());
         }
         return shadowBuffer;
     }
