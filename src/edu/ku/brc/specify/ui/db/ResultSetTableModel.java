@@ -35,47 +35,48 @@ import java.util.*;
 
 public class ResultSetTableModel extends AbstractTableModel
 {
-    private static Log log = LogFactory.getLog(SQLQueryPane.class);
+    private static Log log = LogFactory.getLog(ResultSetTableModel.class);
 
     private ResultSet         resultSet  = null;
     private ResultSetMetaData metaData   = null;
     private Vector<Class>     classNames = new Vector<Class>();
     private int               currentRow = 0;   
-    private int               numRows    = 0;   
+    private int               numRows    = 0;
+    private Vector<Integer>   displayIndexes = null;
     
     /**
-     * 
-     * @param aRS
+     * Construct with a ResultSet
+     * @param resultsSet
      */
-    public ResultSetTableModel(ResultSet aRS)
+    public ResultSetTableModel(ResultSet resultSet)
     {
-        if (resultSet != null)
+        if (this.resultSet != null)
         {
             try
             {
-                resultSet.close();
+                this.resultSet.close();
             } catch (SQLException ex)
             {
                 log.error(ex);
             }
         }
         
-        resultSet = aRS;
+        this.resultSet = resultSet;
         try
         {
-            if (resultSet != null)
+            if (this.resultSet != null)
             {
-                metaData = resultSet.getMetaData();
+                metaData = this.resultSet.getMetaData();
                 for (int i=1;i<=metaData.getColumnCount();i++)
                 {
                      classNames.addElement(Class.forName(metaData.getColumnClassName(i)));
                 }
                 
-                if (resultSet.last())
+                if (this.resultSet.last())
                 {
-                    numRows = resultSet.getRow();
+                    numRows = this.resultSet.getRow();
                 }
-                resultSet.first();
+                this.resultSet.first();
                 currentRow = 1;
             }
         } catch (SQLException ex)
@@ -86,6 +87,16 @@ public class ResultSetTableModel extends AbstractTableModel
         {
             log.error("In constructor of ResultSetTableModel", ex);
         }
+    }
+    
+    
+    /**
+     * Returns the ResultSet
+     * @return Returns the ResultSet
+     */
+    public ResultSet getResultSet()
+    {
+        return resultSet;
     }
     
     /**
@@ -106,19 +117,19 @@ public class ResultSetTableModel extends AbstractTableModel
 
     /**
      * Returns the Class object for a column
-     * @param aColumn the column in question
+     * @param column the column in question
      * @return the Class of the column
      */
-    public Class getColumnClass(int aColumn)
+    public Class getColumnClass(int column)
     {
-        return classNames.size() == 0 ? String.class : (Class)classNames.elementAt(aColumn);
+        return classNames.size() == 0 ? String.class : (Class)classNames.elementAt(column);
     }
 
     /**
      * Get the column name
-     * @param aColumn the column of the cell to be gotten
+     * @param column the column of the cell to be gotten
      */
-    public String getColumnName(int aColumn)
+    public String getColumnName(int column)
     {
         if (metaData == null)
         {
@@ -127,7 +138,7 @@ public class ResultSetTableModel extends AbstractTableModel
         
         try
         {
-            return metaData.getColumnName(aColumn+1);
+            return metaData.getColumnName(column+1);
             
         } catch (SQLException ex)
         {
@@ -137,54 +148,62 @@ public class ResultSetTableModel extends AbstractTableModel
      
     /**
      * Gets the value of the row col
-     * @param aRow the row of the cell to be gotten
-     * @param aColumn the column of the cell to be gotten
+     * @param row the row of the cell to be gotten
+     * @param column the column of the cell to be gotten
      */
-    public Object getValueAt(int aRow, int aColumn)
+    public Object getValueAt(int row, int column)
     {
-        aColumn++;
-        aRow++;
+        column++;
         
         if (resultSet == null) return null;
+        
         try
         {
-            if (aRow == 1)
+            if (displayIndexes != null)
             {
-                if (!resultSet.first())
+                if (!resultSet.absolute(displayIndexes.elementAt(row)+1))
                 {
-                    log.error("Error doing resultSet.first");
+                    log.error("Error doing resultSet.absolute("+row+")");
                     return null;
                 }
-                currentRow = 1;
+               
             } else
             {
-                if (currentRow+1 == aRow)
+                row++;
+            
+                if (row == 1)
                 {
-                    if (!resultSet.next())
+                    if (!resultSet.first())
                     {
-                        log.error("Error doing resultSet.next");
+                        log.error("Error doing resultSet.first");
                         return null;
                     }
-                    currentRow++;
+                    currentRow = 1;
                 } else
                 {
-                    if (!resultSet.absolute(aRow))
+                    if (currentRow+1 == row)
                     {
-                        log.error("Error doing resultSet.absolute("+aRow+")");
-                        return null;
+                        if (!resultSet.next())
+                        {
+                            log.error("Error doing resultSet.next");
+                            return null;
+                        }
+                        currentRow++;
+                    } else
+                    {
+                        if (!resultSet.absolute(row))
+                        {
+                            log.error("Error doing resultSet.absolute("+row+")");
+                            return null;
+                        }
+                        currentRow = row;
                     }
-                    currentRow = aRow;
                 }
+                
             }
             
-            try
-            {
-                return resultSet.getObject(aColumn);
-                
-            } catch (Exception e)
-            {
-                throw new RuntimeException("Error doing resultSet.getObject("+aColumn+")");
-            }
+            return resultSet.getObject(column);
+            
         } catch (SQLException ex)
         {
             log.error("getValueAt", ex);
@@ -196,10 +215,10 @@ public class ResultSetTableModel extends AbstractTableModel
     /**
      * Sets a new value into the Model
      * @param aValue the value to be set
-     * @param aRow the row of the cell to be set
-     * @param aColumn the column of the cell to be set
+     * @param row the row of the cell to be set
+     * @param column the column of the cell to be set
      */
-    public void setValueAt(Object aValue, int aRow, int aColumn)
+    public void setValueAt(Object aValue, int row, int column)
     {
 
     }
@@ -210,7 +229,7 @@ public class ResultSetTableModel extends AbstractTableModel
      */
     public int getRowCount()
     {
-      return numRows;
+      return displayIndexes != null ? displayIndexes.size() : numRows;
     }
     
     /**
@@ -237,6 +256,44 @@ public class ResultSetTableModel extends AbstractTableModel
         currentRow = 0;   
         numRows    = 0;   
        
+    }
+    
+    /**
+     * Initializes the display index data structure
+     *
+     */
+    public void initializeDisplayIndexes()
+    {
+        if (displayIndexes == null)
+        {
+            displayIndexes = new Vector<Integer>();
+        } else
+        {
+            displayIndexes.clear();
+        }
+    }
+    /**
+     * Append an index to the items being displayed
+     * @param index the index to be added
+     */
+    public void addDisplayIndex(final int index)
+    {
+        if (displayIndexes != null)
+        {
+            displayIndexes.add(index);
+        }
+    }
+    
+    public void addDisplayIndexes(int[] indexes)
+    {
+        if (displayIndexes != null)
+        {
+            for (int i=0;i<indexes.length;i++)
+            {
+                displayIndexes.add(indexes[i]);
+            }
+            this.fireTableDataChanged();
+        }
     }
 
 }

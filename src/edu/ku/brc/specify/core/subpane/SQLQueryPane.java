@@ -51,7 +51,7 @@ import edu.ku.brc.specify.ui.*;
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.dbsupport.SQLExecutionListener;
 import edu.ku.brc.specify.dbsupport.SQLExecutionProcessor;
-import edu.ku.brc.specify.ui.db.ResultSetTableModel;
+import edu.ku.brc.specify.ui.db.*;
 
 /**
  * A pane with a text field for entring in a query and then the results are displayed in a table.
@@ -70,6 +70,7 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
     private JLabel                label;
 
     private boolean               hideSQLField;
+    private boolean               hideBtnPanel;
     private SQLExecutionProcessor sqlExecutor;
     private String                sqlStr;
     
@@ -79,13 +80,15 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
      */
     public SQLQueryPane(final String name, 
                         final Taskable task, 
-                        final boolean hideSQLField)
+                        final boolean hideSQLField,
+                        final boolean hideBtnPanel)
     {
         super(name, task);
         
         setPreferredSize(new Dimension(600,600));
         
         this.hideSQLField = hideSQLField;
+        this.hideBtnPanel = hideBtnPanel;
         
         
         // builder.add(viewPanel, cc.xy(1, 1));
@@ -129,6 +132,31 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
             add(new JScrollPane(table), BorderLayout.CENTER);            
         }
         
+        if (!hideBtnPanel)
+        {
+            FormLayout      formLayout = new FormLayout("p,2dlu,p,2dlu,p", "center:p:g");
+            PanelBuilder    builder    = new PanelBuilder(formLayout);
+            CellConstraints cc         = new CellConstraints();
+            
+            JButton selectAllBtn   = new JButton(getResourceString("SelectAll"));
+            JButton deselectAllBtn = new JButton(getResourceString("DeselectAll"));
+            JButton saveToRSBtn    = new JButton(getResourceString("SaveToRecordSet"));
+            
+            builder.add(selectAllBtn,   cc.xy(1,1));
+            builder.add(deselectAllBtn, cc.xy(3,1));
+            builder.add(saveToRSBtn,    cc.xy(5,1));
+            
+            add(builder.getPanel(), BorderLayout.SOUTH);
+            
+            saveToRSBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) 
+                {
+                    SaveRecordSetDlg dlg = new SaveRecordSetDlg((ResultSetTableModel)table.getModel());
+                    dlg.setSize(650,650);
+                    dlg.setVisible(true);
+                }
+            });
+        }
     }
     
     /**

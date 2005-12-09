@@ -307,7 +307,7 @@ public class StatsTask extends BaseTask
                     throw new RuntimeException("sql element is null!");
                 }
                 
-                SQLQueryPane queryPane = new SQLQueryPane(titleElement.getTextTrim(), this, true);
+                SQLQueryPane queryPane = new SQLQueryPane(titleElement.getTextTrim(), this, true, true);
                 queryPane.setSQLStr(sqlElement.getTextTrim());
                 queryPane.doQuery();
                 UICacheManager.addSubPane(queryPane);
