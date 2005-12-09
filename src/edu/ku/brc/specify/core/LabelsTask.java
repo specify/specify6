@@ -28,12 +28,18 @@ import java.util.Vector;
 
 import edu.ku.brc.specify.core.subpane.LabelsPane;
 import edu.ku.brc.specify.core.subpane.SimpleDescPane;
+import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.specify.ui.RolloverCommand;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.dnd.DataActionEvent;
+import edu.ku.brc.specify.ui.dnd.GhostActionable;
+import edu.ku.brc.specify.ui.dnd.GhostMouseDropAdapter;
+import edu.ku.brc.specify.ui.dnd.GhostActionableDropManager;
 
 /**
  * A task to manage Labels and response to Label Commands
@@ -55,23 +61,72 @@ public class LabelsTask extends BaseTask
     {
         super(LABELS, getResourceString(LABELS));
         
-        // Temporary
-        NavBox navBox = new NavBox(name);
-        navBox.add(NavBox.createBtn("Fish Label Example", name, IconManager.IconSize.Std16, new DisplayAction("fish_label.jrxml", "Fish Label Example")));
-        navBox.add(NavBox.createBtn("Lichens Label Example", name, IconManager.IconSize.Std16, new DisplayAction("lichens_label.jrxml", "Lichens Label Example")));
-        navBoxes.addElement(navBox);
     }
+    
+    /**
+     * Helper method for registering a NavBoxItem as a GhostMouseDropAdapter
+     * @param list the list of NavBoxItems that will have this nbi registered as a drop zone
+     * @param navBox the parent box for the nbi to be added to
+     * @param navBoxItemDropZone the nbi in question
+     */
+    protected void addToNavBoxAndRegisterAsDroppable(java.util.List<NavBoxIFace> list, NavBox navBox, NavBoxItemIFace navBoxItemDropZone)
+    {
+        navBox.add(navBoxItemDropZone);
+        for (NavBoxIFace nBox : list)
+        {
+            for (NavBoxItemIFace nbi : nBox.getItems())
+            {
+                if (nbi instanceof GhostActionable)
+                {
+                    GhostActionable       ga  = (GhostActionable)nbi;
+                    GhostMouseDropAdapter gpa = ga.getMouseDropAdapter();  
+                    gpa.addGhostDropListener(new GhostActionableDropManager(UICacheManager.getGlassPane(), navBoxItemDropZone.getUIComponent(), ga));
+                }
+            }
+        }
+
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.Taskable#initialize()
+     */
+    public void initialize()
+    {
+        if (!isInitialized)
+        {
+            super.initialize(); // sets isInitialized to false
+            
+            NavBox navBox = new NavBox(name);  
+            
+            // Get all RecordSets and register them 
+            RecordSetTask rst = (RecordSetTask)ContextMgr.getInstance().getTaskByClass(RecordSetTask.class);
+            
+            java.util.List<NavBoxIFace> list = rst.getNavBoxes();
+            
+            // Temporary these to come from a persistent store
+            addToNavBoxAndRegisterAsDroppable(list, navBox, NavBox.createBtn("Fish Label Example", name, IconManager.IconSize.Std16, new DisplayAction("fish_label.jrxml", "Fish Label Example")));
+            addToNavBoxAndRegisterAsDroppable(list, navBox, NavBox.createBtn("Lichens Label Example", name, IconManager.IconSize.Std16, new DisplayAction("lichens_label.jrxml", "Lichens Label Example")));
+
+            navBoxes.addElement(navBox);
+        }
+        
+    }
+
     
     /**
      * Performs a command (to cfreate a label)
      * @param name the XML file name for the label
      */
-    public void doCommand(final String name, final String title)
+    public void doCommand(final String name, final String title, final Object data)
     {
         LabelsPane labelsPane = new LabelsPane(title, this);
         UICacheManager.addSubPane(labelsPane);
-        
-        labelsPane.createReport(name);
+        RecordSet rs = null;
+        if (data instanceof RecordSet)
+        {
+            rs = (RecordSet)data;
+        }
+        labelsPane.createReport(name, rs);
 
     }
     
@@ -94,6 +149,8 @@ public class LabelsTask extends BaseTask
      */
     public java.util.List<NavBoxIFace> getNavBoxes()
     {
+        initialize();
+        
         extendedNavBoxes.clear();
         extendedNavBoxes.addAll(navBoxes);
         
@@ -145,6 +202,8 @@ public class LabelsTask extends BaseTask
     {
         private String   name;
         private String   title;
+        private RecordSet recordSet = null;
+        
         
         public DisplayAction(final String name, final String title)
         {
@@ -154,7 +213,22 @@ public class LabelsTask extends BaseTask
         
         public void actionPerformed(ActionEvent e) 
         {
-            doCommand(name, title);
+            Object data = null;
+            if (e instanceof DataActionEvent)
+            {
+                data = ((DataActionEvent)e).getData();
+            }
+            doCommand(name, title, data);
+        }
+        
+        public void setRecordSet(final RecordSet recordSet)
+        {
+            this.recordSet = recordSet;
+        }
+        
+        public RecordSet getRecordSet()
+        {
+            return recordSet;
         }
     }
 }

@@ -33,6 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.exceptions.UIException;
+import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
 
 public class UICacheManager
 {
@@ -42,6 +43,7 @@ public class UICacheManager
     public static final String TOOLBAR   = "toolbar";
     public static final String STATUSBAR = "statusbar";
     public static final String TOPFRAME  = "topframe";
+    public static final String GLASSPANE  = "glasspane";
     
     private static Log log               = LogFactory.getLog(UICacheManager.class);
     private static UICacheManager cmdMgr = new UICacheManager();
@@ -329,6 +331,12 @@ public class UICacheManager
             }
           });
     }
+    
+    public static GhostGlassPane getGlassPane()
+    {
+        return ((GhostGlassPane)UICacheManager.getInstance().get(GLASSPANE));
+    }
+
 
 
 }

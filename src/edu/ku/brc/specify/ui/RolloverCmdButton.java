@@ -87,7 +87,7 @@ public class RolloverCmdButton extends JButton implements NavBoxItemIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.NavBoxItemIFace#getUIComponent()
      */
-    public Component getUIComponent()
+    public JComponent getUIComponent()
     {
         return this;
     }

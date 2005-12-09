@@ -21,43 +21,21 @@ package edu.ku.brc.specify.core;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
-import edu.ku.brc.specify.core.DataEntryTask.DataEntryAction;
+import org.hibernate.Criteria;
+
 import edu.ku.brc.specify.core.subpane.SimpleDescPane;
+import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.specify.ui.RolloverCommand;
 import edu.ku.brc.specify.ui.SubPaneIFace;
-import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.hibernate.*;
-import org.hibernate.Criteria;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
-
-import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
-
-import edu.ku.brc.specify.config.SpecifyConfig;
-import edu.ku.brc.specify.core.DataEntryTask;
-import edu.ku.brc.specify.core.InteractionsTask;
-import edu.ku.brc.specify.core.LabelsTask;
-import edu.ku.brc.specify.core.QueryTask;
-import edu.ku.brc.specify.core.ReportsTask;
-import edu.ku.brc.specify.core.StatsTask;
-import edu.ku.brc.specify.dbsupport.*;
-import edu.ku.brc.specify.datamodel.*;
-import edu.ku.brc.specify.plugins.PluginMgr;
-import edu.ku.brc.specify.ui.GenericFrame;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.MainPanel;
-import edu.ku.brc.specify.ui.PropertyViewer;
-import edu.ku.brc.specify.ui.ToolbarLayoutManager;
-import edu.ku.brc.specify.ui.*;
-import edu.ku.brc.specify.dbsupport.*;
+import edu.ku.brc.specify.ui.dnd.GhostActionable;
 /**
  * 
  * @author rods
@@ -75,18 +53,39 @@ public class RecordSetTask extends BaseTask
     {
         super(RECORD_SET, getResourceString(RECORD_SET));
         
-        NavBox navBox = new NavBox(title);
-        
-        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(RecordSet.class);
-        List recordSets = criteria.list();
-          
-        for (Iterator iter=recordSets.iterator();iter.hasNext();)
+    }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.Taskable#initialize()
+     */
+    public void initialize()
+    {
+        if (!isInitialized)
         {
-            RecordSet recordSet = (RecordSet)iter.next();
-            navBox.add(NavBox.createBtn(recordSet.getName(), name, IconManager.IconSize.Std16));
-        }          
-        navBoxes.addElement(navBox);
-        
+            super.initialize();super.initialize(); // sets isInitialized to false
+            
+            Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(RecordSet.class);
+            List recordSets = criteria.list();
+              
+            NavBox navBox = new NavBox(title);
+            
+            for (Iterator iter=recordSets.iterator();iter.hasNext();)
+            {
+                RecordSet recordSet = (RecordSet)iter.next();
+                
+                NavBoxItemIFace nb = NavBox.createBtn(recordSet.getName(), name, IconManager.IconSize.Std16);
+                navBox.add(nb);
+                
+                if (nb instanceof GhostActionable)
+                {
+                    GhostActionable ga = (GhostActionable)nb;
+                    ga.createMouseDropAdapter();
+                    ga.setData(recordSet);
+                }
+            }          
+            navBoxes.addElement(navBox);
+        }
     }
     
     /* (non-Javadoc)
@@ -119,7 +118,6 @@ public class RecordSetTask extends BaseTask
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
         
         //ToolBarDropDownBtn btn = createToolbarButton(RECORD_SET,   "dataentry.gif",    "dataentry_hint");
-       
         //list.add(new ToolBarItemDesc(btn.getCompleteComp()));
         
         return list;
@@ -135,10 +133,4 @@ public class RecordSetTask extends BaseTask
         return list;
         
     }
-    
-    //--------------------------------------------------------------
-    // Inner Classes
-    //--------------------------------------------------------------
-    
-
 }

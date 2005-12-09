@@ -19,7 +19,7 @@
  */
 package edu.ku.brc.specify.core;
 
-import java.awt.Component;
+import javax.swing.JComponent;
 
 /**
  * Interface of an item to be organized by a NavBox
@@ -33,6 +33,6 @@ public interface NavBoxItemIFace
      * Return the UI Component that is used to display the contents of the navigation box 
      * @return Return the UI Component that is used to display the contents of the navigation box 
      */
-    public Component getUIComponent();
+    public JComponent getUIComponent();
     
 }

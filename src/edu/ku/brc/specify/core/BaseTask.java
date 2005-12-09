@@ -53,6 +53,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable
     
     protected Vector<NavBoxIFace> navBoxes = new Vector<NavBoxIFace>(); 
     protected Icon                icon     = null;
+    protected boolean             isInitialized = false;
     
     /**
      * Constructor
@@ -72,6 +73,14 @@ public abstract class BaseTask implements Taskable, TaskPluginable
     public void finalize()
     {
         ContextMgr.getInstance().unregister(this);
+    }
+    
+    /**
+     * 
+     */
+    public void initialize()
+    {
+        isInitialized = true;
     }
     
      /**
@@ -133,6 +142,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable
      */
     public java.util.List<NavBoxIFace> getNavBoxes()
     {
+        initialize();
         return navBoxes;
     }
     

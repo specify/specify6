@@ -26,10 +26,12 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
@@ -48,6 +50,7 @@ public class NavBox extends JPanel implements NavBoxIFace
     private String             name;
     private NavBoxIFace.Scope  scope;
     private NavBoxMgr          mgr;
+    private Vector<NavBoxItemIFace> items = new Vector<NavBoxItemIFace>();
     
     /**
      * 
@@ -105,6 +108,14 @@ public class NavBox extends JPanel implements NavBoxIFace
     {
         return this;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.NavBoxIFace#getItems()
+     */
+    public List<NavBoxItemIFace> getItems()
+    {
+        return items;
+    }
 
     /**
      * Adds a NavBoxItemIFace item to the box and returns the UI component for that item
@@ -115,6 +126,9 @@ public class NavBox extends JPanel implements NavBoxIFace
     public Component add(final NavBoxItemIFace item, boolean notify)
     {
         super.add(item.getUIComponent());
+        
+        items.add(item);
+        
         if (notify && mgr != null)
         {
             mgr.invalidate();
@@ -190,7 +204,7 @@ public class NavBox extends JPanel implements NavBoxIFace
                                             final IconManager.IconSize iconSize, 
                                             final ActionListener al)
     {
-        Icon icon = fileName != null ? IconManager.getInstance().register(iconName, fileName, iconSize) :
+        ImageIcon icon = fileName != null ? IconManager.getInstance().register(iconName, fileName, iconSize) :
                                        IconManager.getInstance().getIcon(iconName, iconSize);
         
         RolloverCommand btn = new RolloverCommand(label, icon);

@@ -9,10 +9,10 @@
 	<property name="com.jasperassistant.designer.SnapToGrid" value="false"/>
 	<property name="com.jasperassistant.designer.Units" value="Inches"/>
 	<property name="com.jasperassistant.designer.Grid" value="true"/>
-	<parameter name="itemnum" class="java.lang.Integer">
+	<parameter name="itemnum" class="java.lang.Object">
 		<parameterDescription><![CDATA[Please the Catalog Number]]></parameterDescription>
 	</parameter>
-	<queryString><![CDATA[Select collectionobject.FieldNumber as fieldNum, collectionobjectcatalog.CatalogNumber as cat_no, collectionobjectcatalog.Name as name, taxonname.TaxonName as species, agent.LastName as catalogedBy, locality.LocalityName as locality, locality.Latitude1 as latitude, locality.Longitude1 as longitude, collectionobjectcatalog.TimestampCreated as date From determination Inner Join collectionobjectcatalog ON collectionobjectcatalog.CollectionObjectCatalogID = determination.BiologicalObjectID AND collectionobjectcatalog.CatalogNumber = $P{itemnum} Inner Join taxonname ON determination.TaxonNameID = taxonname.TaxonNameID Inner Join agent ON determination.DeterminerID = agent.AgentID Inner Join collectionobject ON collectionobjectcatalog.CollectionObjectCatalogID = collectionobject.CollectionObjectID Inner Join collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID Inner Join locality ON collectingevent.LocalityID = locality.LocalityID;]]></queryString>
+	<queryString><![CDATA[Select collectionobject.FieldNumber as fieldNum, collectionobjectcatalog.CatalogNumber as cat_no, collectionobjectcatalog.Name as name, taxonname.TaxonName as species, agent.LastName as catalogedBy, locality.LocalityName as locality, locality.Latitude1 as latitude, locality.Longitude1 as longitude, collectionobjectcatalog.TimestampCreated as date From determination Inner Join collectionobjectcatalog ON collectionobjectcatalog.CollectionObjectCatalogID = determination.BiologicalObjectID AND (collectionobjectcatalog.CatalogNumber $P!{itemnum}) Inner Join taxonname ON determination.TaxonNameID = taxonname.TaxonNameID Inner Join agent ON determination.DeterminerID = agent.AgentID Inner Join collectionobject ON collectionobjectcatalog.CollectionObjectCatalogID = collectionobject.CollectionObjectID Inner Join collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID Inner Join locality ON collectingevent.LocalityID = locality.LocalityID;]]></queryString>
 	<field name="cat_no" class="java.lang.String">
 	</field>
 	<field name="catalogedBy" class="java.lang.String">

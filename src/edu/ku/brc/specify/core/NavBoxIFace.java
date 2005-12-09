@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.core;
 
 import javax.swing.JComponent;
+import java.util.List;
 
 /**
  * Describes a Navigation Box (container) of objects. The objects can be commands, queries, 
@@ -73,5 +74,10 @@ public interface NavBoxIFace
      */
     public void setMgr(NavBoxMgr mgr);
     
+    /**
+     * Returns the list of NavBoxItemIfaces
+     * @return Returns the list of NavBoxItemIfaces
+     */
+    public List<NavBoxItemIFace> getItems();
     
 }

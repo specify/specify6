@@ -56,5 +56,7 @@ public interface Taskable
      * @return Returns the title of the task (Localized)
      */
     public String getTitle();
+    
+    public void initialize();
 
 }

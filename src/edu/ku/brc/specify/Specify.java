@@ -69,12 +69,11 @@ import edu.ku.brc.specify.core.ReportsTask;
 import edu.ku.brc.specify.core.StatsTask;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.plugins.PluginMgr;
-import edu.ku.brc.specify.ui.GenericFrame;
-import edu.ku.brc.specify.ui.MainPanel;
-import edu.ku.brc.specify.ui.PropertyViewer;
-import edu.ku.brc.specify.ui.ToolbarLayoutManager;
-import edu.ku.brc.specify.ui.UICacheManager;
-
+import edu.ku.brc.specify.ui.*;
+import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
+import edu.ku.brc.specify.datamodel.*;
+import java.util.*;
+import edu.ku.brc.specify.dbsupport.*;
 /**
  * Specify Main Application Class
  *
@@ -100,6 +99,7 @@ public class Specify extends JPanel
     protected SessionFactory    mSessionFactory    = null;
     protected Session           mSession           = null;
   
+    protected GhostGlassPane    glassPane;
   
     private JLabel splashLabel = null;
   
@@ -138,10 +138,10 @@ public class Specify extends JPanel
     public Specify(GraphicsConfiguration gc)
     {
         specifyApp = this;
-        
+
         try 
         { 
-            UIManager.setLookAndFeel(new Plastic3DLookAndFeel()); 
+            //UIManager.setLookAndFeel(new Plastic3DLookAndFeel()); 
             //UIManager.setLookAndFeel(new PlasticLookAndFeel()); 
             //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
             //UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
@@ -570,6 +570,11 @@ public class Specify extends JPanel
     public void initializeUI(final GraphicsConfiguration gc)
     {        
         topFrame = new JFrame(gc);
+        topFrame.setGlassPane(glassPane = new GhostGlassPane());
+        topFrame.setLocationRelativeTo(null);
+        Toolkit.getDefaultToolkit().setDynamicLayout(true);
+        UICacheManager.getInstance().register(UICacheManager.GLASSPANE, glassPane);
+        
         JPanel top = new JPanel();
         top.setLayout(new BorderLayout());
         add(top, BorderLayout.NORTH);
@@ -619,7 +624,10 @@ public class Specify extends JPanel
         PluginMgr.getInstance().register(new InteractionsTask());
         PluginMgr.getInstance().register(new StatsTask());
         PluginMgr.getInstance().register(new QueryTask());
-        PluginMgr.getInstance().register(new RecordSetTask());
+        
+        RecordSetTask rst = new RecordSetTask();
+        rst.initialize();
+        PluginMgr.getInstance().register(rst);
         
     }
     

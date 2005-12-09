@@ -24,7 +24,7 @@ import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -41,9 +41,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.core.Taskable;
-import edu.ku.brc.specify.dbsupport.DBConnection;
+import edu.ku.brc.specify.dbsupport.*;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.datamodel.*;
 
 
 /**
@@ -62,6 +63,8 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     protected AsynchronousFillHandle asyncFillHandler = null;
     protected JLabel                 label            = null; 
     protected JasperCompilerRunnable compiler         = null;
+    
+    protected RecordSet              recordSet        = null;
     
     /**
      * 
@@ -98,8 +101,9 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
      * Starts the report creation process
      * @param fileName the XML file name of the report definition
      */
-    public void createReport(final String fileName)
+    public void createReport(final String fileName, final RecordSet recordSet)
     {
+        this.recordSet = recordSet;
         progressLabel.setText(getResourceString("JasperReportCompiling"));
         compiler = new JasperCompilerRunnable(this, XMLHelper.getConfigDirPath(fileName));
         compiler.start();
@@ -109,20 +113,47 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
      * The compiling of the report is complete
      * @param report the completeed report, or null if there was a compiling error
      */
-    protected void compileComplete(JasperReport report)
+    protected void compileComplete(final JasperReport report)
     {
         if (report != null)
         {
             try
             {
                 // 28594
-                String itemnum = JOptionPane.showInputDialog(this, "Please Enter a Catalog Item");
-                if (itemnum == null)
+                String itemnum = "";
+                
+                if ( recordSet == null)
                 {
-                    itemnum = "28594";
+                    itemnum = JOptionPane.showInputDialog(this, "Please Enter a Catalog Item");
+                    if (itemnum == null)
+                    {
+                        itemnum = "28594";
+                    }
+                    itemnum = "= " + itemnum;
+                } else
+                {
+                    StringBuffer strBuf = new StringBuffer(" in (");
+                    Set set = recordSet.getItems();
+                    int i = 0;
+                    for (Iterator iter=set.iterator();iter.hasNext();)
+                    {
+                        RecordSetItem rsi = (RecordSetItem)iter.next();
+                        if (i > 0)
+                        {
+                            strBuf.append(",");
+                        }
+                        strBuf.append(Integer.toString(rsi.getRecordId()));
+                        i++;
+                    }
+                    strBuf.append(")");
+                    itemnum = strBuf.toString();
                 }
+                
                 Map<Object, Object> parameters = new HashMap<Object, Object>();
-                parameters.put("itemnum", Integer.parseInt(itemnum));
+                //parameters.put("itemnum", Integer.parseInt(itemnum));
+                parameters.put("itemnum", itemnum);
+                
+                System.out.println("["+itemnum+"]");
 
                 progressLabel.setText(getResourceString("JasperReportFilling"));
                 asyncFillHandler = AsynchronousFillHandle.createHandle(report, parameters, DBConnection.getInstance().getConnection());
@@ -162,6 +193,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         removeAll();
         setLabelText(getResourceString("JasperReportFillError"));
         log.error(t);
+        t.printStackTrace();
     }
 
     /* (non-Javadoc)
