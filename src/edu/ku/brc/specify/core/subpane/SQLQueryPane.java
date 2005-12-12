@@ -52,7 +52,10 @@ import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.dbsupport.SQLExecutionListener;
 import edu.ku.brc.specify.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.ui.db.*;
-
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.beans.*;
 /**
  * A pane with a text field for entring in a query and then the results are displayed in a table.
  * 
@@ -68,6 +71,11 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
     private JTable                table;
     private JButton               exeBtn;
     private JLabel                label;
+    
+    private JButton               selectAllBtn;
+    private JButton               deselectAllBtn;
+    private JButton               saveToRSBtn;
+
 
     private boolean               hideSQLField;
     private boolean               hideBtnPanel;
@@ -138,9 +146,9 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
             PanelBuilder    builder    = new PanelBuilder(formLayout);
             CellConstraints cc         = new CellConstraints();
             
-            JButton selectAllBtn   = new JButton(getResourceString("SelectAll"));
-            JButton deselectAllBtn = new JButton(getResourceString("DeselectAll"));
-            JButton saveToRSBtn    = new JButton(getResourceString("SaveToRecordSet"));
+            selectAllBtn   = new JButton(getResourceString("SelectAll"));
+            deselectAllBtn = new JButton(getResourceString("DeselectAll"));
+            saveToRSBtn    = new JButton(getResourceString("SaveToRecordSet"));
             
             builder.add(selectAllBtn,   cc.xy(1,1));
             builder.add(deselectAllBtn, cc.xy(3,1));
@@ -148,14 +156,22 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
             
             add(builder.getPanel(), BorderLayout.SOUTH);
             
+            selectAllBtn.addActionListener(new ActionListener()
+                    {  public void actionPerformed(ActionEvent ae) { table.selectAll(); } });
+
+   
+            deselectAllBtn.addActionListener(new ActionListener()
+                    {  public void actionPerformed(ActionEvent ae) { table.clearSelection();} });
+              
             saveToRSBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) 
                 {
-                    SaveRecordSetDlg dlg = new SaveRecordSetDlg((ResultSetTableModel)table.getModel());
-                    dlg.setSize(650,650);
-                    dlg.setVisible(true);
+                    SaveRecordSetDlg dlg = new SaveRecordSetDlg((ResultSetTableModel)table.getModel(), table.getSelectedRows());
+                   
+                    UICacheManager.centerAndShow(dlg);
                 }
             });
+            enableUI(true);
         }
     }
     
@@ -170,6 +186,15 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
             exeBtn.setEnabled(enabled);
             textArea.setEnabled(enabled);
             label.setEnabled(enabled);
+            
+            if (selectAllBtn != null)
+            {
+                boolean en = enabled && table.getModel() != null && table.getModel().getRowCount() > 0;
+    
+                selectAllBtn.setEnabled(en);
+                deselectAllBtn.setEnabled(en && table.getSelectedRowCount() > 0);
+                saveToRSBtn.setEnabled(en);
+            }
         }
     }
     

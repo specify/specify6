@@ -288,10 +288,23 @@ public class ResultSetTableModel extends AbstractTableModel
     {
         if (displayIndexes != null)
         {
+            
+            Hashtable<Integer, Integer> hash = new Hashtable<Integer, Integer>();
+            for (Integer inx : displayIndexes)
+            {
+                hash.put(inx, inx);
+            }
+
             for (int i=0;i<indexes.length;i++)
             {
-                displayIndexes.add(indexes[i]);
+                if (hash.get(indexes[i]) == null)
+                {
+                    displayIndexes.add(indexes[i]);
+                }
             }
+            hash.clear();
+            Collections.sort(displayIndexes);
+            
             this.fireTableDataChanged();
         }
     }

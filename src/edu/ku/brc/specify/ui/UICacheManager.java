@@ -20,6 +20,9 @@
 package edu.ku.brc.specify.ui;
 
 import java.awt.Component;
+import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.util.Hashtable;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -332,11 +335,35 @@ public class UICacheManager
           });
     }
     
+    /**
+     * Returns the glass pane from the mgr
+     * @return Returns the glass pane from the mgr
+     */
     public static GhostGlassPane getGlassPane()
     {
         return ((GhostGlassPane)UICacheManager.getInstance().get(GLASSPANE));
     }
 
+    /**
+     * Center and make the frame visible
+     * @param aFrame
+     */
+    public static void centerAndShow(java.awt.Window window)
+    {
+        Rectangle screenRect = window.getGraphicsConfiguration().getBounds();
+        Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(window.getGraphicsConfiguration());
+
+        // Make sure we don't place the demo off the screen.
+        int centerWidth = screenRect.width < window.getSize().width ? screenRect.x : screenRect.x
+            + screenRect.width / 2 - window.getSize().width / 2;
+        int centerHeight = screenRect.height < window.getSize().height ? screenRect.y : screenRect.y
+            + screenRect.height / 2 - window.getSize().height / 2;
+
+        centerHeight = centerHeight < screenInsets.top ? screenInsets.top : centerHeight;
+
+        window.setLocation(centerWidth, centerHeight);
+        window.setVisible(true);      
+    }
 
 
 }

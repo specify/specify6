@@ -40,17 +40,17 @@ public class SaveRecordSetDlg extends JDialog
      * 
      *
      */
-    public SaveRecordSetDlg(ResultSetTableModel srcModel)
+    public SaveRecordSetDlg(ResultSetTableModel srcModel, final int[] preSelectedRows)
     {
         this.srcModel = srcModel;
-        createUI();
+        createUI(preSelectedRows);
     }
     
     /**
      * 
      *
      */
-    protected void createUI()
+    protected void createUI(final int[] preSelectedRows)
     {
         JPanel panel = new JPanel(new BorderLayout());
         
@@ -107,13 +107,15 @@ public class SaveRecordSetDlg extends JDialog
                     {  public void actionPerformed(ActionEvent ae) { setVisible(false);} });
             
             panel.add(btnBuilder.getPanel(), BorderLayout.SOUTH);
-
+            
+            setSize(btnBuilder.getPanel().getPreferredSize().width+20, 600);
 
         } catch (Exception ex)
         {
             log.error(ex);
         }
         
+        dstModel.addDisplayIndexes(preSelectedRows);
         setContentPane(panel);
         
     }
@@ -126,7 +128,9 @@ public class SaveRecordSetDlg extends JDialog
     {
         srcTable.selectAll();
         dstModel.addDisplayIndexes(srcTable.getSelectedRows());
+        srcTable.clearSelection();
     }
+    
     
     /**
      * Add only the selected items 
@@ -134,9 +138,8 @@ public class SaveRecordSetDlg extends JDialog
      */
     protected void addAddSelected()
     {
-        srcTable.clearSelection();
         dstModel.addDisplayIndexes(srcTable.getSelectedRows());
-        
+        srcTable.clearSelection();
         // XXX need to remove duplicates and sort by index number
     }
     
