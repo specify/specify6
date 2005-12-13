@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tables>
+  <groups>
+  	<group name="colobj"   title="Collection Object"/>
+  	<group name="agents"   title="Agents"/>
+  	<group name="geo"      title="Geography"/>
+  	<group name="locality" title="Locality"/>
+  	<group name="taxon"    title="Taxon"/>
+  	<group name="colobj"   title="Collection Object"/>
+  	<group name="addr"     title="Address"/>
+  </groups>
+  
+  <table id="1" group="colobj" name="CollObject" title="Collection Object">
+    <index>
+	    <sql>
+	        <![CDATA[Select collectionobjectcatalog.CatalogNumber, taxonname.TaxonName From collectionobject Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID Inner Join determination ON determination.BiologicalObjectID = collectionobjectcatalog.CollectionObjectCatalogID Inner Join taxonname ON taxonname.TaxonNameID = determination.TaxonNameID Where collectionobjectcatalog.SubNumber = '0']]>
+	    </sql>
+	    <cols>
+	       <col>1</col>
+	       <col>2</col>
+	    </cols>
+	</index>
+    <detailView>
+	    <sql>
+	        <![CDATA[Select CatalogNumber from collectionobjectcatalog where CatalogNumber in (%s)]]>
+	    </sql>
+        <captions>
+            <caption col="1" text="Localist Name"/>
+        </captions>
+	</detailView>
+  </table>
+  
+  <table id="2" group="locality" name="locality" title="Locality">
+    <index>
+	    <sql>
+	        <![CDATA[select LocalityID,localityname from locality;]]>
+	    </sql>
+	    <cols>
+	       <col>1</col>
+	       <col>2</col>
+	    </cols>
+	</index>
+    <detailView>
+	    <sql>
+	        <![CDATA[select localityname,Latitude1,Longitude1 from locality where LocalityID in (%s)]]>
+	    </sql>
+        <captions>
+            <caption col="1" text="Localist Name"/>
+        </captions>
+	</detailView>
+  </table>
+  
+  <table id="3" group="geo" name="geography" title="Geography">
+    <index>
+	    <sql>
+	        <![CDATA[select * from geography;]]>
+	    </sql>
+	    <cols>
+	       <col>1</col>
+	       <col>3</col>
+	       <col>4</col>
+	       <col>5</col>
+	       <col>6</col>
+	       <col>7</col>
+	       <col>8</col>
+	       <col>9</col>
+	       <col>10</col>
+	       <col>11</col>
+	    </cols>
+	</index>
+    <detailView>
+	    <sql>
+	        <![CDATA[select County,State,Country from geography where GeographyID in (%s)]]>
+	    </sql>
+        <captions>
+            <caption col="1" text="Locality Name"/>
+        </captions>
+	</detailView>
+  </table>
+  
+  <table id="4" group="taxon" name="taxonname" title="Taxon">
+    <index>
+	    <sql>
+	        <![CDATA[select TaxonNameID,TaxonName from taxonname;]]>
+	    </sql>
+	    <cols>
+	       <col>1</col>
+	       <col>2</col>
+	    </cols>
+	</index>
+    <detailView>
+	    <sql>
+	        <![CDATA[select TaxonNameID,TaxonName from taxonname where TaxonNameID in (%s)]]>
+	    </sql>
+        <captions>
+            <caption col="1" text="Localist Name"/>
+        </captions>
+	</detailView>
+  </table>
+  
+  <table id="5" group="agents" name="Agent" title="Agent">
+    <index>
+	    <sql>
+	        <![CDATA[select AgentID,FirstName,LastName from agent;]]>
+	    </sql>
+	    <cols>
+	       <col>1</col>
+	       <col>2</col>
+	       <col>3</col>
+	    </cols>
+	</index>
+    <detailView>
+	    <sql>
+	        <![CDATA[select AgentID,FirstName,LastName from agent where AgentID in (%s)]]>
+	    </sql>
+        <captions>
+            <caption col="1" text="Localist Name"/>
+        </captions>
+	</detailView>
+  </table>
+  
+  <table id="6" group="addr" name="Address" title="Address">
+    <index>
+	    <sql>
+	        <![CDATA[select * from address;]]>
+	    </sql>
+	    <cols>
+	       <col>1</col>
+	       <col>2</col>
+	       <col>3</col>
+	       <col>4</col>
+	       <col>5</col>
+	       <col>6</col>
+	    </cols>
+	</index>
+    <detailView>
+	    <sql>
+	        <![CDATA[select address,city,state from address where AddressID in (%s)]]>
+	    </sql>
+        <captions>
+            <caption col="1" text="Localist Name"/>
+        </captions>
+	</detailView>
+  </table>
+  
+  <table id="7" group="colobj" name="CollObjToDeterminer" title="Determiner">
+    <index>
+	    <sql>
+	        <![CDATA[Select collectionobject.CollectionObjectID, agent.FirstName, agent.LastName From collectionobject Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID Inner Join determination ON determination.BiologicalObjectID = collectionobjectcatalog.CollectionObjectCatalogID Inner Join agent ON agent.AgentID = determination.DeterminerID]]>
+	    </sql>
+	    <cols>
+	       <col>1</col>
+	       <col>2</col>
+	    </cols>
+	</index>
+    <detailView>
+	    <sql>
+	        <![CDATA[Select collectionobject.CollectionObjectID, agent.FirstName, agent.LastName, agent.MiddleInitial From collectionobject Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID Inner Join determination ON determination.BiologicalObjectID = collectionobjectcatalog.CollectionObjectCatalogID Inner Join agent ON agent.AgentID = determination.DeterminerID where collectionobjectcatalog.CollectionObjectCatalogID in (%s)]]>
+	    </sql>
+        <captions>
+            <caption col="1" text="Localist Name"/>
+        </captions>
+	</detailView>
+  </table>  
+  
+  <table id="8" group="colobj" name="CollObToLocality" title="Localities Asscoiated with Collecting Events">
+    <index>
+	    <sql>
+	        <![CDATA[Select collectingevent.CollectingEventID, locality.NamedPlace, locality.LocalityName, locality.Township, locality.Section  From collectingevent Inner Join locality ON collectingevent.LocalityID = locality.LocalityID]]>
+	    </sql>
+	    <cols>
+	       <col>1</col>
+	       <col>2</col>
+	       <col>3</col>
+	       <col>4</col>
+	       <col>5</col>
+	    </cols>
+	</index>
+    <detailView>
+	    <sql>
+	        <![CDATA[Select collectingevent.CollectingEventID, locality.LocalityName  From collectingevent Inner Join locality ON collectingevent.LocalityID = locality.LocalityID where collectingevent.CollectingEventID in (%s)]]>
+	    </sql>
+        <captions>
+            <caption col="1" text="Localist Name"/>
+        </captions>
+	</detailView>
+  </table>  
+  
+</tables>
+  

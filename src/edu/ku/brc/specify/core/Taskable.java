@@ -20,8 +20,8 @@
 package edu.ku.brc.specify.core;
 
 import java.util.List;
-import java.awt.*;
-import javax.swing.*;
+
+import javax.swing.Icon;
 
 
 /**
@@ -57,6 +57,11 @@ public interface Taskable
      */
     public String getTitle();
     
+    /**
+     * Asks the task to initialize itself, this could invlove reading configuration files, etc.
+     * It is only done one time.
+     *
+     */
     public void initialize();
 
 }

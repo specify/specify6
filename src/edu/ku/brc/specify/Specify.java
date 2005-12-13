@@ -20,8 +20,9 @@
  */
 
 package edu.ku.brc.specify;
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
@@ -33,6 +34,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.net.URL;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -60,7 +62,9 @@ import org.hibernate.cfg.Configuration;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 
 import edu.ku.brc.specify.config.SpecifyConfig;
+import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.core.DataEntryTask;
+import edu.ku.brc.specify.core.ExpressSearchTask;
 import edu.ku.brc.specify.core.InteractionsTask;
 import edu.ku.brc.specify.core.LabelsTask;
 import edu.ku.brc.specify.core.QueryTask;
@@ -69,11 +73,12 @@ import edu.ku.brc.specify.core.ReportsTask;
 import edu.ku.brc.specify.core.StatsTask;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.plugins.PluginMgr;
+import edu.ku.brc.specify.ui.GenericFrame;
+import edu.ku.brc.specify.ui.MainPanel;
+import edu.ku.brc.specify.ui.PropertyViewer;
+import edu.ku.brc.specify.ui.ToolbarLayoutManager;
 import edu.ku.brc.specify.ui.*;
 import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
-import edu.ku.brc.specify.datamodel.*;
-import java.util.*;
-import edu.ku.brc.specify.dbsupport.*;
 /**
  * Specify Main Application Class
  *
@@ -105,7 +110,9 @@ public class Specify extends JPanel
   
     // Used only if swingset is an application 
     private JFrame frame = null;
-    private JWindow splashScreen = null;
+    private JWindow splashWindow = null;
+    //private TransparentBackground splashScreen = null;
+    private ImageIcon specifySplashImageIcon   = null;
   
     private String databaseName = "";
     private String userName = "";
@@ -137,7 +144,24 @@ public class Specify extends JPanel
      */
     public Specify(GraphicsConfiguration gc)
     {
+        // Create and throw the splash screen up. Since this will
+        // physically throw bits on the screen, we need to do this
+        // on the GUI thread using invokeLater.
+
+        createSplashScreen();
+        // do the following on the gui thread
+        SwingUtilities.invokeLater(new Runnable() {
+              public void run() 
+              {
+                  showSplashScreen();
+              }
+        });
+        
         specifyApp = this;
+        
+        DBConnection.getInstance().setUsernamePassword("rods", "rods");
+        DBConnection.getInstance().setDriver("com.mysql.jdbc.Driver");
+        DBConnection.getInstance().setDBName("jdbc:mysql://localhost/demo_fish");
 
         try 
         { 
@@ -156,17 +180,9 @@ public class Specify extends JPanel
       
         frame = new JFrame(gc);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        createSplashScreen();
         
         UICacheManager.getInstance().register(UICacheManager.FRAME, frame);
       
-        // do the following on the gui thread
-        SwingUtilities.invokeLater(new Runnable() {
-              public void run() 
-              {
-                  showSplashScreen();
-              }
-        });
       
         try
         {
@@ -188,10 +204,6 @@ public class Specify extends JPanel
           hostName = dbl.getHostName();
         }
        */
-      
-        DBConnection.getInstance().setUsernamePassword("rods", "rods");
-        DBConnection.getInstance().setDriver("com.mysql.jdbc.Driver");
-        DBConnection.getInstance().setDBName("jdbc:mysql://localhost/demo_fish");
         
         
 
@@ -219,12 +231,6 @@ public class Specify extends JPanel
         HibernateUtil.commitTransaction();
         */
         
-        // Create and throw the splash screen up. Since this will
-        // physically throw bits on the screen, we need to do this
-        // on the GUI thread using invokeLater.
-
-        
-      
       
         log.info("Creating configuration "); 
         
@@ -500,24 +506,72 @@ public class Specify extends JPanel
      */
     public void createSplashScreen() 
     {
-        splashLabel = new JLabel(new ImageIcon("images/splash.jpg"));
-        
-        if(!isApplet()) 
+        splashLabel = new JLabel(new ImageIcon(Specify.class.getResource("images/specify_splash.gif")));        if(!isApplet()) 
         {
-            splashScreen = new JWindow(getFrame());
-            splashScreen.getContentPane().add(splashLabel);
-            splashScreen.pack();
-            Rectangle screenRect = getFrame().getGraphicsConfiguration().getBounds();
-            splashScreen.setLocation(screenRect.x + screenRect.width/2 - splashScreen.getSize().width/2,
-                                     screenRect.y + screenRect.height/2 - splashScreen.getSize().height/2);
-        } 
+            splashWindow = new JWindow(getFrame());
+            splashWindow.getContentPane().add(splashLabel);
+            splashWindow.getContentPane().setBackground(Color.WHITE);
+            splashWindow.pack();
+            Dimension scrSize = getToolkit().getScreenSize();// getFrame().getGraphicsConfiguration().getBounds();
+            splashWindow.setLocation(scrSize.width/2 - splashWindow.getSize().width/2,
+                                     scrSize.height/2 - splashWindow.getSize().height/2);
+            System.out.println(splashWindow.getLocation());
+            System.out.println(splashWindow.getSize());
+            /*
+            specifySplashImageIcon = new ImageIcon(Specify.class.getResource("images/specify_splash.gif"));
+            JPanel panel = new JPanel() {
+                
+                public void paintComponent(Graphics g) 
+                {
+                    if (specifySplashImageIcon != null)
+                    {
+                        g.drawImage(specifySplashImageIcon.getImage(),0,0,null);
+                        //g.setColor(Color.BLACK);
+                       // g.draw3DRect(0,0,199,199, true);
+                        //System.out.println("Paint RECT");
+
+                    }
+                }
+                public Dimension getSize()
+                {
+                    //return new Dimension(200,200);
+                    return new Dimension(specifySplashImageIcon.getIconWidth(), specifySplashImageIcon.getIconHeight());
+                }
+                public Dimension getPreferredSize()
+                {
+                    return getSize();
+                }
+            };
+            panel.setOpaque(false);
+            JFrame splashFrame = new JFrame("Transparent Window");
+            splashScreen = new TransparentBackground(splashFrame, specifySplashImageIcon);
+            splashFrame.setSize(specifySplashImageIcon.getIconWidth(), specifySplashImageIcon.getIconHeight());
+            splashScreen.setSize(specifySplashImageIcon.getIconWidth(), specifySplashImageIcon.getIconHeight());
+            
+            //splashScreen.setLayout(new BorderLayout());
+            //splashScreen.add(panel, BorderLayout.CENTER);
+            
+            splashFrame.setUndecorated(true);
+            //splashFrame.getContentPane().setLayout(new BorderLayout());
+            //splashFrame.getContentPane().add(splashScreen, BorderLayout.CENTER);
+            splashFrame.pack();
+            Dimension scrSize = getToolkit().getScreenSize();// getFrame().getGraphicsConfiguration().getBounds();
+            splashFrame.setLocation(scrSize.width/2 - splashFrame.getSize().width/2,
+                                    scrSize.height/2 - splashFrame.getSize().height/2);
+            System.out.println(splashFrame.getLocation());
+            System.out.println(splashFrame.getSize());
+            splashFrame.setVisible(true);
+            */
+        }
+
     }
   
     public void showSplashScreen()
     {
         if (!isApplet())
         {
-            splashScreen.setVisible(true);
+            splashWindow.setVisible(true);
+            //splashScreen.getFrame().setVisible(true);
         } else
         {
             add(splashLabel, BorderLayout.CENTER);
@@ -533,8 +587,9 @@ public class Specify extends JPanel
     {
         if (!isApplet())
         {
-            splashScreen.setVisible(false);
-            splashScreen = null;
+            //splashScreen.hideAll();
+            splashWindow.setVisible(false);
+            splashWindow = null;
             splashLabel = null;
         }
     }
@@ -629,6 +684,11 @@ public class Specify extends JPanel
         rst.initialize();
         PluginMgr.getInstance().register(rst);
         
+        // Express Search (Invisble Task)
+        ExpressSearchTask est = new ExpressSearchTask();
+        est.initialize();
+        PluginMgr.getInstance().register(est);
+       
     }
     
     /**
@@ -742,7 +802,20 @@ public class Specify extends JPanel
                     }
                 });  
 
-        return mb;
+        fileMenu = (JMenu) mb.add(new JMenu(getResourceString("Advanced")));
+        fileMenu.setMnemonic('A');     
+        String label = getResourceString("ESConfig");
+        mi = createMenuItem(fileMenu, label, getResourceString("ESConfig_Mn"), label, false, null);
+        mi.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        ExpressSearchTask expressSearchTask = (ExpressSearchTask)ContextMgr.getInstance().getTaskByName(ExpressSearchTask.EXPRESSSEARCH);
+                        expressSearchTask.showIndexerPane();
+                    }
+                });  
+
+         return mb;
     }
    
     /**

@@ -19,27 +19,23 @@
  */
 package edu.ku.brc.specify.core;
 
-import java.util.List;
-import java.util.Vector;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.*;
-
-import edu.ku.brc.specify.ui.*;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.core.subpane.SQLQueryPane;
-import edu.ku.brc.specify.plugins.MenuItemDesc;
-import edu.ku.brc.specify.plugins.TaskPluginable;
-import edu.ku.brc.specify.plugins.ToolBarItemDesc;
-
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Vector;
+
+import edu.ku.brc.specify.core.subpane.SQLQueryPane;
+import edu.ku.brc.specify.plugins.MenuItemDesc;
+import edu.ku.brc.specify.plugins.ToolBarItemDesc;
+import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.specify.ui.SubPaneIFace;
+import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
+import edu.ku.brc.specify.ui.UICacheManager;
+
 /**
- * This task will enable the iuser to create queries, save them and execute them.
+ * This task will enable the user to create queries, save them and execute them.
  * 
  * @author rods
  *
@@ -105,33 +101,7 @@ public class QueryTask extends BaseTask
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
         
         ToolBarDropDownBtn btn = createToolbarButton(name, "queryIt.gif", "search_hint");
-        
-        // Create Search Panel
-        GridBagLayout gridbag = new GridBagLayout();
-        GridBagConstraints c = new GridBagConstraints();
-        
-        JPanel     searchPanel = new JPanel(gridbag);
-        JLabel     spacer      = new JLabel(" ");
-        JTextField searchText  = new JTextField(10);
-        JButton    searchBtn   = new JButton(name);
-        
-        searchText.setMinimumSize(new Dimension(50, searchText.getPreferredSize().height));
-        
-        c.weightx = 1.0;
-        gridbag.setConstraints(spacer, c);
-        searchPanel.add(spacer);
-        
-        c.weightx = 0.0;
-        gridbag.setConstraints(searchText, c);
-        searchPanel.add(searchText);
-        
-        searchPanel.add(spacer);
-        
-        gridbag.setConstraints(searchBtn, c);
-        searchPanel.add(searchBtn);
-        
         list.add(new ToolBarItemDesc(btn.getCompleteComp()));
-        list.add(new ToolBarItemDesc(searchPanel));
         
         return list;
     }

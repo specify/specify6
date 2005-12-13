@@ -19,14 +19,11 @@
  */
 package edu.ku.brc.specify.stats;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
-
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -35,7 +32,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.MouseInputAdapter;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -143,7 +139,7 @@ public class StatItem extends JPanel implements QueryResultsListener
                     {
                         public void actionPerformed(ActionEvent ae)
                         {
-                            StatsTask statTask = (StatsTask)ContextMgr.getInstance().getTaskByName(getResourceString("Statistics"));
+                            StatsTask statTask = (StatsTask)ContextMgr.getInstance().getTaskByName(StatsTask.STATISTICS);
                             statTask.createStatPane(link);
                         }
                     }); 

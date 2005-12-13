@@ -22,40 +22,31 @@ package edu.ku.brc.specify.core.subpane;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.table.*;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.text.*;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import javax.swing.table.TableModel;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.specify.ui.*;
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.dbsupport.SQLExecutionListener;
 import edu.ku.brc.specify.dbsupport.SQLExecutionProcessor;
-import edu.ku.brc.specify.ui.db.*;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.*;
+import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.db.ResultSetTableModel;
+import edu.ku.brc.specify.ui.db.SaveRecordSetDlg;
 /**
  * A pane with a text field for entring in a query and then the results are displayed in a table.
  * 

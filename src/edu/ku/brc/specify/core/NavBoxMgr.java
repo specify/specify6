@@ -128,7 +128,7 @@ public class NavBoxMgr extends JPanel
         {
             list.add(box); 
             add(box.getUIComponent());
-            layout.addLayoutComponent(null, box.getUIComponent());
+            //layout.addLayoutComponent(null, box.getUIComponent());
             invalidate();
             doLayout();
         } else

@@ -23,6 +23,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.LayoutManager;
+import java.awt.LayoutManager2;
 import java.util.Vector;
 import java.util.List;
 
@@ -32,7 +33,7 @@ import java.util.List;
  * @author rods
  *
  */
-public class NavBoxLayoutManager implements LayoutManager
+public class NavBoxLayoutManager implements LayoutManager, LayoutManager2
 {
     
     private Vector<Component> comps         = new Vector<Component>();
@@ -100,7 +101,7 @@ public class NavBoxLayoutManager implements LayoutManager
      */
     public void layoutContainer(Container arg0)
     {
-        Dimension parentSize =  ((NavBoxMgr)arg0).getSize();
+        Dimension parentSize =  arg0.getSize();
         parentSize.width  -= 2 * borderPadding;
         parentSize.height -= 2 * borderPadding;
         
@@ -150,6 +151,34 @@ public class NavBoxLayoutManager implements LayoutManager
     public void removeAll()
     {
         comps.clear();
+    }
+    
+    // LayoutManager2
+    public void  addLayoutComponent(Component comp, Object constraints)
+    {
+        if (comp == null)
+        {
+            throw new NullPointerException("Null component in addLayoutComponent");
+        }
+        comps.addElement(comp);
+    }
+    public float   getLayoutAlignmentX(Container target)
+    {
+        return (float)0.0;
+    }
+    public float   getLayoutAlignmentY(Container target)
+    {
+        return (float)0.0;
+    }
+    public void invalidateLayout(Container target)
+    {
+        preferredSize.setSize(0, 0);
+        calcPreferredSize();
+    }
+    public Dimension maximumLayoutSize(Container target) 
+    {
+        calcPreferredSize();        
+        return new Dimension(preferredSize); 
     }
 
 }

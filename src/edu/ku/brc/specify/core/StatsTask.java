@@ -74,8 +74,8 @@ public class StatsTask extends BaseTask
     
     
     // Data Members
-    org.dom4j.Element statDOM;
-    org.dom4j.Element panelDOM;
+    protected Element statDOM;
+    protected Element panelDOM;
 
     /**
      * Creates a Statistics Tasks
