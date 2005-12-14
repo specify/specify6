@@ -69,6 +69,7 @@ public class BarChartPane extends ChartPane implements QueryResultsListener, Que
                         final Taskable task)
     {
         super(name, task);
+        progressLabel.setText(getResourceString("BuildingBarChart"));
     }
     
     /*

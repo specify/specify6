@@ -10,6 +10,15 @@
     <icon name="Pie_Chart"  file="piechart.gif" sizes="all"/>
     <icon name="Bar_Chart"  file="barchart.gif" sizes="all"/>
     <icon name="Record_Set" file="recordset.gif" sizes="all"/>
+    <icon name="Agent"      file="agent.gif" sizes="all"/>
+    <icon name="Series"     file="series.gif" sizes="all"/>
+    <icon name="Taxon"      file="taxon.gif" sizes="all"/>
+    <icon name="Form"       file="form.gif" sizes="all"/>
+    <icon name="Geography"  file="geography.gif" sizes="all"/>
+    <icon name="Locality"   file="locality.gif" sizes="all"/>
+    <icon name="ColObj"     file="catobj_fish.gif" sizes="all"/>
+    <icon name="Address"    file="address.gif" sizes="all"/>
+    <icon name="ColEvent"   file="collevent.gif" sizes="all"/>
     
     <icon name="Green Arrow Down" file="green_arrow_down.gif" sizes="16"/>
     <icon name="Green Arrow Up" file="green_arrow_up.gif" sizes="16"/>

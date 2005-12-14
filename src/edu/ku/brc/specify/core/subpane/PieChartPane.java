@@ -67,6 +67,8 @@ public class PieChartPane extends ChartPane implements QueryResultsListener, Que
     {
         super(name, task);
         
+        progressLabel.setText(getResourceString("BuildingPieChart"));
+        
         getter      = new QueryResultsGetter(this); 
         qrContainer = new QueryResultsContainer(name);
     }

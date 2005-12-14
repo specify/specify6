@@ -46,7 +46,7 @@ public class ResultSetTableModel extends AbstractTableModel
     
     /**
      * Construct with a ResultSet
-     * @param resultsSet
+     * @param resultsSet the recordset
      */
     public ResultSetTableModel(ResultSet resultSet)
     {
@@ -145,7 +145,7 @@ public class ResultSetTableModel extends AbstractTableModel
             return "N/A";
         }
     }
-     
+
     /**
      * Gets the value of the row col
      * @param row the row of the cell to be gotten
@@ -284,6 +284,10 @@ public class ResultSetTableModel extends AbstractTableModel
         }
     }
     
+    /**
+     * Sets the display indexes to display only a portion of the recordset
+     * @param indexes the array of indexes
+     */
     public void addDisplayIndexes(int[] indexes)
     {
         if (displayIndexes != null)
@@ -308,5 +312,4 @@ public class ResultSetTableModel extends AbstractTableModel
             this.fireTableDataChanged();
         }
     }
-
 }

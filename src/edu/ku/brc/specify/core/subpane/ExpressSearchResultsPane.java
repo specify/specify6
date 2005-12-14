@@ -67,6 +67,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.*;
+import java.util.Hashtable;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -78,7 +80,7 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class ExpressSearchResultsPane extends BaseSubPane
 {
-    //private static Log log = LogFactory.getLog(SQLQueryPane.class);
+    private static Log log = LogFactory.getLog(ExpressSearchResultsPane.class);
     
     protected static final Cursor handCursor    = new Cursor(Cursor.HAND_CURSOR);
     protected static final Cursor defCursor     = new Cursor(Cursor.DEFAULT_CURSOR);
@@ -113,17 +115,21 @@ public class ExpressSearchResultsPane extends BaseSubPane
      * @param title the title of the table of results
      * @param sqlStr the sql to be executed to fill in the table (box)
      */
-    public void addSearchResults(final String title, final String sqlStr)
+    public void addSearchResults(final String title, final String sqlStr, final String iconName, final Hashtable<String, String> colNameMappings)
     {
-        contentPanel.add(new ExpressTableResults(this, title, sqlStr));
+        contentPanel.add(new ExpressTableResults(this, title, sqlStr, colNameMappings));
         
-        /*if (navBox == null)
+        if (navBox == null)
         {
-            navBox = new NavBox("Search");
-            NavBoxMgr.getInstance().addBox(navBox);
+            navBox = new NavBox(getResourceString("ESResults"));
         }
-        navBox.add(NavBox.createBtn(getResourceString("New"), name, IconManager.IconSize.Std16, null), true);
-        */
+        
+        if (iconName == null)
+        {
+            log.error("Icon name is null for ["+title+"]");
+        }
+        navBox.add(NavBox.createBtn(title, iconName, IconManager.IconSize.Std16, null), true);
+        
     }
     
     
@@ -152,6 +158,24 @@ public class ExpressSearchResultsPane extends BaseSubPane
         return IconManager.getInstance().getIcon("Search", IconManager.IconSize.Std16);
     }
     
+    /* (non-Javadoc)
+     * @see java.awt.Component#showingPane(boolean)
+     */
+    public void showingPane(boolean show)
+    {
+        if (navBox != null)
+        {
+            if (show)
+            {
+                NavBoxMgr.getInstance().addBox(navBox);
+            } else
+            {
+                NavBoxMgr.getInstance().removeBox(navBox, false);
+            }
+        }
+    }
+
+    
 
     //------------------------------------------------------------------
     // Inner Classes
@@ -172,24 +196,26 @@ public class ExpressSearchResultsPane extends BaseSubPane
         protected SQLExecutionProcessor sqlExecutor;
         protected String                sqlStr;
         protected TriangleButton        expandBtn;
-        protected GradiantButton          showTopNumEntriesBtn;
+        protected GradiantButton        showTopNumEntriesBtn;
         protected int                   rowCount = 0;
         protected boolean               showingAllRows = false;
        
         protected JPanel                morePanel = null;       
         protected Color                 bannerColor = new Color(30, 144, 255);   
         protected int                   topNumEntries = 7;
-
+        protected Hashtable<String, String> colNameMappings = null;
         
         /**
          * 
          * @param sqlStr
          */
-        public ExpressTableResults(final ExpressSearchResultsPane esrPane, final String title, final String sqlStr)
+        public ExpressTableResults(final ExpressSearchResultsPane esrPane, final String title, final String sqlStr, final Hashtable<String, String> colNameMappings)
         {
             super(new BorderLayout());
             
             this.esrPane = esrPane;
+            this.colNameMappings = colNameMappings;
+            
             table = new JTable();
             table.setShowVerticalLines(false);
             setBackground(table.getBackground());
@@ -326,16 +352,29 @@ public class ExpressSearchResultsPane extends BaseSubPane
         public void exectionDone(final SQLExecutionProcessor process, final java.sql.ResultSet resultSet)
         {
             ResultSetTableModel rsm = new ResultSetTableModel(resultSet);
-            table.setModel(rsm);
             
+            table.setModel(rsm);
             table.setRowSelectionAllowed(true);
             
             DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
             renderer.setHorizontalAlignment(JLabel.CENTER);
-            TableModel model = table.getModel();
-            for (int i=0;i<model.getColumnCount();i++) {
-                TableColumn column = table.getColumn(model.getColumnName(i));
-                column.setCellRenderer(renderer);
+            
+            TableColumnModel tableColModel = table.getColumnModel();
+            for (int i=0;i<tableColModel.getColumnCount();i++) 
+            {
+                tableColModel.getColumn(i).setCellRenderer(renderer);
+                if (colNameMappings != null)
+                {
+                    String label = (String)tableColModel.getColumn(i).getHeaderValue();
+                    if (label != null )
+                    {
+                        String mappedName = colNameMappings.get(label.toLowerCase());
+                        if (mappedName != null)
+                        {
+                            tableColModel.getColumn(i).setHeaderValue(mappedName);
+                        }
+                    }
+                }
             }
 
             rowCount = rsm.getRowCount();

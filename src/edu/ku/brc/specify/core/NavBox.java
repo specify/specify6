@@ -204,8 +204,13 @@ public class NavBox extends JPanel implements NavBoxIFace
                                             final IconManager.IconSize iconSize, 
                                             final ActionListener al)
     {
-        ImageIcon icon = fileName != null ? IconManager.getInstance().register(iconName, fileName, iconSize) :
-                                       IconManager.getInstance().getIcon(iconName, iconSize);
+        ImageIcon icon = null;
+        
+        if (iconName != null)
+        {
+            icon = fileName != null ? IconManager.getInstance().register(iconName, fileName, iconSize) :
+                                      IconManager.getInstance().getIcon(iconName, iconSize);
+        }
         
         RolloverCommand btn = new RolloverCommand(label, icon);
         if (al != null)

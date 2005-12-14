@@ -19,139 +19,225 @@
  */
 package edu.ku.brc.specify.ui;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.*;
+import java.awt.Insets;
+import java.awt.LayoutManager;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
 
-import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
 import javax.swing.JToolBar;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.SoftBevelBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
-//@author  santhosh kumar - santhosh@in.fiorano.com 
-public abstract class DropDownButton extends JButton implements ChangeListener,
-        PopupMenuListener, ActionListener, PropertyChangeListener
+
+/**
+ * 
+ * XXX NOTE: This only drops menu down and doesn't check for where it is on the screen
+ * 
+ * (Adpated from an example by santhosh kumar)
+ * 
+ * @author rods
+ * @author  santhosh kumar - santhosh@in.fiorano.com 
+ *
+ */
+public abstract class DropDownButton extends JButton implements ChangeListener, PopupMenuListener,
+                                                                ActionListener, PropertyChangeListener
 {
-    private final JButton mainButton        = this;
-    private JButton       arrowButton       = null;
-    private boolean       popupVisible      = false;
-    private String        statusBarHintText = null;
+    protected final JButton mainBtn           = this;
+    protected JButton       arrowBtn          = null;
+    protected boolean       popupVisible      = false;
+    protected String        statusBarHintText = null;
+    
+    protected List<JComponent> menus = null;
     
     // this class needs a mouse tracker to pop down the menu when the mouse isn't over it or the button
 
+    /**
+     * Default Constructor  
+     */
     public DropDownButton()
     {
         super();
         init();
     }
 
-    public DropDownButton(String aLabel, Icon aIcon, int aTextPosition)
+    /**
+     * Creates a toolbar item with label and icon and their positions.
+     * @param label label of the toolbar item
+     * @param icon the icon
+     * @param textPosition the position of the text as related to the icon
+     */
+    public DropDownButton(String label, Icon icon, int textPosition)
     {
-        super(aLabel, aIcon);
+        super(label, icon);
         init();
-        setVerticalTextPosition(aTextPosition);
+        setVerticalTextPosition(textPosition);
         setHorizontalTextPosition(JButton.CENTER);
     }
 
-    public DropDownButton(Icon aIcon)
+    /**
+     * Constructor with only an icon
+     * @param icon the icon
+     */
+    public DropDownButton(Icon icon)
     {
-        super(aIcon);
+        super(icon);
         init();
     }
 
+    /**
+     * Creates a toolbar item with label and icon and their positions and menu items to be added.
+     * The Items MUST be of class JSeparator or JMenuItem.
+     * @param label label of the toolbar item
+     * @param icon the icon
+     * @param textPosition the position of the text as related to the icon
+     * @param menus the list of menu items and separators
+     */
+    public DropDownButton(final String label, final Icon icon, final int textPosition, final List<JComponent> menus)
+    {
+        super(label, icon);      
+        this.menus = menus;
+        init();
+        setVerticalTextPosition(textPosition);
+        setHorizontalTextPosition(JButton.CENTER);
+    }
+
+    /**
+     * INitializes the internal UI
+     */
     protected void init()
     {
-        arrowButton  = new JButton(IconManager.getInstance().register("dropdownarrow", "dropdownarrow.gif", IconManager.IconSize.Std32));
+        arrowBtn  = new JButton(IconManager.getInstance().register("dropdownarrow", "dropdownarrow.gif", IconManager.IconSize.Std32));
         
-        Insets insets = new Insets(4,4,4,4);//mainButton.getBorder().getBorderInsets(mainButton);
-        mainButton.setBorder(new EmptyBorder(insets));
-        arrowButton.setBorder(new EmptyBorder(4,4,4,4));//arrowButton.getBorder().getBorderInsets(arrowButton)));
-        mainButton.setIconTextGap(1); 
-        mainButton.setMargin(new Insets(0,0,0,0));
+        Insets insets = new Insets(4,4,4,4);
+        mainBtn.setBorder(new EmptyBorder(insets));
+        arrowBtn.setBorder(new EmptyBorder(4,4,4,4));
+        mainBtn.setIconTextGap(1); 
+        mainBtn.setMargin(new Insets(0,0,0,0));
 
         
-        mainButton.getModel().addChangeListener(this);
-        mainButton.addPropertyChangeListener("enabled", this); // NOI18N
+        mainBtn.getModel().addChangeListener(this);
+        mainBtn.addPropertyChangeListener("enabled", this); // NO I18N
         
-        arrowButton.getModel().addChangeListener(this);
-        arrowButton.addActionListener(this);
-        arrowButton.setMargin(new Insets(3, 3, 3, 3));
-        arrowButton.setFocusPainted(false); 
-        arrowButton.setFocusable(false);            
+        arrowBtn.getModel().addChangeListener(this);
+        arrowBtn.addActionListener(this);
+        arrowBtn.setMargin(new Insets(3, 3, 3, 3));
+        arrowBtn.setFocusPainted(false); 
+        arrowBtn.setFocusable(false);            
+        //arrowBtn.setEnabled(false);     
+        arrowBtn.setVisible(getPopMenuSize() > 0);
+
     }
     
 
     /*------------------------------[ PropertyChangeListener ]---------------------------------------------------*/
 
+    /* (non-Javadoc)
+     * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
+     */
     public void propertyChange(PropertyChangeEvent evt)
     {
-        arrowButton.setEnabled(mainButton.isEnabled());
+        arrowBtn.setEnabled(mainBtn.isEnabled());
+        if (!arrowBtn.isVisible())
+        {
+            arrowBtn.setVisible(getPopMenuSize() > 0);
+            invalidate();
+            doLayout();
+            repaint();
+        }
     }
 
     /*------------------------------[ ChangeListener ]---------------------------------------------------*/
 
+    /* (non-Javadoc)
+     * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+     */
     public void stateChanged(ChangeEvent e)
     {
-        if (e.getSource() == mainButton.getModel())
+        if (e.getSource() == mainBtn.getModel())
         {
-            if (popupVisible && !mainButton.getModel().isRollover())
+            if (popupVisible && !mainBtn.getModel().isRollover())
             {
-                mainButton.getModel().setRollover(true);
+                mainBtn.getModel().setRollover(true);
                 return;
             }
-            arrowButton.getModel().setRollover(mainButton.getModel().isRollover());
-            arrowButton.setSelected(mainButton.getModel().isArmed() && mainButton.getModel().isPressed());
+            arrowBtn.getModel().setRollover(mainBtn.getModel().isRollover());
+            arrowBtn.setSelected(mainBtn.getModel().isArmed() && mainBtn.getModel().isPressed());
         } else
         {
-            if (popupVisible && !arrowButton.getModel().isSelected())
+            if (popupVisible && !arrowBtn.getModel().isSelected())
             {
-                arrowButton.getModel().setSelected(true);
+                arrowBtn.getModel().setSelected(true);
                 return;
             }
-            mainButton.getModel().setRollover(arrowButton.getModel().isRollover());
+            mainBtn.getModel().setRollover(arrowBtn.getModel().isRollover());
         }
+        arrowBtn.setVisible(getPopMenuSize() > 0);
     }
 
     /*------------------------------[ ActionListener ]---------------------------------------------------*/
 
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
     public void actionPerformed(ActionEvent ae)
     {
         JPopupMenu popup = getPopupMenu();
         popup.addPopupMenuListener(this);
-        popup.show(mainButton, 0, mainButton.getHeight());
+        popup.show(mainBtn, 0, mainBtn.getHeight());
     }
 
     /*------------------------------[ PopupMenuListener ]---------------------------------------------------*/
 
+    /* (non-Javadoc)
+     * @see javax.swing.event.PopupMenuListener#popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent)
+     */
     public void popupMenuWillBecomeVisible(PopupMenuEvent e)
     {
         popupVisible = true;
-        mainButton.getModel().setRollover(true);
-        arrowButton.getModel().setSelected(true);
+        mainBtn.getModel().setRollover(true);
+        arrowBtn.getModel().setSelected(true);
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.event.PopupMenuListener#popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent)
+     */
     public void popupMenuWillBecomeInvisible(PopupMenuEvent e)
     {
         popupVisible = false;
 
-        mainButton.getModel().setRollover(false);
-        arrowButton.getModel().setSelected(false);
+        mainBtn.getModel().setRollover(false);
+        arrowBtn.getModel().setSelected(false);
         ((JPopupMenu) e.getSource()).removePopupMenuListener(this); // act as
                                                                     // good
                                                                     // programmer
                                                                     // :)
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.event.PopupMenuListener#popupMenuCanceled(javax.swing.event.PopupMenuEvent)
+     */
     public void popupMenuCanceled(PopupMenuEvent e)
     {
         popupVisible = false;
@@ -159,48 +245,89 @@ public abstract class DropDownButton extends JButton implements ChangeListener,
 
     /*------------------------------[ Other Methods ]---------------------------------------------------*/
 
-    protected abstract JPopupMenu getPopupMenu();
 
+    /**
+     * Returns a new JPopMenu each time it is called, the poopup menu is created from the internal list
+     * @return Returns a new JPopMenu each time it is called, the poopup menu is created from the internal list
+     */
+    protected JPopupMenu getPopupMenu()
+    {
+        if (menus != null)
+        {
+            JPopupMenu popupMenu = new JPopupMenu();
+            for (JComponent comp : menus)
+            {
+                if (comp instanceof JMenuItem)
+                {
+                    popupMenu.add((JMenuItem)comp);
+                    
+                } else if (comp instanceof JSeparator)
+                {
+                    popupMenu.add((JSeparator)comp);                    
+                }
+            }           
+            return popupMenu;
+        }
+        return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.DropDownButton#getPopMenuSize()
+     */
+    protected int getPopMenuSize()
+    {
+        return menus == null ? 0 : menus.size();
+    }
+
+    /**
+     * Returns the "complete" component  
+     * @return Returns the "complete" component  
+     */
     public JPanel getCompleteComp()
     {
         GridBagLayout      gridbag = new GridBagLayout();
         GridBagConstraints c       = new GridBagConstraints();
         
-        JPanel panel = new BtnPanel(gridbag, mainButton, arrowButton);
+        JPanel panel = new BtnPanel(gridbag, mainBtn, arrowBtn);
         c.fill = GridBagConstraints.VERTICAL;
-        gridbag.setConstraints(mainButton, c);
-        panel.add(mainButton);
+        gridbag.setConstraints(mainBtn, c);
+        panel.add(mainBtn);
         
-        gridbag.setConstraints(arrowButton, c);
-        panel.add(arrowButton);
+        gridbag.setConstraints(arrowBtn, c);
+        panel.add(arrowBtn);
         return panel;       
     }
     
     /**
-     * 
+     * Herlp so this can add itself to the toolbar properly
      * @param toolbar
      * @return the main button of the control 
      */
     public JButton addToToolBar(JToolBar toolbar)
     {   
         toolbar.add(getCompleteComp());
-        return mainButton;
+        return mainBtn;
     }
     
+    /**
+     * 
+     * @author rods
+     *
+     */
     class BtnPanel extends JPanel
     {
         protected EmptyBorder     emptyBorder;
         protected SoftBevelBorder raisedBorder;
         
         protected JButton mainBtn;
-        protected JButton arrowButton;
+        protected JButton arrowBtn;
         
         public BtnPanel(LayoutManager aLM, JButton aMainBtn, JButton aArrowBtn)
         {
             super(aLM);
             
             mainBtn     = aMainBtn;
-            arrowButton = aArrowBtn;
+            arrowBtn = aArrowBtn;
             
             raisedBorder = new SoftBevelBorder(SoftBevelBorder.RAISED);
             emptyBorder  = new EmptyBorder(raisedBorder.getBorderInsets(this));
@@ -213,6 +340,8 @@ public abstract class DropDownButton extends JButton implements ChangeListener,
                     setBorder(raisedBorder);
                     if (statusBarHintText != null)
                         UICacheManager.displayStatusBarText(statusBarHintText);
+                    
+                    arrowBtn.setEnabled(getPopMenuSize() > 0);
                     repaint();
                 }
                 public void mouseExited(MouseEvent e) 
@@ -225,8 +354,8 @@ public abstract class DropDownButton extends JButton implements ChangeListener,
                     {
                         popupVisible = false;
     
-                        mainButton.getModel().setRollover(false);
-                        arrowButton.getModel().setSelected(false);
+                        mainBtn.getModel().setRollover(false);
+                        arrowBtn.getModel().setSelected(false);
                     }
 
                     
@@ -277,11 +406,9 @@ public abstract class DropDownButton extends JButton implements ChangeListener,
             
             super.paint(g);
             
-            if (getBorder() == raisedBorder)
+            if (getBorder() == raisedBorder && arrowBtn.isVisible())
             {
-                //Dimension dim = getSize();
-                //g.setClip(0,0,dim.width,dim.height);
-                
+
                 Color highlight = raisedBorder.getHighlightInnerColor(mainBtn);
                 Color shadow    = raisedBorder.getShadowInnerColor(mainBtn);
                 

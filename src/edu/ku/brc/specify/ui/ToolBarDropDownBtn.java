@@ -19,31 +19,49 @@
  */
 package edu.ku.brc.specify.ui;
 
-import javax.swing.*;
+import java.util.List;
 
+import javax.swing.Icon;
+import javax.swing.JComponent;
+
+/**
+ * Toolbar button derived from DropDownBtn, this provides a way to set menu items
+ * 
+ * @author rods
+ *
+ */
 public class ToolBarDropDownBtn extends DropDownButton
 {
-
-    public ToolBarDropDownBtn()
+     /**
+     * Creates a toolbar item with label and icon and their positions.
+     * @param label label of the toolbar item
+     * @param icon the icon
+     * @param textPosition the position of the text as related to the icon
+     */
+    public ToolBarDropDownBtn(final String label, final Icon icon, final int textPosition)
     {
-        super();
+        super(label, icon, textPosition);
     }
 
-    public ToolBarDropDownBtn(String aLabel, Icon aIcon, int aTextPosition)
+    /**
+     * Creates a toolbar item with label and icon and their positions and menu items to be added.
+     * The Items MUST be of class JSeparator or JMenuItem.
+     * @param label label of the toolbar item
+     * @param icon the icon
+     * @param textPosition the position of the text as related to the icon
+     * @param menus the list of menu items and separators
+     */
+    public ToolBarDropDownBtn(final String label, final Icon icon, final int textPosition, final List<JComponent> menus)
     {
-        super(aLabel, aIcon, aTextPosition);
-    }
+        super(label, icon, textPosition, menus);      
+     }
 
-    public ToolBarDropDownBtn(Icon aIcon)
+    /**
+     * @param icon the icon for the button
+     */
+    public ToolBarDropDownBtn(final Icon icon)
     {
-        super(aIcon);
-    }
-    
-    protected JPopupMenu getPopupMenu()
-    {
-        JPopupMenu popupMenu = new JPopupMenu();
-        popupMenu.add(new JMenuItem("Hello"));
-        return popupMenu;
-    }
+        super(icon);
 
-}
+    }
+ }

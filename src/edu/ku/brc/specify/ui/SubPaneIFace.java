@@ -62,4 +62,11 @@ public interface SubPaneIFace
      * @return Returns the task who owns this pane (needed for context)
      */
     public Taskable getTask();
-}
+    
+    
+    /**
+     * Tells the SubPane that it is about to be shown or hidden
+     * @param show true = show, false hide
+     */
+    public void showingPane(boolean show);
+ }

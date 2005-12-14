@@ -139,15 +139,19 @@ public class NavBoxMgr extends JPanel
     /**
      * Removes a box from the manager
      * @param box the box to be remove
+     * @param notify true - throws exception if it can't be found, false - ignore not found
      */
-    public void removeBox(final NavBoxIFace box)
+    public void removeBox(final NavBoxIFace box, boolean notify)
     {
-        if (exists(box.getName()))
+        if (list.contains(box))
         {
             list.remove(box);
+            remove(box.getUIComponent());
             invalidate();
             doLayout();
-        } else
+            repaint();
+            
+        } else if (notify)
         {
             throw new ConfigurationException("Can't find an existing NavBox with name["+box.getName()+"] to remove.");
         }

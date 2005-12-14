@@ -209,6 +209,9 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
                 model.clear();
             }
         }
+        
+        progressLabel.setText(getResourceString("QueryStarting"));
+        
         String queryStr = getSQLStr();
         // clean up SQL from text control
         queryStr = queryStr.replace("\r\n", " ");

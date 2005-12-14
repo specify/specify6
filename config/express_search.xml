@@ -20,12 +20,12 @@
 	       <col>2</col>
 	    </cols>
 	</index>
-    <detailView>
+    <detailView icon="CatObj">
 	    <sql>
 	        <![CDATA[Select CatalogNumber from collectionobjectcatalog where CatalogNumber in (%s)]]>
 	    </sql>
         <captions>
-            <caption col="1" text="Localist Name"/>
+            <caption col="CatalogNumber" text="Catalog Number"/>
         </captions>
 	</detailView>
   </table>
@@ -40,12 +40,14 @@
 	       <col>2</col>
 	    </cols>
 	</index>
-    <detailView>
+    <detailView icon="Locality">
 	    <sql>
 	        <![CDATA[select localityname,Latitude1,Longitude1 from locality where LocalityID in (%s)]]>
 	    </sql>
         <captions>
-            <caption col="1" text="Localist Name"/>
+            <caption col="localityname" text="Locality Name"/>
+            <caption col="Latitude1" text="Latitude"/>
+            <caption col="Longitude1" text="Longitude"/>
         </captions>
 	</detailView>
   </table>
@@ -68,13 +70,10 @@
 	       <col>11</col>
 	    </cols>
 	</index>
-    <detailView>
+    <detailView icon="Geography">
 	    <sql>
 	        <![CDATA[select County,State,Country from geography where GeographyID in (%s)]]>
 	    </sql>
-        <captions>
-            <caption col="1" text="Locality Name"/>
-        </captions>
 	</detailView>
   </table>
   
@@ -88,12 +87,13 @@
 	       <col>2</col>
 	    </cols>
 	</index>
-    <detailView>
+    <detailView icon="Taxon">
 	    <sql>
 	        <![CDATA[select TaxonNameID,TaxonName from taxonname where TaxonNameID in (%s)]]>
 	    </sql>
         <captions>
-            <caption col="1" text="Localist Name"/>
+            <caption col="TaxonNameID" text="Taxon ID"/>
+            <caption col="TaxonName" text="Taxon Name"/>
         </captions>
 	</detailView>
   </table>
@@ -109,12 +109,14 @@
 	       <col>3</col>
 	    </cols>
 	</index>
-    <detailView>
+    <detailView icon="Agent">
 	    <sql>
 	        <![CDATA[select AgentID,FirstName,LastName from agent where AgentID in (%s)]]>
 	    </sql>
         <captions>
-            <caption col="1" text="Localist Name"/>
+            <caption col="AgentID" text="AgentID"/>
+            <caption col="FirstName" text="First Name"/>
+            <caption col="LastName" text="Last Name"/>
         </captions>
 	</detailView>
   </table>
@@ -133,37 +135,55 @@
 	       <col>6</col>
 	    </cols>
 	</index>
-    <detailView>
+    <detailView icon="Address">
 	    <sql>
 	        <![CDATA[select address,city,state from address where AddressID in (%s)]]>
 	    </sql>
         <captions>
-            <caption col="1" text="Localist Name"/>
+            <caption col="address" text="Address"/>
+            <caption col="city" text="City"/>
+            <caption col="state" text="State"/>
         </captions>
 	</detailView>
   </table>
+
   
   <table id="7" group="colobj" name="CollObjToDeterminer" title="Determiner">
     <index>
 	    <sql>
-	        <![CDATA[Select collectionobject.CollectionObjectID, agent.FirstName, agent.LastName From collectionobject Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID Inner Join determination ON determination.BiologicalObjectID = collectionobjectcatalog.CollectionObjectCatalogID Inner Join agent ON agent.AgentID = determination.DeterminerID]]>
+	        <![CDATA[Select determination.BiologicalObjectID, agent.FirstName, agent.LastName From determination Inner Join agent ON determination.DeterminerID = agent.AgentID where determination.current1 <> 0]]>
 	    </sql>
 	    <cols>
 	       <col>1</col>
 	       <col>2</col>
+	       <col>3</col>
 	    </cols>
 	</index>
-    <detailView>
+    <detailView icon="ColObj">
 	    <sql>
-	        <![CDATA[Select collectionobject.CollectionObjectID, agent.FirstName, agent.LastName, agent.MiddleInitial From collectionobject Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID Inner Join determination ON determination.BiologicalObjectID = collectionobjectcatalog.CollectionObjectCatalogID Inner Join agent ON agent.AgentID = determination.DeterminerID where collectionobjectcatalog.CollectionObjectCatalogID in (%s)]]>
+	        <![CDATA[select * from (Select 
+ taxonname.TaxonName, 
+ agent.LastName, 
+ agent.FirstName, 
+ collectionobjectcatalog.CollectionObjectCatalogID 
+ From 
+ collectionobject 
+ Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID 
+ Inner Join determination ON determination.BiologicalObjectID = collectionobjectcatalog.CollectionObjectCatalogID 
+ Inner Join agent ON determination.DeterminerID = agent.AgentID 
+ Inner Join taxonname ON determination.TaxonNameID = taxonname.TaxonNameID where determination.current1 <> 0) as tx 
+ where tx.CollectionObjectCatalogID in (%s)]]>
 	    </sql>
         <captions>
-            <caption col="1" text="Localist Name"/>
+            <caption col="TaxonName" text="taxonname.TaxonName"/>
+            <caption col="LastName" text="Last Name"/>
+            <caption col="FirstName" text="First Name"/>
+            <caption col="CollectionObjectCatalogID" text="ID"/>
         </captions>
 	</detailView>
   </table>  
-  
-  <table id="8" group="colobj" name="CollObToLocality" title="Localities Asscoiated with Collecting Events">
+
+  <table id="8" group="colobj" name="CollObToLocality" title="Localities in Collecting Events">
     <index>
 	    <sql>
 	        <![CDATA[Select collectingevent.CollectingEventID, locality.NamedPlace, locality.LocalityName, locality.Township, locality.Section  From collectingevent Inner Join locality ON collectingevent.LocalityID = locality.LocalityID]]>
@@ -176,15 +196,16 @@
 	       <col>5</col>
 	    </cols>
 	</index>
-    <detailView>
+    <detailView icon="ColEvent">
 	    <sql>
 	        <![CDATA[Select collectingevent.CollectingEventID, locality.LocalityName  From collectingevent Inner Join locality ON collectingevent.LocalityID = locality.LocalityID where collectingevent.CollectingEventID in (%s)]]>
 	    </sql>
         <captions>
-            <caption col="1" text="Localist Name"/>
+            <caption col="CollectingEventID" text="CE ID"/>
+            <caption col="LocalityName" text="Locality Name"/>
         </captions>
 	</detailView>
   </table>  
-  
+
 </tables>
   

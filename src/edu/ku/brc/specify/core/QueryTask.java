@@ -26,6 +26,8 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JComponent;
+
 import edu.ku.brc.specify.core.subpane.SQLQueryPane;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
@@ -43,6 +45,10 @@ import edu.ku.brc.specify.ui.UICacheManager;
 public class QueryTask extends BaseTask
 {
     public static final String QUERY = "Search";
+    
+    protected Vector<ToolBarDropDownBtn> tbList = new Vector<ToolBarDropDownBtn>();
+    protected Vector<JComponent>          menus  = new Vector<JComponent>();
+    
     
     /**
      * Default Constructor
@@ -69,8 +75,8 @@ public class QueryTask extends BaseTask
     }
     
     /**
-     * 
-     * @param sqlStr
+     * CReates pane and executes a query
+     * @param sqlStr SQL to be executed
      */
     public void createAndExecute(final String sqlStr)
     {
@@ -78,10 +84,21 @@ public class QueryTask extends BaseTask
         UICacheManager.getInstance().getSubPaneMgr().addPane(sqlPane);
         sqlPane.setSQLStr(sqlStr);
         sqlPane.doQuery();
+        
+        // XXX Example Code
+        // This is an example of how to add menu items to a menu in a Toolbar Button
+        /*
+        if (menus != null && menus.size() == 0)
+        {
+            ToolBarDropDownBtn tb = tbList.elementAt(0);
+            menus.add(new JMenuItem("Hello"));
+            tb.propertyChange(null);
+        }*/
+        
     }
     
-    /**
-     * 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
     public SubPaneIFace getStarterPane()
     {
@@ -100,10 +117,15 @@ public class QueryTask extends BaseTask
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
         
-        ToolBarDropDownBtn btn = createToolbarButton(name, "queryIt.gif", "search_hint");
+        ToolBarDropDownBtn btn = createToolbarButton(name, "queryIt.gif", "search_hint", menus);
+        if (tbList.size() == 0)
+        {
+            tbList.add(btn);
+        }
         list.add(new ToolBarItemDesc(btn.getCompleteComp()));
         
         return list;
+        
     }
     
     /*

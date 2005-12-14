@@ -21,18 +21,27 @@ package edu.ku.brc.specify.ui;
 
 import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.core.NavBoxMgr;
+import edu.ku.brc.specify.core.subpane.ExpressSearchResultsPane;
 import edu.ku.brc.specify.exceptions.UIException;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.awt.*;
 
 public class SubPaneMgr extends JTabbedPane implements ChangeListener
 {
-    protected Hashtable<String, SubPaneIFace> panes = new Hashtable<String, SubPaneIFace>();
-       
+    // Static Data Members
+    private static Log log = LogFactory.getLog(SubPaneMgr.class);
+    
+    // Data Members
+    protected Hashtable<String, SubPaneIFace> panes = new Hashtable<String, SubPaneIFace>();   
+    protected SubPaneIFace currentPane = null;
+    
     /**
      * 
      * 
@@ -41,7 +50,7 @@ public class SubPaneMgr extends JTabbedPane implements ChangeListener
     {
         // This way we notifications that the tabs have changed
         addChangeListener(this);
-     }
+    }
     
     /**
      * Counts up all the same kind of windows
@@ -79,8 +88,20 @@ public class SubPaneMgr extends JTabbedPane implements ChangeListener
         
         // Add this pane to the tabs
         String title = pane.getName() + (cnt > 0 ? ":" + Integer.toString(cnt+1) : "");
+        
+        //log.info("addPane: adding pane "+pane.getTitle());
+        // When the first the pane is added there is no notification via the listener so we nedd to do it here
+        // when items are added and there is already items then the listener gets notified.
+        /*if (currentPane != null)
+        {
+            currentPane.showingPane(false);
+        }
+        pane.showingPane(true);
+        currentPane = pane;
+        */
+        
+        panes.put(title, pane); // this must be done before adding it
         addTab(title, pane.getIcon(), pane.getUIComponent());
-        panes.put(title, pane);
         
         this.setSelectedIndex(this.getComponentCount()-1);
         
@@ -99,6 +120,11 @@ public class SubPaneMgr extends JTabbedPane implements ChangeListener
      */
     public SubPaneIFace removePane(SubPaneIFace pane)
     {
+        if (currentPane == pane)
+        {
+            pane.showingPane(false);
+            currentPane = null;
+        }
         this.remove(pane.getUIComponent());
         return pane;
     }
@@ -197,9 +223,21 @@ public class SubPaneMgr extends JTabbedPane implements ChangeListener
             // might be null when it is the very first one
             if (subPane != null)
             {
-                ContextMgr.getInstance().requestContext(subPane.getTask());
-            }
-        } else 
+                //log.info("stateChanged: new pane ["+subPane.getTitle()+"]");
+                // When the first the pane is added there is no notification via the listener so we nedd to do it here
+                // when items are added and there is already items then the listener gets notified.
+                if (currentPane != subPane)
+                {
+                    if (currentPane != null)
+                    {
+                        currentPane.showingPane(false);
+                    }
+                    ContextMgr.getInstance().requestContext(subPane.getTask()); // XXX not sure if this need to be moved up into the if above
+                    subPane.showingPane(true);
+                }
+             }
+             currentPane = subPane;
+       } else 
         {
             ContextMgr.getInstance().requestContext(null);
         }

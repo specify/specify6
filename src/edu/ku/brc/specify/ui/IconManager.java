@@ -157,6 +157,10 @@ public class IconManager
      */
     public ImageIcon getIcon(final String iconName, final IconSize id)
     {
+        if (iconName == null)
+        {
+            throw new NullPointerException("icon name should not be null!");
+        }
         
         IconEntry entry = entries.get(iconName);
         if (entry != null)

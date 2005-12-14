@@ -26,7 +26,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.Icon;
+import javax.swing.*;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
@@ -94,6 +94,23 @@ public abstract class BaseTask implements Taskable, TaskPluginable
                                                      final String imageName,
                                                      final String hint)
     {
+
+        return createToolbarButton(catName, imageName, hint, null);
+        
+    }
+    
+    /**
+     * Helper
+     * @param catName
+     * @param imageName
+     * @param hint
+     * @return
+     */
+    protected ToolBarDropDownBtn createToolbarButton(final String catName,
+                                                     final String imageName,
+                                                     final String hint,
+                                                     final List<JComponent> menus)
+    {
         String name = getResourceString(catName);
         
         ImageIcon icon32 = IconManager.getInstance().register(name, imageName, IconManager.IconSize.Std32);
@@ -102,7 +119,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable
         
         icon = icon16;
         
-        ToolBarDropDownBtn btn = new ToolBarDropDownBtn(name, icon24, JButton.BOTTOM);
+        ToolBarDropDownBtn btn = new ToolBarDropDownBtn(name, icon24, JButton.BOTTOM, menus);
         btn.setStatusBarHintText(getResourceString(hint));
         
         btn.addActionListener(new ActionListener() {
@@ -112,8 +129,8 @@ public abstract class BaseTask implements Taskable, TaskPluginable
             }
         });
         return btn;
-        
     }
+
     
     /**
      * Returns the initial pane for this task, may be a blank (empty) pane, but shouldn't null

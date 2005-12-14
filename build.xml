@@ -8,6 +8,7 @@
   <property name="hibernatelib.dir" value="hibernate_libs"/>
   <property name="externallib.dir" value="external_libs"/>
   <property name="hibernate.properties" value="hibernate.properties"/>
+  <property name="dir.dest" value="dest"/>
 	
 	
   <property name="data.dir" value="data"/>
@@ -208,5 +209,6 @@
          <!-- <hbm2java /> -->
          <hbm2ddl update="true"/>
       </hibernatetool>
-   </target> 
+   </target>
+	
 </project>

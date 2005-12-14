@@ -53,7 +53,7 @@ public class ReportsTask extends BaseTask
         //navBox = new NavBox(name);
         //navBox.add(NavBox.createBtn(name, name, IconManager.IconSize.Std16));
         //navBox.add(NavBox.createBtn(name, name, IconManager.IconSize.Std16));
-        navBoxes.addElement(navBox);
+        //navBoxes.addElement(navBox);
     }
     
     /**

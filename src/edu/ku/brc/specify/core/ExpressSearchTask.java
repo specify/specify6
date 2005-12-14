@@ -138,15 +138,33 @@ public class ExpressSearchTask extends BaseTask
                 Element   viewElement  = (Element)tableElement.selectSingleNode("detailView");
                 String    sqlStr       = viewElement.selectSingleNode("sql").getText();
                 String    idStr        = tableElement.attributeValue("id");
-                TableInfo table        = new TableInfo(idStr, tableElement.attributeValue("title"), sqlStr);
+                String    iconName     = viewElement.attributeValue("icon");
+                TableInfo table        = new TableInfo(idStr, tableElement.attributeValue("title"), sqlStr, iconName);
+                
+                List captionItems = viewElement.selectNodes("captions/caption");
+                if (captionItems.size() > 0)
+                {
+                    Hashtable<String, String> colNameMappings = new Hashtable<String, String>();
+                    for ( Iterator capIter = captionItems.iterator(); capIter.hasNext(); ) 
+                    {
+                        Element captionElement = (Element)capIter.next();
+                        String    col  = captionElement.attributeValue("col");
+                        String    text = captionElement.attributeValue("text");
+                        colNameMappings.put(col.toLowerCase(), text);
+                    }
+                    table.setColNameMappings(colNameMappings);
+                } else
+                {
+                    log.info("No Captions!");
+                }
+                
                 tables.put(idStr, table);
             }  
             
         } catch (Exception ex)
         {
             log.error(ex);
-        }
-        
+        }    
     }
     
     /**
@@ -186,7 +204,7 @@ public class ExpressSearchTask extends BaseTask
                 return;
             }
 
-            PhraseQuery     query = new PhraseQuery();
+            PhraseQuery  query = new PhraseQuery();
             //query.setSlop(slop);
             
             StringTokenizer st = new StringTokenizer(searchTerm);
@@ -223,8 +241,8 @@ public class ExpressSearchTask extends BaseTask
                 TableInfo tableInfo = e.nextElement();
                 if (tableInfo.getRecIds().size() > 0)
                 {
-                    expressSearchPane.addSearchResults(tableInfo.getTitle(), tableInfo.getSql());
-                    System.out.println(tableInfo.getTitle()+" "+tableInfo.getRecIds().size());
+                    expressSearchPane.addSearchResults(tableInfo.getTitle(), tableInfo.getSql(), tableInfo.getIconName(), tableInfo.getColNameMappings());
+                    tableInfo.getRecIds().clear();
                 }
             }
             
@@ -327,13 +345,16 @@ public class ExpressSearchTask extends BaseTask
         protected String tableId;
         protected String title;
         protected String sqlStr;
+        protected String iconName = null;
         protected Vector<Integer> recIds = new Vector<Integer>();
+        protected Hashtable<String, String> colNameMappings = null;
         
-        public TableInfo(final String tableId, final String title, final String sqlStr)
+        public TableInfo(final String tableId, final String title, final String sqlStr, final String iconName)
         {
-            this.tableId = tableId;
-            this.title = title;
-            this.sqlStr = sqlStr;
+            this.tableId  = tableId;
+            this.title    = title;
+            this.sqlStr   = sqlStr;
+            this.iconName = iconName;
         }
 
         public String getTitle()
@@ -372,6 +393,26 @@ public class ExpressSearchTask extends BaseTask
             }
             return idsStr.toString();
         }
+
+        public String getIconName()
+        {
+            return iconName;
+        }
+        
+        /**
+         * Sets the hashtable for mapping names from resultset column names to more human readable names
+         * @param colNameMappings the hash of name mappings
+         */
+        public void setColNameMappings(final Hashtable<String, String> colNameMappings)
+        {
+            this.colNameMappings = colNameMappings;
+        }
+
+        public Hashtable<String, String> getColNameMappings()
+        {
+            return colNameMappings;
+        }
+       
     }
 
 }

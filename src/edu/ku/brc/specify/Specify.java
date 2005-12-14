@@ -165,7 +165,7 @@ public class Specify extends JPanel
 
         try 
         { 
-            //UIManager.setLookAndFeel(new Plastic3DLookAndFeel()); 
+            UIManager.setLookAndFeel(new Plastic3DLookAndFeel()); 
             //UIManager.setLookAndFeel(new PlasticLookAndFeel()); 
             //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
             //UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
@@ -515,8 +515,6 @@ public class Specify extends JPanel
             Dimension scrSize = getToolkit().getScreenSize();// getFrame().getGraphicsConfiguration().getBounds();
             splashWindow.setLocation(scrSize.width/2 - splashWindow.getSize().width/2,
                                      scrSize.height/2 - splashWindow.getSize().height/2);
-            System.out.println(splashWindow.getLocation());
-            System.out.println(splashWindow.getSize());
             /*
             specifySplashImageIcon = new ImageIcon(Specify.class.getResource("images/specify_splash.gif"));
             JPanel panel = new JPanel() {

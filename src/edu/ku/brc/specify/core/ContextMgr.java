@@ -69,17 +69,20 @@ public class ContextMgr
      */
     public void requestContext(Taskable task)
     {
-        if (currentContext != null)
+        if (task != currentContext)
         {
-            NavBoxMgr.getInstance().unregister(currentContext);
+            if (currentContext != null)
+            {
+                NavBoxMgr.getInstance().unregister(currentContext);
+            }
+            
+            if (task != null)
+            {
+                NavBoxMgr.getInstance().register(task);
+             }
+            
+            currentContext = task;
         }
-        
-        if (task != null)
-        {
-            NavBoxMgr.getInstance().register(task);
-         }
-        
-        currentContext = task;
         
     }
     

@@ -54,7 +54,7 @@ public class StatsPane extends BaseSubPane
     // Data Members
 
     /**
-     * 
+     * Creates a StatsPane
      * @param name
      * @param task
      */

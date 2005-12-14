@@ -183,6 +183,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable
                         doc.add(Field.Keyword("id", rs.getObject(fields[0]).toString()));
                         doc.add(Field.UnIndexed("table", Integer.toString(tableId)));
                         
+                        int cnt = 0;
                         for (int i=1;i<fields.length;i++)
                         {
                             Object valObj = rs.getObject(fields[i]);
@@ -192,6 +193,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable
                                 if (valStr.length() > 0)
                                 {
                                     termsIndexed++;
+                                    cnt++;
                                     doc.add(Field.UnStored("contents", valStr));
                                     
                                     if (isCancelled)
@@ -203,7 +205,10 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable
                                }
                             }
                         }
-                        writer.addDocument(doc);
+                        if (cnt > 0)
+                        {
+                            writer.addDocument(doc);                            
+                        }
                     } while(rs.next());
                     log.info("done indexing");
                 }

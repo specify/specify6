@@ -233,7 +233,8 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
             }
           });
         
-        txtFld.addFocusListener(new FocusListener() {
+        txtFld.addFocusListener(new FocusListener() 
+        {
             public void focusGained(FocusEvent e) {}
             public void focusLost(FocusEvent e) 
             {
@@ -264,13 +265,20 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
             Dimension size = getSize();
             int x = insets.left;
             int y = insets.top;
-            g.drawImage(imgIcon.getImage(), x + 1, y + (size.height - imgIcon.getIconHeight())/2, 
-                        imgIcon.getIconWidth(), imgIcon.getIconHeight(), null);
+            
+            int xOffset = 0;
+            if (imgIcon != null && imgIcon.getImage() != null)
+            {
+                g.drawImage(imgIcon.getImage(), x + 1, y + (size.height - imgIcon.getIconHeight())/2, 
+                            imgIcon.getIconWidth(), imgIcon.getIconHeight(), null);
+                xOffset = imgIcon.getIconWidth();
+            }
        
             g.setFont(getFont());
             FontMetrics fm = g.getFontMetrics();
             g.setColor(getForeground());
-            g.drawString(label, x+1+imgIcon.getIconWidth()+1, y+((size.height-fm.getHeight())/2)+fm.getAscent());
+            
+            g.drawString(label, x+1+xOffset+1, y+((size.height-fm.getHeight())/2)+fm.getAscent());
             
             
             if (isOver && !this.hasFocus())

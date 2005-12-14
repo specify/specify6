@@ -71,14 +71,17 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
         
         progressBar = new JProgressBar();
         progressBar.setIndeterminate(true);
-        FormLayout      formLayout = new FormLayout("center:100px:g", "center:p:g, p, center:p:g");
+        FormLayout      formLayout = new FormLayout("f:max(100px;p):g", "center:p:g, p, center:p:g");
         PanelBuilder    builder    = new PanelBuilder(formLayout);
         CellConstraints cc         = new CellConstraints();
        
         builder.add(progressBar,                  cc.xy(1,1));
-        builder.add(progressLabel = new JLabel(), cc.xy(1,3));
+        builder.add(progressLabel = new JLabel("", JLabel.CENTER), cc.xy(1,3));
         
-        add(builder.getPanel(), BorderLayout.CENTER);
+        PanelBuilder    builder2    = new PanelBuilder(new FormLayout("center:p:g", "center:p:g"));
+        builder2.add(builder.getPanel(), cc.xy(1,1));
+   
+        add(builder2.getPanel(), BorderLayout.CENTER);
         
     }
     
@@ -124,6 +127,14 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     public Taskable getTask()
     {
         return task;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.awt.Component#showingPane(boolean)
+     */
+    public void showingPane(boolean show)
+    {
+        //log.info("showingPane "+name+"  "+show);
     }
 
     
