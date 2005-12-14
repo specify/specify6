@@ -112,7 +112,7 @@ public class ExpressSearchTask extends BaseTask
         File path = new File(System.getProperty("user.home")+File.separator+"Specify"+File.separator+"index-dir");
         if (!path.exists())
         {
-            if (!path.mkdir())
+            if (!path.mkdirs())
             {
                 String msg = "unable to create directory [" + path.getAbsolutePath() + "]";
                 log.error(msg); 
