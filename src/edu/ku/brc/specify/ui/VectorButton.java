@@ -125,13 +125,14 @@ public class VectorButton extends JButton implements MouseListener
         
         // calculate inset
         int inset = (int)(scale*0.04f);
-        
-        int w = width - inset*2;// - 1; // XXX ?? Hmmm, 
-        int h = height - (int)(scale*0.1f) - 1;
+
+        boolean doingGradient = !isDrawHighlight && !isRoundedRect && !isDrawInnerBlock;
+        int w = doingGradient ? width : width - inset*2 - 1; // XXX ?? Hmmm, 
+        int h = doingGradient ? height : height - (int)(scale*0.1f) - 1;
         
         
         g2.translate(inset,0);
-        drawDropShadow(w,h,scale,g2);
+        //drawDropShadow(w,h,scale,g2);
         
         if (pressed) {
             g2.translate(0, 0.04f*scale);

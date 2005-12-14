@@ -34,7 +34,7 @@ import java.awt.event.MouseEvent;
  * @author rods
  *
  */
-public class CloseButton extends VectorButton
+public class CloseButton extends GradiantButton
 {
     /**
      * 
@@ -48,42 +48,32 @@ public class CloseButton extends VectorButton
     public CloseButton() 
     {
         super("");
-    }
-    
-    /* (non-Javadoc)
-     * @see java.awt.Component#getPreferredSize()
-     */
-    public Dimension getPreferredSize() 
-    {
-        FontMetrics fm = this.getFontMetrics(getFont());
-        float scale = (50f/30f)*this.getFont().getSize2D();
-        int h = fm.getHeight();
-        h += (int)(scale*.3f);
-        return new Dimension(h, h);
     }  
     
     /* (non-Javadoc)
      * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
      */
-    public void paintComponent(Graphics g) 
+    public void paint(Graphics g) 
     {       
-        super.paintComponent(g);
+        super.paint(g);
         
-        Rectangle r = getBounds();
-        r.x = 0;
-        r.y = 0;
-        int delta = (int)((double)r.width * 0.28);
-        r.grow(-delta, -delta);
-
+        FontMetrics fm = this.getFontMetrics(getFont());
+        int w = (int)((double)fm.getAscent() * 0.8);
+        Rectangle r = new Rectangle((getWidth() - w) / 2, (getHeight() - w) / 2, w, w);
+        
+        if (pressed) 
+        {
+            g.translate(1, 1);
+        }
         //Graphics2D g2d = (Graphics2D)g;
         //g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); 
         g.setColor(closeColor);
         g.fillOval(r.x, r.y, r.width, r.height);
 
         g.setColor(getForeground());
-        r.grow(-2, -2);
-        g.drawLine(r.x, r.y, r.x+r.width-1, r.y+r.height-1);
-        g.drawLine(r.x, r.y+r.height-1, r.x+r.width-1, r.y);
+        r.grow(-3, -3);
+        g.drawLine(r.x, r.y, r.x+r.width, r.y+r.height);
+        g.drawLine(r.x, r.y+r.height, r.x+r.width, r.y);
     }
 
     /**

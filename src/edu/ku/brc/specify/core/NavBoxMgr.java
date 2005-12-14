@@ -128,13 +128,30 @@ public class NavBoxMgr extends JPanel
         {
             list.add(box); 
             add(box.getUIComponent());
-            //layout.addLayoutComponent(null, box.getUIComponent());
             invalidate();
             doLayout();
         } else
         {
             throw new ConfigurationException("Adding a new NavBox with duplicate name["+box.getName()+"]");
         }
-    }    
+    } 
+    
+    /**
+     * Removes a box from the manager
+     * @param box the box to be remove
+     */
+    public void removeBox(final NavBoxIFace box)
+    {
+        if (exists(box.getName()))
+        {
+            list.remove(box);
+            invalidate();
+            doLayout();
+        } else
+        {
+            throw new ConfigurationException("Can't find an existing NavBox with name["+box.getName()+"] to remove.");
+        }
+    }
+
     
 }

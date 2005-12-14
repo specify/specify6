@@ -165,7 +165,7 @@ public class Specify extends JPanel
 
         try 
         { 
-            UIManager.setLookAndFeel(new Plastic3DLookAndFeel()); 
+            //UIManager.setLookAndFeel(new Plastic3DLookAndFeel()); 
             //UIManager.setLookAndFeel(new PlasticLookAndFeel()); 
             //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
             //UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");

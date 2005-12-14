@@ -58,6 +58,7 @@ import edu.ku.brc.specify.ui.*;
 import edu.ku.brc.specify.core.*;
 import edu.ku.brc.specify.core.ExpressSearchTask;
 import edu.ku.brc.specify.core.Taskable;
+
 import edu.ku.brc.specify.dbsupport.SQLExecutionListener;
 import edu.ku.brc.specify.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.ui.db.*;
@@ -84,6 +85,8 @@ public class ExpressSearchResultsPane extends BaseSubPane
 
     protected JPanel      contentPanel;
     protected JScrollPane scrollPane;
+    
+    protected NavBox      navBox = null;
     
     /**
      * Default Constructor
@@ -113,6 +116,14 @@ public class ExpressSearchResultsPane extends BaseSubPane
     public void addSearchResults(final String title, final String sqlStr)
     {
         contentPanel.add(new ExpressTableResults(this, title, sqlStr));
+        
+        /*if (navBox == null)
+        {
+            navBox = new NavBox("Search");
+            NavBoxMgr.getInstance().addBox(navBox);
+        }
+        navBox.add(NavBox.createBtn(getResourceString("New"), name, IconManager.IconSize.Std16, null), true);
+        */
     }
     
     
@@ -121,10 +132,14 @@ public class ExpressSearchResultsPane extends BaseSubPane
      */
     public void removeTable(ExpressTableResults table)
     {
-            contentPanel.remove(table);
-            contentPanel.invalidate();
-            contentPanel.doLayout();
-            scrollPane.revalidate();
+        contentPanel.remove(table);
+        contentPanel.invalidate();
+        contentPanel.doLayout();
+        contentPanel.repaint();
+
+        scrollPane.revalidate();
+        scrollPane.doLayout();
+        scrollPane.repaint();
     }
     
     
@@ -157,7 +172,7 @@ public class ExpressSearchResultsPane extends BaseSubPane
         protected SQLExecutionProcessor sqlExecutor;
         protected String                sqlStr;
         protected TriangleButton        expandBtn;
-        protected VectorButton          showTopNumEntriesBtn;
+        protected GradiantButton          showTopNumEntriesBtn;
         protected int                   rowCount = 0;
         protected boolean               showingAllRows = false;
        
@@ -179,7 +194,7 @@ public class ExpressSearchResultsPane extends BaseSubPane
             table.setShowVerticalLines(false);
             setBackground(table.getBackground());
             
-            VectorLabel vl = new VectorLabel(title, JLabel.LEFT);
+            GradiantLabel vl = new GradiantLabel(title, JLabel.LEFT);
             vl.setForeground(bannerColor);
             vl.setTextColor(Color.WHITE);
             
@@ -187,7 +202,7 @@ public class ExpressSearchResultsPane extends BaseSubPane
             expandBtn.setForeground(bannerColor);
             expandBtn.setTextColor(Color.WHITE);
       
-            showTopNumEntriesBtn = new VectorButton(String.format(getResourceString("ShowTopEntries"), new Object[] {topNumEntries}));
+            showTopNumEntriesBtn = new GradiantButton(String.format(getResourceString("ShowTopEntries"), new Object[] {topNumEntries}));
             showTopNumEntriesBtn.setForeground(bannerColor);
             showTopNumEntriesBtn.setTextColor(Color.WHITE);
             showTopNumEntriesBtn.setVisible(false);
@@ -223,6 +238,8 @@ public class ExpressSearchResultsPane extends BaseSubPane
                 public void actionPerformed(ActionEvent e) 
                 {
                     boolean isExpanded = !expandBtn.isDown();
+                    
+                    expandBtn.setDown(isExpanded);
                     
                     tablePane.setVisible(isExpanded);               
                     

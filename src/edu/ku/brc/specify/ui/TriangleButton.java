@@ -33,7 +33,7 @@ import java.awt.event.MouseEvent;
  * @author rods
  *
  */
-public class TriangleButton extends VectorButton
+public class TriangleButton extends GradiantButton
 {
     /**
      * 
@@ -52,24 +52,16 @@ public class TriangleButton extends VectorButton
     }
     
     /* (non-Javadoc)
-     * @see java.awt.Component#getPreferredSize()
-     */
-    public Dimension getPreferredSize() 
-    {
-        FontMetrics fm = this.getFontMetrics(getFont());
-        float scale = (50f/30f)*this.getFont().getSize2D();
-        int h = fm.getHeight();
-        h += (int)(scale*.3f);
-        return new Dimension(h, h);
-    }  
-    
-    /* (non-Javadoc)
      * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
      */
-    public void paintComponent(Graphics g) 
+    public void paint(Graphics g) 
     {       
-        super.paintComponent(g);
+        super.paint(g);
         
+        if (pressed) 
+        {
+            g.translate(1, 1);
+        }
         poly.reset();
         Rectangle r = getBounds();
         int delta = (int)((double)r.width * 0.28);
@@ -137,7 +129,7 @@ public class TriangleButton extends VectorButton
      */
     public void mouseClicked(MouseEvent evt) 
     { 
-        isDown = !isDown;
+        //isDown = !isDown;
         repaint();
     }
 
