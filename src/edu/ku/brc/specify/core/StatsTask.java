@@ -134,7 +134,7 @@ public class StatsTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        return new StatsPane(name, this);
+        return new StatsPane(name, this, "stats_summary_panel.xml", false, null);
     }
     
     /**

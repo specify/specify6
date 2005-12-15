@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <icons>
+    <icon name="Specify"    file="specify_icon.gif" sizes="32"/>
+    <icon name="Specify16"  file="specify_icon16.gif" sizes="16"/>
+    <icon name="Startup"    file="specify_icon.gif" sizes="all"/>
     <icon name="Work_Bench" file="newworkbench.gif" sizes="all"/>
     <icon name="Data_Entry" file="dataentry.gif" sizes="all"/>
     <icon name="Labels"     file="labels.gif" sizes="all"/>
@@ -19,6 +22,7 @@
     <icon name="ColObj"     file="catobj_fish.gif" sizes="all"/>
     <icon name="Address"    file="address.gif" sizes="all"/>
     <icon name="ColEvent"   file="collevent.gif" sizes="all"/>
+    <icon name="Configure"  file="configure.gif" sizes="all"/>
     
     <icon name="Green Arrow Down" file="green_arrow_down.gif" sizes="16"/>
     <icon name="Green Arrow Up" file="green_arrow_up.gif" sizes="16"/>

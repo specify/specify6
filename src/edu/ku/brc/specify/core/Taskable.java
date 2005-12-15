@@ -25,7 +25,7 @@ import javax.swing.Icon;
 
 
 /**
- * Status: Work In Progress
+ * Interface for any task in the system
  * 
  * @author rods
  *
@@ -63,5 +63,11 @@ public interface Taskable
      *
      */
     public void initialize();
+    
+    /**
+     * Requests the context for this task
+     *
+     */
+    public void requestContext();
 
 }

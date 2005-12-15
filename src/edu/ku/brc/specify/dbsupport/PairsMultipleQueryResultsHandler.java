@@ -106,7 +106,6 @@ public class PairsMultipleQueryResultsHandler implements QueryResultsHandlerIFac
             java.util.List<QueryResultsDataObj> qrdos = qrc.getQueryResultsDataObjs();
             for (int i=0;i<qrdos.size();i++)
             {         
-                list.add(qrdos.get(i++).getResult());
                 list.add(qrdos.get(i).getResult());
             }
 

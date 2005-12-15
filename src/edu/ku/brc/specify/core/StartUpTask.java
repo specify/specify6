@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: ReportsTask.java,v $
+/* Filename:    $RCSfile: StartUpTask.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2005/10/19 19:59:54 $
@@ -24,7 +24,7 @@ import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 import java.util.List;
 import java.util.Vector;
 
-import edu.ku.brc.specify.core.subpane.SimpleDescPane;
+import edu.ku.brc.specify.core.subpane.StatsPane;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.ui.IconManager;
@@ -32,36 +32,35 @@ import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 
 /**
- * This task will enable a user to create, and view reports.
+ * This task will enable the user to create queries, save them and execute them.
  * 
  * @author rods
  *
  */
-public class ReportsTask extends BaseTask
+public class StartUpTask extends BaseTask
 {
-    public static final String REPORTS = "Reports";
-
-    public ReportsTask()
-    {
-        super(REPORTS, getResourceString(REPORTS));
-        
-        // Temporary
-        NavBox navBox = new NavBox(getResourceString("Actions"));
-        navBox.add(NavBox.createBtn(getResourceString("Create_New_Report"), name, IconManager.IconSize.Std16));
-        navBoxes.addElement(navBox);
-        
-        //navBox = new NavBox(name);
-        //navBox.add(NavBox.createBtn(name, name, IconManager.IconSize.Std16));
-        //navBox.add(NavBox.createBtn(name, name, IconManager.IconSize.Std16));
-        //navBoxes.addElement(navBox);
-    }
+    public static final String STARTUP = "Startup";
+    
+    protected Vector<ToolBarDropDownBtn> tbList = new Vector<ToolBarDropDownBtn>();
+    
     
     /**
-     * @return the initial pane
+     * Default Constructor
+     *
+     */
+    public StartUpTask()
+    {
+        super(STARTUP, getResourceString(STARTUP));
+        
+        icon = IconManager.getImage(STARTUP, IconManager.IconSize.Std16);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
     public SubPaneIFace getStarterPane()
     {
-        return new SimpleDescPane(title, this, "This is the Reports Pane");
+        return new StatsPane(title, this, "startup_panel.xml", true, null);
     }
     
     //-------------------------------------------------------
@@ -75,11 +74,16 @@ public class ReportsTask extends BaseTask
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        ToolBarDropDownBtn btn = createToolbarButton(name, "reports.gif", "reports_hint");      
-
         
+        /*ToolBarDropDownBtn btn = createToolbarButton(name, "queryIt.gif", "search_hint");
+        if (tbList.size() == 0)
+        {
+            tbList.add(btn);
+        }
         list.add(new ToolBarItemDesc(btn.getCompleteComp()));
+        */
         return list;
+        
     }
     
     /*
@@ -89,9 +93,9 @@ public class ReportsTask extends BaseTask
     public List<MenuItemDesc> getMenuItems()
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
+        
         return list;
         
     }
     
-
 }

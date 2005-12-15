@@ -29,6 +29,10 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import edu.ku.brc.specify.ui.CurvedBorder;
 
 /**
@@ -42,7 +46,8 @@ import edu.ku.brc.specify.ui.CurvedBorder;
 public class StatGroup extends JPanel
 {
 
-    public String name;
+    protected String name;
+    protected JPanel content = null;
     
     /**
      * Constructor with the localized name of the Group
@@ -55,7 +60,48 @@ public class StatGroup extends JPanel
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(15, 2, 2, 2));
         setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
-    }
+        setOpaque(false);
+    } 
+    
+    /**
+     * Constructor with the localized name of the Group
+     * @param name name of the group (already been localized)
+     * @param useSeparator use non-border separator titles
+     */
+    public StatGroup(final String name, boolean useSeparator)
+    {
+        this.name = name;
+        
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setOpaque(false);
+        
+       if (useSeparator)
+        {
+            setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+            PanelBuilder    builder    = new PanelBuilder(new FormLayout("p:g", "p,p"));
+            CellConstraints cc         = new CellConstraints();
+            
+            //PanelBuilder sepBuilder = new PanelBuilder(new FormLayout("p:g,2px,f:p:g", "c:p"));
+            //sepBuilder.add(new JLabel(name), cc.xy(1,1));
+            //sepBuilder.add(new JSeparator(), cc.xy(3,1));
+            //sepBuilder.getPanel().setOpaque(false);
+           
+            content = new JPanel();
+            content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+            content.setOpaque(false);
+            
+            //builder.add(sepBuilder.getPanel(), cc.xy(1,1));
+            builder.addSeparator(name, cc.xy(1,1));
+            builder.add(content, cc.xy(1,2));
+            builder.getPanel().setOpaque(false);
+            add(builder.getPanel());
+            
+        } else
+        {
+            setBorder(BorderFactory.createEmptyBorder(15, 2, 2, 2));
+            setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
+         }
+    } 
     
     /**
      * Enables Threaded objects to ask for a relayout of the UI
@@ -74,7 +120,8 @@ public class StatGroup extends JPanel
      */
     public void addItem(StatItem item)
     {
-        add(item);
+        
+        (content != null ? content : this).add(item);
     }
     
     /**
@@ -84,27 +131,30 @@ public class StatGroup extends JPanel
     {
         super.paint(g);
         
-        Dimension dim = getSize();
-        
-        FontMetrics fm = g.getFontMetrics();
-        int strW = fm.stringWidth(name);
-        
-        int x = (dim.width - strW) / 2;
-        Insets ins = getBorder().getBorderInsets(this);
-        int y = 2 + fm.getAscent();
-        
-        int lineW = dim.width - ins.left - ins.right;
-        g.setColor(Color.BLUE.darker());
-        g.drawString(name, x, y);
-        x = ins.left;
-        y += fm.getDescent() + fm.getLeading();
-
-        g.setColor(Color.LIGHT_GRAY.brighter());
-        g.drawLine(x, y,   x+lineW, y);
-        y++;
-        x++;
-        g.setColor(Color.LIGHT_GRAY);
-        g.drawLine(x, y,   x+lineW, y);
+        if (content == null)
+        {
+            Dimension dim = getSize();
+            
+            FontMetrics fm = g.getFontMetrics();
+            int strW = fm.stringWidth(name);
+            
+            int x = (dim.width - strW) / 2;
+            Insets ins = getBorder().getBorderInsets(this);
+            int y = 2 + fm.getAscent();
+            
+            int lineW = dim.width - ins.left - ins.right;
+            g.setColor(Color.BLUE.darker());
+            g.drawString(name, x, y);
+            x = ins.left;
+            y += fm.getDescent() + fm.getLeading();
+    
+            g.setColor(Color.LIGHT_GRAY.brighter());
+            g.drawLine(x, y,   x+lineW, y);
+            y++;
+            x++;
+            g.setColor(Color.LIGHT_GRAY);
+            g.drawLine(x, y,   x+lineW, y);
+        }
     }
 
 }

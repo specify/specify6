@@ -68,7 +68,7 @@ public class InteractionsTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        return new SimpleDescPane(name, this, "This is the Interactions Pane");
+        return new SimpleDescPane(title, this, "This is the Interactions Pane");
     }
     
     //-------------------------------------------------------

@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: SQLQueryPane.java,v $
+/* Filename:    $RCSfile: ExpressSearchResultsPane.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2005/10/19 19:59:54 $
@@ -22,29 +22,24 @@ package edu.ku.brc.specify.core.subpane;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Hashtable;
 
-import javax.swing.*;
-import javax.swing.*;
-import javax.swing.table.*;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
-import javax.swing.text.*;
+import javax.swing.table.TableColumnModel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,25 +48,19 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.specify.stats.StatGroup;
-import edu.ku.brc.specify.ui.*;
-import edu.ku.brc.specify.core.*;
-import edu.ku.brc.specify.core.ExpressSearchTask;
+import edu.ku.brc.specify.core.NavBox;
+import edu.ku.brc.specify.core.NavBoxLayoutManager;
+import edu.ku.brc.specify.core.NavBoxMgr;
 import edu.ku.brc.specify.core.Taskable;
-
 import edu.ku.brc.specify.dbsupport.SQLExecutionListener;
 import edu.ku.brc.specify.dbsupport.SQLExecutionProcessor;
-import edu.ku.brc.specify.ui.db.*;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.*;
-import java.util.Hashtable;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import edu.ku.brc.specify.ui.CloseButton;
+import edu.ku.brc.specify.ui.GradiantButton;
+import edu.ku.brc.specify.ui.GradiantLabel;
+import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.specify.ui.TriangleButton;
+import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 /**
  * A pane with a text field for entring in a query and then the results are displayed in a table.
  * 
@@ -324,21 +313,31 @@ public class ExpressSearchResultsPane extends BaseSubPane
         }
         
         /**
-         * Display the 'n' number of rows up to topNumEntries
-         * 
-         * @param numRows the desired number of rows
+         * Creates an array of indexes
+         * @param rows the number of rows to be displayed
+         * @return an array of indexes
          */
-        protected void setDisplayRows(final int numRows, int maxNum)
+        protected int[] createIndexesArray(final int rows)
         {
-            int rows = Math.min(numRows, maxNum);
-            ResultSetTableModel rsm = (ResultSetTableModel)table.getModel();
-            rsm.initializeDisplayIndexes();
             int[] indexes = new int[rows];
             for (int i=0;i<rows;i++)
             {
                 indexes[i] = i;
             }
-            rsm.addDisplayIndexes(indexes);
+            return indexes;            
+        }
+        
+        /**
+         * Display the 'n' number of rows up to topNumEntries
+         * 
+         * @param numRows the desired number of rows
+         */
+        protected void setDisplayRows(final int numRows, final int maxNum)
+        {
+            int rows = Math.min(numRows, maxNum);
+            ResultSetTableModel rsm = (ResultSetTableModel)table.getModel();
+            rsm.initializeDisplayIndexes();
+            rsm.addDisplayIndexes(createIndexesArray(rows));
            
         }
         
@@ -352,6 +351,7 @@ public class ExpressSearchResultsPane extends BaseSubPane
         public void exectionDone(final SQLExecutionProcessor process, final java.sql.ResultSet resultSet)
         {
             ResultSetTableModel rsm = new ResultSetTableModel(resultSet);
+            rsm.addDisplayIndexes(createIndexesArray(7)); // pre-initialize to reduce flash (not sure if this is working)
             
             table.setModel(rsm);
             table.setRowSelectionAllowed(true);

@@ -111,7 +111,7 @@ public class IconManager
     {
         loadIcons();
     }
-
+    
     /**
      * Registers an icon (group or category), it creates an icon of "id" size and stores it
      * @param iconName the group name of icons of various sizes
@@ -125,7 +125,7 @@ public class IconManager
         if (icon == null)
         {
             IconEntry entry = new IconEntry(iconName);
-            URL url = Specify.class.getResource(relativePath+fileName);
+            URL url = getImagePath(fileName);
             
             assert url != null : "Couldn't find URL for resource path: ["+(relativePath+fileName)+"]";
             
@@ -247,5 +247,41 @@ public class IconManager
             log.error(ex);
         }
     }
+    
+    //------------------------------------------------------------
+    // Static Methods
+    //------------------------------------------------------------
+    
+    /**
+     * Returns an URL for the path to the image
+     * @param imageName the image name
+     * @return Returns an URL for the path to the image
+     */
+    public static URL getImagePath(final String imageName)
+    {
+        return Specify.class.getResource(relativePath+imageName);
+    }
+
+    /**
+     * Returns a Standard Size icon
+     * @param imageName the name of the icon/image
+     * @return Returns a Standard Size icon
+     */
+    public static ImageIcon getImage(final String imageName)
+    {
+        return iconMgr.getIcon(imageName, IconSize.Std32);
+    }
+
+    /**
+     * Returns a Standard Size icon
+     * @param imageName the name of the icon/image
+     * @param id tthe size to be returned
+     * @return Returns a Standard Size icon
+     */
+    public static ImageIcon getImage(final String imageName, final IconSize id)
+    {
+        return iconMgr.getIcon(imageName, id);
+    }
+
     
 }

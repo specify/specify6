@@ -138,17 +138,6 @@ public abstract class BaseTask implements Taskable, TaskPluginable
      */
     public abstract SubPaneIFace getStarterPane();
 
-    /**
-     * Requests the context for this task
-     *
-     */
-    protected void requestContext()
-    {
-        ContextMgr.getInstance().requestContext(this);
-        
-        UICacheManager.getInstance().getSubPaneMgr().addPane(getStarterPane());
-    }
-    
     //-------------------------------------------------------
     // Taskable
     //-------------------------------------------------------
@@ -170,6 +159,16 @@ public abstract class BaseTask implements Taskable, TaskPluginable
     public Icon getIcon()
     {
         return icon;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.Taskable#requestContext()
+     */
+    public void requestContext()
+    {
+        ContextMgr.getInstance().requestContext(this);
+        
+        UICacheManager.getInstance().getSubPaneMgr().addPane(getStarterPane());
     }
     
     //-------------------------------------------------------

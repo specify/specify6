@@ -21,11 +21,11 @@ package edu.ku.brc.specify.core;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import javax.swing.JButton;
+import javax.swing.*;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -76,9 +76,11 @@ public class ExpressSearchTask extends BaseTask
     protected File                         lucenePath = null;
     protected Hashtable<String, TableInfo> tables = new Hashtable<String, TableInfo>();
     protected JTextField                   searchText;
-    protected JButton                      searchBtn;   
+    protected JButton                      searchBtn;
+    protected Color                        textBGColor = null;
+    protected Color                        badSearchColor = new Color(255,235,235);
     
-
+    
     /**
      * Deafult Constructor
      */
@@ -219,7 +221,11 @@ public class ExpressSearchTask extends BaseTask
             
             if (hits.length() == 0)
             {
-                System.out.println("No Hits for ["+searchTerm+"]");
+                log.debug("No Hits for ["+searchTerm+"]");
+                searchText.setBackground(badSearchColor);
+                searchText.setSelectionStart(0);
+                searchText.setSelectionEnd(searchText.getText().length());
+                searchText.getToolkit().beep();
                 return;
             } 
            
@@ -235,7 +241,7 @@ public class ExpressSearchTask extends BaseTask
                 tableInfo.getRecIds().add((Integer.parseInt(doc.get("id"))));
             }
         
-            ExpressSearchResultsPane expressSearchPane = new ExpressSearchResultsPane(title, this);
+            ExpressSearchResultsPane expressSearchPane = new ExpressSearchResultsPane(searchTerm, this);
             for (Enumeration<TableInfo> e=tables.elements();e.hasMoreElements();)
             {
                 TableInfo tableInfo = e.nextElement();
@@ -290,6 +296,7 @@ public class ExpressSearchTask extends BaseTask
         searchBtn   = new JButton(getResourceString("Search"));
         
         searchText  = new JTextField(10);
+        textBGColor = searchText.getBackground();
         
         searchText.setMinimumSize(new Dimension(50, searchText.getPreferredSize().height));
         
@@ -306,6 +313,19 @@ public class ExpressSearchTask extends BaseTask
         
         searchBtn.addActionListener(doQuery);
         searchText.addActionListener(doQuery);
+        searchText.addKeyListener(new KeyAdapter()
+        {
+            public void keyPressed(KeyEvent e)
+            {
+                if (searchText.getBackground() != textBGColor)
+                {
+                    searchText.setBackground(textBGColor);
+                }
+            }
+
+
+        });
+        
         
         c.weightx = 1.0;
         gridbag.setConstraints(spacer, c);

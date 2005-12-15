@@ -21,6 +21,8 @@
 package edu.ku.brc.specify.core.subpane;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.specify.helpers.UIHelper.getString;
+import static edu.ku.brc.specify.helpers.UIHelper.getInt;
 
 import java.awt.BorderLayout;
 
@@ -123,7 +125,7 @@ public class PieChartPane extends ChartPane implements QueryResultsListener, Que
         {         
             Object descObj = list.get(i++);
             Object valObj  = list.get(i);
-            dataset.setValue(BarChartPane.getString(descObj), BarChartPane.getInt(valObj));
+            dataset.setValue(getString(descObj), getInt(valObj));
         }
         list.clear();        
         

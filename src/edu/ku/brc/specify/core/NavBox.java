@@ -146,6 +146,21 @@ public class NavBox extends JPanel implements NavBoxIFace
     {
         return add(item, false);
     }
+    
+    
+    /* (non-Javadoc)
+     * @see java.awt.Component#getPreferredSize()
+     */
+    public Dimension getPreferredSize()
+    {
+        Dimension size = super.getPreferredSize();
+        FontMetrics fm = this.getFontMetrics(getFont());
+        int width = fm.stringWidth(name);
+        Insets insets = getBorder().getBorderInsets(this);
+        width += insets.left + insets.right;
+        size.width = Math.max(size.width, width);
+        return size;
+    }
         
 
     /* (non-Javadoc)

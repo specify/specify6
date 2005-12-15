@@ -1,5 +1,7 @@
 package edu.ku.brc.specify.stats;
 
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+
 import java.util.List;
 import java.util.Vector;
 
@@ -54,6 +56,25 @@ public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListen
         sqle.start();
     }
 
+    /**
+     * Constructor that describes where we get everything from
+     * @param name the name or title
+     * @param sql the SQL statement to be executed
+     * @param descCol the column where the description comes form
+     * @param valCol the column where the value comes from
+     * @param useSeparator use non-border separator titles
+     */
+    public StatGroupFromQuery(final String name, final String sql, final int descCol, final int valCol, boolean useSeparator)
+    {
+        super(name, useSeparator);
+        
+        this.descCol = descCol;
+        this.valCol  = valCol;
+        
+        sqle = new SQLExecutionProcessor(this, sql);
+        sqle.start();
+    }
+
     //-----------------------------------------------------
     //-- SQLExecutionListener
     //-----------------------------------------------------
@@ -95,6 +116,12 @@ public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListen
                     statItem.refreshUI();
                 }    
                 data.clear();
+            } else
+            {
+                StatItem statItem = new StatItem(getResourceString("NoneAvail"), null);
+                statItem.setValueText(" ");
+                addItem(statItem);
+                statItem.refreshUI();
             }
         } catch (Exception ex)
         {
@@ -108,8 +135,10 @@ public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListen
      */
     public synchronized void executionError(final SQLExecutionProcessor processor, final Exception ex)
     {
-        
-        //hasFailed = true;   
+        StatItem statItem = new StatItem(getResourceString("NoneAvail"), null);
+        statItem.setValueText(" ");
+        addItem(statItem);
+        statItem.refreshUI();
     }
 
 

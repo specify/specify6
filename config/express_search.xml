@@ -11,6 +11,12 @@
   </groups>
   
   <table id="1" group="colobj" name="CollObject" title="Collection Object">
+    <outofdate>
+        <table name="collectionobject" title="Collection Object"/>
+        <table name="collectionobjectcatalog" title="Collection Object Catalog"/>
+        <table name="determination" title="Determination"/>
+        <table name="taxonname" title="Taxon"/>
+    </outofdate>
     <index>
 	    <sql>
 	        <![CDATA[Select collectionobjectcatalog.CatalogNumber, taxonname.TaxonName From collectionobject Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID Inner Join determination ON determination.BiologicalObjectID = collectionobjectcatalog.CollectionObjectCatalogID Inner Join taxonname ON taxonname.TaxonNameID = determination.TaxonNameID Where collectionobjectcatalog.SubNumber = '0']]>
@@ -31,6 +37,9 @@
   </table>
   
   <table id="2" group="locality" name="locality" title="Locality">
+    <outofdate>
+        <table name="locality" title="Locality"/>
+    </outofdate>
     <index>
 	    <sql>
 	        <![CDATA[select LocalityID,localityname from locality;]]>
@@ -53,6 +62,9 @@
   </table>
   
   <table id="3" group="geo" name="geography" title="Geography">
+    <outofdate>
+        <table name="geography" title="Geography"/>
+    </outofdate>
     <index>
 	    <sql>
 	        <![CDATA[select * from geography;]]>
@@ -78,27 +90,35 @@
   </table>
   
   <table id="4" group="taxon" name="taxonname" title="Taxon">
+    <outofdate>
+        <table name="taxonname" title="Taxon"/>
+    </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[select TaxonNameID,TaxonName from taxonname;]]>
+	        <![CDATA[select TaxonNameID,TaxonName,CommonName from taxonname;]]>
 	    </sql>
 	    <cols>
 	       <col>1</col>
 	       <col>2</col>
+	       <col>3</col>
 	    </cols>
 	</index>
     <detailView icon="Taxon">
 	    <sql>
-	        <![CDATA[select TaxonNameID,TaxonName from taxonname where TaxonNameID in (%s)]]>
+	        <![CDATA[select TaxonName,CommonName,TaxonNameID from taxonname where TaxonNameID in (%s)]]>
 	    </sql>
         <captions>
             <caption col="TaxonNameID" text="Taxon ID"/>
             <caption col="TaxonName" text="Taxon Name"/>
+            <caption col="CommonName" text="Common Name"/>
         </captions>
 	</detailView>
   </table>
   
   <table id="5" group="agents" name="Agent" title="Agent">
+    <outofdate>
+        <table name="agent" title="Agent"/>
+    </outofdate>
     <index>
 	    <sql>
 	        <![CDATA[select AgentID,FirstName,LastName from agent;]]>
@@ -122,6 +142,9 @@
   </table>
   
   <table id="6" group="addr" name="Address" title="Address">
+    <outofdate>
+        <table name="address" title="Address"/>
+    </outofdate>
     <index>
 	    <sql>
 	        <![CDATA[select * from address;]]>
@@ -149,6 +172,9 @@
 
   
   <table id="7" group="colobj" name="CollObjToDeterminer" title="Determiner">
+    <outofdate>
+        <table name="determination" title="Determination"/>
+    </outofdate>
     <index>
 	    <sql>
 	        <![CDATA[Select determination.BiologicalObjectID, agent.FirstName, agent.LastName From determination Inner Join agent ON determination.DeterminerID = agent.AgentID where determination.current1 <> 0]]>
@@ -184,6 +210,9 @@
   </table>  
 
   <table id="8" group="colobj" name="CollObToLocality" title="Localities in Collecting Events">
+    <outofdate>
+        <table name="collectingevent" title="Collecting Event"/>
+    </outofdate>
     <index>
 	    <sql>
 	        <![CDATA[Select collectingevent.CollectingEventID, locality.NamedPlace, locality.LocalityName, locality.Township, locality.Section  From collectingevent Inner Join locality ON collectingevent.LocalityID = locality.LocalityID]]>
@@ -198,11 +227,11 @@
 	</index>
     <detailView icon="ColEvent">
 	    <sql>
-	        <![CDATA[Select collectingevent.CollectingEventID, locality.LocalityName  From collectingevent Inner Join locality ON collectingevent.LocalityID = locality.LocalityID where collectingevent.CollectingEventID in (%s)]]>
+	        <![CDATA[Select locality.LocalityName, collectingevent.CollectingEventID  From collectingevent Inner Join locality ON collectingevent.LocalityID = locality.LocalityID where collectingevent.CollectingEventID in (%s)]]>
 	    </sql>
         <captions>
-            <caption col="CollectingEventID" text="CE ID"/>
             <caption col="LocalityName" text="Locality Name"/>
+            <caption col="CollectingEventID" text="CE ID"/>
         </captions>
 	</detailView>
   </table>  

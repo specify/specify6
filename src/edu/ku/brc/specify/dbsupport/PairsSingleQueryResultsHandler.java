@@ -94,7 +94,6 @@ public class PairsSingleQueryResultsHandler implements QueryResultsHandlerIFace
         java.util.List<QueryResultsDataObj> qrdos = container.getQueryResultsDataObjs();
         for (int i=0;i<qrdos.size();i++)
         {         
-            list.add(qrdos.get(i++).getResult());
             list.add(qrdos.get(i).getResult());
         }
         return list;

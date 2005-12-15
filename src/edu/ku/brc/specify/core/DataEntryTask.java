@@ -81,7 +81,7 @@ public class DataEntryTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        return new SimpleDescPane(name, this, "This is the Data Entry Pane");
+        return new SimpleDescPane(title, this, "This is the Data Entry Pane");
     }
     
     //-------------------------------------------------------

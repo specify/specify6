@@ -197,16 +197,16 @@ public class SQLExecutionProcessor implements Runnable
                 }
                 dbStatement = dbConnection.createStatement();
                 
-                log.info("SQL ["+sqlStr+"]");
+                log.debug("SQL ["+sqlStr+"]");
                 if (sqlStr.toLowerCase().indexOf("select") == 0)
                 {
                     ResultSet rs = dbStatement.executeQuery(sqlStr);
-                    log.info("SQL*["+sqlStr+"]");
+                    log.debug("SQL*["+sqlStr+"]");
                     listener.exectionDone(this, rs);
                 } else
                 {
                     int result = dbStatement.executeUpdate(sqlStr);
-                    log.info("SQL*["+sqlStr+"]");
+                    log.debug("SQL*["+sqlStr+"]");
                     listener.exectionDone(this, null);
                 }
                 

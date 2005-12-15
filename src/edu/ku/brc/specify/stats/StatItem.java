@@ -126,11 +126,13 @@ public class StatItem extends JPanel implements QueryResultsListener
     protected void initUI()
     {
         setLayout(new BorderLayout());
+        setOpaque(false);
         
         JComponent descComp;
         if (link != null)
         {
             descBtn    = new JButton(description);
+            descBtn.setOpaque(false);
             descBtn.setBorder(new EmptyBorder(1,1,1,1));
             descBtn.setCursor(handCursor);
             descBtn.setForeground(linkColor);
@@ -163,6 +165,7 @@ public class StatItem extends JPanel implements QueryResultsListener
         } else
         {
             descLabel = new JLabel(description);
+            descLabel.setOpaque(false);
             descComp = descLabel;
         }
         resultsLabel = new JLabel("?", JLabel.RIGHT);
@@ -182,7 +185,7 @@ public class StatItem extends JPanel implements QueryResultsListener
         //builder.add(infProgress, cc.xy(3,1));
         //infProgress.start();
         
-        
+        builder.getPanel().setOpaque(false);
         add(builder.getPanel(), BorderLayout.CENTER);       
     }
     
@@ -274,7 +277,13 @@ public class StatItem extends JPanel implements QueryResultsListener
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 invalidate();
-                ((StatGroup)getParent()).relayout();
+                if (getParent() instanceof StatGroup)
+                {
+                    ((StatGroup)getParent()).relayout();
+                } else
+                {
+                    //((StatGroup)getParent().getParent()).relayout();
+                }
             }
           });
     }

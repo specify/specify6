@@ -20,21 +20,20 @@
  */
 
 package edu.ku.brc.specify;
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
-import java.awt.*;
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.specify.helpers.UIHelper.centerAndShow;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
-import java.awt.Insets;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.net.URL;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -59,7 +58,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
-import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
+import com.jgoodies.looks.plastic.*;
+import com.jgoodies.looks.plastic.theme.*;
 
 import edu.ku.brc.specify.config.SpecifyConfig;
 import edu.ku.brc.specify.core.ContextMgr;
@@ -70,14 +70,16 @@ import edu.ku.brc.specify.core.LabelsTask;
 import edu.ku.brc.specify.core.QueryTask;
 import edu.ku.brc.specify.core.RecordSetTask;
 import edu.ku.brc.specify.core.ReportsTask;
+import edu.ku.brc.specify.core.StartUpTask;
 import edu.ku.brc.specify.core.StatsTask;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.plugins.PluginMgr;
 import edu.ku.brc.specify.ui.GenericFrame;
+import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.MainPanel;
 import edu.ku.brc.specify.ui.PropertyViewer;
 import edu.ku.brc.specify.ui.ToolbarLayoutManager;
-import edu.ku.brc.specify.ui.*;
+import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
 /**
  * Specify Main Application Class
@@ -93,12 +95,12 @@ public class Specify extends JPanel
     private static final int    PREFERRED_HEIGHT = 750;
 
     // Status Bar
-    private JTextField          statusField       = null;
-    private JMenuBar            menuBar          = null;
-    private JFrame              topFrame            = null;
-    private MainPanel           mainPanel         = null;
+    private JTextField          statusField        = null;
+    private JMenuBar            menuBar            = null;
+    private JFrame              topFrame           = null;
+    private MainPanel           mainPanel          = null;
     
-    protected  boolean          hasChanged        = false;
+    protected  boolean          hasChanged         = false;
   
     protected Configuration     mConfig            = null;
     protected SessionFactory    mSessionFactory    = null;
@@ -170,6 +172,7 @@ public class Specify extends JPanel
             if (!System.getProperty("os.name").equals("Mac OS X"))
             {
                 UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
+                PlasticLookAndFeel.setMyCurrentTheme(new DesertBlue());
             }
                 
             //UIManager.setLookAndFeel(new PlasticLookAndFeel()); 
@@ -247,216 +250,15 @@ public class Specify extends JPanel
 
         try {
             
-            // Tell it about the classes we want mapped, taking advantage of
-            // the way we've named their mapping documents.
-            //mConfig.addClass(Accession.class).addClass(CollectingEvent.class).addClass(CollectionObject.class);
-            //mConfig.addClass(Geography.class).addClass(TaxonName.class).addClass(Locality.class);
-            //log.info("Adding mapped classes "); 
-            
-            /*
-            mConfig.addClass(Accession.class);
-            mConfig.addClass(CollectingEvent.class);
-            mConfig.addClass(CollectionObject.class);
-            mConfig.addClass(Geography.class);
-            mConfig.addClass(TaxonName.class);
-            mConfig.addClass(Locality.class);
-            mConfig.addClass(CollectionObjectCatalog.class);
-            mConfig.addClass(AccessionAgent.class);
-            mConfig.addClass(AccessionAuthorization.class);
-            mConfig.addClass(Address.class);
-            mConfig.addClass(Agent.class);
-            mConfig.addClass(AgentAddress.class);
-            mConfig.addClass(BiologicalObjectAttribute.class);
-            mConfig.addClass(BiologicalObjectRelation.class);
-            mConfig.addClass(BiologicalObjectRelationType.class);
-            mConfig.addClass(Borrow.class);
-            mConfig.addClass(BorrowAgent.class);
-            mConfig.addClass(BorrowMaterial.class);
-            mConfig.addClass(BorrowReturnMaterial.class);
-            mConfig.addClass(BorrowShipment.class);
-            mConfig.addClass(CatalogSeriesDefinition.class);
-            mConfig.addClass(CatalogSery.class);
-            //mConfig.addClass(CollectingEvent.class);
-            mConfig.addClass(Collection.class);
-            //mConfig.addClass(CollectionObject.class);
-            //mConfig.addClass(CollectionObjectCatalog.class);
-            mConfig.addClass(CollectionObjectCitation.class);
-            mConfig.addClass(CollectionObjectType.class);
-            mConfig.addClass(CollectionTaxonomyType.class);
-            mConfig.addClass(Deaccession.class);
-            mConfig.addClass(DeaccessionAgent.class);
-            mConfig.addClass(DeaccessionCollectionObject.class);
-            mConfig.addClass(Determination.class);
-            mConfig.addClass(DeterminationCitation.class);
-            mConfig.addClass(ExchangeIn.class);
-            mConfig.addClass(ExchangeOut.class);
-            //mConfig.addClass(Geography.class);
-            mConfig.addClass(GeologicTimeBoundary.class);
-            mConfig.addClass(GeologicTimePeriod.class);
-            mConfig.addClass(Habitat.class);
-            mConfig.addClass(Image.class);
-            mConfig.addClass(ImageAgent.class);
-            mConfig.addClass(ImageCollectionObject.class);
-            mConfig.addClass(ImageLocality.class);
-            mConfig.addClass(Journal.class);
-            mConfig.addClass(Loan.class);
-            mConfig.addClass(LoanAgent.class);
-            mConfig.addClass(LoanPhysicalObject.class);
-            mConfig.addClass(LoanReturnPhysicalObject.class);
-            //mConfig.addClass(Locality.class);
-            mConfig.addClass(LocalityCitation.class);
-            mConfig.addClass(Observation.class);
-            mConfig.addClass(OtherIdentifier.class);
-            mConfig.addClass(Permit.class);
-            mConfig.addClass(Preparation.class);
-            mConfig.addClass(Project.class);
-            mConfig.addClass(ProjectCollectionObject.class);
-            mConfig.addClass(ReferenceWork.class);
-            mConfig.addClass(Shipment.class);
-            mConfig.addClass(Sound.class);
-            mConfig.addClass(SoundEventStorage.class);
-            mConfig.addClass(TaxonCitation.class);
-            //mConfig.addClass(TaxonName.class);
-            mConfig.addClass(TaxonomicUnitType.class);
-            mConfig.addClass(TaxonomyType.class);
-            
-            log.info("-----------");
-            // New Parts of the Schema
-            mConfig.addClass(CollectionObj.class);
-            mConfig.addClass(PrepsObj.class);
-            mConfig.addClass(PrepAttrs.class);
-            mConfig.addClass(PrepTypes.class);
-            mConfig.addClass(HabitatAttrs.class);
-            mConfig.addClass(BioAttrs.class);
-            mConfig.addClass(AttrsDef.class);
-        */
-            
-//          mConfig.addClass(CollectingEvent.class);
-            //mConfig.addClass(CollectionObject.class);
-            //mConfig.addClass(CollectionObjectCatalog.class);
-            //mConfig.addClass(Geography.class);
-//          mConfig.addClass(Locality.class)
-            //mConfig.addClass(TaxonName.class);        
-            //mConfig.addClass(Accession.class).addClass(CollectingEvent.class).addClass(CollectionObject.class).addClass(Geography.class).addClass(TaxonName.class).addClass(Locality.class).addClass(CollectionObjectCatalog.class).addClass(AccessionAgent.class).addClass(AccessionAuthorization.class).addClass(Address.class).addClass(Agent.class).addClass(AgentAddress.class).addClass(BiologicalObjectAttribute.class).addClass(BiologicalObjectRelation.class).addClass(BiologicalObjectRelationType.class).addClass(Borrow.class).addClass(BorrowAgent.class).addClass(BorrowMaterial.class).addClass(BorrowReturnMaterial.class).addClass(BorrowShipment.class).addClass(CatalogSeriesDefinition.class).addClass(CatalogSery.class).addClass(Collection.class).addClass(CollectionObjectCitation.class).addClass(CollectionObjectType.class).addClass(CollectionTaxonomyType.class).addClass(Deaccession.class).addClass(DeaccessionAgent.class).addClass(DeaccessionCollectionObject.class).addClass(Determination.class).addClass(DeterminationCitation.class).addClass(ExchangeIn.class).addClass(ExchangeOut.class).addClass(GeologicTimeBoundary.class).addClass(GeologicTimePeriod.class).addClass(Habitat.class).addClass(Image.class).addClass(ImageAgent.class).addClass(ImageCollectionObject.class).addClass(ImageLocality.class).addClass(Journal.class).addClass(Loan.class).addClass(LoanAgent.class).addClass(LoanPhysicalObject.class).addClass(LoanReturnPhysicalObject.class).addClass(LocalityCitation.class).addClass(Observation.class).addClass(OtherIdentifier.class).addClass(Permit.class).addClass(Preparation.class).addClass(Project.class).addClass(ProjectCollectionObject.class).addClass(ReferenceWork.class).addClass(Shipment.class).addClass(Sound.class).addClass(SoundEventStorage.class).addClass(TaxonCitation.class).addClass(TaxonomicUnitType.class).addClass(TaxonomyType.class);
-            
-            //mConfig.setProperty("batch_size", "25");
-            //mConfig.setProperty("fetch_size", "25");
-            //mConfig.setProperty("use_scrollable_resultset", "false");
-            //mConfig.setProperty("show_sql", "true");
-            // Get the session factory we can use for persistence
-            //mConfig.set
-
-            //setHibernateLogonConfig();
-
-           // }
-            //mSessionFactory = mConfig.buildSessionFactory();
-        
-            // Ask for a session using the JDBC information we've configured
-            //mSession = mSessionFactory.openSession(); 
-            //mSession.//
-            
-
-            /*
-            Criteria criteria = mSession.createCriteria(Accession.class);
-            _data = criteria.list();//session.find("from collev");
-             */
-            
-            /*mLayoutPanel = new JPanel(mCardLayout);
-            add(mLayoutPanel, BorderLayout.CENTER);
-            
-            ActionMgr.resetAll();
-           
-            ActionListener backAction = new ActionListener()
-            {
-                public void actionPerformed(ActionEvent ae)
-                {
-                    //try{mSession.flush();}
-                    //catch(Exception e){
-                    //  log.error("Error:", e);
-                        /////////////meg added
-                    //}
-                    showCard("Main");
-                }
-            };
-            
-            mMainPanel = new MainPanel(this);
-            mMainPanel.setMinimumSize(new Dimension(500,500));
-            mLayoutPanel.add(mMainPanel, "Main");
-            
-            Document doc = null;
-            try
-            {
-                doc = XMLHelper.readXMLFile2DOM("main_ui.xml");
-            } catch (Exception e)
-            {
-                log.error("Error Loading main_ui.xml - "+e);
-            }
-            
-            // Load the view files
-            NodeList nodeList = XPathAPI.selectNodeList(doc, "definition/viewCache");
-            for (int i=0;i<nodeList.getLength();i++)
-            {
-                Node node = nodeList.item(i);
-                String name = XMLHelper.findAttrValue(node, "name");
-                String file = XMLHelper.findAttrValue(node, "file");
-                ViewMgrCacheItem viewItem = ViewMgr.add(name, file);
-            }
-            
-            DataGetter dataGetter = new DataGetterForDB();
-
-            // load the views
-            IconManager iconMgr = IconManager.getInst();
-            nodeList = XPathAPI.selectNodeList(doc, "definition/view");
-            for (int i=0;i<nodeList.getLength();i++)
-            {
-                Node node = nodeList.item(i);
-                String cacheName = XMLHelper.findAttrValue(node, "cacheName");
-                String name      = XMLHelper.findAttrValue(node, "name");
-                String className = XMLHelper.findAttrValue(node, "class");
-                int    id        = XMLHelper.getIntFromAttr(node, "id");
-                String edit      = XMLHelper.findAttrValue(node, "edit");
-                
-                Class classObj = Class.forName(className);
-                
-                ViewMgrCacheItem viewItem = ViewMgr.get(cacheName);
-                if (viewItem != null)
-                {
-                    boolean isEdit = edit.equals("true");
-                    ViewPanel viewPanel = new ViewPanel(null, viewItem, id, null, classObj, isEdit, true, false, dataGetter);
-                    mLayoutPanel.add(name, viewPanel);
-                    if (isEdit)
-                    {
-                        viewPanel.registerSaveAction(this);
-                    }
-                    viewPanel.registerBackAction(backAction);
-                    mViewPanels.put(name, viewPanel);
-                    viewPanel.validate();
-                } else 
-                {
-                    log.error("Couldn't locate cache item["+cacheName+"]");
-                }
-
-            }
-
-            ActionMgr.registerListenerByType(this, "generic");
-
-            //ViewMgrCacheItem viewItem = ViewMgr.add("Accession", "Accessions_view.xml");
-            //_viewPanel = new ViewPanel(viewItem, 1, _data.get(0), Accession.class);
-            //add(_viewPanel, BorderLayout.CENTER);
-            
-            */
-            
             SwingUtilities.invokeLater(new Runnable()
                     {
                         public void run()
                         {
-
-                            //showCard("Main");
                             validate();
                             hideSplash();
                             
                             add(mainPanel, BorderLayout.CENTER);
-                             //mainPanel.showPane(SQLQueryPane.paneName);
+                            ContextMgr.getInstance().getTaskByClass(StartUpTask.class).requestContext();
                             showApp();
                             
                         }
@@ -610,16 +412,6 @@ public class Specify extends JPanel
         setPreferredSize(new Dimension(PREFERRED_WIDTH, PREFERRED_HEIGHT));
 
         initializeUI(gc);
-
-        // Note that
-        // we again must do this on the GUI thread using invokeLater.
-        SwingUtilities.invokeLater(new Runnable()
-        {
-          public void run()
-          {
-            //showApp();
-           }
-        });
     }
 
  
@@ -629,6 +421,8 @@ public class Specify extends JPanel
     public void initializeUI(final GraphicsConfiguration gc)
     {        
         topFrame = new JFrame(gc);
+        topFrame.setIconImage( IconManager.getImage("Specify16", IconManager.IconSize.Std16).getImage() );
+        
         topFrame.setGlassPane(glassPane = new GhostGlassPane());
         topFrame.setLocationRelativeTo(null);
         Toolkit.getDefaultToolkit().setDynamicLayout(true);
@@ -656,27 +450,15 @@ public class Specify extends JPanel
         }
         UICacheManager.getInstance().register(UICacheManager.TOOLBAR, toolBar);
         
-        //layoutPanel = new JPanel(cardLayout);
-        //layoutPanel.setBackground(Color.WHITE);
-        //add(layoutPanel, BorderLayout.CENTER);
-        
-        // Special Temp code
-        //addPane(SQLQueryPane.paneName, new SQLQueryPane());
         mainPanel = new MainPanel();
-        //mainPanel.addSubPanel(new SQLQueryPane());
-        
-        /*GenericFrame frame = new GenericFrame();
-        frame.setTitle("Preferences");
-        frame.getContentPane().add(new SQLQueryPane(), BorderLayout.CENTER);
-        centerAndShow(frame);
-         */
-        
+
         statusField = new JTextField("");
         statusField.setEditable(false);
         UICacheManager.getInstance().register(UICacheManager.STATUSBAR, statusField);
         
         add(statusField, BorderLayout.SOUTH);
         
+        PluginMgr.getInstance().register(new StartUpTask());
         PluginMgr.getInstance().register(new DataEntryTask());
         PluginMgr.getInstance().register(new LabelsTask());
         PluginMgr.getInstance().register(new ReportsTask());
@@ -688,7 +470,6 @@ public class Specify extends JPanel
         rst.initialize();
         PluginMgr.getInstance().register(rst);
         
-        // Express Search (Invisble Task)
         ExpressSearchTask est = new ExpressSearchTask();
         est.initialize();
         PluginMgr.getInstance().register(est);
@@ -751,7 +532,7 @@ public class Specify extends JPanel
                 });    
 
         
-        JMenuItem mi2;
+        /*JMenuItem mi2;
         JMenu fileMenu2 = (JMenu) mb.add(new JMenu("Log off"));
         
 
@@ -784,6 +565,7 @@ public class Specify extends JPanel
                         Specify ha = new Specify(grc);
                     }
                 });  
+        */
         
         JMenuItem mi3;
         JMenu fileMenu3 = (JMenu) mb.add(new JMenu("Windows"));
@@ -913,27 +695,6 @@ public class Specify extends JPanel
     }
   
     /**
-     * Center and make the frame visible
-     * @param aFrame
-     */
-    public static void centerAndShow(JFrame aFrame)
-    {
-        Rectangle screenRect = aFrame.getGraphicsConfiguration().getBounds();
-        Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(aFrame.getGraphicsConfiguration());
-
-        // Make sure we don't place the demo off the screen.
-        int centerWidth = screenRect.width < aFrame.getSize().width ? screenRect.x : screenRect.x
-            + screenRect.width / 2 - aFrame.getSize().width / 2;
-        int centerHeight = screenRect.height < aFrame.getSize().height ? screenRect.y : screenRect.y
-            + screenRect.height / 2 - aFrame.getSize().height / 2;
-
-        centerHeight = centerHeight < screenInsets.top ? screenInsets.top : centerHeight;
-
-        aFrame.setLocation(centerWidth, centerHeight);
-        aFrame.setVisible(true);      
-    }
-
-    /**
      * Returns the frame instance
      */
     public JFrame getFrame()
@@ -976,37 +737,6 @@ public class Specify extends JPanel
     {
         return specifyApp;
     }
-  
-
-    // *******************************************************
-    // *****************   Interfaces  ***********************
-    // *******************************************************
-
-   
-    //-------------------------------
-    // SaveDataObjectIFace
-    //-------------------------------
-    public boolean save(Object aObj)
-    {
-        if (aObj == null) return false;
-        
-        try 
-        {
-              Transaction tx = mSession.beginTransaction();
-              mSession.save(aObj);
-              tx.commit();
-              //Criteria criteria = mSession.createCriteria(Accession.class);
-              //_data = criteria.list();//session.find("from collev");
-              //accession = (Accession)_data.get(0);
-              //log.info("XXX:"+accession.getLastEditedBy());
-              return true;
-        } catch (Exception e)
-        {
-            log.error("save - ", e);
-        }
-        return false;
-    }
-
   
 
   // *******************************************************

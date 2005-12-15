@@ -21,6 +21,8 @@
 package edu.ku.brc.specify.core.subpane;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.specify.helpers.UIHelper.centerAndShow;
+
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -159,7 +161,7 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
                 {
                     SaveRecordSetDlg dlg = new SaveRecordSetDlg((ResultSetTableModel)table.getModel(), table.getSelectedRows());
                    
-                    UICacheManager.centerAndShow(dlg);
+                    centerAndShow(dlg);
                 }
             });
             enableUI(true);
