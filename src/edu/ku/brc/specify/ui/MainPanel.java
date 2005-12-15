@@ -39,6 +39,8 @@ public class MainPanel extends JSplitPane
     {
         super(JSplitPane.HORIZONTAL_SPLIT);
         
+        setOneTouchExpandable(true);
+        
         navBoxMgr  =  NavBoxMgr.getInstance();
         subPaneMgr = new SubPaneMgr();
         UICacheManager.getInstance().setSubPaneMgr(subPaneMgr);
@@ -47,7 +49,9 @@ public class MainPanel extends JSplitPane
         this.setRightComponent(subPaneMgr);
         
         setTabPlacement(JTabbedPane.BOTTOM);  // PREF
-        this.setDividerLocation(175);         // PREF
+        this.setDividerLocation(0);         // PREF
+        this.setLastDividerLocation(175);
+        navBoxMgr.setSplitPane(this);
     }
     
     /**

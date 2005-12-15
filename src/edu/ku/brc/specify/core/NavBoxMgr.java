@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import edu.ku.brc.specify.exceptions.ConfigurationException;
 
@@ -42,6 +42,7 @@ public class NavBoxMgr extends JPanel
     // Data Members
     private List<NavBoxIFace>   list   = Collections.synchronizedList(new ArrayList<NavBoxIFace>());
     private NavBoxLayoutManager layout = new NavBoxLayoutManager(5, 5);
+    private JSplitPane          splitPane;
      
     /**
      * Protected Default Constructor for the singleton
@@ -51,6 +52,11 @@ public class NavBoxMgr extends JPanel
     {
        setLayout(layout);
        setBackground(Color.WHITE); // XXX PREF ??
+    }
+    
+    public void setSplitPane(final JSplitPane splitPane)
+    {
+        this.splitPane = splitPane;
     }
     
     /**
@@ -80,6 +86,25 @@ public class NavBoxMgr extends JPanel
         }
         doLayout();
         repaint();
+        adjustSplitter();
+    }
+    
+    /**
+     * Adjust the split for when things are added (or removed)
+     *
+     */
+    public void adjustSplitter()
+    {
+        if (splitPane != null)
+        {
+            if (this.getComponentCount() > 0)
+            {
+                splitPane.setDividerLocation(getPreferredSize().width);
+            } else
+            {
+                splitPane.setDividerLocation(0);
+            }
+        }        
     }
     
     /**
@@ -130,6 +155,7 @@ public class NavBoxMgr extends JPanel
             add(box.getUIComponent());
             invalidate();
             doLayout();
+            adjustSplitter();
         } else
         {
             throw new ConfigurationException("Adding a new NavBox with duplicate name["+box.getName()+"]");
@@ -155,7 +181,5 @@ public class NavBoxMgr extends JPanel
         {
             throw new ConfigurationException("Can't find an existing NavBox with name["+box.getName()+"] to remove.");
         }
-    }
-
-    
+    }    
 }

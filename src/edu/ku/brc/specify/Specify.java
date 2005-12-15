@@ -89,7 +89,7 @@ public class Specify extends JPanel
     private static Log log = LogFactory.getLog(Specify.class);
 
     // The preferred size of the demo
-    private static final int    PREFERRED_WIDTH  = 650;
+    private static final int    PREFERRED_WIDTH  = 800;
     private static final int    PREFERRED_HEIGHT = 750;
 
     // Status Bar
@@ -165,7 +165,13 @@ public class Specify extends JPanel
 
         try 
         { 
-            UIManager.setLookAndFeel(new Plastic3DLookAndFeel()); 
+            System.out.println(System.getProperty("os.name"));
+            
+            if (!System.getProperty("os.name").equals("Mac OS X"))
+            {
+                UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
+            }
+                
             //UIManager.setLookAndFeel(new PlasticLookAndFeel()); 
             //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
             //UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
