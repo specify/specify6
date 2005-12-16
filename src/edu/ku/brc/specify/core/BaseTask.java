@@ -113,13 +113,9 @@ public abstract class BaseTask implements Taskable, TaskPluginable
     {
         String name = getResourceString(catName);
         
-        ImageIcon icon32 = IconManager.getInstance().register(name, imageName, IconManager.IconSize.Std32);
-        ImageIcon icon24 = IconManager.getInstance().getIcon(name, IconManager.IconSize.Std24);
-        ImageIcon icon16 = IconManager.getInstance().getIcon(name, IconManager.IconSize.Std16);
+        icon = IconManager.getInstance().getIcon(catName, IconManager.IconSize.Std16);
         
-        icon = icon16;
-        
-        ToolBarDropDownBtn btn = new ToolBarDropDownBtn(name, icon24, JButton.BOTTOM, menus);
+        ToolBarDropDownBtn btn = new ToolBarDropDownBtn(name, IconManager.getInstance().getIcon(catName, IconManager.IconSize.Std24), JButton.BOTTOM, menus);
         btn.setStatusBarHintText(getResourceString(hint));
         
         btn.addActionListener(new ActionListener() {

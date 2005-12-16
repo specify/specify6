@@ -67,6 +67,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.specify.core.ExpressResultsTableInfo;
 import edu.ku.brc.specify.core.ExpressSearchTask;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.PairsMultipleQueryResultsHandler;
@@ -292,10 +293,16 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
      * @param fields the column positions in the results of those items to be indexed
      * @return the time it took in milliseconds
      */
-    public long indexQuery(final IndexWriter writer, final String sqlStr, int tableId, int[] fields)
+    public long indexQuery(final IndexWriter writer,ExpressResultsTableInfo tableInfo)
     {
         Connection dbConnection = DBConnection.getInstance().getConnection();
         Statement  dbStatement = null;
+        
+        int     tableId      = Integer.parseInt(tableInfo.getTableId());
+        int[]   fields       = tableInfo.getCols();
+        boolean useHitsCache = tableInfo.isUseHitsCache();
+        
+        StringBuffer strBuf = new StringBuffer();
         
         long begin = 0;
         
@@ -307,8 +314,9 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             {
                 dbStatement = dbConnection.createStatement();
                 
-                log.info("SQL ["+sqlStr+"]");
-                ResultSet rs = dbStatement.executeQuery(sqlStr);
+                log.info("SQL ["+tableInfo.getBuildSql()+"]");
+                
+                ResultSet rs = dbStatement.executeQuery(tableInfo.getBuildSql());
                 
                 begin = new Date().getTime();
                 
@@ -334,25 +342,64 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                         doc.add(Field.UnIndexed("table", Integer.toString(tableId)));
                         
                         int cnt = 0;
-                        for (int i=1;i<fields.length;i++)
+                        if (useHitsCache)
                         {
-                            Object valObj = rs.getObject(fields[i]);
-                            if (valObj != null)
+                            strBuf.setLength(0);
+                            for (int i=0;i<fields.length;i++)
                             {
-                                String valStr =  valObj.toString();
-                                if (valStr.length() > 0)
+                                Object valObj = rs.getObject(fields[i]);
+                                if (valObj != null)
                                 {
-                                    termsIndexed++;
-                                    cnt++;
-                                    doc.add(Field.UnStored("contents", valStr));
-                                    
-                                    if (isCancelled)
+                                    String valStr =  valObj.toString();
+                                    if (valStr.length() > 0)
+                                    {          
+                                        termsIndexed++;
+                                        cnt++;
+                                        if (i > 0)
+                                        {
+                                            doc.add(Field.UnStored("contents", valStr));
+                                        }
+                                        strBuf.append(valStr);
+                                        strBuf.append('\t');
+                                         
+                                        if (isCancelled)
+                                        {
+                                            return 0;
+                                        }
+                                    } else
                                     {
-                                        dbStatement.close();
-                                        dbConnection.close();
-                                        return 0;
+                                        strBuf.append(" \t");
                                     }
-                               }
+                                } else
+                                {
+                                    strBuf.append(" \t");
+                                }
+                            }
+                                
+                            doc.add(Field.UnIndexed("data", strBuf.toString()));
+                           
+                        } else
+                        {
+                            for (int i=1;i<fields.length;i++)
+                            {
+                                Object valObj = rs.getObject(fields[i]);
+                                if (valObj != null)
+                                {
+                                    String valStr =  valObj.toString();
+                                    if (valStr.length() > 0)
+                                    {
+                                        termsIndexed++;
+                                        cnt++;
+                                        doc.add(Field.UnStored("contents", valStr));
+                                        
+                                        if (isCancelled)
+                                        {
+                                            dbStatement.close();
+                                            dbConnection.close();
+                                            return 0;
+                                        }
+                                   }
+                                }
                             }
                         }
                         if (cnt > 0)
@@ -370,11 +417,11 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         } catch (java.sql.SQLException ex)
         {
             //ex.printStackTrace();
-            log.error("Error in run["+sqlStr+"]", ex);      
+            log.error("Error in run["+tableInfo.getBuildSql()+"]", ex);      
         } catch (Exception ex)
         {
             //ex.printStackTrace();
-            log.error("Error in run["+sqlStr+"]", ex);           
+            log.error("Error in run["+tableInfo.getBuildSql()+"]", ex);           
         }
         long end = new Date().getTime();
 
@@ -479,22 +526,11 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             for ( Iterator iter = tables.iterator(); iter.hasNext(); ) 
             {
                 Element tableElement = (Element)iter.next();
-                int    id    = Integer.parseInt(tableElement.attributeValue("id"));
-                String title = tableElement.attributeValue("title");
-                
-                Element indexElement = (Element)tableElement.selectSingleNode("index");
-                String  sqlStr       = indexElement.selectSingleNode("sql").getText();
-                                
-                List colItems = indexElement.selectNodes("cols/col");
-                int[] cols = new int[colItems.size()];
-                for (int i=0;i<colItems.size();i++)
-                {
-                    Element colElement = (Element)colItems.get(i);
-                    cols[i] = Integer.parseInt(colElement.getTextTrim());
-               }
-               log.info("Indexing: "+title+"  Id: "+id);
-               indvLabel.setText(title);
-               deltaTime += indexQuery(writer, sqlStr, id, cols);
+                ExpressResultsTableInfo tableInfo = new ExpressResultsTableInfo(tableElement, ExpressResultsTableInfo.LOAD_TYPE.Building);
+
+               log.info("Indexing: "+tableInfo.getTitle()+"  Id: "+tableInfo.getTableId());
+               indvLabel.setText(tableInfo.getTitle());
+               deltaTime += indexQuery(writer, tableInfo);
                if (isCancelled)
                {
                    break;

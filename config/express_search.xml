@@ -1,16 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tables>
-  <groups>
-  	<group name="colobj"   title="Collection Object"/>
-  	<group name="agents"   title="Agents"/>
-  	<group name="geo"      title="Geography"/>
-  	<group name="locality" title="Locality"/>
-  	<group name="taxon"    title="Taxon"/>
-  	<group name="colobj"   title="Collection Object"/>
-  	<group name="addr"     title="Address"/>
-  </groups>
-  
-  <table id="1" group="colobj" name="CollObject" title="Collection Object">
+  <table id="1" name="CollObject" title="Collection Object">
     <outofdate>
         <table name="collectionobject" title="Collection Object"/>
         <table name="collectionobjectcatalog" title="Collection Object Catalog"/>
@@ -26,7 +16,7 @@
 	       <col>2</col>
 	    </cols>
 	</index>
-    <detailView icon="CatObj">
+    <detailView icon="ColObj">
 	    <sql>
 	        <![CDATA[Select CatalogNumber from collectionobjectcatalog where CatalogNumber in (%s)]]>
 	    </sql>
@@ -36,7 +26,7 @@
 	</detailView>
   </table>
   
-  <table id="2" group="locality" name="locality" title="Locality">
+  <table id="2" name="locality" title="Locality">
     <outofdate>
         <table name="locality" title="Locality"/>
     </outofdate>
@@ -61,7 +51,7 @@
 	</detailView>
   </table>
   
-  <table id="3" group="geo" name="geography" title="Geography">
+  <table id="3" name="geography" title="Geography">
     <outofdate>
         <table name="geography" title="Geography"/>
     </outofdate>
@@ -89,7 +79,7 @@
 	</detailView>
   </table>
   
-  <table id="4" group="taxon" name="taxonname" title="Taxon">
+  <table id="4" name="taxonname" title="Taxon">
     <outofdate>
         <table name="taxonname" title="Taxon"/>
     </outofdate>
@@ -108,14 +98,14 @@
 	        <![CDATA[select TaxonName,CommonName,TaxonNameID from taxonname where TaxonNameID in (%s)]]>
 	    </sql>
         <captions>
-            <caption col="TaxonNameID" text="Taxon ID"/>
             <caption col="TaxonName" text="Taxon Name"/>
             <caption col="CommonName" text="Common Name"/>
+            <caption col="TaxonNameID" text="Taxon ID"/>
         </captions>
 	</detailView>
   </table>
   
-  <table id="5" group="agents" name="Agent" title="Agent">
+  <table id="5" name="Agent" title="Agent">
     <outofdate>
         <table name="agent" title="Agent"/>
     </outofdate>
@@ -141,7 +131,7 @@
 	</detailView>
   </table>
   
-  <table id="6" group="addr" name="Address" title="Address">
+  <table id="6" name="Address" title="Address">
     <outofdate>
         <table name="address" title="Address"/>
     </outofdate>
@@ -171,21 +161,34 @@
   </table>
 
   
-  <table id="7" group="colobj" name="CollObjToDeterminer" title="Determiner">
+  <table id="7" usehitscache="true" name="CollObjToDeterminer" title="Determiner">
     <outofdate>
         <table name="determination" title="Determination"/>
     </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[Select determination.BiologicalObjectID, agent.FirstName, agent.LastName From determination Inner Join agent ON determination.DeterminerID = agent.AgentID where determination.current1 <> 0]]>
+	        <![CDATA[Select 
+ collectionobjectcatalog.CollectionObjectCatalogID,	        
+ taxonname.TaxonName, 
+ taxonname.CommonName, 
+ agent.LastName, 
+ agent.FirstName
+  From 
+ collectionobject 
+ Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID 
+ Inner Join determination ON determination.BiologicalObjectID = collectionobjectcatalog.CollectionObjectCatalogID 
+ Inner Join agent ON determination.DeterminerID = agent.AgentID 
+ Inner Join taxonname ON determination.TaxonNameID = taxonname.TaxonNameID where determination.current1 <> 0]]>
 	    </sql>
 	    <cols>
 	       <col>1</col>
 	       <col>2</col>
 	       <col>3</col>
+	       <col>4</col>
+	       <col>5</col>
 	    </cols>
 	</index>
-    <detailView icon="ColObj">
+    <detailView icon="Agent">
 	    <sql>
 	        <![CDATA[select * from (Select 
  taxonname.TaxonName, 
@@ -201,15 +204,16 @@
  where tx.CollectionObjectCatalogID in (%s)]]>
 	    </sql>
         <captions>
-            <caption col="TaxonName" text="taxonname.TaxonName"/>
+            <caption col="CollectionObjectCatalogID" text="ID"/>
+             <caption col="TaxonName" text="TaxonName"/>
+             <caption col="CommonName" text="Common Name"/>
             <caption col="LastName" text="Last Name"/>
             <caption col="FirstName" text="First Name"/>
-            <caption col="CollectionObjectCatalogID" text="ID"/>
-        </captions>
+       </captions>
 	</detailView>
-  </table>  
+  </table>
 
-  <table id="8" group="colobj" name="CollObToLocality" title="Localities in Collecting Events">
+  <table id="8" name="CollObToLocality" title="Localities in Collecting Events">
     <outofdate>
         <table name="collectingevent" title="Collecting Event"/>
     </outofdate>

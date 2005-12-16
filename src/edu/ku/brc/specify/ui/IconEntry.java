@@ -34,7 +34,7 @@ public class IconEntry
     private static Log log = LogFactory.getLog(IconManager.class);
     
     private String name;
-    private Hashtable<Integer, ImageIcon> icons = new Hashtable<Integer, ImageIcon>();
+    private Hashtable<String, ImageIcon> icons = new Hashtable<String, ImageIcon>();
     
     /**
      * 
@@ -45,48 +45,56 @@ public class IconEntry
         this.name = name;
     }
 
-
     /**
      * Returns an icon for a given size in pixels
      * @param size the size of the icon
      * @return the icon for that size in pixels
      */
-    public ImageIcon getIcon(final Integer size)
+    public ImageIcon getIcon(final IconSize id)
     {
-        ImageIcon icon = icons.get(size);
-        //if (icon == null)
-        //{
-        //    icon = icons.get(size);
-        //}
-        return icon;
+        //log.info("Getting["+name+"]["+id.toString()+"]");
+        return icons.get(id.toString());
     }
     
     /**
      * Adds an icon of a particular size
-     * @param size the size in pixels
+     * @param size the IconSize
      * @param icon the icon to be added
      */
-    public void add(final Integer size, final ImageIcon icon)
+    public void add(final IconSize id, final ImageIcon icon)
     {
-        icons.put(size, icon);
+        //log.info("Putting["+name+"]["+id.toString()+"]");
+        icons.put(id.toString(), icon);
+    }
+
+
+    /**
+     * Adds an icon of a particular size
+     * @param size the IconSize
+     * @param icon the icon to be added
+     */
+    public void addScaled(final IconSize id, final IconSize newId)
+    {
+        //log.info("Putting["+name+"]["+id.toString()+"]");
+        icons.put(id.toString(), getScaledIcon(id, newId));
     }
 
 
     /**
      * Gets a scaled icon and if it doesn't exist it creates one and scales it
-     * @param iconSize the standard size in pixels
+     * @param iconSize the icon size (Std)
      * @param scaledIconSize the new scaled size in pixels
      * @return the scaled icon
      */
     public ImageIcon getScaledIcon(final IconSize iconSize, final IconSize scaledIconSize)
     {
-        ImageIcon icon = icons.get(iconSize.size());
+        ImageIcon icon = icons.get(iconSize.toString());
         if (icon != null)
         {
             ImageIcon scaledIcon = new ImageIcon(icon.getImage().getScaledInstance(scaledIconSize.size(), scaledIconSize.size(), Image.SCALE_SMOOTH));
             if (scaledIcon != null)
             {
-                icons.put(scaledIconSize.size(), scaledIcon);
+                icons.put(scaledIconSize.toString(), scaledIcon);
                 return scaledIcon;
             } else
             {

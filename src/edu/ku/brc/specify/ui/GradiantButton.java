@@ -19,6 +19,7 @@
  */
 package edu.ku.brc.specify.ui;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
@@ -30,6 +31,8 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
@@ -37,7 +40,7 @@ import javax.swing.border.EmptyBorder;
 /**
  * A gradiant filled button button.
  * A renderer need to be created so GradiantLabel and GradiantButton can share all the code.
-
+ *
  * 
  * @author rods
  *
@@ -46,6 +49,7 @@ public class GradiantButton extends JButton implements MouseListener
 {
     protected Color   textColor        = null;
     protected Color   textColorShadow  = null;
+    protected float   iconAlpha        = 0.7f;
     
     /**
      * Defaults to a gradiant square button
@@ -54,6 +58,24 @@ public class GradiantButton extends JButton implements MouseListener
     public GradiantButton(String text) 
     {
         super(text);
+        init();
+    }
+    
+    /**
+     * Defaults to a gradiant square button
+     * @param icon the icon to be displayed without text
+     */
+    public GradiantButton(final ImageIcon icon) 
+    {
+        super("", icon);
+        init();
+    }
+    
+    /**
+     * Helper method for constructors
+     */
+    protected void init()
+    {
         setTextColor(Color.BLACK);
         setBorder(new EmptyBorder(0,0,0,0));
         super.setBorderPainted(false);
@@ -66,6 +88,7 @@ public class GradiantButton extends JButton implements MouseListener
     public Dimension getPreferredSize() 
     {
         String text = getText();
+        
         FontMetrics fm = this.getFontMetrics(getFont());
         float scale = (50f/40f)*this.getFont().getSize2D();
         int w = fm.stringWidth(text);
@@ -75,31 +98,67 @@ public class GradiantButton extends JButton implements MouseListener
         return new Dimension(w, h);
     }
     
+    /* (non-Javadoc)
+     * @see java.awt.Component#paint(java.awt.Graphics)
+     */
     public void paint(Graphics g) 
     {        
         Graphics2D g2 = (Graphics2D)g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
         int w = this.getWidth();
         int h = this.getHeight();
   
-        drawButtonBody(w,h, getForeground(), g2);
-        drawText(w,h, getText(), g2);
+        drawButtonBody(g2, w,h, getForeground());
+        
+        if (pressed) 
+        {
+            g2.translate(1, 1);
+        }
+        
+       String text = getText();
+        if (text != null && text.length() > 0)
+        {
+            drawText(g2, w,h, getText());
+        }
+        
+        Icon icon = getIcon();
+        if (icon != null)
+        {
+            //Graphics2D g2 = (Graphics2D) g.create();
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, iconAlpha));
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                                RenderingHints.VALUE_ANTIALIAS_ON);
+           icon.paintIcon(this, g2, (w - icon.getIconWidth()) / 2, (h - icon.getIconHeight()) / 2);
+        }
     }
     
-    protected void drawButtonBody(int w, int h, Color base, Graphics2D g2) 
+    /**
+     * Draws the button body
+     * @param g2 the graphics to be painted into
+     * @param w the width of the control
+     * @param h the height of the control
+     * @param color the of the background
+     */
+    protected void drawButtonBody(Graphics2D g2, int w, int h, Color color) 
     {
-            // draw the button body
-        Color grad_top = base.brighter();
-        Color grad_bot = base.darker();        
+        // draw the button body
+        Color grad_top = color.brighter();
+        Color grad_bot = color.darker();        
         GradientPaint bg = new GradientPaint(new Point(0,0), grad_top,
                                              new Point(0,h), grad_bot);
         g2.setPaint(bg);
         g2.fillRect(0, 0, w, h);
-
-        
     }
     
-    protected void drawText(int w, int h, String text, Graphics2D g2) 
+    /**
+     * Paints the text of the control
+     * @param g2 the graphics to be painted into
+     * @param w the width of the control
+     * @param h the height of the control
+     * @param text the string
+     */
+    protected void drawText(Graphics2D g2, int w, int h, String text) 
     {
         // calculate the width and height
         int fw = g2.getFontMetrics().stringWidth(text);
@@ -108,11 +167,6 @@ public class GradiantButton extends JButton implements MouseListener
         int textx = this.getHorizontalAlignment() == JLabel.LEFT ? Math.max(getInsets().left, 2) : (w-fw)/2;
         int texty = h/2 + fh/2;
 
-        if (pressed) 
-        {
-            g2.translate(1, 1);
-        }
-        
         // draw the text
         g2.setColor(textColorShadow);
         g2.drawString(text,textx, texty);
@@ -121,38 +175,58 @@ public class GradiantButton extends JButton implements MouseListener
 
     }
     
-    
-     // generate the alpha version of this color
+     /**
+     * Generate the alpha version of this color
+     * @param color the color in question
+     * @param alpha the alpha of the new color
+     * @return Generate the alpha version of this color
+     */ 
     protected static Color alphaColor(Color color, int alpha) 
     {
         return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
     }
     
-    
-    /* mouse listener implementation */
-    protected boolean pressed = false;
-    public void mouseExited(MouseEvent evt) { }
-    public void mouseEntered(MouseEvent evt) { }
-    public void mouseClicked(MouseEvent evt) { }
-    public void mouseReleased(MouseEvent evt) { 
-        pressed = false;
-    }
-    public void mousePressed(MouseEvent evt) 
-    {
-        pressed = true;
-    }
-    
-    
+    /**
+     * @return returns the text color
+     */
     public Color getTextColor()
     {
         return textColor;
     }
 
+    /**
+     * Sests the text Color
+     * @param textColor text color
+     */
     public void setTextColor(Color textColor)
     {
         this.textColor = textColor;
         textColorShadow = new Color(textColor.getRed(), textColor.getGreen(), textColor.getBlue(), 70);
     }
 
+    public void setIconAlpha(float iconAlpha)
+    {
+        this.iconAlpha = iconAlpha;
+    }
+
+   
+    //----------------------------------------------------------
+    //-- MouseListener Implementation
+    //----------------------------------------------------------
+    protected boolean pressed = false;
+    public void mouseExited(MouseEvent evt) { }
+    public void mouseEntered(MouseEvent evt) { }
+    public void mouseClicked(MouseEvent evt) { }
+    
+    public void mouseReleased(MouseEvent evt) 
+    { 
+        pressed = false;
+    }
+    
+    public void mousePressed(MouseEvent evt) 
+    {
+        pressed = true;
+    }
+    
     
 }

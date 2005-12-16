@@ -34,7 +34,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
-import javax.swing.Icon;
+import javax.swing.*;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
@@ -49,6 +49,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+
+import edu.ku.brc.specify.helpers.XMLHelper;
 
 
 /**
@@ -70,6 +72,12 @@ public abstract class DropDownButton extends JButton implements ChangeListener, 
     protected String        statusBarHintText = null;
     
     protected List<JComponent> menus = null;
+    
+    protected static ImageIcon dropDownArrow;
+    
+    static {
+        dropDownArrow = new ImageIcon(XMLHelper.getConfigDirPath("dropdownarrow.gif"));
+    }
     
     // this class needs a mouse tracker to pop down the menu when the mouse isn't over it or the button
 
@@ -128,7 +136,8 @@ public abstract class DropDownButton extends JButton implements ChangeListener, 
      */
     protected void init()
     {
-        arrowBtn  = new JButton(IconManager.getInstance().register("dropdownarrow", "dropdownarrow.gif", IconManager.IconSize.Std32));
+
+        arrowBtn  = new JButton(dropDownArrow);
         
         Insets insets = new Insets(4,4,4,4);
         mainBtn.setBorder(new EmptyBorder(insets));

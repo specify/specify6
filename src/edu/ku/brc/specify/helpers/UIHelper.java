@@ -135,6 +135,34 @@ public final class UIHelper
         return "";
    }
     
+    public static boolean getBoolean(Object valObj)
+    {
+        if (valObj != null)
+        {
+            if (valObj instanceof String)
+            {
+                String valStr = ((String)valObj).toLowerCase();
+                if (valStr.equals("true"))
+                {
+                    return true;
+                } else if (valStr.equals("false"))
+                {
+                    return false;
+                } else
+                {
+                    System.out.println("getBoolean - value is not 'true' or 'false'");
+                }
+            } else
+            {
+                System.out.println("getBoolean - Class type is "+valObj.getClass().getName()+" should be String");
+            }
+        } else
+        {
+            log.error("getBoolean - Result Object is null for["+valObj+"]");
+        }
+        return false;
+   }
+    
 
     
 

@@ -52,6 +52,8 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
 import org.dom4j.Element;
 
 import edu.ku.brc.specify.core.subpane.ExpressSearchIndexerPane;
@@ -78,12 +80,12 @@ public class ExpressSearchTask extends BaseTask
     
     // Data Members
     protected File                         lucenePath = null;
-    protected Hashtable<String, TableInfo> tables = new Hashtable<String, TableInfo>();
     protected JTextField                   searchText;
     protected JButton                      searchBtn;
     protected Color                        textBGColor = null;
     protected Color                        badSearchColor = new Color(255,235,235);
     
+    protected Hashtable<String, ExpressResultsTableInfo> tables = new Hashtable<String, ExpressResultsTableInfo>();
     
     /**
      * Deafult Constructor
@@ -141,30 +143,8 @@ public class ExpressSearchTask extends BaseTask
             for ( Iterator iter = tableItems.iterator(); iter.hasNext(); ) 
             {
                 Element   tableElement = (Element)iter.next();
-                Element   viewElement  = (Element)tableElement.selectSingleNode("detailView");
-                String    sqlStr       = viewElement.selectSingleNode("sql").getText();
-                String    idStr        = tableElement.attributeValue("id");
-                String    iconName     = viewElement.attributeValue("icon");
-                TableInfo table        = new TableInfo(idStr, tableElement.attributeValue("title"), sqlStr, iconName);
-                
-                List captionItems = viewElement.selectNodes("captions/caption");
-                if (captionItems.size() > 0)
-                {
-                    Hashtable<String, String> colNameMappings = new Hashtable<String, String>();
-                    for ( Iterator capIter = captionItems.iterator(); capIter.hasNext(); ) 
-                    {
-                        Element captionElement = (Element)capIter.next();
-                        String    col  = captionElement.attributeValue("col");
-                        String    text = captionElement.attributeValue("text");
-                        colNameMappings.put(col.toLowerCase(), text);
-                    }
-                    table.setColNameMappings(colNameMappings);
-                } else
-                {
-                    log.info("No Captions!");
-                }
-                
-                tables.put(idStr, table);
+                ExpressResultsTableInfo tableInfo = new ExpressResultsTableInfo(tableElement, ExpressResultsTableInfo.LOAD_TYPE.Viewing);                
+                tables.put(tableInfo.getTableId(), tableInfo);
             }  
             
         } catch (Exception ex)
@@ -203,25 +183,11 @@ public class ExpressSearchTask extends BaseTask
         
         try
         {
-            // Temporary for testing
-            if (searchTerm.equals("indexme"))
-            {
-                showIndexerPane();
-                return;
-            }
-
-            /*PhraseQuery  query = new PhraseQuery();
-            //query.setSlop(slop);
-            
-            StringTokenizer st = new StringTokenizer(searchTerm);
-            while (st.hasMoreTokens())
-            {
-                String termStr = st.nextToken();
-                log.info(termStr);
-                query.add(new Term("contents", termStr));  
-            }*/
             try
             {
+                //Sort sort =  new Sort("table");
+                //Sort sort2 =  new Sort(new SortField[] {new SortField("table", SortField.INT, true)});
+                
                 IndexSearcher searcher = new IndexSearcher(FSDirectory.getDirectory(lucenePath, false));
                 Hits hits = searcher.search(QueryParser.parse(searchTerm, "contents", new SimpleAnalyzer()));
                 
@@ -235,25 +201,56 @@ public class ExpressSearchTask extends BaseTask
                     return;
                 } 
                
+                boolean useFloat = false;
+                
+                int cntUseHitsCache = 0;
+                // can be sped up now that they are sorted
                 for (int i=0;i<hits.length();i++)
                 {
                     Document  doc       = hits.doc(i);
                     String    idStr     = doc.get("table");
-                    TableInfo tableInfo = tables.get(idStr);
+                    ExpressResultsTableInfo tableInfo = tables.get(idStr);
                     if (tableInfo == null)
                     {
+                        for (Enumeration<String> e=tables.keys();e.hasMoreElements();)
+                        {
+                            String key = e.nextElement();
+                            log.info("Key ["+idStr+"] Title["+tables.get(key).getTitle()+"]");
+                        }
                         throw new RuntimeException("Bad id from search["+idStr+"]");
-                    }                
-                    tableInfo.getRecIds().add((Integer.parseInt(doc.get("id"))));
+                    }  
+                    
+                    if (tableInfo.isUseHitsCache())
+                    {
+                        tableInfo.addIndex(i);
+                        cntUseHitsCache++;
+                    } else
+                    {
+                        try
+                        {
+                            if (useFloat)
+                            {
+                                tableInfo.getRecIds().add((int)(Float.parseFloat(doc.get("id"))));
+                            } else
+                            {
+                                tableInfo.getRecIds().add((Integer.parseInt(doc.get("id"))));
+                            }
+                        } catch (java.lang.NumberFormatException e)
+                        {
+                            // megalotis
+                            useFloat = true;
+                            tableInfo.getRecIds().add((int)(Float.parseFloat(doc.get("id"))));
+                        }
+                    }
                 }
             
                 ExpressSearchResultsPane expressSearchPane = new ExpressSearchResultsPane(searchTerm, this);
-                for (Enumeration<TableInfo> e=tables.elements();e.hasMoreElements();)
+                for (Enumeration<ExpressResultsTableInfo> e=tables.elements();e.hasMoreElements();)
                 {
-                    TableInfo tableInfo = e.nextElement();
-                    if (tableInfo.getRecIds().size() > 0)
+                    ExpressResultsTableInfo tableInfo = e.nextElement();
+                    if (tableInfo.getRecIds().size() > 0 || tableInfo.getNumIndexes() > 0)
                     {
-                        expressSearchPane.addSearchResults(tableInfo.getTitle(), tableInfo.getSql(), tableInfo.getIconName(), tableInfo.getColNameMappings());
+                        expressSearchPane.addSearchResults(tableInfo, hits);
                         tableInfo.getRecIds().clear();
                     }
                 }
@@ -370,79 +367,4 @@ public class ExpressSearchTask extends BaseTask
     //-----------------------------------------------------------------
     // Inner Class that represents all the search results for a table
     //-----------------------------------------------------------------
-    class TableInfo
-    {
-        protected String tableId;
-        protected String title;
-        protected String sqlStr;
-        protected String iconName = null;
-        protected Vector<Integer> recIds = new Vector<Integer>();
-        protected Hashtable<String, String> colNameMappings = null;
-        
-        public TableInfo(final String tableId, final String title, final String sqlStr, final String iconName)
-        {
-            this.tableId  = tableId;
-            this.title    = title;
-            this.sqlStr   = sqlStr;
-            this.iconName = iconName;
-        }
-
-        public String getTitle()
-        {
-            return title;
-        }
-        
-        public String getSql()
-        {
-            
-            return sqlStr.replace("%s", getRecIdList());
-        }
-        
-        public Vector<Integer> getRecIds()
-        {
-            return recIds;
-        }
-
-        public void setRecIds(Vector<Integer> recIds)
-        {
-            this.recIds = recIds;
-        }
-
-        public String getTableId()
-        {
-            return tableId;
-        }
-        
-        public String getRecIdList()
-        {
-            StringBuffer idsStr = new StringBuffer();
-            for (int i=0;i<recIds.size();i++)
-            {
-                if (i > 0) idsStr.append(',');
-                idsStr.append(recIds.elementAt(i).toString());
-            }
-            return idsStr.toString();
-        }
-
-        public String getIconName()
-        {
-            return iconName;
-        }
-        
-        /**
-         * Sets the hashtable for mapping names from resultset column names to more human readable names
-         * @param colNameMappings the hash of name mappings
-         */
-        public void setColNameMappings(final Hashtable<String, String> colNameMappings)
-        {
-            this.colNameMappings = colNameMappings;
-        }
-
-        public Hashtable<String, String> getColNameMappings()
-        {
-            return colNameMappings;
-        }
-       
-    }
-
 }

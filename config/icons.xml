@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <icons>
+    <icon name="Startup"    file="specify_icon.gif" sizes="all"/>
     <icon name="Specify"    file="specify_icon.gif" sizes="32"/>
     <icon name="Specify16"  file="specify_icon16.gif" sizes="16"/>
-    <icon name="Startup"    file="specify_icon.gif" sizes="all"/>
     <icon name="Work_Bench" file="newworkbench.gif" sizes="all"/>
     <icon name="Data_Entry" file="dataentry.gif" sizes="all"/>
     <icon name="Labels"     file="labels.gif" sizes="all"/>

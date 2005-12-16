@@ -19,25 +19,27 @@
  */
 package edu.ku.brc.specify.ui;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
-
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.color.ColorSpace;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
 import java.net.URL;
-import java.util.*;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import edu.ku.brc.specify.core.NavBox;
-import edu.ku.brc.specify.exceptions.*;
-import edu.ku.brc.specify.helpers.XMLHelper;
-import edu.ku.brc.specify.Specify;
 import org.dom4j.Element;
 
+import edu.ku.brc.specify.Specify;
+import edu.ku.brc.specify.exceptions.ConfigurationException;
+import edu.ku.brc.specify.helpers.XMLHelper;
 /**
  * @author Rod Spears
  *
@@ -53,19 +55,15 @@ public class IconManager
         Std32(32, false, false),
         Std24(24, false, false),
         Std16(16, false, false),
-        Custom(0, false, false),
         Std32Fade(32, true, false),
         Std24Fade(24, true, false),
         Std16Fade(16, true, false),     
-        CustomFade(0, false, false),
         Std32BW(32, false, true),
         Std24BW(24, false, true),
         Std16BW(16, false, true),
-        CustomBW(0, false, false),
         Std32FadeBW(32, true, true),
         Std24FadeBW(24, true, true),
-        Std16FadeBW(16, true, true),
-        CustomFadeBW(0, false, false);
+        Std16FadeBW(16, true, true);
         
         IconSize(final int size, final boolean faded, final boolean blackWhite)
         { 
@@ -81,7 +79,7 @@ public class IconManager
         public Integer size()         { return size; }
         public boolean faded()        { return faded; }
         public boolean blackWhite()   { return blackWhite; }
-        public String  toString()     { return Integer.toString(size) + (faded ? "f":"") + (blackWhite ? "BW":""); }
+        public String  toString()     { return "Std" + Integer.toString(size) + (faded ? "f":"") + (blackWhite ? "BW":""); }
         public void setSize(int size) { this.size = size; }
         public void setFaded(boolean faded) { this.faded = faded; }
         public void setBlackWhite(boolean bw) { blackWhite = bw; }
@@ -119,33 +117,77 @@ public class IconManager
      * @param id the size of the icon
      * @return the icon that was created at the "id" size
      */
-    public ImageIcon register(final String iconName, final String fileName, final IconSize id)
+    public IconEntry register(final String iconName, final String fileName, final IconSize id)
     {
-        ImageIcon icon = getIcon(iconName, id);
-        if (icon == null)
+        URL url = getImagePath(fileName);
+        
+        assert url != null : "Couldn't find URL for resource path: ["+(relativePath+fileName)+"]";
+        
+        ImageIcon icon = new ImageIcon(url);
+        
+        if (icon != null)
+        {
+            return register(iconName, icon, id);
+        }
+        
+        return null;
+    }
+
+    /**
+     * Registers an icon (group or category), it creates an icon of "id" size and stores it
+     * @param iconName the group name of icons of various sizes
+     * @param fileName the file name of the icon
+     * @param id the size of the icon
+     * @return the icon that was created at the "id" size
+     */
+    public IconEntry register(final String iconName, final ImageIcon icon, final IconSize id)
+    {
+        if (icon != null)
         {
             IconEntry entry = new IconEntry(iconName);
-            URL url = getImagePath(fileName);
+            entry.add(id, icon);
+            entries.put(iconName, entry);
+            return entry;
             
-            assert url != null : "Couldn't find URL for resource path: ["+(relativePath+fileName)+"]";
-            
-            icon = new ImageIcon(url);
-            if (icon != null)
-            {
-                
-                entry.add(id.size(), icon);
-                entries.put(iconName, entry);
-                return icon;
-                
-            } else
-            {
-                log.error("Can't load icon ["+iconName+"]["+fileName+"]");
-            }
-            return null;
         } else
         {
-            return icon;
+            throw new RuntimeException("Can't register null icon name["+iconName+"] Size:"+id.toString());
         }
+    }
+
+    protected IconSize getIconSize(int size, boolean bw, boolean faded)
+    {
+        if (size != 32 && size != 24 && size != 16)
+        {
+            throw new RuntimeException("Wrong icon size! "+ size);
+        }
+
+        if (bw)
+        {
+            switch (size)
+            {
+                case 32 : return IconSize.Std32BW;
+                case 24 : return IconSize.Std24BW;
+                case 16 : return IconSize.Std16BW;
+            }
+        } else if (faded) 
+        {
+            switch (size)
+            {
+                case 32 : return IconSize.Std32Fade;
+                case 24 : return IconSize.Std24Fade;
+                case 16 : return IconSize.Std16Fade;
+            }
+        } else
+        {
+            switch (size)
+            {
+                case 32 : return IconSize.Std32;
+                case 24 : return IconSize.Std24;
+                case 16 : return IconSize.Std16;
+            }
+        }
+        return null;
     }
 
 
@@ -165,15 +207,12 @@ public class IconManager
         IconEntry entry = entries.get(iconName);
         if (entry != null)
         {
-            ImageIcon icon = entry.getIcon(id.size());
+            ImageIcon icon = entry.getIcon(id);
             if (icon == null)
             {
                 if (id.size() != 32)
                 {
-                    IconManager.IconSize.Custom.setSize(32);
-                    IconManager.IconSize.Custom.setFaded(id.faded());
-                    IconManager.IconSize.Custom.setBlackWhite(id.blackWhite());
-                    return entry.getScaledIcon(IconManager.IconSize.Custom, id);
+                    return entry.getScaledIcon(getIconSize(32, id.blackWhite(), id.faded()), id);
                 } else
                 {
                     log.error("Couldn't find Std size for icon ["+ iconName+"] is not registered.");
@@ -228,9 +267,19 @@ public class IconManager
                 if (sizes == null || sizes.length() == 0 || sizes.toLowerCase().equals("all"))
                 {
                     
-                    Icon icon = register(name, file, IconManager.IconSize.Std32);
-                    icon = getIcon(name, IconManager.IconSize.Std24);
-                    icon = getIcon(name, IconManager.IconSize.Std16);
+                    IconEntry entry = register(name, file, IconManager.IconSize.Std32);
+                    
+                    entry.addScaled(IconSize.Std32, IconSize.Std24);
+                    entry.addScaled(IconSize.Std32, IconSize.Std16);
+                    
+                    //ImageIcon icon = entry.getIcon(IconSize.Std32);
+                    //entry.add(IconSize.Std32BW, createBWImage(icon));
+                    
+                    //icon = entry.getIcon(IconSize.Std24);
+                    //entry.add(IconSize.Std24BW, createBWImage(icon));
+                    
+                    //icon = entry.getIcon(IconSize.Std16);
+                    //entry.add(IconSize.Std16, createBWImage(icon));
                     
                 } else
                 {
@@ -252,6 +301,17 @@ public class IconManager
     // Static Methods
     //------------------------------------------------------------
     
+    public static ImageIcon createBWImage(final ImageIcon img) 
+    {
+        BufferedImage bi = new BufferedImage(img.getIconWidth(), img.getIconHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics g = bi.createGraphics();
+        g.drawImage(img.getImage(), 0, 0, null);
+        ColorConvertOp colorConvert = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
+        colorConvert.filter(bi, bi);
+        ImageIcon icon = new ImageIcon(bi);
+        return icon;
+    }
+
     /**
      * Returns an URL for the path to the image
      * @param imageName the image name
