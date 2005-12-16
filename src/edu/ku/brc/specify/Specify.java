@@ -506,12 +506,11 @@ public class Specify extends JPanel
      */
     public JMenuBar createMenus()
     {
-        JMenuBar mb = null;
-        mb = new JMenuBar();
+        JMenuBar mb = new JMenuBar();
         JMenuItem mi;
-        JMenu fileMenu = (JMenu) mb.add(new JMenu("File"));
-        fileMenu.setMnemonic('F');
-        mi = createMenuItem(fileMenu, "Exit", "x", "Exit Appication", false, null);
+        
+        JMenu menu = createMenu(mb, "FileMenu", "FileMneu");
+        mi = createMenuItem(menu, "Exit", "x", "Exit Appication", false, null);
         mi.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent ae)
@@ -520,9 +519,8 @@ public class Specify extends JPanel
                     }
                 });   
         
-        JMenu editMenu = (JMenu) mb.add(new JMenu("Edit"));
-        editMenu.setMnemonic('E');
-        mi = createMenuItem(editMenu, "Preferences", "P", "Preferences", false, null);
+        menu = createMenu(mb, "EditMenu", "EditMneu");
+        mi = createMenuItem(menu, "Preferences", "P", "Preferences", false, null);
         mi.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent ae)
@@ -566,32 +564,8 @@ public class Specify extends JPanel
                     }
                 });  
         */
-        
-        JMenuItem mi3;
-        JMenu fileMenu3 = (JMenu) mb.add(new JMenu("Windows"));
-        fileMenu3.setMnemonic('W');       
-        mi3 = createMenuItem(fileMenu3, "Close All", "A", "Close All", false, null);
-        mi3.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        UICacheManager.getInstance().getSubPaneMgr().closeAll();
-                    }
-                });  
-
-        mi3 = createMenuItem(fileMenu3, "Close Current", "C", "Close C", false, null);
-        mi3.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        UICacheManager.getInstance().getSubPaneMgr().closeCurrent();
-                    }
-                });  
-
-        fileMenu = (JMenu) mb.add(new JMenu(getResourceString("Advanced")));
-        fileMenu.setMnemonic('A');     
-        String label = getResourceString("ESConfig");
-        mi = createMenuItem(fileMenu, label, getResourceString("ESConfig_Mn"), label, false, null);
+        menu = createMenu(mb, "AdvMenu", "AdvMneu");
+        mi = createMenuItem(menu, getResourceString("ESConfig"), getResourceString("ESConfig_Mn"), getResourceString("ESConfig"), false, null);
         mi.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent ae)
@@ -600,6 +574,26 @@ public class Specify extends JPanel
                         expressSearchTask.showIndexerPane();
                     }
                 });  
+       
+        menu = createMenu(mb, "TabsMenu", "TabsMneu");
+        mi = createMenuItem(menu, "Close Current", "C", "Close C", false, null);
+        mi.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        UICacheManager.getInstance().getSubPaneMgr().closeCurrent();
+                    }
+                });  
+
+        mi = createMenuItem(menu, "Close All", "A", "Close All", false, null);
+        mi.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        UICacheManager.getInstance().getSubPaneMgr().closeAll();
+                    }
+                });  
+
 
          return mb;
     }
@@ -654,12 +648,12 @@ public class Specify extends JPanel
   /**
    * Creates a generic menu item
    */
-    public JMenuItem createMenuItem(final JMenu aMenu,
-                                    final String aLabel,
-                                    final String aMnemonic,
-                                    final String aAccessibleDescription,
-                                    final boolean aEnabled,
-                                    final AbstractAction aAction)
+    protected JMenuItem createMenuItem(final JMenu aMenu,
+                                       final String aLabel,
+                                       final String aMnemonic,
+                                       final String aAccessibleDescription,
+                                       final boolean aEnabled,
+                                       final AbstractAction aAction)
     {
         JMenuItem mi = (JMenuItem) aMenu.add(new JMenuItem(aLabel));
         if (aMnemonic.length() > 0)
@@ -677,7 +671,27 @@ public class Specify extends JPanel
         return mi;
     }
 
-
+    /**
+     * Create a menu 
+     * @param mennuBar the menubar
+     * @param labelKey the label key to be localized
+     * @param mneuKey the mneu key to be localized
+     * @return returns a menu
+     */
+    protected JMenu createMenu(final JMenuBar menuBar, final String labelKey, final String mneuKey)
+    {
+        JMenu menu = null;
+        try
+        {
+            menu = (JMenu) menuBar.add(new JMenu(getResourceString(labelKey)));
+            menu.setMnemonic(getResourceString(mneuKey).charAt(0));
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            log.info("Couldn't create menu for " + labelKey + "  " + mneuKey);
+        }
+        return menu;
+    }
   
     /**
      * Bring up the PPApp demo by showing the frame (only applicable if coming up

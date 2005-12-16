@@ -21,32 +21,36 @@ package edu.ku.brc.specify.core;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.*;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
-import javax.swing.*;
+import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.store.FSDirectory;
 import org.dom4j.Element;
 
@@ -206,7 +210,7 @@ public class ExpressSearchTask extends BaseTask
                 return;
             }
 
-            PhraseQuery  query = new PhraseQuery();
+            /*PhraseQuery  query = new PhraseQuery();
             //query.setSlop(slop);
             
             StringTokenizer st = new StringTokenizer(searchTerm);
@@ -215,45 +219,51 @@ public class ExpressSearchTask extends BaseTask
                 String termStr = st.nextToken();
                 log.info(termStr);
                 query.add(new Term("contents", termStr));  
-            }
-            IndexSearcher searcher = new IndexSearcher(FSDirectory.getDirectory(lucenePath, false));
-            Hits hits = searcher.search(query);
-            
-            if (hits.length() == 0)
+            }*/
+            try
             {
-                log.debug("No Hits for ["+searchTerm+"]");
-                searchText.setBackground(badSearchColor);
-                searchText.setSelectionStart(0);
-                searchText.setSelectionEnd(searchText.getText().length());
-                searchText.getToolkit().beep();
-                return;
-            } 
-           
-            for (int i=0;i<hits.length();i++)
-            {
-                Document  doc       = hits.doc(i);
-                String    idStr     = doc.get("table");
-                TableInfo tableInfo = tables.get(idStr);
-                if (tableInfo == null)
+                IndexSearcher searcher = new IndexSearcher(FSDirectory.getDirectory(lucenePath, false));
+                Hits hits = searcher.search(QueryParser.parse(searchTerm, "contents", new SimpleAnalyzer()));
+                
+                if (hits.length() == 0)
                 {
-                    throw new RuntimeException("Bad id from search["+idStr+"]");
-                }                
-                tableInfo.getRecIds().add((Integer.parseInt(doc.get("id"))));
-            }
-        
-            ExpressSearchResultsPane expressSearchPane = new ExpressSearchResultsPane(searchTerm, this);
-            for (Enumeration<TableInfo> e=tables.elements();e.hasMoreElements();)
-            {
-                TableInfo tableInfo = e.nextElement();
-                if (tableInfo.getRecIds().size() > 0)
+                    log.debug("No Hits for ["+searchTerm+"]");
+                    searchText.setBackground(badSearchColor);
+                    searchText.setSelectionStart(0);
+                    searchText.setSelectionEnd(searchText.getText().length());
+                    searchText.getToolkit().beep();
+                    return;
+                } 
+               
+                for (int i=0;i<hits.length();i++)
                 {
-                    expressSearchPane.addSearchResults(tableInfo.getTitle(), tableInfo.getSql(), tableInfo.getIconName(), tableInfo.getColNameMappings());
-                    tableInfo.getRecIds().clear();
+                    Document  doc       = hits.doc(i);
+                    String    idStr     = doc.get("table");
+                    TableInfo tableInfo = tables.get(idStr);
+                    if (tableInfo == null)
+                    {
+                        throw new RuntimeException("Bad id from search["+idStr+"]");
+                    }                
+                    tableInfo.getRecIds().add((Integer.parseInt(doc.get("id"))));
                 }
+            
+                ExpressSearchResultsPane expressSearchPane = new ExpressSearchResultsPane(searchTerm, this);
+                for (Enumeration<TableInfo> e=tables.elements();e.hasMoreElements();)
+                {
+                    TableInfo tableInfo = e.nextElement();
+                    if (tableInfo.getRecIds().size() > 0)
+                    {
+                        expressSearchPane.addSearchResults(tableInfo.getTitle(), tableInfo.getSql(), tableInfo.getIconName(), tableInfo.getColNameMappings());
+                        tableInfo.getRecIds().clear();
+                    }
+                }
+                
+                UICacheManager.getInstance().getSubPaneMgr().addPane(expressSearchPane);
+            } catch (ParseException ex)
+            {
+                JOptionPane.showMessageDialog(UICacheManager.getInstance().get(UICacheManager.FRAME), getResourceString("BadQuery"), getResourceString("BadQueryTitle"), JOptionPane.ERROR_MESSAGE);
+                log.info(ex);
             }
-            
-            UICacheManager.getInstance().getSubPaneMgr().addPane(expressSearchPane);
-            
         } catch (IOException ex)
         {
             log.error(ex);
@@ -306,7 +316,7 @@ public class ExpressSearchTask extends BaseTask
                 String text = searchText.getText();
                 if (text != null && text.length() > 0)
                 {
-                    doQuery(text.toLowerCase());
+                    doQuery(text);
                 }
             }
         };

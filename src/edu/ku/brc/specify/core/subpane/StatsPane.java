@@ -137,10 +137,9 @@ public class StatsPane extends BaseSubPane
                 }
                 rowsDef.append("top:p");
             }
-            
-            
+                       
             //log.info(rowsDef.toString()+", "+colsDef.toString());
-            FormLayout      formLayout = new FormLayout(createDuplicateJGoodiesDef("f:max(250px;p)", "50dlu", maxCols), rowsDef.toString());
+            FormLayout      formLayout = new FormLayout(createDuplicateJGoodiesDef("f:max(250px;p)", "35dlu", maxCols), rowsDef.toString());
             PanelBuilder    builder    = new PanelBuilder(formLayout);
             CellConstraints cc         = new CellConstraints();
 
