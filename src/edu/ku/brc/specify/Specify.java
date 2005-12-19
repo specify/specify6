@@ -319,7 +319,8 @@ public class Specify extends JPanel
      */
     public void createSplashScreen() 
     {
-        splashLabel = new JLabel(new ImageIcon(Specify.class.getResource("images/specify_splash.gif")));        if(!isApplet()) 
+        splashLabel = new JLabel(new ImageIcon(Specify.class.getResource("images/specify_splash.gif")));        
+        if(!isApplet()) 
         {
             splashWindow = new JWindow(getFrame());
             splashWindow.getContentPane().add(splashLabel);

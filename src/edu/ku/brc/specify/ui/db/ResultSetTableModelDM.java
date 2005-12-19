@@ -3,11 +3,16 @@ package edu.ku.brc.specify.ui.db;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.RecordSetItem;
 
 public class ResultSetTableModelDM extends ResultSetTableModel
 {
@@ -187,5 +192,72 @@ public class ResultSetTableModelDM extends ResultSetTableModel
         }
     }
    
+    /**
+     * Returns a RecordSet object from the table
+     * @param rows the selected rows
+     * @param column the col that contains the ID
+     * @return Returns a RecordSet object from the table
+     */
+    public RecordSet getRecordSet(final int[] rows, final int column)
+    {
+        try
+        {
+            RecordSet rs = new RecordSet();
+            
+            Set<RecordSetItem> items = new HashSet<RecordSetItem>();
+            rs.setItems(items);
+            
+            if (rows == null)
+            {
+                if (displayIndexes != null)
+                {
+                    for (int i=0;i<displayIndexes.length;i++)
+                    {
+                        if (resultSet.absolute(displayIndexes[i]+1))
+                        {
+                            RecordSetItem rsi = new RecordSetItem();
+                            rsi.setRecordId(resultSet.getObject(column+1).toString());
+                            items.add(rsi);
+                        }
+                    }
+                } else
+                {
+                    if (!resultSet.first())
+                    {
+                        log.error("Error doing resultSet.first");
+                        return null;
+                    }                   
+                    do
+                    {                   
+                        RecordSetItem rsi = new RecordSetItem();
+                        rsi.setRecordId(resultSet.getObject(column+1).toString());
+                        items.add(rsi);
+                    } while (resultSet.next());
+                        
+
+                }
+        
+            } else
+            {
+                for (int i=0;i<rows.length;i++)
+                {
+                    int rowInx = displayIndexes != null ? displayIndexes[rows[i]] : rows[i];
+                    if (resultSet.absolute(rowInx+1))
+                    {
+                        RecordSetItem rsi = new RecordSetItem();
+                        rsi.setRecordId(resultSet.getObject(column+1).toString());
+                        items.add(rsi);
+                    }
+                }
+            }
+            return rs;
+
+        } catch (Exception ex)
+        {
+            log.error(ex);
+        }
+        return null;
+    }
+    
 
 }

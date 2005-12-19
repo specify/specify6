@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.swing.*;
+import edu.ku.brc.specify.ui.*;
 
 import edu.ku.brc.specify.exceptions.ConfigurationException;
 
@@ -38,12 +39,13 @@ public class NavBoxMgr extends JPanel
 {
     // Static Data Members
     private static NavBoxMgr instance = new NavBoxMgr();
+    private static Trash     trash    = new Trash();
     
     // Data Members
     private List<NavBoxIFace>   list   = Collections.synchronizedList(new ArrayList<NavBoxIFace>());
     private NavBoxLayoutManager layout = new NavBoxLayoutManager(5, 5);
     private JSplitPane          splitPane;
-     
+    
     /**
      * Protected Default Constructor for the singleton
      *
@@ -52,6 +54,18 @@ public class NavBoxMgr extends JPanel
     {
        setLayout(layout);
        setBackground(Color.WHITE); // XXX PREF ??
+       
+       trash = new Trash();
+       
+       add(trash);
+    }
+    
+    /**
+     * @return the trash can object
+     */
+    public static Trash getTrash()
+    {
+        return trash;
     }
     
     public void setSplitPane(final JSplitPane splitPane)
@@ -97,7 +111,7 @@ public class NavBoxMgr extends JPanel
     {
         if (splitPane != null)
         {
-            if (this.getComponentCount() > 0)
+            if (this.getComponentCount() > 1)
             {
                 splitPane.setDividerLocation(getPreferredSize().width);
             } else
@@ -118,6 +132,7 @@ public class NavBoxMgr extends JPanel
         this.removeAll();
         list.clear();
 
+        add(trash);
         repaint();
     }
     
@@ -139,10 +154,12 @@ public class NavBoxMgr extends JPanel
     }
     
     /**
-     * Adds a box to the manager (all adds are 'appends' at the moment)
+     * Adds a box to the manager (all adds are 'appends' at the moment). The ignoreAlreadyThere allows to request
+     * something to be added without worrying whether it is already there.
      * @param box the box to be added
+     * @param ignoreAlreadyThere ignore the fact if it is already there
      */
-    public void addBox(final NavBoxIFace box)
+    public void addBox(final NavBoxIFace box, final boolean ignoreAlreadyThere)
     {
         if (box == null)
         {
@@ -156,10 +173,20 @@ public class NavBoxMgr extends JPanel
             invalidate();
             doLayout();
             adjustSplitter();
-        } else
+            
+        } else if (ignoreAlreadyThere)
         {
             throw new ConfigurationException("Adding a new NavBox with duplicate name["+box.getName()+"]");
         }
+    } 
+    
+    /**
+     * Adds a box to the manager (all adds are 'appends' at the moment)
+     * @param box the box to be added
+     */
+    public void addBox(final NavBoxIFace box)
+    {
+        addBox(box, false);
     } 
     
     /**

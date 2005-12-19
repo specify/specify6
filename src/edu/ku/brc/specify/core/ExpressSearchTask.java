@@ -302,7 +302,7 @@ public class ExpressSearchTask extends BaseTask
         
         searchBtn   = new JButton(getResourceString("Search"));
         
-        searchText  = new JTextField(10);
+        searchText  = new JTextField("megalotis", 10);
         textBGColor = searchText.getBackground();
         
         searchText.setMinimumSize(new Dimension(50, searchText.getPreferredSize().height));

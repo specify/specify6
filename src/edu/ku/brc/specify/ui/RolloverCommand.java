@@ -19,8 +19,17 @@
  */
 package edu.ku.brc.specify.ui;
 
-import java.awt.*;
-import java.awt.*;
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -29,14 +38,22 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.awt.image.ConvolveOp;
+import java.awt.image.Kernel;
 import java.lang.reflect.Field;
 import java.util.Vector;
 
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.MouseInputAdapter;
 
-import java.awt.dnd.*;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 
 import edu.ku.brc.specify.core.NavBoxItemIFace;
@@ -45,12 +62,6 @@ import edu.ku.brc.specify.ui.dnd.GhostActionable;
 import edu.ku.brc.specify.ui.dnd.GhostMotionAdapter;
 import edu.ku.brc.specify.ui.dnd.GhostMouseDropAdapter;
 import edu.ku.brc.specify.ui.dnd.ShadowFactory;
-import edu.ku.brc.specify.ui.dnd.GhostActionableDropManager;
-
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import java.awt.image.*;
 
 /**
  * @author Rod Spears
@@ -86,7 +97,9 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     protected BufferedImage          buffer       = null;;
     protected double                 ratio        = 0.0;
     protected Dimension              prefferedRenderSize = new Dimension(0,0);
-    protected boolean                verticalLayout = false;
+    protected boolean                verticalLayout      = false;
+    
+    protected JPopupMenu             popupMenu    = null;
     
     /**
      * Constructs a UI component with a label and an icon which can be clicked to execute an action
@@ -131,8 +144,8 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
             
         if (label != null)
         {
-            final JPopupMenu popupMenu = new JPopupMenu();
-            JMenuItem renameMenuItem = new JMenuItem("Rename"); // XXX Localize
+            popupMenu = new JPopupMenu();
+            JMenuItem renameMenuItem = new JMenuItem(getResourceString("Rename"));
             renameMenuItem.addActionListener(actionListener);
             popupMenu.add(renameMenuItem);
             MouseListener mouseListener = new MouseAdapter() {
@@ -155,6 +168,22 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
         }
     }
     
+    /**
+     * @return the text part of the button
+     */
+    public String getLabelText()
+    {
+        return label;
+    }
+    
+    /**
+     * @return the popup menu (right click)
+     */
+    public JPopupMenu getPopupMenu()
+    {
+        return popupMenu;
+    }
+
     /**
      * Calculates the preferred size for initial painting and layout
      *

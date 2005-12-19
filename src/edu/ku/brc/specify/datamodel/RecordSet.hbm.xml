@@ -10,7 +10,7 @@
 	
 <class name="RecordSet"
 	   table="recordset"
-	   lazy="true">
+	   lazy="false">
 
 	<!-- Common id property. -->
 	<id name="id"
@@ -43,7 +43,7 @@
 
     <!-- bi-directional one-to-many association to RecordSetItem -->
     <set
-        name="items" table="recordset_items">
+        name="items" table="recordset_items" lazy="false">
     	<key column="rs_id"/>
     	<composite-element class="RecordSetItem">
     		<property name="recordId" not-null="true"/>

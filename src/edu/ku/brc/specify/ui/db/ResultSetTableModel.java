@@ -249,9 +249,9 @@ public class ResultSetTableModel extends AbstractTableModel
     
     /**
      * Returns a RecordSet object from the table
-      * @param rows
-     * @param column
-     * @return
+     * @param rows the selected rows
+     * @param column the col that contains the ID
+     * @return Returns a RecordSet object from the table
      */
     public RecordSet getRecordSet(final int[] rows, final int column)
     {
@@ -280,16 +280,15 @@ public class ResultSetTableModel extends AbstractTableModel
         
             } else
             {
-                /*for (int i=0;i<rows.length;i++)
+                for (int i=0;i<rows.length;i++)
                 {
-                    if (!resultSet.absolute(rows[row]))
+                    if (resultSet.absolute(rows[i]))
                     {
                         RecordSetItem rsi = new RecordSetItem();
-                        obj = resultSet.getObject(column);
-                        rsi.setRecordId(UIHelper.getInt(obj));
-                        set.add(rsi);
+                        rsi.setRecordId(resultSet.getObject(column+1).toString());
+                        items.add(rsi);
                     }
-                }*/
+                }
                 
             }
         } catch (Exception ex)

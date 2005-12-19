@@ -48,6 +48,20 @@ public class CommandAction
         this.data   = data;
         
     }
+    
+    /**
+     * Constructs a command
+     * @param type the type of command determines who listens for it
+     * @param action the name of the action to be performed (contract between producer and consumer)
+     */
+    public CommandAction(final String type, final String action)
+    {
+        this.type   = type;
+        this.action = action;
+        this.data   = null;
+        
+    }
+    
     public String getAction()
     {
         return action;

@@ -49,7 +49,7 @@ public class GradiantButton extends JButton implements MouseListener
 {
     protected Color     textColor        = null;
     protected Color     textColorShadow  = null;
-    protected float     iconAlpha        = 0.7f;
+    protected float     iconAlpha        = 0.8f;
     protected ImageIcon icon             = null;
     
     /**

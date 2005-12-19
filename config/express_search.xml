@@ -18,7 +18,7 @@
 	</index>
     <detailView icon="ColObj">
 	    <sql>
-	        <![CDATA[Select CatalogNumber from collectionobjectcatalog where CatalogNumber in (%s)]]>
+	        <![CDATA[Select CatalogNumber from collectionobjectcatalog where CatalogNumber in (%s) and collectionobjectcatalog.SubNumber = '0']]>
 	    </sql>
         <captions>
             <caption col="CatalogNumber" text="Catalog Number"/>

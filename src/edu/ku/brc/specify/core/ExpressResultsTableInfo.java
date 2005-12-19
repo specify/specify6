@@ -264,7 +264,6 @@ public class ExpressResultsTableInfo
     
     public String getViewSql()
     {
-        
         return viewSql.replace("%s", getRecIdList());
     }
     

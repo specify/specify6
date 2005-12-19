@@ -47,7 +47,7 @@ import edu.ku.brc.specify.ui.GradiantButton;
 import edu.ku.brc.specify.ui.GradiantLabel;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.TriangleButton;
-import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
+import edu.ku.brc.specify.ui.db.*;
 
 /**
  * This is a single set of of results and is derived from a query where all the record numbers where 
@@ -92,6 +92,7 @@ abstract class ExpressTableResultsBase extends JPanel
         
         table = new JTable();
         table.setShowVerticalLines(false);
+        table.setRowSelectionAllowed(true);
         setBackground(table.getBackground());
         
         GradiantLabel vl = new GradiantLabel(tableInfo.getTitle(), JLabel.LEFT);
@@ -108,7 +109,15 @@ abstract class ExpressTableResultsBase extends JPanel
         showTopNumEntriesBtn.setVisible(false);
         showTopNumEntriesBtn.setCursor(handCursor);
         
-        FormLayout      formLayout = new FormLayout("p,0px,p:g,0px,p,0px,p,0px,p", "center:p");
+        StringBuffer colDef = new StringBuffer("p,0px,p:g,0px,p");
+        boolean isCollectionTable = tableInfo.getTableId().equals("1");
+        if (isCollectionTable)
+        {
+            colDef.append(",0px,p,0px,p,0px,p"); // Labels, Save To RecordSet, Data Entry
+        }
+        colDef.append(",0px,p"); // close Button
+        
+        FormLayout      formLayout = new FormLayout(colDef.toString(), "center:p");
         PanelBuilder    builder    = new PanelBuilder(formLayout);
         CellConstraints cc         = new CellConstraints();
 
@@ -122,10 +131,27 @@ abstract class ExpressTableResultsBase extends JPanel
         builder.add(showTopNumEntriesBtn, cc.xy(col,1));
         col += 2;
         
-        GradiantButton labelsBtn = new GradiantButton(IconManager.getImage("Labels", IconManager.IconSize.Std16));
-        labelsBtn.setForeground(bannerColor);
-        builder.add(labelsBtn, cc.xy(col,1));
-        col += 2;
+        GradiantButton labelsBtn = null;
+        GradiantButton rsBtn     = null;
+        GradiantButton deBtn     = null;
+        
+        if (isCollectionTable)
+        {
+            labelsBtn = new GradiantButton(IconManager.getImage("Labels", IconManager.IconSize.Std16));
+            labelsBtn.setForeground(bannerColor);
+            builder.add(labelsBtn, cc.xy(col,1));
+            col += 2;
+            
+            rsBtn = new GradiantButton(IconManager.getImage("Record_Set", IconManager.IconSize.Std16));
+            rsBtn.setForeground(bannerColor);
+            builder.add(rsBtn, cc.xy(col,1));
+            col += 2;
+            
+            deBtn = new GradiantButton(IconManager.getImage("Data_Entry", IconManager.IconSize.Std16));
+            deBtn.setForeground(bannerColor);
+            builder.add(deBtn, cc.xy(col,1));
+            col += 2;
+        }
         
         CloseButton closeBtn = new CloseButton();
         closeBtn.setForeground(bannerColor);
@@ -195,18 +221,47 @@ abstract class ExpressTableResultsBase extends JPanel
             }
         });
         
-        labelsBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) 
-            {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        RecordSet rs = getRecordSet(null, tableInfo.getRecordSetColumnInx());
-                        CommandDispatcher.dispatch(new CommandAction("Labels", "DoLabels", rs));
-                    }
-                  });
-              
-            }
-        });
+        if (isCollectionTable)
+        {
+            labelsBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) 
+                {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            RecordSet rs = getRecordSet(table.getSelectedRows(), tableInfo.getRecordSetColumnInx());
+                            CommandDispatcher.dispatch(new CommandAction("Labels", "DoLabels", rs));
+                        }
+                      });
+                  
+                }
+            });
+            
+            rsBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) 
+                {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            RecordSet rs = getRecordSet(table.getSelectedRows(), tableInfo.getRecordSetColumnInx());
+                            CommandDispatcher.dispatch(new CommandAction("Record_Set", "Save", rs));
+                        }
+                      });
+                  
+                }
+            });
+            
+            deBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) 
+                {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            RecordSet rs = getRecordSet(table.getSelectedRows(), tableInfo.getRecordSetColumnInx());
+                            CommandDispatcher.dispatch(new CommandAction("Data_Entry", "Edit", rs));
+                        }
+                      });
+                  
+                }
+            });
+        }
         
     }
     

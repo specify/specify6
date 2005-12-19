@@ -3,48 +3,48 @@ package edu.ku.brc.specify.ui.db;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.GraphicsConfiguration;
+import java.awt.Component;
+import java.awt.Frame;
 import java.awt.HeadlessException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
+import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-
-import java.util.*;
-
-import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.ListCellRenderer;
+import javax.swing.ListModel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import java.sql.*;
 import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.specify.core.RecordSetTask;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.specify.ui.UICacheManager;
 
 public class ChooseRecordSetDlg extends JDialog implements ActionListener 
 {
     // Static Data Members
     private static Log log = LogFactory.getLog(ChooseRecordSetDlg.class);
 
+    
+    private final static ImageIcon icon = IconManager.getImage(RecordSetTask.RECORD_SET, IconManager.IconSize.Std16);
+
+    // Data Members
     protected JButton        cancelBtn;
     protected JButton        okBtn;
     protected JList          list;
@@ -52,14 +52,11 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
     
     public ChooseRecordSetDlg() throws HeadlessException
     {
-        super();
+        super((Frame)UICacheManager.getInstance().get(UICacheManager.FRAME), true);
         createUI();
-    }
-
-    public ChooseRecordSetDlg(Frame arg0) throws HeadlessException
-    {
-        super(arg0);
-        createUI();
+        setLocationRelativeTo((JFrame)(Frame)UICacheManager.getInstance().get(UICacheManager.FRAME));
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        this.setAlwaysOnTop(true);
     }
 
     /**
@@ -69,14 +66,16 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
     protected void createUI()
     {
         JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
         
-        panel.add(new JLabel("Choose a RecordSet"), BorderLayout.NORTH);
+        panel.add(new JLabel(getResourceString("ChooseRecordSet"), JLabel.CENTER), BorderLayout.NORTH);
 
         try
         {
             Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(RecordSet.class);
             recordSets = criteria.list();
-              
+            HibernateUtil.closeSession();
+            
             ListModel listModel = new AbstractListModel() 
             {
                 public int getSize() { return recordSets.size(); }
@@ -84,6 +83,7 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
             };
             
             list = new JList(listModel);
+            list.setCellRenderer(new RSListRenderer());
             list.setVisibleRowCount(5);
             list.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent e) {
@@ -125,13 +125,51 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
     //Handle clicks on the Set and Cancel buttons.
     public void actionPerformed(ActionEvent e) 
     {
-        /*
-        if ("Set".equals(e.getActionCommand())) {
-            ListDialog.value = (String)(list.getSelectedValue());
-        }
-        ListDialog.dialog.setVisible(false);
-        */
+        setVisible(false);
     }
+    
+    public RecordSet getSelectedRecordSet()
+    {
+        int inx = list.getSelectedIndex();
+        if (inx != -1)
+        {
+            return (RecordSet)recordSets.get(inx);
+        }
+        return null;
+    }
+    
+    //----------------------------------------------------------------
+    //-- Inner Classes
+    //----------------------------------------------------------------
+    class RSListRenderer extends JLabel implements ListCellRenderer 
+    {
 
+        // This is the only method defined by ListCellRenderer.
+        // We just reconfigure the JLabel each time we're called.
+
+        public Component getListCellRendererComponent(JList list,
+                                                      Object value,            // value to display
+                                                      int index,               // cell index
+                                                      boolean isSelected,      // is the cell selected
+                                                      boolean cellHasFocus)    // the list and the cell have the focus
+        {
+            String s = value.toString();
+            setText(s);
+            setIcon(icon);
+            if (isSelected) 
+            {
+                setBackground(list.getSelectionBackground());
+                setForeground(list.getSelectionForeground());
+            } else 
+            {
+                setBackground(list.getBackground());
+                setForeground(list.getForeground());
+            }
+            setEnabled(list.isEnabled());
+            setFont(list.getFont());
+            setOpaque(true);
+            return this;
+        }
+    }
     
 }

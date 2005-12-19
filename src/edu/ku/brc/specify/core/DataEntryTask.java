@@ -28,12 +28,18 @@ import java.util.Vector;
 
 import edu.ku.brc.specify.core.subpane.DataEntryPane;
 import edu.ku.brc.specify.core.subpane.SimpleDescPane;
+import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
+import edu.ku.brc.specify.ui.CommandAction;
+import edu.ku.brc.specify.ui.CommandDispatcher;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.dnd.GhostActionable;
+import edu.ku.brc.specify.ui.dnd.GhostActionableDropManager;
+import edu.ku.brc.specify.ui.dnd.GhostMouseDropAdapter;
 
 
 /**
@@ -53,6 +59,7 @@ public class DataEntryTask extends BaseTask
     public DataEntryTask()
     {
         super(DATA_ENTRY, getResourceString(DATA_ENTRY));
+        CommandDispatcher.register(DATA_ENTRY, this);
         
         // Temporary
         NavBox navBox = new NavBox(getResourceString("Actions"));
@@ -121,6 +128,23 @@ public class DataEntryTask extends BaseTask
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
         return list;
         
+    }
+    
+    //-------------------------------------------------------
+    // CommandListener Interface
+    //-------------------------------------------------------
+
+    public void doCommand(CommandAction cmdAction)
+    {
+        if (cmdAction.getAction().equals("Edit"))
+        {
+            if (cmdAction.getData() instanceof RecordSet)
+            {
+                RecordSet recordSet = (RecordSet)cmdAction.getData();
+                            
+                UICacheManager.addSubPane(new SimpleDescPane(title, this, "This is where we would be editing the "+recordSet.getItems().size()+" records in the RecordSet."));
+            }
+        }
     }
     
     //--------------------------------------------------------------

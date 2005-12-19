@@ -122,7 +122,7 @@ public class CommandDispatcher
             return false;
         } else
         {
-            throw new RuntimeException("Type of Listeners could nlt be found["+cmdAction.getType()+"]");
+            throw new RuntimeException("Type of Listeners couldn't be found["+cmdAction.getType()+"]");
         } 
     }
 

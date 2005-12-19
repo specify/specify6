@@ -142,7 +142,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                 
                 if ( recordSet == null)
                 {
-                    itemnum = JOptionPane.showInputDialog(this, "Please Enter a Catalog Item");
+                    itemnum = JOptionPane.showInputDialog(this, getResourceString("AskCatalogNum"));
                     if (itemnum == null)
                     {
                         itemnum = "28594";

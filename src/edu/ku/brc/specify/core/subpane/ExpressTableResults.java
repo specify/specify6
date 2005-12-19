@@ -20,35 +20,13 @@
 
 package edu.ku.brc.specify.core.subpane;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Hashtable;
-
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.SwingUtilities;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumnModel;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.core.ExpressResultsTableInfo;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.dbsupport.SQLExecutionListener;
 import edu.ku.brc.specify.dbsupport.SQLExecutionProcessor;
-import edu.ku.brc.specify.ui.CloseButton;
-import edu.ku.brc.specify.ui.GradiantButton;
-import edu.ku.brc.specify.ui.GradiantLabel;
-import edu.ku.brc.specify.ui.TriangleButton;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
 
@@ -61,6 +39,10 @@ import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
  */
 class ExpressTableResults extends ExpressTableResultsBase implements SQLExecutionListener
 {
+    // Static Data Members
+    private static Log log  = LogFactory.getLog(ExpressTableResults.class);
+    
+    // Data Members
     protected SQLExecutionProcessor sqlExecutor;
     protected java.sql.ResultSet resultSet;
     
@@ -151,7 +133,8 @@ class ExpressTableResults extends ExpressTableResultsBase implements SQLExecutio
     public RecordSet getRecordSet(final int[] rows, final int column)
     {
         ResultSetTableModelDM rsm = (ResultSetTableModelDM)table.getModel();
-        return rsm.getRecordSet(null, column);
+        log.info("Row Selection Count["+table.getSelectedRowCount()+"]");
+        return rsm.getRecordSet(table.getSelectedRows(), column);
     }
 
 

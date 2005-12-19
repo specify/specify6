@@ -27,6 +27,8 @@ import java.awt.LayoutManager2;
 import java.util.Vector;
 import java.util.List;
 
+import edu.ku.brc.specify.ui.*;
+
 /**
  * The layout manager for laying out NavBoxes in a vertical fashion (only)
  * 
@@ -111,8 +113,14 @@ public class NavBoxLayoutManager implements LayoutManager, LayoutManager2
         for (Component comp : comps)
         {
             Dimension size = comp.getPreferredSize();
-            comp.setBounds(x, y, parentSize.width, size.height);
-            y += size.height + ySeparation;
+            if (comp instanceof Trash)
+            {
+                comp.setBounds((parentSize.width - size.width)/2, parentSize.height-size.height-1, size.width, size.height);
+            } else
+            {
+                comp.setBounds(x, y, parentSize.width, size.height);
+                y += size.height + ySeparation;                
+            }
         }
 
     }

@@ -20,10 +20,7 @@
 
 package edu.ku.brc.specify.core.subpane;
 
-import java.util.Collections;
-import java.util.Hashtable;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -115,6 +112,19 @@ class ExpressTableResultsHitsCache extends ExpressTableResultsBase
         UICacheManager.forceTopFrameRepaint();    
         
     }
+    
+    /**
+     * Returns a RecordSet object from the table
+      * @param rows
+     * @param column
+     * @return
+     */
+    public RecordSet getRecordSet(final int[] rows, final int column)
+    {
+        HitsTableModel hitsModel = (HitsTableModel)table.getModel();
+        return hitsModel.getRecordSet(table.getSelectedRows(), column);
+    }
+
     
     //---------------------------------------------------
     //-- Table Model for Hit Results
@@ -220,17 +230,17 @@ class ExpressTableResultsHitsCache extends ExpressTableResultsBase
             this.cols = cols;
             numCols = Math.min(numCols, cols.length);
         }
+        
+        /**
+         * Returns a RecordSet object from the table
+         * @param rows the selected rows
+         * @param column the col that contains the ID
+         * @return Returns a RecordSet object from the table
+         */
+        public RecordSet getRecordSet(final int[] rows, final int column)
+        {
+            return null;
+        }
+        
     }
-    
-    /**
-     * Returns a RecordSet object from the table
-      * @param rows
-     * @param column
-     * @return
-     */
-    public RecordSet getRecordSet(final int[] rows, final int column)
-    {
-        return null;
-    }
-
 }
