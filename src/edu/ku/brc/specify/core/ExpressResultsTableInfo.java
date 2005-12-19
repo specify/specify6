@@ -53,8 +53,15 @@ public class ExpressResultsTableInfo
     protected boolean                   useHitsCache = false;
     protected String                    buildSql;
     protected String[]                  colNames     = null;
+    protected boolean[]                 visCols      = null;
     protected Hashtable<String, String> outOfDate    = new Hashtable<String, String>();
     protected Vector<Integer>           indexes      = new Vector<Integer>();
+    
+    protected int                       tableType;
+    protected int                       recordSetColumnInx;
+    
+    // Derived Data member
+    protected int                       visColCount = 0;
     
     /**
      * Constructs a table info object
@@ -114,18 +121,27 @@ public class ExpressResultsTableInfo
             if (captionItems.size() > 0)
             {
                 colNames = new String[captionItems.size()];
+                visCols  = new boolean[captionItems.size()];
                 int i = 0;
                 for ( Iterator capIter = captionItems.iterator(); capIter.hasNext(); ) 
                 {
                     Element captionElement = (Element)capIter.next();
-                    colNames[i++] = captionElement.attributeValue("text");
+                    colNames[i] = captionElement.attributeValue("text");
+                    String vc = captionElement.attributeValue("visible");
+                    visCols[i] = vc == null || vc.length() == 0 || !vc.toLowerCase().equals("false");
+                    visColCount += visCols[i] ? 1 : 0;
+                    i++;
                 }
             } else
             {
                 //log.info("No Captions!");
             }
+            Element rsElement  = (Element)viewElement.selectSingleNode("recordset");
+            tableType = Integer.parseInt(rsElement.attributeValue("tabletype"));
+            recordSetColumnInx = Integer.parseInt(rsElement.attributeValue("col"));
+
         }
-        
+        System.out.println("visColCount "+visColCount);
     }
     
     public int getNumIndexes()
@@ -171,11 +187,51 @@ public class ExpressResultsTableInfo
         cleanUp();
     }
     
+    /**
+     * Returns an array with the column name mappined, return null if all columns are to be shown
+     * @return Returns an array with the column name mappined, return null if all columns are to be shown
+     */
     public String[] getColNames()
     {
+        String[] mappedColNames = null;
+        if (getVisColCount() < colNames.length)
+        {
+            mappedColNames = new String[visColCount];
+            int j = 0;
+            for (int i=0;i<visCols.length;i++)
+            {
+                if (visCols[i])
+                {
+                    mappedColNames[j++] = colNames[i];
+                }
+            }
+            return mappedColNames;
+        }
+      
         return colNames;
     }
 
+    /**
+     * Returns an array with the column mappings, return null if all columns are to be shown
+     * @return Returns an array with the column mappings, return null if all columns are to be shown
+     */
+    public int[] getDisplayColIndexes()
+    {
+        int[] cols = null;
+        if (visCols != null && getVisColCount() < visCols.length)
+        {
+            cols = new int[visColCount];
+            int j = 0;
+            for (int i=0;i<visCols.length;i++)
+            {
+                if (visCols[i])
+                {
+                    cols[j++] = i;
+                }
+            }
+        }
+        return cols;
+    }
 
     public int[] getCols()
     {
@@ -246,6 +302,21 @@ public class ExpressResultsTableInfo
     public boolean isUseHitsCache()
     {
         return useHitsCache;
+    }
+
+    public int getVisColCount()
+    {
+        return visColCount;
+    }
+
+    public boolean[] getVisCols()
+    {
+        return visCols;
+    }
+
+    public int getRecordSetColumnInx()
+    {
+        return recordSetColumnInx;
     }
 }
 

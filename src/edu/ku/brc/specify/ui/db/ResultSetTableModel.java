@@ -28,6 +28,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.core.subpane.SQLQueryPane;
+import edu.ku.brc.specify.datamodel.*;
+import edu.ku.brc.specify.helpers.*;
 
 import java.lang.reflect.Field;
 import java.sql.*;
@@ -35,14 +37,15 @@ import java.util.*;
 
 public class ResultSetTableModel extends AbstractTableModel
 {
+    // Static Data Members
     private static Log log = LogFactory.getLog(ResultSetTableModel.class);
 
-    private ResultSet         resultSet  = null;
-    private ResultSetMetaData metaData   = null;
-    private Vector<Class>     classNames = new Vector<Class>();
-    private int               currentRow = 0;   
-    private int               numRows    = 0;
-    private Vector<Integer>   displayIndexes = null;
+    // Data Members
+    protected ResultSet         resultSet  = null;
+    protected ResultSetMetaData metaData   = null;
+    protected Vector<Class>     classNames = new Vector<Class>();
+    protected int               currentRow = 0;   
+    protected int               numRows    = 0;
     
     /**
      * Construct with a ResultSet
@@ -159,49 +162,36 @@ public class ResultSetTableModel extends AbstractTableModel
         
         try
         {
-            if (displayIndexes != null)
+            row++;
+        
+            if (row == 1)
             {
-                if (!resultSet.absolute(displayIndexes.elementAt(row)+1))
+                if (!resultSet.first())
                 {
-                    log.error("Error doing resultSet.absolute("+row+")");
+                    log.error("Error doing resultSet.first");
                     return null;
                 }
-               
+                currentRow = 1;
             } else
             {
-                row++;
-            
-                if (row == 1)
+                if (currentRow+1 == row)
                 {
-                    if (!resultSet.first())
+                    if (!resultSet.next())
                     {
-                        log.error("Error doing resultSet.first");
+                        log.error("Error doing resultSet.next");
                         return null;
                     }
-                    currentRow = 1;
+                    currentRow++;
                 } else
                 {
-                    if (currentRow+1 == row)
+                    if (!resultSet.absolute(row))
                     {
-                        if (!resultSet.next())
-                        {
-                            log.error("Error doing resultSet.next");
-                            return null;
-                        }
-                        currentRow++;
-                    } else
-                    {
-                        if (!resultSet.absolute(row))
-                        {
-                            log.error("Error doing resultSet.absolute("+row+")");
-                            return null;
-                        }
-                        currentRow = row;
+                        log.error("Error doing resultSet.absolute("+row+")");
+                        return null;
                     }
+                    currentRow = row;
                 }
-                
             }
-            
             return resultSet.getObject(column);
             
         } catch (SQLException ex)
@@ -229,7 +219,7 @@ public class ResultSetTableModel extends AbstractTableModel
      */
     public int getRowCount()
     {
-      return displayIndexes != null ? displayIndexes.size() : numRows;
+      return numRows;
     }
     
     /**
@@ -254,62 +244,59 @@ public class ResultSetTableModel extends AbstractTableModel
         classNames.clear();
         
         currentRow = 0;   
-        numRows    = 0;   
-       
+        numRows    = 0;
     }
     
     /**
-     * Initializes the display index data structure
-     *
+     * Returns a RecordSet object from the table
+      * @param rows
+     * @param column
+     * @return
      */
-    public void initializeDisplayIndexes()
+    public RecordSet getRecordSet(final int[] rows, final int column)
     {
-        if (displayIndexes == null)
+        try
         {
-            displayIndexes = new Vector<Integer>();
-        } else
-        {
-            displayIndexes.clear();
-        }
-    }
-    /**
-     * Append an index to the items being displayed
-     * @param index the index to be added
-     */
-    public void addDisplayIndex(final int index)
-    {
-        if (displayIndexes != null)
-        {
-            displayIndexes.add(index);
-        }
-    }
-    
-    /**
-     * Sets the display indexes to display only a portion of the recordset
-     * @param indexes the array of indexes
-     */
-    public void addDisplayIndexes(int[] indexes)
-    {
-        if (displayIndexes != null)
-        {
+            RecordSet rs = new RecordSet();
             
-            Hashtable<Integer, Integer> hash = new Hashtable<Integer, Integer>();
-            for (Integer inx : displayIndexes)
+            if (!resultSet.first())
             {
-                hash.put(inx, inx);
+                log.error("Error doing resultSet.first");
+                return null;
             }
-
-            for (int i=0;i<indexes.length;i++)
+            
+            Set<RecordSetItem> items = new HashSet<RecordSetItem>();
+            rs.setItems(items);
+            if (rows == null)
             {
-                if (hash.get(indexes[i]) == null)
+                do
+                {                   
+                    RecordSetItem rsi = new RecordSetItem();
+                    rsi.setRecordId(resultSet.getObject(column+1).toString());
+                    items.add(rsi);
+                } while (resultSet.next());
+                
+                return rs;
+        
+            } else
+            {
+                /*for (int i=0;i<rows.length;i++)
                 {
-                    displayIndexes.add(indexes[i]);
-                }
+                    if (!resultSet.absolute(rows[row]))
+                    {
+                        RecordSetItem rsi = new RecordSetItem();
+                        obj = resultSet.getObject(column);
+                        rsi.setRecordId(UIHelper.getInt(obj));
+                        set.add(rsi);
+                    }
+                }*/
+                
             }
-            hash.clear();
-            Collections.sort(displayIndexes);
-            
-            this.fireTableDataChanged();
+        } catch (Exception ex)
+        {
+            log.error(ex);
         }
+        return null;
     }
+    
 }

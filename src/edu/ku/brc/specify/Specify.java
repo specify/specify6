@@ -24,6 +24,7 @@ package edu.ku.brc.specify;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 import static edu.ku.brc.specify.helpers.UIHelper.centerAndShow;
 
+import java.util.Date;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -34,6 +35,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.*;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -72,8 +74,9 @@ import edu.ku.brc.specify.core.RecordSetTask;
 import edu.ku.brc.specify.core.ReportsTask;
 import edu.ku.brc.specify.core.StartUpTask;
 import edu.ku.brc.specify.core.StatsTask;
-import edu.ku.brc.specify.dbsupport.DBConnection;
-import edu.ku.brc.specify.plugins.PluginMgr;
+import edu.ku.brc.specify.dbsupport.*;
+import edu.ku.brc.specify.plugins.*;
+import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.ui.GenericFrame;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.MainPanel;
@@ -224,13 +227,15 @@ public class Specify extends JPanel
         
         recordSet.setName("Catalog Items");
         recordSet.setTableId(1);
-        recordSet.setCreated(new Date());
+        recordSet.setCreated(Calendar.getInstance().getTime());
         
-        Set items = new HashSet();
-        RecordSetItem rsi = new RecordSetItem();
-        rsi.setRecordId(1);
-        
-        items.add(rsi);
+        Set<RecordSetItem> items = new HashSet<RecordSetItem>();
+        for (int i=0;i<10;i++)
+        {
+            RecordSetItem rsi = new RecordSetItem();
+            rsi.setRecordId(Integer.toString(i));
+            items.add(rsi);
+        }
         recordSet.setItems(items);
         
         HibernateUtil.getCurrentSession().saveOrUpdate(recordSet);

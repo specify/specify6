@@ -23,6 +23,7 @@
         <captions>
             <caption col="CatalogNumber" text="Catalog Number"/>
         </captions>
+        <recordset tabletype="1" col="0"/>
 	</detailView>
   </table>
   
@@ -32,7 +33,7 @@
     </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[select LocalityID,localityname from locality;]]>
+	        <![CDATA[select LocalityID, localityname from locality;]]>
 	    </sql>
 	    <cols>
 	       <col>1</col>
@@ -41,13 +42,15 @@
 	</index>
     <detailView icon="Locality">
 	    <sql>
-	        <![CDATA[select localityname,Latitude1,Longitude1 from locality where LocalityID in (%s)]]>
+	        <![CDATA[select localityname,Latitude1,Longitude1, LocalityID from locality where LocalityID in (%s)]]>
 	    </sql>
         <captions>
             <caption col="localityname" text="Locality Name"/>
             <caption col="Latitude1" text="Latitude"/>
             <caption col="Longitude1" text="Longitude"/>
+            <caption col="LocalityID" text="ID" visible="false"/>
         </captions>
+        <recordset tabletype="2" col="3"/>
 	</detailView>
   </table>
   
@@ -74,8 +77,15 @@
 	</index>
     <detailView icon="Geography">
 	    <sql>
-	        <![CDATA[select County,State,Country from geography where GeographyID in (%s)]]>
+	        <![CDATA[select County,State,Country, GeographyID from geography where GeographyID in (%s)]]>
 	    </sql>
+        <captions>
+            <caption col="County" text="County"/>
+            <caption col="State" text="State"/>
+            <caption col="Country" text="Country"/>
+            <caption col="GeographyID" text="ID" visible="false"/>
+        </captions>
+        <recordset tabletype="3" col="3"/>
 	</detailView>
   </table>
   
@@ -100,8 +110,9 @@
         <captions>
             <caption col="TaxonName" text="Taxon Name"/>
             <caption col="CommonName" text="Common Name"/>
-            <caption col="TaxonNameID" text="Taxon ID"/>
+            <caption col="TaxonNameID" text="Taxon ID" visible="false"/>
         </captions>
+        <recordset tabletype="4" col="2"/>
 	</detailView>
   </table>
   
@@ -121,13 +132,14 @@
 	</index>
     <detailView icon="Agent">
 	    <sql>
-	        <![CDATA[select AgentID,FirstName,LastName from agent where AgentID in (%s)]]>
+	        <![CDATA[select FirstName,LastName,AgentID from agent where AgentID in (%s)]]>
 	    </sql>
         <captions>
-            <caption col="AgentID" text="AgentID"/>
             <caption col="FirstName" text="First Name"/>
             <caption col="LastName" text="Last Name"/>
+            <caption col="AgentID" text="AgentID" visible="false"/>
         </captions>
+        <recordset tabletype="5" col="2"/>
 	</detailView>
   </table>
   
@@ -150,13 +162,15 @@
 	</index>
     <detailView icon="Address">
 	    <sql>
-	        <![CDATA[select address,city,state from address where AddressID in (%s)]]>
+	        <![CDATA[select address,city,state,AddressID from address where AddressID in (%s)]]>
 	    </sql>
         <captions>
             <caption col="address" text="Address"/>
             <caption col="city" text="City"/>
             <caption col="state" text="State"/>
+            <caption col="AddressID" text="ID" visible="false"/>
         </captions>
+        <recordset tabletype="6" col="3"/>
 	</detailView>
   </table>
 
@@ -192,6 +206,7 @@
 	    <sql>
 	        <![CDATA[select * from (Select 
  taxonname.TaxonName, 
+ taxonname.CommonName,
  agent.LastName, 
  agent.FirstName, 
  collectionobjectcatalog.CollectionObjectCatalogID 
@@ -204,12 +219,13 @@
  where tx.CollectionObjectCatalogID in (%s)]]>
 	    </sql>
         <captions>
-            <caption col="CollectionObjectCatalogID" text="ID"/>
-             <caption col="TaxonName" text="TaxonName"/>
-             <caption col="CommonName" text="Common Name"/>
+            <caption col="CollectionObjectCatalogID" text="ID" visible="false"/>
+            <caption col="TaxonName" text="TaxonName"/>
+            <caption col="CommonName" text="Common Name"/>
             <caption col="LastName" text="Last Name"/>
             <caption col="FirstName" text="First Name"/>
        </captions>
+       <recordset tabletype="7" col="4"/>
 	</detailView>
   </table>
 
@@ -237,6 +253,7 @@
             <caption col="LocalityName" text="Locality Name"/>
             <caption col="CollectingEventID" text="CE ID"/>
         </captions>
+       <recordset tabletype="8" col="1"/>
 	</detailView>
   </table>  
 

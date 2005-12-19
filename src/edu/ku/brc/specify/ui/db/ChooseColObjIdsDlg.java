@@ -22,26 +22,26 @@ import com.jgoodies.forms.layout.FormLayout;
 public class ChooseColObjIdsDlg extends JDialog
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(ResultSetTableModel.class);
+    private static Log log = LogFactory.getLog(ChooseColObjIdsDlg.class);
 
     // Data Members
-    protected JTable              srcTable;
-    protected JTable              dstTable;
-    protected ResultSetTableModel srcModel;
-    protected ResultSetTableModel dstModel;
+    protected JTable                srcTable;
+    protected JTable                dstTable;
+    protected ResultSetTableModelDM srcModel;
+    protected ResultSetTableModelDM dstModel;
     
-    protected JButton             selectAllBtn;
-    protected JButton             deselectAllBtn;
-    protected JButton             addAllBtn;
-    protected JButton             addAllSelectedBtn;
-    protected JButton             cancelBtn;
-    protected JButton             okBtn;
+    protected JButton               selectAllBtn;
+    protected JButton               deselectAllBtn;
+    protected JButton               addAllBtn;
+    protected JButton               addAllSelectedBtn;
+    protected JButton               cancelBtn;
+    protected JButton               okBtn;
     
     /**
      * 
      *
      */
-    public ChooseColObjIdsDlg(ResultSetTableModel srcModel, final int[] preSelectedRows)
+    public ChooseColObjIdsDlg(ResultSetTableModelDM srcModel, final int[] preSelectedRows)
     {
         this.srcModel = srcModel;
         createUI(preSelectedRows);
@@ -69,7 +69,7 @@ public class ChooseColObjIdsDlg extends JDialog
             srcTable = new JTable(srcModel);
             srcTable.setRowSelectionAllowed(true);
             
-            dstModel = new ResultSetTableModel(srcModel.getResultSet());
+            dstModel = new ResultSetTableModelDM(srcModel.getResultSet());
             dstTable = new JTable(dstModel);
             dstTable.setRowSelectionAllowed(true);
             dstModel.initializeDisplayIndexes();

@@ -39,7 +39,7 @@ import edu.ku.brc.specify.core.subpane.SQLQueryPane;
 public class ContextMgr
 {
     // Static Data Members
-    private static Log         log     = LogFactory.getLog(SQLQueryPane.class);
+    private static Log         log     = LogFactory.getLog(ContextMgr.class);
     private static ContextMgr instance = new ContextMgr();
     
     // Data Members

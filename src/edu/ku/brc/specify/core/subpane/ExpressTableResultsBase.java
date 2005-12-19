@@ -27,7 +27,6 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Hashtable;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -41,13 +40,14 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.specify.core.ExpressResultsTableInfo;
+import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.ui.*;
 import edu.ku.brc.specify.ui.GradiantButton;
 import edu.ku.brc.specify.ui.GradiantLabel;
+import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.TriangleButton;
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.db.ResultSetTableModel;
-import edu.ku.brc.specify.core.*;
+import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
 
 /**
  * This is a single set of of results and is derived from a query where all the record numbers where 
@@ -56,7 +56,7 @@ import edu.ku.brc.specify.core.*;
  * @author rods
  *
  */
-class ExpressTableResultsBase extends JPanel
+abstract class ExpressTableResultsBase extends JPanel
 {
     protected static final Cursor handCursor    = new Cursor(Cursor.HAND_CURSOR);
     protected static final Cursor defCursor     = new Cursor(Cursor.DEFAULT_CURSOR);
@@ -72,7 +72,8 @@ class ExpressTableResultsBase extends JPanel
     protected JPanel                morePanel     = null;       
     protected Color                 bannerColor   = new Color(30, 144, 255);   
     protected int                   topNumEntries = 7;
-    protected String[]              colNames      = null;
+    protected String[]              colNames;
+    protected ExpressResultsTableInfo tableInfo;
     
     /**
      * Constructor of a results "table" which is really a panel
@@ -86,8 +87,8 @@ class ExpressTableResultsBase extends JPanel
     {
         super(new BorderLayout());
         
-        this.esrPane  = esrPane;
-        this.colNames = tableInfo.getColNames();
+        this.esrPane   = esrPane;
+        this.tableInfo = tableInfo;
         
         table = new JTable();
         table.setShowVerticalLines(false);
@@ -194,6 +195,19 @@ class ExpressTableResultsBase extends JPanel
             }
         });
         
+        labelsBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) 
+            {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        RecordSet rs = getRecordSet(null, tableInfo.getRecordSetColumnInx());
+                        CommandDispatcher.dispatch(new CommandAction("Labels", "DoLabels", rs));
+                    }
+                  });
+              
+            }
+        });
+        
     }
     
     /**
@@ -204,6 +218,9 @@ class ExpressTableResultsBase extends JPanel
     {
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setHorizontalAlignment(JLabel.CENTER);
+        
+        int[] colMappings = null;//tableInfo.getDisplayColIndexes();
+        colNames = tableInfo.getColNames();
 
         TableColumnModel tableColModel = table.getColumnModel();
         for (int i=0;i<tableColModel.getColumnCount();i++) 
@@ -214,7 +231,7 @@ class ExpressTableResultsBase extends JPanel
                 String label = (String)tableColModel.getColumn(i).getHeaderValue();
                 if (label != null )
                 {
-                    tableColModel.getColumn(i).setHeaderValue(colNames[i]);
+                    tableColModel.getColumn(i).setHeaderValue(colMappings != null ? colNames[colMappings[i]] : colNames[i]);
                 }
             }
         }
@@ -291,9 +308,19 @@ class ExpressTableResultsBase extends JPanel
     protected void setDisplayRows(final int numRows, final int maxNum)
     {
         int rows = Math.min(numRows, maxNum);
-        ResultSetTableModel rsm = (ResultSetTableModel)table.getModel();
+        ResultSetTableModelDM rsm = (ResultSetTableModelDM)table.getModel();
         rsm.initializeDisplayIndexes();
         rsm.addDisplayIndexes(createIndexesArray(rows));
        
     }
+    
+    
+    /**
+     * Returns a RecordSet object from the table
+     * @param true - allRecords all the records regardless of selection, false - only the selected records
+     * @return Returns a RecordSet object from the table
+     */
+    public abstract RecordSet getRecordSet(final int[] rows, final int column);
+
+
 }

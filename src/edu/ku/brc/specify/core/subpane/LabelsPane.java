@@ -152,6 +152,10 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                 {
                     StringBuffer strBuf = new StringBuffer(" in (");
                     Set set = recordSet.getItems();
+                    if (set == null)
+                    {
+                        throw new RuntimeException("RecordSet items is null!");
+                    }                    
                     int i = 0;
                     for (Iterator iter=set.iterator();iter.hasNext();)
                     {
@@ -160,7 +164,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                         {
                             strBuf.append(",");
                         }
-                        strBuf.append(Integer.toString(rsi.getRecordId()));
+                        strBuf.append(rsi.getRecordId());
                         i++;
                     }
                     strBuf.append(")");

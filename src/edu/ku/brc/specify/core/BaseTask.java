@@ -26,13 +26,18 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.*;
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.TaskPluginable;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
+import edu.ku.brc.specify.ui.CommandAction;
+import edu.ku.brc.specify.ui.CommandListener;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
@@ -45,8 +50,11 @@ import edu.ku.brc.specify.ui.UICacheManager;
  * @author rods
  *
  */
-public abstract class BaseTask implements Taskable, TaskPluginable
+public abstract class BaseTask implements Taskable, TaskPluginable, CommandListener
 {
+    // Static Data Members
+    private static Log log = LogFactory.getLog(BaseTask.class);
+    
     // Data Members
     protected final String        name;
     protected final String        title;
@@ -200,5 +208,14 @@ public abstract class BaseTask implements Taskable, TaskPluginable
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getMenuItems()
      */
     public abstract List<MenuItemDesc> getMenuItems();
+
+    //-------------------------------------------------------
+    // CommandListener Interface
+    //-------------------------------------------------------
+
+    public void doCommand(CommandAction cmdAction)
+    {
+        log.error("Command sent to task ["+name+"] and was not processed.");
+    }
 
 }

@@ -42,6 +42,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.core.ExpressResultsTableInfo;
+import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.dbsupport.SQLExecutionListener;
 import edu.ku.brc.specify.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.ui.CloseButton;
@@ -49,7 +50,7 @@ import edu.ku.brc.specify.ui.GradiantButton;
 import edu.ku.brc.specify.ui.GradiantLabel;
 import edu.ku.brc.specify.ui.TriangleButton;
 import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.db.ResultSetTableModel;
+import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
 
 /**
  * This is a single set of of results and is derived from a query where all the record numbers where 
@@ -61,7 +62,7 @@ import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 class ExpressTableResults extends ExpressTableResultsBase implements SQLExecutionListener
 {
     protected SQLExecutionProcessor sqlExecutor;
-
+    protected java.sql.ResultSet resultSet;
     
     /**
      * Constructor of a results "table" which is really a panel
@@ -89,7 +90,7 @@ class ExpressTableResults extends ExpressTableResultsBase implements SQLExecutio
     protected void setDisplayRows(final int numRows, final int maxNum)
     {
         int rows = Math.min(numRows, maxNum);
-        ResultSetTableModel rsm = (ResultSetTableModel)table.getModel();
+        ResultSetTableModelDM rsm = (ResultSetTableModelDM)table.getModel();
         rsm.initializeDisplayIndexes();
         rsm.addDisplayIndexes(createIndexesArray(rows));
        
@@ -104,12 +105,19 @@ class ExpressTableResults extends ExpressTableResultsBase implements SQLExecutio
      */
     public void exectionDone(final SQLExecutionProcessor process, final java.sql.ResultSet resultSet)
     {
-        ResultSetTableModel rsm = new ResultSetTableModel(resultSet);
-        rsm.addDisplayIndexes(createIndexesArray(7)); // pre-initialize to reduce flash (not sure if this is working)
+        this.resultSet = resultSet;
+        
+        ResultSetTableModelDM rsm = new ResultSetTableModelDM(resultSet);
+        table.setRowSelectionAllowed(true);
+        int[] visCols = tableInfo.getDisplayColIndexes();
+        if (visCols != null)
+        {
+             rsm.addDisplayColIndexes(visCols);
+        }
         
         table.setModel(rsm);
-        table.setRowSelectionAllowed(true);
-        
+        //colNames = tableInfo.getColNames();
+
         configColumnNames();
         
         rowCount = rsm.getRowCount();
@@ -133,6 +141,17 @@ class ExpressTableResults extends ExpressTableResultsBase implements SQLExecutio
     public void executionError(final SQLExecutionProcessor process, final Exception ex)
     {
         sqlExecutor = null;
+    }
+
+    /**
+     * Returns a RecordSet object from the table
+     * @param true - allRecords all the records regardless of selection, false - only the selected records
+     * @return Returns a RecordSet object from the table
+     */
+    public RecordSet getRecordSet(final int[] rows, final int column)
+    {
+        ResultSetTableModelDM rsm = (ResultSetTableModelDM)table.getModel();
+        return rsm.getRecordSet(null, column);
     }
 
 

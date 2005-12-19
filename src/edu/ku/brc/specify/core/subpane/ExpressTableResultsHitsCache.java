@@ -31,6 +31,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Hits;
 
 import edu.ku.brc.specify.core.ExpressResultsTableInfo;
+import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.ui.UICacheManager;
 
 /**
@@ -84,12 +85,22 @@ class ExpressTableResultsHitsCache extends ExpressTableResultsBase
      */
     public void fillTable()
     {
-        table.setModel(new HitsTableModel());
+        HitsTableModel hitsModel = new HitsTableModel();
+        
+        // Must be done before setting it into the table
+        int[] visCols = tableInfo.getDisplayColIndexes();
+        if (visCols != null)
+        {
+             hitsModel.setDisplayColIndexes(visCols);
+        }
+        
+        colNames = tableInfo.getColNames();
+
+        table.setModel(hitsModel);
         
         configColumnNames();
         
         numCols  = table.getModel().getColumnCount();
-        rowCache = new String[numCols];
         
         rowCount = indexes.length;
         if (rowCount > topNumEntries)
@@ -97,6 +108,7 @@ class ExpressTableResultsHitsCache extends ExpressTableResultsBase
             buildMorePanel();
         }
         setDisplayRows(rowCount, topNumEntries);
+        
 
         invalidate();
         doLayout();
@@ -109,7 +121,8 @@ class ExpressTableResultsHitsCache extends ExpressTableResultsBase
     //---------------------------------------------------
     class HitsTableModel extends AbstractTableModel
     {
-        private Vector<Integer> displayIndexes = null;
+        private int[] displayIndexes = null;
+        private int[] cols           = null;
         
         public HitsTableModel()
         {
@@ -137,12 +150,12 @@ class ExpressTableResultsHitsCache extends ExpressTableResultsBase
         
         public int getColumnCount() 
         { 
-            return colNames.length; 
+            return cols != null ? cols.length : colNames.length; 
         }
         
         public int getRowCount()
         { 
-            return displayIndexes != null ? displayIndexes.size() : indexes.length;
+            return displayIndexes != null ? displayIndexes.length : indexes.length;
         }
         
         public Object getValueAt(int row, int col) 
@@ -150,7 +163,7 @@ class ExpressTableResultsHitsCache extends ExpressTableResultsBase
             String str = "";
             try
             {
-                int inx = displayIndexes != null ? displayIndexes.elementAt(row) : row;
+                int inx = displayIndexes != null ? displayIndexes[row] : row;
                 int mappedInx = indexes[inx];
                 
                 Document doc = hits.doc(mappedInx);
@@ -158,13 +171,18 @@ class ExpressTableResultsHitsCache extends ExpressTableResultsBase
                 if (col == 0 || row != rowCacheIndex)
                 {
                     StringTokenizer st = new StringTokenizer(data, "\t");
-                    for (int i=0;i<numCols;i++)
+                    int numTokens = st.countTokens();
+                    if (rowCache == null || numTokens > rowCache.length)
+                    {
+                        rowCache = new String[numTokens];
+                    }
+                    for (int i=0;i<numTokens;i++)
                     {
                         rowCache[i] = st.nextToken();
                     }
                     rowCacheIndex = row;
                 }
-                return rowCache[col];
+                return cols != null ? rowCache[cols[col]] : rowCache[col];
                 
             } catch (Exception ex)
             {
@@ -180,13 +198,7 @@ class ExpressTableResultsHitsCache extends ExpressTableResultsBase
          */
         public void initializeDisplayIndexes()
         {
-            if (displayIndexes == null)
-            {
-                displayIndexes = new Vector<Integer>();
-            } else
-            {
-                displayIndexes.clear();
-            }
+            displayIndexes = null;
         }
  
         /**
@@ -195,27 +207,30 @@ class ExpressTableResultsHitsCache extends ExpressTableResultsBase
          */
         public void addDisplayIndexes(int[] indexes)
         {
-            if (displayIndexes != null)
-            {
-                
-                Hashtable<Integer, Integer> hash = new Hashtable<Integer, Integer>();
-                for (Integer inx : displayIndexes)
-                {
-                    hash.put(inx, inx);
-                }
-
-                for (int i=0;i<indexes.length;i++)
-                {
-                    if (hash.get(indexes[i]) == null)
-                    {
-                        displayIndexes.add(indexes[i]);
-                    }
-                }
-                hash.clear();
-                Collections.sort(displayIndexes);
-                
-                this.fireTableDataChanged();
-            }
+            displayIndexes  = indexes;
+            this.fireTableDataChanged();
         }
-   }
+        
+        /**
+         * Sets the display columns
+         * @param cols xxx
+         */
+        public void setDisplayColIndexes(int[] cols)
+        {
+            this.cols = cols;
+            numCols = Math.min(numCols, cols.length);
+        }
+    }
+    
+    /**
+     * Returns a RecordSet object from the table
+      * @param rows
+     * @param column
+     * @return
+     */
+    public RecordSet getRecordSet(final int[] rows, final int column)
+    {
+        return null;
+    }
+
 }

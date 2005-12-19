@@ -89,6 +89,34 @@ public final class UIHelper
         return value;
     }
     
+    public static double getDouble(Object valObj)
+    {
+        double value = 0.0;
+        if (valObj != null)
+        {
+            if (valObj instanceof Integer)
+            {
+                value = ((Integer)valObj).doubleValue();
+            } else if (valObj instanceof Long)
+            {
+                value = ((Long)valObj).doubleValue();
+            } else if (valObj instanceof Float)
+            {
+                value = ((Float)valObj).doubleValue();
+            } else if (valObj instanceof Double)
+            {
+                value = ((Double)valObj).doubleValue();
+            } else
+            {
+                System.out.println("getDouble - Class type is "+valObj.getClass().getName());
+            }
+        } else
+        {
+            log.error("getDouble - Result Object is null for["+valObj+"]");
+        }
+        return value;
+    }
+    
     public static int getInt(Object valObj)
     {
         int value = 0;

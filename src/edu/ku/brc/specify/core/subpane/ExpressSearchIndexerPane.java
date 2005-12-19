@@ -103,8 +103,9 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     protected JButton      cancelBtn;
     protected JButton      closeBtn;
     
-    protected ImageIcon    checkIcon    = new ImageIcon(IconManager.getImagePath("check.gif"));
-    protected ImageIcon    exclaimIcon  = new ImageIcon(IconManager.getImagePath("exclaim.gif"));
+    protected ImageIcon    checkIcon     = new ImageIcon(IconManager.getImagePath("check.gif"));
+    protected ImageIcon    exclaimIcon   = new ImageIcon(IconManager.getImagePath("exclaim.gif"));
+    protected ImageIcon    exclaimYWIcon = new ImageIcon(IconManager.getImagePath("exclaim_yellow.gif"));
     
     protected PairsMultipleQueryResultsHandler handler = null;
     
@@ -156,17 +157,17 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         {
             Element esDOM = XMLHelper.readDOMFromConfigDir("express_search.xml");         // Describes the definitions of the full text search
             
-            Hashtable<String, String> hash = new Hashtable<String, String>();
+            Hashtable<String, String> namesHash = new Hashtable<String, String>();
             
             List tables = esDOM.selectNodes("/tables/table/outofdate/table");
             for ( Iterator iter = tables.iterator(); iter.hasNext(); ) 
             {
                 Element tableElement = (Element)iter.next();
-                hash.put(tableElement.attributeValue("name"), tableElement.attributeValue("title"));
-            }  
+                namesHash.put(tableElement.attributeValue("name"), tableElement.attributeValue("title"));
+            }            
 
-            PanelBuilder    builder    = new PanelBuilder(new FormLayout("p:g,2dlu,p:g", createDuplicateJGoodiesDef("p","5px", hash.size())));
-            CellConstraints cc         = new CellConstraints();
+            PanelBuilder    builder = new PanelBuilder(new FormLayout("p:g,2dlu,p:g", createDuplicateJGoodiesDef("p","5px", namesHash.size())));
+            CellConstraints cc      = new CellConstraints();
             
             if (captionFont == null)
             {
@@ -176,26 +177,26 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             
             int row = 1;
             DateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-            for (Enumeration<String> e=hash.keys();e.hasMoreElements();)
+            for (Enumeration<String> e=namesHash.keys();e.hasMoreElements();)
             {
-                String name = e.nextElement();
-                String sqlStr = "select count(*) from " + name +" where datediff(TimeStampCreated, "+formatter.format(lastModified)+") > 0";
+                String nameStr = e.nextElement();
+                String sqlStr = "select count(*) from " + nameStr +" where datediff(TimeStampCreated, "+formatter.format(lastModified)+") > 0";
                 log.info(sqlStr);
                 QueryResultsContainer container = new QueryResultsContainer(sqlStr);
-                container.add(new QueryResultsDataObj(name));
+                container.add(new QueryResultsDataObj(nameStr));
                 
                 // Since the index doesn't exist fake like 
                 // each table has at least one out of date record
                 container.add(noIndexFile ? new QueryResultsDataObj(new Integer(1)) : new QueryResultsDataObj(1,1));
                 list.add(container);
                 
-                JLabel label = new JLabel(hash.get(name)+":", JLabel.RIGHT);
+                JLabel label = new JLabel(namesHash.get(nameStr)+":", JLabel.RIGHT);
                 label.setFont(captionFont);
                 
                 builder.add(label, cc.xy(1,row));
-                label = new JLabel(exclaimIcon);
+                label = new JLabel(exclaimYWIcon);
                 
-                resultsLabels.put(name, label);
+                resultsLabels.put(nameStr, label);
                 builder.add(label, cc.xy(3,row));
                 row += 2;
             }
@@ -640,7 +641,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         {         
             Object name   = list.get(i++);
             Object valObj = list.get(i);
-             JLabel label = resultsLabels.get(getString(name));
+            JLabel label  = resultsLabels.get(getString(name));
             if (label != null)
             {
                 int num = getInt(valObj);

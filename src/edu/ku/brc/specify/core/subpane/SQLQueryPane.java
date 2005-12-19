@@ -48,6 +48,7 @@ import edu.ku.brc.specify.dbsupport.SQLExecutionListener;
 import edu.ku.brc.specify.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
+import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
 import edu.ku.brc.specify.ui.db.SaveRecordSetDlg;
 /**
  * A pane with a text field for entring in a query and then the results are displayed in a table.
@@ -159,7 +160,8 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
             saveToRSBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) 
                 {
-                    SaveRecordSetDlg dlg = new SaveRecordSetDlg((ResultSetTableModel)table.getModel(), table.getSelectedRows());
+                    ResultSetTableModelDM resultSet = new ResultSetTableModelDM(((ResultSetTableModel)table.getModel()).getResultSet());
+                    SaveRecordSetDlg dlg = new SaveRecordSetDlg(resultSet, table.getSelectedRows());
                    
                     centerAndShow(dlg);
                 }

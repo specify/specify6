@@ -90,6 +90,19 @@ public class RecordSet  implements java.io.Serializable {
         this.items = items;
     }
 
+  /**
+	 * toString
+	 * @return String
+	 */
+  public String toString() {
+	  StringBuffer buffer = new StringBuffer();
+
+      buffer.append(getClass().getName()).append("@").append(Integer.toHexString(hashCode())).append(" [");
+      buffer.append("name").append("='").append(getName()).append("' ");			
+      buffer.append("]");
+      
+      return buffer.toString();
+	}
 
 
 

@@ -31,8 +31,8 @@ import edu.ku.brc.specify.core.subpane.SimpleDescPane;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.SubPaneIFace;
+import edu.ku.brc.specify.ui.*;
+import edu.ku.brc.specify.ui.db.*;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.dnd.DataActionEvent;
@@ -50,6 +50,8 @@ public class LabelsTask extends BaseTask
 {
     public static final String LABELS = "Labels";
     
+    public static final String DOLABELS_ACTION = "DoLabels";
+    
     protected Vector<NavBoxIFace> extendedNavBoxes = new Vector<NavBoxIFace>(); 
 
     /**
@@ -59,7 +61,7 @@ public class LabelsTask extends BaseTask
     public LabelsTask()
     {
         super(LABELS, getResourceString(LABELS));
-        
+        CommandDispatcher.register(LABELS, this);
     }
     
     /**
@@ -138,6 +140,18 @@ public class LabelsTask extends BaseTask
         return new SimpleDescPane(name, this, "Welcome to Specify's Label Maker");
     }
     
+    /**
+     * Displays UI that asks the user to select a predefined label.
+     * @return
+     */
+    protected String askForLabelName()
+    {
+        // XXX need to pass in table type
+        ChooseRecordSetDlg dlg = new ChooseRecordSetDlg();
+        dlg.setVisible(true);
+        return "fish_label.jrxml";
+    }
+    
     //-------------------------------------------------------
     // Taskable
     //-------------------------------------------------------
@@ -188,6 +202,27 @@ public class LabelsTask extends BaseTask
         
     }
     
+    
+    //-------------------------------------------------------
+    // CommandListener Interface
+    //-------------------------------------------------------
+
+    public void doCommand(CommandAction cmdAction)
+    {
+        if (cmdAction.getAction().equals(DOLABELS_ACTION))
+        {
+            Object data = cmdAction.getData();
+            if (data instanceof RecordSet)
+            {
+                String labelName = askForLabelName();
+                if (labelName != null)
+                {
+                    doCommand(labelName, "Labels", data);
+                }
+            }
+        }
+    }
+    
     //--------------------------------------------------------------
     // Inner Classes
     //--------------------------------------------------------------
@@ -230,4 +265,5 @@ public class LabelsTask extends BaseTask
             return recordSet;
         }
     }
+ 
 }

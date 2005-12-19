@@ -40,7 +40,6 @@
 				not-null="true"/>
 
     <!-- Associations -->
-  
 
     <!-- bi-directional one-to-many association to RecordSetItem -->
     <set
@@ -50,5 +49,6 @@
     		<property name="recordId" not-null="true"/>
         </composite-element>
     </set>
+
 </class>
 </hibernate-mapping>

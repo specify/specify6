@@ -12,7 +12,7 @@ public class RecordSetItem  implements java.io.Serializable {
 
     // Fields    
 
-     private Integer recordId;
+     private String recordId;
 
 
     // Constructors
@@ -30,11 +30,11 @@ public class RecordSetItem  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getRecordId() {
+    public String getRecordId() {
         return this.recordId;
     }
     
-    public void setRecordId(Integer recordId) {
+    public void setRecordId(String recordId) {
         this.recordId = recordId;
     }
 

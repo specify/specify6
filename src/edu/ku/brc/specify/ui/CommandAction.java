@@ -19,13 +19,59 @@
  */
 package edu.ku.brc.specify.ui;
 
+/**
+ * Represents a single command action typically between the UI and a task, sometimes between tasks
+ * The "type" of command determines who will be listening for it.
+ * 
+ * @author rods
+ *
+ */
 public class CommandAction
 {
 
-    public CommandAction()
+    protected final String type;
+    protected final String action;
+    protected final Object data;
+    
+    protected boolean isConsumed = false;
+    
+    /**
+     * Constructs a command
+     * @param type the type of command determines who listens for it
+     * @param action the name of the action to be performed (contract between producer and consumer)
+     * @param data the data to be passed
+     */
+    public CommandAction(final String type, final String action, final Object data)
     {
-        super();
-        // TODO Auto-generated constructor stub
+        this.type   = type;
+        this.action = action;
+        this.data   = data;
+        
     }
+    public String getAction()
+    {
+        return action;
+    }
+
+    public Object getData()
+    {
+        return data;
+    }
+
+    public String getType()
+    {
+        return type;
+    }
+
+    public boolean isConsumed()
+    {
+        return isConsumed;
+    }
+
+    public void setConsumed(boolean isConsumed)
+    {
+        this.isConsumed = isConsumed;
+    }
+
 
 }

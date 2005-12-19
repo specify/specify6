@@ -41,15 +41,16 @@ import javax.swing.border.EmptyBorder;
  * A gradiant filled button button.
  * A renderer need to be created so GradiantLabel and GradiantButton can share all the code.
  *
- * 
+ * When the icon is set into the JButton constructor it changes the font size 
  * @author rods
  *
  */
 public class GradiantButton extends JButton implements MouseListener 
 {
-    protected Color   textColor        = null;
-    protected Color   textColorShadow  = null;
-    protected float   iconAlpha        = 0.7f;
+    protected Color     textColor        = null;
+    protected Color     textColorShadow  = null;
+    protected float     iconAlpha        = 0.7f;
+    protected ImageIcon icon             = null;
     
     /**
      * Defaults to a gradiant square button
@@ -67,7 +68,8 @@ public class GradiantButton extends JButton implements MouseListener
      */
     public GradiantButton(final ImageIcon icon) 
     {
-        super("", icon);
+        super("");
+        this.icon = icon;
         init();
     }
     
@@ -88,7 +90,6 @@ public class GradiantButton extends JButton implements MouseListener
     public Dimension getPreferredSize() 
     {
         String text = getText();
-        
         FontMetrics fm = this.getFontMetrics(getFont());
         float scale = (50f/40f)*this.getFont().getSize2D();
         int w = fm.stringWidth(text);
@@ -122,7 +123,6 @@ public class GradiantButton extends JButton implements MouseListener
             drawText(g2, w,h, getText());
         }
         
-        Icon icon = getIcon();
         if (icon != null)
         {
             //Graphics2D g2 = (Graphics2D) g.create();
