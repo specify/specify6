@@ -76,7 +76,7 @@ public class IconEntry
     public void addScaled(final IconSize id, final IconSize newId)
     {
         //log.info("Putting["+name+"]["+id.toString()+"]");
-        icons.put(id.toString(), getScaledIcon(id, newId));
+        icons.put(newId.toString(), getScaledIcon(id, newId));
     }
 
 

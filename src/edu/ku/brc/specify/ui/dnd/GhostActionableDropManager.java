@@ -15,7 +15,7 @@ import javax.swing.SwingUtilities;
  * 
  * @author rods
  * @author Romain Guy <romain.guy@mac.com>
- * @author Sébastien Petrucci <sebastien_petrucci@yahoo.fr>*
+ * @author Sï¿½bastien Petrucci <sebastien_petrucci@yahoo.fr>*
  * @author rods
  *
  */
@@ -56,7 +56,7 @@ public class GhostActionableDropManager extends AbstractGhostDropManager
            
             if (component instanceof GhostActionable && source instanceof GhostActionable)
             {
-                ((GhostActionable)component).doAction(((GhostActionable)source).getData());
+                ((GhostActionable)component).doAction((GhostActionable)source);
             }
             e.setConsumed(true);
            

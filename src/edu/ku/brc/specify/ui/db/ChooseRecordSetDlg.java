@@ -3,7 +3,6 @@ package edu.ku.brc.specify.ui.db;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -21,7 +20,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 
 import org.apache.commons.logging.Log;
@@ -33,6 +31,7 @@ import com.jgoodies.forms.builder.ButtonBarBuilder;
 import edu.ku.brc.specify.core.RecordSetTask;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.ui.IconListCellRenderer;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.UICacheManager;
 
@@ -83,7 +82,7 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
             };
             
             list = new JList(listModel);
-            list.setCellRenderer(new RSListRenderer());
+            list.setCellRenderer(new IconListCellRenderer(icon)); // icon comes from the base class (it's probably size 16)
             list.setVisibleRowCount(5);
             list.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent e) {
@@ -136,40 +135,6 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
             return (RecordSet)recordSets.get(inx);
         }
         return null;
-    }
-    
-    //----------------------------------------------------------------
-    //-- Inner Classes
-    //----------------------------------------------------------------
-    class RSListRenderer extends JLabel implements ListCellRenderer 
-    {
-
-        // This is the only method defined by ListCellRenderer.
-        // We just reconfigure the JLabel each time we're called.
-
-        public Component getListCellRendererComponent(JList list,
-                                                      Object value,            // value to display
-                                                      int index,               // cell index
-                                                      boolean isSelected,      // is the cell selected
-                                                      boolean cellHasFocus)    // the list and the cell have the focus
-        {
-            String s = value.toString();
-            setText(s);
-            setIcon(icon);
-            if (isSelected) 
-            {
-                setBackground(list.getSelectionBackground());
-                setForeground(list.getSelectionForeground());
-            } else 
-            {
-                setBackground(list.getBackground());
-                setForeground(list.getForeground());
-            }
-            setEnabled(list.isEnabled());
-            setFont(list.getFont());
-            setOpaque(true);
-            return this;
-        }
     }
     
 }

@@ -58,6 +58,7 @@ import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 
 import edu.ku.brc.specify.core.NavBoxItemIFace;
 import edu.ku.brc.specify.ui.dnd.DataActionEvent;
+import edu.ku.brc.specify.ui.dnd.DndDeletable;
 import edu.ku.brc.specify.ui.dnd.GhostActionable;
 import edu.ku.brc.specify.ui.dnd.GhostMotionAdapter;
 import edu.ku.brc.specify.ui.dnd.GhostMouseDropAdapter;
@@ -70,7 +71,7 @@ import edu.ku.brc.specify.ui.dnd.ShadowFactory;
  * Creates a panel containing an icon and button with a focus "ring" when the mouse is hovering.
  * This class is used mostly in NavBoxes
  */
-public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostActionable
+public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostActionable, DndDeletable
 {
     protected JTextField             txtFld     = null;   
     protected JLabel                 iconLabel;
@@ -92,7 +93,7 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     
     // These used for the Ghosting
     protected static final int SHADOW_SIZE = 10;
-    protected RenderingHints         hints;
+    protected RenderingHints         hints        = null;
     protected BufferedImage          shadowBuffer = null;
     protected BufferedImage          buffer       = null;;
     protected double                 ratio        = 0.0;
@@ -100,6 +101,10 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     protected boolean                verticalLayout      = false;
     
     protected JPopupMenu             popupMenu    = null;
+    protected RolloverCommand        itself       = null; // for the mouse adapter
+    
+    // DndDeletable
+    protected CommandAction          deleteCmdAction = null;
     
     /**
      * Constructs a UI component with a label and an icon which can be clicked to execute an action
@@ -115,22 +120,25 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
         this.label   = label;
         
         iconLabel    = new JLabel(imgIcon);        
+        itself       = this;
         
         MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {
             public void mouseEntered(MouseEvent e) 
             {
                 isOver = true;
                 repaint();
+                UICacheManager.displayStatusBarText(itself.getToolTipText());
             }
             public void mouseExited(MouseEvent e) 
             {
                 isOver = false;
                 repaint();
+                UICacheManager.displayStatusBarText("");
             }
             public void mouseClicked(MouseEvent e) 
             {
                 repaint();
-                doAction(null);
+                doAction(itself);
             }
           };
         addMouseListener(mouseInputAdapter);
@@ -425,10 +433,11 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     //-----------------------------------------------
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#doAction(java.lang.Object)
+     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#doAction(edu.ku.brc.specify.ui.dnd.GhostActionable)
      */
-    public void doAction(Object data)
+    public void doAction(GhostActionable src)
     {
+        Object data = src != null ? src.getData() : null;
         DataActionEvent ae = new DataActionEvent(this, data);
         for (ActionListener al : listeners)
         {
@@ -472,8 +481,8 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     }
     
     /**
-     * 
-     * @return
+     * Returns the width
+     * @return Returns the width
      */
     public int getItemWidth() 
     {
@@ -481,8 +490,8 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     }
     
     /**
-     * 
-     * @return
+     * Returns the height
+     * @return Returns the height
      */
     public int getItemHeight() 
     {
@@ -490,40 +499,31 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     }
     
     /**
-     * 
+     * Initialize rendering hints 
      *
      */
     private void createRenderingHints() 
     {
-        hints = new RenderingHints(RenderingHints.KEY_INTERPOLATION,
-                                   RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-        Object value = RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
-        try {
-            Field declaredField = RenderingHints.class.getDeclaredField("VALUE_TEXT_ANTIALIAS_LCD_HRGB");
-            value = declaredField.get(null);
-        } catch (Exception e) {
-        }
-        hints.put(RenderingHints.KEY_TEXT_ANTIALIASING, value);
-    }
-    
-     /**
-     * 
-     */
-    private void initForRendering()
-    {
-        if (ratio == 0.0)
+        if (hints == null)
         {
-            this.ratio = 100.0 / 30.0;//(double) image.getWidth() / (double) image.getHeight();
-            createRenderingHints();
+            hints = new RenderingHints(RenderingHints.KEY_INTERPOLATION,
+                                       RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+            Object value = RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
+            try {
+                Field declaredField = RenderingHints.class.getDeclaredField("VALUE_TEXT_ANTIALIAS_LCD_HRGB");
+                value = declaredField.get(null);
+            } catch (Exception e) {
+            }
+            hints.put(RenderingHints.KEY_TEXT_ANTIALIASING, value);
         }
     }
     
     /**
-     * 
+     * Render the control to a buffer
      */
     private void renderOffscreen() 
     {
-        initForRendering();
+        createRenderingHints();
         BufferedImage bgBufImg = getBackgroundImageBuffer();
         
         buffer = new BufferedImage(bgBufImg.getWidth(),bgBufImg.getHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -555,8 +555,8 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     }
     
     /**
-     * 
-     * @return
+     * Returns the buffered image of the control
+     * @return Returns the buffered image of the control
      */
     public BufferedImage getBufferedImage() 
     {
@@ -577,7 +577,7 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     {
         if (shadowBuffer == null) 
         {
-            initForRendering();
+            createRenderingHints();
             ShadowFactory factory = new ShadowFactory(SHADOW_SIZE, 0.17f, Color.BLACK);
 
             BufferedImage image = new BufferedImage(getItemWidth(), getItemHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -592,14 +592,57 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
         return shadowBuffer;
     }
 
+    /**
+     * Returns the layout orientation
+     * @return Returns the layout orientation
+     */
     public boolean isVerticalLayout()
     {
         return verticalLayout;
     }
 
+    /**
+     * Set the layout orientation
+     * @param verticalLayout true - vertical, false - horizontal
+     */
     public void setVerticalLayout(boolean verticalLayout)
     {
         this.verticalLayout = verticalLayout;
+    }
+
+    //-----------------------------------------------
+    // DndDeletable Interface
+    //-----------------------------------------------
+
+    /**
+     * Asks the object to send a request for itself to be deleted
+     * @return return true if deleted, false if it couldn't be deleted
+     */
+    public boolean deleteRequest()
+    {
+        if (deleteCmdAction != null)
+        {
+            CommandDispatcher.dispatch(deleteCmdAction);
+        }
+        return true;
+    }
+    
+    /**
+     * Returns an XML string for cahing the entire contents of the object to be serialized
+     * @return Returns an XML string for cahing the entire contents of the object to be serialized
+     */
+    public String toXML()
+    {
+        return null;
+    }
+    
+    /**
+     * The command that will be dispatched when "deleteRequest" is called
+     * @param cmdAction the command that will delete the object from itself container
+     */
+    public void setCommandAction(final CommandAction cmdAction)
+    {
+        deleteCmdAction = cmdAction;
     }
 
     

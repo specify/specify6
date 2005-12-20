@@ -22,7 +22,6 @@ package edu.ku.brc.specify.core;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -42,7 +41,6 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 
 import org.apache.commons.logging.Log;
@@ -57,11 +55,12 @@ import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.ui.CommandAction;
 import edu.ku.brc.specify.ui.CommandDispatcher;
+import edu.ku.brc.specify.ui.IconListCellRenderer;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.RolloverCommand;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
-import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.*;
 import edu.ku.brc.specify.ui.db.ChooseRecordSetDlg;
 import edu.ku.brc.specify.ui.dnd.DataActionEvent;
 import edu.ku.brc.specify.ui.dnd.GhostActionable;
@@ -387,38 +386,6 @@ public class LabelsTask extends BaseTask
         }
     }
     
-    class ListRenderer extends JLabel implements ListCellRenderer 
-    {
-
-        // This is the only method defined by ListCellRenderer.
-        // We just reconfigure the JLabel each time we're called.
-
-        public Component getListCellRendererComponent(JList list,
-                                                      Object value,            // value to display
-                                                      int index,               // cell index
-                                                      boolean isSelected,      // is the cell selected
-                                                      boolean cellHasFocus)    // the list and the cell have the focus
-        {
-            String s = value.toString();
-            setText(s);
-            setIcon(icon);
-            if (isSelected) 
-            {
-                setBackground(list.getSelectionBackground());
-                setForeground(list.getSelectionForeground());
-            } else 
-            {
-                setBackground(list.getBackground());
-                setForeground(list.getForeground());
-            }
-            setEnabled(list.isEnabled());
-            setFont(list.getFont());
-            setOpaque(true);
-            return this;
-        }
-    }
-
-    
     /**
      * @author rods
      *
@@ -463,7 +430,7 @@ public class LabelsTask extends BaseTask
                 };
                 
                 list = new JList(listModel);
-                list.setCellRenderer(new ListRenderer());
+                list.setCellRenderer(new IconListCellRenderer(icon));
                 
                 list.setVisibleRowCount(5);
                 list.addMouseListener(new MouseAdapter() {

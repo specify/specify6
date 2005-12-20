@@ -71,35 +71,7 @@ public class RecordSetTask extends BaseTask
         super(RECORD_SET, getResourceString(RECORD_SET));
         CommandDispatcher.register(RECORD_SET, this);
     }
-    
-    /**
-     * Helper method to add an item to the navbox
-     * @param recordSet the recordset to be added
-     */
-    protected NavBoxItemIFace addNavBoxItem(final RecordSet recordSet)
-    {
-        NavBoxItemIFace nb = NavBox.createBtn(recordSet.getName(), name, IconManager.IconSize.Std16);
-        RolloverCommand rb = (RolloverCommand)nb;
-        
-        JPopupMenu popupMenu = rb.getPopupMenu();
-        
-        JMenuItem renameMenuItem = new JMenuItem(getResourceString("Delete"));
-        renameMenuItem.addActionListener(new RSAction("delete", nb, recordSet));
-        popupMenu.add(renameMenuItem);
-        
-        navBox.add(nb);
-        
-        if (nb instanceof GhostActionable)
-        {
-            GhostActionable ga = (GhostActionable)nb;
-            ga.createMouseDropAdapter();
-            ga.setData(recordSet);
-            GhostMouseDropAdapter gpa = ga.getMouseDropAdapter();  
-            gpa.addGhostDropListener(new GhostActionableDropManager(UICacheManager.getGlassPane(), NavBoxMgr.getTrash(), ga));
 
-        }
-        return nb;
-    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#initialize()
@@ -118,7 +90,7 @@ public class RecordSetTask extends BaseTask
             for (Iterator iter=recordSets.iterator();iter.hasNext();)
             {
                 RecordSet recordSet = (RecordSet)iter.next();
-                addNavBoxItem(recordSet);
+                addNavBoxItem(navBox, recordSet.getName(), "Record_Set", "Delete", recordSet);
                 
             }          
             navBoxes.addElement(navBox);
@@ -132,11 +104,12 @@ public class RecordSetTask extends BaseTask
      */
     public void saveRecordSet(final RecordSet recordSet)
     {
-        NavBoxItemIFace nbi = addNavBoxItem(recordSet);
+        NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), "Record_Set", "Delete", recordSet);
         
         recordSet.setCreated(Calendar.getInstance().getTime());
         
         // save to database
+        HibernateUtil.getCurrentSession();
         HibernateUtil.beginTransaction();
         HibernateUtil.getCurrentSession().saveOrUpdate(recordSet);
         HibernateUtil.commitTransaction();
@@ -144,10 +117,10 @@ public class RecordSetTask extends BaseTask
         
         NavBoxMgr.getInstance().addBox(navBox);
         
+        // XXX This needs to be made generic
         navBox.invalidate();
         navBox.doLayout();
         navBox.repaint();
-        
         
         CommandDispatcher.dispatch(new CommandAction("Labels", "NewRecordSet", nbi));
     }
@@ -159,12 +132,18 @@ public class RecordSetTask extends BaseTask
     protected void deleteRecordSet(final RecordSet recordSet)
     {
         // delete from database
+        HibernateUtil.getCurrentSession();
         HibernateUtil.beginTransaction();
         HibernateUtil.getCurrentSession().delete(recordSet);
         HibernateUtil.commitTransaction();
         HibernateUtil.closeSession();       
     }
     
+    /**
+     * Return a NavBoxItem by name
+     * @param boxName the name of the NavBoxItem
+     * @return Return a NavBoxItem by name
+     */
     protected NavBoxItemIFace getBoxByName(final String boxName)
     {
         for (NavBoxItemIFace nbi : navBox.getItems())
@@ -177,13 +156,21 @@ public class RecordSetTask extends BaseTask
         return null;
     }
     
-    protected void deleteRecordSetFromUI(final RecordSet recordSet, final NavBoxItemIFace boxItem)
+    /**
+     * Delete the RecordSet from the UI, which really means remove the NavBoxItemIFace. 
+     * This method first checks to see if the boxItem is not null and uses that, i
+     * f it is null then it looks the box up by name ans used that
+     * @param boxItem the box item to be deleted
+     * @param recordSet the record set that is "owned" by some UI object that needs to be deleted (used for secodary lookup
+     */
+    protected void deleteRecordSetFromUI(final NavBoxItemIFace boxItem, final RecordSet recordSet)
     {
         Component comp = boxItem != null ? boxItem.getUIComponent() : getBoxByName(recordSet.getName()).getUIComponent(); 
         if (comp != null)
         {
             navBox.remove(comp);
             
+            // XXX this is pathetic and needs to be generised
             navBox.invalidate();
             navBox.setSize(navBox.getPreferredSize());
             navBox.doLayout();
@@ -207,16 +194,7 @@ public class RecordSetTask extends BaseTask
     // Plugin Interface
     //-------------------------------------------------------
     
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getToolBarItems()
-     */
-    public String getName()
-    {
-        return RECORD_SET; // XXX Localize, Hmmm maybe not????
-    }
-    
-    /*
+     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getToolBarItems()
      */
@@ -245,6 +223,9 @@ public class RecordSetTask extends BaseTask
     // CommandListener Interface
     //-------------------------------------------------------
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.CommandListener#doCommand(edu.ku.brc.specify.ui.CommandAction)
+     */
     public void doCommand(CommandAction cmdAction)
     {
         if (cmdAction.getAction().equals("Save"))
@@ -253,7 +234,7 @@ public class RecordSetTask extends BaseTask
             if (data instanceof RecordSet)
             {
                 String rsName  = JOptionPane.showInputDialog(UICacheManager.getInstance().get(UICacheManager.FRAME), getResourceString("AskForRSName"));
-                if (rsName != null)
+                if (rsName != null && rsName.length() > 0)
                 {
                     RecordSet rs = (RecordSet)data;
                     rs.setName(rsName);
@@ -264,48 +245,9 @@ public class RecordSetTask extends BaseTask
         {
             RecordSet recordSet = (RecordSet)cmdAction.getData();
             deleteRecordSet(recordSet);
-            deleteRecordSetFromUI(recordSet, null);
+            deleteRecordSetFromUI(null, recordSet);
 
         }
     }
     
-    //--------------------------------------------------------------
-    // Inner Classes
-    //--------------------------------------------------------------
- 
-     /**
-     * 
-     * @author rods
-     *
-     */
-    class RSAction implements ActionListener 
-    {
-        private String   cmd;
-        private RecordSet       recordSet = null;
-        private NavBoxItemIFace boxItem   = null;
-        
-        
-        public RSAction(final String cmd, final NavBoxItemIFace boxItem, final RecordSet recordSet)
-        {
-            this.cmd       = cmd;
-            this.recordSet = recordSet;
-            this.boxItem   = boxItem;
-        }
-        
-        public void actionPerformed(ActionEvent e) 
-        {
-            if (cmd.equals("delete"))
-            {
-                deleteRecordSet(recordSet);
-                deleteRecordSetFromUI(recordSet, null);
-            }
-        }
-        
-        public RecordSet getRecordSet()
-        {
-            return recordSet;
-        }
-    }
- 
-   
 }

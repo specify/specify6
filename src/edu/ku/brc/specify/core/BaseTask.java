@@ -27,21 +27,30 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.TaskPluginable;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.ui.CommandAction;
+import edu.ku.brc.specify.ui.CommandDispatcher;
 import edu.ku.brc.specify.ui.CommandListener;
 import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.specify.ui.RolloverCommand;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.dnd.GhostActionable;
+import edu.ku.brc.specify.ui.dnd.GhostActionableDropManager;
+import edu.ku.brc.specify.ui.dnd.GhostMouseDropAdapter;
 
 /**
  * Abstract class to provide a base level of functionality for implementing a task.
@@ -60,7 +69,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     protected final String        title;
     
     protected Vector<NavBoxIFace> navBoxes = new Vector<NavBoxIFace>(); 
-    protected Icon                icon     = null;
+    protected ImageIcon           icon     = null;
     protected boolean             isInitialized = false;
     
     /**
@@ -135,6 +144,43 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
         return btn;
     }
 
+    /**
+     * Helper method to add an item to the navbox
+     * @param recordSet the recordset to be added
+     */
+    protected NavBoxItemIFace addNavBoxItem(final NavBox navBox, 
+                                            final String labelText, 
+                                            final String cmdGroup,
+                                            final String cmdStr, 
+                                            final Object data)
+    {
+        NavBoxItemIFace nb = NavBox.createBtn(labelText, name, IconManager.IconSize.Std16);
+        RolloverCommand rb = (RolloverCommand)nb;
+        
+        // This is part of the "DndDeletable" Interface, 
+        // the object is responsible for knowing how to delete itself.
+        CommandAction delRSCmd = new CommandAction(cmdGroup, cmdStr, data);
+        rb.setCommandAction(delRSCmd);
+        
+        JPopupMenu popupMenu = rb.getPopupMenu();
+        
+        JMenuItem delMenuItem = new JMenuItem(getResourceString("Delete"));
+        delMenuItem.addActionListener(new RSAction(delRSCmd));
+        popupMenu.add(delMenuItem);
+        
+        navBox.add(nb);
+        
+        if (nb instanceof GhostActionable)
+        {
+            GhostActionable ga = (GhostActionable)nb;
+            ga.createMouseDropAdapter();
+            ga.setData(data);
+            GhostMouseDropAdapter gpa = ga.getMouseDropAdapter();  
+            gpa.addGhostDropListener(new GhostActionableDropManager(UICacheManager.getGlassPane(), NavBoxMgr.getTrash(), ga));
+
+        }
+        return nb;
+    }
     
     /**
      * Returns the initial pane for this task, may be a blank (empty) pane, but shouldn't null
@@ -217,5 +263,31 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     {
         log.error("Command sent to task ["+name+"] and was not processed.");
     }
+    
+    //--------------------------------------------------------------
+    // Inner Classes
+    //--------------------------------------------------------------
+ 
+    /**
+     * XXX This is now generic and should be moved out of here 
+     * @author rods
+     *
+     */
+    class RSAction implements ActionListener 
+    {
+        protected CommandAction cmdAction;
+        
+        public RSAction(final CommandAction cmdAction)
+        {
+            this.cmdAction = cmdAction;
+         }
+        
+        public void actionPerformed(ActionEvent e) 
+        {
+            CommandDispatcher.dispatch(cmdAction);
+        }
+    }
+ 
+   
 
 }

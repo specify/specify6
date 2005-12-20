@@ -118,17 +118,7 @@ public class ExpressSearchResultsPane extends BaseSubPane
         scrollPane.doLayout();
         scrollPane.repaint();
     }
-    
-    
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.specify.core.Taskable#getIcon()
-     */
-    public Icon getIcon()
-    {
-        return IconManager.getInstance().getIcon("Search", IconManager.IconSize.Std16);
-    }
-    
+        
     /* (non-Javadoc)
      * @see java.awt.Component#showingPane(boolean)
      */

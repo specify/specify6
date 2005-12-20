@@ -110,11 +110,11 @@ abstract class ExpressTableResultsBase extends JPanel
         showTopNumEntriesBtn.setVisible(false);
         showTopNumEntriesBtn.setCursor(handCursor);
         
-        StringBuffer colDef = new StringBuffer("p,0px,p:g,0px,p");
+        StringBuffer colDef = new StringBuffer("p,0px,p:g,0px,p,0px,p,0px,p");
         boolean isCollectionTable = tableInfo.getTableId().equals("1");
         if (isCollectionTable)
         {
-            colDef.append(",0px,p,0px,p,0px,p"); // Labels, Save To RecordSet, Data Entry
+            colDef.append(",0px,p"); // Labels, Save To RecordSet, Data Entry
         }
         colDef.append(",0px,p"); // close Button
         
@@ -143,19 +143,19 @@ abstract class ExpressTableResultsBase extends JPanel
             labelsBtn.setForeground(bannerColor);
             builder.add(labelsBtn, cc.xy(col,1));
             col += 2;
-            
-            rsBtn = new GradiantButton(IconManager.getImage("Record_Set", IconManager.IconSize.Std16));
-            rsBtn.setToolTipText(getResourceString("CreateRecordSetTT"));
-            rsBtn.setForeground(bannerColor);
-            builder.add(rsBtn, cc.xy(col,1));
-            col += 2;
-            
-            deBtn = new GradiantButton(IconManager.getImage("Data_Entry", IconManager.IconSize.Std16));
-            deBtn.setToolTipText(getResourceString("EditRecordSetTT"));
-            deBtn.setForeground(bannerColor);
-            builder.add(deBtn, cc.xy(col,1));
-            col += 2;
         }
+        
+        rsBtn = new GradiantButton(IconManager.getImage("Record_Set", IconManager.IconSize.Std16));
+        rsBtn.setToolTipText(getResourceString("CreateRecordSetTT"));
+        rsBtn.setForeground(bannerColor);
+        builder.add(rsBtn, cc.xy(col,1));
+        col += 2;
+        
+        deBtn = new GradiantButton(IconManager.getImage("Data_Entry", IconManager.IconSize.Std16));
+        deBtn.setToolTipText(getResourceString("EditRecordSetTT"));
+        deBtn.setForeground(bannerColor);
+        builder.add(deBtn, cc.xy(col,1));
+        col += 2;
         
         CloseButton closeBtn = new CloseButton();
         closeBtn.setToolTipText(getResourceString("ESCloseTable"));
@@ -230,9 +230,9 @@ abstract class ExpressTableResultsBase extends JPanel
         if (isCollectionTable)
         {
             labelsBtn.addActionListener(new ESTableAction("Labels", "DoLabels", table, tableInfo));
-            rsBtn.addActionListener(new ESTableAction("Record_Set", "Save", table, tableInfo));
-            deBtn.addActionListener(new ESTableAction("Data_Entry", "Edit", table, tableInfo));
         }
+        rsBtn.addActionListener(new ESTableAction("Record_Set", "Save", table, tableInfo));
+        deBtn.addActionListener(new ESTableAction("Data_Entry", "Edit", table, tableInfo));
         
     }
     
@@ -379,6 +379,7 @@ abstract class ExpressTableResultsBase extends JPanel
         public void actionPerformed(ActionEvent e) 
         {
             RecordSet rs = getRecordSet(table.getSelectedRows(), tableInfo.getRecordSetColumnInx());
+            rs.setTableId(Integer.parseInt(tableInfo.getTableId()));
             CommandDispatcher.dispatch(new CommandAction(name, action, rs));
         }
     }

@@ -11,25 +11,25 @@ public interface GhostActionable
 {
 
     /**
-     * Asks the object to perform its action
-     * @param data a generic data object to be passed
+     * Asks the destination to perform its action amd it is given the source
+     * @param source the source object that caused the action to happen
      */
-    public void doAction(Object data);
+    public void doAction(GhostActionable source);
     
     /**
-     * 
+     * Set the data into the objet
      * @param data
      */
     public void setData(final Object data);
     
     /**
-     * 
-     * @return
+     * Return the data
+     * @return Return the data
      */
     public Object getData();
     
     /**
-     * 
+     * Creates a adpator for the DnD action 
      *
      */
     public void createMouseDropAdapter();

@@ -26,10 +26,13 @@ import java.util.StringTokenizer;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Hits;
 
 import edu.ku.brc.specify.core.ExpressResultsTableInfo;
+import edu.ku.brc.specify.core.ExpressSearchTask;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.specify.ui.UICacheManager;
@@ -41,8 +44,12 @@ import edu.ku.brc.specify.ui.UICacheManager;
  * @author rods
  *
  */
-class ExpressTableResultsHitsCache extends ExpressTableResultsBase
+public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
 {
+    // Static Data Members
+    private static Log log = LogFactory.getLog(ExpressTableResultsHitsCache.class);
+    
+    // Data Members
     protected Hits hits;
     
     protected String[] rowCache      = null;
@@ -255,19 +262,24 @@ class ExpressTableResultsHitsCache extends ExpressTableResultsBase
                     {
                         Document doc  = hits.doc(i);
                         String   data = doc.get("data");
-                        
-                        StringTokenizer st = new StringTokenizer(data, "\t");
-                        RecordSetItem rsi = new RecordSetItem();
-                        for (int col=0;col<st.countTokens();col++)
+                        if (data != null)
                         {
-                            if (col == column)
+                            StringTokenizer st = new StringTokenizer(data, "\t");
+                            RecordSetItem rsi = new RecordSetItem();
+                            for (int col=0;col<st.countTokens();col++)
                             {
-                                rsi.setRecordId(st.nextToken());
-                                break;
+                                if (col == column)
+                                {
+                                    rsi.setRecordId(st.nextToken());
+                                    break;
+                                }
+                                st.nextToken();
                             }
-                            st.nextToken();
+                            items.add(rsi);
+                        } else
+                        {
+                            log.error("Why was the data object null? row="+i);
                         }
-                        items.add(rsi);
                     }
                 } else
                 {

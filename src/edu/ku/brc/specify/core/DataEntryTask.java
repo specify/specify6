@@ -70,8 +70,14 @@ public class DataEntryTask extends BaseTask
         navBox.add(NavBox.createBtn(getResourceString("Series_Processing"), name, IconManager.IconSize.Std16, new DataEntryAction("")));
         navBoxes.addElement(navBox);
         
-        navBox = new NavBox(getResourceString("Create"));
-        navBox.add(NavBox.createBtn(title, name, IconManager.IconSize.Std16));
+        navBox = new NavBox(getResourceString("CreateAndUpdate"));
+        //navBox.add(NavBox.createBtn(title, name, IconManager.IconSize.Std16));
+        navBox.add(NavBox.createBtn("Specimen", "ColObj", IconManager.IconSize.Std16));
+        navBox.add(NavBox.createBtn("Locality", "Locality", IconManager.IconSize.Std16));
+        navBox.add(NavBox.createBtn("Taxon", "Taxon", IconManager.IconSize.Std16));
+        navBox.add(NavBox.createBtn("Geography", "Geography", IconManager.IconSize.Std16));
+        navBox.add(NavBox.createBtn("Agent", "Agent", IconManager.IconSize.Std16));
+        navBox.add(NavBox.createBtn("Address", "Address", IconManager.IconSize.Std16));
         navBoxes.addElement(navBox);
         
     }

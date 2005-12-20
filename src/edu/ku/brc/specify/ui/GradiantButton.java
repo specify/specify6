@@ -47,10 +47,11 @@ import javax.swing.border.EmptyBorder;
  */
 public class GradiantButton extends JButton implements MouseListener 
 {
-    protected Color     textColor        = null;
-    protected Color     textColorShadow  = null;
-    protected float     iconAlpha        = 0.8f;
-    protected ImageIcon icon             = null;
+    protected Color          textColor        = null;
+    protected Color          textColorShadow  = null;
+    protected float          iconAlpha        = 0.8f;
+    protected ImageIcon      icon             = null;
+    protected GradiantButton itself;
     
     /**
      * Defaults to a gradiant square button
@@ -78,6 +79,7 @@ public class GradiantButton extends JButton implements MouseListener
      */
     protected void init()
     {
+        itself = this;
         setTextColor(Color.BLACK);
         setBorder(new EmptyBorder(0,0,0,0));
         super.setBorderPainted(false);
@@ -214,8 +216,14 @@ public class GradiantButton extends JButton implements MouseListener
     //-- MouseListener Implementation
     //----------------------------------------------------------
     protected boolean pressed = false;
-    public void mouseExited(MouseEvent evt) { }
-    public void mouseEntered(MouseEvent evt) { }
+    public void mouseExited(MouseEvent evt) 
+    { 
+        UICacheManager.displayStatusBarText("");
+    }
+    public void mouseEntered(MouseEvent evt) 
+    { 
+        UICacheManager.displayStatusBarText(itself.getToolTipText());
+    }
     public void mouseClicked(MouseEvent evt) { }
     
     public void mouseReleased(MouseEvent evt) 

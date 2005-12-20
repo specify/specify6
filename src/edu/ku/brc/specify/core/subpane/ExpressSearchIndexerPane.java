@@ -44,7 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.BorderFactory;
+import javax.swing.*;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -132,6 +132,9 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         
     }
     
+    /**
+     * @return check to see if luceen exist and whether it is empty
+     */
     protected boolean isLuceneEmpty()
     {
         if (lucenePath.exists())
@@ -230,7 +233,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
         removeAll();
         
-        RolloverCommand configureBtn = new RolloverCommand(getResourceString("Configure"), IconManager.getInstance().getIcon("Configure", IconManager.IconSize.Std32));
+        RolloverCommand configureBtn = new RolloverCommand(getResourceString("Configure"), IconManager.getImage("Configure", IconManager.IconSize.Std32));
         RolloverCommand buildBtn     = new RolloverCommand(getResourceString("Build"), new ImageIcon(IconManager.getImagePath("build.gif")));
         
         configureBtn.setVerticalLayout(true);
@@ -268,6 +271,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         configureBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) 
             {
+                JOptionPane.showMessageDialog(UICacheManager.getInstance().get(UICacheManager.FRAME), "Sorry, not implemented yet.");
             }
         });
         
@@ -321,7 +325,9 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 
                 begin = new Date().getTime();
                 
-                double numRows = 1;
+                double numRows;
+                int    trigger;
+                int    step = 0;
                 if (rs.last())
                 {
                     numRows = rs.getRow();
@@ -330,6 +336,10 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     progressBar.setIndeterminate(false);
                     progressBar.setString("0%");
                     progressBar.setStringPainted(true);
+                    trigger = (int)(numRows * 0.02);
+                } else
+                {
+                    throw new RuntimeException("Can't go to last record.");
                 }
                 
                 if (rs.first())
@@ -337,11 +347,13 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     int rowCnt = 1;
                     do
                     {
-                        if (rowCnt % 50 == 0)
+                        if (step == trigger)
                         {
                             progressBar.setValue(rowCnt);
                             progressBar.setString((int)(((double)rowCnt / numRows) * 100.0)+"%");
+                            step = 0;
                         }
+                        step++;
                         rowCnt++;
                         Document doc = new Document();
                         doc.add(Field.Keyword("id", rs.getObject(fields[0]).toString()));
@@ -415,7 +427,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     } while(rs.next());
                     log.info("done indexing");
                 }
-                progressBar.setString("100%");
+                progressBar.setString("");
 
                 dbStatement.close();
                 dbConnection.close();

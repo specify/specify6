@@ -22,7 +22,7 @@ import javax.swing.Timer;
  * 
  * @author rods
  * @author Romain Guy <romain.guy@mac.com>
- * @author Sébastien Petrucci <sebastien_petrucci@yahoo.fr>*
+ * @author Sï¿½bastien Petrucci <sebastien_petrucci@yahoo.fr>*
  *
  */
 public class GhostGlassPane extends JPanel 
@@ -78,7 +78,7 @@ public class GhostGlassPane extends JPanel
      * Sets the point for drawing
      * @param location the location
      */
-    protected void setPoint(Point location) 
+    public void setPoint(Point location) 
     {
         this.oldLocation = this.location;
         this.location = location;
@@ -144,7 +144,7 @@ public class GhostGlassPane extends JPanel
      * Start animation where painting will occur for the given rect
      * @param visibleRect the rect to be painted
      */
-    void startAnimation(Rectangle visibleRect) 
+    public void startAnimation(Rectangle visibleRect) 
     {
         this.visibleRect = visibleRect;
         new Timer(1000 / 30, new FadeOutAnimation()).start();

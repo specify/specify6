@@ -50,10 +50,8 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Hits;
-import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
 import org.dom4j.Element;
 
 import edu.ku.brc.specify.core.subpane.ExpressSearchIndexerPane;
@@ -62,6 +60,7 @@ import edu.ku.brc.specify.core.subpane.SimpleDescPane;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
+import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.UICacheManager;
 
@@ -93,7 +92,7 @@ public class ExpressSearchTask extends BaseTask
     public ExpressSearchTask()
     {
         super(EXPRESSSEARCH, getResourceString(EXPRESSSEARCH));
-        
+        icon = IconManager.getInstance().getIcon("Search", IconManager.IconSize.Std16);
     }
     
     /* (non-Javadoc)
@@ -185,11 +184,29 @@ public class ExpressSearchTask extends BaseTask
         {
             try
             {
-                //Sort sort =  new Sort("table");
-                //Sort sort2 =  new Sort(new SortField[] {new SortField("table", SortField.INT, true)});
+                // XXX sorting didn't work for some reason
+                
+                // Sort sort =  new Sort("table");
+                // Sort sort2 =  new Sort(new SortField[] {new SortField("table", SortField.INT, true)});
                 
                 IndexSearcher searcher = new IndexSearcher(FSDirectory.getDirectory(lucenePath, false));
-                Hits hits = searcher.search(QueryParser.parse(searchTerm, "contents", new SimpleAnalyzer()));
+                
+                Query query;
+                boolean implicitOR = false;  // XXX Pref
+                // Implicit OR
+                if (implicitOR)
+                {
+                    query = QueryParser.parse(searchTerm, "contents", new SimpleAnalyzer());
+                    
+                } else
+                {
+                    // Implicit AND
+                    QueryParser parser = new QueryParser("contents", new SimpleAnalyzer());
+                    parser.setOperator(QueryParser.DEFAULT_OPERATOR_AND);
+                    query = parser.parse(searchTerm);
+                }
+                
+                Hits hits = searcher.search(query);
                 
                 if (hits.length() == 0)
                 {
@@ -204,7 +221,7 @@ public class ExpressSearchTask extends BaseTask
                 boolean useFloat = false;
                 
                 int cntUseHitsCache = 0;
-                // can be sped up now that they are sorted
+                // can be sped up if I figure out how to sort it
                 for (int i=0;i<hits.length();i++)
                 {
                     Document  doc       = hits.doc(i);
