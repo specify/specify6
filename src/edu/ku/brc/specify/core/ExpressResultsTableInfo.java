@@ -141,7 +141,6 @@ public class ExpressResultsTableInfo
             recordSetColumnInx = Integer.parseInt(rsElement.attributeValue("col"));
 
         }
-        System.out.println("visColCount "+visColCount);
     }
     
     public int getNumIndexes()

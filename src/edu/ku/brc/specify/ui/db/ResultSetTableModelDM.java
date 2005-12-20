@@ -207,9 +207,9 @@ public class ResultSetTableModelDM extends ResultSetTableModel
             Set<RecordSetItem> items = new HashSet<RecordSetItem>();
             rs.setItems(items);
             
-            if (rows == null)
+            if (rows == null || rows.length == 0)
             {
-                if (displayIndexes != null)
+                /*if (displayIndexes != null)
                 {
                     for (int i=0;i<displayIndexes.length;i++)
                     {
@@ -221,7 +221,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
                         }
                     }
                 } else
-                {
+                {*/
                     if (!resultSet.first())
                     {
                         log.error("Error doing resultSet.first");
@@ -235,7 +235,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
                     } while (resultSet.next());
                         
 
-                }
+                //}
         
             } else
             {

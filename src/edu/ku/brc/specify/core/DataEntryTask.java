@@ -52,6 +52,10 @@ public class DataEntryTask extends BaseTask
 {
     public static final String DATA_ENTRY = "Data_Entry";
     
+    // Data Members
+    protected Vector<NavBoxIFace> extendedNavBoxes = new Vector<NavBoxIFace>(); 
+
+    
     /**
      * Default Constructor
      *
@@ -83,6 +87,24 @@ public class DataEntryTask extends BaseTask
 
     }
     
+    /*
+     *  (non-Javadoc)
+     * @see edu.ku.brc.specify.core.Taskable#getNavBoxes()
+     */
+    public java.util.List<NavBoxIFace> getNavBoxes()
+    {
+        initialize();
+        
+        extendedNavBoxes.clear();
+        extendedNavBoxes.addAll(navBoxes);
+        
+        RecordSetTask rsTask = (RecordSetTask)ContextMgr.getInstance().getTaskByClass(RecordSetTask.class);
+        
+        extendedNavBoxes.addAll(rsTask.getNavBoxes());
+        
+        return extendedNavBoxes;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
@@ -94,15 +116,6 @@ public class DataEntryTask extends BaseTask
     //-------------------------------------------------------
     // Plugin Interface
     //-------------------------------------------------------
-    
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getToolBarItems()
-     */
-    public String getName()
-    {
-        return DATA_ENTRY; // XXX Localize, Hmmm maybe not????
-    }
     
     /*
      *  (non-Javadoc)

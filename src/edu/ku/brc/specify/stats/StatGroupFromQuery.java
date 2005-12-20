@@ -8,10 +8,6 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-
 import edu.ku.brc.specify.dbsupport.SQLExecutionListener;
 import edu.ku.brc.specify.dbsupport.SQLExecutionProcessor;
 
@@ -34,9 +30,10 @@ public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListen
     // Data Members
     protected SQLExecutionProcessor sqle;
     
-    protected int descCol;
-    protected int valCol;
-    
+    protected int    descCol;
+    protected int    valCol;
+    protected String linkStr = null;
+    protected int    colId   = -1;
     
     /**
      * Constructor that describes where we get everything from
@@ -44,8 +41,13 @@ public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListen
      * @param sql the SQL statement to be executed
      * @param descCol the column where the description comes form
      * @param valCol the column where the value comes from
+     * @param valCol the column where the value comes from
+     * @param linkStr name of the query to link to
      */
-    public StatGroupFromQuery(final String name, final String sql, final int descCol, final int valCol)
+    public StatGroupFromQuery(final String name, 
+                              final String sql, 
+                              final int descCol,
+                              final int valCol)
     {
         super(name);
         
@@ -62,9 +64,14 @@ public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListen
      * @param sql the SQL statement to be executed
      * @param descCol the column where the description comes form
      * @param valCol the column where the value comes from
+     * @param linkStr name of the query to link to
      * @param useSeparator use non-border separator titles
      */
-    public StatGroupFromQuery(final String name, final String sql, final int descCol, final int valCol, boolean useSeparator)
+    public StatGroupFromQuery(final String name, 
+                              final String sql, 
+                              final int descCol, 
+                              final int valCol, 
+                              boolean useSeparator)
     {
         super(name, useSeparator);
         
@@ -73,6 +80,17 @@ public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListen
         
         sqle = new SQLExecutionProcessor(this, sql);
         sqle.start();
+    }
+    
+    /**
+     * Sets info need to make links
+     * @param linkStr the name of the static link
+     * @param idCol the column of the id which is used to build the link
+     */
+    public void setLinkInfo(final String linkStr, final int colId)
+    {
+        this.linkStr = linkStr;
+        this.colId = colId;
     }
 
     //-----------------------------------------------------
@@ -104,13 +122,9 @@ public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListen
                     
                 } while (resultSet.next());
                 
-                FormLayout      formLayout = new FormLayout("f:p,15dlu,f:p", rowsDef.toString());
-                PanelBuilder    builder    = new PanelBuilder(formLayout);
-                CellConstraints cc         = new CellConstraints();
-                
                 for (int i=0;i<data.size();i++)
                 {
-                    StatItem statItem = new StatItem(data.get(i++).toString(), null);
+                    StatItem statItem = new StatItem(data.get(i++).toString(), linkStr == null ? null : (linkStr+",id="+colId));
                     statItem.setValueText(data.get(i).toString());
                     addItem(statItem);
                     statItem.refreshUI();

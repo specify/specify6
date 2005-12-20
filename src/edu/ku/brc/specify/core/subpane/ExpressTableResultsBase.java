@@ -100,6 +100,7 @@ abstract class ExpressTableResultsBase extends JPanel
         vl.setTextColor(Color.WHITE);
         
         expandBtn = new TriangleButton();
+        expandBtn.setToolTipText(getResourceString("CollapseTBL"));
         expandBtn.setForeground(bannerColor);
         expandBtn.setTextColor(Color.WHITE);
   
@@ -138,22 +139,26 @@ abstract class ExpressTableResultsBase extends JPanel
         if (isCollectionTable)
         {
             labelsBtn = new GradiantButton(IconManager.getImage("Labels", IconManager.IconSize.Std16));
+            labelsBtn.setToolTipText(getResourceString("CreateLabelTT"));
             labelsBtn.setForeground(bannerColor);
             builder.add(labelsBtn, cc.xy(col,1));
             col += 2;
             
             rsBtn = new GradiantButton(IconManager.getImage("Record_Set", IconManager.IconSize.Std16));
+            rsBtn.setToolTipText(getResourceString("CreateRecordSetTT"));
             rsBtn.setForeground(bannerColor);
             builder.add(rsBtn, cc.xy(col,1));
             col += 2;
             
             deBtn = new GradiantButton(IconManager.getImage("Data_Entry", IconManager.IconSize.Std16));
+            deBtn.setToolTipText(getResourceString("EditRecordSetTT"));
             deBtn.setForeground(bannerColor);
             builder.add(deBtn, cc.xy(col,1));
             col += 2;
         }
         
         CloseButton closeBtn = new CloseButton();
+        closeBtn.setToolTipText(getResourceString("ESCloseTable"));
         closeBtn.setForeground(bannerColor);
         closeBtn.setCloseColor(new Color(255,255,255, 90));
         builder.add(closeBtn, cc.xy(col,1));
@@ -174,7 +179,8 @@ abstract class ExpressTableResultsBase extends JPanel
                 boolean isExpanded = !expandBtn.isDown();
                 
                 expandBtn.setDown(isExpanded);
-                
+                expandBtn.setToolTipText(isExpanded ? getResourceString("CollapseTBL") : getResourceString("ExpandTBL"));
+
                 tablePane.setVisible(isExpanded);               
                 
                 if (!showingAllRows && morePanel != null)
@@ -223,44 +229,9 @@ abstract class ExpressTableResultsBase extends JPanel
         
         if (isCollectionTable)
         {
-            labelsBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) 
-                {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            RecordSet rs = getRecordSet(table.getSelectedRows(), tableInfo.getRecordSetColumnInx());
-                            CommandDispatcher.dispatch(new CommandAction("Labels", "DoLabels", rs));
-                        }
-                      });
-                  
-                }
-            });
-            
-            rsBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) 
-                {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            RecordSet rs = getRecordSet(table.getSelectedRows(), tableInfo.getRecordSetColumnInx());
-                            CommandDispatcher.dispatch(new CommandAction("Record_Set", "Save", rs));
-                        }
-                      });
-                  
-                }
-            });
-            
-            deBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) 
-                {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            RecordSet rs = getRecordSet(table.getSelectedRows(), tableInfo.getRecordSetColumnInx());
-                            CommandDispatcher.dispatch(new CommandAction("Data_Entry", "Edit", rs));
-                        }
-                      });
-                  
-                }
-            });
+            labelsBtn.addActionListener(new ESTableAction("Labels", "DoLabels", table, tableInfo));
+            rsBtn.addActionListener(new ESTableAction("Record_Set", "Save", table, tableInfo));
+            deBtn.addActionListener(new ESTableAction("Data_Entry", "Edit", table, tableInfo));
         }
         
     }
@@ -377,5 +348,39 @@ abstract class ExpressTableResultsBase extends JPanel
      */
     public abstract RecordSet getRecordSet(final int[] rows, final int column);
 
+    //--------------------------------------------------------------
+    // Inner Classes
+    //--------------------------------------------------------------
+ 
+     /**
+     * 
+     * @author rods
+     *
+     */
+    class ESTableAction implements ActionListener 
+    {
+        protected String    name;
+        protected String    action;
+        protected RecordSet recordSet;
+        protected JTable    table;
+        protected ExpressResultsTableInfo tableInfo;
+        
+        public ESTableAction(final String name, 
+                             final String action, 
+                             final JTable table,
+                             final ExpressResultsTableInfo tableInfo)
+        {
+            this.name      = name;
+            this.action    = action;
+            this.table     = table;
+            this.tableInfo = tableInfo;
+        }
+        
+        public void actionPerformed(ActionEvent e) 
+        {
+            RecordSet rs = getRecordSet(table.getSelectedRows(), tableInfo.getRecordSetColumnInx());
+            CommandDispatcher.dispatch(new CommandAction(name, action, rs));
+        }
+    }
 
 }

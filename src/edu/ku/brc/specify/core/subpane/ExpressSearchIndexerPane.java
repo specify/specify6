@@ -321,11 +321,15 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 
                 begin = new Date().getTime();
                 
+                double numRows = 1;
                 if (rs.last())
                 {
-                    progressBar.setMaximum(rs.getRow());
+                    numRows = rs.getRow();
+                    progressBar.setMaximum((int)numRows);
                     progressBar.setValue(0);
                     progressBar.setIndeterminate(false);
+                    progressBar.setString("0%");
+                    progressBar.setStringPainted(true);
                 }
                 
                 if (rs.first())
@@ -336,6 +340,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                         if (rowCnt % 50 == 0)
                         {
                             progressBar.setValue(rowCnt);
+                            progressBar.setString((int)(((double)rowCnt / numRows) * 100.0)+"%");
                         }
                         rowCnt++;
                         Document doc = new Document();
@@ -410,6 +415,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     } while(rs.next());
                     log.info("done indexing");
                 }
+                progressBar.setString("100%");
 
                 dbStatement.close();
                 dbConnection.close();
@@ -521,8 +527,10 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             Element esDOM = XMLHelper.readDOMFromConfigDir("express_search.xml");         // Describes the definitions of the full text search
             
             List tables = esDOM.selectNodes("/tables/table");
+            globalProgressBar.setStringPainted(true);
             globalProgressBar.setMaximum(tables.size());
             globalProgressBar.setValue(0);
+            globalProgressBar.setString("0%");
             int indexerCnt = 0;
             for ( Iterator iter = tables.iterator(); iter.hasNext(); ) 
             {
@@ -537,6 +545,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                    break;
                }
                globalProgressBar.setValue(++indexerCnt);
+
+               globalProgressBar.setString((int)((double)indexerCnt / (double)tables.size() * 100.0)+"%");
                indvLabel.setText("");
             }  
             

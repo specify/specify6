@@ -127,5 +127,12 @@
       </sql>
     </stat>
     
+    <stat name="OverdueLookup" display="Table">
+      <title>Loan Overdue</title>
+      <sql type="text">
+        <![CDATA[Select distinct loan.LoanNumber as LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName,loan.OriginalDueDate, loanphysicalobject.Quantity, loanphysicalobject.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country From loan Inner Join loanphysicalobject ON loan.LoanID =  loanphysicalobject.LoanID Inner Join loanagents ON loan.LoanID = loanagents.LoanID Inner Join agentaddress ON loanagents.AgentAddressID = agentaddress.AgentAddressID Inner Join address ON agentaddress.AddressID = address.AddressID Inner Join agent ON agentaddress.AgentID = agent.AgentID where loan.loanid = %s;]]>
+      </sql>
+    </stat>
+    
   </statistics>
   

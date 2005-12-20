@@ -41,6 +41,9 @@ public class InteractionsTask extends BaseTask
 {
     public static final String INTERACTIONS = "Interactions";
     
+    // Data Members
+    protected Vector<NavBoxIFace> extendedNavBoxes = new Vector<NavBoxIFace>(); 
+
    /**
      * Default Constructor
      *
@@ -61,6 +64,24 @@ public class InteractionsTask extends BaseTask
         navBox.add(NavBox.createBtn(getResourceString("All_Open_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
         navBox.add(NavBox.createBtn(getResourceString("All_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
         navBoxes.addElement(navBox);
+    }
+    
+    /*
+     *  (non-Javadoc)
+     * @see edu.ku.brc.specify.core.Taskable#getNavBoxes()
+     */
+    public java.util.List<NavBoxIFace> getNavBoxes()
+    {
+        initialize();
+        
+        extendedNavBoxes.clear();
+        extendedNavBoxes.addAll(navBoxes);
+        
+        RecordSetTask rsTask = (RecordSetTask)ContextMgr.getInstance().getTaskByClass(RecordSetTask.class);
+        
+        extendedNavBoxes.addAll(rsTask.getNavBoxes());
+        
+        return extendedNavBoxes;
     }
     
     /* (non-Javadoc)

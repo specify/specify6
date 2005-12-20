@@ -20,6 +20,8 @@
 
 package edu.ku.brc.specify.core.subpane;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.swing.table.AbstractTableModel;
@@ -29,6 +31,7 @@ import org.apache.lucene.search.Hits;
 
 import edu.ku.brc.specify.core.ExpressResultsTableInfo;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.specify.ui.UICacheManager;
 
 /**
@@ -239,7 +242,60 @@ class ExpressTableResultsHitsCache extends ExpressTableResultsBase
          */
         public RecordSet getRecordSet(final int[] rows, final int column)
         {
-            return null;
+            RecordSet rs = new RecordSet();
+            
+            Set<RecordSetItem> items = new HashSet<RecordSetItem>();
+            rs.setItems(items);
+            
+            try
+            {
+                if (rows == null || rows.length == 0)
+                {
+                    for (int i=0;i<hits.length();i++)
+                    {
+                        Document doc  = hits.doc(i);
+                        String   data = doc.get("data");
+                        
+                        StringTokenizer st = new StringTokenizer(data, "\t");
+                        RecordSetItem rsi = new RecordSetItem();
+                        for (int col=0;col<st.countTokens();col++)
+                        {
+                            if (col == column)
+                            {
+                                rsi.setRecordId(st.nextToken());
+                                break;
+                            }
+                            st.nextToken();
+                        }
+                        items.add(rsi);
+                    }
+                } else
+                {
+                    for (int i=0;i<rows.length;i++)
+                    {
+                        Document doc  = hits.doc(rows[i]);
+                        String   data = doc.get("data");
+                        
+                        StringTokenizer st = new StringTokenizer(data, "\t");
+                        RecordSetItem rsi = new RecordSetItem();
+                        for (int col=0;col<st.countTokens();col++)
+                        {
+                            if (col == column)
+                            {
+                                rsi.setRecordId(st.nextToken());
+                                break;
+                            }
+                            st.nextToken();
+                        }
+                        items.add(rsi);
+                    }
+                }
+            } catch (Exception ex)
+            {
+                // XXX ???
+                ex.printStackTrace();
+            }
+            return rs;
         }
         
     }

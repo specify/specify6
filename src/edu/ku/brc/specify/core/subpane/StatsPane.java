@@ -138,7 +138,6 @@ public class StatsPane extends BaseSubPane
                 rowsDef.append("top:p");
             }
                        
-            //log.info(rowsDef.toString()+", "+colsDef.toString());
             FormLayout      formLayout = new FormLayout(createDuplicateJGoodiesDef("f:max(250px;p)", "35dlu", maxCols), rowsDef.toString());
             PanelBuilder    builder    = new PanelBuilder(formLayout);
             CellConstraints cc         = new CellConstraints();
@@ -161,7 +160,20 @@ public class StatsPane extends BaseSubPane
                     StatGroup group = null;
                     if (descCol > -1 && valCol > -1 && sqlElement != null)
                     {
-                        group = new StatGroupFromQuery(boxElement.attributeValue("title"), sqlElement.getText(), descCol, valCol, useSeparatorTitles);
+                        String linkStr = null;
+                        int colId      = -1;
+                        Element link = (Element)boxElement.selectSingleNode("link");
+                        if (link != null)
+                        {
+                            linkStr = link.getTextTrim();
+                            colId   = Integer.parseInt(link.attributeValue("colid"));
+                        }
+                        group = new StatGroupFromQuery(boxElement.attributeValue("title"), 
+                                                       sqlElement.getText(), 
+                                                       descCol, 
+                                                       valCol,
+                                                       useSeparatorTitles);
+                        ((StatGroupFromQuery)group).setLinkInfo(linkStr, colId);
                         
                     } else
                     {

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tables>
-  <table id="1" name="CollObject" title="Collection Object">
+  <table id="1" usehitscache="true" name="CollObject" title="Collection Object">
     <outofdate>
         <table name="collectionobject" title="Collection Object"/>
         <table name="collectionobjectcatalog" title="Collection Object Catalog"/>
@@ -22,6 +22,7 @@
 	    </sql>
         <captions>
             <caption col="CatalogNumber" text="Catalog Number"/>
+            <caption col="TaxonName" text="Taxon Name"/>
         </captions>
         <recordset tabletype="1" col="0"/>
 	</detailView>

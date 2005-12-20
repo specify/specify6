@@ -276,7 +276,18 @@ public class StatsTask extends BaseTask
      */
     public void createStatPane(final String statName)
     {
-        org.dom4j.Element element = (org.dom4j.Element)statDOM.selectSingleNode("/statistics/stat[@name='"+statName+"']");
+        String nameStr;
+        String idStr = null;
+        int inx = statName.indexOf(',');
+        if (inx == -1)
+        {
+            nameStr = statName;
+        } else
+        {
+            nameStr = statName.substring(0,inx);
+            idStr   = statName.substring(inx+4, statName.length());
+        }
+        org.dom4j.Element element = (org.dom4j.Element)statDOM.selectSingleNode("/statistics/stat[@name='"+nameStr+"']");
         if (element != null)
         {
             String displayType = element.attributeValue(DISPLAY).toLowerCase();
@@ -308,7 +319,13 @@ public class StatsTask extends BaseTask
                 }
                 
                 SQLQueryPane queryPane = new SQLQueryPane(titleElement.getTextTrim(), this, true, true);
-                queryPane.setSQLStr(sqlElement.getTextTrim());
+                String sqlStr = sqlElement.getTextTrim();
+                if (idStr != null)
+                {
+                    sqlStr = String.format(sqlStr, new Object[] {idStr});
+                }
+                System.out.println(sqlStr);
+                queryPane.setSQLStr(sqlStr);
                 queryPane.doQuery();
                 UICacheManager.addSubPane(queryPane);
                 

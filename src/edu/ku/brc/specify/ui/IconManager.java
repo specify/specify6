@@ -121,8 +121,8 @@ public class IconManager
     {
         URL url = getImagePath(fileName);
         
-        assert url != null : "Couldn't find URL for resource path: ["+(relativePath+fileName)+"]";
-        
+        assert url != null : "Couldn't find URL for resource path: ["+(relativePath+" "+fileName)+"]";
+
         ImageIcon icon = new ImageIcon(url);
         
         if (icon != null)
@@ -293,6 +293,7 @@ public class IconManager
             }
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             log.error(ex);
         }
     }
