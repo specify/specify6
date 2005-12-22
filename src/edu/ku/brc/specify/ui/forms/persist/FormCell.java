@@ -32,7 +32,7 @@ public class FormCell
         
     }
 
-    public FormCell(CellType aType, String aName)
+    public FormCell(final CellType aType, final String aName)
     {
         type = aType;
         name = aName;
@@ -43,7 +43,7 @@ public class FormCell
         return name;
     }
 
-    public void setName(String name)
+    public void setName(final String name)
     {
         this.name = name;
     }
@@ -53,7 +53,7 @@ public class FormCell
         return type;
     }
 
-    public void setType(CellType type)
+    public void setType(final CellType type)
     {
         this.type = type;
     }

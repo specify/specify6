@@ -20,6 +20,7 @@
 
 package edu.ku.brc.specify.core.subpane;
 
+import java.awt.Color;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -32,7 +33,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Hits;
 
 import edu.ku.brc.specify.core.ExpressResultsTableInfo;
-import edu.ku.brc.specify.core.ExpressSearchTask;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.specify.ui.UICacheManager;
@@ -44,6 +44,7 @@ import edu.ku.brc.specify.ui.UICacheManager;
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
 {
     // Static Data Members
@@ -59,9 +60,9 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
     /**
      * Constructor of a results "table" which is really a panel
      * @param esrPane the parent 
-     * @param title the title of the resulys
-     * @param sqlStr the SQL string used to populate the results
-     * @param colNameMappings the mappings for the column names
+     * @param tableInfo the info describing the results
+     * @param hits the hits results
+     * @param bannerColor the color of the banner (or bar)
      */
     public ExpressTableResultsHitsCache(final ExpressSearchResultsPane esrPane, 
                                         final ExpressResultsTableInfo tableInfo,
@@ -139,7 +140,7 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
     //---------------------------------------------------
     //-- Table Model for Hit Results
     //---------------------------------------------------
-    class HitsTableModel extends AbstractTableModel
+    @SuppressWarnings("serial") class HitsTableModel extends AbstractTableModel
     {
         private int[] displayIndexes = null;
         private int[] cols           = null;
@@ -270,7 +271,11 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
                             {
                                 if (col == column)
                                 {
-                                    rsi.setRecordId(st.nextToken());
+                                    String val = st.nextToken();
+                                    if (val != null)
+                                    {
+                                        rsi.setRecordId(val);
+                                    }
                                     break;
                                 }
                                 st.nextToken();
@@ -288,18 +293,31 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
                         Document doc  = hits.doc(rows[i]);
                         String   data = doc.get("data");
                         
-                        StringTokenizer st = new StringTokenizer(data, "\t");
-                        RecordSetItem rsi = new RecordSetItem();
-                        for (int col=0;col<st.countTokens();col++)
+                        if (data != null)
                         {
-                            if (col == column)
+                            String str = data.replace('\t', '|');
+                            System.out.println(str);
+                            
+                            StringTokenizer st = new StringTokenizer(data, "\t");
+                            RecordSetItem rsi = new RecordSetItem();
+                            for (int col=0;col<st.countTokens();col++)
                             {
-                                rsi.setRecordId(st.nextToken());
-                                break;
+                                if (col == column)
+                                {
+                                    String val = st.nextToken();
+                                    if (val != null)
+                                    {
+                                        rsi.setRecordId(val);
+                                    } 
+                                    break;
+                                }
+                                st.nextToken();
                             }
-                            st.nextToken();
+                            items.add(rsi);
+                        } else
+                        {
+                            log.error("*Why was the data object null? row="+i);
                         }
-                        items.add(rsi);
                     }
                 }
             } catch (Exception ex)

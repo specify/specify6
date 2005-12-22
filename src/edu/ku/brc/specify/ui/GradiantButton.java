@@ -31,7 +31,6 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -45,8 +44,12 @@ import javax.swing.border.EmptyBorder;
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class GradiantButton extends JButton implements MouseListener 
 {
+    /**
+     * 
+     */
     protected Color          textColor        = null;
     protected Color          textColorShadow  = null;
     protected float          iconAlpha        = 0.8f;

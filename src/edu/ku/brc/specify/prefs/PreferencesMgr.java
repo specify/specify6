@@ -25,14 +25,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.commons.betwixt.XMLIntrospector;
 import org.apache.commons.betwixt.io.BeanWriter;
-import org.apache.commons.digester.Digester;
-import org.apache.commons.digester.xmlrules.DigesterLoader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -73,13 +69,14 @@ public class PreferencesMgr implements PreferencesIFace
      * @return whether it was loaded
      */
     public boolean load()
-    {
+    {/*
         try
         {
             List groupsList = new ArrayList();
             File xmlFile    = new File("/home/rods/workspace/Specify/src/preferences.xml");
             Digester digester = DigesterLoader.createDigester(getClass().getResource("preferences_digester.xml"));
             digester.push(groupsList);
+            
             
             Object root = digester.parse(xmlFile);
 
@@ -88,6 +85,7 @@ public class PreferencesMgr implements PreferencesIFace
                 PrefGroup grp = (PrefGroup)iter.next();
                 groups.put(grp.getName(), grp);
             }
+            
             //changed = true;
             //save();
             return true;
@@ -95,6 +93,7 @@ public class PreferencesMgr implements PreferencesIFace
         {
             log.fatal(ex);
         }
+        */
         return false;
         
     }

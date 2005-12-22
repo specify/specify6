@@ -43,10 +43,10 @@ public class HibernateUtil {
 
     //private static final String INTERCEPTOR_CLASS = "hibernate.util.interceptor_class";
 
-    private static Configuration  configuration;
-    private static SessionFactory sessionFactory;
-    private static ThreadLocal    threadSession     = new ThreadLocal();
-    private static ThreadLocal    threadTransaction = new ThreadLocal();
+    private static Configuration       configuration;
+    private static SessionFactory      sessionFactory;
+    private static ThreadLocal<Object> threadSession     = new ThreadLocal<Object>();
+    private static ThreadLocal<Object> threadTransaction = new ThreadLocal<Object>();
 
     private static boolean useThreadLocal = true;
 
@@ -98,7 +98,6 @@ public class HibernateUtil {
     
     static {
         try {
-            System.err.println("************************");
             configuration = new Configuration();
             sessionFactory = configuration.configure().buildSessionFactory();
             // We could also let Hibernate bind it to JNDI:

@@ -19,29 +19,37 @@
  */
 package edu.ku.brc.specify.ui.forms;
 
-import edu.ku.brc.specify.ui.forms.persist.*;
-
+import java.io.FileInputStream;
+import java.net.URL;
 import java.util.*;
-import java.io.*;
-import java.net.*;
+import java.util.Hashtable;
+import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+
 import edu.ku.brc.specify.exceptions.ConfigurationException;
+import edu.ku.brc.specify.helpers.XMLHelper;
+import edu.ku.brc.specify.ui.forms.persist.FormAltView;
+import edu.ku.brc.specify.ui.forms.persist.FormCell;
+import edu.ku.brc.specify.ui.forms.persist.FormCellSubView;
+import edu.ku.brc.specify.ui.forms.persist.FormFormView;
+import edu.ku.brc.specify.ui.forms.persist.FormRow;
+import edu.ku.brc.specify.ui.forms.persist.FormView;
+import edu.ku.brc.specify.ui.forms.persist.FormViewFactory;
+import edu.ku.brc.specify.ui.forms.persist.ViewSet;
 
 public class ViewMgr
 {
     // Statics
-    private final static Logger log        = Logger.getLogger(ViewMgr.class);
-    private static ViewMgr      instance   = new ViewMgr();
-    private static SAXReader    saxReader  = null;
+    private final static Logger     log        = Logger.getLogger(ViewMgr.class);
+    private static ViewMgr          instance   = new ViewMgr();
+    private static SAXReader        saxReader  = null;    
     
     
     // Data Members
     private Hashtable<String, ViewSet> viewsHash = new Hashtable<String, ViewSet>();
-    
-    private FormViewFactory  formViewFactory = FormViewFactory.getInstance();
     
     /**
      * protected Constructor
@@ -52,21 +60,12 @@ public class ViewMgr
     }
     
     /**
-     * 
-     * @return the singleton for the ViewMgr
-     */
-    public static ViewMgr getInstance()
-    {
-        return instance;
-    }
-    
-    /**
      * This is used mostly for testing
      *
      */
-    public void clearAll()
+    public static void clearAll()
     {
-        viewsHash.clear();
+        instance.viewsHash.clear();
     }
     
     /**
@@ -74,19 +73,23 @@ public class ViewMgr
      * @param fileInputStream
      * @return returns a document from a DOM file input stream
      */
-    public static org.dom4j.Document readFileToDOM4J(FileInputStream fileInputStream) throws Exception
+    public static org.dom4j.Document readFileToDOM4J(final FileInputStream fileInputStream) throws Exception
     {
         if (saxReader == null)
         {
             saxReader= new SAXReader();
         }
         
-        saxReader.setValidation(true);
-        saxReader.setFeature("http://apache.org/xml/features/validation/schema", true);
-        saxReader.setFeature("http://xml.org/sax/features/validation", true);
-        saxReader.setProperty("http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation", 
-                           (FormViewFactory.class.getResource("../form.xsd")).getPath());
-        
+        boolean doValidation = false;
+        saxReader.setValidation(doValidation);
+        if (doValidation)
+        {
+            saxReader.setValidation(true);
+            saxReader.setFeature("http://apache.org/xml/features/validation/schema", true);
+            saxReader.setFeature("http://xml.org/sax/features/validation", true);
+            saxReader.setProperty("http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation", 
+                               XMLHelper.getConfigDirPath("form.xsd"));
+        }
         return saxReader.read( fileInputStream );
     }
 
@@ -95,7 +98,7 @@ public class ViewMgr
      * @param path the path to the view file
      * @throws Exception file io exceptions
      */
-    public void loadViewFile(final String path) throws Exception
+    public static void loadViewFile(final String path) throws Exception
     {
         loadViewFile(new FileInputStream(path));
     }
@@ -105,7 +108,7 @@ public class ViewMgr
      * @param url the url location
      * @throws Exception and errors
      */
-    public void loadViewFile(URL url) throws Exception
+    public static void loadViewFile(final URL url) throws Exception
     {
         loadViewFile(new FileInputStream(url.getFile()));
     }
@@ -115,9 +118,9 @@ public class ViewMgr
      * @param viewSetName name of set of views (file of views)
      * @return returns whether a a "set" of views have been read. A "set" of views come from a single file.
      */
-    public boolean isViewSetNameInUse(final String viewSetName)
+    public static boolean isViewSetNameInUse(final String viewSetName)
     {
-        return viewsHash.get(viewSetName) != null;
+        return instance.viewsHash.get(viewSetName) != null;
     }
     
     /**
@@ -126,7 +129,7 @@ public class ViewMgr
      * @param viewId the id of an individual view
      * @return return true if the ViewSet/ViewId has been registered
      */
-    public boolean isViewInUse(final String viewSetName, final Integer viewId)
+    public static boolean isViewInUse(final String viewSetName, final Integer viewId)
     {
          return getView(viewSetName, viewId) != null;
     }
@@ -137,9 +140,9 @@ public class ViewMgr
      * @param viewId the id of the view
      * @return the FormView from a view set by id 
      */
-    public FormView getView(final String viewSetName, final Integer viewId)
+    public static FormView getView(final String viewSetName, final Integer viewId)
     {
-        ViewSet viewSet = viewsHash.get(viewSetName);
+        ViewSet viewSet = instance.viewsHash.get(viewSetName);
         if (viewSet != null)
         {
             return viewSet.getById(viewId);
@@ -152,9 +155,9 @@ public class ViewMgr
      * @param viewSetName the name of the view set
      * @return ViewSet containing the hashtable of FormViews for this view set (this is not a copy)
      */
-    public ViewSet getViews(final String viewSetName)
+    public static ViewSet getViews(final String viewSetName)
     {
-        return viewsHash.get(viewSetName);        
+        return instance.viewsHash.get(viewSetName);        
     }
 
     
@@ -162,15 +165,13 @@ public class ViewMgr
      * Validates the views and subview
      * @throws Exception XXX
      */
-    public void validate() throws Exception
+    public static void validate() throws Exception
     {
-        ViewMgr viewMgr = ViewMgr.getInstance();
-        
-        for (Enumeration e=viewsHash.keys();e.hasMoreElements();)
+        for (Enumeration e=instance.viewsHash.keys();e.hasMoreElements();)
         {
             String viewSetName = (String)e.nextElement();
             
-            ViewSet viewSet = viewsHash.get(viewSetName);
+            ViewSet viewSet = instance.viewsHash.get(viewSetName);
              
            // Validate all the Alt Views and SubViews
             for (FormView view : viewSet.getViews())
@@ -201,7 +202,7 @@ public class ViewMgr
                             if (cell.getType() == FormCell.CellType.subview) // faster than instance of
                             {
                                 FormCellSubView cellSV = (FormCellSubView)cell;
-                                if (!viewMgr.isViewInUse(formView.getViewSetName(), cellSV.getId()))
+                                if (!isViewInUse(formView.getViewSetName(), cellSV.getId()))
                                 {
                                     String msg = "View Set ["+viewSetName+"] ["+view.getId()+"] Cell SubView Id ["+cellSV.getId()+"] cannot be found.";
                                     log.error(msg);
@@ -220,7 +221,7 @@ public class ViewMgr
      * @param fileInputStream a file input stream to read the DOM4J from
      * @throws Exception on various errors
      */
-    public void loadViewFile(FileInputStream fileInputStream) throws Exception
+    public static void loadViewFile(FileInputStream fileInputStream) throws Exception
     {
         org.dom4j.Document document = readFileToDOM4J(fileInputStream);
         Element            root     = document.getRootElement();
@@ -230,13 +231,13 @@ public class ViewMgr
             
             // Note this will check for the uniqueness of the view sets name
             // so we can assume the ViewSet is unique (throws an exception if not unique)
-            String viewsName = formViewFactory.getViews(root, views, true);
+            String viewsName = FormViewFactory.getViews(root, views, true);
             
             ViewSet viewSet = new ViewSet(viewsName);
             viewSet.setViews(views);
             
             // Register all views for the view set
-            viewsHash.put(viewsName, viewSet);
+            instance.viewsHash.put(viewsName, viewSet);
                 
         } else
         {
@@ -246,5 +247,15 @@ public class ViewMgr
         }
         
     }
+    
+    /**
+     * Returns a list of all the ViewSets
+     * @return Returns a list of all the ViewSets
+     */
+    public static List<ViewSet> getViewSets()
+    {
+        return Collections.list(instance.viewsHash.elements());
+    }
+     
 
 }

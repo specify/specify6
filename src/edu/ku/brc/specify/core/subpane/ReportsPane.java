@@ -20,9 +20,6 @@
 
 package edu.ku.brc.specify.core.subpane;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import edu.ku.brc.specify.core.Taskable;
 
 /**
@@ -31,13 +28,11 @@ import edu.ku.brc.specify.core.Taskable;
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class ReportsPane extends BaseSubPane
 {
-    private static Log log = LogFactory.getLog(LabelsPane.class);
+    //private static Log log = LogFactory.getLog(LabelsPane.class);
 
-    private String             name;
-    private Taskable          task;
-    
     /**
      * 
      *

@@ -31,6 +31,7 @@ import javax.swing.ListCellRenderer;
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class IconListCellRenderer extends JLabel implements ListCellRenderer 
 {
 

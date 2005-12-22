@@ -53,8 +53,12 @@ import edu.ku.brc.specify.ui.dnd.*;
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class Trash extends JComponent implements GhostActionable
 {
+    // Static Data Members
+    private static Trash instance = new Trash();
+    
     // These used for the Ghosting
     protected static final int SHADOW_SIZE = 10;
     
@@ -70,14 +74,18 @@ public class Trash extends JComponent implements GhostActionable
     protected BufferedImage          buffer              = null;;
     protected Dimension              prefferedRenderSize = new Dimension(0,0);
     protected boolean                verticalLayout      = false;
-    protected Vector<Object>         items               = new Vector<Object>();
+    protected Vector<DndDeletable>   items               = new Vector<DndDeletable>();
     
     protected Color                  textColor           = new Color(0,0,0, 90);
     protected Font                   textFont            = null;
     protected JPopupMenu             popupMenu           = null;
     protected JMenuItem              emptyMenuItem       = null;
+    protected JMenuItem              openMenuItem       = null;
     
-    public Trash()
+    /**
+     * Constructor
+     */
+    protected Trash()
     {
         trashIcon     = new ImageIcon(IconManager.getImagePath("trash.png"));
         trashFullIcon = new ImageIcon(IconManager.getImagePath("trash_full.png"));
@@ -85,6 +93,15 @@ public class Trash extends JComponent implements GhostActionable
         imgIcon       = trashIcon;
         
         popupMenu = new JPopupMenu();
+        
+        openMenuItem = new JMenuItem(getResourceString("Open"));
+        openMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                openTrashCan();
+            }
+          });
+        popupMenu.add(openMenuItem);
+        
         emptyMenuItem = new JMenuItem(getResourceString("EmptyTrash"));
         emptyMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
@@ -92,10 +109,12 @@ public class Trash extends JComponent implements GhostActionable
             }
           });
         popupMenu.add(emptyMenuItem);
+        
         MouseListener mouseListener = new MouseAdapter() {
               private void showIfPopupTrigger(MouseEvent mouseEvent) 
               {
                   emptyMenuItem.setEnabled(items.size() > 0);
+                  openMenuItem.setEnabled(items.size() > 0);
                   
                   if (mouseEvent.isPopupTrigger() && popupMenu.getComponentCount() > 0) 
                   {
@@ -114,6 +133,33 @@ public class Trash extends JComponent implements GhostActionable
 
     }
     
+    /**
+     * Opens the trash can for viewing
+     */
+    protected void openTrashCan()
+    {
+        TrashCanDlg dlg = new TrashCanDlg();
+        dlg.setVisible(true);        
+    }
+    
+    /**
+     * A singleton to the trash can
+     * @return A singleton to the trash can
+     */
+    public static Trash getInstance()
+    {
+        return instance;
+    }
+    
+    /**
+     * the list of trash items
+     * @return the list of trash items
+     */
+    public Vector<DndDeletable> getItems()
+    {
+        return items;
+    }
+
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
@@ -212,7 +258,7 @@ public class Trash extends JComponent implements GhostActionable
             {
                 if (((DndDeletable)src).deleteRequest())
                 {
-                    items.add(data);
+                    items.add((DndDeletable)src);
                     imgIcon = trashFullIcon;
                     repaint();
                 }

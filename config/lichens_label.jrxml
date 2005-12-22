@@ -2,7 +2,7 @@
 <!-- Created using an evaluation version of JasperAssistant (http://www.jasperassistant.com) -->
 <!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 
-<jasperReport name="Label" language="java" pageWidth="324" pageHeight="252" columnWidth="288" leftMargin="18" rightMargin="18" topMargin="18" bottomMargin="18">
+<jasperReport name="Lichens Label" language="java" pageWidth="324" pageHeight="252" columnWidth="288" leftMargin="18" rightMargin="18" topMargin="18" bottomMargin="18">
 	<property name="com.jasperassistant.designer.GridHeight" value="12"/>
 	<property name="com.jasperassistant.designer.GridWidth" value="12"/>
 	<property name="com.jasperassistant.designer.DataSource" value="Hyla SQL"/>

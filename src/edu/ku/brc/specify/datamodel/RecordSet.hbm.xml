@@ -46,7 +46,7 @@
         name="items" table="recordset_items" lazy="false">
     	<key column="rs_id"/>
     	<composite-element class="RecordSetItem">
-    		<property name="recordId" not-null="true"/>
+    		<property name="recordId" not-null="true" unique="false"/>
         </composite-element>
     </set>
 

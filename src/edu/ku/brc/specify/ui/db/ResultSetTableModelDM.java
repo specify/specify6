@@ -2,11 +2,8 @@ package edu.ku.brc.specify.ui.db;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
 
+@SuppressWarnings("serial")
 public class ResultSetTableModelDM extends ResultSetTableModel
 {
     // Static Data Members

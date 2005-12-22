@@ -45,6 +45,7 @@ import edu.ku.brc.specify.ui.RolloverCommand;
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class NavBox extends JPanel implements NavBoxIFace
 {
     private String             name;
@@ -174,7 +175,6 @@ public class NavBox extends JPanel implements NavBoxIFace
         
         FontMetrics fm = g.getFontMetrics();
         int strW = fm.stringWidth(name);
-        int strH = fm.getHeight();
         
         int x = (dim.width - strW) / 2;
         Insets ins = getBorder().getBorderInsets(this);

@@ -3,7 +3,6 @@ package edu.ku.brc.specify;
 import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
@@ -105,7 +104,7 @@ public class InitializeData
             SessionFactory sessionFactory = config.buildSessionFactory();
     
             // Ask for a session using the JDBC information we've configured
-            Session session = sessionFactory.openSession();
+            //Session session = sessionFactory.openSession();
             
             // Clean up after ourselves
             sessionFactory.close();

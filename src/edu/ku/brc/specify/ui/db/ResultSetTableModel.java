@@ -21,20 +21,22 @@
 package edu.ku.brc.specify.ui.db;
 
 
-import javax.swing.*;
-import javax.swing.table.*;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Vector;
+
+import javax.swing.table.AbstractTableModel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.ku.brc.specify.core.subpane.SQLQueryPane;
-import edu.ku.brc.specify.datamodel.*;
-import edu.ku.brc.specify.helpers.*;
+import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.RecordSetItem;
 
-import java.lang.reflect.Field;
-import java.sql.*;
-import java.util.*;
-
+@SuppressWarnings("serial")
 public class ResultSetTableModel extends AbstractTableModel
 {
     // Static Data Members
@@ -125,7 +127,7 @@ public class ResultSetTableModel extends AbstractTableModel
      */
     public Class getColumnClass(int column)
     {
-        return classNames.size() == 0 ? String.class : (Class)classNames.elementAt(column);
+        return classNames.size() == 0 ? (Class)String.class : (Class)classNames.elementAt(column);
     }
 
     /**

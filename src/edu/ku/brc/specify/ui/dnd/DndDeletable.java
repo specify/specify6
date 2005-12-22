@@ -19,6 +19,8 @@
  */
 package edu.ku.brc.specify.ui.dnd;
 
+import javax.swing.Icon;
+
 import edu.ku.brc.specify.ui.CommandAction;
 
 /**
@@ -47,4 +49,16 @@ public interface DndDeletable
      * @param cmdAction the command that will delete the object from itself container
      */
     public void setCommandAction(final CommandAction cmdAction);
+    
+    /**
+     * The name of the object being deleted
+     * @return The name of the object being deleted
+     */
+    public String getName();
+    
+    /**
+     * An icon that is representative of the item
+     * @return An icon that is representative of the item
+     */
+    public Icon getIcon();
 }

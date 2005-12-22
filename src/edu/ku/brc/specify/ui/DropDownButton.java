@@ -63,6 +63,7 @@ import edu.ku.brc.specify.helpers.XMLHelper;
  * @author  santhosh kumar - santhosh@in.fiorano.com 
  *
  */
+@SuppressWarnings("serial")
 public abstract class DropDownButton extends JButton implements ChangeListener, PopupMenuListener,
                                                                 ActionListener, PropertyChangeListener
 {

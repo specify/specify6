@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tables>
-  <table id="1" usehitscache="true" name="CollObject" title="Collection Object">
+  <table id="1" usehitscache="true" name="CollObject" title="Collection Object" priority="1" color="30, 144, 255">
     <outofdate>
         <table name="collectionobject" title="Collection Object"/>
         <table name="collectionobjectcatalog" title="Collection Object Catalog"/>
@@ -28,7 +28,7 @@
 	</detailView>
   </table>
   
-  <table id="2" name="locality" title="Locality">
+  <table id="2" name="locality" title="Locality" priority="1" color="30, 144, 255">
     <outofdate>
         <table name="locality" title="Locality"/>
     </outofdate>
@@ -55,7 +55,7 @@
 	</detailView>
   </table>
   
-  <table id="3" name="geography" title="Geography">
+  <table id="3" name="geography" title="Geography" priority="1" color="30, 144, 255">
     <outofdate>
         <table name="geography" title="Geography"/>
     </outofdate>
@@ -90,7 +90,7 @@
 	</detailView>
   </table>
   
-  <table id="4" name="taxonname" title="Taxon">
+  <table id="4" name="taxonname" title="Taxon" priority="1" color="30, 144, 255">
     <outofdate>
         <table name="taxonname" title="Taxon"/>
     </outofdate>
@@ -117,7 +117,7 @@
 	</detailView>
   </table>
   
-  <table id="5" name="Agent" title="Agent">
+  <table id="5" name="Agent" title="Agent" priority="1" color="30, 144, 255">
     <outofdate>
         <table name="agent" title="Agent"/>
     </outofdate>
@@ -144,7 +144,7 @@
 	</detailView>
   </table>
   
-  <table id="6" name="Address" title="Address">
+  <table id="6" name="Address" title="Address" priority="1" color="30, 144, 255">
     <outofdate>
         <table name="address" title="Address"/>
     </outofdate>
@@ -176,7 +176,7 @@
   </table>
 
   
-  <table id="7" usehitscache="true" name="CollObjToDeterminer" title="Determiner">
+  <table id="7" usehitscache="true" name="CollObjToDeterminer" title="Determiner" priority="1" color="30, 144, 255">
     <outofdate>
         <table name="determination" title="Determination"/>
     </outofdate>
@@ -226,11 +226,11 @@
             <caption col="LastName" text="Last Name"/>
             <caption col="FirstName" text="First Name"/>
        </captions>
-       <recordset tabletype="7" col="4"/>
+       <recordset tabletype="7" col="0"/>
 	</detailView>
   </table>
 
-  <table id="8" name="CollObToLocality" title="Localities in Collecting Events">
+  <table id="8" name="CollObToLocality" title="Localities in Collecting Events" priority="1" color="30, 144, 255">
     <outofdate>
         <table name="collectingevent" title="Collecting Event"/>
     </outofdate>
@@ -255,6 +255,42 @@
             <caption col="CollectingEventID" text="CE ID"/>
         </captions>
        <recordset tabletype="8" col="1"/>
+	</detailView>
+  </table>  
+
+  <table id="10000" usehitscache="true" name="Forms" title="Forms" priority="2" color="95, 158, 160">
+    <outofdate/>
+    <index>
+	    <sql/>
+	    <cols/>
+    </index>
+	<detailView icon="Form">
+	    <sql/>
+        <captions>
+            <caption col="form" text="Form Name"/>
+            <caption col="type" text="Type" visible="false"/>
+            <caption col="field" text="Label Name"/>
+            <caption col="desc" text="Where Used"/>
+        </captions>
+       <recordset tabletype="10000" col="1"/>
+	</detailView>
+  </table>  
+
+  <table id="20000" usehitscache="true" name="Labels" title="Labels" priority="3" color="189, 183, 107">
+    <outofdate/>
+    <index>
+	    <sql/>
+	    <cols/>
+    </index>
+	<detailView icon="Form">
+	    <sql/>
+        <captions>
+            <caption col="file" text="File Name"/>
+            <caption col="labelName" text="Label Name"/>
+            <caption col="type" text="Type"/>
+            <caption col="label" text="Label"/>
+        </captions>
+       <recordset tabletype="20000" col="1"/>
 	</detailView>
   </table>  
 

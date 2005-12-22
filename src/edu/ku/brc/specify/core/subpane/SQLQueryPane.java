@@ -56,6 +56,7 @@ import edu.ku.brc.specify.ui.db.SaveRecordSetDlg;
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
 {
     //private static Log log = LogFactory.getLog(SQLQueryPane.class);
@@ -72,7 +73,6 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
 
 
     private boolean               hideSQLField;
-    private boolean               hideBtnPanel;
     private SQLExecutionProcessor sqlExecutor;
     private String                sqlStr;
     
@@ -90,7 +90,6 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
         setPreferredSize(new Dimension(600,600));
         
         this.hideSQLField = hideSQLField;
-        this.hideBtnPanel = hideBtnPanel;
         
         
         // builder.add(viewPanel, cc.xy(1, 1));
@@ -172,7 +171,7 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
     
     /**
      * Enables the Text Field and the Execute Button
-     *
+     * @param enabled enabled
      */
     public void enableUI(boolean enabled)
     {

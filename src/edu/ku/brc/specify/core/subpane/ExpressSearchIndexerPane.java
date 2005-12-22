@@ -44,10 +44,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSeparator;
@@ -74,18 +75,34 @@ import edu.ku.brc.specify.dbsupport.PairsMultipleQueryResultsHandler;
 import edu.ku.brc.specify.dbsupport.QueryResultsContainer;
 import edu.ku.brc.specify.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.specify.dbsupport.QueryResultsListener;
+import edu.ku.brc.specify.helpers.DiskFileFilter;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.RolloverCommand;
 import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.forms.ViewMgr;
+import edu.ku.brc.specify.ui.forms.persist.FormCell;
+import edu.ku.brc.specify.ui.forms.persist.FormCellWithLabel;
+import edu.ku.brc.specify.ui.forms.persist.FormColumn;
+import edu.ku.brc.specify.ui.forms.persist.FormFormView;
+import edu.ku.brc.specify.ui.forms.persist.FormRow;
+import edu.ku.brc.specify.ui.forms.persist.FormTableView;
+import edu.ku.brc.specify.ui.forms.persist.FormView;
+import edu.ku.brc.specify.ui.forms.persist.ViewSet;
 
 /**
  * A pane enables the user to see (and control) the indexing process for express search.<BR>
  * NOTE: This creates the index cache locality, it doesn't support is being on the network.
  * 
+ * 
+ * NOTE: XXX The indexing of the database needs to be abstracted out to be able to run "headless"<br>
+ * That way we could run it on a server. The idea is that the UI would be accessed via a proxy 
+ * and the headless could be a "do nothing stub".
+ * 
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, QueryResultsListener
 {
     // Static Data Members
@@ -103,7 +120,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     protected JButton      cancelBtn;
     protected JButton      closeBtn;
     
-    protected ImageIcon    checkIcon     = new ImageIcon(IconManager.getImagePath("check.gif"));
+    protected ImageIcon    checkIcon     = new ImageIcon(IconManager.getImagePath("check.gif"));  // Move to icons.xml
     protected ImageIcon    exclaimIcon   = new ImageIcon(IconManager.getImagePath("exclaim.gif"));
     protected ImageIcon    exclaimYWIcon = new ImageIcon(IconManager.getImagePath("exclaim_yellow.gif"));
     
@@ -114,6 +131,9 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     protected Font                      captionFont = null;
     protected JLabel                    explainLabel;
     protected boolean                   noIndexFile = false;
+    
+    protected boolean                   doIndexForms  = true; // XXX Pref 
+    protected boolean                   doIndexLabels = true; // XXX Pref 
     
     /**
      * Default Constructor
@@ -128,8 +148,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         startCheckOutOfDateProcess(); // must be done before openingScreenInit
         
         openingScreenInit();
-        
-        
+           
     }
     
     /**
@@ -446,9 +465,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
         long delta = end - begin;
         log.info("Time to index (" + delta + " ms)");
-        return delta;
-
-        
+        return delta;       
     }
     
     /**
@@ -519,13 +536,238 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     }
     
     /**
+     * @param writer
+     * @param form
+     */
+    protected void indexViewForm(final IndexWriter writer ,final FormFormView form) throws IOException
+    {
+        // separator, field, label, subview
+        for (FormRow row :  form.getRows())
+        {
+            for (FormCell cell : row.getCells())
+            {
+                if (cell instanceof FormCellWithLabel)
+                {
+                    termsIndexed++;
+                    Document doc = new Document();
+                    doc.add(Field.Keyword("id", Integer.toString(form.getId())));
+                    doc.add(Field.Keyword("table", "10000"));
+                    
+                    String formName = form.getName();
+                    String label    = ((FormCellWithLabel)cell).getLabel();
+                    
+                    StringBuffer strBuf = new StringBuffer();
+                    strBuf.append(formName);
+                    strBuf.append('\t');
+                    strBuf.append(cell.getType().toString());
+                    strBuf.append('\t');
+                    strBuf.append(label);
+                    strBuf.append('\t');
+                    strBuf.append(form.getDesc());
+                    strBuf.append('\t');
+
+                    doc.add(Field.UnStored("contents", form.getName()));
+                    doc.add(Field.UnStored("contents", label));
+                    
+                    doc.add(Field.UnIndexed("data", strBuf.toString()));
+                    
+                    writer.addDocument(doc);
+                }
+
+            }
+        }
+   }
+    
+    /**
+     * @param writer
+     * @param form
+     */
+    protected void indexViewTable(final IndexWriter writer, final FormTableView form) throws IOException
+    {
+        for (FormColumn formCol : form.getColumns())
+        {
+            termsIndexed++;
+            
+            Document doc = new Document();
+            doc.add(Field.Keyword("id", Integer.toString(form.getId())));
+            doc.add(Field.Keyword("table", "10000"));
+            
+            String formName = form.getName();
+            String label    = formCol.getLabel();
+            
+            StringBuffer strBuf = new StringBuffer();
+            strBuf.append(formName);
+            strBuf.append('\t');
+            strBuf.append("col");
+            strBuf.append('\t');
+            strBuf.append(label);
+            strBuf.append('\t');
+            strBuf.append(form.getDesc());
+            strBuf.append('\t');
+
+            doc.add(Field.UnStored("contents", form.getName()));
+            doc.add(Field.UnStored("contents", label));
+            
+            doc.add(Field.UnIndexed("data", strBuf.toString()));
+            
+            writer.addDocument(doc);
+           
+        }
+    }
+    
+    /**
+     * Indexes all the fields and forms in the forms
+     *
+     */
+    protected long indexForms(final IndexWriter writer) throws IOException
+    {
+        // XXX Temporary load of form because now forma er being loaded right now
+        try
+        {
+            ViewMgr.clearAll();
+            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("form.xml"));
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        
+        // Count up how many View we are going to process
+        int cnt = 0;
+        for (ViewSet viewSet : ViewMgr.getViewSets())
+        {
+            cnt += viewSet.getViews().size();
+        }
+            
+        indvLabel.setVisible(true);
+        progressBar.setMaximum(cnt);
+        progressBar.setValue(0);
+        progressBar.setIndeterminate(false);
+        progressBar.setString("0%");
+        progressBar.setStringPainted(true);
+        
+        long begin = new Date().getTime();
+        
+        cnt = 0;
+        for (ViewSet viewSet : ViewMgr.getViewSets())
+        {
+            for (FormView formView : viewSet.getViews())
+            {
+                indvLabel.setText(formView.getViewSetName());
+                
+                if (formView.getType() == FormView.ViewType.form)
+                {
+                    indexViewForm(writer, (FormFormView)formView);
+                   
+                } else if (formView.getType() == FormView.ViewType.table)
+                {
+                    indexViewTable(writer, (FormTableView)formView);
+                   
+                } else if (formView.getType() == FormView.ViewType.field)
+                {
+                   
+                }
+                progressBar.setValue(++cnt);
+            }
+        }
+        long end = new Date().getTime();
+        long delta = end - begin;
+        log.info("Time to index (" + delta + " ms)");
+
+        progressBar.setString("100%");
+        indvLabel.setText("");
+        
+        return delta;
+    }
+    
+    /**
+     * Indexes all the fields and forms in the forms
+     *
+     */
+    protected long indexLabels(final IndexWriter writer)
+    {
+        File configDir = new File(XMLHelper.getConfigDirPath(null));
+        File[] files = configDir.listFiles(new DiskFileFilter("jrxml"));
+        
+        indvLabel.setVisible(true);
+        progressBar.setMaximum(files.length);
+        progressBar.setValue(0);
+        progressBar.setIndeterminate(false);
+        progressBar.setString("0%");
+        progressBar.setStringPainted(true);
+        
+        long begin = new Date().getTime();
+        
+        int cnt = 0;
+        
+        for (File file : files)
+        {
+            String fileName = file.getName();
+            try
+            {
+                Element root = XMLHelper.readFileToDOM4J(file.getAbsoluteFile());
+                String labelName = root.attributeValue("name");
+                
+                indvLabel.setText(labelName);
+                
+                /*List textFields = root.selectNodes("/jasperReport/detail/band/textField");
+                for ( Iterator iter = textFields.iterator(); iter.hasNext(); ) 
+                {
+                    Element textField = (Element)iter.next();
+                }*/ 
+                
+                List staticTexts = root.selectNodes("/jasperReport/detail/band/staticText/text");
+                for ( Iterator iter = staticTexts.iterator(); iter.hasNext(); ) 
+                {
+                    Element text = (Element)iter.next();
+                    String label = text.getTextTrim();
+                    
+                    termsIndexed++;
+                    
+                    Document doc = new Document();
+                    doc.add(Field.Keyword("id", labelName));
+                    doc.add(Field.Keyword("table", "20000"));
+                    
+                    StringBuffer strBuf = new StringBuffer();
+                    strBuf.append(fileName);
+                    strBuf.append('\t');
+                    strBuf.append(labelName);
+                    strBuf.append('\t');
+                    strBuf.append("Static");
+                    strBuf.append('\t');
+                    strBuf.append(label);
+                    strBuf.append('\t');
+ 
+                    doc.add(Field.UnStored("contents", fileName));                    
+                    doc.add(Field.UnStored("contents", labelName));                    
+                    doc.add(Field.UnStored("contents", label));                    
+                    doc.add(Field.UnIndexed("data", strBuf.toString()));
+                    
+                    writer.addDocument(doc);
+               }            
+                
+            } catch (Exception ex)
+            {
+                log.error(ex);
+            }
+            progressBar.setValue(++cnt);
+        }
+        long end = new Date().getTime();
+        long delta = end - begin;
+        log.info("Time to index (" + delta + " ms)");
+
+        progressBar.setString("100%");
+        indvLabel.setText("");
+        
+        return delta;
+    }
+    
+    /**
      * Starts the index process, it reads all the desired SQL from an XML file "express_search.xml"
      * in the config directory. If the process is cancelled then the indexing files are removed.
      *
      */
     public void index() throws IOException
     {
- 
         
         Directory dir = FSDirectory.getDirectory(lucenePath, true);
         IndexWriter writer = new IndexWriter(dir, new StandardAnalyzer(), true);
@@ -539,8 +781,11 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             Element esDOM = XMLHelper.readDOMFromConfigDir("express_search.xml");         // Describes the definitions of the full text search
             
             List tables = esDOM.selectNodes("/tables/table");
+            
+            int numOfCategories = tables.size() + (doIndexForms ? 1 : 0) + (doIndexLabels ? 1 : 0);
+            
             globalProgressBar.setStringPainted(true);
-            globalProgressBar.setMaximum(tables.size());
+            globalProgressBar.setMaximum(numOfCategories);
             globalProgressBar.setValue(0);
             globalProgressBar.setString("0%");
             int indexerCnt = 0;
@@ -551,7 +796,12 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
                log.info("Indexing: "+tableInfo.getTitle()+"  Id: "+tableInfo.getTableId());
                indvLabel.setText(tableInfo.getTitle());
-               deltaTime += indexQuery(writer, tableInfo);
+               int id = Integer.parseInt(tableInfo.getTableId()); 
+               if (id < 10000)
+               {
+                   deltaTime += indexQuery(writer, tableInfo);
+                   log.info(deltaTime);
+               }
                if (isCancelled)
                {
                    break;
@@ -560,7 +810,20 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
                globalProgressBar.setString((int)((double)indexerCnt / (double)tables.size() * 100.0)+"%");
                indvLabel.setText("");
-            }  
+            }
+            
+            // These could be moved up into the loop above
+            if (doIndexForms)
+            {
+                deltaTime += indexForms(writer);
+                log.info(deltaTime);
+            }
+            
+            if (doIndexLabels)
+            {
+                deltaTime += indexLabels(writer);
+                log.info(deltaTime);
+            }
             
         } catch (Exception ex)
         {
@@ -597,6 +860,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             
             indvLabel.setText(termsIndexed+ " terms indexed in "+(((double)deltaTime) / 1000.0) + " seconds");
             globalLabel.setText(getResourceString("doneIndexing"));
+            log.info(deltaTime);
             log.info("Time to index all (" + (((double)deltaTime) / 1000.0) + " seconds)");
             writer.optimize();
             writer.close();

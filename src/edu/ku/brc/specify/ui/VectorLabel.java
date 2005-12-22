@@ -43,8 +43,12 @@ import javax.swing.JLabel;
  * @author Joshua Marinacci
  *
  */
+@SuppressWarnings({"serial","serial"})
 public class VectorLabel extends JLabel
 {
+    /**
+     * 
+     */
     protected boolean isDrawHighlight  = false;
     protected boolean isRoundedRect    = false;
     protected boolean isDrawInnerBlock = false;

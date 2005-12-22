@@ -43,6 +43,7 @@ import edu.ku.brc.specify.ui.CurvedBorder;
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class StatGroup extends JPanel
 {
 

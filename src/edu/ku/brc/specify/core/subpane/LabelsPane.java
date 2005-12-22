@@ -56,6 +56,7 @@ import edu.ku.brc.specify.datamodel.*;
  * 
  * 
  */
+@SuppressWarnings("serial")
 public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 {
     // Static Data Members

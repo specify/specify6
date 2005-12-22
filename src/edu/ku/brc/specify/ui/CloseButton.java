@@ -19,14 +19,10 @@
  */
 package edu.ku.brc.specify.ui;
 
-import java.awt.*;
-import java.awt.Dimension;
+import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Polygon;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.event.MouseEvent;
 
 /**
  *  A simple vector button that draw a close on its face.
@@ -34,6 +30,7 @@ import java.awt.event.MouseEvent;
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class CloseButton extends GradiantButton
 {
     /**

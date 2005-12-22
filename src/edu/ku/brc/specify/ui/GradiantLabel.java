@@ -42,6 +42,7 @@ import javax.swing.border.EmptyBorder;
  * @author Joshua Marinacci
  *
  */
+@SuppressWarnings("serial")
 public class GradiantLabel extends JLabel
 {
     protected Color   textColor        = null;

@@ -25,6 +25,7 @@ import javax.swing.JTabbedPane;
 
 import edu.ku.brc.specify.core.NavBoxMgr;
 
+@SuppressWarnings("serial")
 public class MainPanel extends JSplitPane
 {
 
@@ -38,6 +39,7 @@ public class MainPanel extends JSplitPane
     public MainPanel()
     {
         super(JSplitPane.HORIZONTAL_SPLIT);
+        //setBackground(Color.WHITE);
         
         setOneTouchExpandable(true);
         

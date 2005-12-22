@@ -73,6 +73,7 @@ import edu.ku.brc.specify.ui.dnd.GhostMouseDropAdapter;
  * @author rods
  * 
  */
+@SuppressWarnings("serial")
 public class LabelsTask extends BaseTask
 {
     // Static Data Members
@@ -152,7 +153,7 @@ public class LabelsTask extends BaseTask
             NavBox navBox = new NavBox(name);  
             
             // Get all RecordSets and register them 
-            RecordSetTask rst = (RecordSetTask)ContextMgr.getInstance().getTaskByClass(RecordSetTask.class);
+            RecordSetTask rst = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
             
             java.util.List<NavBoxIFace> list = rst.getNavBoxes();
             
@@ -263,7 +264,7 @@ public class LabelsTask extends BaseTask
         extendedNavBoxes.clear();
         extendedNavBoxes.addAll(navBoxes);
         
-        RecordSetTask rsTask = (RecordSetTask)ContextMgr.getInstance().getTaskByClass(RecordSetTask.class);
+        RecordSetTask rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
         
         extendedNavBoxes.addAll(rsTask.getNavBoxes());
         

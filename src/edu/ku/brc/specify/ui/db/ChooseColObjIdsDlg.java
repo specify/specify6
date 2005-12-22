@@ -2,7 +2,8 @@ package edu.ku.brc.specify.ui.db;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -11,7 +12,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractListModel;
-import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -19,7 +20,9 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.*;
+import javax.swing.JTabbedPane;
+import javax.swing.ListCellRenderer;
+import javax.swing.ListModel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,6 +36,13 @@ import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.UICacheManager;
 
+/**
+ * XXX (NOT USED RIGHT NOW
+ * 
+ * @author rods
+ *
+ */
+@SuppressWarnings("serial") 
 public class ChooseColObjIdsDlg extends JDialog implements ActionListener 
 {
     // Static Data Members
@@ -79,6 +89,7 @@ public class ChooseColObjIdsDlg extends JDialog implements ActionListener
                 public Object getElementAt(int index) { return ((RecordSet)recordSets.get(index)).getName(); }
             };
             
+            @SuppressWarnings("serial") 
             class MyCellRenderer extends JLabel implements ListCellRenderer 
             {
 

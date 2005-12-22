@@ -20,8 +20,8 @@
 
 package edu.ku.brc.specify.core.subpane;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.core.Taskable;
 
@@ -31,9 +31,10 @@ import edu.ku.brc.specify.core.Taskable;
  * @author rods
  * 
  */
+@SuppressWarnings("serial")
 public class DataEntryPane extends BaseSubPane
 {
-    private static Log log = LogFactory.getLog(DataEntryPane.class);
+    //private static Log log = LogFactory.getLog(DataEntryPane.class);
 
     /**
      * 

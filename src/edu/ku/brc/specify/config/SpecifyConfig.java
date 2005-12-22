@@ -19,23 +19,20 @@
  */
 package edu.ku.brc.specify.config;
 
+import java.io.File;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.configuration.*;
 
-import javax.swing.*;
-import java.util.*;
-import java.io.*;
-import java.net.*;
-
-import edu.ku.brc.specify.helpers.*;
 import edu.ku.brc.specify.extfilerepos.impl.ExternalFileRepository;
 import edu.ku.brc.specify.helpers.AskForDirectory;
-import java.util.NoSuchElementException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 /**
  * This class is responsible for reading and writing all application specific properties to and from the "specify/properties" file.
@@ -82,8 +79,8 @@ public class SpecifyConfig
      */
     protected File getUserHomeConfigPath()
     {
-        File configPath = null;
-        try {
+        try 
+        {
             return new File(System.getProperty("user.home") + System.getProperty("file.separator") + "specify.properties");
             
         } catch (SecurityException ex) {

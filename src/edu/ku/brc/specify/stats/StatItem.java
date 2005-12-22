@@ -51,6 +51,7 @@ import edu.ku.brc.specify.dbsupport.QueryResultsSerializedGetter;
  * @author rods
  * 
  */
+@SuppressWarnings("serial")
 public class StatItem extends JPanel implements QueryResultsListener
 {
     /**
@@ -141,7 +142,7 @@ public class StatItem extends JPanel implements QueryResultsListener
                     {
                         public void actionPerformed(ActionEvent ae)
                         {
-                            StatsTask statTask = (StatsTask)ContextMgr.getInstance().getTaskByName(StatsTask.STATISTICS);
+                            StatsTask statTask = (StatsTask)ContextMgr.getTaskByName(StatsTask.STATISTICS);
                             statTask.createStatPane(link);
                         }
                     }); 

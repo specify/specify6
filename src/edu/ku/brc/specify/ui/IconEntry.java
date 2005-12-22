@@ -108,4 +108,15 @@ public class IconEntry
         }
         return null;
     }
+
+    /**
+     * Return name
+     * @return Return name
+     */
+    public String getName()
+    {
+        return name;
+    }
+    
+    
 }

@@ -26,10 +26,9 @@ package edu.ku.brc.specify.exceptions;
  *
  * @author Rod Spears <rods@ku.edu>
  */
+@SuppressWarnings("serial")
 public class ConfigurationException extends RuntimeException 
 {
-    //private static final long serialVersionUID = 0;
-    
     public ConfigurationException() {
     }
 

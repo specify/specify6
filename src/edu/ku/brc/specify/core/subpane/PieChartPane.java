@@ -20,16 +20,14 @@
 
 package edu.ku.brc.specify.core.subpane;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
-import static edu.ku.brc.specify.helpers.UIHelper.getString;
 import static edu.ku.brc.specify.helpers.UIHelper.getInt;
+import static edu.ku.brc.specify.helpers.UIHelper.getString;
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 
 import javax.swing.Icon;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -49,10 +47,11 @@ import edu.ku.brc.specify.ui.IconManager;
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class PieChartPane extends ChartPane implements QueryResultsListener, QueryResultsProcessable
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(BarChartPane.class);
+    //private static Log log = LogFactory.getLog(BarChartPane.class);
     
     // Data Members
     private QueryResultsGetter       getter;
@@ -81,7 +80,7 @@ public class PieChartPane extends ChartPane implements QueryResultsListener, Que
      */
     public Icon getIcon()
     {
-        return IconManager.getInstance().getIcon("Pie_Chart", IconManager.IconSize.Std16);
+        return IconManager.getIcon("Pie_Chart", IconManager.IconSize.Std16);
     }
     
     

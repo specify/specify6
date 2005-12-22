@@ -23,6 +23,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+@SuppressWarnings("serial")
 public class GenericFrame extends JFrame 
 {
     protected Dimension defaultSize = new Dimension(200, 200);

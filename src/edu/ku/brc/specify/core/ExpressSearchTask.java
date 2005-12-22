@@ -92,7 +92,7 @@ public class ExpressSearchTask extends BaseTask
     public ExpressSearchTask()
     {
         super(EXPRESSSEARCH, getResourceString(EXPRESSSEARCH));
-        icon = IconManager.getInstance().getIcon("Search", IconManager.IconSize.Std16);
+        icon = IconManager.getIcon("Search", IconManager.IconSize.Std16);
     }
     
     /* (non-Javadoc)
@@ -319,7 +319,8 @@ public class ExpressSearchTask extends BaseTask
         
         searchBtn   = new JButton(getResourceString("Search"));
         
-        searchText  = new JTextField("megalotis", 10);
+        //searchText  = new JTextField("megalotis", 10);
+        searchText  = new JTextField(10);
         textBGColor = searchText.getBackground();
         
         searchText.setMinimumSize(new Dimension(50, searchText.getPreferredSize().height));

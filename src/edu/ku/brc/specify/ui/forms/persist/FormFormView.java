@@ -19,6 +19,7 @@
  */
 package edu.ku.brc.specify.ui.forms.persist;
 
+import java.util.List;
 import java.util.Vector;
 
 
@@ -34,18 +35,20 @@ public class FormFormView extends FormView
      */
     public FormFormView()
     {
-        super(ViewType.form, -1);
+        super(ViewType.form, -1, "", "");
         
     }
 
     /**
-     * 
-     * @param aType
-     * @param aId
+     * Creates a Form View
+     * @param type the type (could be form or field)
+     * @param id the id
+     * @param name the name
+     * @param desc description
      */
-    public FormFormView(ViewType aType, int aId)
+    public FormFormView(final FormView.ViewType type, final int id, final String name, final String desc)
     {
-        super(ViewType.form, aId);
+        super(type, id, name, desc);
         
     }
     
@@ -65,17 +68,17 @@ public class FormFormView extends FormView
         return aRow;
     }
 
-    public Vector<String> getColumnDef()
+    public List<String> getColumnDef()
     {
         return columnDef;
     }
 
-    public Vector<String> getRowDef()
+    public List<String> getRowDef()
     {
         return rowDef;
     }
 
-    public Vector<FormRow> getRows()
+    public List<FormRow> getRows()
     {
         return rows;
     }

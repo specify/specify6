@@ -36,7 +36,6 @@ import javax.swing.JPopupMenu;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.TaskPluginable;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
@@ -81,7 +80,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
         this.name = name;
         this.title = title;
         
-        ContextMgr.getInstance().register(this);
+        ContextMgr.register(this);
     }
     
     /**
@@ -89,7 +88,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
      */
     public void finalize()
     {
-        ContextMgr.getInstance().unregister(this);
+        ContextMgr.unregister(this);
     }
     
     /**
@@ -130,9 +129,9 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     {
         String name = getResourceString(catName);
         
-        icon = IconManager.getInstance().getIcon(catName, IconManager.IconSize.Std16);
+        icon = IconManager.getIcon(catName, IconManager.IconSize.Std16);
         
-        ToolBarDropDownBtn btn = new ToolBarDropDownBtn(name, IconManager.getInstance().getIcon(catName, IconManager.IconSize.Std24), JButton.BOTTOM, menus);
+        ToolBarDropDownBtn btn = new ToolBarDropDownBtn(name, IconManager.getIcon(catName, IconManager.IconSize.Std24), JButton.BOTTOM, menus);
         btn.setStatusBarHintText(getResourceString(hint));
         
         btn.addActionListener(new ActionListener() {
@@ -216,7 +215,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
      */
     public void requestContext()
     {
-        ContextMgr.getInstance().requestContext(this);
+        ContextMgr.requestContext(this);
         
         UICacheManager.getInstance().getSubPaneMgr().addPane(getStarterPane());
     }

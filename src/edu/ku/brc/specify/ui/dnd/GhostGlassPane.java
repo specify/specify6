@@ -25,6 +25,7 @@ import javax.swing.Timer;
  * @author S�bastien Petrucci <sebastien_petrucci@yahoo.fr>*
  *
  */
+@SuppressWarnings("serial")
 public class GhostGlassPane extends JPanel 
 {
     private final int ANIMATION_DELAY = 500;

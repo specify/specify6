@@ -20,6 +20,8 @@
 
 package edu.ku.brc.specify.core.subpane;
 
+import java.awt.Color;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -37,7 +39,7 @@ import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
  * @author rods
  *
  */
-class ExpressTableResults extends ExpressTableResultsBase implements SQLExecutionListener
+@SuppressWarnings("serial") class ExpressTableResults extends ExpressTableResultsBase implements SQLExecutionListener
 {
     // Static Data Members
     private static Log log  = LogFactory.getLog(ExpressTableResults.class);
@@ -49,9 +51,8 @@ class ExpressTableResults extends ExpressTableResultsBase implements SQLExecutio
     /**
      * Constructor of a results "table" which is really a panel
      * @param esrPane the parent 
-     * @param title the title of the resulys
-     * @param sqlStr the SQL string used to populate the results
-     * @param colNameMappings the mappings for the column names
+     * @param tableInfo the info describing the results
+     * @param bannerColor the color of the banner (or bar)
      */
     public ExpressTableResults(final ExpressSearchResultsPane esrPane, 
                                final ExpressResultsTableInfo tableInfo)

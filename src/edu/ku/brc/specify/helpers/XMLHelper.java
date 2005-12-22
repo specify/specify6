@@ -74,7 +74,7 @@ public class XMLHelper
    public static String getConfigDirPath(final String fileName)
    {
        java.io.File f = new java.io.File(".");
-       return f.getAbsolutePath() +  File.separator + "config" + File.separator + fileName;
+       return f.getAbsolutePath() +  File.separator + "config" + (fileName != null ? (File.separator + fileName) : "");
    }
    
    /**

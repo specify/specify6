@@ -19,24 +19,21 @@
  */
 package edu.ku.brc.specify.ui;
 
-import edu.ku.brc.specify.core.ContextMgr;
-import edu.ku.brc.specify.core.NavBoxMgr;
-import edu.ku.brc.specify.core.subpane.ExpressSearchResultsPane;
-import edu.ku.brc.specify.exceptions.UIException;
-import java.util.*;
-import javax.swing.*;
+import java.awt.Component;
+import java.util.Enumeration;
+import java.util.Hashtable;
+
+import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import edu.ku.brc.specify.core.ContextMgr;
 
-import java.awt.*;
-
+@SuppressWarnings("serial")
 public class SubPaneMgr extends JTabbedPane implements ChangeListener
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(SubPaneMgr.class);
+    //private static Log log = LogFactory.getLog(SubPaneMgr.class);
     
     // Data Members
     protected Hashtable<String, SubPaneIFace> panes = new Hashtable<String, SubPaneIFace>();   
@@ -232,14 +229,14 @@ public class SubPaneMgr extends JTabbedPane implements ChangeListener
                     {
                         currentPane.showingPane(false);
                     }
-                    ContextMgr.getInstance().requestContext(subPane.getTask()); // XXX not sure if this need to be moved up into the if above
+                    ContextMgr.requestContext(subPane.getTask()); // XXX not sure if this need to be moved up into the if above
                     subPane.showingPane(true);
                 }
              }
              currentPane = subPane;
        } else 
         {
-            ContextMgr.getInstance().requestContext(null);
+            ContextMgr.requestContext(null);
         }
         
     }

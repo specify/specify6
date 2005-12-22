@@ -23,10 +23,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.*;
-import edu.ku.brc.specify.ui.*;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 
 import edu.ku.brc.specify.exceptions.ConfigurationException;
+import edu.ku.brc.specify.ui.Trash;
 
 /**
  * A singleton that manages a list of NavBoxIFace items. The NavBoxIFace are layed out using a manager 
@@ -35,11 +36,12 @@ import edu.ku.brc.specify.exceptions.ConfigurationException;
   * @author rods
  *
 */
+@SuppressWarnings("serial")
 public class NavBoxMgr extends JPanel
 {
     // Static Data Members
     private static NavBoxMgr instance = new NavBoxMgr();
-    private static Trash     trash    = new Trash();
+    private static Trash     trash;
     
     // Data Members
     private List<NavBoxIFace>   list   = Collections.synchronizedList(new ArrayList<NavBoxIFace>());
@@ -55,7 +57,7 @@ public class NavBoxMgr extends JPanel
        setLayout(layout);
        setBackground(Color.WHITE); // XXX PREF ??
        
-       trash = new Trash();
+       trash = Trash.getInstance();
        
        add(trash);
     }

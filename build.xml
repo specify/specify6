@@ -150,7 +150,7 @@
   </target>
 
   <target name="run" description="Runs prototype" depends="compile">
-    <java classname="edu.ku.brc.hyla.HylaApp" fork="true">
+    <java classname="edu.ku.brc.specify.Specify" fork="true">
       <classpath refid="project.class.path"/>
     	 <jvmarg value= "-Xmx900m"/> 
     </java>

@@ -38,7 +38,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.core.Taskable;
-import edu.ku.brc.specify.dbsupport.QueryResultsContainer;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.stats.StatGroup;
 import edu.ku.brc.specify.stats.StatGroupFromQuery;
@@ -50,6 +49,7 @@ import edu.ku.brc.specify.stats.StatItem;
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class StatsPane extends BaseSubPane
 {
     // Static Data Members
@@ -201,7 +201,6 @@ public class StatsPane extends BaseSubPane
                             } else if (statements.size() > 0)
                             {
                                 int cnt = 0;
-                                QueryResultsContainer qrc = null;
                                 for (Object stObj : statements) 
                                 {
                                     Element stElement = (Element)stObj;
@@ -209,10 +208,10 @@ public class StatsPane extends BaseSubPane
                                     int vColInx = getIntFromAttr(stElement, "col", -1);
                                     if (vRowInx == -1 || vColInx == -1)
                                     {
-                                        qrc = statItem.add(stElement.getText());
+                                        statItem.add(stElement.getText()); // ignore return object
                                     } else
                                     {
-                                        qrc = statItem.add(stElement.getText(), vRowInx, vColInx, StatItem.VALUE_TYPE.Value);
+                                        statItem.add(stElement.getText(), vRowInx, vColInx, StatItem.VALUE_TYPE.Value); // ignore return object
                                     }
                                     cnt++;
                                 }

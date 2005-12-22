@@ -19,10 +19,8 @@
  */
 package edu.ku.brc.specify.ui;
 
-import java.util.*;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.Hashtable;
+import java.util.Vector;
 
 
 /**
@@ -38,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
 public class CommandDispatcher
 {
     // Static Data Members
-    private static Log log  = LogFactory.getLog(CommandDispatcher.class);
+    //private static Log log  = LogFactory.getLog(CommandDispatcher.class);
     
     private static CommandDispatcher instance = new CommandDispatcher();
     

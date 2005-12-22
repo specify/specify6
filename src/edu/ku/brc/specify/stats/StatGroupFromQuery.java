@@ -22,6 +22,7 @@ import edu.ku.brc.specify.dbsupport.SQLExecutionProcessor;
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListener
 {
     // Static Data Members

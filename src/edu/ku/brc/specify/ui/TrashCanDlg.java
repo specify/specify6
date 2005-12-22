@@ -1,4 +1,4 @@
-package edu.ku.brc.specify.ui.db;
+package edu.ku.brc.specify.ui;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
@@ -18,74 +18,71 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Criteria;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
 import edu.ku.brc.specify.core.RecordSetTask;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.ui.IconListCellRenderer;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.dnd.DndDeletable;
 
-/**
- * Choose a record set from the a list from the database
- * 
- * @author rods
- *
- */
 @SuppressWarnings("serial")
-public class ChooseRecordSetDlg extends JDialog implements ActionListener 
+public class TrashCanDlg extends JDialog implements ActionListener, ListSelectionListener
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(ChooseRecordSetDlg.class);
+    private static Log log = LogFactory.getLog(TrashCanDlg.class);
 
     
     private final static ImageIcon icon = IconManager.getImage(RecordSetTask.RECORD_SET, IconManager.IconSize.Std16);
 
     // Data Members
-    protected JButton        cancelBtn;
+    protected JButton        restoreBtn;
     protected JButton        okBtn;
     protected JList          list;
-    protected java.util.List recordSets;
+    protected java.util.List<DndDeletable> items;
+    protected Trash          trash;
     
-    public ChooseRecordSetDlg() throws HeadlessException
+    /**
+     * @throws HeadlessException
+     */
+    public TrashCanDlg() throws HeadlessException
     {
         super((Frame)UICacheManager.getInstance().get(UICacheManager.FRAME), true);
         createUI();
         setLocationRelativeTo((JFrame)(Frame)UICacheManager.getInstance().get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         this.setAlwaysOnTop(true);
+        
     }
 
     /**
-     * 
+     * Create default UI
      *
      */
     protected void createUI()
     {
+        trash = Trash.getInstance();
+        items = trash.getItems();
+        
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
         
-        panel.add(new JLabel(getResourceString("ChooseRecordSet"), JLabel.CENTER), BorderLayout.NORTH);
+        panel.add(new JLabel(getResourceString("DeletedItems"), JLabel.CENTER), BorderLayout.NORTH);
 
         try
         {
-            Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(RecordSet.class);
-            recordSets = criteria.list();
-            HibernateUtil.closeSession();
             
             ListModel listModel = new AbstractListModel() 
             {
-                public int getSize() { return recordSets.size(); }
-                public Object getElementAt(int index) { return ((RecordSet)recordSets.get(index)).getName(); }
+                public int getSize() { return items.size(); }
+                public Object getElementAt(int index) { return items.get(index).getName(); }
             };
             
             list = new JList(listModel);
@@ -98,22 +95,26 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
                     }
                 }
             });
+            list.addListSelectionListener(this);
+            
             JScrollPane listScroller = new JScrollPane(list);
             panel.add(listScroller, BorderLayout.CENTER);
             
             // Bottom Button UI
-            cancelBtn         = new JButton(getResourceString("Cancel"));
-            okBtn             = new JButton(getResourceString("OK"));
+            restoreBtn         = new JButton(getResourceString("Restore"));
+            okBtn             = new JButton(getResourceString("Close"));
 
+            restoreBtn.setEnabled(false);
+            
             okBtn.addActionListener(this);
             getRootPane().setDefaultButton(okBtn);
             
             ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
             //btnBuilder.addGlue();
-             btnBuilder.addGriddedButtons(new JButton[] {cancelBtn, okBtn}); 
+             btnBuilder.addGriddedButtons(new JButton[] {restoreBtn, okBtn}); 
  
-            cancelBtn.addActionListener(new ActionListener()
-                    {  public void actionPerformed(ActionEvent ae) { setVisible(false);} });
+            restoreBtn.addActionListener(new ActionListener()
+                    {  public void actionPerformed(ActionEvent ae) { restoreItem(); }});
             
             panel.add(btnBuilder.getPanel(), BorderLayout.SOUTH);
 
@@ -127,6 +128,14 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
         //setLocationRelativeTo(locationComp);
         
     }
+        
+    /**
+     * Restores an item
+     */
+    protected void restoreItem()
+    {
+        JOptionPane.showMessageDialog(UICacheManager.getInstance().get(UICacheManager.FRAME), "Sorry, not implemented yet.");
+    }
     
     //Handle clicks on the Set and Cancel buttons.
     public void actionPerformed(ActionEvent e) 
@@ -134,14 +143,22 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
         setVisible(false);
     }
     
-    public RecordSet getSelectedRecordSet()
+    public DndDeletable getDeletable()
     {
         int inx = list.getSelectedIndex();
         if (inx != -1)
         {
-            return (RecordSet)recordSets.get(inx);
+            return items.get(inx);
         }
         return null;
+    }
+    
+    //------------------------------------------------------
+    // ListSelectionListener
+    //------------------------------------------------------
+    public void valueChanged(ListSelectionEvent e)
+    {
+       restoreBtn.setEnabled(list.getSelectedIndex() != -1); 
     }
     
 }

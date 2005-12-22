@@ -2,9 +2,12 @@
   <element name="view">
     <attribute name="id" property="id"/>
     <attribute name="type" property="type"/>
+    <attribute name="name" property="name"/>
     <attribute name="resourceLabels" property="resourceLabels"/>
     
-     <element name="altviews">
+    <element name="desc"/>
+    
+    <element name="altviews">
       <element name="alt" property="altViews"/>
     </element>
     

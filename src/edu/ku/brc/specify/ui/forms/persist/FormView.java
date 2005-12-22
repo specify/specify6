@@ -27,6 +27,8 @@ public class FormView implements Comparable<FormView>
     
     protected ViewType             type;
     protected int                  id;
+    protected String               name;
+    protected String               desc;
     protected Vector<FormAltView>  altViews       = new Vector<FormAltView>();
     protected boolean              resourceLabels = false;
     
@@ -42,20 +44,27 @@ public class FormView implements Comparable<FormView>
     }
     
     /**
-     * 
-     * @param aType
-     * @param aId
+     * CReate FormView
+     * @param type the type of form (form, table, field)
+     * @param id the unique id of the form
      */
-    public FormView(ViewType aType, int aId)
+    public FormView(final ViewType type, final int id, final String name, final String desc)
     {
-        type = aType;
-        id   = aId;
+        this.type = type;
+        this.id   = id;
+        this.name = name;
+        this.desc = desc;
     }
     
-    public FormAltView addAltView(FormAltView aAltView)
+    /**
+     * Adds an alternative view
+     * @param altView the alternate view
+     * @return the form that was passed in
+     */
+    public FormAltView addAltView(final FormAltView altView)
     {
-        altViews.add(aAltView);
-        return aAltView;
+        altViews.add(altView);
+        return altView;
     }
 
     
@@ -76,7 +85,7 @@ public class FormView implements Comparable<FormView>
         return id;
     }
 
-    public void setId(int id)
+    public void setId(final int id)
     {
         this.id = id;
     }
@@ -86,7 +95,7 @@ public class FormView implements Comparable<FormView>
         return type;
     }
 
-    public void setType(ViewType type)
+    public void setType(final ViewType type)
     {
         this.type = type;
     }
@@ -106,7 +115,7 @@ public class FormView implements Comparable<FormView>
         return resourceLabels;
     }
 
-    public void setResourceLabels(boolean resourceLabels)
+    public void setResourceLabels(final boolean resourceLabels)
     {
         this.resourceLabels = resourceLabels;
     }
@@ -116,9 +125,29 @@ public class FormView implements Comparable<FormView>
         return viewSetName;
     }
 
-    public void setViewSetName(String viewSetName)
+    public void setViewSetName(final String viewSetName)
     {
         this.viewSetName = viewSetName;
+    }
+
+    public String getDesc()
+    {
+        return desc;
+    }
+
+    public void setDesc(String desc)
+    {
+        this.desc = desc;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
     }
 
      

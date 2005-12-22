@@ -19,10 +19,10 @@
  */
 package edu.ku.brc.specify.ui;
 
-import java.util.List;
+import javax.swing.Icon;
+import javax.swing.JComponent;
 
-import javax.swing.*;
-import edu.ku.brc.specify.core.*;
+import edu.ku.brc.specify.core.Taskable;
 
 /**
  * 

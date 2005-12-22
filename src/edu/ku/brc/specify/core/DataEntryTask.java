@@ -37,9 +37,6 @@ import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.dnd.GhostActionable;
-import edu.ku.brc.specify.ui.dnd.GhostActionableDropManager;
-import edu.ku.brc.specify.ui.dnd.GhostMouseDropAdapter;
 
 
 /**
@@ -104,7 +101,7 @@ public class DataEntryTask extends BaseTask
         extendedNavBoxes.clear();
         extendedNavBoxes.addAll(navBoxes);
         
-        RecordSetTask rsTask = (RecordSetTask)ContextMgr.getInstance().getTaskByClass(RecordSetTask.class);
+        RecordSetTask rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
         
         extendedNavBoxes.addAll(rsTask.getNavBoxes());
         

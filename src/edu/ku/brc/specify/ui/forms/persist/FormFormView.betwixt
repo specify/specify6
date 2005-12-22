@@ -1,8 +1,11 @@
 <info primitiveTypes="element">
   <element name="view">
     <attribute name="id" property="id"/>
+    <attribute name="name" property="name"/>
     <attribute name="type" property="type"/>
     <attribute name="resourceLabels" property="resourceLabels"/>
+    
+    <element name="desc"/>
     
     <element name="altviews">
       <element name="alt" property="altViews"/>

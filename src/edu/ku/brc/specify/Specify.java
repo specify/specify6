@@ -21,10 +21,9 @@
 
 package edu.ku.brc.specify;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 import static edu.ku.brc.specify.helpers.UIHelper.centerAndShow;
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
-import java.util.Date;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -35,7 +34,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.*;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -57,11 +55,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
-import com.jgoodies.looks.plastic.*;
-import com.jgoodies.looks.plastic.theme.*;
+import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
+import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.specify.config.SpecifyConfig;
 import edu.ku.brc.specify.core.ContextMgr;
@@ -74,9 +72,8 @@ import edu.ku.brc.specify.core.RecordSetTask;
 import edu.ku.brc.specify.core.ReportsTask;
 import edu.ku.brc.specify.core.StartUpTask;
 import edu.ku.brc.specify.core.StatsTask;
-import edu.ku.brc.specify.dbsupport.*;
-import edu.ku.brc.specify.plugins.*;
-import edu.ku.brc.specify.datamodel.*;
+import edu.ku.brc.specify.dbsupport.DBConnection;
+import edu.ku.brc.specify.plugins.PluginMgr;
 import edu.ku.brc.specify.ui.GenericFrame;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.MainPanel;
@@ -89,6 +86,7 @@ import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
  *
  * @author Rod Spears <rods@ku.edu>
  */
+@SuppressWarnings("serial")
 public class Specify extends JPanel
 {
     private static Log log = LogFactory.getLog(Specify.class);
@@ -117,16 +115,18 @@ public class Specify extends JPanel
     private JFrame frame = null;
     private JWindow splashWindow = null;
     //private TransparentBackground splashScreen = null;
-    private ImageIcon specifySplashImageIcon   = null;
+    //private ImageIcon specifySplashImageIcon   = null;
   
+    /*
     private String databaseName = "";
     private String userName = "";
     private String password ="";
     private String hostName ="";
-  
-    private GraphicsConfiguration grc;
-  
     private boolean useLogonDialog = false;
+    */  
+    private GraphicsConfiguration grc;
+
+    
 
   
     private SpecifyConfig config;
@@ -170,7 +170,7 @@ public class Specify extends JPanel
 
         try 
         { 
-            System.out.println(System.getProperty("os.name"));
+            //System.out.println(System.getProperty("os.name"));
             
             if (!System.getProperty("os.name").equals("Mac OS X"))
             {
@@ -263,7 +263,7 @@ public class Specify extends JPanel
                             hideSplash();
                             
                             add(mainPanel, BorderLayout.CENTER);
-                            ContextMgr.getInstance().getTaskByClass(StartUpTask.class).requestContext();
+                            ContextMgr.getTaskByClass(StartUpTask.class).requestContext();
                             showApp();
                             
                         }
@@ -576,7 +576,7 @@ public class Specify extends JPanel
                 {
                     public void actionPerformed(ActionEvent ae)
                     {
-                        ExpressSearchTask expressSearchTask = (ExpressSearchTask)ContextMgr.getInstance().getTaskByName(ExpressSearchTask.EXPRESSSEARCH);
+                        ExpressSearchTask expressSearchTask = (ExpressSearchTask)ContextMgr.getTaskByName(ExpressSearchTask.EXPRESSSEARCH);
                         expressSearchTask.showIndexerPane();
                     }
                 });  
@@ -797,8 +797,11 @@ public class Specify extends JPanel
    */
   public static void main(String[] args)
   {
-    // Create PPApp on the default monitor
-      Specify hyla = new Specify(GraphicsEnvironment.getLocalGraphicsEnvironment()
+
+
+      // Create Specify Application
+      
+      Specify specify = new Specify(GraphicsEnvironment.getLocalGraphicsEnvironment()
         .getDefaultScreenDevice().getDefaultConfiguration());
   }
 

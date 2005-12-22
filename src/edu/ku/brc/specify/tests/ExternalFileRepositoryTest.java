@@ -1,14 +1,13 @@
 package edu.ku.brc.specify.tests;
 
-import javax.swing.JOptionPane;
+import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import junit.framework.TestCase;
 import edu.ku.brc.specify.config.SpecifyConfig;
-import edu.ku.brc.specify.extfilerepos.*;
-import edu.ku.brc.specify.extfilerepos.impl.*;
+import edu.ku.brc.specify.extfilerepos.ExternalFileIFace;
+import edu.ku.brc.specify.extfilerepos.impl.ExternalFileRepository;
 
 public class ExternalFileRepositoryTest extends TestCase
 {

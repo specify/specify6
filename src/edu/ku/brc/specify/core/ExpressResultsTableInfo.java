@@ -21,8 +21,10 @@
 package edu.ku.brc.specify.core;
 
 import static edu.ku.brc.specify.helpers.UIHelper.getBoolean;
+import edu.ku.brc.specify.exceptions.*;
 
-import java.util.Hashtable;
+import java.awt.Color;
+import java.util.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -59,6 +61,8 @@ public class ExpressResultsTableInfo
     
     protected int                       tableType;
     protected int                       recordSetColumnInx;
+    protected int                       priority;
+    protected Color                     color;
     
     // Derived Data member
     protected int                       visColCount = 0;
@@ -76,6 +80,24 @@ public class ExpressResultsTableInfo
     }
     
     /**
+     * PRase comma separated r,g,b string
+     * @param rgb the string with comma separated color values
+     * @return the Color object
+     */
+    protected Color parseRGB(final String rgb)
+    {
+        StringTokenizer st = new StringTokenizer(rgb, ",");
+        if (st.countTokens() == 3)
+        {
+            String r = st.nextToken().trim();
+            String g = st.nextToken().trim();
+            String b = st.nextToken().trim();
+            return new Color(Integer.parseInt(r), Integer.parseInt(g), Integer.parseInt(b));
+        }
+        throw new ConfigurationException("R,G,B value is bad ["+rgb+"]");
+    }
+    
+    /**
      * Fill the current object with the info from the DOM depending on the LOAD_TYPE
      * @param tableElement the DOM4J element used to fill the object
      */
@@ -83,6 +105,8 @@ public class ExpressResultsTableInfo
     {
         tableId      = tableElement.attributeValue("id");
         title        = tableElement.attributeValue("title");
+        priority     = Integer.parseInt(tableElement.attributeValue("priority"));
+        color        = parseRGB(tableElement.attributeValue("color"));
         
         String uhcStr = tableElement.attributeValue("usehitscache");
         useHitsCache  = uhcStr == null || uhcStr.length() == 0 ? false : getBoolean(uhcStr);
@@ -316,5 +340,16 @@ public class ExpressResultsTableInfo
     {
         return recordSetColumnInx;
     }
+
+    public Color getColor()
+    {
+        return color;
+    }
+
+    public int getPriority()
+    {
+        return priority;
+    }
+    
 }
 

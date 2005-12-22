@@ -26,6 +26,7 @@ package edu.ku.brc.specify.exceptions;
  *
  * @author Christian Bauer <christian@hibernate.org>
  */
+@SuppressWarnings("serial")
 public class UIException extends RuntimeException 
 {
     //private static final long serialVersionUID = 0;

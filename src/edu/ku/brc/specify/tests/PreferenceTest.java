@@ -5,10 +5,7 @@ import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.ku.brc.specify.config.SpecifyConfig;
-import edu.ku.brc.specify.extfilerepos.ExternalFileIFace;
-import edu.ku.brc.specify.extfilerepos.impl.ExternalFileRepository;
-import edu.ku.brc.specify.prefs.*;
+import edu.ku.brc.specify.prefs.PreferencesMgr;
 
 public class PreferenceTest extends TestCase
 {

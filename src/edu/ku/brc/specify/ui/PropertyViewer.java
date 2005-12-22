@@ -20,10 +20,15 @@
 
 package edu.ku.brc.specify.ui;
 
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.Insets;
 
-import javax.swing.*;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
@@ -34,20 +39,14 @@ import javax.swing.tree.TreeSelectionModel;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.dom4j.Node;
 
 import edu.ku.brc.specify.config.SpecifyConfig;
-import edu.ku.brc.specify.helpers.*;
 
-import org.apache.log4j.Logger;
-import org.apache.xpath.XPathAPI;
-
-import org.dom4j.*;
-
+@SuppressWarnings("serial")
 public class PropertyViewer extends JPanel
 {
-    private static Log log = LogFactory.getLog(PropertyViewer.class);
+    //private static Log log = LogFactory.getLog(PropertyViewer.class);
     
     protected CardLayout    cardLayout   = new CardLayout();
     protected JPanel        groupContainer; 
@@ -145,8 +144,8 @@ public class PropertyViewer extends JPanel
 
                   if (node == null) return;
 
-                  Object nodeInfo = node.getUserObject();
-                  /*if (nodeInfo instanceof ViewNode)
+                  /*Object nodeInfo = node.getUserObject();
+                  if (nodeInfo instanceof ViewNode)
                   {
                       showCard("");
                   }*/

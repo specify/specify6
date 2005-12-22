@@ -29,13 +29,13 @@ public class FormTableView extends FormView
     
     public FormTableView()
     {
-        super(ViewType.table, -1);
+        super(ViewType.table, -1, "", "");
         
     }
 
-    public FormTableView(ViewType type, int id)
+    public FormTableView(final int id, final String name, final String desc)
     {
-        super(ViewType.table, id);
+        super(ViewType.table, id, name, desc);
         
     }
     

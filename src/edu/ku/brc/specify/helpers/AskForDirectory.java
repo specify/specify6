@@ -19,7 +19,6 @@
  */
 package edu.ku.brc.specify.helpers;
 
-import java.io.File;
 import java.util.NoSuchElementException;
 
 import javax.swing.JComponent;

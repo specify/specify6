@@ -19,13 +19,19 @@
  */
 package edu.ku.brc.specify.ui;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Insets;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseMotionListener;
-import javax.swing.event.*;
-import  com.jgoodies.looks.plastic.*;
+
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.UIManager;
+import javax.swing.event.MouseInputAdapter;
+
+import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 
 import edu.ku.brc.specify.core.NavBoxItemIFace;
 
@@ -36,6 +42,7 @@ import edu.ku.brc.specify.core.NavBoxItemIFace;
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class RolloverCmdButton extends JButton implements NavBoxItemIFace
 {
     protected boolean      isOver     = false;

@@ -205,7 +205,7 @@ public class SQLExecutionProcessor implements Runnable
                     listener.exectionDone(this, rs);
                 } else
                 {
-                    int result = dbStatement.executeUpdate(sqlStr);
+                    dbStatement.executeUpdate(sqlStr); // int result return is ignored (probably shouldn't be)
                     log.debug("SQL*["+sqlStr+"]");
                     listener.exectionDone(this, null);
                 }

@@ -77,7 +77,7 @@ public class InteractionsTask extends BaseTask
         extendedNavBoxes.clear();
         extendedNavBoxes.addAll(navBoxes);
         
-        RecordSetTask rsTask = (RecordSetTask)ContextMgr.getInstance().getTaskByClass(RecordSetTask.class);
+        RecordSetTask rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
         
         extendedNavBoxes.addAll(rsTask.getNavBoxes());
         

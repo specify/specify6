@@ -43,6 +43,7 @@ import java.awt.image.Kernel;
 import java.lang.reflect.Field;
 import java.util.Vector;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -71,6 +72,7 @@ import edu.ku.brc.specify.ui.dnd.ShadowFactory;
  * Creates a panel containing an icon and button with a focus "ring" when the mouse is hovering.
  * This class is used mostly in NavBoxes
  */
+@SuppressWarnings("serial")
 public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostActionable, DndDeletable
 {
     protected JTextField             txtFld     = null;   
@@ -645,5 +647,22 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
         deleteCmdAction = cmdAction;
     }
 
+    /**
+     * The name of the object being deleted
+     * @return The name of the object being deleted
+     */
+    public String getName()
+    {
+        return label;
+    }
     
+    /**
+     * An icon that is representative of the item
+     * @return An icon that is representative of the item
+     */
+    public Icon getIcon()
+    {
+        return imgIcon;
+    }
+   
 }

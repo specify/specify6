@@ -20,8 +20,6 @@
 package edu.ku.brc.specify.ui;
 
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Polygon;
 import java.awt.Rectangle;
@@ -33,6 +31,7 @@ import java.awt.event.MouseEvent;
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class TriangleButton extends GradiantButton
 {
     /**

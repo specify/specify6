@@ -19,9 +19,6 @@
  */
 package edu.ku.brc.specify.core.subpane;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import edu.ku.brc.specify.core.Taskable;
 
 /**
@@ -31,10 +28,11 @@ import edu.ku.brc.specify.core.Taskable;
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class ChartPane extends BaseSubPane implements Chartable
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(ChartPane.class);
+    //private static Log log = LogFactory.getLog(ChartPane.class);
     
     // Data Members
     protected String  title       = "";

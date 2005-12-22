@@ -36,6 +36,7 @@ import javax.swing.*;
  * @author Joshua Marinacci
  *
  */
+@SuppressWarnings("serial")
 public class VectorButton extends JButton implements MouseListener 
 {
     protected boolean isDrawHighlight  = false;

@@ -19,7 +19,6 @@
  */
 package edu.ku.brc.specify.ui;
 
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
@@ -30,7 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import org.apache.commons.logging.Log;
@@ -40,11 +38,12 @@ import org.dom4j.Element;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.exceptions.ConfigurationException;
 import edu.ku.brc.specify.helpers.XMLHelper;
+
 /**
+ * Caches icon in three sizes (32, 24, 16)
+ * 
  * @author Rod Spears
  *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class IconManager
 {
@@ -87,19 +86,9 @@ public class IconManager
     };
     
     protected static String      relativePath = "images/";
-    private   static IconManager iconMgr      = new IconManager();
+    private   static IconManager instance      = new IconManager();
     
     protected Hashtable<String, IconEntry> entries       = new Hashtable<String, IconEntry>();
-    
-  
-    /**
-     * 
-     * @return the singleton instance
-     */
-    public static IconManager getInstance()
-    {
-         return iconMgr;
-    }
     
     /**
      * 
@@ -107,6 +96,7 @@ public class IconManager
      */
     protected IconManager()
     {
+        instance = this;
         loadIcons();
     }
     
@@ -117,7 +107,7 @@ public class IconManager
      * @param id the size of the icon
      * @return the icon that was created at the "id" size
      */
-    public IconEntry register(final String iconName, final String fileName, final IconSize id)
+    public static IconEntry register(final String iconName, final String fileName, final IconSize id)
     {
         URL url = getImagePath(fileName);
         
@@ -140,13 +130,13 @@ public class IconManager
      * @param id the size of the icon
      * @return the icon that was created at the "id" size
      */
-    public IconEntry register(final String iconName, final ImageIcon icon, final IconSize id)
+    public static IconEntry register(final String iconName, final ImageIcon icon, final IconSize id)
     {
         if (icon != null)
         {
             IconEntry entry = new IconEntry(iconName);
             entry.add(id, icon);
-            entries.put(iconName, entry);
+            instance.entries.put(iconName, entry);
             return entry;
             
         } else
@@ -155,7 +145,7 @@ public class IconManager
         }
     }
 
-    protected IconSize getIconSize(int size, boolean bw, boolean faded)
+    protected static IconSize getIconSize(int size, boolean bw, boolean faded)
     {
         if (size != 32 && size != 24 && size != 16)
         {
@@ -197,14 +187,14 @@ public class IconManager
      * @param id the size ID
      * @return the icon
      */
-    public ImageIcon getIcon(final String iconName, final IconSize id)
+    public static ImageIcon getIcon(final String iconName, final IconSize id)
     {
         if (iconName == null)
         {
             throw new NullPointerException("icon name should not be null!");
         }
         
-        IconEntry entry = entries.get(iconName);
+        IconEntry entry = instance.entries.get(iconName);
         if (entry != null)
         {
             ImageIcon icon = entry.getIcon(id);
@@ -233,7 +223,7 @@ public class IconManager
      * @param size the integer size
      * @return Returns the IconSize enum for an integer
      */
-    protected IconSize getSizeFromInt(int size)
+    protected static IconSize getSizeFromInt(int size)
     {
 
         switch (size)
@@ -249,7 +239,7 @@ public class IconManager
      * Loads icons from config file
      *
      */
-    public void loadIcons()
+    public static void loadIcons()
     {
         
         try
@@ -298,10 +288,11 @@ public class IconManager
         }
     }
     
-    //------------------------------------------------------------
-    // Static Methods
-    //------------------------------------------------------------
-    
+    /**
+     * Creates a Black and White image from the color
+     * @param img the image to be converted
+     * @return new B&W image 
+     */
     public static ImageIcon createBWImage(final ImageIcon img) 
     {
         BufferedImage bi = new BufferedImage(img.getIconWidth(), img.getIconHeight(), BufferedImage.TYPE_INT_RGB);
@@ -330,7 +321,7 @@ public class IconManager
      */
     public static ImageIcon getImage(final String imageName)
     {
-        return iconMgr.getIcon(imageName, IconSize.Std32);
+        return getIcon(imageName, IconSize.Std32);
     }
 
     /**
@@ -341,7 +332,7 @@ public class IconManager
      */
     public static ImageIcon getImage(final String imageName, final IconSize id)
     {
-        return iconMgr.getIcon(imageName, id);
+        return getIcon(imageName, id);
     }
 
     

@@ -20,9 +20,6 @@
 package edu.ku.brc.specify.ui;
 
 import java.awt.Component;
-import java.awt.Insets;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.util.Hashtable;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;

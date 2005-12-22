@@ -20,18 +20,16 @@
 package edu.ku.brc.specify.extfilerepos.impl;
 
 import java.io.File;
-import javax.swing.*;
-
-import edu.ku.brc.specify.extfilerepos.*;
-import edu.ku.brc.specify.dbsupport.HibernateUtil;
-import org.hibernate.*;
-import org.hibernate.cfg.*;
-import org.apache.commons.logging.*;
-import org.apache.commons.configuration.*;
-import org.apache.commons.configuration.PropertiesConfiguration;
+import java.util.Date;
 import java.util.NoSuchElementException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.Session;
+
+import edu.ku.brc.specify.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.extfilerepos.ExternalFileRepositoryIFace;
 import edu.ku.brc.specify.helpers.AskForDirectory;
-import java.util.*;
 
 /**
  * Implementation of the ExternalFileRepositoryIFace for a local directory/disk based external repository

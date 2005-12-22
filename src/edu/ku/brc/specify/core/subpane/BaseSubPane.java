@@ -28,9 +28,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -45,9 +42,10 @@ import edu.ku.brc.specify.ui.SubPaneIFace;
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class BaseSubPane extends JPanel implements SubPaneIFace
 {
-    private static Log log = LogFactory.getLog(BaseSubPane.class);
+    //private static Log log = LogFactory.getLog(BaseSubPane.class);
 
     protected String            name;
     protected Taskable          task;

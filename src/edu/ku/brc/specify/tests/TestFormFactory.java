@@ -45,10 +45,10 @@ public class TestFormFactory extends TestCase
     {
         try
         {
-            ViewMgr.getInstance().loadViewFile(new FileInputStream(aFile));
+            ViewMgr.loadViewFile(new FileInputStream(aFile));
             if (aDoValidate)
             {
-                ViewMgr.getInstance().validate();
+                ViewMgr.validate();
             }
             return true;
             
@@ -90,11 +90,11 @@ public class TestFormFactory extends TestCase
     public void testReadValidViewFile()
     {
         log.info("Running Test testReadValidViewFile");
-        ViewMgr.getInstance().clearAll();
+        ViewMgr.clearAll();
         
         assertTrue(readFile(getPath("view_valid.xml"), true));
         
-        FormViewFactory.getInstance().save(ViewMgr.getInstance().getViews("view valid"), getPath("view_valid_new.xml"));
+        FormViewFactory.save(ViewMgr.getViews("view valid"), getPath("view_valid_new.xml"));
     }
     
     /**
@@ -104,7 +104,7 @@ public class TestFormFactory extends TestCase
     public void testDuplicateViewIds()
     {
         log.info("Running Test testDuplicateViewIds");
-        ViewMgr.getInstance().clearAll();
+        ViewMgr.clearAll();
         assertFalse(readFile(getPath("duplicate_view_ids.xml"), true));
     }
     
@@ -114,7 +114,7 @@ public class TestFormFactory extends TestCase
     public void testMissingSubViewId()
     {
         log.info("Running Test testMissingSubViewId");
-        ViewMgr.getInstance().clearAll();
+        ViewMgr.clearAll();
         assertFalse(readFile(getPath("missing_subview_id.xml"), true));
     }
     
@@ -125,14 +125,14 @@ public class TestFormFactory extends TestCase
     public void testLookups()
     {
         log.info("Running Test testLookups");
-        ViewMgr.getInstance().clearAll();
+        ViewMgr.clearAll();
         boolean rs = readFile(getPath("view_valid.xml"), true);
         if (rs)
         {
-            rs = ViewMgr.getInstance().isViewSetNameInUse("view valid");
+            rs = ViewMgr.isViewSetNameInUse("view valid");
             if (rs)
             {
-                rs = ViewMgr.getInstance().isViewInUse("view valid", 2);
+                rs = ViewMgr.isViewInUse("view valid", 2);
             }
         }
         assertTrue(rs);
@@ -145,7 +145,7 @@ public class TestFormFactory extends TestCase
     public void testSubViewReference()
     {
         log.info("Running Test testSubViewReference");
-        ViewMgr.getInstance().clearAll();
+        ViewMgr.clearAll();
         readFile(getPath("view_valid.xml"), false);    // don't validate
         assertTrue(getPath("view_valid2.xml"), true);  // asks the ViewManager to validate the entire set of forms
     }

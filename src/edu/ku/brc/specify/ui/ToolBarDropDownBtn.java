@@ -30,6 +30,7 @@ import javax.swing.JComponent;
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class ToolBarDropDownBtn extends DropDownButton
 {
      /**

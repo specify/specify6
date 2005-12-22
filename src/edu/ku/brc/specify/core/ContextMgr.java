@@ -24,8 +24,6 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.ku.brc.specify.core.subpane.SQLQueryPane;
-
 /**
  * Manages the task context of the UI. The task context is controlled by what tab is visible in the main pane
  * When tasks are registered they are asked for the NavBoxes and those are placed in the NavBox Manager. when
@@ -39,8 +37,8 @@ import edu.ku.brc.specify.core.subpane.SQLQueryPane;
 public class ContextMgr
 {
     // Static Data Members
-    private static Log         log     = LogFactory.getLog(ContextMgr.class);
-    private static ContextMgr instance = new ContextMgr();
+    private static Log         log      = LogFactory.getLog(ContextMgr.class);
+    private static ContextMgr  instance = new ContextMgr();
     
     // Data Members
     protected Taskable         currentContext = null;
@@ -52,28 +50,20 @@ public class ContextMgr
      */
     protected ContextMgr()
     { 
-    }
-    
-    /**
-     * Returns singleton
-     * @return returns singleton of Context Manager
-     */ 
-    public static ContextMgr getInstance()
-    {
-        return instance;
+        instance = this; // safety
     }
     
     /**
      * Request for a change in context
      * @param task the task requesting the context
      */
-    public void requestContext(Taskable task)
+    public static void requestContext(Taskable task)
     {
-        if (task != currentContext)
+        if (task != instance.currentContext)
         {
-            if (currentContext != null)
+            if (instance.currentContext != null)
             {
-                NavBoxMgr.getInstance().unregister(currentContext);
+                NavBoxMgr.getInstance().unregister(instance.currentContext);
             }
             
             if (task != null)
@@ -81,7 +71,7 @@ public class ContextMgr
                 NavBoxMgr.getInstance().register(task);
              }
             
-            currentContext = task;
+            instance.currentContext = task;
         }
         
     }
@@ -90,23 +80,23 @@ public class ContextMgr
      * Registers a task
      * @param task the task to be register
      */
-    protected void register(Taskable task)
+    protected static void register(Taskable task)
     {
-        tasks.addElement(task);
+        instance.tasks.addElement(task);
     }
     
     /**
      *  Unregisters a task. Checks to see if it is the current task, if so then it unregisters the NavBoxes
      * @param task the task to be unregistered
      */
-    public void unregister(Taskable task)
+    public static void unregister(Taskable task)
     {
         /*if (currentContext == task)
         {    
             NavBoxMgr.getInstance().unregister(currentContext);
             currentContext = null;
         }*/
-        tasks.removeElement(task);
+        instance.tasks.removeElement(task);
     }
     
     /**
@@ -114,7 +104,7 @@ public class ContextMgr
      * @param name name of task to be returned
      * @return Returns a task by a given name
      */
-    public Taskable getTaskByName(final String name)
+    public static Taskable getTaskByName(final String name)
     {
         if (name == null)
         {
@@ -122,7 +112,7 @@ public class ContextMgr
         }
         
         // Sequential search (Could use binary but list is short)
-        for (Taskable task : tasks)
+        for (Taskable task : instance.tasks)
         {
             if (name.equals(task.getName()))
             {
@@ -138,7 +128,7 @@ public class ContextMgr
      * @param name name of task to be returned
      * @return Returns a task by a given name
      */
-    public Taskable getTaskByClass(final Class theClass)
+    public static Taskable getTaskByClass(final Class theClass)
     {
         if (theClass == null)
         {
@@ -146,7 +136,7 @@ public class ContextMgr
         }
         
         // Sequential search (Could use binary but list is short)
-        for (Taskable task : tasks)
+        for (Taskable task : instance.tasks)
         {
             if (task.getClass() == theClass)
             {

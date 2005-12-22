@@ -23,10 +23,10 @@ package edu.ku.brc.specify.core.subpane;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -40,12 +40,14 @@ import edu.ku.brc.specify.core.NavBoxLayoutManager;
 import edu.ku.brc.specify.core.NavBoxMgr;
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.ui.IconManager;
+
 /**
  * A pane with a text field for entring in a query and then the results are displayed in a table.
  * 
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class ExpressSearchResultsPane extends BaseSubPane
 {
     private static Log log = LogFactory.getLog(ExpressSearchResultsPane.class);
@@ -53,7 +55,7 @@ public class ExpressSearchResultsPane extends BaseSubPane
     protected JPanel      contentPanel;
     protected JScrollPane scrollPane;
     protected NavBox      navBox = null;
-    
+     
     /**
      * Default Constructor
      *
@@ -81,6 +83,7 @@ public class ExpressSearchResultsPane extends BaseSubPane
      */
     public void addSearchResults(final ExpressResultsTableInfo tableInfo, final Hits hits)
     {
+         
         if (tableInfo.isUseHitsCache())
         {
             contentPanel.add(new ExpressTableResultsHitsCache(this, tableInfo, hits));

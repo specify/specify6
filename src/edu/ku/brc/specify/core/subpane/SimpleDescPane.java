@@ -33,6 +33,7 @@ import edu.ku.brc.specify.core.Taskable;
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class SimpleDescPane extends BaseSubPane
 {
     //private static Log log = LogFactory.getLog(SimpleDescPane.class);

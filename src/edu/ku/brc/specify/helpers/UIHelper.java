@@ -7,8 +7,6 @@ import java.awt.Toolkit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.ku.brc.specify.core.subpane.BarChartPane;
-
 public final class UIHelper
 {
     // Static Data Members

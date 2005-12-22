@@ -25,6 +25,7 @@ import javax.swing.border.*;
 /**
  * This Border class draws a curved border
  */
+@SuppressWarnings("serial")
 public class CurvedBorder extends AbstractBorder
 {
     private Color borderColor = Color.gray;

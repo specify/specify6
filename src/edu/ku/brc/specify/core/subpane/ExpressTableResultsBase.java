@@ -62,33 +62,34 @@ abstract class ExpressTableResultsBase extends JPanel
     protected static final Cursor defCursor     = new Cursor(Cursor.DEFAULT_CURSOR);
 
     protected ExpressSearchResultsPane esrPane;
-    protected JTable                table;
-    protected JPanel                tablePane;
-    protected TriangleButton        expandBtn;
-    protected GradiantButton        showTopNumEntriesBtn;
-    protected int                   rowCount = 0;
-    protected boolean               showingAllRows = false;
+    protected JTable                   table;
+    protected JPanel                   tablePane;
+    protected TriangleButton           expandBtn;
+    protected GradiantButton           showTopNumEntriesBtn;
+    protected int                      rowCount       = 0;
+    protected boolean                  showingAllRows = false;
    
-    protected JPanel                morePanel     = null;       
-    protected Color                 bannerColor   = new Color(30, 144, 255);   
-    protected int                   topNumEntries = 7;
-    protected String[]              colNames;
-    protected ExpressResultsTableInfo tableInfo;
+    protected JPanel                   morePanel      = null;       
+    protected Color                    bannerColor    = new Color(30, 144, 255);    // XXX PREF
+    protected int                      topNumEntries  = 7;
+    protected String[]                 colNames;
+    protected ExpressResultsTableInfo  tableInfo;
     
     /**
      * Constructor of a results "table" which is really a panel
      * @param esrPane the parent 
-     * @param title the title of the resulys
-     * @param sqlStr the SQL string used to populate the results
-     * @param colNameMappings the mappings for the column names
+     * @param esrPane the parent 
+     * @param tableInfo the info describing the results
+     * @param bannerColor the color of the banner (or bar)
      */
     public ExpressTableResultsBase(final ExpressSearchResultsPane esrPane, 
                                    final ExpressResultsTableInfo tableInfo)
     {
         super(new BorderLayout());
         
-        this.esrPane   = esrPane;
-        this.tableInfo = tableInfo;
+        this.esrPane     = esrPane;
+        this.tableInfo   = tableInfo;
+        this.bannerColor = tableInfo.getColor();
         
         table = new JTable();
         table.setShowVerticalLines(false);
@@ -337,9 +338,7 @@ abstract class ExpressTableResultsBase extends JPanel
         ResultSetTableModelDM rsm = (ResultSetTableModelDM)table.getModel();
         rsm.initializeDisplayIndexes();
         rsm.addDisplayIndexes(createIndexesArray(rows));
-       
     }
-    
     
     /**
      * Returns a RecordSet object from the table
