@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: BarChartPane.java,v $
+/* Filename:    $RCSfile: PieChartPane.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2005/10/19 19:59:54 $
@@ -18,59 +18,60 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.specify.core.subpane;
+package edu.ku.brc.specify.tasks.subpane;
 
 import static edu.ku.brc.specify.helpers.UIHelper.getInt;
 import static edu.ku.brc.specify.helpers.UIHelper.getString;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 
 import javax.swing.Icon;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
 
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.dbsupport.QueryResultsContainer;
+import edu.ku.brc.specify.dbsupport.QueryResultsGetter;
 import edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.specify.dbsupport.QueryResultsListener;
 import edu.ku.brc.specify.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.specify.ui.IconManager;
 
-
 /**
- * Creates a pane that can listener for Query Results and then create a Bar Chart
+ * Creates a pane that can listener for Query Results and then create a Pie Chart
  * 
  * @author rods
  *
  */
 @SuppressWarnings("serial")
-public class BarChartPane extends ChartPane implements QueryResultsListener, QueryResultsProcessable
+public class PieChartPane extends ChartPane implements QueryResultsListener, QueryResultsProcessable
 {
     // Static Data Members
     //private static Log log = LogFactory.getLog(BarChartPane.class);
     
     // Data Members
+    private QueryResultsGetter       getter;
+    private QueryResultsContainer    qrContainer;
     private QueryResultsHandlerIFace handler = null;
     
 
     /**
-     * Creates a BarChart pane with a name and a reference to the taskable that started it
-     * @param name the name of the BarChart
-     * @param task the starting task
+     * 
+     *
      */
-    public BarChartPane(final String name, 
+    public PieChartPane(final String name, 
                         final Taskable task)
     {
         super(name, task);
-        progressLabel.setText(getResourceString("BuildingBarChart"));
+        
+        progressLabel.setText(getResourceString("BuildingPieChart"));
+        
+        getter      = new QueryResultsGetter(this); 
+        qrContainer = new QueryResultsContainer(name);
     }
     
     /*
@@ -79,8 +80,9 @@ public class BarChartPane extends ChartPane implements QueryResultsListener, Que
      */
     public Icon getIcon()
     {
-        return IconManager.getIcon("Bar_Chart", IconManager.IconSize.Std16);
+        return IconManager.getIcon("Pie_Chart", IconManager.IconSize.Std16);
     }
+    
     
     //--------------------------------------
     // QueryResultsProcessable
@@ -108,27 +110,6 @@ public class BarChartPane extends ChartPane implements QueryResultsListener, Que
     // QueryResultsListener
     //--------------------------------------
     
-    /**
-     * Helper method for methods below
-     */
-    protected void addCompletedComp(JComponent comp)
-    {
-        removeAll(); // remove progress bar
-        add(comp, BorderLayout.CENTER);
-        
-        if (handler != null)
-        {
-            handler.cleanUp();
-            handler = null;
-        }
-
-        doLayout();
-        repaint();
-        
-
-  
-    }
-    
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.QueryResultsListener#allResultsBack()
@@ -136,47 +117,88 @@ public class BarChartPane extends ChartPane implements QueryResultsListener, Que
     public synchronized void allResultsBack()
     {
         // create a dataset... 
-        String cat = "";
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset(); 
+        DefaultPieDataset dataset = new DefaultPieDataset(); 
         
         java.util.List<Object> list = handler.getDataObjects();
         for (int i=0;i<list.size();i++)
         {         
             Object descObj = list.get(i++);
             Object valObj  = list.get(i);
-            dataset.addValue(getInt(valObj), getString(descObj), cat);
+            dataset.setValue(getString(descObj), getInt(valObj));
         }
-        list.clear();
-
-        // create the chart... 
-        JFreeChart chart = ChartFactory.createBarChart3D( 
-                title,      // chart title 
-                xAxisTitle, // domain axis label 
-                yAxisTitle, // range axis label 
-                dataset,    // data 
-                isVertical ? PlotOrientation.VERTICAL : PlotOrientation.HORIZONTAL, 
-                true,       // include legend 
-                true,       // tooltips? 
-                false       // URLs? 
-            ); 
+        list.clear();        
+        
+        // create a chart... 
+        JFreeChart chart = ChartFactory.createPieChart( 
+                title, 
+                dataset, 
+                false, // legend? 
+                true, // tooltips? 
+                false // URLs? 
+            );
+        
+        /*JPanel outerPanel = new JPanel() 
+        {
+            Dimension dim = new Dimension(400,400);
+            public Rectangle getBounds()
+            {
+              return new Rectangle(getLocation().x, getLocation().y, dim.width, dim.height);
+            }
+            public void setBounds(Rectangle r) 
+            {
+                setBounds(r.x, r.y, r.width, r.height);
+            }
+            public void setBounds(int x, int y, int width, int height) 
+            {
+                if (width <= 400) 
+                    dim.width = width;
+                else
+                    dim.width = 400;
+                if (height <= 400) 
+                    dim.height = height;
+                else 
+                    dim.height = 400;
+                super.setBounds(x, y, width, height);
+            }
+            public Rectangle getBounds(Rectangle rv) 
+            {
+                rv.setBounds(getLocation().x, getLocation().y, dim.width, dim.height);
+                return rv;
+            }
+            public Dimension getSize()
+            {
+                return new Dimension(dim);
+            }
+            public Dimension getSize(Dimension rv) 
+            {
+                rv.setSize(dim);
+                return rv;
+            }
+        };*/
         // create and display a frame... 
         ChartPanel panel = new ChartPanel(chart, true, true, true, true, true); 
-        panel.setMaximumSize(new Dimension(100,100));
-        panel.setPreferredSize(new Dimension(100,100));
-        
-        addCompletedComp(panel);
 
+        //outerPanel.setLayout(new BorderLayout());
+        //outerPanel.add(panel);
+        
+        removeAll(); // remove progress bar
+
+        add(panel, BorderLayout.CENTER);
+
+        doLayout();
+        repaint();
+        
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.QueryResultsListener#resultsInError(edu.ku.brc.specify.dbsupport.QueryResultsContainer)
      */
     public void resultsInError(final QueryResultsContainer qrc)
     {
-        //JOptionPane.showMessageDialog(this, getResourceString("ERROR_CREATNG_BARCHART"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); // XXX LOCALIZE
         
-        addCompletedComp(new JLabel(getResourceString("ERROR_CREATNG_BARCHART"), JLabel.CENTER));
     }
 
-   
+    
+
+    
 }

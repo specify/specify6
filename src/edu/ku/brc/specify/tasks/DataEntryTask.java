@@ -17,7 +17,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.core;
+package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
@@ -26,11 +26,15 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
 
-import edu.ku.brc.specify.core.subpane.DataEntryPane;
-import edu.ku.brc.specify.core.subpane.SimpleDescPane;
+import edu.ku.brc.specify.core.ContextMgr;
+import edu.ku.brc.specify.core.NavBox;
+import edu.ku.brc.specify.core.NavBoxIFace;
+import edu.ku.brc.specify.core.ServiceInfo;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
+import edu.ku.brc.specify.tasks.subpane.DataEntryPane;
+import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.specify.ui.CommandAction;
 import edu.ku.brc.specify.ui.CommandDispatcher;
 import edu.ku.brc.specify.ui.IconManager;
@@ -62,25 +66,42 @@ public class DataEntryTask extends BaseTask
         super(DATA_ENTRY, getResourceString(DATA_ENTRY));
         CommandDispatcher.register(DATA_ENTRY, this);
         
-        // Temporary
-        NavBox navBox = new NavBox(getResourceString("Actions"));
-        navBox.add(NavBox.createBtn(getResourceString("Series_Processing"), name, IconManager.IconSize.Std16, new DataEntryAction("")));
-        navBoxes.addElement(navBox);
-        
-        navBox = new NavBox(getResourceString("CreateAndUpdate"));
-        //navBox.add(NavBox.createBtn(title, name, IconManager.IconSize.Std16));
-        navBox.add(NavBox.createBtn("Specimen", "ColObj", IconManager.IconSize.Std16));
-        navBox.add(NavBox.createBtn("Locality", "Locality", IconManager.IconSize.Std16));
-        navBox.add(NavBox.createBtn("Taxon", "Taxon", IconManager.IconSize.Std16));
-        navBox.add(NavBox.createBtn("Geography", "Geography", IconManager.IconSize.Std16));
-        navBox.add(NavBox.createBtn("Agent", "Agent", IconManager.IconSize.Std16));
-        navBox.add(NavBox.createBtn("Address", "Address", IconManager.IconSize.Std16));
-        navBoxes.addElement(navBox);
-        
     }
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.Taskable#initialize()
+     */
+    public void initialize()
+    {
+        if (!isInitialized)
+        {
+            super.initialize(); // sets isInitialized to false
+            
+            // Temporary
+            NavBox navBox = new NavBox(getResourceString("Actions"));
+            navBox.add(NavBox.createBtn(getResourceString("Series_Processing"), name, IconManager.IconSize.Std16, new DataEntryAction("")));
+            navBoxes.addElement(navBox);
+            
+            navBox = new NavBox(getResourceString("CreateAndUpdate"));
+            //navBox.add(NavBox.createBtn(title, name, IconManager.IconSize.Std16));
+            navBox.add(NavBox.createBtn("Specimen", "ColObj", IconManager.IconSize.Std16));
+            navBox.add(NavBox.createBtn("Locality", "Locality", IconManager.IconSize.Std16));
+            navBox.add(NavBox.createBtn("Taxon", "Taxon", IconManager.IconSize.Std16));
+            navBox.add(NavBox.createBtn("Geography", "Geography", IconManager.IconSize.Std16));
+            navBox.add(NavBox.createBtn("Agent", "Agent", IconManager.IconSize.Std16));
+            navBox.add(NavBox.createBtn("Address", "Address", IconManager.IconSize.Std16));
+            navBoxes.addElement(navBox);
+            
+            // Register Services
+            CommandAction cmd = new CommandAction("Data_Entry", "Edit", null);
+            ServiceInfo serviceInfo = ContextMgr.registerService("Data_Entry", 1, cmd, this, getResourceString("EditRecordSetTT"));
+            loadServiceIcons(serviceInfo);
+            
+        }
+    }
+   
     /**
-     * OPens a pane with a form
+     * Opens a pane with a form
      * @param formName the name of the form to be opened
      */
     public void openForm(final String formName)

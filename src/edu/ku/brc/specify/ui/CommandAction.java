@@ -31,7 +31,8 @@ public class CommandAction
 
     protected final String type;
     protected final String action;
-    protected final Object data;
+    
+    protected Object data;
     
     protected boolean isConsumed = false;
     
@@ -65,6 +66,11 @@ public class CommandAction
     public String getAction()
     {
         return action;
+    }
+
+    public void setData(final Object data)
+    {
+        this.data = data;
     }
 
     public Object getData()

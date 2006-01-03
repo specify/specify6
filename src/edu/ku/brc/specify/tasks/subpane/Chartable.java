@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: InteractionsPane.java,v $
+/* Filename:    $RCSfile: Chartable.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2005/10/19 19:59:54 $
@@ -17,32 +17,43 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+package edu.ku.brc.specify.tasks.subpane;
 
-package edu.ku.brc.specify.core.subpane;
-
-import edu.ku.brc.specify.core.Taskable;
 
 /**
- * This pane will be responsible for creating form for Gift/Exchanges and loans. We may end up
- * getting rid of this and just using the Data Entry Pane 
- *
+ * Interface that enables chart speciic informations to be set
+ * 
  * @author rods
  * 
  */
-@SuppressWarnings("serial")
-public class InteractionsPane extends BaseSubPane
+public interface Chartable
 {
-    //private static Log log = LogFactory.getLog(InteractionsPane.class);
+
+    /**
+     * Sets the title of the chart
+     * @param title the title
+     */
+    public void setTitle(final String title);
     
     /**
-     * 
-     *
+     * Sets the X Axis label if applicable
+     * @param title the title
      */
-    public InteractionsPane(final String name, 
-                            final Taskable task)
-    {
-        super(name, task);
-        
-    }
+    public void setXAxis(final String title);
     
+    /**
+     * Sets the Y Axis label if applicable
+     * @param title the title
+     */
+    public void setYAxis(final String title);
+    
+    /** 
+     * Set whether the chart is vertical or horizontal (vertical is the default)
+     * @param isVertical true if vertical 
+     */
+    public void setVertical(boolean isVertical);
+    
+
+
+
 }

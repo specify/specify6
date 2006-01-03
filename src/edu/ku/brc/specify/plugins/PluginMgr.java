@@ -22,6 +22,7 @@ package edu.ku.brc.specify.plugins;
 
 import java.awt.Component;
 import java.util.Hashtable;
+import java.util.Enumeration;
 
 import javax.swing.JMenuBar;
 import javax.swing.JToolBar;
@@ -59,13 +60,13 @@ public class PluginMgr
      * Registers a plugin into the applications
      * @param plugin the plugin to be registered
      */
-    public void register(final TaskPluginable plugin)
+    public static void register(final TaskPluginable plugin)
     {
         if (plugin != null)
         {
-            if (plugins.get(plugin.getName()) == null)
+            if (instance.plugins.get(plugin.getName()) == null)
             {
-                plugins.put(plugin.getName(), plugin);
+                instance.plugins.put(plugin.getName(), plugin);
                 
                 registerWithUI(plugin);
                 
@@ -83,13 +84,13 @@ public class PluginMgr
      * Unregisters a plugin from the application
      * @param plugin
      */
-    public void unregister(final TaskPluginable plugin)
+    public static void unregister(final TaskPluginable plugin)
     {
         if (plugin != null)
         {
-            if (plugins.get(plugin.getName()) != null)
+            if (instance.plugins.get(plugin.getName()) != null)
             {
-                plugins.remove(plugin.getName());
+                instance.plugins.remove(plugin.getName());
             } else
             {
                 throw new RuntimeException("Unregistering a plugin that has been registered ["+plugin.getName()+"]");
@@ -104,7 +105,7 @@ public class PluginMgr
      * Registers the plugin's UI compontents with the various parts of the UI
      * @param plugin the plugin that will register it's UI
      */
-    protected void registerWithUI(final TaskPluginable plugin)
+    protected static void registerWithUI(final TaskPluginable plugin)
     {
         JToolBar toolBar = (JToolBar)UICacheManager.getInstance().get(UICacheManager.TOOLBAR);
         if (toolBar != null)
@@ -156,9 +157,22 @@ public class PluginMgr
      * Unregisters the plugin's UI components from the various different pasts of the application
      * @param plugin the plugin that is being unregistered
      */
-    protected void unregisterWithUI(final TaskPluginable plugin)
+    protected static void unregisterWithUI(final TaskPluginable plugin)
     {
         
+    }
+    
+    /**
+     * Forces an initialization of all the plugins. Can be called mulitple times because plugins are responsible
+     * for making sure they only get initialized one time.
+     */
+    public static void initializePlugins()
+    {
+        for (Enumeration<TaskPluginable> e=instance.plugins.elements();e.hasMoreElements();)
+        {
+            TaskPluginable taskablePlugin = e.nextElement();
+            taskablePlugin.initialize();
+        }
     }
 
 }

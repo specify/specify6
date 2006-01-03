@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.specify.core.subpane;
+package edu.ku.brc.specify.tasks.subpane;
 
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;

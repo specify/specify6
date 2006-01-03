@@ -32,7 +32,6 @@ import javax.swing.Icon;
  */
 public interface Taskable
 {
-
     /**
      * 
      * @return a collection of Nav Boxes
@@ -58,8 +57,8 @@ public interface Taskable
     public String getTitle();
     
     /**
-     * Asks the task to initialize itself, this could invlove reading configuration files, etc.
-     * It is only done one time.
+     * Initializes the task. The Taskable is responsible for making sure this method 
+     * can be called mulitple times with no ill effects.
      *
      */
     public void initialize();

@@ -19,10 +19,12 @@
  */
 package edu.ku.brc.specify.core;
 
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import edu.ku.brc.specify.ui.CommandAction;
 
 /**
  * Manages the task context of the UI. The task context is controlled by what tab is visible in the main pane
@@ -41,8 +43,11 @@ public class ContextMgr
     private static ContextMgr  instance = new ContextMgr();
     
     // Data Members
-    protected Taskable         currentContext = null;
-    protected Vector<Taskable> tasks          = new Vector<Taskable>();
+    protected Taskable         currentContext         = null;
+    protected Vector<Taskable> tasks                  = new Vector<Taskable>();
+    
+    protected Hashtable<String, ServiceInfo>        services        = new Hashtable<String, ServiceInfo>();
+    protected Hashtable<Integer, List<ServiceInfo>> servicesByTable = new Hashtable<Integer, List<ServiceInfo>>();
     
     /**
      * Protected Constructor of Singleton
@@ -80,7 +85,7 @@ public class ContextMgr
      * Registers a task
      * @param task the task to be register
      */
-    protected static void register(Taskable task)
+    public static void register(Taskable task)
     {
         instance.tasks.addElement(task);
     }
@@ -146,4 +151,54 @@ public class ContextMgr
         log.info("Couldn't find task by class");
         return null;
     }
+    
+    /**
+     * Register a service for other UI components to use
+     * @param name the name of the service
+     * @param tableId the table ID that the service is provided for
+     * @param command the command to be sent
+     * @param task the task that provides the service
+     * @param tooltip the tooltip text for any UI
+     * @return a service info object that provide the service
+     */
+    public static ServiceInfo registerService(final String name, final int tableId, final CommandAction command, final Taskable task, final String tooltip)
+    {
+        ServiceInfo serviceInfo = new ServiceInfo(name, tableId, command, task, tooltip);
+        instance.services.put(serviceInfo.getHashKey(), serviceInfo);
+        List<ServiceInfo> serviceList = instance.servicesByTable.get(tableId);
+        if (serviceList == null)
+        {
+            serviceList = new ArrayList<ServiceInfo>();
+            instance.servicesByTable.put(tableId, serviceList);
+        }
+        serviceList.add(serviceInfo);
+        return serviceInfo;
+    }
+    
+    /**
+     * Returns the ServiceInfo object for a given service and the table it is to act upon.
+     * @param name name of service to be provided
+     * @param tableId the table ID of the data to be serviced
+     * @return 
+     */
+    public static ServiceInfo checkForService(final String name, final int tableId)
+    {
+        return instance.services.get(ServiceInfo.getHashKey(name, tableId));
+    }
+    
+    /**
+     * Returns a list of services for a table id, this will always return a list (empty list, never null).
+     * @param tableId the table id of the list of services 
+     * @return Returns a list of services for a table id
+     */
+    public static List<ServiceInfo> checkForServices(final int tableId)
+    {
+        List<ServiceInfo> serviceList = instance.servicesByTable.get(tableId);
+        if (serviceList == null)
+        {
+            return new ArrayList<ServiceInfo>();
+        }
+        return serviceList;
+    }
+    
 }

@@ -17,7 +17,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.core;
+package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
@@ -36,6 +36,12 @@ import javax.swing.JPopupMenu;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import edu.ku.brc.specify.core.*;
+import edu.ku.brc.specify.core.NavBox;
+import edu.ku.brc.specify.core.NavBoxIFace;
+import edu.ku.brc.specify.core.NavBoxItemIFace;
+import edu.ku.brc.specify.core.NavBoxMgr;
+import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.TaskPluginable;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
@@ -89,14 +95,6 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     public void finalize()
     {
         ContextMgr.unregister(this);
-    }
-    
-    /**
-     * 
-     */
-    public void initialize()
-    {
-        isInitialized = true;
     }
     
      /**
@@ -182,6 +180,17 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     }
     
     /**
+     * Helper method that loads the standard icon sizes needed for services.
+     * @param info the service info object to be loaded with the icons
+     */
+    protected void loadServiceIcons(final ServiceInfo info)
+    {
+        info.addIcon(IconManager.getIcon(name, IconManager.IconSize.Std16), IconManager.IconSize.Std16);
+        info.addIcon(IconManager.getIcon(name, IconManager.IconSize.Std24), IconManager.IconSize.Std24);
+        info.addIcon(IconManager.getIcon(name, IconManager.IconSize.Std32), IconManager.IconSize.Std32);
+    }
+    
+    /**
      * Returns the initial pane for this task, may be a blank (empty) pane, but shouldn't null
      * @return Returns the initial pane for this task, may be a blank (empty) pane, but shouldn't null
      */
@@ -190,6 +199,14 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     //-------------------------------------------------------
     // Taskable
     //-------------------------------------------------------
+    
+    /**
+     * 
+     */
+    public void initialize()
+    {
+        isInitialized = true;
+    }
     
     /*
      *  (non-Javadoc)

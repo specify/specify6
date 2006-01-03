@@ -17,7 +17,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.core.subpane;
+package edu.ku.brc.specify.tasks.subpane;
 
 import edu.ku.brc.specify.core.Taskable;
 
@@ -55,7 +55,7 @@ public class ChartPane extends BaseSubPane implements Chartable
     }
        
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.core.subpane.Chartable#setTitle(java.lang.String)
+     * @see edu.ku.brc.specify.tasks.subpane.Chartable#setTitle(java.lang.String)
      */
     public void setTitle(final String title)
     {
@@ -63,7 +63,7 @@ public class ChartPane extends BaseSubPane implements Chartable
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.core.subpane.Chartable#setXAxis(java.lang.String)
+     * @see edu.ku.brc.specify.tasks.subpane.Chartable#setXAxis(java.lang.String)
      */
     public void setXAxis(final String title)
     {
@@ -71,7 +71,7 @@ public class ChartPane extends BaseSubPane implements Chartable
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.core.subpane.Chartable#setYAxis(java.lang.String)
+     * @see edu.ku.brc.specify.tasks.subpane.Chartable#setYAxis(java.lang.String)
      */
     public void setYAxis(final String title)
     {
@@ -79,7 +79,7 @@ public class ChartPane extends BaseSubPane implements Chartable
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.core.subpane.Chartable#setVertical(boolean)
+     * @see edu.ku.brc.specify.tasks.subpane.Chartable#setVertical(boolean)
      */
     public void setVertical(boolean isVertical)
     {

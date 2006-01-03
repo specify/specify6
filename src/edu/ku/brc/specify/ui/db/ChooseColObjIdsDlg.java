@@ -30,9 +30,9 @@ import org.hibernate.Criteria;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
-import edu.ku.brc.specify.core.RecordSetTask;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.UICacheManager;
 

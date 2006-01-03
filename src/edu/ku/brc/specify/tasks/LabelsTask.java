@@ -17,7 +17,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.core;
+package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
@@ -48,11 +48,16 @@ import org.apache.commons.logging.LogFactory;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
-import edu.ku.brc.specify.core.subpane.LabelsPane;
-import edu.ku.brc.specify.core.subpane.SimpleDescPane;
+import edu.ku.brc.specify.core.ContextMgr;
+import edu.ku.brc.specify.core.NavBox;
+import edu.ku.brc.specify.core.NavBoxIFace;
+import edu.ku.brc.specify.core.NavBoxItemIFace;
+import edu.ku.brc.specify.core.ServiceInfo;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
+import edu.ku.brc.specify.tasks.subpane.LabelsPane;
+import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.specify.ui.CommandAction;
 import edu.ku.brc.specify.ui.CommandDispatcher;
 import edu.ku.brc.specify.ui.IconListCellRenderer;
@@ -60,7 +65,7 @@ import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.RolloverCommand;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
-import edu.ku.brc.specify.ui.*;
+import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.db.ChooseRecordSetDlg;
 import edu.ku.brc.specify.ui.dnd.DataActionEvent;
 import edu.ku.brc.specify.ui.dnd.GhostActionable;
@@ -162,6 +167,13 @@ public class LabelsTask extends BaseTask
             addToNavBoxAndRegisterAsDroppable(list, navBox, NavBox.createBtn("Lichens Label Example", name, IconManager.IconSize.Std16, new DisplayAction("lichens_label.jrxml", "Lichens Label Example")), "lichens_label.jrxml");
 
             navBoxes.addElement(navBox);
+            
+            // Register Services
+            CommandAction cmd = new CommandAction("Labels", "DoLabels", null);
+            ServiceInfo serviceInfo = ContextMgr.registerService("Labels", 1, cmd, this, getResourceString("CreateLabelTT"));
+            loadServiceIcons(serviceInfo);
+            
+
         }
         
     }
@@ -408,7 +420,7 @@ public class LabelsTask extends BaseTask
         }
 
         /**
-         * 
+         * Creates the Default UI for Lable task
          *
          */
         protected void createUI()
@@ -471,12 +483,18 @@ public class LabelsTask extends BaseTask
             
         }
         
-        //Handle clicks on the Set and Cancel buttons.
+         /* (non-Javadoc)
+         * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+         */
         public void actionPerformed(ActionEvent e) 
         {
-            setVisible(false);
+            // Handle clicks on the OK and Cancel buttons.
+           setVisible(false);
         }
         
+        /* (non-Javadoc)
+         * @see java.awt.Component#getName()
+         */
         public String getName()
         {
             int inx = list.getSelectedIndex();

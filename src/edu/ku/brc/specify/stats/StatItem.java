@@ -38,11 +38,11 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.core.ContextMgr;
-import edu.ku.brc.specify.core.StatsTask;
 import edu.ku.brc.specify.dbsupport.QueryResultsContainer;
 import edu.ku.brc.specify.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.specify.dbsupport.QueryResultsListener;
 import edu.ku.brc.specify.dbsupport.QueryResultsSerializedGetter;
+import edu.ku.brc.specify.tasks.StatsTask;
 
 /**
  * A Single Statitem that creates a QueryResultsContainer and then gets the result and displays it.

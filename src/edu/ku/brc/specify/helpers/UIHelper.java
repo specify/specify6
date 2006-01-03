@@ -13,8 +13,8 @@ public final class UIHelper
     private static Log log = LogFactory.getLog(UIHelper.class);
 
     /**
-     * Center and make the frame visible
-     * @param aFrame
+     * Center and make the window visible
+     * @param window the window to center
      */
     public static void centerAndShow(java.awt.Window window)
     {

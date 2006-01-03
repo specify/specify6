@@ -21,16 +21,42 @@
 package edu.ku.brc.specify.plugins;
 
 import java.util.List;
-
+/**
+ * An interface for describing how a plugin can be registered into the UI and begin to provide service.
+ * 
+ * External plugins should make sure the call <i>initialize</i> after they install themselves, or they can call
+ * PluginMgr.initilize();
+ * 
+ * @author rods
+ *
+ */
 public interface TaskPluginable
 {
+    /**
+     * Initializes the task. The Taskable is responsible for making sure this method 
+     * can be called mulitple times with no ill effects.
+     *
+     */
+    public void initialize();
+    
 
+    /**
+     * Returns the name of the task (NOT Localized)
+     * @return Returns the name of the task (NOT Localized)
+     */
     public String getName();
     
     
-    
+    /**
+     * Returns the toolbar items (usually only one item)
+     * @return Returns the toolbar items (usually only one item)
+     */
     public List<ToolBarItemDesc> getToolBarItems();
     
+    /**
+     * Returns the menu item to be registered
+     * @return Returns the menu item to be registered
+     */
     public List<MenuItemDesc>    getMenuItems();
     
 }

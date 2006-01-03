@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
-import edu.ku.brc.specify.core.RecordSetTask;
+import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.specify.ui.dnd.DndDeletable;
 
 @SuppressWarnings("serial")

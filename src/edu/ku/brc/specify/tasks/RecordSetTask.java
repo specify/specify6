@@ -17,7 +17,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.core;
+package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
@@ -31,11 +31,16 @@ import javax.swing.JOptionPane;
 
 import org.hibernate.Criteria;
 
-import edu.ku.brc.specify.core.subpane.SimpleDescPane;
+import edu.ku.brc.specify.core.ContextMgr;
+import edu.ku.brc.specify.core.NavBox;
+import edu.ku.brc.specify.core.NavBoxItemIFace;
+import edu.ku.brc.specify.core.NavBoxMgr;
+import edu.ku.brc.specify.core.ServiceInfo;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
+import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.specify.ui.CommandAction;
 import edu.ku.brc.specify.ui.CommandDispatcher;
 import edu.ku.brc.specify.ui.RolloverCommand;
@@ -74,7 +79,7 @@ public class RecordSetTask extends BaseTask
     {
         if (!isInitialized)
         {
-            super.initialize();super.initialize(); // sets isInitialized to false
+            super.initialize(); // sets isInitialized to false
             
             Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(RecordSet.class);
             List recordSets = criteria.list();
@@ -89,6 +94,12 @@ public class RecordSetTask extends BaseTask
             }          
             navBoxes.addElement(navBox);
             HibernateUtil.closeSession();
+            
+            // Register Services
+            CommandAction cmd = new CommandAction("Record_Set", "Save", null);
+            ServiceInfo serviceInfo = ContextMgr.registerService("Record_Set", 1, cmd, this, getResourceString("CreateRecordSetTT"));
+            loadServiceIcons(serviceInfo);
+            
         }
     }
     

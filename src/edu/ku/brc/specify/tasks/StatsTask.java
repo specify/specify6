@@ -17,7 +17,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.core;
+package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
@@ -31,12 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
-import edu.ku.brc.specify.core.subpane.BarChartPane;
-import edu.ku.brc.specify.core.subpane.BaseSubPane;
-import edu.ku.brc.specify.core.subpane.ChartPane;
-import edu.ku.brc.specify.core.subpane.PieChartPane;
-import edu.ku.brc.specify.core.subpane.SQLQueryPane;
-import edu.ku.brc.specify.core.subpane.StatsPane;
+import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.dbsupport.CustomQuery;
 import edu.ku.brc.specify.dbsupport.CustomQueryFactory;
 import edu.ku.brc.specify.dbsupport.PairsMultipleQueryResultsHandler;
@@ -49,6 +44,12 @@ import edu.ku.brc.specify.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
+import edu.ku.brc.specify.tasks.subpane.BarChartPane;
+import edu.ku.brc.specify.tasks.subpane.BaseSubPane;
+import edu.ku.brc.specify.tasks.subpane.ChartPane;
+import edu.ku.brc.specify.tasks.subpane.PieChartPane;
+import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
+import edu.ku.brc.specify.tasks.subpane.StatsPane;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;

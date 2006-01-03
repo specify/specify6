@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: SimpleDescPane.java,v $
+/* Filename:    $RCSfile: InteractionsPane.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2005/10/19 19:59:54 $
@@ -18,39 +18,31 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.specify.core.subpane;
-
-import java.awt.BorderLayout;
-
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
+package edu.ku.brc.specify.tasks.subpane;
 
 import edu.ku.brc.specify.core.Taskable;
 
 /**
- * A default pane for display a simple label telling what it is suppose to do
- * 
- * @author rods
+ * This pane will be responsible for creating form for Gift/Exchanges and loans. We may end up
+ * getting rid of this and just using the Data Entry Pane 
  *
+ * @author rods
+ * 
  */
 @SuppressWarnings("serial")
-public class SimpleDescPane extends BaseSubPane
+public class InteractionsPane extends BaseSubPane
 {
-    //private static Log log = LogFactory.getLog(SimpleDescPane.class);
+    //private static Log log = LogFactory.getLog(InteractionsPane.class);
     
     /**
      * 
      *
      */
-    public SimpleDescPane(final String name, 
-                          final Taskable task,
-                          final String desc)
+    public InteractionsPane(final String name, 
+                            final Taskable task)
     {
         super(name, task);
         
-        JLabel label = new JLabel(desc, SwingConstants.CENTER);
-        add(label, BorderLayout.CENTER);
-       
     }
     
 }

@@ -17,7 +17,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.core;
+package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
@@ -49,17 +49,16 @@ import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.FSDirectory;
 import org.dom4j.Element;
 
-import edu.ku.brc.specify.core.subpane.ExpressSearchIndexerPane;
-import edu.ku.brc.specify.core.subpane.ExpressSearchResultsPane;
-import edu.ku.brc.specify.core.subpane.SimpleDescPane;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
+import edu.ku.brc.specify.tasks.subpane.ExpressSearchIndexerPane;
+import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPane;
+import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.UICacheManager;
@@ -93,6 +92,8 @@ public class ExpressSearchTask extends BaseTask
     {
         super(EXPRESSSEARCH, getResourceString(EXPRESSSEARCH));
         icon = IconManager.getIcon("Search", IconManager.IconSize.Std16);
+        
+        lucenePath = getIndexDirPath(); // must be initialized here
     }
     
     /* (non-Javadoc)
@@ -103,8 +104,6 @@ public class ExpressSearchTask extends BaseTask
         if (!isInitialized)
         {
             super.initialize(); // sets isInitialized to false
-            
-            lucenePath = getIndexDirPath();
             
             intializeTableInfo();
         }
@@ -381,8 +380,4 @@ public class ExpressSearchTask extends BaseTask
         return new Vector<MenuItemDesc>();
     }
     
-    
-    //-----------------------------------------------------------------
-    // Inner Class that represents all the search results for a table
-    //-----------------------------------------------------------------
 }

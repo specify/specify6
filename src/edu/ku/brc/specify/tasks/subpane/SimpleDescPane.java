@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: ReportsPane.java,v $
+/* Filename:    $RCSfile: SimpleDescPane.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2005/10/19 19:59:54 $
@@ -18,30 +18,39 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.specify.core.subpane;
+package edu.ku.brc.specify.tasks.subpane;
+
+import java.awt.BorderLayout;
+
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 import edu.ku.brc.specify.core.Taskable;
 
 /**
- * The future reports pane
+ * A default pane for display a simple label telling what it is suppose to do
  * 
  * @author rods
  *
  */
 @SuppressWarnings("serial")
-public class ReportsPane extends BaseSubPane
+public class SimpleDescPane extends BaseSubPane
 {
-    //private static Log log = LogFactory.getLog(LabelsPane.class);
-
+    //private static Log log = LogFactory.getLog(SimpleDescPane.class);
+    
     /**
      * 
      *
      */
-    public ReportsPane(final String name, 
-                       final Taskable task)
+    public SimpleDescPane(final String name, 
+                          final Taskable task,
+                          final String desc)
     {
         super(name, task);
         
+        JLabel label = new JLabel(desc, SwingConstants.CENTER);
+        add(label, BorderLayout.CENTER);
+       
     }
     
 }

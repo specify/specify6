@@ -63,17 +63,17 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.specify.config.SpecifyConfig;
 import edu.ku.brc.specify.core.ContextMgr;
-import edu.ku.brc.specify.core.DataEntryTask;
-import edu.ku.brc.specify.core.ExpressSearchTask;
-import edu.ku.brc.specify.core.InteractionsTask;
-import edu.ku.brc.specify.core.LabelsTask;
-import edu.ku.brc.specify.core.QueryTask;
-import edu.ku.brc.specify.core.RecordSetTask;
-import edu.ku.brc.specify.core.ReportsTask;
-import edu.ku.brc.specify.core.StartUpTask;
-import edu.ku.brc.specify.core.StatsTask;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.plugins.PluginMgr;
+import edu.ku.brc.specify.tasks.DataEntryTask;
+import edu.ku.brc.specify.tasks.ExpressSearchTask;
+import edu.ku.brc.specify.tasks.InteractionsTask;
+import edu.ku.brc.specify.tasks.LabelsTask;
+import edu.ku.brc.specify.tasks.QueryTask;
+import edu.ku.brc.specify.tasks.RecordSetTask;
+import edu.ku.brc.specify.tasks.ReportsTask;
+import edu.ku.brc.specify.tasks.StartUpTask;
+import edu.ku.brc.specify.tasks.StatsTask;
 import edu.ku.brc.specify.ui.GenericFrame;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.MainPanel;
@@ -464,21 +464,17 @@ public class Specify extends JPanel
         
         add(statusField, BorderLayout.SOUTH);
         
-        PluginMgr.getInstance().register(new StartUpTask());
-        PluginMgr.getInstance().register(new DataEntryTask());
-        PluginMgr.getInstance().register(new LabelsTask());
-        PluginMgr.getInstance().register(new ReportsTask());
-        PluginMgr.getInstance().register(new InteractionsTask());
-        PluginMgr.getInstance().register(new StatsTask());
-        PluginMgr.getInstance().register(new QueryTask());
+        PluginMgr.register(new StartUpTask());
+        PluginMgr.register(new DataEntryTask());
+        PluginMgr.register(new LabelsTask());
+        PluginMgr.register(new ReportsTask());
+        PluginMgr.register(new InteractionsTask());
+        PluginMgr.register(new StatsTask());
+        PluginMgr.register(new QueryTask());    
+        PluginMgr.register(new RecordSetTask());
+        PluginMgr.register(new ExpressSearchTask());
         
-        RecordSetTask rst = new RecordSetTask();
-        rst.initialize();
-        PluginMgr.getInstance().register(rst);
-        
-        ExpressSearchTask est = new ExpressSearchTask();
-        est.initialize();
-        PluginMgr.getInstance().register(est);
+        PluginMgr.initializePlugins();
        
     }
     
