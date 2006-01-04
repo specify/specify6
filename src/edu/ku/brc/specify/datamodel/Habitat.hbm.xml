@@ -1,0 +1,612 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="edu.ku.brc.specify.datamodel.Habitat" 
+    table="Habitat"
+	lazy="true"
+>
+    <meta attribute="class-description" inherit="false">
+       @hibernate.class
+        table="Habitat"
+    </meta>
+
+    <id
+        name="habitatId"
+        type="java.lang.Integer"
+        column="HabitatID"
+    >
+        <meta attribute="field-description">
+           @hibernate.id
+            generator-class="assigned"
+            type="java.lang.Integer"
+            column="HabitatID"
+
+        </meta>
+        <meta attribute="scope-field">protected</meta>
+        <generator class="assigned" />
+    </id>
+
+    <property
+        name="airTempC"
+        type="java.lang.Float"
+        column="AirTempC"
+        length="24"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="AirTempC"
+            length="24"
+        </meta>    
+    </property>
+    <property
+        name="waterTempC"
+        type="java.lang.Float"
+        column="WaterTempC"
+        length="24"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="WaterTempC"
+            length="24"
+        </meta>    
+    </property>
+    <property
+        name="waterpH"
+        type="java.lang.Float"
+        column="WaterpH"
+        length="24"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="WaterpH"
+            length="24"
+        </meta>    
+    </property>
+    <property
+        name="turbidity"
+        type="java.lang.String"
+        column="Turbidity"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Turbidity"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="clarity"
+        type="java.lang.String"
+        column="Clarity"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Clarity"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="salinity"
+        type="java.lang.String"
+        column="Salinity"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Salinity"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="soilType"
+        type="java.lang.String"
+        column="SoilType"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="SoilType"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="soilPh"
+        type="java.lang.Float"
+        column="SoilPh"
+        length="24"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="SoilPh"
+            length="24"
+        </meta>    
+    </property>
+    <property
+        name="soilTempC"
+        type="java.lang.Float"
+        column="SoilTempC"
+        length="24"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="SoilTempC"
+            length="24"
+        </meta>    
+    </property>
+    <property
+        name="soilMoisture"
+        type="java.lang.String"
+        column="SoilMoisture"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="SoilMoisture"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="slope"
+        type="java.lang.String"
+        column="Slope"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Slope"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="vegetation"
+        type="java.lang.String"
+        column="Vegetation"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Vegetation"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="habitatType"
+        type="java.lang.String"
+        column="HabitatType"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="HabitatType"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="current1"
+        type="java.lang.String"
+        column="Current1"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Current1"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="substrate"
+        type="java.lang.String"
+        column="Substrate"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Substrate"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="substrateMoisture"
+        type="java.lang.String"
+        column="SubstrateMoisture"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="SubstrateMoisture"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="heightAboveGround"
+        type="java.lang.Float"
+        column="HeightAboveGround"
+        length="24"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="HeightAboveGround"
+            length="24"
+        </meta>    
+    </property>
+    <property
+        name="nearestNeighbor"
+        type="java.lang.String"
+        column="NearestNeighbor"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="NearestNeighbor"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="remarks"
+        type="java.lang.String"
+        column="Remarks"
+        length="1073741823"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Remarks"
+            length="1073741823"
+        </meta>    
+    </property>
+    <property
+        name="minDepth"
+        type="java.lang.Float"
+        column="MinDepth"
+        length="24"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="MinDepth"
+            length="24"
+        </meta>    
+    </property>
+    <property
+        name="maxDepth"
+        type="java.lang.Float"
+        column="MaxDepth"
+        length="24"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="MaxDepth"
+            length="24"
+        </meta>    
+    </property>
+    <property
+        name="text1"
+        type="java.lang.String"
+        column="Text1"
+        length="300"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Text1"
+            length="300"
+        </meta>    
+    </property>
+    <property
+        name="text2"
+        type="java.lang.String"
+        column="Text2"
+        length="300"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Text2"
+            length="300"
+        </meta>    
+    </property>
+    <property
+        name="number1"
+        type="java.lang.Float"
+        column="Number1"
+        length="24"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Number1"
+            length="24"
+        </meta>    
+    </property>
+    <property
+        name="number2"
+        type="java.lang.Float"
+        column="Number2"
+        length="24"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Number2"
+            length="24"
+        </meta>    
+    </property>
+    <property
+        name="timestampCreated"
+        type="java.sql.Timestamp"
+        column="TimestampCreated"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampCreated"
+            length="23"
+        </meta>    
+    </property>
+    <property
+        name="timestampModified"
+        type="java.sql.Timestamp"
+        column="TimestampModified"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampModified"
+            length="23"
+        </meta>    
+    </property>
+    <property
+        name="lastEditedBy"
+        type="java.lang.String"
+        column="LastEditedBy"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="LastEditedBy"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="habitatTypeId"
+        type="java.lang.Integer"
+        column="HabitatTypeID"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="HabitatTypeID"
+            length="10"
+        </meta>    
+    </property>
+    <property
+        name="yesNo1"
+        type="java.lang.Short"
+        column="YesNo1"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="YesNo1"
+            length="5"
+        </meta>    
+    </property>
+    <property
+        name="yesNo2"
+        type="java.lang.Short"
+        column="YesNo2"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="YesNo2"
+            length="5"
+        </meta>    
+    </property>
+    <property
+        name="number3"
+        type="java.lang.Float"
+        column="Number3"
+        length="24"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Number3"
+            length="24"
+        </meta>    
+    </property>
+    <property
+        name="number4"
+        type="java.lang.Float"
+        column="Number4"
+        length="24"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Number4"
+            length="24"
+        </meta>    
+    </property>
+    <property
+        name="number5"
+        type="java.lang.Float"
+        column="Number5"
+        length="24"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Number5"
+            length="24"
+        </meta>    
+    </property>
+    <property
+        name="text3"
+        type="java.lang.String"
+        column="Text3"
+        length="300"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Text3"
+            length="300"
+        </meta>    
+    </property>
+    <property
+        name="text4"
+        type="java.lang.String"
+        column="Text4"
+        length="100"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Text4"
+            length="100"
+        </meta>    
+    </property>
+    <property
+        name="text5"
+        type="java.lang.String"
+        column="Text5"
+        length="100"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Text5"
+            length="100"
+        </meta>    
+    </property>
+    <property
+        name="yesNo3"
+        type="java.lang.Short"
+        column="YesNo3"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="YesNo3"
+            length="5"
+        </meta>    
+    </property>
+    <property
+        name="yesNo4"
+        type="java.lang.Short"
+        column="YesNo4"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="YesNo4"
+            length="5"
+        </meta>    
+    </property>
+    <property
+        name="yesNo5"
+        type="java.lang.Short"
+        column="YesNo5"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="YesNo5"
+            length="5"
+        </meta>    
+    </property>
+
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-one association to CollectingEvent -->
+    <one-to-one
+        name="collectingEvent"
+        class="edu.ku.brc.specify.datamodel.CollectingEvent"
+        outer-join="auto"
+        constrained="true"
+		cascade="delete"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.one-to-one
+            class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            outer-join="auto"
+            constrained="true"
+			cascade="delete"
+        </meta>    
+    </one-to-one>
+    <!-- bi-directional many-to-one association to CollectionObjectType -->
+    <many-to-one
+        name="collectionObjectType"
+        class="edu.ku.brc.specify.datamodel.CollectionObjectType"
+        not-null="true"
+		outer-join="true"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="BiologicalObjectTypeCollectedID"         
+        </meta>
+        <column name="BiologicalObjectTypeCollectedID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to TaxonName -->
+    <many-to-one
+        name="taxonName"
+        class="edu.ku.brc.specify.datamodel.TaxonName"
+        not-null="true"
+		outer-join="true"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="HostTaxonID"         
+        </meta>
+        <column name="HostTaxonID" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

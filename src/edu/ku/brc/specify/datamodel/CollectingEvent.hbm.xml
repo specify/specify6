@@ -1,0 +1,347 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="edu.ku.brc.specify.datamodel.CollectingEvent" 
+    table="CollectingEvent"
+	lazy="true"
+>
+    <meta attribute="class-description" inherit="false">
+       @hibernate.class
+        table="CollectingEvent"
+    </meta>
+
+    <id
+        name="collectingEventId"
+        type="java.lang.Integer"
+        column="CollectingEventID"
+    >
+        <meta attribute="field-description">
+           @hibernate.id
+            generator-class="assigned"
+            type="java.lang.Integer"
+            column="CollectingEventID"
+
+        </meta>
+        <meta attribute="scope-field">protected</meta>
+        <generator class="assigned" />
+    </id>
+
+    <property
+        name="stationFieldNumber"
+        type="java.lang.String"
+        column="StationFieldNumber"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="StationFieldNumber"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="method"
+        type="java.lang.String"
+        column="Method"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Method"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="verbatimDate"
+        type="java.lang.String"
+        column="VerbatimDate"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="VerbatimDate"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="startDate"
+        type="java.lang.Integer"
+        column="StartDate"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="StartDate"
+            length="10"
+        </meta>    
+    </property>
+    <property
+        name="endDate"
+        type="java.lang.Integer"
+        column="EndDate"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="EndDate"
+            length="10"
+        </meta>    
+    </property>
+    <property
+        name="startTime"
+        type="java.lang.Short"
+        column="StartTime"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="StartTime"
+            length="5"
+        </meta>    
+    </property>
+    <property
+        name="endTime"
+        type="java.lang.Short"
+        column="EndTime"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="EndTime"
+            length="5"
+        </meta>    
+    </property>
+    <property
+        name="verbatimLocality"
+        type="java.lang.String"
+        column="VerbatimLocality"
+        length="1073741823"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="VerbatimLocality"
+            length="1073741823"
+        </meta>    
+    </property>
+    <property
+        name="groupPermittedToView"
+        type="java.lang.Integer"
+        column="GroupPermittedToView"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="GroupPermittedToView"
+            length="10"
+        </meta>    
+    </property>
+    <property
+        name="remarks"
+        type="java.lang.String"
+        column="Remarks"
+        length="1073741823"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Remarks"
+            length="1073741823"
+        </meta>    
+    </property>
+    <property
+        name="timestampModified"
+        type="java.sql.Timestamp"
+        column="TimestampModified"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampModified"
+            length="23"
+        </meta>    
+    </property>
+    <property
+        name="timestampCreated"
+        type="java.sql.Timestamp"
+        column="TimestampCreated"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampCreated"
+            length="23"
+        </meta>    
+    </property>
+    <property
+        name="lastEditedBy"
+        type="java.lang.String"
+        column="LastEditedBy"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="LastEditedBy"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="methodId"
+        type="java.lang.Integer"
+        column="MethodID"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="MethodID"
+            length="10"
+        </meta>    
+    </property>
+
+    <!-- Associations -->
+	<!-- ADDED - WAS NOT PART OF ORIGINAL MAPPING FILES - RELATIONSHIP
+		WAS ENFORCED, PREVIOUSLY, THROUGH HARD-CODES IN THE SPECIFY APPLICATION
+		AND NOT THROUGH THE DATABASE ENGINE -->
+    <!-- bi-directional many-to-one association to CollectionObjectType -->
+    <many-to-one
+        name="collectionObjectType"
+        class="edu.ku.brc.specify.datamodel.CollectionObjectType"
+        not-null="true"
+		outer-join="true"
+    >
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="BiologicalObjectTypeCollectedID"         
+        </meta>
+        <column name="BiologicalObjectTypeCollectedID" />
+    </many-to-one> 
+
+    <!-- bi-directional one-to-one association to Habitat -->
+    <one-to-one
+        name="habitat"
+        class="edu.ku.brc.specify.datamodel.Habitat"
+        outer-join="auto"
+		cascade="delete"
+    >
+	<meta attribute="scope-field">protected</meta> <!-- meg added -->
+        <meta attribute="field-description">
+           @hibernate.one-to-one
+            outer-join="auto"
+			cascade="delete"
+        </meta>
+    </one-to-one>
+    <!-- bi-directional one-to-one association to Stratigraphy -->
+    <one-to-one
+        name="stratigraphy"
+        class="edu.ku.brc.specify.datamodel.Stratigraphy"
+        outer-join="auto"
+		cascade="delete"
+    >
+        <meta attribute="field-description">
+           @hibernate.one-to-one
+            outer-join="auto"
+			cascade="delete"
+        </meta>
+    </one-to-one>
+    <!-- bi-directional one-to-many association to CollectionObj -->
+    <set
+        name="collectionObjects"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >    
+	<meta attribute="scope-field">protected</meta> <!-- meg added -->
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="CollectingEventID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.CollectionObj"
+        </meta> 
+        <key>
+            <column name="CollectingEventID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.CollectionObj"
+        />
+    </set>
+	
+    <!-- bi-directional one-to-many association to Collector -->
+    <set
+        name="collectors"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="delete"
+
+           @hibernate.collection-key
+            column="CollectingEventID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.Collector"
+        </meta>
+        <key>
+            <column name="CollectingEventID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.Collector"
+        />
+    </set>
+    <!-- bi-directional many-to-one association to Locality -->
+   <many-to-one 
+        name="locality"
+        class="edu.ku.brc.specify.datamodel.Locality"
+        not-null="true"
+		outer-join="true"
+    >
+	<meta attribute="scope-field">protected</meta> <!-- meg added -->
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="LocalityID"         
+        </meta>
+        <column name="LocalityID" />
+    </many-to-one>
+
+     <!-- NEED TO BE REOMOVE - HACK FOR DEMO -->
+        <many-to-one name="accession"
+                 column="accessionId"
+                 class="edu.ku.brc.specify.datamodel.Accession">
+      <meta attribute="scope-field">protected</meta>
+	</many-to-one>
+
+</class>
+</hibernate-mapping>

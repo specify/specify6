@@ -1,0 +1,332 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="edu.ku.brc.specify.datamodel.Borrow" 
+    table="Borrow"
+	lazy="true"
+>
+    <meta attribute="class-description" inherit="false">
+       @hibernate.class
+        table="Borrow"
+    </meta>
+
+    <id
+        name="borrowId"
+        type="java.lang.Integer"
+        column="BorrowID"
+    >
+        <meta attribute="field-description">
+           @hibernate.id
+            generator-class="assigned"
+            type="java.lang.Integer"
+            column="BorrowID"
+
+        </meta>
+        <meta attribute="scope-field">protected</meta>
+        <generator class="assigned" />
+    </id>
+
+    <property
+        name="collectionId"
+        type="int"
+        column="CollectionID"
+        not-null="true"
+        length="10"
+    >
+        <meta attribute="field-description">
+           @hibernate.property
+            column="CollectionID"
+            length="10"
+            not-null="true"
+        </meta>    
+    </property>
+	
+    <property
+        name="invoiceNumber"
+        type="java.lang.String"
+        column="InvoiceNumber"
+        not-null="true"
+        length="50"
+    >
+        <meta attribute="field-description">
+           @hibernate.property
+            column="InvoiceNumber"
+            length="50"
+            not-null="true"
+        </meta>    
+    </property>
+    <property
+        name="receivedDate"
+        type="java.lang.Integer"
+        column="ReceivedDate"
+        length="10"
+    >
+        <meta attribute="field-description">
+           @hibernate.property
+            column="ReceivedDate"
+            length="10"
+        </meta>    
+    </property>
+    <property
+        name="originalDueDate"
+        type="java.lang.Integer"
+        column="OriginalDueDate"
+        length="10"
+    >
+        <meta attribute="field-description">
+           @hibernate.property
+            column="OriginalDueDate"
+            length="10"
+        </meta>    
+    </property>
+    <property
+        name="dateClosed"
+        type="java.lang.Integer"
+        column="DateClosed"
+        length="10"
+    >
+        <meta attribute="field-description">
+           @hibernate.property
+            column="DateClosed"
+            length="10"
+        </meta>    
+    </property>
+    <property
+        name="remarks"
+        type="java.lang.String"
+        column="Remarks"
+        length="1073741823"
+    >
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Remarks"
+            length="1073741823"
+        </meta>    
+    </property>
+    <property
+        name="text1"
+        type="java.lang.String"
+        column="Text1"
+        length="300"
+    >
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Text1"
+            length="300"
+        </meta>    
+    </property>
+    <property
+        name="text2"
+        type="java.lang.String"
+        column="Text2"
+        length="300"
+    >
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Text2"
+            length="300"
+        </meta>    
+    </property>
+    <property
+        name="number1"
+        type="java.lang.Float"
+        column="Number1"
+        length="24"
+    >
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Number1"
+            length="24"
+        </meta>    
+    </property>
+    <property
+        name="number2"
+        type="java.lang.Float"
+        column="Number2"
+        length="24"
+    >
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Number2"
+            length="24"
+        </meta>    
+    </property>
+    <property
+        name="timestampModified"
+        type="java.sql.Timestamp"
+        column="TimestampModified"
+        length="23"
+    >
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampModified"
+            length="23"
+        </meta>    
+    </property>
+    <property
+        name="timestampCreated"
+        type="java.sql.Timestamp"
+        column="TimestampCreated"
+        length="23"
+    >
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampCreated"
+            length="23"
+        </meta>    
+    </property>
+    <property
+        name="lastEditedBy"
+        type="java.lang.String"
+        column="LastEditedBy"
+        length="50"
+    >
+        <meta attribute="field-description">
+           @hibernate.property
+            column="LastEditedBy"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="closed"
+        type="java.lang.Short"
+        column="Closed"
+        length="5"
+    >
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Closed"
+            length="5"
+        </meta>    
+    </property>
+    <property
+        name="yesNo1"
+        type="java.lang.Short"
+        column="YesNo1"
+        length="5"
+    >
+        <meta attribute="field-description">
+           @hibernate.property
+            column="YesNo1"
+            length="5"
+        </meta>    
+    </property>
+    <property
+        name="yesNo2"
+        type="java.lang.Short"
+        column="YesNo2"
+        length="5"
+    >
+        <meta attribute="field-description">
+           @hibernate.property
+            column="YesNo2"
+            length="5"
+        </meta>    
+    </property>
+    <property
+        name="currentDueDate"
+        type="java.lang.Integer"
+        column="CurrentDueDate"
+        length="10"
+    >
+        <meta attribute="field-description">
+           @hibernate.property
+            column="CurrentDueDate"
+            length="10"
+        </meta>    
+    </property>
+
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-many association to BorrowShipment -->
+    <set
+        name="borrowShipments"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="delete"
+
+           @hibernate.collection-key
+            column="BorrowID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.BorrowShipment"
+        </meta>
+        <key>
+            <column name="BorrowID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.BorrowShipment"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to BorrowAgent -->
+    <set
+        name="borrowAgents"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="delete"
+
+           @hibernate.collection-key
+            column="BorrowID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.BorrowAgent"
+        </meta>
+        <key>
+            <column name="BorrowID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.BorrowAgent"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to BorrowMaterial -->
+    <set
+        name="borrowMaterials"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="delete"
+
+           @hibernate.collection-key
+            column="BorrowID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.BorrowMaterial"
+        </meta>
+        <key>
+            <column name="BorrowID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.BorrowMaterial"
+        />
+    </set>
+
+</class>
+</hibernate-mapping>

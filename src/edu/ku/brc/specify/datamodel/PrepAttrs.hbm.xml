@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="edu.ku.brc.specify.datamodel.PrepAttrs" 
+    table="PrepAttrs"
+	lazy="true"
+>
+    <meta attribute="class-description" inherit="false">
+       @hibernate.class
+        table="PrepAttrs"
+    </meta>
+
+    <id
+        name="prepAttrsId"
+        type="java.lang.Integer"
+        column="PrepAttrsID">
+        <meta attribute="field-description">
+           @hibernate.id
+            generator-class="assigned"
+            type="java.lang.Integer"
+            column="PrepAttrsID"
+
+        </meta>
+        <meta attribute="scope-field">protected</meta>
+        <generator class="assigned" />
+    </id>
+	
+    <property
+        name="name"
+        type="java.lang.String"
+        column="name"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="name"
+            length="50"
+        </meta>    
+    </property>
+
+    <property
+        name="value"
+        type="java.lang.String"
+        column="value"
+        length="128"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="value"
+            length="128"
+        </meta>    
+    </property>
+
+    <property
+        name="fieldType"
+        type="java.lang.Integer"
+        column="fieldType"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="fieldType"
+            length="10"
+        </meta>    
+    </property>
+
+    <property
+        name="unit"
+        type="java.lang.Integer"
+        column="unit"
+        length="2"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="unit"
+            length="2"
+        </meta>    
+    </property>
+
+    <property
+        name="prepDate"
+        type="java.lang.Integer"
+        column="prepDate"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="prepDate"
+            length="10"
+        </meta>    
+    </property>
+	
+    <property
+        name="remarks"
+        type="java.lang.String"
+        column="Remarks"
+        length="1073741823"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Remarks"
+            length="1073741823"
+        </meta>
+    </property>
+	
+	
+	<!-- Associations -->
+	
+
+	
+    <!-- bi-directional many-to-one association to PrepsObj -->
+    <many-to-one
+        name="prepsObj"
+        class="edu.ku.brc.specify.datamodel.PrepsObj"
+        not-null="true"
+		outer-join="true"
+    >
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="PrepsObjID"
+        </meta>
+        <column name="PrepsObjID" />
+    </many-to-one>	
+
+    <!-- bi-directional many-to-one association to TaxonName -->
+    <many-to-one
+        name="taxonName"
+        class="edu.ku.brc.specify.datamodel.TaxonName"
+        not-null="true"
+    >
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="ParasiteTaxonNameID"         
+        </meta>
+        <column name="ParasiteTaxonNameID" />
+    </many-to-one>	
+</class>
+</hibernate-mapping>

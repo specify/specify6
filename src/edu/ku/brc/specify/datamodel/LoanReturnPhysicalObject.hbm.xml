@@ -1,0 +1,168 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject" 
+    table="LoanReturnPhysicalObject"
+	lazy="true"
+>
+    <meta attribute="class-description" inherit="false">
+       @hibernate.class
+        table="LoanReturnPhysicalObject"
+    </meta>
+
+    <id
+        name="loanReturnPhysicalObjectId"
+        type="java.lang.Integer"
+        column="LoanReturnPhysicalObjectID"
+    >
+        <meta attribute="field-description">
+           @hibernate.id
+            generator-class="assigned"
+            type="java.lang.Integer"
+            column="LoanReturnPhysicalObjectID"
+
+        </meta>
+        <meta attribute="scope-field">protected</meta>
+        <generator class="assigned" />
+    </id>
+
+    <property
+        name="date1"
+        type="java.lang.Integer"
+        column="Date1"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Date1"
+            length="10"
+        </meta>    
+    </property>
+    <property
+        name="quantity"
+        type="java.lang.Short"
+        column="Quantity"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Quantity"
+            length="5"
+        </meta>    
+    </property>
+    <property
+        name="remarks"
+        type="java.lang.String"
+        column="Remarks"
+        length="1073741823"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Remarks"
+            length="1073741823"
+        </meta>    
+    </property>
+    <property
+        name="timestampCreated"
+        type="java.sql.Timestamp"
+        column="TimestampCreated"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampCreated"
+            length="23"
+        </meta>    
+    </property>
+    <property
+        name="timestampModified"
+        type="java.sql.Timestamp"
+        column="TimestampModified"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampModified"
+            length="23"
+        </meta>    
+    </property>
+    <property
+        name="lastEditedBy"
+        type="java.lang.String"
+        column="LastEditedBy"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="LastEditedBy"
+            length="50"
+        </meta>    
+    </property>
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to LoanPhysicalObject -->
+    <many-to-one
+        name="loanPhysicalObject"
+        class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"
+        not-null="true"
+		outer-join="true"
+		cascade="delete"
+    >
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+			cascade="delete"
+           @hibernate.column name="LoanPhysicalObjectID"         
+        </meta>
+        <column name="LoanPhysicalObjectID" />
+    </many-to-one>
+	
+    <!-- bi-directional many-to-one association to DeaccessionCollectionObject -->
+    <many-to-one
+        name="deaccessionCollectionObject"
+        class="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject"
+        not-null="true"
+		outer-join="true"
+    >
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="DeaccessionPhysicalObjectID"         
+        </meta>
+        <column name="DeaccessionPhysicalObjectID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Agent -->
+    <many-to-one
+        name="agent"
+        class="edu.ku.brc.specify.datamodel.Agent"
+        not-null="true"
+		outer-join="true"
+    >
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="ReceivedByID"         
+        </meta>
+        <column name="ReceivedByID" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

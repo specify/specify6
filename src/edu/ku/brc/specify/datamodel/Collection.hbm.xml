@@ -1,0 +1,384 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="edu.ku.brc.specify.datamodel.Collection" 
+    table="Collection"
+	lazy="true"
+>
+    <meta attribute="class-description" inherit="false">
+       @hibernate.class
+        table="Collection"
+    </meta>
+
+    <id
+        name="collectionId"
+        type="java.lang.Integer"
+        column="CollectionID"
+    >
+        <meta attribute="field-description">
+           @hibernate.id
+            generator-class="assigned"
+            type="java.lang.Integer"
+            column="CollectionID"
+
+        </meta>
+        <meta attribute="scope-field">protected</meta>
+        <generator class="assigned" />
+    </id>
+
+    <property
+        name="collectionName"
+        type="java.lang.String"
+        column="CollectionName"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="CollectionName"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="collectionIdentifier"
+        type="java.lang.String"
+        column="CollectionIdentifier"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="CollectionIdentifier"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="description"
+        type="java.lang.String"
+        column="Description"
+        length="1073741823"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Description"
+            length="1073741823"
+        </meta>    
+    </property>
+    <property
+        name="remarks"
+        type="java.lang.String"
+        column="Remarks"
+        length="1073741823"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Remarks"
+            length="1073741823"
+        </meta>    
+    </property>
+    <property
+        name="text1"
+        type="java.lang.String"
+        column="Text1"
+        length="300"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Text1"
+            length="300"
+        </meta>    
+    </property>
+    <property
+        name="text2"
+        type="java.lang.String"
+        column="Text2"
+        length="300"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Text2"
+            length="300"
+        </meta>    
+    </property>
+    <property
+        name="number1"
+        type="java.lang.Float"
+        column="Number1"
+        length="24"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Number1"
+            length="24"
+        </meta>    
+    </property>
+    <property
+        name="number2"
+        type="java.lang.Float"
+        column="Number2"
+        length="24"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Number2"
+            length="24"
+        </meta>    
+    </property>
+    <property
+        name="timestampModified"
+        type="java.sql.Timestamp"
+        column="TimestampModified"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampModified"
+            length="23"
+        </meta>    
+    </property>
+    <property
+        name="timestampCreated"
+        type="java.sql.Timestamp"
+        column="TimestampCreated"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampCreated"
+            length="23"
+        </meta>    
+    </property>
+    <property
+        name="lastEditedBy"
+        type="java.lang.String"
+        column="LastEditedBy"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="LastEditedBy"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="yesNo1"
+        type="java.lang.Short"
+        column="YesNo1"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="YesNo1"
+            length="5"
+        </meta>    
+    </property>
+    <property
+        name="yesNo2"
+        type="java.lang.Short"
+        column="YesNo2"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="YesNo2"
+            length="5"
+        </meta>    
+    </property>
+
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-many association to CatalogSeries -->
+    <set
+        name="catalogSeries"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="delete"
+
+           @hibernate.collection-key
+            column="CollectionID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.CatalogSeries"
+        </meta>
+        <key>
+            <column name="CollectionID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.CatalogSeries"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to Deaccession -->
+    <set
+        name="deaccessions"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="CollectionID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.Deaccession"
+        </meta>
+        <key>
+            <column name="CollectionID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.Deaccession"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to Accession -->
+    <set
+        name="accessions"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="CollectionID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.Accession"
+        </meta>
+        <key>
+            <column name="CollectionID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.Accession"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to ExchangeIn -->
+    <set
+        name="exchangeIns"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="CollectionID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.ExchangeIn"
+        </meta>
+        <key>
+            <column name="CollectionID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.ExchangeIn"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to CollectionTaxonomyType -->
+    <set
+        name="collectionTaxonomyTypes"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="delete"
+
+           @hibernate.collection-key
+            column="CollectionID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.CollectionTaxonomyType"
+        </meta>
+        <key>
+            <column name="CollectionID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.CollectionTaxonomyType"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to ExchangeOut -->
+    <set
+        name="exchangeOuts"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="CollectionID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.ExchangeOut"
+        </meta>
+        <key>
+            <column name="CollectionID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.ExchangeOut"
+        />
+    </set>
+    <!-- bi-directional many-to-one association to Agent -->
+    <many-to-one
+        name="agent"
+        class="edu.ku.brc.specify.datamodel.Agent"
+        not-null="true"
+		outer-join="true"
+    >
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="OrganizationID"         
+        </meta>
+        <column name="OrganizationID" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

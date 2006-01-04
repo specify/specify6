@@ -53,18 +53,6 @@
            classpathref="project.class.path"/>		   
 		   
 
-  <!-- Generate the java code for all mapping files in our source tree -->
-  <target name="codegen" depends="prepare"
-          description="Generate Java source from the O/R mapping files">
-    <!-- <hbm2java output="${source.root}">
-      <fileset dir="${source.root}">
-        <include name="**/*.hbm.xml"/>
-      </fileset>
-    </hbm2java> -->
-  </target>
-
-
-
 <!-- Formally introduce Ant to the toolset -->
    <taskdef name="hibernatetool"
            classname="org.hibernate.tool.ant.HibernateToolTask">
@@ -108,47 +96,6 @@
     </javac>
   </target>
 
-  <!-- Generate the schemas for all mapping files in our class tree -->
-  <target name="schema" depends="compile"
-          description="Generate DB schema from the O/R mapping files">
-
-    <!-- Teach Ant how to use Hibernate's schema generation tool -->
-    <taskdef name="schemaexport"
-             classname="net.sf.hibernate.tool.hbm2ddl.SchemaExportTask"
-             classpathref="project.class.path"/>
-
-    <schemaexport properties="${class.root}/${hibernate.properties}"
-                  quiet="no" text="no" drop="no">
-      <fileset dir="${class.root}">
-        <include name="**/*.hbm.xml"/>
-      </fileset>
-    </schemaexport>
-  </target>
-
-	  <!-- Generate the schemas for all mapping files in our class tree -->
-	  <target name="schemaupdate" depends="compile"
-	          description="Generate DB schema from the O/R mapping files">
-
-	    <!-- Teach Ant how to use Hibernate's schema generation tool -->
-	    <taskdef name="schemaupdate"
-	             classname="net.sf.hibernate.tool.hbm2ddl.SchemaUpdateTask"
-	             classpathref="project.class.path"/>
-
-	    <schemaupdate properties="${class.root}/${hibernate.properties}"
-	                  quiet="no" text="no">
-	      <fileset dir="${class.root}">
-	        <include name="**/*.hbm.xml"/>
-	      </fileset>
-	    </schemaupdate>
-	  </target>	
-	
-  <target name="ctest" description="Creates and persists some sample data"
-          depends="compile">
-    <java classname="edu.ku.brc.hyla.HylaCreateTest" fork="true">
-      <classpath refid="project.class.path"/>
-    </java>
-  </target>
-
   <target name="run" description="Runs prototype" depends="compile">
     <java classname="edu.ku.brc.specify.Specify" fork="true">
       <classpath refid="project.class.path"/>
@@ -156,35 +103,20 @@
     </java>
   </target>
 
-  <target name="qtest" description="Run a simple Hibernate query"
-          depends="compile">
-    <java classname="edu.ku.brc.hyla.HylaQueryTest" fork="true">
-      <classpath refid="project.class.path"/>
-    </java>
-  </target>
-  
-    <target name="buildrun" description="Compiles, maps, builds and runs"
-          depends="compile,codegen,schema,ctest">
-    <java classname="edu.ku.brc.hyla.HylaApp" fork="true">
-      <classpath refid="project.class.path"/>
-    </java>
-  </target>
-
-  <target name="runspring" description="Runs prototype" depends="compile">
-    <java classname="edu.ku.brc.hyla.HylaAppLoader" fork="true">
+  <target name="initData" description="Runs Initialize Data" depends="compile">
+    <java classname="edu.ku.brc.specify.InitializeData" fork="true">
       <classpath refid="project.class.path"/>
     	 <jvmarg value= "-Xmx900m"/> 
     </java>
   </target>
+
   <target name="runwb" description="Runs prototype" depends="compile">
-    <java classname="edu.ku.brc.hyla.WorkBench" fork="true">
+    <java classname="edu.ku.brc.specify.WorkBench" fork="true">
       <classpath refid="project.class.path"/>
     	 <jvmarg value= "-Xmx900m"/> 
     </java>
   </target>  
-  
-  
-   
+       
    <target name="gencode">
       <!-- bit of a best guess, I'm afraid -->
       <hibernatetool destdir="${source.root}">

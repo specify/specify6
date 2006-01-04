@@ -1,0 +1,472 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="edu.ku.brc.specify.datamodel.ReferenceWork" 
+    table="ReferenceWork"
+	lazy="true"
+>
+    <meta attribute="class-description" inherit="false">
+       @hibernate.class
+        table="ReferenceWork"
+    </meta>
+
+    <id
+        name="referenceWorkId"
+        type="java.lang.Integer"
+        column="ReferenceWorkID"
+    >
+        <meta attribute="field-description">
+           @hibernate.id
+            generator-class="assigned"
+            type="java.lang.Integer"
+            column="ReferenceWorkID"
+
+        </meta>
+        <meta attribute="scope-field">protected</meta>
+        <generator class="assigned" />
+    </id>
+
+    <property
+        name="containingReferenceWorkId"
+        type="java.lang.Integer"
+        column="ContainingReferenceWorkID"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="ContainingReferenceWorkID"
+            length="10"
+        </meta>    
+    </property>
+    <property
+        name="referenceWorkType"
+        type="byte"
+        column="ReferenceWorkType"
+        not-null="true"
+        length="3"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="ReferenceWorkType"
+            length="3"
+            not-null="true"
+        </meta>    
+    </property>
+    <property
+        name="title"
+        type="java.lang.String"
+        column="Title"
+        length="255"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Title"
+            length="255"
+        </meta>    
+    </property>
+    <property
+        name="publisher"
+        type="java.lang.String"
+        column="Publisher"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Publisher"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="placeOfPublication"
+        type="java.lang.String"
+        column="PlaceOfPublication"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="PlaceOfPublication"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="date1"
+        type="java.lang.String"
+        column="Date1"
+        length="25"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Date1"
+            length="25"
+        </meta>    
+    </property>
+    <property
+        name="volume"
+        type="java.lang.String"
+        column="Volume"
+        length="25"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Volume"
+            length="25"
+        </meta>    
+    </property>
+    <property
+        name="pages"
+        type="java.lang.String"
+        column="Pages"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Pages"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="url"
+        type="java.lang.String"
+        column="URL"
+        length="300"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="URL"
+            length="300"
+        </meta>    
+    </property>
+    <property
+        name="libraryNumber"
+        type="java.lang.String"
+        column="LibraryNumber"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="LibraryNumber"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="remarks"
+        type="java.lang.String"
+        column="Remarks"
+        length="1073741823"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Remarks"
+            length="1073741823"
+        </meta>    
+    </property>
+    <property
+        name="text1"
+        type="java.lang.String"
+        column="Text1"
+        length="300"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Text1"
+            length="300"
+        </meta>    
+    </property>
+    <property
+        name="text2"
+        type="java.lang.String"
+        column="Text2"
+        length="300"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Text2"
+            length="300"
+        </meta>    
+    </property>
+    <property
+        name="number1"
+        type="java.lang.Float"
+        column="Number1"
+        length="24"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Number1"
+            length="24"
+        </meta>    
+    </property>
+    <property
+        name="number2"
+        type="java.lang.Float"
+        column="Number2"
+        length="24"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Number2"
+            length="24"
+        </meta>    
+    </property>
+    <property
+        name="timestampCreated"
+        type="java.sql.Timestamp"
+        column="TimestampCreated"
+        not-null="true"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampCreated"
+            length="23"
+            not-null="true"
+        </meta>    
+    </property>
+    <property
+        name="timestampModified"
+        type="java.sql.Timestamp"
+        column="TimestampModified"
+        not-null="true"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampModified"
+            length="23"
+            not-null="true"
+        </meta>    
+    </property>
+    <property
+        name="lastEditedBy"
+        type="java.lang.String"
+        column="LastEditedBy"
+        not-null="true"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="LastEditedBy"
+            length="50"
+            not-null="true"
+        </meta>    
+    </property>
+    <property
+        name="published"
+        type="java.lang.Short"
+        column="Published"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Published"
+            length="5"
+        </meta>    
+    </property>
+    <property
+        name="yesNo1"
+        type="java.lang.Short"
+        column="YesNo1"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="YesNo1"
+            length="5"
+        </meta>    
+    </property>
+    <property
+        name="yesNo2"
+        type="java.lang.Short"
+        column="YesNo2"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="YesNo2"
+            length="5"
+        </meta>    
+    </property>
+
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-many association to LocalityCitation -->
+    <set
+        name="localityCitations"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="ReferenceWorkID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.LocalityCitation"
+        </meta>
+        <key>
+            <column name="ReferenceWorkID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.LocalityCitation"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to CollectionObjectCitation -->
+    <set
+        name="collectionObjectCitations"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="ReferenceWorkID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.CollectionObjectCitation"
+        </meta>
+        <key>
+            <column name="ReferenceWorkID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.CollectionObjectCitation"
+        />
+    </set>
+ 
+    <!-- bi-directional one-to-many association to TaxonCitation -->
+    <set
+        name="taxonCitations"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="ReferenceWorkID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.TaxonCitation"
+        </meta>
+        <key>
+            <column name="ReferenceWorkID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.TaxonCitation"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to DeterminationCitation -->
+    <set
+        name="determinationCitations"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="ReferenceWorkID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.DeterminationCitation"
+        </meta>
+        <key>
+            <column name="ReferenceWorkID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.DeterminationCitation"
+        />
+    </set>
+    <!-- bi-directional many-to-one association to Journal -->
+    <many-to-one
+        name="journal"
+        class="edu.ku.brc.specify.datamodel.Journal"
+        not-null="true"
+		outer-join="true"
+    >
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="JournalID"         
+        </meta>
+        <column name="JournalID" />
+    </many-to-one>
+
+
+	    <!-- bi-directional one-to-many association to Author -->
+    <set
+        name="authors"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="delete"
+
+           @hibernate.collection-key
+            column="ReferenceWorkID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.Author"
+        </meta>
+        <key>
+            <column name="ReferenceWorkID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.Author"
+        />
+    </set>
+	</class>
+</hibernate-mapping>

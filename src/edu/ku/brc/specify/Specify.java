@@ -166,7 +166,7 @@ public class Specify extends JPanel
         
         DBConnection.getInstance().setUsernamePassword("rods", "rods");
         DBConnection.getInstance().setDriver("com.mysql.jdbc.Driver");
-        DBConnection.getInstance().setDBName("jdbc:mysql://localhost/demo_fish");
+        DBConnection.getInstance().setDBName("jdbc:mysql://localhost/demo_fish2");
 
         try 
         { 

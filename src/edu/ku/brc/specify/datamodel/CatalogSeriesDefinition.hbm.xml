@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="edu.ku.brc.specify.datamodel.CatalogSeriesDefinition" 
+    table="CatalogSeriesDefinition"
+	lazy="true"
+>
+    <meta attribute="class-description" inherit="false">
+       @hibernate.class
+        table="CatalogSeriesDefinition"
+    </meta>
+
+    <id
+        name="catalogSeriesDefinitionId"
+        type="java.lang.Integer"
+        column="CatalogSeriesDefinitionID"
+    >
+        <meta attribute="field-description">
+           @hibernate.id
+            generator-class="assigned"
+            type="java.lang.Integer"
+            column="CatalogSeriesDefinitionID"
+
+        </meta>
+        <meta attribute="scope-field">protected</meta>
+        <generator class="assigned" />
+    </id>
+
+ <!--   <property
+        name="objectTypeId"
+        type="int"
+        column="ObjectTypeID"
+        not-null="true"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="ObjectTypeID"
+            length="10"
+            not-null="true"
+        </meta>    
+    </property>-->
+    <property
+        name="remarks"
+        type="java.lang.String"
+        column="Remarks"
+        length="1073741823"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Remarks"
+            length="1073741823"
+        </meta>    
+    </property>
+    <property
+        name="timestampModified"
+        type="java.sql.Timestamp"
+        column="TimestampModified"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampModified"
+            length="23"
+        </meta>    
+    </property>
+    <property
+        name="timestampCreated"
+        type="java.sql.Timestamp"
+        column="TimestampCreated"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampCreated"
+            length="23"
+        </meta>    
+    </property>
+    <property
+        name="lastEditedBy"
+        type="java.lang.String"
+        column="LastEditedBy"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="LastEditedBy"
+            length="50"
+        </meta>    
+    </property>
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to CatalogSeries -->
+    <many-to-one
+        name="catalogSeries"
+        class="edu.ku.brc.specify.datamodel.CatalogSeries"
+        not-null="true"
+		outer-join="true"
+		cascade="delete"
+    >
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="CatalogSeriesID" 
+		   cascade="delete"        
+        </meta>
+        <column name="CatalogSeriesID" />
+    </many-to-one>
+	
+	<!-- ADDED - WAS NOT PART OF ORIGINAL MAPPING FILES - RELATIONSHIPE
+		WAS PREVIOUSLY ENFORCED HARD-CODED IN THE SPECIFY APPLICATION
+		AND NOT THROUGH THE DATABASE -->	
+    <!-- bi-directional many-to-one association to CollectionObjectType -->
+    <many-to-one
+        name="collectionobjecttypes"
+        class="edu.ku.brc.specify.datamodel.CollectionObjectType"
+        not-null="true"
+		outer-join="true"
+		cascade="none"
+    >
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="ObjectTypeID" 
+		   cascade="none"        
+        </meta>
+        <column name="ObjectTypeID" />
+    </many-to-one>	
+
+</class>
+</hibernate-mapping>

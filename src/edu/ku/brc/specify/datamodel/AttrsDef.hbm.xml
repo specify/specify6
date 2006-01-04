@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="edu.ku.brc.specify.datamodel.AttrsDef" 
+    table="AttrsDef"
+	lazy="true"
+>
+    <meta attribute="class-description" inherit="false">
+       @hibernate.class
+        table="AttrsDef"
+    </meta>
+
+    <id
+        name="attrsDefId"
+        type="java.lang.Integer"
+        column="AttrsDef"
+    >
+        <meta attribute="field-description">
+           @hibernate.id
+            generator-class="assigned"
+            type="java.lang.Integer"
+            column="AttrsDefID"
+
+        </meta>
+        <meta attribute="scope-field">protected</meta>
+        <generator class="assigned" />
+    </id>
+
+    <property
+        name="disciplineType"
+        type="java.lang.Integer"
+        column="disciplineType"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="disciplineType"
+            length="10"
+        </meta>    
+    </property>
+
+    <!--
+		Indicates whether it is for Habitat or Biological
+		0 - Habtitat
+		1 - Biological
+	-->
+    <property
+        name="tableType"
+        type="java.lang.Short"
+        column="tableType"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="tableType"
+            length="5"
+        </meta>    
+    </property>
+	
+	<!--
+		This is needed for Preparations because
+		there can be different PrepTypes that can have
+		their own set of Attrs
+    -->
+    <property
+        name="subType"
+        type="java.lang.Short"
+        column="subType"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="subType"
+            length="5"
+        </meta>    
+    </property>
+	
+    <property
+        name="fieldName"
+        type="java.lang.String"
+        column="fieldName"
+        length="32"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="fieldName"
+            length="32"
+        </meta>    
+    </property>
+
+    <property
+        name="dataType"
+        type="java.lang.Short"
+        column="dataType"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="dataType"
+            length="5"
+        </meta>    
+    </property>
+
+
+</class>
+</hibernate-mapping>

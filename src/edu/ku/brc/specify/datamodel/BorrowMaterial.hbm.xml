@@ -1,0 +1,219 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="edu.ku.brc.specify.datamodel.BorrowMaterial" 
+    table="BorrowMaterial"
+	lazy="true"
+>
+    <meta attribute="class-description" inherit="false">
+       @hibernate.class
+        table="BorrowMaterial"
+    </meta>
+
+    <id
+        name="borrowMaterialId"
+        type="java.lang.Integer"
+        column="BorrowMaterialID"
+    >
+        <meta attribute="field-description">
+           @hibernate.id
+            generator-class="assigned"
+            type="java.lang.Integer"
+            column="BorrowMaterialID"
+
+        </meta>
+        <meta attribute="scope-field">protected</meta>
+        <generator class="assigned" />
+    </id>
+
+    <property
+        name="materialNumber"
+        type="java.lang.String"
+        column="MaterialNumber"
+        not-null="true"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="MaterialNumber"
+            length="50"
+            not-null="true"
+        </meta>    
+    </property>
+    <property
+        name="description"
+        type="java.lang.String"
+        column="Description"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Description"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="quantity"
+        type="java.lang.Short"
+        column="Quantity"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Quantity"
+            length="5"
+        </meta>    
+    </property>
+    <property
+        name="outComments"
+        type="java.lang.String"
+        column="OutComments"
+        length="1073741823"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="OutComments"
+            length="1073741823"
+        </meta>    
+    </property>
+    <property
+        name="inComments"
+        type="java.lang.String"
+        column="InComments"
+        length="1073741823"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="InComments"
+            length="1073741823"
+        </meta>    
+    </property>
+    <property
+        name="quantityResolved"
+        type="java.lang.Short"
+        column="QuantityResolved"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="QuantityResolved"
+            length="5"
+        </meta>    
+    </property>
+    <property
+        name="quantityReturned"
+        type="java.lang.Short"
+        column="QuantityReturned"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="QuantityReturned"
+            length="5"
+        </meta>    
+    </property>
+    <property
+        name="timestampModified"
+        type="java.sql.Timestamp"
+        column="TimestampModified"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampModified"
+            length="23"
+        </meta>    
+    </property>
+    <property
+        name="timestampCreated"
+        type="java.sql.Timestamp"
+        column="TimestampCreated"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampCreated"
+            length="23"
+        </meta>    
+    </property>
+    <property
+        name="lastEditedBy"
+        type="java.lang.String"
+        column="LastEditedBy"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="LastEditedBy"
+            length="50"
+        </meta>    
+    </property>
+
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-many association to BorrowReturnMaterial -->
+    <set
+        name="borrowReturnMaterials"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="delete"
+
+           @hibernate.collection-key
+            column="BorrowMaterialID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.BorrowReturnMaterial"
+        </meta>
+        <key>
+            <column name="BorrowMaterialID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.BorrowReturnMaterial"
+        />
+    </set>
+    <!-- bi-directional many-to-one association to Borrow -->
+    <many-to-one
+        name="borrow"
+        class="edu.ku.brc.specify.datamodel.Borrow"
+        not-null="true"
+		outer-join="true"
+		cascade="delete"
+    >
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+			cascade="delete"
+           @hibernate.column name="BorrowID"         
+        </meta>
+        <column name="BorrowID" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

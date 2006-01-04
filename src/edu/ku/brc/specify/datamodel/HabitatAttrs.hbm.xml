@@ -1,0 +1,177 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="edu.ku.brc.specify.datamodel.HabitatAttrs" 
+    table="HabitatAttrs"
+	lazy="true"
+>
+    <meta attribute="class-description" inherit="false">
+       @hibernate.class
+        table="HabitatAttrs"
+    </meta>
+
+    <id
+        name="habitatAttrsId"
+        type="java.lang.Integer"
+        column="HabitatAttrsID">
+        <meta attribute="field-description">
+           @hibernate.id
+            generator-class="assigned"
+            type="java.lang.Integer"
+            column="HabitatAttrsID"
+
+        </meta>
+        <meta attribute="scope-field">protected</meta>
+        <generator class="assigned" />
+    </id>
+	
+    <property
+        name="name"
+        type="java.lang.String"
+        column="name"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="name"
+            length="50"
+        </meta>    
+    </property>
+
+    <property
+        name="value"
+        type="java.lang.String"
+        column="value"
+        length="128"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="value"
+            length="128"
+        </meta>    
+    </property>
+
+    <property
+        name="fieldType"
+        type="java.lang.Integer"
+        column="fieldType"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="fieldType"
+            length="10"
+        </meta>    
+    </property>
+
+    <property
+        name="unit"
+        type="java.lang.Integer"
+        column="unit"
+        length="2"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="unit"
+            length="2"
+        </meta>    
+    </property>
+
+    <property
+        name="habitatDate"
+        type="java.lang.Integer"
+        column="habitatDate"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="habitatDate"
+            length="10"
+        </meta>    
+    </property>
+	
+    <property
+        name="remarks"
+        type="java.lang.String"
+        column="Remarks"
+        length="1073741823"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Remarks"
+            length="1073741823"
+        </meta>
+    </property>
+	
+	
+	<!-- Associations -->
+	
+   <!-- bi-directional one-to-one association to CollectingEvent -->
+    <one-to-one
+        name="collectingEvent"
+        class="edu.ku.brc.specify.datamodel.CollectingEvent"
+        outer-join="auto"
+        constrained="true"
+		cascade="delete"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.one-to-one
+            class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            outer-join="auto"
+            constrained="true"
+			cascade="delete"
+        </meta>    
+    </one-to-one>
+    
+		<!-- bi-directional many-to-one association to CollectionObjectType -->
+    <many-to-one
+        name="collectionObjectType"
+        class="edu.ku.brc.specify.datamodel.CollectionObjectType"
+        not-null="true"
+		outer-join="true"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="BiologicalObjectTypeCollectedID"         
+        </meta>
+        <column name="BiologicalObjectTypeCollectedID" />
+    </many-to-one>
+    
+		<!-- bi-directional many-to-one association to TaxonName -->
+    <many-to-one
+        name="taxonName"
+        class="edu.ku.brc.specify.datamodel.TaxonName"
+        not-null="true"
+		outer-join="true"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="HostTaxonID"         
+        </meta>
+        <column name="HostTaxonID" />
+    </many-to-one>	
+	
+</class>
+</hibernate-mapping>

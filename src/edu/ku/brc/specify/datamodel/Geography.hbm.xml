@@ -1,0 +1,332 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="edu.ku.brc.specify.datamodel.Geography" 
+    table="Geography"
+	lazy="true"
+>
+    <meta attribute="class-description" inherit="false">
+       @hibernate.class
+        table="Geography"
+    </meta>
+
+    <id
+        name="geographyId"
+        type="java.lang.Integer"
+        column="GeographyID"
+    >
+        <meta attribute="field-description">
+           @hibernate.id
+            generator-class="assigned"
+            type="java.lang.Integer"
+            column="GeographyID"
+
+        </meta>
+        <meta attribute="scope-field">protected</meta>
+        <generator class="assigned" />
+    </id>
+
+    <property
+        name="continentOrOcean"
+        type="java.lang.String"
+        column="ContinentOrOcean"
+        length="100"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="ContinentOrOcean"
+            length="100"
+        </meta>    
+    </property>
+    <property
+        name="country"
+        type="java.lang.String"
+        column="Country"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Country"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="state"
+        type="java.lang.String"
+        column="State"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="State"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="county"
+        type="java.lang.String"
+        column="County"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="County"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="islandGroup"
+        type="java.lang.String"
+        column="IslandGroup"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="IslandGroup"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="island"
+        type="java.lang.String"
+        column="Island"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Island"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="waterBody"
+        type="java.lang.String"
+        column="WaterBody"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="WaterBody"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="drainage"
+        type="java.lang.String"
+        column="Drainage"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Drainage"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="fullGeographicName"
+        type="java.lang.String"
+        column="FullGeographicName"
+        length="255"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="FullGeographicName"
+            length="255"
+        </meta>    
+    </property>
+    <property
+        name="remarks"
+        type="java.lang.String"
+        column="Remarks"
+        length="1073741823"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Remarks"
+            length="1073741823"
+        </meta>    
+    </property>
+    <property
+        name="timestampCreated"
+        type="java.sql.Timestamp"
+        column="TimestampCreated"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampCreated"
+            length="23"
+        </meta>    
+    </property>
+    <property
+        name="timestampModified"
+        type="java.sql.Timestamp"
+        column="TimestampModified"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampModified"
+            length="23"
+        </meta>    
+    </property>
+    <property
+        name="timestampVersion"
+        type="java.sql.Timestamp"
+        column="TimestampVersion"
+        length="16"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampVersion"
+            length="16"
+        </meta>    
+    </property>
+    <property
+        name="lastEditedBy"
+        type="java.lang.String"
+        column="LastEditedBy"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="LastEditedBy"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="isCurrent"
+        type="java.lang.Short"
+        column="IsCurrent"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="IsCurrent"
+            length="5"
+        </meta>    
+    </property>
+
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-many association to Locality -->
+ <!--   <set
+        name="localitiesByGeographyId"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="GeographyID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.Locality"
+        </meta>
+        <key>
+            <column name="GeographyID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.Locality"
+        />
+    </set>-->
+    <!-- bi-directional one-to-many association to Locality -->
+    <set
+        name="localitiesByGeographyId1"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="GeographyID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.Locality"
+        </meta>
+        <key>
+            <column name="GeographyID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.Locality"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to Geography -->
+    <set
+        name="geographies"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="delete"
+
+           @hibernate.collection-key
+            column="CurrentID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.Geography"
+        </meta>
+        <key>
+            <column name="CurrentID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.Geography"
+        />
+    </set>
+    <!-- bi-directional many-to-one association to Geography -->
+    <many-to-one
+        name="geography"
+        class="edu.ku.brc.specify.datamodel.Geography"
+        not-null="true"
+		outer-join="true"
+    >
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="CurrentID"         
+        </meta>
+        <column name="CurrentID" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

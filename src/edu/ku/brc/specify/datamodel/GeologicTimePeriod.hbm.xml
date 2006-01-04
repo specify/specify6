@@ -1,0 +1,216 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="edu.ku.brc.specify.datamodel.GeologicTimePeriod" 
+    table="GeologicTimePeriod"
+	lazy="true"
+>
+    <meta attribute="class-description" inherit="false">
+       @hibernate.class
+        table="GeologicTimePeriod"
+    </meta>
+
+    <id
+        name="geologicTimePeriodId"
+        type="java.lang.Integer"
+        column="GeologicTimePeriodID"
+    >
+        <meta attribute="field-description">
+           @hibernate.id
+            generator-class="assigned"
+            type="java.lang.Integer"
+            column="GeologicTimePeriodID"
+
+        </meta>
+        <meta attribute="scope-field">protected</meta>
+        <generator class="assigned" />
+    </id>
+
+    <property
+        name="rankCode"
+        type="java.lang.Integer"
+        column="RankCode"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="RankCode"
+            length="10"
+        </meta>    
+    </property>
+    <property
+        name="rankName"
+        type="java.lang.String"
+        column="RankName"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="RankName"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="name"
+        type="java.lang.String"
+        column="Name"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Name"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="standard"
+        type="java.lang.String"
+        column="Standard"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Standard"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="remarks"
+        type="java.lang.String"
+        column="Remarks"
+        length="1073741823"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Remarks"
+            length="1073741823"
+        </meta>    
+    </property>
+    <property
+        name="timestampModified"
+        type="java.sql.Timestamp"
+        column="TimestampModified"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampModified"
+            length="23"
+        </meta>    
+    </property>
+    <property
+        name="timestampCreated"
+        type="java.sql.Timestamp"
+        column="TimestampCreated"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampCreated"
+            length="23"
+        </meta>    
+    </property>
+    <property
+        name="timestampVersion"
+        type="java.sql.Timestamp"
+        column="TimestampVersion"
+        length="16"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampVersion"
+            length="16"
+        </meta>    
+    </property>
+    <property
+        name="lastEditedBy"
+        type="java.lang.String"
+        column="LastEditedBy"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="LastEditedBy"
+            length="50"
+        </meta>    
+    </property>
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to GeologicTimeBoundary -->
+    <many-to-one
+        name="geologicTimeBoundaryByLowerBoundaryId"
+        class="edu.ku.brc.specify.datamodel.GeologicTimeBoundary"
+        not-null="true"
+		outer-join="true"
+    >
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="LowerBoundaryID"         
+        </meta>
+        <column name="LowerBoundaryID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to GeologicTimeBoundary -->
+    <many-to-one
+        name="geologicTimeBoundaryByUpperBoundaryId"
+        class="edu.ku.brc.specify.datamodel.GeologicTimeBoundary"
+        not-null="true"
+		outer-join="true"
+    >
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="UpperBoundaryID"         
+        </meta>
+        <column name="UpperBoundaryID" />
+    </many-to-one>
+
+    <!-- bi-directional one-to-many association to Stratigraphy -->
+   <!-- <set
+        name="stratigraphies"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="GeologicTimePeriodID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.Stratigraphy"
+        </meta>
+        <key>
+            <column name="GeologicTimePeriodID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.Stratigraphy"
+        />
+    </set>-->
+</class>
+</hibernate-mapping>

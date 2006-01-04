@@ -1,0 +1,349 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="edu.ku.brc.specify.datamodel.CollectionObjectType" 
+    table="CollectionObjectType"
+	lazy="true"
+>
+    <meta attribute="class-description" inherit="false">
+       @hibernate.class
+        table="CollectionObjectType"
+    </meta>
+
+    <id
+        name="collectionObjectTypeId"
+        type="java.lang.Integer"
+        column="CollectionObjectTypeID"
+    >
+        <meta attribute="field-description">
+           @hibernate.id
+            generator-class="assigned"
+            type="java.lang.Integer"
+            column="CollectionObjectTypeID"
+
+        </meta>
+        <meta attribute="scope-field">protected</meta>
+        <generator class="assigned" />
+    </id>
+
+    <property
+        name="collectionObjectTypeName"
+        type="java.lang.String"
+        column="CollectionObjectTypeName"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="CollectionObjectTypeName"
+            length="50"
+        </meta>    
+    </property>
+    <property
+        name="category"
+        type="java.lang.String"
+        column="Category"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Category"
+            length="50"
+        </meta>    
+    </property>
+
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-many association to Habitat -->
+    <set
+        name="habitats"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="BiologicalObjectTypeCollectedID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.Habitat"
+        </meta>
+        <key>
+            <column name="BiologicalObjectTypeCollectedID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.Habitat"
+        />
+    </set>
+
+    <!-- bi-directional one-to-many association to PrepsObj -->
+    <set
+        name="preparations"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="PhysicalObjectTypeID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.PrepsObj"
+        </meta>
+        <key>
+            <column name="PhysicalObjectTypeID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.PrepsObj"
+        />
+    </set>
+	
+    <!-- bi-directional one-to-many association to Preparation -->
+    <!--<set
+        name="preparations"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="PhysicalObjectTypeID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.Preparation"
+        </meta>
+        <key>
+            <column name="PhysicalObjectTypeID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.Preparation"
+        />
+    </set>	-->
+    <!-- bi-directional one-to-many association to CollectionTaxonomyType -->
+    <set
+        name="collectionTaxonomyTypes"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="BiologicalObjectTypeID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.CollectionTaxonomyType"
+        </meta>
+        <key>
+            <column name="BiologicalObjectTypeID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.CollectionTaxonomyType"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to CollectionObj -->
+    <set
+        name="collectionObjects"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="CollectionObjectTypeID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.CollectionObj"
+        </meta>
+        <key>
+            <column name="CollectionObjectTypeID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.CollectionObj"
+        />
+    </set>
+	
+    <!-- bi-directional one-to-many association to CollectionObject -->
+   <!-- <set
+        name="collectionObjects"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="CollectionObjectTypeID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
+        </meta>
+        <key>
+            <column name="CollectionObjectTypeID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
+        />
+    </set>	-->
+
+    <!-- bi-directional one-to-many association to CollectionObjectCatalog -->
+    <!-- <set
+        name="collectionObjectCatalogs"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="CollectionObjectTypeID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.CollectionObjectCatalog"
+        </meta>
+        <key>
+            <column name="CollectionObjectTypeID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.CollectionObjectCatalog"
+        />
+    </set>
+	-->
+
+    <!-- bi-directional one-to-many association to Determination -->
+    <set
+        name="determinations"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="BiologicalObjectTypeID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.Determination"
+        </meta>
+        <key>
+            <column name="BiologicalObjectTypeID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.Determination"
+        />
+    </set>
+
+	<!-- ADDED - WAS NOT PART OF ORIGINAL MAPPING FILES - RELATIONSHIPE
+		WAS PREVIOUSLY ENFORCED HARD-CODED IN THE SPECIFY APPLICATION
+		AND NOT THROUGH THE DATABASE -->
+    <!-- bi-directional one-to-one association to BioAttrs -->
+    <one-to-one
+        name="bioattrss"
+        class="edu.ku.brc.specify.datamodel.BioAttrs"
+        outer-join="auto"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.one-to-one
+            outer-join="auto"
+        </meta>
+    </one-to-one>
+	
+	<!-- ADDED - WAS NOT PART OF ORIGINAL MAPPING FILES - RELATIONSHIPE
+		WAS PREVIOUSLY ENFORCED HARD-CODED IN THE SPECIFY APPLICATION
+		AND NOT THROUGH THE DATABASE -->
+    <!-- bi-directional one-to-one association to CollectingEvent -->
+    <one-to-one
+        name="collectingevents"
+        class="edu.ku.brc.specify.datamodel.CollectingEvent"
+        outer-join="auto"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.one-to-one
+            outer-join="auto"
+        </meta>
+    </one-to-one>	
+	
+	<!-- ADDED - WAS NOT PART OF ORIGINAL MAPPING FILES - RELATIONSHIPE
+		WAS PREVIOUSLY ENFORCED HARD-CODED IN THE SPECIFY APPLICATION
+		AND NOT THROUGH THE DATABASE -->
+    <!-- bi-directional one-to-many association to CatalogSeriesDefinition -->
+    <set
+        name="catalogseriesdefinitions"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="ObjectTypeID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.CatalogSeriesDefinition"
+        </meta>
+        <key>
+            <column name="ObjectTypeID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.CatalogSeriesDefinition"
+        />
+    </set>
+</class>
+</hibernate-mapping>

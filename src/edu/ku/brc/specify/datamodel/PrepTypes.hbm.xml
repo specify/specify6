@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="edu.ku.brc.specify.datamodel.PrepTypes" 
+    table="PrepTypes"
+	lazy="true"
+>
+    <meta attribute="class-description" inherit="false">
+       @hibernate.class
+        table="PrepTypes"
+    </meta>
+
+    <id
+        name="prepTypeID"
+        type="java.lang.Integer"
+        column="PrepTypeID">
+        <meta attribute="field-description">
+           @hibernate.id
+            generator-class="assigned"
+            type="java.lang.Integer"
+            column="PrepTypeID"
+
+        </meta>
+        <meta attribute="scope-field">protected</meta>
+        <generator class="assigned" />
+    </id>
+	
+    <property
+        name="name"
+        type="java.lang.String"
+        column="name"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="name"
+            length="50"
+        </meta>    
+    </property>
+
+	
+	
+	<!-- Associations -->
+	
+		 
+	
+    <!-- bi-directional one-to-many association to PrepsObj -->
+    <set
+        name="prepsObjs"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="preparationId"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.PrepsObj"
+        </meta>
+        <key>
+            <column name="preparationId" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.PrepsObj"
+        />
+    </set>
+
+	
+</class>
+</hibernate-mapping>
