@@ -64,6 +64,7 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 import edu.ku.brc.specify.config.SpecifyConfig;
 import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.dbsupport.DBConnection;
+import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.plugins.PluginMgr;
 import edu.ku.brc.specify.tasks.DataEntryTask;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
@@ -81,6 +82,7 @@ import edu.ku.brc.specify.ui.PropertyViewer;
 import edu.ku.brc.specify.ui.ToolbarLayoutManager;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
+import edu.ku.brc.specify.ui.forms.ViewMgr;
 /**
  * Specify Main Application Class
  *
@@ -149,6 +151,8 @@ public class Specify extends JPanel
      */
     public Specify(GraphicsConfiguration gc)
     {
+        UICacheManager.register(UICacheManager.MAINPANE, this); // important to be done immediately
+        
         // Create and throw the splash screen up. Since this will
         // physically throw bits on the screen, we need to do this
         // on the GUI thread using invokeLater.
@@ -164,9 +168,9 @@ public class Specify extends JPanel
         
         specifyApp = this;
         
-        DBConnection.getInstance().setUsernamePassword("rods", "rods");
-        DBConnection.getInstance().setDriver("com.mysql.jdbc.Driver");
-        DBConnection.getInstance().setDBName("jdbc:mysql://localhost/demo_fish2");
+        DBConnection.setUsernamePassword("rods", "rods");
+        DBConnection.setDriver("com.mysql.jdbc.Driver");
+        DBConnection.setDBName("jdbc:mysql://localhost/demo_fish2");
 
         try 
         { 
@@ -193,8 +197,8 @@ public class Specify extends JPanel
         frame = new JFrame(gc);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        UICacheManager.getInstance().register(UICacheManager.FRAME, frame);
-      
+        UICacheManager.register(UICacheManager.FRAME, frame);
+
       
         try
         {
@@ -206,7 +210,17 @@ public class Specify extends JPanel
             JOptionPane.showMessageDialog(this, e.toString(), "Fatal Error", JOptionPane.ERROR_MESSAGE);
         }
       
-      
+        // XXX Temporary load of form because now forma er being loaded right now
+        try
+        {
+            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("form.xml"));
+            
+        } catch (Exception ex)
+        {
+            log.fatal(ex);
+            ex.printStackTrace();
+        }
+ 
         /*
         if(useLogonDialog){
           DatabaseLogon dbl = new DatabaseLogon();
@@ -432,13 +446,13 @@ public class Specify extends JPanel
         topFrame.setGlassPane(glassPane = new GhostGlassPane());
         topFrame.setLocationRelativeTo(null);
         Toolkit.getDefaultToolkit().setDynamicLayout(true);
-        UICacheManager.getInstance().register(UICacheManager.GLASSPANE, glassPane);
+        UICacheManager.register(UICacheManager.GLASSPANE, glassPane);
         
         JPanel top = new JPanel();
         top.setLayout(new BorderLayout());
         add(top, BorderLayout.NORTH);
         
-        UICacheManager.getInstance().register(UICacheManager.TOPFRAME, topFrame);
+        UICacheManager.register(UICacheManager.TOPFRAME, topFrame);
         
         menuBar = createMenus();
         if (menuBar != null)
@@ -446,7 +460,7 @@ public class Specify extends JPanel
             //top.add(menuBar, BorderLayout.NORTH);
             topFrame.setJMenuBar(menuBar);
         }
-        UICacheManager.getInstance().register(UICacheManager.MENUBAR, menuBar);
+        UICacheManager.register(UICacheManager.MENUBAR, menuBar);
 
         
         JToolBar toolBar = createToolBar();
@@ -454,17 +468,19 @@ public class Specify extends JPanel
         {
             top.add(toolBar, BorderLayout.CENTER);
         }
-        UICacheManager.getInstance().register(UICacheManager.TOOLBAR, toolBar);
+        UICacheManager.register(UICacheManager.TOOLBAR, toolBar);
         
         mainPanel = new MainPanel();
 
         statusField = new JTextField("");
         statusField.setEditable(false);
-        UICacheManager.getInstance().register(UICacheManager.STATUSBAR, statusField);
+        UICacheManager.register(UICacheManager.STATUSBAR, statusField);
         
         add(statusField, BorderLayout.SOUTH);
         
-        PluginMgr.register(new StartUpTask());
+        PluginMgr.readRegistry();
+        
+        /*PluginMgr.register(new StartUpTask());
         PluginMgr.register(new DataEntryTask());
         PluginMgr.register(new LabelsTask());
         PluginMgr.register(new ReportsTask());
@@ -473,8 +489,9 @@ public class Specify extends JPanel
         PluginMgr.register(new QueryTask());    
         PluginMgr.register(new RecordSetTask());
         PluginMgr.register(new ExpressSearchTask());
-        
+        */
         PluginMgr.initializePlugins();
+        
        
     }
     
@@ -583,7 +600,7 @@ public class Specify extends JPanel
                 {
                     public void actionPerformed(ActionEvent ae)
                     {
-                        UICacheManager.getInstance().getSubPaneMgr().closeCurrent();
+                        UICacheManager.getSubPaneMgr().closeCurrent();
                     }
                 });  
 
@@ -592,7 +609,7 @@ public class Specify extends JPanel
                 {
                     public void actionPerformed(ActionEvent ae)
                     {
-                        UICacheManager.getInstance().getSubPaneMgr().closeAll();
+                        UICacheManager.getSubPaneMgr().closeAll();
                     }
                 });  
 

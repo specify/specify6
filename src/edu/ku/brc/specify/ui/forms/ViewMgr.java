@@ -37,7 +37,7 @@ import edu.ku.brc.specify.ui.forms.persist.FormCellSubView;
 import edu.ku.brc.specify.ui.forms.persist.FormFormView;
 import edu.ku.brc.specify.ui.forms.persist.FormRow;
 import edu.ku.brc.specify.ui.forms.persist.FormView;
-import edu.ku.brc.specify.ui.forms.persist.FormViewFactory;
+import edu.ku.brc.specify.ui.forms.persist.*;
 import edu.ku.brc.specify.ui.forms.persist.ViewSet;
 
 public class ViewMgr

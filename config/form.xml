@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <viewset name="view valid" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="form.xsd">
-    <view id="1" type="form" name="Accession" resourceLabels="false">
+    <view id="1" type="form" name="Accession" class="edu.ku.brc.specify.datamodel.Accession" resourceLabels="false">
     	<desc><![CDATA[The Main Accession form.]]></desc>
         <altviews>
             <alt id="2" label="Alt. Form"/>
@@ -55,15 +55,15 @@
             </row>
             <row>
                 <cell type="subview" id="12" name="accessionAgents"
-                    class="edu.ku.brc.hyla.AccessionAgent"/>
+                    class="edu.ku.brc.specify.datamodel.AccessionAgent"/>
             </row>
             <row>
                 <cell type="subview" id="13" name="collectionObjectCatalogs"
-                    class="edu.ku.brc.hyla.CollectionObjectCatalog"/>
+                    class="edu.ku.brc.specify.datamodel.CollectionObjectCatalog"/>
             </row>
         </rows>
     </view>
-    <view id="2" name="Accession" type="form">
+    <view id="2" name="Accession" class="" type="form">
     	<desc><![CDATA[The alternate Accession form.]]></desc>
         <altviews>
             <alt id="1" label="Form"/>
@@ -151,7 +151,7 @@
         </rows>
     </view>
     
-    <view id="3" name="Accession" type="table">
+    <view id="3" name="Accession" class="" type="table">
      	<desc><![CDATA[The Accession table.]]></desc>
         <altviews>
             <alt id="1" label="Form"/>
@@ -169,7 +169,7 @@
         </columns>
     </view>
     
-    <view id="4" name="Accession" type="table">
+    <view id="4" name="Accession" class="" type="table">
       	<desc><![CDATA[The alternative Accession table.]]></desc>
         <altviews>
             <alt id="1" label="Form"/>
@@ -189,7 +189,7 @@
         </columns>
     </view>
     
-    <view id="5" name="Accession" type="field">
+    <view id="5" name="Accession" class="" type="field">
       	<desc><![CDATA[The Accession field.]]></desc>
         <altviews>
             <alt id="1" label="Form"/>
@@ -212,7 +212,7 @@
         </rows>
     </view>
     
-    <view id="6" name="Collection Event" type="form">
+    <view id="6" name="Collection Event" class="" type="form">
      	<desc><![CDATA[The main Collection Event form]]></desc>
         <altviews>
             <alt id="7" label="Table"/>
@@ -294,7 +294,7 @@
         </rows>
     </view>
     
-    <view id="7" name="Collecting Event" type="table">
+    <view id="7" name="Collecting Event" class="" type="table">
      	<desc><![CDATA[The main Collection Event table]]></desc>
         <altviews>
             <alt id="6" label="Form"/>
@@ -310,7 +310,7 @@
         </columns>
     </view>
     
-    <view id="8" name="Collecting Event" type="field">
+    <view id="8" name="Collecting Event" class="" type="field">
       	<desc><![CDATA[The main Collection Event field]]></desc>
         <altviews>
             <alt id="6" label="Form"/>
@@ -331,7 +331,7 @@
         </rows>
     </view>
     
-    <view id="12" name="Accession Agent" type="form">
+    <view id="12" name="Accession Agent" class="edu.ku.brc.specify.datamodel.AccessionAgent" type="form">
      	<desc><![CDATA[The main Accession Agent form]]></desc>
         <columnDef>
             <cellDef>right:max(50dlu;p)</cellDef>
@@ -387,7 +387,7 @@
         </rows>
     </view>
     
-    <view id="13" name="Collection Object Catalog" type="form">
+    <view id="13" name="Collection Object Catalog" class="edu.ku.brc.specify.datamodel.CollectionObjectCatalog" type="form">
      	<desc><![CDATA[The main Collection Object Catalog form]]></desc>
         <columnDef>
             <cellDef>right:max(50dlu;p)</cellDef>

@@ -180,7 +180,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                     parameters.put("itemnum", itemnum);
                     
                     progressLabel.setText(getResourceString("JasperReportFilling"));
-                    asyncFillHandler = AsynchronousFillHandle.createHandle(jasperReport, parameters, DBConnection.getInstance().getConnection());
+                    asyncFillHandler = AsynchronousFillHandle.createHandle(jasperReport, parameters, DBConnection.getConnection());
                     asyncFillHandler.addListener(this);
                     asyncFillHandler.startFill();
                 } else

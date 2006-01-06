@@ -35,7 +35,7 @@ public class FormFormView extends FormView
      */
     public FormFormView()
     {
-        super(ViewType.form, -1, "", "");
+        super(ViewType.form, -1, "", "", "", "");
         
     }
 
@@ -46,9 +46,14 @@ public class FormFormView extends FormView
      * @param name the name
      * @param desc description
      */
-    public FormFormView(final FormView.ViewType type, final int id, final String name, final String desc)
+    public FormFormView(final FormView.ViewType type, 
+                        final int    id, 
+                        final String name, 
+                        final String className, 
+                        final String gettableClassName, 
+                        final String desc)
     {
-        super(type, id, name, desc);
+        super(type, id, name, className, gettableClassName, desc);
         
     }
     

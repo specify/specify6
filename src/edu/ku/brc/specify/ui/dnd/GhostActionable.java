@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.ui.dnd;
 
+import java.awt.datatransfer.DataFlavor;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 /**
  * 
@@ -46,4 +48,18 @@ public interface GhostActionable
      * @return Returns a BufferedImage representing a "snapshot" of what the UI looks like before a Drag
      */
     public BufferedImage getBufferedImage();
+    
+    
+    /**
+     * Returns the DataFlavor that this accept as a Drop 
+     * @return Returns the DataFlavor that this accept as a Drag or Drop 
+     */
+    public List<DataFlavor> getDropDataFlavors();
+    
+    /**
+     * Returns the Drag flavor
+     * @return Returns the Drag flavor
+     */
+    public List<DataFlavor> getDragDataFlavors();
+    
 }

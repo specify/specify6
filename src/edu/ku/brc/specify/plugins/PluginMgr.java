@@ -20,19 +20,33 @@
 
 package edu.ku.brc.specify.plugins;
 
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+
 import java.awt.Component;
-import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JMenuBar;
 import javax.swing.JToolBar;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.dom4j.Element;
+
+import edu.ku.brc.specify.core.ContextMgr;
+import edu.ku.brc.specify.core.ServiceInfo;
+import edu.ku.brc.specify.helpers.XMLHelper;
+import edu.ku.brc.specify.ui.CommandAction;
+import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.UICacheManager;
 
 public class PluginMgr
 {
 
     // Static Data Members
+    private static Log log = LogFactory.getLog(PluginMgr.class);
     private static PluginMgr instance = new PluginMgr();
     
     // Data Members
@@ -107,7 +121,7 @@ public class PluginMgr
      */
     protected static void registerWithUI(final TaskPluginable plugin)
     {
-        JToolBar toolBar = (JToolBar)UICacheManager.getInstance().get(UICacheManager.TOOLBAR);
+        JToolBar toolBar = (JToolBar)UICacheManager.get(UICacheManager.TOOLBAR);
         if (toolBar != null)
         {
             for (ToolBarItemDesc tbItem : plugin.getToolBarItems())
@@ -136,7 +150,7 @@ public class PluginMgr
             throw new NullPointerException("The Toolbar component cannot be null!");
         }
         
-        JMenuBar menuBar = (JMenuBar)UICacheManager.getInstance().get(UICacheManager.MENUBAR);
+        JMenuBar menuBar = (JMenuBar)UICacheManager.get(UICacheManager.MENUBAR);
         if (menuBar != null)
         {
             for (MenuItemDesc menuItem : plugin.getMenuItems())
@@ -173,6 +187,74 @@ public class PluginMgr
             TaskPluginable taskablePlugin = e.nextElement();
             taskablePlugin.initialize();
         }
+    }
+    
+    /**
+     * Helper method that loads the standard icon sizes needed for services.
+     * @param name the name of the icon
+     * @param info the service info object to be loaded with the icons
+     */
+    protected static void loadServiceIcons(final String name, final ServiceInfo info)
+    {
+        info.addIcon(IconManager.getIcon(name, IconManager.IconSize.Std16), IconManager.IconSize.Std16);
+        info.addIcon(IconManager.getIcon(name, IconManager.IconSize.Std24), IconManager.IconSize.Std24);
+        info.addIcon(IconManager.getIcon(name, IconManager.IconSize.Std32), IconManager.IconSize.Std32);
+    }
+    
+    /**
+     * Reads the plugins registry and loads them 
+     * 
+     */
+    public static void readRegistry()
+    {
+        
+        try
+        {
+            Element root  = XMLHelper.readDOMFromConfigDir("plugin_registry.xml");
+            
+            List boxes = root.selectNodes("/plugins/core/plugin");
+            for ( Iterator iter = boxes.iterator(); iter.hasNext(); ) 
+            {
+                org.dom4j.Element pluginElement = (org.dom4j.Element)iter.next();
+                
+                Object newObj = null;
+                String name   = pluginElement.attributeValue("class");
+                try
+                {
+    
+                    Class cls = Class.forName(name);
+                    newObj = cls.newInstance();
+                } catch (ClassNotFoundException ex)
+                {
+                    log.error(ex);
+                    // XXX Do we need a dialog here ???
+                }
+                if (newObj instanceof TaskPluginable)
+                {
+                    TaskPluginable tp = (TaskPluginable)newObj;
+                    register(tp);
+                    
+                    List servicesList = pluginElement.selectNodes("service");
+                    for ( Iterator iterServices = servicesList.iterator(); iterServices.hasNext(); ) 
+                    {
+                        Element serviceElement = (Element)iterServices.next();
+                        int tableId = Integer.parseInt(serviceElement.attributeValue("tableid"));
+                        CommandAction cmd = new CommandAction(tp.getName(), serviceElement.attributeValue("command"), tableId);
+                        ServiceInfo serviceInfo = ContextMgr.registerService(tp.getName(), tableId, cmd, null, serviceElement.attributeValue("tooltip"));
+                        loadServiceIcons(tp.getName(), serviceInfo);
+                    }  
+                } else
+                {
+                    log.error("Oops, the plugin is not instance of TaskPluginable ["+newObj+"]");
+                    // XXX Need to display an error
+                }
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            log.error(ex);
+        }
+        
     }
 
 }

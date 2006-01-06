@@ -78,9 +78,7 @@ abstract class ExpressTableResultsBase extends JPanel
     /**
      * Constructor of a results "table" which is really a panel
      * @param esrPane the parent 
-     * @param esrPane the parent 
      * @param tableInfo the info describing the results
-     * @param bannerColor the color of the banner (or bar)
      */
     public ExpressTableResultsBase(final ExpressSearchResultsPane esrPane, 
                                    final ExpressResultsTableInfo tableInfo)
@@ -111,244 +109,108 @@ abstract class ExpressTableResultsBase extends JPanel
         showTopNumEntriesBtn.setVisible(false);
         showTopNumEntriesBtn.setCursor(handCursor);
         
-        boolean newWay = true;
-        if (newWay)
-        {
-            List<ServiceInfo> services = ContextMgr.checkForServices(Integer.parseInt(tableInfo.getTableId()));
-            
-            StringBuffer colDef = new StringBuffer("p,0px,p:g,0px,p,0px,p,0px,");
-            colDef.append(UIHelper.createDuplicateJGoodiesDef("p", "0px", services.size())); // add additional col defs for services
-            
-            FormLayout      formLayout = new FormLayout(colDef.toString(), "center:p");
-            PanelBuilder    builder    = new PanelBuilder(formLayout);
-            CellConstraints cc         = new CellConstraints();
-            
-            int col = 1;
-            builder.add(expandBtn, cc.xy(col,1));
-            col += 2;
-            
-            builder.add(vl, cc.xy(col,1));
-            col += 2;
-            
-            builder.add(showTopNumEntriesBtn, cc.xy(col,1));
-            col += 2;
-            
-            // install the btns on the banner with available services
-            for (ServiceInfo serviceInfo : services)
-            {
-                GradiantButton btn = new GradiantButton(serviceInfo.getIcon(IconManager.IconSize.Std16));
-                btn.setToolTipText(serviceInfo.getTooltip());
-                btn.setForeground(bannerColor);
-                builder.add(btn, cc.xy(col,1));
-                
-                btn.addActionListener(new ESTableAction(serviceInfo.getCommandAction(), table, tableInfo));
-
-                col += 2;
-
-            }
-            
-            CloseButton closeBtn = new CloseButton();
-            closeBtn.setToolTipText(getResourceString("ESCloseTable"));
-            closeBtn.setForeground(bannerColor);
-            closeBtn.setCloseColor(new Color(255,255,255, 90));
-            builder.add(closeBtn, cc.xy(col,1));
-            col += 2;
-            
-            add(builder.getPanel(), BorderLayout.NORTH);
-            
-            tablePane = new JPanel(new BorderLayout());
-            tablePane.setLayout(new BorderLayout());
-            tablePane.add(table.getTableHeader(), BorderLayout.PAGE_START);
-            tablePane.add(table, BorderLayout.CENTER);
-    
-            add(tablePane, BorderLayout.CENTER);
-            
-            expandBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) 
-                {
-                    boolean isExpanded = !expandBtn.isDown();
-                    
-                    expandBtn.setDown(isExpanded);
-                    expandBtn.setToolTipText(isExpanded ? getResourceString("CollapseTBL") : getResourceString("ExpandTBL"));
-    
-                    tablePane.setVisible(isExpanded);               
-                    
-                    if (!showingAllRows && morePanel != null)
-                    {
-                        morePanel.setVisible(isExpanded);
-                    }
-                    invalidate();
-                    doLayout();
-                    esrPane.revalidateScroll();
-                }
-            });
-            
-            showTopNumEntriesBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) 
-                {
-                    morePanel.setVisible(true);
-                    showTopNumEntriesBtn.setVisible(false);
-                    showingAllRows = false;
-                    setDisplayRows(rowCount, topNumEntries);
-                    
-                    // If it is collapsed then expand it
-                    if (!expandBtn.isDown())
-                    {
-                        tablePane.setVisible(true);
-                        expandBtn.setDown(true);
-                    }
-                    
-                    // Make sure the layout is updated
-                    invalidate();
-                    doLayout();
-                    esrPane.revalidateScroll();
-                }
-            });
-            
-            closeBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) 
-                {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            removeMe();
-                        }
-                      });
-                  
-                }
-            }); 
+        List<ServiceInfo> services = ContextMgr.checkForServices(Integer.parseInt(tableInfo.getTableId()));
         
+        StringBuffer colDef = new StringBuffer("p,0px,p:g,0px,p,0px,p,0px,");
+        colDef.append(UIHelper.createDuplicateJGoodiesDef("p", "0px", services.size())); // add additional col defs for services
         
-        } else
+        FormLayout      formLayout = new FormLayout(colDef.toString(), "center:p");
+        PanelBuilder    builder    = new PanelBuilder(formLayout);
+        CellConstraints cc         = new CellConstraints();
+        
+        int col = 1;
+        builder.add(expandBtn, cc.xy(col,1));
+        col += 2;
+        
+        builder.add(vl, cc.xy(col,1));
+        col += 2;
+        
+        builder.add(showTopNumEntriesBtn, cc.xy(col,1));
+        col += 2;
+        
+        // install the btns on the banner with available services
+        for (ServiceInfo serviceInfo : services)
         {
-            StringBuffer colDef = new StringBuffer("p,0px,p:g,0px,p,0px,p,0px,p");
+            GradiantButton btn = new GradiantButton(serviceInfo.getIcon(IconManager.IconSize.Std16));
+            btn.setToolTipText(serviceInfo.getTooltip());
+            btn.setForeground(bannerColor);
+            builder.add(btn, cc.xy(col,1));
             
-            boolean isCollectionTable = tableInfo.getTableId().equals("1");
-            if (isCollectionTable)
-            {
-                colDef.append(",0px,p"); // Labels, Save To RecordSet, Data Entry
-            }
-            colDef.append(",0px,p"); // close Button
-            
-            FormLayout      formLayout = new FormLayout(colDef.toString(), "center:p");
-            PanelBuilder    builder    = new PanelBuilder(formLayout);
-            CellConstraints cc         = new CellConstraints();
-    
-            int col = 1;
-            builder.add(expandBtn, cc.xy(col,1));
+            btn.addActionListener(new ESTableAction(serviceInfo.getCommandAction(), table, tableInfo));
+
             col += 2;
-            
-            builder.add(vl, cc.xy(col,1));
-            col += 2;
-            
-            builder.add(showTopNumEntriesBtn, cc.xy(col,1));
-            col += 2;
-            
-            GradiantButton labelsBtn = null;
-            GradiantButton rsBtn     = null;
-            GradiantButton deBtn     = null;
-            
-            if (isCollectionTable)
-            {
-                labelsBtn = new GradiantButton(IconManager.getImage("Labels", IconManager.IconSize.Std16));
-                labelsBtn.setToolTipText(getResourceString("CreateLabelTT"));
-                labelsBtn.setForeground(bannerColor);
-                builder.add(labelsBtn, cc.xy(col,1));
-                col += 2;
-            }
-            
-            rsBtn = new GradiantButton(IconManager.getImage("Record_Set", IconManager.IconSize.Std16));
-            rsBtn.setToolTipText(getResourceString("CreateRecordSetTT"));
-            rsBtn.setForeground(bannerColor);
-            builder.add(rsBtn, cc.xy(col,1));
-            col += 2;
-            
-            deBtn = new GradiantButton(IconManager.getImage("Data_Entry", IconManager.IconSize.Std16));
-            deBtn.setToolTipText(getResourceString("EditRecordSetTT"));
-            deBtn.setForeground(bannerColor);
-            builder.add(deBtn, cc.xy(col,1));
-            col += 2;
-            
-            CloseButton closeBtn = new CloseButton();
-            closeBtn.setToolTipText(getResourceString("ESCloseTable"));
-            closeBtn.setForeground(bannerColor);
-            closeBtn.setCloseColor(new Color(255,255,255, 90));
-            builder.add(closeBtn, cc.xy(col,1));
-            col += 2;
-            
-            add(builder.getPanel(), BorderLayout.NORTH);
-            
-            tablePane = new JPanel(new BorderLayout());
-            tablePane.setLayout(new BorderLayout());
-            tablePane.add(table.getTableHeader(), BorderLayout.PAGE_START);
-            tablePane.add(table, BorderLayout.CENTER);
-    
-            add(tablePane, BorderLayout.CENTER);
-            
-            expandBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) 
-                {
-                    boolean isExpanded = !expandBtn.isDown();
-                    
-                    expandBtn.setDown(isExpanded);
-                    expandBtn.setToolTipText(isExpanded ? getResourceString("CollapseTBL") : getResourceString("ExpandTBL"));
-    
-                    tablePane.setVisible(isExpanded);               
-                    
-                    if (!showingAllRows && morePanel != null)
-                    {
-                        morePanel.setVisible(isExpanded);
-                    }
-                    invalidate();
-                    doLayout();
-                    esrPane.revalidateScroll();
-                }
-            });
-            
-            showTopNumEntriesBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) 
-                {
-                    morePanel.setVisible(true);
-                    showTopNumEntriesBtn.setVisible(false);
-                    showingAllRows = false;
-                    setDisplayRows(rowCount, topNumEntries);
-                    
-                    // If it is collapsed then expand it
-                    if (!expandBtn.isDown())
-                    {
-                        tablePane.setVisible(true);
-                        expandBtn.setDown(true);
-                    }
-                    
-                    // Make sure the layout is updated
-                    invalidate();
-                    doLayout();
-                    esrPane.revalidateScroll();
-                }
-            });
-            
-            closeBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) 
-                {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            removeMe();
-                        }
-                      });
-                  
-                }
-            });
-            
-            /*
-            if (isCollectionTable)
-            {
-                labelsBtn.addActionListener(new ESTableAction("Labels", "DoLabels", table, tableInfo));
-            }
-            rsBtn.addActionListener(new ESTableAction("Record_Set", "Save", table, tableInfo));
-            deBtn.addActionListener(new ESTableAction("Data_Entry", "Edit", table, tableInfo));
-            */
+
         }
         
+        CloseButton closeBtn = new CloseButton();
+        closeBtn.setToolTipText(getResourceString("ESCloseTable"));
+        closeBtn.setForeground(bannerColor);
+        closeBtn.setCloseColor(new Color(255,255,255, 90));
+        builder.add(closeBtn, cc.xy(col,1));
+        col += 2;
         
+        add(builder.getPanel(), BorderLayout.NORTH);
+        
+        tablePane = new JPanel(new BorderLayout());
+        tablePane.setLayout(new BorderLayout());
+        tablePane.add(table.getTableHeader(), BorderLayout.PAGE_START);
+        tablePane.add(table, BorderLayout.CENTER);
+
+        add(tablePane, BorderLayout.CENTER);
+        
+        expandBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) 
+            {
+                boolean isExpanded = !expandBtn.isDown();
+                
+                expandBtn.setDown(isExpanded);
+                expandBtn.setToolTipText(isExpanded ? getResourceString("CollapseTBL") : getResourceString("ExpandTBL"));
+
+                tablePane.setVisible(isExpanded);               
+                
+                if (!showingAllRows && morePanel != null)
+                {
+                    morePanel.setVisible(isExpanded);
+                }
+                invalidate();
+                doLayout();
+                esrPane.revalidateScroll();
+            }
+        });
+        
+        showTopNumEntriesBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) 
+            {
+                morePanel.setVisible(true);
+                showTopNumEntriesBtn.setVisible(false);
+                showingAllRows = false;
+                setDisplayRows(rowCount, topNumEntries);
+                
+                // If it is collapsed then expand it
+                if (!expandBtn.isDown())
+                {
+                    tablePane.setVisible(true);
+                    expandBtn.setDown(true);
+                }
+                
+                // Make sure the layout is updated
+                invalidate();
+                doLayout();
+                esrPane.revalidateScroll();
+            }
+        });
+        
+        closeBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) 
+            {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        removeMe();
+                    }
+                  });
+              
+            }
+        });        
     }
     
     /**

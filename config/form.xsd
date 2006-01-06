@@ -26,6 +26,7 @@
       <xs:attribute name="name" use="required"/>
       <xs:attribute name="resourceLabels" type="xs:boolean"/>
       <xs:attribute name="type" use="required" type="xs:NCName"/>
+     <xs:attribute name="class" use="required" type="xs:string"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="desc" type="xs:string"/>
@@ -51,8 +52,9 @@
   </xs:element>
   <xs:element name="column">
     <xs:complexType>
+      <xs:attribute name="name" use="required" type="xs:string"/>
       <xs:attribute name="label" use="required"/>
-      <xs:attribute name="name" use="required" type="xs:NCName"/>
+      <xs:attribute name="format" type="xs:string"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="columnDef">
@@ -85,11 +87,17 @@
   </xs:element>
   <xs:element name="cell">
     <xs:complexType>
-      <xs:attribute name="class" type="xs:NCName"/>
-      <xs:attribute name="id" type="xs:integer"/>
-      <xs:attribute name="label"/>
-      <xs:attribute name="name" type="xs:NCName"/>
       <xs:attribute name="type" use="required" type="xs:NCName"/>
+      <xs:attribute name="name" type="xs:NCName"/>
+      <xs:attribute name="id" type="xs:integer"/>
+      <xs:attribute name="class" type="xs:NCName"/>
+      <xs:attribute name="label"  type="xs:string"/>
+      <xs:attribute name="uitype" type="xs:string"/>
+      <xs:attribute name="format" type="xs:string"/>
+      <xs:attribute name="cols" type="xs:integer"/>
+      <xs:attribute name="rows" type="xs:integer"/>
+      <xs:attribute name="colspan" type="xs:integer"/>
+      <xs:attribute name="rowspan" type="xs:integer"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="cellDef" type="xs:string"/>

@@ -28,7 +28,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.ui.IconManager.IconSize;
-
+/**
+ * An entry in the IconCacheManager
+ * 
+ * @author rods
+ *
+ */
 public class IconEntry
 {
     private static Log log = LogFactory.getLog(IconManager.class);

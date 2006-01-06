@@ -59,7 +59,7 @@ public class NavBoxMgr extends JPanel
        
        trash = Trash.getInstance();
        
-       add(trash);
+       //add(trash);
     }
     
     /**
@@ -88,21 +88,26 @@ public class NavBoxMgr extends JPanel
      * Registers a Task's NavBoxes into the Manager
      * @param task a task to be managed, this means we ask the task for the list of NavBoxes and then does a layout
      */
-    public void register(final Taskable task)
+    public static void register(final Taskable task)
     {
         List<NavBoxIFace> list = task.getNavBoxes();
         if (list != null)
         {
+            if (instance.getComponentCount() == 0 && list.size() > 0)
+            {
+                instance.add(trash);    
+            }
+            
             for (NavBoxIFace box : list)
             {
-                addBox(box);
+                instance.addBox(box);
                 box.getUIComponent().invalidate();
                 box.getUIComponent().doLayout();
             }
         }
-        doLayout();
-        repaint();
-        adjustSplitter();
+        instance.doLayout();
+        instance.repaint();
+        instance.adjustSplitter();
     }
     
     /**
@@ -113,7 +118,7 @@ public class NavBoxMgr extends JPanel
     {
         if (splitPane != null)
         {
-            if (this.getComponentCount() > 1)
+            if (this.getComponentCount() > 0)
             {
                 splitPane.setDividerLocation(getPreferredSize().width);
             } else
@@ -127,15 +132,15 @@ public class NavBoxMgr extends JPanel
      * Registers a Task's NavBoxes into the Manager
      * @param task the task to be registered 
      */
-    public void unregister(final Taskable task)
+    public static void unregister(final Taskable task)
     {
         // for now just clear everything
-        layout.removeAll();
-        this.removeAll();
-        list.clear();
+        instance.layout.removeAll();
+        instance.removeAll();
+        instance.list.clear();
 
-        add(trash);
-        repaint();
+        //instance.add(trash);
+        instance.repaint();
     }
     
     /**
@@ -161,7 +166,7 @@ public class NavBoxMgr extends JPanel
      * @param box the box to be added
      * @param ignoreAlreadyThere ignore the fact if it is already there
      */
-    public void addBox(final NavBoxIFace box, final boolean ignoreAlreadyThere)
+    public void addBoxInternal(final NavBoxIFace box, final boolean ignoreAlreadyThere)
     {
         if (box == null)
         {
@@ -180,7 +185,18 @@ public class NavBoxMgr extends JPanel
         {
             throw new ConfigurationException("Adding a new NavBox with duplicate name["+box.getName()+"]");
         }
-    } 
+    }
+    
+    /**
+     * Adds a box to the manager (all adds are 'appends' at the moment). The ignoreAlreadyThere allows to request
+     * something to be added without worrying whether it is already there.
+     * @param box the box to be added
+     * @param ignoreAlreadyThere ignore the fact if it is already there
+     */
+    public static void addBox(final NavBoxIFace box, final boolean ignoreAlreadyThere)
+    {
+        instance.addBoxInternal(box, ignoreAlreadyThere);
+    }
     
     /**
      * Adds a box to the manager (all adds are 'appends' at the moment)

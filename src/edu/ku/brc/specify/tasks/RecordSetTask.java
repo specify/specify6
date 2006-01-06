@@ -22,6 +22,7 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.Component;
+import java.awt.datatransfer.DataFlavor;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -31,11 +32,9 @@ import javax.swing.JOptionPane;
 
 import org.hibernate.Criteria;
 
-import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.core.NavBoxItemIFace;
 import edu.ku.brc.specify.core.NavBoxMgr;
-import edu.ku.brc.specify.core.ServiceInfo;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
@@ -45,6 +44,7 @@ import edu.ku.brc.specify.ui.CommandAction;
 import edu.ku.brc.specify.ui.CommandDispatcher;
 import edu.ku.brc.specify.ui.RolloverCommand;
 import edu.ku.brc.specify.ui.SubPaneIFace;
+import edu.ku.brc.specify.ui.Trash;
 import edu.ku.brc.specify.ui.UICacheManager;
 
 /**
@@ -57,6 +57,7 @@ public class RecordSetTask extends BaseTask
 {
     // Static Data Members
     public static final String RECORD_SET = "Record_Set";
+    public static final DataFlavor RECORDSET_FLAVOR = new DataFlavor(RecordSetTask.class, "RECORD_SET");
     
     // Data Members
     protected NavBox navBox = null;
@@ -89,18 +90,23 @@ public class RecordSetTask extends BaseTask
             for (Iterator iter=recordSets.iterator();iter.hasNext();)
             {
                 RecordSet recordSet = (RecordSet)iter.next();
-                addNavBoxItem(navBox, recordSet.getName(), "Record_Set", "Delete", recordSet);
-                
+                addDraggableDataFlavors(addNavBoxItem(navBox, recordSet.getName(), RECORD_SET, "Delete", recordSet));
             }          
             navBoxes.addElement(navBox);
             HibernateUtil.closeSession();
             
-            // Register Services
-            CommandAction cmd = new CommandAction("Record_Set", "Save", null);
-            ServiceInfo serviceInfo = ContextMgr.registerService("Record_Set", 1, cmd, this, getResourceString("CreateRecordSetTT"));
-            loadServiceIcons(serviceInfo);
-            
         }
+    }
+    
+    /**
+     * Adds the appropriate flavors to make it draggable
+     * @param nbi the item to be made draggable
+     */
+    protected void addDraggableDataFlavors(NavBoxItemIFace nbi)
+    {
+        RolloverCommand roc = (RolloverCommand)nbi;
+        roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+        roc.addDragDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
     }
     
     /**
@@ -111,6 +117,8 @@ public class RecordSetTask extends BaseTask
     {
         NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), "Record_Set", "Delete", recordSet);
         
+        addDraggableDataFlavors(nbi);
+
         recordSet.setCreated(Calendar.getInstance().getTime());
         
         // save to database
@@ -175,7 +183,7 @@ public class RecordSetTask extends BaseTask
         {
             navBox.remove(comp);
             
-            // XXX this is pathetic and needs to be generised
+            // XXX this is pathetic and needs to be generized
             navBox.invalidate();
             navBox.setSize(navBox.getPreferredSize());
             navBox.doLayout();
@@ -238,7 +246,7 @@ public class RecordSetTask extends BaseTask
             Object data = cmdAction.getData();
             if (data instanceof RecordSet)
             {
-                String rsName  = JOptionPane.showInputDialog(UICacheManager.getInstance().get(UICacheManager.FRAME), getResourceString("AskForRSName"));
+                String rsName  = JOptionPane.showInputDialog(UICacheManager.get(UICacheManager.FRAME), getResourceString("AskForRSName"));
                 if (rsName != null && rsName.length() > 0)
                 {
                     RecordSet rs = (RecordSet)data;

@@ -169,7 +169,7 @@ public class ExpressSearchTask extends BaseTask
     public void showIndexerPane()
     {
         ExpressSearchIndexerPane expressSearchIndexerPane = new ExpressSearchIndexerPane(this);
-        UICacheManager.getInstance().getSubPaneMgr().addPane(expressSearchIndexerPane);       
+        UICacheManager.getSubPaneMgr().addPane(expressSearchIndexerPane);       
     }
     
     /**
@@ -271,10 +271,10 @@ public class ExpressSearchTask extends BaseTask
                     }
                 }
                 
-                UICacheManager.getInstance().getSubPaneMgr().addPane(expressSearchPane);
+                UICacheManager.getSubPaneMgr().addPane(expressSearchPane);
             } catch (ParseException ex)
             {
-                JOptionPane.showMessageDialog(UICacheManager.getInstance().get(UICacheManager.FRAME), getResourceString("BadQuery"), getResourceString("BadQueryTitle"), JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.FRAME), getResourceString("BadQuery"), getResourceString("BadQueryTitle"), JOptionPane.ERROR_MESSAGE);
                 log.info(ex);
             }
         } catch (IOException ex)
@@ -318,8 +318,8 @@ public class ExpressSearchTask extends BaseTask
         
         searchBtn   = new JButton(getResourceString("Search"));
         
-        //searchText  = new JTextField("megalotis", 10);
-        searchText  = new JTextField(10);
+        searchText  = new JTextField("megalotis", 10);
+        //searchText  = new JTextField(10);
         textBGColor = searchText.getBackground();
         
         searchText.setMinimumSize(new Dimension(50, searchText.getPreferredSize().height));

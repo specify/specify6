@@ -22,11 +22,16 @@ package edu.ku.brc.specify.ui;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -34,6 +39,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -44,8 +51,9 @@ import javax.swing.SwingUtilities;
 
 import edu.ku.brc.specify.ui.dnd.DndDeletable;
 import edu.ku.brc.specify.ui.dnd.GhostActionable;
+import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
 import edu.ku.brc.specify.ui.dnd.GhostMotionAdapter;
-import edu.ku.brc.specify.ui.dnd.*;
+import edu.ku.brc.specify.ui.dnd.GhostMouseDropAdapter;
 
 /**
  * Implements a "trash can" for deleting and recovering RecordSets, labels etc.
@@ -57,6 +65,8 @@ import edu.ku.brc.specify.ui.dnd.*;
 public class Trash extends JComponent implements GhostActionable
 {
     // Static Data Members
+    public static final DataFlavor TRASH_FLAVOR = new DataFlavor(Trash.class, "Trash");
+    
     private static Trash instance = new Trash();
     
     // These used for the Ghosting
@@ -80,13 +90,18 @@ public class Trash extends JComponent implements GhostActionable
     protected Font                   textFont            = null;
     protected JPopupMenu             popupMenu           = null;
     protected JMenuItem              emptyMenuItem       = null;
-    protected JMenuItem              openMenuItem       = null;
+    protected JMenuItem              openMenuItem        = null;
     
+    // DnD
+    protected List<DataFlavor>       dropFlavors         = new ArrayList<DataFlavor>(); 
+
     /**
      * Constructor
      */
     protected Trash()
     {
+        dropFlavors.add(TRASH_FLAVOR);
+        
         trashIcon     = new ImageIcon(IconManager.getImagePath("trash.png"));
         trashFullIcon = new ImageIcon(IconManager.getImagePath("trash_full.png"));
         paperIcon     = trashFullIcon;//new ImageIcon(IconManager.getImagePath("trash_paper.gif"));
@@ -341,9 +356,8 @@ public class Trash extends JComponent implements GhostActionable
         g2.dispose();
     }
     
-    /**
-     * 
-     * @return
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getBufferedImage()
      */
     public BufferedImage getBufferedImage() 
     {
@@ -353,5 +367,23 @@ public class Trash extends JComponent implements GhostActionable
         }
         return buffer;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getDataFlavor()
+     */
+    public List<DataFlavor> getDropDataFlavors()
+    {
+        return dropFlavors;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getDragDataFlavors()
+     */
+    public List<DataFlavor> getDragDataFlavors()
+    {
+        return (List<DataFlavor>)null; // this is not draggable
+    }
+    
+
 
 }

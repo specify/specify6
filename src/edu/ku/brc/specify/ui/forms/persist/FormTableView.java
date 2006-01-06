@@ -27,15 +27,29 @@ public class FormTableView extends FormView
 
     protected Vector<FormColumn> columns = new Vector<FormColumn>();
     
+    /**
+     * Default Constructor
+     */
     public FormTableView()
     {
-        super(ViewType.table, -1, "", "");
+        super(ViewType.table, -1, "", "", "", "");
         
     }
-
-    public FormTableView(final int id, final String name, final String desc)
+    
+    /**
+     * @param id
+     * @param name
+     * @param className
+     * @param gettableClassName
+     * @param desc
+     */
+    public FormTableView(final int    id, 
+                         final String name, 
+                         final String className, 
+                         final String gettableClassName, 
+                         final String desc)
     {
-        super(ViewType.table, id, name, desc);
+        super(ViewType.table, id, name, className, gettableClassName, desc);
         
     }
     
@@ -58,9 +72,9 @@ public class FormTableView extends FormView
     //-------------------------------------------------------------------
     // Helpers
     //-------------------------------------------------------------------
-    public FormColumn createColumn(String name, String label)
+    public FormColumn createColumn(final String name, final String label, final String format)
     {
-        return addColumn(new FormColumn(name, label));
+        return addColumn(new FormColumn(name, label, format));
     }
     
    

@@ -82,7 +82,7 @@ public class QueryTask extends BaseTask
     public void createAndExecute(final String sqlStr)
     {
         SQLQueryPane sqlPane = new SQLQueryPane(name, this, false, false);//true, true);
-        UICacheManager.getInstance().getSubPaneMgr().addPane(sqlPane);
+        UICacheManager.getSubPaneMgr().addPane(sqlPane);
         sqlPane.setSQLStr(sqlStr);
         sqlPane.doQuery();
         

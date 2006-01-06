@@ -5,7 +5,10 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
+import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
+
+import edu.ku.brc.specify.ui.UICacheManager;
 
 /**
  * Implements the mousePressed and release methods to start and stop the drag
@@ -13,7 +16,7 @@ import javax.swing.SwingUtilities;
  * 
  * @author rods
  * @author Romain Guy <romain.guy@mac.com>
- * @author Sébastien Petrucci <sebastien_petrucci@yahoo.fr>*
+ * @author Sï¿½bastien Petrucci <sebastien_petrucci@yahoo.fr>*
  */
 public class GhostMouseDropAdapter extends GhostDropAdapter 
 {
@@ -81,15 +84,47 @@ public class GhostMouseDropAdapter extends GhostDropAdapter
         SwingUtilities.convertPointFromScreen(p, glassPane);
 
         glassPane.setPoint(p);
+        
+        //System.out.println(NavBoxMgr.getInstance().getBounds());
+        //JComponent rootPane = NavBoxMgr.getInstance();
+        JComponent rootPane = (JComponent)UICacheManager.get(UICacheManager.MAINPANE);
+        //System.out.println(rootPane.getBounds());
+        
+        Point pp = (Point) e.getPoint().clone();
+        SwingUtilities.convertPointToScreen(pp, c);
+        SwingUtilities.convertPointFromScreen(pp, rootPane);
 
+        // find the component that under this point
+        Component dropComponent = SwingUtilities.getDeepestComponentAt(rootPane, pp.x, pp.y);
+
+        //System.out.println(component);
+        
         boolean clearIt = true;
-        if (hasListeners())
+        if (dropComponent instanceof GhostActionable && dropComponent instanceof JComponent)
         {
-            GhostDropEvent gde = new GhostDropEvent(c, action, eventPoint);
-            fireGhostDropEvent(gde);
-            if (gde.isConsumed())
+            BufferedImage bi = ghostActionable.getBufferedImage();
+            glassPane.setImage(bi, bi.getWidth());
+            glassPane.startAnimation(SwingUtilities.convertRectangle(dropComponent,
+                                                                    ((JComponent)dropComponent).getVisibleRect(),
+                                                                    glassPane));
+            Component source = e.getComponent();
+           
+            if (source instanceof GhostActionable)
             {
+                ((GhostActionable)dropComponent).doAction((GhostActionable)source);
                 clearIt = false;
+            }
+            
+        } else
+        {
+            if (hasListeners())
+            {
+                GhostDropEvent gde = new GhostDropEvent(c, action, eventPoint);
+                fireGhostDropEvent(gde);
+                if (gde.isConsumed())
+                {
+                    clearIt = false;
+                }
             }
         }
         

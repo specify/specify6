@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<core>
+	    <plugin class="edu.ku.brc.specify.tasks.StartUpTask"/>
+	    <plugin class="edu.ku.brc.specify.tasks.DataEntryTask">
+	    	<service command="Edit" tableid="1" tooltip="EditRecordSetTT"/>
+	    	<service command="Edit" tableid="7" tooltip="EditRecordSetTT"/>
+	    </plugin>
+	    <plugin class="edu.ku.brc.specify.tasks.LabelsTask">
+	    	<service command="DoLabels" tableid="1" tooltip="CreateLabelTT"/>
+	    </plugin>
+	    <plugin class="edu.ku.brc.specify.tasks.ReportsTask"/>
+	    <plugin class="edu.ku.brc.specify.tasks.InteractionsTask"/>
+	    <plugin class="edu.ku.brc.specify.tasks.StatsTask"/>
+	    <plugin class="edu.ku.brc.specify.tasks.QueryTask"/>
+        <plugin class="edu.ku.brc.specify.tasks.RecordSetTask">
+	    	<service command="Save" tableid="1" tooltip="CreateRecordSetTT"/>
+	    </plugin>
+	    <plugin class="edu.ku.brc.specify.tasks.ExpressSearchTask"/>
+	</core>
+	<external/>
+</plugins>

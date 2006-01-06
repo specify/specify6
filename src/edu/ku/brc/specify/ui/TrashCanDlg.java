@@ -54,9 +54,9 @@ public class TrashCanDlg extends JDialog implements ActionListener, ListSelectio
      */
     public TrashCanDlg() throws HeadlessException
     {
-        super((Frame)UICacheManager.getInstance().get(UICacheManager.FRAME), true);
+        super((Frame)UICacheManager.get(UICacheManager.FRAME), true);
         createUI();
-        setLocationRelativeTo((JFrame)(Frame)UICacheManager.getInstance().get(UICacheManager.FRAME));
+        setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         this.setAlwaysOnTop(true);
         
@@ -134,7 +134,7 @@ public class TrashCanDlg extends JDialog implements ActionListener, ListSelectio
      */
     protected void restoreItem()
     {
-        JOptionPane.showMessageDialog(UICacheManager.getInstance().get(UICacheManager.FRAME), "Sorry, not implemented yet.");
+        JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.FRAME), "Sorry, not implemented yet.");
     }
     
     //Handle clicks on the Set and Cancel buttons.

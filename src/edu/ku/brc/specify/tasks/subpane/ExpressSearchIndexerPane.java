@@ -290,7 +290,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         configureBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) 
             {
-                JOptionPane.showMessageDialog(UICacheManager.getInstance().get(UICacheManager.FRAME), "Sorry, not implemented yet.");
+                JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.FRAME), "Sorry, not implemented yet.");
             }
         });
         
@@ -319,7 +319,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
      */
     public long indexQuery(final IndexWriter writer,ExpressResultsTableInfo tableInfo)
     {
-        Connection dbConnection = DBConnection.getInstance().getConnection();
+        Connection dbConnection = DBConnection.getConnection();
         Statement  dbStatement = null;
         
         int     tableId      = Integer.parseInt(tableInfo.getTableId());
@@ -528,7 +528,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         closeBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) 
             {
-                UICacheManager.getInstance().getSubPaneMgr().closeCurrent();
+                UICacheManager.getSubPaneMgr().closeCurrent();
             }
         });
         

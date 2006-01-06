@@ -45,7 +45,7 @@ public class MainPanel extends JSplitPane
         
         navBoxMgr  =  NavBoxMgr.getInstance();
         subPaneMgr = new SubPaneMgr();
-        UICacheManager.getInstance().setSubPaneMgr(subPaneMgr);
+        UICacheManager.setSubPaneMgr(subPaneMgr);
         
         this.setLeftComponent(navBoxMgr);
         this.setRightComponent(subPaneMgr);

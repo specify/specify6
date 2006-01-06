@@ -68,12 +68,12 @@ public class ContextMgr
         {
             if (instance.currentContext != null)
             {
-                NavBoxMgr.getInstance().unregister(instance.currentContext);
+                NavBoxMgr.unregister(instance.currentContext);
             }
             
             if (task != null)
             {
-                NavBoxMgr.getInstance().register(task);
+                NavBoxMgr.register(task);
              }
             
             instance.currentContext = task;

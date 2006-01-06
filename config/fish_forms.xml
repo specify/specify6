@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<viewset name="Fish Views" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="form.xsd">
+
+    <view id="1" type="form" 
+                 name="Accession" 
+                 class="edu.ku.brc.specify.datamodel.Accession" 
+                 getter="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+                 resourceLabels="false" 
+                 >
+    	<desc><![CDATA[The Main Accession form.]]></desc>
+		<columnDef>
+			<cellDef>max(50dlu;p)</cellDef>
+			<cellDef>3dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>3dlu</cellDef>
+			<cellDef>max(50dlu;p)</cellDef>
+			<cellDef>3dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>max(88dlu;p)</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>3dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>f:p:g</cellDef>
+		</columnDef>
+
+		<rowDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>10dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+		</rowDef>
+
+		<rows>
+			<row>
+				<cell type="separator" label="KU Fish"/>
+			</row>
+			<row>
+				<cell type="field" name="catalogNumber" label="Catalog Number"/>
+				<cell type="field" name="catalogSery.seriesName" label="Catalog Series"/>
+			</row>
+			<row>
+				<cell type="field" name="accession.number" label="Accession #"/>
+				<cell type="field" name="agent.lastName,agent.firstName" label="Cataloger" format="0, 1"/>
+				<cell type="field" name="catalogedDate" label="Date"/>
+			</row>
+			<row>
+				<cell type="separator" label="Determination"/>
+			</row>
+			<row>
+				<cell type="subview" id="6" name="determinationsByBiologicalObjectId" class="edu.ku.brc.specify.datamodel.Determination"/>
+			</row>
+			<row>
+				<cell type="separator" label="Locality"/>
+			</row>
+			<row>
+				<!-- <cell type="field" name="fieldNumber,collectingEvent.locality.localityName" label="FieldNo:Locality" format="0, 1"/> -->
+				<cell type="field" name="fieldNumber" label="FieldNo"/>
+				<cell type="field" name="collectingEvent.locality.localityName" label="Locality" cols="41" colspan="6"/>
+			</row>
+			<row>
+				<cell type="separator" label="Preparations"/>
+			</row>
+			<row>
+				<cell type="subview" id="7" name="preparations" class="edu.ku.brc.specify.datamodel.PrepsObj"/>
+			</row>
+			<row>
+				<cell type="separator" label=""/>
+			</row>
+			<row>
+				<cell type="field" name="lastEditedBy" label="Edited By"/>
+				<cell type="field" name="timestampModified" label="Last Edited" cols="20" colspan="2"/>
+			</row>
+		</rows>
+	</view>
+	
+	<view id="6" type="form" 
+                 name="Accession" 
+                 class="edu.ku.brc.specify.datamodel.TaxonName" 
+                 getter="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+                 resourceLabels="false" 
+                 >
+	    <altviews>
+			<alt id="6" label="Form"/>
+			<!-- <alt id="66" label="Table"/> -->
+		</altviews>
+		<columnDef>
+			<cellDef>max(50dlu;p)</cellDef>
+			<cellDef>3dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>3dlu</cellDef>
+			<cellDef>max(50dlu;p)</cellDef>
+			<cellDef>3dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>3dlu</cellDef>
+			<cellDef>max(50dlu;p)</cellDef>
+			<cellDef>3dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>f:p:g</cellDef>
+		</columnDef>
+	  
+		<rowDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p:g</cellDef>
+			<cellDef>2dlu</cellDef>
+		</rowDef>
+	  
+		<rows>
+			<row>
+				<cell type="field" name="taxonName.fullTaxonName" label="Taxon"/>	
+				<cell type="field" name="confidenceId" label="Confidence"/>
+			</row>
+			<row>
+				<cell type="field" name="current1" label="Is Current" uiType=""/>
+				<cell type="field" name="agent.lastName,agent.firstName" label="Determiner" format="0, 1" cols="20"/>
+				<cell type="field" name="date1" label="Date"/>
+			</row>
+			<row>
+				<cell type="field" name="remarks" label="Remarks" colspan="9" cols="50"/>	
+			</row>
+		</rows>
+	</view>
+	
+	<view id="7" type="form" 
+                 name="Accession" 
+                 class="edu.ku.brc.specify.datamodel.PrepsObj" 
+                 getter="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+                 resourceLabels="false" 
+                 >
+		<altviews>
+			<alt id="7" label="Form"/>	
+			<!-- <alt id="8" label="Table"/> -->
+		</altviews>
+		<columnDef>
+			<cellDef>max(50dlu;p)</cellDef>
+			<cellDef>3dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>3dlu</cellDef>
+			<cellDef>max(50dlu;p)</cellDef>
+			<cellDef>3dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>3dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>3dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>p:g</cellDef>
+		</columnDef>
+	  
+		<rowDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+		</rowDef>
+	  
+		<rows>
+			<row>
+				<cell type="field" name="preparationMethod" label="Prep Method"/>
+				<cell type="field" name="subNumber" label="Sub No"/>
+				<cell type="field" name="remarks" label="Remarks" rowspan="8" cols="25"/>
+			</row>
+			<row>
+				<cell type="field" name="preparedDate" label="Prepared Date"/>
+				<cell type="field" name="agent.lastName,agent.firstName" label="Prepared By" format="0, 1"/>
+			</row>
+			<row>
+				<cell type="field" name="count" label="Count"/>
+				<cell type="field" name="storagelocation" label="Storage" format="0, 1"/>
+			</row>
+			<row>
+				<cell type="field" name="url" label="URL" colspan="5" cols="50"/>	
+			</row>
+			
+			<!--
+			<row>
+				<cell type="attrs" name="prepAttrs" subtypeattr="subNumber" class="edu.ku.brc.specify.datamodel.AttrsDef">
+					<subview id="100" subtype="1" desc="ethonol"/>
+					<subview id="101" subtype="2" desc="Skel"/>
+					<subview id="102" subtype="3" desc="Tissue"/>
+			    </column>
+			</row>
+			-->
+			
+			<!--
+			<row>
+				<cell type="attrs" id="200" name="prepAttrs" subtypeattr="subNumber" class="edu.ku.brc.specify.datamodel.AttrsDef"/>
+			</row>
+			-->
+			
+			<!-- <row>
+				<cell type="field" name="prepAttrs.size" label="Size"/>
+				<cell type="field" name="prepAttrs.sex" label="Sex"/>
+			</row>
+			<row>
+				<cell type="field" name="prepAttrs.url" label="URL" colspan="5"/>
+			</row>
+			-->
+			
+		</rows>
+	</view>
+</viewset>	

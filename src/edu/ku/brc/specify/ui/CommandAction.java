@@ -31,6 +31,7 @@ public class CommandAction
 
     protected final String type;
     protected final String action;
+    protected final int    tableId;
     
     protected Object data;
     
@@ -46,8 +47,22 @@ public class CommandAction
     {
         this.type   = type;
         this.action = action;
+        this.tableId = -1;
         this.data   = data;
-        
+    }
+    
+    /**
+     * Constructs a command
+     * @param type the type of command determines who listens for it
+     * @param action the name of the action to be performed (contract between producer and consumer)
+     * @param tableId the table id that the command is associated with
+     */
+    public CommandAction(final String type, final String action, final int tableId)
+    {
+        this.type    = type;
+        this.action  = action;
+        this.tableId = tableId;
+        this.data    = null;
     }
     
     /**
@@ -59,8 +74,8 @@ public class CommandAction
     {
         this.type   = type;
         this.action = action;
+        this.tableId = -1;
         this.data   = null;
-        
     }
     
     public String getAction()
@@ -93,5 +108,8 @@ public class CommandAction
         this.isConsumed = isConsumed;
     }
 
-
+    public int getTableId()
+    {
+        return tableId;
+    }
 }

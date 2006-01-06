@@ -24,6 +24,7 @@ import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.HeadlessException;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -43,6 +44,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListModel;
 
+
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -52,7 +55,6 @@ import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.core.NavBoxIFace;
 import edu.ku.brc.specify.core.NavBoxItemIFace;
-import edu.ku.brc.specify.core.ServiceInfo;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
@@ -62,7 +64,7 @@ import edu.ku.brc.specify.ui.CommandAction;
 import edu.ku.brc.specify.ui.CommandDispatcher;
 import edu.ku.brc.specify.ui.IconListCellRenderer;
 import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.RolloverCommand;
+import edu.ku.brc.specify.ui.*;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.UICacheManager;
@@ -82,6 +84,7 @@ import edu.ku.brc.specify.ui.dnd.GhostMouseDropAdapter;
 public class LabelsTask extends BaseTask
 {
     // Static Data Members
+    public static final DataFlavor LABEL_FLAVOR = new DataFlavor(LabelsTask.class, "Label");
     private static Log log = LogFactory.getLog(LabelsTask.class);
     
     public static final String LABELS = "Labels";
@@ -103,30 +106,6 @@ public class LabelsTask extends BaseTask
         CommandDispatcher.register(LABELS, this);
     }
     
-    /**
-     * Helper method for registering a NavBoxItem as a GhostMouseDropAdapter
-     * @param list the list of NavBoxItems that will have this nbi registered as a drop zone
-     * @param navBox the parent box for the nbi to be added to
-     * @param navBoxItemDropZone the nbi in question
-     */
-    protected void addRegisterAsDroppable(final java.util.List<NavBoxIFace> list, final NavBox navBox, final NavBoxItemIFace navBoxItemDropZone)
-    {
-        // Here we loop through each RecordSet and add to it a that is something it can be dropped upon
-        
-        for (NavBoxIFace nBox : list)// List of RecordSets
-        {
-            for (NavBoxItemIFace nbi : nBox.getItems())
-            {
-                if (nbi instanceof GhostActionable)
-                {
-                    GhostActionable       ga  = (GhostActionable)nbi;
-                    GhostMouseDropAdapter gpa = ga.getMouseDropAdapter();  
-                    gpa.addGhostDropListener(new GhostActionableDropManager(UICacheManager.getGlassPane(), navBoxItemDropZone.getUIComponent(), ga));
-                }
-            }
-        }  
-    }
-    
    /**
      * Helper method for registering a NavBoxItem as a GhostMouseDropAdapter
      * @param list the list of NavBoxItems that will have this nbi registered as a drop zone
@@ -136,14 +115,18 @@ public class LabelsTask extends BaseTask
      */
     protected NavBoxItemIFace addToNavBoxAndRegisterAsDroppable(final java.util.List<NavBoxIFace> list, 
                                                                 final NavBox navBox, 
-                                                                final NavBoxItemIFace navBoxItemDropZone,
+                                                                final NavBoxItemIFace nbi,
                                                                 final String fileName)
     {
-        ((RolloverCommand)navBoxItemDropZone).setData(fileName);
-        navBox.add(navBoxItemDropZone);
-        labelsList.add(navBoxItemDropZone);
-        addRegisterAsDroppable(list, navBox, navBoxItemDropZone);
-        return navBoxItemDropZone;
+        RolloverCommand roc = (RolloverCommand)nbi;
+        roc.setData(fileName);
+        roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+        roc.addDragDataFlavor(LABEL_FLAVOR);        
+        roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+        
+        navBox.add(nbi);
+        labelsList.add(nbi);
+        return nbi;
     }
     
     /* (non-Javadoc)
@@ -168,12 +151,6 @@ public class LabelsTask extends BaseTask
 
             navBoxes.addElement(navBox);
             
-            // Register Services
-            CommandAction cmd = new CommandAction("Labels", "DoLabels", null);
-            ServiceInfo serviceInfo = ContextMgr.registerService("Labels", 1, cmd, this, getResourceString("CreateLabelTT"));
-            loadServiceIcons(serviceInfo);
-            
-
         }
         
     }
@@ -206,7 +183,7 @@ public class LabelsTask extends BaseTask
         if (recordSet.getItems().size() > 200) // XXX Pref
         {
             Object[] options = {"Create Labels", "Cancel"};
-            int n = JOptionPane.showOptionDialog((Frame)UICacheManager.getInstance().get(UICacheManager.FRAME),
+            int n = JOptionPane.showOptionDialog((Frame)UICacheManager.get(UICacheManager.FRAME),
                                                 String.format(getResourceString("LotsOfLabels"), new Object[] {(recordSet.getItems().size())}),
                                                 getResourceString("LotsOfLabelsTitle"),
                                                 JOptionPane.YES_NO_OPTION,
@@ -412,9 +389,9 @@ public class LabelsTask extends BaseTask
         
         public ChooseLabel() throws HeadlessException
         {
-            super((Frame)UICacheManager.getInstance().get(UICacheManager.FRAME), getResourceString("ChooseLabel"), true);
+            super((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString("ChooseLabel"), true);
             createUI();
-            setLocationRelativeTo((JFrame)(Frame)UICacheManager.getInstance().get(UICacheManager.FRAME));
+            setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
             setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
             this.setAlwaysOnTop(true);
         }

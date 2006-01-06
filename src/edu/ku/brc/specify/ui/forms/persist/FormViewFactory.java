@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: FormViewFactory,v $
+ /* Filename:    $RCSfile: FormViewFactory,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2005/10/12 16:52:27 $
@@ -52,6 +52,8 @@ public class FormViewFactory
     private static final String TYPE  = "type";
     private static final String LABEL = "label";
     private static final String DESC  = "desc";
+    private static final String CLASSNAME  = "class";
+    private static final String GETTABLE  = "gettable";
 
     // Data Members
     protected boolean doingResourceLabels = false;
@@ -78,16 +80,19 @@ public class FormViewFactory
             instance.doingResourceLabels = Boolean.parseBoolean(bStr);
         }
         
-        FormView          view = null;
-        int               id   = Integer.parseInt(element.attributeValue(ID));
-        String            name = element.attributeValue(NAME);
-        String            desc = "";
+        FormView view      = null;
+        int      id        = Integer.parseInt(element.attributeValue(ID));
+        String   name      = element.attributeValue(NAME);
+        String   className = element.attributeValue(CLASSNAME);
+        String   gettableClassName = element.attributeValue(GETTABLE);
+        String   desc      = "";
         
         Element descElement = (Element)element.selectSingleNode(DESC);
         if (descElement != null)
         {
             desc = descElement.getTextTrim();
         }
+        
         FormView.ViewType type;
         try
         {
@@ -101,15 +106,15 @@ public class FormViewFactory
         switch (type)
         {
             case form :
-                view = createFormView(FormView.ViewType.form, element, id, name, desc, instance.doingResourceLabels);
+                view = createFormView(FormView.ViewType.form, element, id, name, className, gettableClassName, desc, instance.doingResourceLabels);
                 break;
         
             case table :
-                view = createTableView(element, id, name, desc, instance.doingResourceLabels);
+                view = createTableView(element, id, name, className, gettableClassName, desc, instance.doingResourceLabels);
                 break;
                 
             case field :
-                view = createFormView(FormView.ViewType.field, element, id, name, desc, instance.doingResourceLabels);
+                view = createFormView(FormView.ViewType.field, element, id, name, gettableClassName, className, desc, instance.doingResourceLabels);
                break;
         }
         
@@ -138,7 +143,7 @@ public class FormViewFactory
         
         Hashtable<Integer, FormView> idHash = new Hashtable<Integer, FormView>();
         
-        for ( Iterator i = aDocument.elementIterator( "view" ); i.hasNext(); ) 
+        for ( Iterator i = aDocument.elementIterator( "view" ); i.hasNext(); )
         {
             Element  element = (Element) i.next(); // assume element is NOT null, if it is null it will cause an exception
             FormView view    = createView(element);
@@ -181,7 +186,7 @@ public class FormViewFactory
             if (altviews != null)
             {
                 // iterate through child elements of root with element name "foo"
-                for ( Iterator i = altviews.elementIterator( "alt" ); i.hasNext(); ) 
+                for ( Iterator i = altviews.elementIterator( "alt" ); i.hasNext(); )
                 {
                     Element element = (Element) i.next();
                     
@@ -199,7 +204,7 @@ public class FormViewFactory
     /**
      * Gets the list of defs (cellDef or rowDef)
      * @param aElement the DOM lement to process
-     * @param aDefName the name of the element to go get all the elements (strings) from 
+     * @param aDefName the name of the element to go get all the elements (strings) from
      * @return a vector of Strings with all the cell or row definitions
      */
     protected static Vector<String> getDefs(final Element aElement, final String aDefName)
@@ -209,7 +214,7 @@ public class FormViewFactory
         
         if (cellDef != null)
         {
-            for ( Iterator i = cellDef.elementIterator( "cellDef" ); i.hasNext(); ) 
+            for ( Iterator i = cellDef.elementIterator( "cellDef" ); i.hasNext(); )
             {
                 defs.add(((Element) i.next()).getText());         
             }
@@ -221,43 +226,58 @@ public class FormViewFactory
     }
     
     /**
-     *  Creates a particular type of form 
+     *  Creates a particular type of form
      * @param type the type of form to be built
      * @param element the DOM element for building the form
      * @param id the id of the form
      * @param resLabels indicates whether the labels are really resource identifiers so the labels should come froma resource bundle
      * @return a form view of type "form"
      */
-    protected static FormFormView createFormView(final FormView.ViewType type, final Element element, final int id, final String name, final String desc, final boolean resLabels)
+    protected static FormFormView createFormView(final FormView.ViewType type, 
+                                                 final Element element, 
+                                                 final int id, 
+                                                 final String name, 
+                                                 final String className, 
+                                                 final String gettableClassName, 
+                                                 final String desc, 
+                                                 final boolean resLabels)
     {
-        FormFormView formView = new FormFormView(type, id, name, desc);
+        FormFormView formView = new FormFormView(type, id, name, className, gettableClassName, desc);
         
         formView.setResourceLabels(resLabels);
         formView.setColumnDef(getDefs(element, "columnDef"));
         formView.setRowDef(getDefs(element, "rowDef"));
         
-        Element rows = (Element)element.selectSingleNode("rows");        
-        if (rows != null)
+        Element rowsElement = (Element)element.selectSingleNode("rows");        
+        if (rowsElement != null)
         {
-            for ( Iterator i = rows.elementIterator( "row" ); i.hasNext(); ) {
+            for ( Iterator i = rowsElement.elementIterator( "row" ); i.hasNext(); ) {
                 Element rowElement = (Element) i.next();      
                 
-                FormRow row = new FormRow();
+                FormRow formRow = new FormRow();
                 
-                for ( Iterator cellIter = rowElement.elementIterator( "cell" ); cellIter.hasNext(); ) 
+                for ( Iterator cellIter = rowElement.elementIterator( "cell" ); cellIter.hasNext(); )
                 {
                     Element cellElement = (Element) cellIter.next();
-                    String label = cellElement.attributeValue(LABEL);
+                    String cellName  = getAttr(cellElement, NAME, "");
+                    String label     = getAttr(cellElement, LABEL, "");
+                    String uitype    = getAttr(cellElement, "uitype", "");
+                    String format    = getAttr(cellElement, "format", "");
+                    int    cols      = getAttr(cellElement, "cols", 10); // XXX PREF for default width of text field
+                    int    rows      = getAttr(cellElement, "rows", 5);  // XXX PREF for default heightof text area
+                    int    colspan   = getAttr(cellElement, "colspan", 1);
+                    int    rowspan   = getAttr(cellElement, "rowspan", 1);
                     
                     FormCell.CellType cellType = FormCell.CellType.valueOf(cellElement.attributeValue(TYPE));
-                    switch (cellType) 
+                    switch (cellType)
                     {
                         case label:
                         case separator:
                         case field:
-                            row.createCell(cellType, 
-                                           cellElement.attributeValue(NAME),
-                                           instance.doingResourceLabels && label != null ? getResourceLabel(label) : label);
+                            formRow.createCell(cellType, 
+                                               cellName, 
+                                               instance.doingResourceLabels && label != null ? getResourceLabel(label) : label, 
+                                               uitype, format, cols, rows, colspan, rowspan);
                             break;
                             
                         case subview:
@@ -267,15 +287,17 @@ public class FormViewFactory
                             {
                                 vsName = instance.viewSetName;
                             }
-                            row.createSubView(cellElement.attributeValue(NAME), 
-                                              vsName,
-                                              Integer.parseInt(cellElement.attributeValue(ID)), 
-                                              cellElement.attributeValue("class"));
+                            formRow.createSubView(cellElement.attributeValue(NAME),
+                                                  vsName,
+                                                  Integer.parseInt(cellElement.attributeValue(ID)),
+                                                  cellElement.attributeValue("class"),
+                                                  colspan,
+                                                  rowspan);
                         }
                         break;
                     }        
                 }
-                formView.addRow(row);                    
+                formView.addRow(formRow);                    
             }
         }
 
@@ -283,7 +305,31 @@ public class FormViewFactory
     }
     
     /**
-     * CReates a Table Form View
+     * @param element
+     * @param attrName
+     * @param defValue
+     * @return
+     */
+    public static String getAttr(final Element element, final String attrName, final String defValue)
+    {
+        String str = element.attributeValue(attrName);
+        return str != null ? str : defValue;
+    }
+    
+    /**
+     * @param element
+     * @param attrName
+     * @param defValue
+     * @return
+     */
+    public static int getAttr(final Element element, final String attrName, final int defValue)
+    {
+        String str = element.attributeValue(attrName);
+        return str != null && str.length() > 0 ? Integer.parseInt(str) : defValue;
+    }
+    
+    /**
+     * Creates a Table Form View
      * @param element the DOM element to process
      * @param id the id of the table
      * @param name the name of the table
@@ -291,13 +337,15 @@ public class FormViewFactory
      * @param resLabels indicates whether the labels are really resource identifiers so the labels should come froma resource bundle
      * @return a form view of type "table"
      */
-    protected static FormTableView createTableView(final Element element, 
-                                                   final int     id, 
-                                                   final String  name, 
-                                                   final String  desc, 
+    protected static FormTableView createTableView(final Element element,
+                                                   final int     id,
+                                                   final String  name,
+                                                   final String  className,
+                                                   final String  gettableClassName,
+                                                   final String  desc,
                                                    final boolean resLabels)
     {
-        FormTableView tableView = new FormTableView(id, name, desc);
+        FormTableView tableView = new FormTableView(id, name, className, gettableClassName, desc);
         
         tableView.setResourceLabels(resLabels);
         
@@ -307,7 +355,11 @@ public class FormViewFactory
             for ( Iterator i = columns.elementIterator( "column" ); i.hasNext(); ) {
                 Element colElement = (Element) i.next();      
                 
-                FormColumn column = new FormColumn(colElement.attributeValue(NAME), colElement.attributeValue(LABEL));
+                FormColumn column = new FormColumn(colElement.attributeValue(NAME), 
+                        colElement.attributeValue(LABEL),
+                        getAttr(colElement, "format", "")
+                        );
+                
                 tableView.addColumn(column);
             }
         }
@@ -320,7 +372,7 @@ public class FormViewFactory
      * XXX please move me!
      */
 
-    public class FormViewComparator implements Comparator<FormView> 
+    public class FormViewComparator implements Comparator<FormView>
     {
         
         public int compare(FormView o1, FormView o2)
@@ -334,7 +386,7 @@ public class FormViewFactory
             }
         }
         
-        public boolean equals(Object obj) 
+        public boolean equals(Object obj)
         {
             return (obj instanceof FormView);
         }
@@ -369,3 +421,4 @@ public class FormViewFactory
         }
     }
 }
+

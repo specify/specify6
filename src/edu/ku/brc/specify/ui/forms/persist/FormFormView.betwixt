@@ -2,7 +2,9 @@
   <element name="view">
     <attribute name="id" property="id"/>
     <attribute name="name" property="name"/>
+    <attribute name="class" property="className"/>
     <attribute name="type" property="type"/>
+     <attribute name="gettable" property="gettableClassName"/>
     <attribute name="resourceLabels" property="resourceLabels"/>
     
     <element name="desc"/>

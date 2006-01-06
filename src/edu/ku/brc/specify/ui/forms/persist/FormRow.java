@@ -65,30 +65,42 @@ public class FormRow
     // Helpers
     //-------------------------------------------------------------------
     
-    public FormCell createSubView(String aName, String aViewSetName, int aId, String aClass)
+    public FormCell createSubView(String name, 
+                                  String viewSetName, 
+                                  int    id, 
+                                  String classObj,
+                                  int    colspan, 
+                                  int    rowspan)
     {
-        return addCell(new FormCellSubView(aName, aViewSetName, aId, aClass));
+        return addCell(new FormCellSubView(name, viewSetName, id, classObj, colspan, rowspan));
     }
     
-    public FormCell createField(String aName, String aLabel)
+    public FormCell createField(String name, String label)
     {
-        return addCell(new FormCellWithLabel(FormCell.CellType.field, aName, aLabel));
+        return addCell(new FormCell(FormCell.CellType.field, name, label));
     }
     
-    public FormCell createLabel(String aLabel)
+    public FormCell createLabel(String label)
     {
-        return addCell(new FormCellWithLabel(FormCell.CellType.label, null, aLabel));
+        return addCell(new FormCell(FormCell.CellType.label, null, label));
     }
     
     public FormCell createSeparator(String aLabel)
     {
-        return addCell(new FormCellWithLabel(FormCell.CellType.separator, null, aLabel));
+        return addCell(new FormCell(FormCell.CellType.separator, null, aLabel));
     }
     
-    public FormCell createCell(FormCell.CellType aType, String aName, String aLabel)
+    public FormCell createCell(FormCell.CellType type, 
+                               String name, 
+                               String label, 
+                               String uitype, 
+                               String format, 
+                               int    cols, 
+                               int    rows, 
+                               int    colspan, 
+                               int    rowspan)
     {
-        return addCell(new FormCellWithLabel(aType, aName, aLabel));
+        return addCell(new FormCell(type, name, label, uitype, format, cols, rows, colspan, rowspan));
     }
-    
     
 }

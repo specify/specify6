@@ -68,42 +68,42 @@ public class DBConnection
      * @param dbUserid the username
      * @param dbPassword the password
      */
-    public void setUsernamePassword(final String dbUserid, final String dbPassword)
+    public static void setUsernamePassword(final String dbUserid, final String dbPassword)
     {
-        this.dbUserid   = dbUserid;
-        this.dbPassword = dbPassword;
+        instance.dbUserid   = dbUserid;
+        instance.dbPassword = dbPassword;
     }
     
     /**
      * Sets the database name 
      * @param dbName the database name
      */
-    public void setDBName(final String dbName)
+    public static void setDBName(final String dbName)
     {
-        this.dbName = dbName;
+        instance.dbName = dbName;
     }
     
     /**
      * Sets the driver name 
      * @param dbDriver the driver name
      */
-    public void setDriver(final String dbDriver)
+    public static void setDriver(final String dbDriver)
     {
-        this.dbDriver = dbDriver;
+        instance.dbDriver = dbDriver;
     }
     
     /**
      * Returns a new connection to the database/. It uses the database name, driver, username and password to connect
      * @return the JDBC connection to the database
      */
-    public Connection getConnection()
+    public static Connection getConnection()
     {
         Connection con = null;
         try
         {
-            Class.forName(dbDriver); // load driver
+            Class.forName(instance.dbDriver); // load driver
             
-            con = DriverManager.getConnection(dbName, dbUserid, dbPassword );
+            con = DriverManager.getConnection(instance.dbName, instance.dbUserid, instance.dbPassword );
             
         } catch (Exception ex)
         {

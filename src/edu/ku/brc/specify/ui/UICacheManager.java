@@ -43,16 +43,16 @@ public class UICacheManager
     public static final String TOOLBAR   = "toolbar";
     public static final String STATUSBAR = "statusbar";
     public static final String TOPFRAME  = "topframe";
-    public static final String GLASSPANE  = "glasspane";
+    public static final String GLASSPANE = "glasspane";
+    public static final String MAINPANE  = "mainpane";
     
-    private static Log log               = LogFactory.getLog(UICacheManager.class);
-    private static UICacheManager cmdMgr = new UICacheManager();
+    private static Log            log      = LogFactory.getLog(UICacheManager.class);
+    private static UICacheManager instance = new UICacheManager();
     
     // Data Members
     protected Hashtable<String, Component> components = new Hashtable<String, Component>();
     
-    protected Hashtable<String, ActionChangedListener>         actionChangedListeners = new Hashtable<String, ActionChangedListener>();
-    protected Hashtable<String, Hashtable<String, JComponent>> uiItems                = new Hashtable<String, Hashtable<String, JComponent>>();
+    protected Hashtable<String, Hashtable<String, JComponent>> uiItems = new Hashtable<String, Hashtable<String, JComponent>>();
     
     protected ResourceBundle resourceBundle = null;
     protected String         resourceName   = "resources";
@@ -83,7 +83,7 @@ public class UICacheManager
      */
     public static UICacheManager getInstance()
     {
-        return cmdMgr;
+        return instance;
     }
     
     /**
@@ -92,73 +92,41 @@ public class UICacheManager
      */
     public static ResourceBundle getResourceBundleInternal()
     {
-        return UICacheManager.getInstance().getResourceBundle();
-    }
-    
-   
-    /**
-     * Register an action change listener
-     * @param aName
-     * @param aACL
-     * @throws UIException
-     */
-    public void registerActionChangedListener(String aName, ActionChangedListener aACL) throws UIException
-    {
-        if (actionChangedListeners.containsKey(aName))
-        {
-           throw new UIException("ActionChangedListener with Name["+aName+"] has already been registered."); 
-        }
-        actionChangedListeners.put(aName, aACL);
+        return instance.getResourceBundle();
     }
     
     /**
-     * 
-     * @param aName
-     * @param aACL
-     * @throws UIException
+     * Registers a uicomp
+     * @param category the category to be registered
+     * @param name the name 
+     * @param uiComp the ui component
+     * @throws UIException throws exception if it is already registered
      */
-    public void unregisterActionChangedListener(String aName, ActionChangedListener aACL) throws UIException
+    public static void registerUI(final String category, final String name, final JComponent uiComp) throws UIException
     {
-        ActionChangedListener acl = actionChangedListeners.get(aName);
-        if (acl == null)
-        {
-           throw new UIException("Couldn't find ActionChangedListener with Name["+aName+"]."); 
-        }
-        actionChangedListeners.remove(acl);
-    }
-    
-    /**
-     * 
-     * @param aCategory
-     * @param aName
-     * @param aUIComp
-     * @throws UIException
-     */
-    public void registerUI(String aCategory, String aName, JComponent aUIComp) throws UIException
-    {
-        Hashtable<String, JComponent> compsHash = uiItems.get(aCategory);
+        Hashtable<String, JComponent> compsHash = instance.uiItems.get(category);
         if (compsHash == null)
         {
             compsHash = new Hashtable<String, JComponent>();
-            uiItems.put(aCategory, compsHash);
+            instance.uiItems.put(category, compsHash);
         }
-        if (compsHash.containsKey(aName))
+        if (compsHash.containsKey(name))
         {
-           throw new UIException("UI component with Name["+aName+"] has already been registered to ["+aCategory+"]."); 
+           throw new UIException("UI component with Name["+name+"] has already been registered to ["+category+"]."); 
         }
-        compsHash.put(aName, aUIComp);
+        compsHash.put(name, uiComp);
     }
     
     /**
-     * 
-     * @param aCategory
-     * @param aName
-     * @param aUIComp
-     * @throws UIException
+     * Unregisters a uicomp
+     * @param category the category to be registered
+     * @param name the name 
+     * @param uiComp the ui component
+     * @throws UIException throws exception if it is not registered
      */
-    public void unregisterUI(String aCategory, String aName, JComponent aUIComp) throws UIException
+    public static void unregisterUI(final String aCategory, final String aName, final JComponent aUIComp) throws UIException
     {
-        Hashtable<String, JComponent> compsHash = uiItems.get(aCategory);
+        Hashtable<String, JComponent> compsHash = instance.uiItems.get(aCategory);
         if (compsHash == null)
         {
             throw new UIException("Couldn't find UI Category with Name["+aCategory+"]."); 
@@ -171,12 +139,27 @@ public class UICacheManager
         compsHash.remove(comp);
     }
     
+    /**
+     * Returns a UI component by name
+     * @param name the name of the component to be retrieved 
+     * @return a UI component by name
+     */
+    public static Component get(final String name)
+    {
+        return instance.components.get(name);
+    }
+    
+    /**
+     * Returns the main ResourceBundle
+     * @return Returns the main ResourceBundle
+     */
     public ResourceBundle getResourceBundle()
     {
         return resourceBundle;
     }
 
     /**
+     * Returns the reourceName.
      * @return Returns the reourceName.
      */
     public String getResourceName()
@@ -185,26 +168,37 @@ public class UICacheManager
     }
 
     /**
+     * Sets the resource name
      * @param resourceName The reourceName to set.
      */
-    public void setResourceName(String resourceName)
+    public void setResourceName(final String resourceName)
     {
         this.resourceName = resourceName;
     }
     
-    public String getResourceStringInternal(String aKey)
+    /**
+     * Returns a localized string from the resource bundle (masks the thrown expecption)
+     * @param key the key to look up
+     * @return  Returns a localized string from the resource bundle
+     */
+    protected String getResourceStringInternal(final String key)
     {
         try {
-            return resourceBundle.getString(aKey);
+            return resourceBundle.getString(key);
         } catch (MissingResourceException ex) {
-            log.error("Couldn't find key["+aKey+"] in resource bundle.");
-            return aKey;
+            log.error("Couldn't find key["+key+"] in resource bundle.");
+            return key;
         }
     }
 
-    public static String getResourceString(String aKey)
+    /**
+     * Returns a localized string from the resource bundle (masks the thrown expecption)
+     * @param key the key to look up
+     * @return  Returns a localized string from the resource bundle
+     */
+    public static String getResourceString(final String key)
     {
-        return getInstance().getResourceStringInternal(aKey);
+        return instance.getResourceStringInternal(key);
     }
 
     /**
@@ -212,13 +206,13 @@ public class UICacheManager
      * @param name the name of the UI component to be registered
      * @param uiComp the UI component to be registered
      */
-    public void register(final String name, final Component uiComp)
+    public static void register(final String name, final Component uiComp)
     {
         if (uiComp != null)
         {
-            if (components.get(name) == null)
+            if (instance.components.get(name) == null)
             {
-                components.put(name, uiComp);
+                instance.components.put(name, uiComp);
             } else
             {
                 throw new RuntimeException("Registering a uiComp with an existing name["+ name+"]");
@@ -233,13 +227,13 @@ public class UICacheManager
      * Unregisters a uiComp from the application
      * @param name the name of the UI component to be unregistered
      */
-    public void unregister(final String name)
+    public static void unregister(final String name)
     {
         if (name != null)
         {
-            if (components.get(name) != null)
+            if (instance.components.get(name) != null)
             {
-                components.remove(name);
+                instance.components.remove(name);
             } else
             {
                 throw new RuntimeException("Unregistering a uiComp that has been registered ["+name+"]");
@@ -251,22 +245,12 @@ public class UICacheManager
     }
 
     /**
-     * Returns a UI component by name
-     * @param name the name of the component to be retrieved 
-     * @return a UI component by name
-     */
-    public Component get(final String name)
-    {
-        return components.get(name);
-    }
-    
-    /**
      * Displays a message in the status bar
      * @param text
      */
     public static void displayStatusBarText(final String text)
     {
-        JTextField txtField = ((JTextField)UICacheManager.getInstance().get(STATUSBAR));
+        JTextField txtField = ((JTextField)instance.components.get(STATUSBAR));
         assert txtField != null : "No statusbar has been created!";
        
         txtField.setText(text == null ? "" : text);
@@ -281,7 +265,7 @@ public class UICacheManager
     {
         if (key == null) throw new NullPointerException("Call to displayLocalizedStatusBarText cannot be null!");
         
-        String localizedStr = UICacheManager.getInstance().getResourceStringInternal(key);
+        String localizedStr = instance.getResourceStringInternal(key);
         assert localizedStr != null : "Localized String for key["+key+"]";
         
         displayStatusBarText(localizedStr);
@@ -295,25 +279,25 @@ public class UICacheManager
      */
     public static void addSubPane(SubPaneIFace subPane)
     {
-        UICacheManager.getInstance().getSubPaneMgr().addPane(subPane);
+        getSubPaneMgr().addPane(subPane);
     }
 
     /**
      * 
      * @return the sub pane manager
      */
-    public SubPaneMgr getSubPaneMgr()
+    public static SubPaneMgr getSubPaneMgr()
     {
-        return subPaneMgr;
+        return instance.subPaneMgr;
     }
 
     /**
      * 
      * @param subPaneMgr
      */
-    public void setSubPaneMgr(SubPaneMgr subPaneMgr)
+    public static void setSubPaneMgr(SubPaneMgr subPaneMgr)
     {
-        this.subPaneMgr = subPaneMgr;
+        instance.subPaneMgr = subPaneMgr;
     }
     
     /**
@@ -325,7 +309,7 @@ public class UICacheManager
         SwingUtilities.invokeLater(new Runnable() {
             public void run() 
             {
-                JFrame frame = ((JFrame)UICacheManager.getInstance().get(TOPFRAME));
+                JFrame frame = ((JFrame)instance.components.get(TOPFRAME));
                 assert frame != null : "The top frame has not been registered";
                 frame.repaint();
             }
@@ -338,6 +322,6 @@ public class UICacheManager
      */
     public static GhostGlassPane getGlassPane()
     {
-        return ((GhostGlassPane)UICacheManager.getInstance().get(GLASSPANE));
+        return ((GhostGlassPane)instance.components.get(GLASSPANE));
     }
 }

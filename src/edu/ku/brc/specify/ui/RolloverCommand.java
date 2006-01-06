@@ -30,6 +30,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.RenderingHints;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -41,6 +42,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
 import java.lang.reflect.Field;
+import java.util.*;
 import java.util.Vector;
 
 import javax.swing.Icon;
@@ -66,11 +68,12 @@ import edu.ku.brc.specify.ui.dnd.GhostMouseDropAdapter;
 import edu.ku.brc.specify.ui.dnd.ShadowFactory;
 
 /**
- * @author Rod Spears
- *
  *  
  * Creates a panel containing an icon and button with a focus "ring" when the mouse is hovering.
  * This class is used mostly in NavBoxes
+ * 
+ * @author Rod Spears
+ *
  */
 @SuppressWarnings("serial")
 public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostActionable, DndDeletable
@@ -94,7 +97,7 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     protected Object                 data = null;
     
     // These used for the Ghosting
-    protected static final int SHADOW_SIZE = 10;
+    protected static final int       SHADOW_SIZE = 10;
     protected RenderingHints         hints        = null;
     protected BufferedImage          shadowBuffer = null;
     protected BufferedImage          buffer       = null;;
@@ -105,6 +108,9 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     protected JPopupMenu             popupMenu    = null;
     protected RolloverCommand        itself       = null; // for the mouse adapter
     
+    protected List<DataFlavor>       dropFlavors  = new ArrayList<DataFlavor>(); 
+    protected List<DataFlavor>       dragFlavors  = new ArrayList<DataFlavor>(); 
+
     // DndDeletable
     protected CommandAction          deleteCmdAction = null;
     
@@ -115,6 +121,7 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
      */
     public RolloverCommand(final String label, final ImageIcon imgIcon)
     {
+       
         setBorder(new EmptyBorder(new Insets(1,1,1,1)));
         setLayout(new BorderLayout());
        
@@ -428,6 +435,24 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     {
         return this;
     }
+    
+    /**
+     * Adds a new "drag" data flavor it's list of data flavors that it supports
+     * @param dataFlavor the new data flavor
+     */
+    public void addDragDataFlavor(final DataFlavor dataFlavor)
+    {
+        dragFlavors.add(dataFlavor);
+    }
+
+    /**
+     * Adds a new "drop" data flavor it's list of data flavors that it supports
+     * @param dataFlavor the new data flavor
+     */
+    public void addDropDataFlavor(final DataFlavor dataFlavor)
+    {
+        dropFlavors.add(dataFlavor);
+    }
 
     
     //-----------------------------------------------
@@ -561,8 +586,7 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
      * @return Returns the buffered image of the control
      */
     public BufferedImage getBufferedImage() 
-    {
-        
+    {      
         if (buffer == null) 
         {
             renderOffscreen();
@@ -610,6 +634,22 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     public void setVerticalLayout(boolean verticalLayout)
     {
         this.verticalLayout = verticalLayout;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getDataFlavor()
+     */
+    public List<DataFlavor> getDropDataFlavors()
+    {
+        return dropFlavors;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getDataFlavor()
+     */
+    public List<DataFlavor> getDragDataFlavors()
+    {
+        return dragFlavors;
     }
 
     //-----------------------------------------------

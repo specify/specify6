@@ -92,11 +92,6 @@ public class DataEntryTask extends BaseTask
             navBox.add(NavBox.createBtn("Address", "Address", IconManager.IconSize.Std16));
             navBoxes.addElement(navBox);
             
-            // Register Services
-            CommandAction cmd = new CommandAction("Data_Entry", "Edit", null);
-            ServiceInfo serviceInfo = ContextMgr.registerService("Data_Entry", 1, cmd, this, getResourceString("EditRecordSetTT"));
-            loadServiceIcons(serviceInfo);
-            
         }
     }
    
@@ -107,7 +102,7 @@ public class DataEntryTask extends BaseTask
     public void openForm(final String formName)
     {
         DataEntryPane formPane = new DataEntryPane(name, this);
-        UICacheManager.getInstance().getSubPaneMgr().addPane(formPane);
+        UICacheManager.getSubPaneMgr().addPane(formPane);
 
     }
     

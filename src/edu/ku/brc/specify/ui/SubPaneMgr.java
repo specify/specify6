@@ -30,7 +30,7 @@ import javax.swing.event.ChangeListener;
 import edu.ku.brc.specify.core.ContextMgr;
 
 @SuppressWarnings("serial")
-public class SubPaneMgr extends JTabbedPane implements ChangeListener
+public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
 {
     // Static Data Members
     //private static Log log = LogFactory.getLog(SubPaneMgr.class);

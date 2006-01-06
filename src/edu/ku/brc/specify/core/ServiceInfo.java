@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: IconManager.java,v $
+/* Filename:    $RCSfile: ServiceInfo.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.2 $
  * Date:        $Date: 2005/10/19 19:59:54 $

@@ -1,4 +1,23 @@
-package edu.ku.brc.specify.ui.db;
+/* Filename:    $RCSfile: ChooseFromListDlg.java,v $
+ * Author:      $Author: rods $
+ * Revision:    $Revision: 1.1 $
+ * Date:        $Date: 2005/10/19 19:59:54 $
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+package edu.ku.brc.specify.ui;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
@@ -9,6 +28,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
@@ -24,42 +44,58 @@ import javax.swing.ListModel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Criteria;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.tasks.RecordSetTask;
-import edu.ku.brc.specify.ui.IconListCellRenderer;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.UICacheManager;
-
 /**
- * Choose a record set from the a list from the database
+ * Choose an object from a list of Objects using their "toString"
  * 
  * @author rods
  *
  */
 @SuppressWarnings("serial")
-public class ChooseRecordSetDlg extends JDialog implements ActionListener 
+public class ChooseFromListDlg extends JDialog implements ActionListener 
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(ChooseRecordSetDlg.class);
-
+    private static Log log = LogFactory.getLog(ChooseFromListDlg.class);
     
-    private final static ImageIcon icon = IconManager.getImage(RecordSetTask.RECORD_SET, IconManager.IconSize.Std16);
-
     // Data Members
     protected JButton        cancelBtn;
     protected JButton        okBtn;
     protected JList          list;
-    protected java.util.List recordSets;
+    protected List           items;
+    protected ImageIcon      icon   = null;
     
-    public ChooseRecordSetDlg() throws HeadlessException
+    /**
+     * Constructor 
+     * @param title the title of the dialog
+     * @param items the list to be selected from
+     * @throws HeadlessException
+     */
+    public ChooseFromListDlg(final String title, final List items) throws HeadlessException
     {
         super((Frame)UICacheManager.get(UICacheManager.FRAME), true);
-        createUI();
+        this.items = items;
+        createUI(title);
+        setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        this.setAlwaysOnTop(true);
+    }
+
+    /**
+     * Constructor 
+     * @param title the title of the dialog
+     * @param items the list to be selected from
+     * @param icon the icon to be displayed in front of each entry in the list
+     * @throws HeadlessException
+     */
+    public ChooseFromListDlg(final String title, final List items, final ImageIcon icon) throws HeadlessException
+    {
+        super((Frame)UICacheManager.get(UICacheManager.FRAME), true);
+        this.items = items;
+        this.icon = icon;
+        
+        createUI(title);
         setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         this.setAlwaysOnTop(true);
@@ -69,27 +105,27 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
      * 
      *
      */
-    protected void createUI()
+    protected void createUI(final String title)
     {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
         
-        panel.add(new JLabel(getResourceString("ChooseRecordSet"), JLabel.CENTER), BorderLayout.NORTH);
+        panel.add(new JLabel(title, JLabel.CENTER), BorderLayout.NORTH);
 
         try
         {
-            Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(RecordSet.class);
-            recordSets = criteria.list();
-            HibernateUtil.closeSession();
             
             ListModel listModel = new AbstractListModel() 
             {
-                public int getSize() { return recordSets.size(); }
-                public Object getElementAt(int index) { return ((RecordSet)recordSets.get(index)).getName(); }
+                public int getSize() { return items.size(); }
+                public Object getElementAt(int index) { return items.get(index).toString(); }
             };
             
             list = new JList(listModel);
-            list.setCellRenderer(new IconListCellRenderer(icon)); // icon comes from the base class (it's probably size 16)
+            if (icon != null)
+            {
+                list.setCellRenderer(new IconListCellRenderer(icon)); // icon comes from the base class (it's probably size 16)
+            }
             list.setVisibleRowCount(10);
             list.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent e) {
@@ -128,18 +164,24 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
         
     }
     
-    //Handle clicks on the Set and Cancel buttons.
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
     public void actionPerformed(ActionEvent e) 
     {
         setVisible(false);
     }
     
-    public RecordSet getSelectedRecordSet()
+    /**
+     * Returns the selected Object or null if nothing was selected
+     * @return the selected Object or null if nothing was selected
+     */
+    public Object getSelectedObject()
     {
         int inx = list.getSelectedIndex();
         if (inx != -1)
         {
-            return (RecordSet)recordSets.get(inx);
+            return items.get(inx);
         }
         return null;
     }

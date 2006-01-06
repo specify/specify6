@@ -172,22 +172,11 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
             GhostActionable ga = (GhostActionable)nb;
             ga.createMouseDropAdapter();
             ga.setData(data);
-            GhostMouseDropAdapter gpa = ga.getMouseDropAdapter();  
-            gpa.addGhostDropListener(new GhostActionableDropManager(UICacheManager.getGlassPane(), NavBoxMgr.getTrash(), ga));
+            //GhostMouseDropAdapter gpa = ga.getMouseDropAdapter();  
+            //gpa.addGhostDropListener(new GhostActionableDropManager(UICacheManager.getGlassPane(), NavBoxMgr.getTrash(), ga));
 
         }
         return nb;
-    }
-    
-    /**
-     * Helper method that loads the standard icon sizes needed for services.
-     * @param info the service info object to be loaded with the icons
-     */
-    protected void loadServiceIcons(final ServiceInfo info)
-    {
-        info.addIcon(IconManager.getIcon(name, IconManager.IconSize.Std16), IconManager.IconSize.Std16);
-        info.addIcon(IconManager.getIcon(name, IconManager.IconSize.Std24), IconManager.IconSize.Std24);
-        info.addIcon(IconManager.getIcon(name, IconManager.IconSize.Std32), IconManager.IconSize.Std32);
     }
     
     /**
@@ -234,7 +223,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     {
         ContextMgr.requestContext(this);
         
-        UICacheManager.getInstance().getSubPaneMgr().addPane(getStarterPane());
+        UICacheManager.getSubPaneMgr().addPane(getStarterPane());
     }
     
     //-------------------------------------------------------

@@ -28,7 +28,8 @@ import javax.swing.Timer;
 @SuppressWarnings("serial")
 public class GhostGlassPane extends JPanel 
 {
-    private final int ANIMATION_DELAY = 500;
+    private final int   ANIMATION_DELAY = 500;
+    private final float STD_ALPHA       = 0.7f;
     
     private BufferedImage dragged = null;
     private Point location = new Point(0, 0);
@@ -38,9 +39,9 @@ public class GhostGlassPane extends JPanel
     private int height;
     private Rectangle visibleRect = null;
     
-    private float zoom = 1.0f;
-    private float alpha = 0.7f;
-
+    private float zoom  = 1.0f;
+    private float alpha = STD_ALPHA;
+ 
     /**
      * Default Constructor
      */
@@ -142,6 +143,23 @@ public class GhostGlassPane extends JPanel
     }
 
     /**
+     * Set the alpha to a custmo value
+     * @param alpha the new alpha value used to paint the dragged object
+     */
+    public void setAlpha(float alpha)
+    {
+        this.alpha = alpha;
+    }
+    
+    /**
+     * Resets the alpha channel back to it's "standard" value
+     */
+    public void resetAlpha()
+    {
+        this.alpha = STD_ALPHA;
+    }
+    
+    /**
      * Start animation where painting will occur for the given rect
      * @param visibleRect the rect to be painted
      */
@@ -184,4 +202,5 @@ public class GhostGlassPane extends JPanel
             repaint(getRepaintRect());
         }
     }
+    
 }

@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.ui.forms.persist;
 
 import java.util.Vector;
+import edu.ku.brc.specify.ui.forms.*;
 
 public class FormView implements Comparable<FormView>
 {
@@ -29,10 +30,14 @@ public class FormView implements Comparable<FormView>
     protected int                  id;
     protected String               name;
     protected String               desc;
+    protected String               className;
+    protected String               dataGettableName;
     protected Vector<FormAltView>  altViews       = new Vector<FormAltView>();
     protected boolean              resourceLabels = false;
     
     protected String               viewSetName    = null;
+    
+    protected DataObjectGettable   dataGettable   = null;
     
     /**
      * Default Constructor
@@ -48,12 +53,27 @@ public class FormView implements Comparable<FormView>
      * @param type the type of form (form, table, field)
      * @param id the unique id of the form
      */
-    public FormView(final ViewType type, final int id, final String name, final String desc)
+    public FormView(final ViewType type, 
+                    final int      id, 
+                    final String   name, 
+                    final String   className, 
+                    final String   dataGettableName, 
+                    final String   desc)
     {
         this.type = type;
         this.id   = id;
         this.name = name;
+        this.className = className;
+        this.dataGettableName = dataGettableName;
         this.desc = desc;
+        
+        try
+        {
+            dataGettable = (DataObjectGettable)DataObjectGettableFactory.get(className, dataGettableName);
+            
+        } catch (Exception ex)
+        {
+        }
     }
     
     /**
@@ -148,6 +168,31 @@ public class FormView implements Comparable<FormView>
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    public String getClassName()
+    {
+        return className;
+    }
+
+    public void setClassName(String className)
+    {
+        this.className = className;
+    }
+
+    public String getDataGettableName()
+    {
+        return dataGettableName;
+    }
+
+    public void setDataGettableName(String dataGettableName)
+    {
+        this.dataGettableName = dataGettableName;
+    }
+
+    public DataObjectGettable getDataGettable()
+    {
+        return dataGettable;
     }
 
      

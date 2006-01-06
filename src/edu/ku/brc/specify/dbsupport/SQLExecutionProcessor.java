@@ -186,7 +186,7 @@ public class SQLExecutionProcessor implements Runnable
         {
             if (dbConnection == null)
             {
-                dbConnection = DBConnection.getInstance().getConnection();
+                dbConnection = DBConnection.getConnection();
             }
             
             if (dbConnection != null)
