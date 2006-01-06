@@ -108,7 +108,7 @@ public class InitializeData
         config.addClass(Locality.class);
         config.addClass(CollectionObjectCatalog.class);
         config.addClass(AccessionAgent.class);
-        config.addClass(AccessionAuthorization.class);
+        config.addClass(AccessionAuthorizations.class);
         config.addClass(Address.class);
         config.addClass(Agent.class);
         config.addClass(AgentAddress.class);
