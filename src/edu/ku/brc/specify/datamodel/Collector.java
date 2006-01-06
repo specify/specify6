@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="Collectors"
+ *         table="collectors"
  *     
  */
 public class Collector  implements java.io.Serializable {

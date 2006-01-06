@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="AttrsDef"
+ *         table="attrsdef"
  *     
  */
 public class AttrsDef  implements java.io.Serializable {

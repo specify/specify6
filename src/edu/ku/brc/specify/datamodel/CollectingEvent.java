@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="CollectingEvent"
+ *         table="collectingevent"
  *     
  */
 public class CollectingEvent  implements java.io.Serializable {

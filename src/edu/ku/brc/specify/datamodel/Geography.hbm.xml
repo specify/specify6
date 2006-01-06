@@ -13,12 +13,12 @@
 
 <class 
     name="edu.ku.brc.specify.datamodel.Geography" 
-    table="Geography"
+    table="geography"
 	lazy="true"
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="Geography"
+        table="geography"
     </meta>
 
     <id

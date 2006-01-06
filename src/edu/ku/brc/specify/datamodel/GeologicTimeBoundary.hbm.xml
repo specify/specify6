@@ -13,12 +13,12 @@
 
 <class 
     name="edu.ku.brc.specify.datamodel.GeologicTimeBoundary" 
-    table="GeologicTimeBoundary"
+    table="geologictimeboundary"
 	lazy="true"
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="GeologicTimeBoundary"
+        table="geologictimeboundary"
     </meta>
 
     <id

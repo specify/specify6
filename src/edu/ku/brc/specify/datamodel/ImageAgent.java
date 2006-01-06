@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="ImageAgents"
+ *         table="imageagents"
  *     
  */
 public class ImageAgent  implements java.io.Serializable {

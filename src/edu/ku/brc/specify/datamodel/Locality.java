@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="Locality"
+ *         table="locality"
  *     
  */
 public class Locality  implements java.io.Serializable {

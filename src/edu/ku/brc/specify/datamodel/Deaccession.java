@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="Deaccession"
+ *         table="deaccession"
  *     
  */
 public class Deaccession  implements java.io.Serializable {

@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="Geography"
+ *         table="geography"
  *     
  */
 public class Geography  implements java.io.Serializable {

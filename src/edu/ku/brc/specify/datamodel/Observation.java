@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="Observation"
+ *         table="observation"
  *     
  */
 public class Observation  implements java.io.Serializable {

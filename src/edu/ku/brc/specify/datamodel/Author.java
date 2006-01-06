@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="Authors"
+ *         table="authors"
  *     
  */
 public class Author  implements java.io.Serializable {

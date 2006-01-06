@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="ImageLocalities"
+ *         table="imagelocalities"
  *     
  */
 public class ImageLocality  implements java.io.Serializable {

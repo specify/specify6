@@ -13,12 +13,12 @@
 
 <class 
     name="edu.ku.brc.specify.datamodel.TaxonomyType"
-    table="TaxonomyType"
+    table="taxonomytype"
 lazy="true"	
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="TaxonomyType"
+        table="taxonomytype"
     </meta>
 
     <id

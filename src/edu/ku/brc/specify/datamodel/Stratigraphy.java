@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="Stratigraphy"
+ *         table="stratigraphy"
  *     
  */
 public class Stratigraphy  implements java.io.Serializable {

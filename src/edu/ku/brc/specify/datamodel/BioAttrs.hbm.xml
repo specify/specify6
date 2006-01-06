@@ -13,12 +13,12 @@
 
 <class 
     name="edu.ku.brc.specify.datamodel.BioAttrs" 
-    table="BioAttrs"
+    table="bioattrs"
 	lazy="true"
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="BioAttrs"
+        table="bioattrs"
     </meta>
 
     <id

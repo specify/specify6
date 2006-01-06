@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="ReferenceWork"
+ *         table="referencework"
  *     
  */
 public class ReferenceWork  implements java.io.Serializable {

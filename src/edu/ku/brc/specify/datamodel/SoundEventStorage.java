@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="SoundEventStorage"
+ *         table="soundeventstorage"
  *     
  */
 public class SoundEventStorage  implements java.io.Serializable {

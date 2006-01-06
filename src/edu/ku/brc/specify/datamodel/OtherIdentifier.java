@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="OtherIdentifier"
+ *         table="otheridentifier"
  *     
  */
 public class OtherIdentifier  implements java.io.Serializable {

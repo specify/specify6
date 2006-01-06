@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="LoanAgents"
+ *         table="loanagents"
  *     
  */
 public class LoanAgent  implements java.io.Serializable {

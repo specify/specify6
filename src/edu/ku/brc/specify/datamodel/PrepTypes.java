@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="PrepTypes"
+ *         table="preptypes"
  *     
  */
 public class PrepTypes  implements java.io.Serializable {

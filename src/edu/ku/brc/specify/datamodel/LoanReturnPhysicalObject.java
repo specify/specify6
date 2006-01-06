@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="LoanReturnPhysicalObject"
+ *         table="loanreturnphysicalobject"
  *     
  */
 public class LoanReturnPhysicalObject  implements java.io.Serializable {

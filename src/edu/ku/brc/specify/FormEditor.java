@@ -48,6 +48,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
+import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.helpers.*;
 import edu.ku.brc.specify.ui.*;
@@ -59,6 +60,39 @@ import org.dom4j.io.SAXReader;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.*;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+
+import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
+import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+import com.jgoodies.looks.plastic.theme.DesertBlue;
+
+import edu.ku.brc.specify.config.SpecifyConfig;
+import edu.ku.brc.specify.core.ContextMgr;
+import edu.ku.brc.specify.dbsupport.*;
+import edu.ku.brc.specify.helpers.*;
+import edu.ku.brc.specify.plugins.PluginMgr;
+import edu.ku.brc.specify.tasks.DataEntryTask;
+import edu.ku.brc.specify.tasks.ExpressSearchTask;
+import edu.ku.brc.specify.tasks.InteractionsTask;
+import edu.ku.brc.specify.tasks.LabelsTask;
+import edu.ku.brc.specify.tasks.QueryTask;
+import edu.ku.brc.specify.tasks.RecordSetTask;
+import edu.ku.brc.specify.tasks.ReportsTask;
+import edu.ku.brc.specify.tasks.StartUpTask;
+import edu.ku.brc.specify.tasks.StatsTask;
+import edu.ku.brc.specify.ui.GenericFrame;
+import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.specify.ui.MainPanel;
+import edu.ku.brc.specify.ui.PropertyViewer;
+import edu.ku.brc.specify.ui.ToolbarLayoutManager;
+import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
+import edu.ku.brc.specify.ui.forms.ViewMgr;
+import edu.ku.brc.specify.datamodel.*;
 
 /**
  * The stand alone part of the FormEditor (this is a prototype at the moment that is used for viewing forms) 
@@ -102,6 +136,21 @@ public class FormEditor
                     mainFrame.setSize(new Dimension(1024, 764));
                     //frame.pack();
                     UIHelper.centerAndShow(mainFrame);
+                    
+                    DBConnection.setUsernamePassword("rods", "rods");
+                    DBConnection.setDriver("com.mysql.jdbc.Driver");
+                    DBConnection.setDBName("jdbc:mysql://localhost/demo_fish2");
+                    
+                    
+                    //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class);
+                    Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setFetchMode(Accession.class.getName(), FetchMode.DEFAULT).setMaxResults(300);
+                    java.util.List list = criteria.list();//session.find("from collev");
+
+                    for (Object obj : list)
+                    {
+                        Accession accession = (Accession)obj;
+                        System.out.println(accession.getNumber());
+                    }
 
                 }
           });

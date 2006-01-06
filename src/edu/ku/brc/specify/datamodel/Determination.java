@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="Determination"
+ *         table="determination"
  *     
  */
 public class Determination  implements java.io.Serializable {

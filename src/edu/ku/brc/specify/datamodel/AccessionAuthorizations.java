@@ -7,10 +7,10 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="AccessionAuthorizations"
+ *         table="accessionauthorizations"
  *     
  */
-public class AccessionAuthorization  implements java.io.Serializable {
+public class AccessionAuthorizations  implements java.io.Serializable {
 
     // Fields    
 
@@ -26,11 +26,11 @@ public class AccessionAuthorization  implements java.io.Serializable {
     // Constructors
 
     /** default constructor */
-    public AccessionAuthorization() {
+    public AccessionAuthorizations() {
     }
     
     /** constructor with id */
-    public AccessionAuthorization(Integer accessionAuthorizationsId) {
+    public AccessionAuthorizations(Integer accessionAuthorizationsId) {
         this.accessionAuthorizationsId = accessionAuthorizationsId;
     }
    

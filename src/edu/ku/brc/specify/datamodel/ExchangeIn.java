@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="ExchangeIn"
+ *         table="exchangein"
  *     
  */
 public class ExchangeIn  implements java.io.Serializable {

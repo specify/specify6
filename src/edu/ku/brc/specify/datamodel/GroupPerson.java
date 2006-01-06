@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="GroupPersons"
+ *         table="grouppersons"
  *     
  */
 public class GroupPerson  implements java.io.Serializable {

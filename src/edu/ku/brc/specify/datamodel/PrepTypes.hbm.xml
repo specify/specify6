@@ -13,12 +13,12 @@
 
 <class 
     name="edu.ku.brc.specify.datamodel.PrepTypes" 
-    table="PrepTypes"
+    table="preptypes"
 	lazy="true"
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="PrepTypes"
+        table="preptypes"
     </meta>
 
     <id

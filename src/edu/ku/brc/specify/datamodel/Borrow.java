@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="Borrow"
+ *         table="borrow"
  *     
  */
 public class Borrow  implements java.io.Serializable {

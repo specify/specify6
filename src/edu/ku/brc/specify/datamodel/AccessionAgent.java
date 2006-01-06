@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="AccessionAgents"
+ *         table="accessionagents"
  *     
  */
 public class AccessionAgent  implements java.io.Serializable {

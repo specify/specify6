@@ -13,12 +13,12 @@
 
 <class 
     name="edu.ku.brc.specify.datamodel.Agent" 
-    table="Agent"
+    table="agent"
 	lazy="true"
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="Agent"
+        table="agent"
     </meta>
 
     <id

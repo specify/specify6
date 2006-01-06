@@ -12,25 +12,25 @@
 -->
 
 <class 
-    name="edu.ku.brc.specify.datamodel.DeterminationCitation" 
-    table="determinationcitation"
+    name="edu.ku.brc.specify.datamodel.AccessionAuthorizations" 
+    table="accessionauthorizations"
 	lazy="true"
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="determinationcitation"
+        table="accessionauthorizations"
     </meta>
 
     <id
-        name="determinationCitationId"
+        name="accessionAuthorizationsId"
         type="java.lang.Integer"
-        column="DeterminationCitationID"
+        column="AccessionAuthorizationsID"
     >
         <meta attribute="field-description">
            @hibernate.id
             generator-class="assigned"
             type="java.lang.Integer"
-            column="DeterminationCitationID"
+            column="AccessionAuthorizationsID"
 
         </meta>
         <meta attribute="scope-field">protected</meta>
@@ -43,24 +43,10 @@
         column="Remarks"
         length="1073741823"
     >
-        <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Remarks"
             length="1073741823"
-        </meta>    
-    </property>
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
         </meta>    
     </property>
     <property
@@ -69,10 +55,21 @@
         column="TimestampModified"
         length="23"
     >
-        <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="TimestampModified"
+            length="23"
+        </meta>    
+    </property>
+    <property
+        name="timestampCreated"
+        type="java.sql.Timestamp"
+        column="TimestampCreated"
+        length="23"
+    >
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampCreated"
             length="23"
         </meta>    
     </property>
@@ -82,7 +79,6 @@
         column="LastEditedBy"
         length="50"
     >
-        <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="LastEditedBy"
@@ -92,24 +88,24 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional many-to-one association to ReferenceWork -->
+    <!-- bi-directional many-to-one association to Permit -->
     <many-to-one
-        name="referenceWork"
-        class="edu.ku.brc.specify.datamodel.ReferenceWork"
+        name="permit"
+        class="edu.ku.brc.specify.datamodel.Permit"
         not-null="true"
 		outer-join="true"
     >
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="ReferenceWorkID"         
+           @hibernate.column name="PermitID"         
         </meta>
-        <column name="ReferenceWorkID" />
+        <column name="PermitID" />
     </many-to-one>
-    <!-- bi-directional many-to-one association to Determination -->
+    <!-- bi-directional many-to-one association to Accession -->
     <many-to-one
-        name="determination"
-        class="edu.ku.brc.specify.datamodel.Determination"
+        name="accession"
+        class="edu.ku.brc.specify.datamodel.Accession"
         not-null="true"
 		outer-join="true"
 		cascade="delete"
@@ -117,10 +113,9 @@
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-			cascade="delete"
-           @hibernate.column name="DeterminationID"         
+           @hibernate.column name="AccessionID"         
         </meta>
-        <column name="DeterminationID" />
+        <column name="AccessionID" />
     </many-to-one>
 
 </class>

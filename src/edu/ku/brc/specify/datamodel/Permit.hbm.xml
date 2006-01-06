@@ -13,12 +13,12 @@
 
 <class 
     name="edu.ku.brc.specify.datamodel.Permit" 
-    table="Permit"
+    table="permit"
 	lazy="true"
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="Permit"
+        table="permit"
     </meta>
 
     <id
@@ -263,7 +263,7 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional one-to-many association to AccessionAuthorization -->
+    <!-- bi-directional one-to-many association to AccessionAuthorizations -->
     <set
         name="accessionAuthorizations"
         lazy="true"
@@ -280,13 +280,13 @@
             column="PermitID"
 
            @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.AccessionAuthorization"
+            class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
         </meta>
         <key>
             <column name="PermitID" />
         </key>
         <one-to-many 
-            class="edu.ku.brc.specify.datamodel.AccessionAuthorization"
+            class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
         />
     </set>
     <!-- bi-directional many-to-one association to AgentAddress -->

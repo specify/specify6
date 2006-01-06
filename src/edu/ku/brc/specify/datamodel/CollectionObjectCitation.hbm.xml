@@ -13,12 +13,12 @@
 
 <class 
     name="edu.ku.brc.specify.datamodel.CollectionObjectCitation" 
-    table="CollectionObjectCitation"
+    table="collectionobjectcitation"
 	lazy="true"
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="CollectionObjectCitation"
+        table="collectionobjectcitation"
     </meta>
 
     <id

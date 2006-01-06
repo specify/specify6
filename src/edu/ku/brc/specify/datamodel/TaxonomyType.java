@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="TaxonomyType"
+ *         table="taxonomytype"
  *     
  */
 public class TaxonomyType  implements java.io.Serializable {

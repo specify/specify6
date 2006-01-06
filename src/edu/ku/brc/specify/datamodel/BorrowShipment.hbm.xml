@@ -13,12 +13,12 @@
 
 <class 
     name="edu.ku.brc.specify.datamodel.BorrowShipment" 
-    table="BorrowShipments"
+    table="borrowshipments"
 	lazy="true"
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="BorrowShipments"
+        table="borrowshipments"
     </meta>
 
     <id

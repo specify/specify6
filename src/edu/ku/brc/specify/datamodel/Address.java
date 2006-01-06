@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="Address"
+ *         table="address"
  *     
  */
 public class Address  implements java.io.Serializable {

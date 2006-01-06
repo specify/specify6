@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="BioAttrs"
+ *         table="bioattrs"
  *     
  */
 public class BioAttrs  implements java.io.Serializable {

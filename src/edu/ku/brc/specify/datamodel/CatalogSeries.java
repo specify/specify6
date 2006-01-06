@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="CatalogSeries"
+ *         table="catalogseries"
  *     
  */
 public class CatalogSeries  implements java.io.Serializable {

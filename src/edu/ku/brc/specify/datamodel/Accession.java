@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="Accession"
+ *         table="accession"
  *     
  */
 public class Accession  implements java.io.Serializable {
@@ -379,7 +379,7 @@ public class Accession  implements java.io.Serializable {
      *            @hibernate.collection-key
      *             column="AccessionID"
      *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.AccessionAuthorization"
+     *             class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
      *         
      */
     public Set getAccessionAuthorizations() {

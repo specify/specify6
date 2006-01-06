@@ -10,13 +10,13 @@
 
 <class
     name="edu.ku.brc.specify.datamodel.CollectionObj" 
-    table="CollectionObj"
+    table="collectionobj"
 	lazy="true"
 	batch-size="50"
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="CollectionObj"
+        table="collectionobj"
     </meta>
 
     <id

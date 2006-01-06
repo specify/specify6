@@ -13,11 +13,11 @@
 
 <class 
     name="edu.ku.brc.specify.datamodel.Stratigraphy" 
-    table="Stratigraphy"
+    table="stratigraphy"
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="Stratigraphy"
+        table="stratigraphy"
     </meta>
 
     <id

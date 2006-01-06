@@ -210,7 +210,7 @@ public class Specify extends JPanel
             JOptionPane.showMessageDialog(this, e.toString(), "Fatal Error", JOptionPane.ERROR_MESSAGE);
         }
       
-        // XXX Temporary load of form because now forma er being loaded right now
+        // XXX Temporary load of form because now form are being loaded right now
         try
         {
             ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("form.xml"));

@@ -13,11 +13,11 @@
 
 <class 
     name="edu.ku.brc.specify.datamodel.GroupPerson" 
-    table="GroupPersons"
+    table="grouppersons"
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="GroupPersons"
+        table="grouppersons"
     </meta>
 
     <id

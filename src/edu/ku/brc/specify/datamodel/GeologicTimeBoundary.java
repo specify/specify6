@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="GeologicTimeBoundary"
+ *         table="geologictimeboundary"
  *     
  */
 public class GeologicTimeBoundary  implements java.io.Serializable {

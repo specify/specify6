@@ -13,11 +13,11 @@
 
 <class 
     name="edu.ku.brc.specify.datamodel.Collector" 
-    table="Collectors"
+    table="collectors"
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="Collectors"
+        table="collectors"
     </meta>
 
     <id

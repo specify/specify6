@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *        @hibernate.class
- *         table="TaxonCitation"
+ *         table="taxoncitation"
  *     
  */
 public class TaxonCitation  implements java.io.Serializable {

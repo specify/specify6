@@ -13,12 +13,12 @@
 
 <class 
     name="edu.ku.brc.specify.datamodel.ExchangeOut" 
-    table="ExchangeOut"
+    table="exchangeout"
 	lazy="true"
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="ExchangeOut"
+        table="exchangeout"
     </meta>
 
     <id
