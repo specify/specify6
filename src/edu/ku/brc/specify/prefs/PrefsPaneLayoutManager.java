@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: NavBoxLayoutManager.java,v $
+/* Filename:    $RCSfile: PrefsPaneLayoutManager.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2005/10/19 19:59:54 $
@@ -17,43 +17,55 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.ui;
+package edu.ku.brc.specify.prefs;
 
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.*;
-import java.util.Vector;
+import java.awt.LayoutManager;
+import java.awt.LayoutManager2;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The layout manager for laying out the toolbar in a horizontal fashion ONLY. 
- * This is a prototype layout manager, more work needs to be done.
+ * The layout manager for laying all the cells in the panel, but the size comes from the largest cell
+ * dimensions of all the cells in the entire panel.
+ * 
+ * (Currently not in use)
  * 
  * @author rods
  *
  */
-public class ToolbarLayoutManager implements LayoutManager, LayoutManager2
+public class PrefsPaneLayoutManager implements LayoutManager, LayoutManager2
 {
     
-    private Vector<Component> comps         = new Vector<Component>();
-    private Dimension         preferredSize = new Dimension();
-    private int               borderPadding = 2;
-    private int               separation    = 5;
-    private int               maxCompHeight = 0;
+    private List<Component> comps             = new ArrayList<Component>();
+    private Dimension       preferredSize     = new Dimension();
+    private Dimension       actualCellSize    = new Dimension(32, 32);
+    private Dimension       actualRowSize     = new Dimension(0, 0);
+    
+    private int             maxNumItems       = 0;
 
     /**
      * Contructs a layout manager for layting out NavBoxes. It lays out all the NavBoxes vertically 
      * and uses the 'ySeparator' as the spacing in between the boxes. It uses borderPadding as a 'margin'
      * aroound all the boxes
      * @param borderPadding the margin around the boxes
-     * @param separation the vertical separation inbetween the boxes.
+     * @param ySeparation the vertical separation inbetween the boxes.
      */
-    public ToolbarLayoutManager(int borderPadding, int separation)
+    public PrefsPaneLayoutManager()
     {
-        this.borderPadding = borderPadding;
-        this.separation   = separation;
     }
+    
+    /**
+     * Sets the actual cell size for layout
+     * @param actualCellSize the dim of the cell, which is the same size as all other cells in the panel
+     */
+    public void setActualCellSize(Dimension actualCellSize)
+    {
+        this.actualCellSize = actualCellSize;
+    }
+
     
     /* (non-Javadoc)
      * @see java.awt.LayoutManager#addLayoutComponent(java.lang.String, java.awt.Component)
@@ -64,7 +76,11 @@ public class ToolbarLayoutManager implements LayoutManager, LayoutManager2
         {
             throw new NullPointerException("Null component in addLayoutComponent");
         }
-        comps.addElement(arg1);
+        
+        if (arg1 instanceof PrefPanelRow)
+        {
+            comps.add((PrefPanelRow)arg1);
+        }
 
     }
 
@@ -77,7 +93,7 @@ public class ToolbarLayoutManager implements LayoutManager, LayoutManager2
         {
             throw new NullPointerException("Null component in removeLayoutComponent");
         }
-        comps.removeElement(arg0);
+        comps.remove(arg0);
 
     }
 
@@ -101,28 +117,25 @@ public class ToolbarLayoutManager implements LayoutManager, LayoutManager2
      * @see java.awt.LayoutManager#layoutContainer(java.awt.Container)
      */
     public void layoutContainer(Container arg0)
-    {        
-        calcPreferredSize();
-
-        int x = borderPadding;
-        int y = borderPadding;
+    {
+        if (preferredSize.width == 0 || preferredSize.height == 0)
+        {
+            calcPreferredSize(); 
+        }
         
-        Component lastComp = comps.size() > 0 ? comps.lastElement() : null;
+        int x = 0;
+        int y = 0;
+        
+        actualRowSize.width = Math.max(actualRowSize.width, arg0.getSize().width);
+        
         for (Component comp : comps)
         {
-            Dimension size = comp.getPreferredSize();
-            if (comp == lastComp)
-            {
-                x = arg0.getSize().width - (borderPadding + size.width);
-            }
-            
-            int yc = y;
-            if (size.height < preferredSize.height)
-            {
-                yc = (preferredSize.height - size.height) / 2;
-            }
-            comp.setBounds(x, yc, size.width, size.height);
-            x += size.width + separation;
+            PrefPanelRow ppr   = (PrefPanelRow)comp;
+            ppr.setActualCellSize(actualCellSize);
+            ppr.setActualRowSize(actualRowSize);
+            ppr.setMaxNumItems(maxNumItems);
+            comp.setBounds(x, y, actualRowSize.width, actualRowSize.height);
+            y += actualRowSize.height;
         }
 
     }
@@ -130,25 +143,41 @@ public class ToolbarLayoutManager implements LayoutManager, LayoutManager2
     /**
      * Calculates the preferred size of the contain. It lays out all the NavBoxes vertically 
      * and uses the 'ySeparator' as the spacing in between the boxes. It uses borderPadding as a 'margin'
-     * aroound all the boxes
+     * around all the boxes
      *
      */
     protected void calcPreferredSize()
     {
-        if (maxCompHeight == 0)
+        preferredSize.width   = 0;
+        
+        actualCellSize.width  = 0;
+        actualCellSize.height = 0;
+        
+        // Find the max height and the largest any given cell wants to be
+        int rowHeight   = 0;
+        for (Component comp : comps)
         {
-            preferredSize.setSize(borderPadding*2, borderPadding);
+            PrefPanelRow ppr               = (PrefPanelRow)comp;
+            Dimension    size              = ppr.getPreferredSize();
+            Dimension    preferredCellSize = ppr.getPreferredCellSize();
             
-            // Assumes Horizontal layout at the moment
-            for (Component comp : comps)
-            {
-                Dimension size = comp.getPreferredSize();
-                maxCompHeight        = Math.max(maxCompHeight, size.height);
-                preferredSize.height = Math.max(preferredSize.height, size.height + (2 * borderPadding));
-                preferredSize.width += size.width + separation;
-            }
-            preferredSize.width -= separation;
+            actualCellSize.width  = Math.max(actualCellSize.width, preferredCellSize.width);
+            actualCellSize.height = Math.max(actualCellSize.height, preferredCellSize.height);
+            
+            rowHeight   = Math.max(rowHeight, size.height);
+            maxNumItems = Math.max(ppr.getComponentCount()-1, maxNumItems);
         }
+        
+        // Now that we now the size of each cell, than have them tells what their max width would be
+        for (Component comp : comps)
+        {
+            PrefPanelRow ppr    = (PrefPanelRow)comp;
+            preferredSize.width = Math.max(preferredSize.width, ppr.getActualWidth(actualCellSize));
+        }
+        
+        actualRowSize.width  = preferredSize.width;
+        actualRowSize.height = rowHeight;
+        preferredSize.height = rowHeight * comps.size();
     }
     
     /**
@@ -175,7 +204,11 @@ public class ToolbarLayoutManager implements LayoutManager, LayoutManager2
         {
             throw new NullPointerException("Null component in addLayoutComponent");
         }
-        comps.addElement(comp);
+        
+        if (comp instanceof PrefPanelRow)
+        {
+            comps.add(comp);
+        }
     }
     public float   getLayoutAlignmentX(Container target)
     {
@@ -187,7 +220,6 @@ public class ToolbarLayoutManager implements LayoutManager, LayoutManager2
     }
     public void invalidateLayout(Container target)
     {
-        maxCompHeight = 0;
         preferredSize.setSize(0, 0);
         calcPreferredSize();
     }

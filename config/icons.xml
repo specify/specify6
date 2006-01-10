@@ -24,6 +24,9 @@
     <icon name="Address"    file="address.gif" sizes="all"/>
     <icon name="ColEvent"   file="collevent.gif" sizes="all"/>
     
+    
+    <icon name="UserInterface" file="form.gif" sizes="all"/>
+    
     <icon name="Green Arrow Down" file="green_arrow_down.gif" sizes="16"/>
     <icon name="Green Arrow Up" file="green_arrow_up.gif" sizes="16"/>
 </icons>

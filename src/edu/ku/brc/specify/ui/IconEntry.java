@@ -93,26 +93,12 @@ public class IconEntry
      */
     public ImageIcon getScaledIcon(final IconSize iconSize, final IconSize scaledIconSize)
     {
-        ImageIcon icon = icons.get(iconSize.toString());
-        if (icon != null)
-        {
-            ImageIcon scaledIcon = new ImageIcon(icon.getImage().getScaledInstance(scaledIconSize.size(), scaledIconSize.size(), Image.SCALE_SMOOTH));
-            if (scaledIcon != null)
-            {
-                icons.put(scaledIconSize.toString(), scaledIcon);
-                return scaledIcon;
-            } else
-            {
-                
-                log.error("Can't scale icon ["+iconSize+"] to ["+scaledIconSize+"]");
-            }
-            
-        } else
-        {
-            log.error("Couldn't find icon ["+iconSize+"] to scale to ["+scaledIconSize+"]");
-        }
-        return null;
+        ImageIcon scaledIcon = IconManager.getScaledIcon(icons.get(iconSize.toString()), iconSize, scaledIconSize);
+        icons.put(scaledIconSize.toString(), scaledIcon);
+        return scaledIcon;
+
     }
+
 
     /**
      * Return name

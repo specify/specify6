@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.exceptions.UIException;
 import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
+import java.util.prefs.*;
 
 public class UICacheManager
 {
@@ -58,6 +59,7 @@ public class UICacheManager
     protected String         resourceName   = "resources";
     
     protected SubPaneMgr     subPaneMgr     = null;
+    protected Class          rootPrefClass   = null;
     
     /**
      * Default private constructor for singleton
@@ -251,10 +253,10 @@ public class UICacheManager
     public static void displayStatusBarText(final String text)
     {
         JTextField txtField = ((JTextField)instance.components.get(STATUSBAR));
-        assert txtField != null : "No statusbar has been created!";
-       
-        txtField.setText(text == null ? "" : text);
-       
+        if (txtField != null)
+        {
+            txtField.setText(text == null ? "" : text);
+        }
     }
 
     /**
@@ -324,4 +326,73 @@ public class UICacheManager
     {
         return ((GhostGlassPane)instance.components.get(GLASSPANE));
     }
+    
+    //----------------------------------------------------------------------------------
+    // Prefs Section
+    //----------------------------------------------------------------------------------
+
+    /**
+     * Returns the name of the root preference for this application
+     * @return Returns the name of the root preference for this application
+     */
+    public static Class getRootPrefClass()
+    {
+        if (instance.rootPrefClass == null)
+        {
+            throw new RuntimeException("Root Pref Name is null and nees to be set!");
+        }
+        return instance.rootPrefClass;
+    }
+
+    /**
+     * Sets the name of the root preference for this application
+     * @param rootPrefClass the root pref name (defaults to "Specify")
+     */
+    public static void setRootPrefClass(final Class rootPrefClass)
+    {
+        instance.rootPrefClass = rootPrefClass;
+    }
+    
+    /**
+     * Helper method to assist in building pref node names. 
+     * It takes the parent name and then appends a slash and then the child's name
+     * @param parentName the parent name
+     * @param childName the new child name to be appended
+     * @return returnturn [parentName]/[childName]
+     */
+    public static String appendChildPrefName(String parentName, String childName)
+    {
+        return parentName + "/" + childName;
+    }
+    
+    /**
+     * Helper method to assist in building pref node names. 
+     * It takes the parent name and then appends a slash and then the child's name
+     * @param parentName the parent name
+     * @param childName the new child name to be appended
+     * @return returnturn [parentName]/[childName]
+     */
+    public static String appendChildPrefName(String parentName, String childName, String subChildName)
+    {
+        return parentName + "/" + childName+ "/" + subChildName;
+    }
+    
+    /**
+     * Return the Preferences node for the application
+     * @return Return the Preferences node for the application
+     */
+    public static Preferences getAppPrefs()
+    {
+        return Preferences.userNodeForPackage(getRootPrefClass());
+    }
+    
+    /*
+    public static Preferences getPrefSection(final String sectionName)
+    {
+        Preferences userRootNode = Preferences.userRoot();
+        
+        Preferences rootNode = Preferences.userNodeForPackage(getRootPrefClass());
+
+        
+    }*/
 }

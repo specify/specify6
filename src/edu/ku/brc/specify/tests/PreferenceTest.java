@@ -1,34 +1,17 @@
 package edu.ku.brc.specify.tests;
 
 import junit.framework.TestCase;
+import java.util.prefs.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.ku.brc.specify.prefs.PreferencesMgr;
 
 public class PreferenceTest extends TestCase
 {
     private static Log log = LogFactory.getLog(PreferenceTest.class);
 
-    public PreferencesMgr prefsMgr = null;
-    
-    public void setUp()
-    {
-        log.info("In Setup.");
-        try
-        {
-            //SpecifyConfig config = SpecifyConfig.getInstance();
-            //config.init(null); // do this once
-            
-        } catch (Exception e)
-        {
-            log.info("Error with Configuration", e);
-        }
-        
-        prefsMgr = (PreferencesMgr)PreferencesMgr.getInstance();
-        
-    }
+    public static Preferences rootPref = Preferences.userRoot();
     
     /**
      * 
@@ -38,24 +21,21 @@ public class PreferenceTest extends TestCase
     {
         log.info("In testLoad.");
         
-        assertTrue(prefsMgr.load());
+        String networkPref = "/Specify/Network/XXX";
+        rootPref.put(networkPref, "XXX");
+        
+        System.out.println(rootPref.get(networkPref, "N/A"));
+        assertTrue(true);
+        
+        networkPref = "/Specify/Network/YYY";
+        rootPref.put(networkPref, "YYY");
+        
+        System.out.println(rootPref.get(networkPref, "N/A"));
+        assertTrue(true);
         
         log.info("Out testLoad.");
     }
 
-    /**
-     * 
-     *
-     */
-    public void testGetPrefByPath()
-    {
-        log.info("In testGetPrefByPath.");
-        
-        prefsMgr.load();
-        assertNotNull(prefsMgr.getPrefByPath("application/general/main.separator.position"));
-        
-        log.info("Out testGetPrefByPath.");
-    }
 
 }
 

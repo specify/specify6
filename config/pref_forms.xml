@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<viewset name="Preferences" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="form.xsd">
+
+    <view id="1" type="form" 
+                 name="EMail" 
+                 class="java.util.prefs.Preferences" 
+                 getter="edu.ku.brc.specify.ui.forms.PrefsGetterForObj"
+                 resourceLabels="false" 
+                 >
+    	<desc><![CDATA[EMail Preference Form.]]></desc>
+		<columnDef>
+			<cellDef>max(50dlu;p)</cellDef>
+			<cellDef>3dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>3dlu</cellDef>
+			<cellDef>max(50dlu;p)</cellDef>
+			<cellDef>3dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>max(88dlu;p)</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>3dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>f:p:g</cellDef>
+		</columnDef>
+
+		<rowDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>10dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+			<cellDef>2dlu</cellDef>
+			<cellDef>p</cellDef>
+		</rowDef>
+
+		<rows>
+			<row>
+				<cell type="separator" label="EMail Settings"/>
+			</row>
+			<row>
+				<cell type="field" name="username" label="Username"/>
+				<cell type="field" name="password" label="Password"/>
+				<cell type="field" name="email"    label="EMail"/>
+			</row>
+			<row>
+				<cell type="separator" label="MailBox"/>
+			</row>
+			<row>
+				<cell type="field" uitype="combobox" custom="edu.ku.brc.specify.prefs.EMailAccountType" name="accountype" label="Account Type"/>
+			</row>
+
+		</rows>
+	</view>
+	
+</viewset>	

@@ -23,76 +23,35 @@ package edu.ku.brc.specify;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.util.*;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.apache.commons.betwixt.XMLIntrospector;
-import org.apache.commons.betwixt.io.BeanWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Element;
+import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 
+import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
+import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+import com.jgoodies.looks.plastic.theme.DesertBlue;
+
+import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.dbsupport.DBConnection;
+import edu.ku.brc.specify.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.helpers.XMLHelper;
-import edu.ku.brc.specify.helpers.*;
-import edu.ku.brc.specify.ui.*;
-import edu.ku.brc.specify.ui.forms.*;
-import edu.ku.brc.specify.ui.forms.persist.*;
-
-import org.dom4j.io.SAXReader;
-
-import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
-import com.jgoodies.looks.plastic.PlasticLookAndFeel;
-import com.jgoodies.looks.plastic.theme.DesertBlue;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.hibernate.*;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-
-import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
-import com.jgoodies.looks.plastic.PlasticLookAndFeel;
-import com.jgoodies.looks.plastic.theme.DesertBlue;
-
-import edu.ku.brc.specify.config.SpecifyConfig;
-import edu.ku.brc.specify.core.ContextMgr;
-import edu.ku.brc.specify.dbsupport.*;
-import edu.ku.brc.specify.helpers.*;
-import edu.ku.brc.specify.plugins.PluginMgr;
-import edu.ku.brc.specify.tasks.DataEntryTask;
-import edu.ku.brc.specify.tasks.ExpressSearchTask;
-import edu.ku.brc.specify.tasks.InteractionsTask;
-import edu.ku.brc.specify.tasks.LabelsTask;
-import edu.ku.brc.specify.tasks.QueryTask;
-import edu.ku.brc.specify.tasks.RecordSetTask;
-import edu.ku.brc.specify.tasks.ReportsTask;
-import edu.ku.brc.specify.tasks.StartUpTask;
-import edu.ku.brc.specify.tasks.StatsTask;
-import edu.ku.brc.specify.ui.GenericFrame;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.MainPanel;
-import edu.ku.brc.specify.ui.PropertyViewer;
-import edu.ku.brc.specify.ui.ToolbarLayoutManager;
+import edu.ku.brc.specify.ui.ChooseFromListDlg;
 import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
+import edu.ku.brc.specify.ui.forms.FormViewable;
+import edu.ku.brc.specify.ui.forms.ViewFactory;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
-import edu.ku.brc.specify.datamodel.*;
+import edu.ku.brc.specify.ui.forms.persist.FormView;
+import edu.ku.brc.specify.ui.forms.persist.ViewSet;
 
 /**
  * The stand alone part of the FormEditor (this is a prototype at the moment that is used for viewing forms) 
@@ -108,7 +67,8 @@ public class FormEditor
     protected JFrame mainFrame;
     
     /**
-     * @param formView
+     * Create a form
+     * @param formView the definition of the form to create
      */
     protected void createForm(FormView formView)
     {       

@@ -20,11 +20,13 @@
 package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.specify.ui.UICacheManager.appendChildPrefName;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
+import java.util.prefs.Preferences;
 
 import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.core.NavBox;
@@ -161,6 +163,35 @@ public class DataEntryTask extends BaseTask
         return list;
         
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.TaskPluginable#installPrefs()
+     */
+    public void installPrefs()
+    {
+       /*Preferences appPrefs = UICacheManager.getAppPrefs();
+       
+       String sectionName = appendChildPrefName("UserInterface", "Formatting", "name");
+       String sectionName = appPrefs.get("", null);
+       if (sectionName == null)
+       {
+           
+       }
+       
+       Preferences userPrefNode = Preferences.userRoot();
+       //userPrefNode.get
+
+        */
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.TaskPluginable#removePrefs()
+     */
+    public void removePrefs()
+    {
+        
+    }
+
     
     //-------------------------------------------------------
     // CommandListener Interface

@@ -59,4 +59,15 @@ public interface TaskPluginable
      */
     public List<MenuItemDesc>    getMenuItems();
     
+    /**
+     * Install all preferences with default values
+     */
+    public void installPrefs();
+
+    /**
+     * Remove all preferences from the system
+     */
+    public void removePrefs();
+
+    
 }

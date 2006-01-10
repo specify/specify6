@@ -26,6 +26,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -41,7 +42,6 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.ui.forms.persist.FormCell;
 import edu.ku.brc.specify.ui.forms.persist.FormCellSubView;
-import edu.ku.brc.specify.ui.forms.persist.FormCellWithLabel;
 import edu.ku.brc.specify.ui.forms.persist.FormFormView;
 import edu.ku.brc.specify.ui.forms.persist.FormRow;
 import edu.ku.brc.specify.ui.forms.persist.FormView;
@@ -263,6 +263,9 @@ public class ViewFactory
                             JButton btn = new JButton("Show");
                             comp = btn;
                             
+                        } else if (uiType.equals("combobox")) {
+                            comp = new JComboBox(); 
+                            
                         } else if (uiType.equals("checkbox")) {
                             comp = new JCheckBox("", value.toString().equals("true")); 
                             
@@ -274,6 +277,9 @@ public class ViewFactory
                             //sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
                             
                             comp = sp;
+                        } else
+                        {
+                            throw new RuntimeException("Don't recognize uitype=["+uiType+"]");
                         }
                         /* XXX hashtable
                         if (aHashtable != null)

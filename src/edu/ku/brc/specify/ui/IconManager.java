@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.ui;
 
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
@@ -176,6 +177,34 @@ public class IconManager
                 case 24 : return IconSize.Std24;
                 case 16 : return IconSize.Std16;
             }
+        }
+        return null;
+    }
+
+    /**
+     * Gets a scaled icon and if it doesn't exist it creates one and scales it
+     * @param icon image to be scaled
+     * @param iconSize the icon size (Std)
+     * @param scaledIconSize the new scaled size in pixels
+     * @return the scaled icon
+     */
+    public static ImageIcon getScaledIcon(final ImageIcon icon, final IconSize iconSize, final IconSize scaledIconSize)
+    {
+        
+        if (icon != null)
+        {
+            ImageIcon scaledIcon = new ImageIcon(icon.getImage().getScaledInstance(scaledIconSize.size(), scaledIconSize.size(), Image.SCALE_SMOOTH));
+            if (scaledIcon != null)
+            {
+                return scaledIcon;
+            } else
+            {
+                log.error("Can't scale icon ["+iconSize+"] to ["+scaledIconSize+"]");
+            }
+            
+        } else
+        {
+            log.error("Couldn't find icon ["+iconSize+"] to scale to ["+scaledIconSize+"]");
         }
         return null;
     }

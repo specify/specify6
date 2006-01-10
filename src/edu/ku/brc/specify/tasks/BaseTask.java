@@ -260,6 +260,23 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
      */
     public abstract List<MenuItemDesc> getMenuItems();
 
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.TaskPluginable#installPrefs()
+     */
+    public void installPrefs()
+    {
+        
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.TaskPluginable#removePrefs()
+     */
+    public void removePrefs()
+    {
+        
+    }
+
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------

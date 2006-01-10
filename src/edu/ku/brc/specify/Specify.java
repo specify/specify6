@@ -23,6 +23,7 @@ package edu.ku.brc.specify;
 
 import static edu.ku.brc.specify.helpers.UIHelper.centerAndShow;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.specify.ui.UICacheManager.appendChildPrefName;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -34,10 +35,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Iterator;
+import java.util.List;
+import java.util.prefs.Preferences;
+import java.net.URL;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
+import javax.swing.Action;import static edu.ku.brc.specify.ui.UICacheManager.appendChildPrefName;
+
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -64,8 +71,10 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 import edu.ku.brc.specify.config.SpecifyConfig;
 import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.dbsupport.DBConnection;
+import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.plugins.PluginMgr;
+import edu.ku.brc.specify.prefs.PrefMainPanel;
 import edu.ku.brc.specify.tasks.DataEntryTask;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.InteractionsTask;
@@ -83,6 +92,9 @@ import edu.ku.brc.specify.ui.ToolbarLayoutManager;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
+import edu.ku.brc.specify.helpers.XMLHelper;
+
+import org.dom4j.*;
 /**
  * Specify Main Application Class
  *
@@ -151,7 +163,10 @@ public class Specify extends JPanel
      */
     public Specify(GraphicsConfiguration gc)
     {
+        UICacheManager.setRootPrefClass(Specify.class);
         UICacheManager.register(UICacheManager.MAINPANE, this); // important to be done immediately
+        
+        initPrefs();
         
         // Create and throw the splash screen up. Since this will
         // physically throw bits on the screen, we need to do this
@@ -210,10 +225,10 @@ public class Specify extends JPanel
             JOptionPane.showMessageDialog(this, e.toString(), "Fatal Error", JOptionPane.ERROR_MESSAGE);
         }
       
-        // XXX Temporary load of form because now form are being loaded right now
+//      XXX Temporary load of form because now form are being loaded right now
         try
         {
-            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("form.xml"));
+            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("pref_forms.xml"));
             
         } catch (Exception ex)
         {
@@ -289,6 +304,87 @@ public class Specify extends JPanel
         }
 
     
+    }
+    
+    /**
+     * 
+     */
+    protected void initPrefs()
+    {
+        Preferences appPrefs = UICacheManager.getAppPrefs();
+        
+        try
+        {
+            
+            appPrefs = UICacheManager.getAppPrefs();
+            
+            Element root = XMLHelper.readDOMFromConfigDir("prefsInit.xml");
+            if (root == null)
+            {
+                return; // XXX FIXME
+            }
+            
+            List sections = root.selectNodes("/prefs/section");
+            for ( Iterator iter = sections.iterator(); iter.hasNext(); ) 
+            {
+                boolean isNew = false;
+                org.dom4j.Element section = (org.dom4j.Element)iter.next();
+                
+                String      title       = section.attributeValue("title");
+                Preferences sectionNode = appPrefs.node(title);
+                if (!sectionNode.getBoolean("isApp", false))
+                {
+                    sectionNode.put("title", title);
+                    sectionNode.putBoolean("isApp", true);
+                    isNew = true;
+                }
+                
+                List prefs = section.selectNodes("pref");
+                for ( Iterator iterPrefs = prefs.iterator(); iterPrefs.hasNext(); ) 
+                {
+                    org.dom4j.Element pref = (org.dom4j.Element)iterPrefs.next();
+                    
+                    String prefTitle  = pref.attributeValue("title");
+                    String iconName   = pref.attributeValue("icon");
+                    String panelClass = pref.attributeValue("panelClass");
+                    
+                    Preferences prefNode     = sectionNode.node(prefTitle);
+                    String      prefTitleStr = prefNode.get("title", null);
+                    if (prefTitleStr == null)
+                    {
+                        prefNode.put("title", prefTitle);
+                        prefNode.put("panelClass", panelClass);
+                        
+                        URL url = IconManager.getImagePath(iconName);
+                        if (url != null)
+                        {
+                            prefNode.put("iconPath", url.toString());
+                            
+                        } else
+                        {
+                            log.error("Image name["+iconName+"] not found.");
+                        }
+                    }
+                }
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            // XXX FIXME
+        }
+        
+        // load form definitions for Preferences (Might want to move this to a preference Class
+        try
+        {
+            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("pref_forms.xml"));
+            
+        } catch (Exception ex)
+        {
+            log.fatal(ex);
+            ex.printStackTrace();
+        }
+        
     }
     
     /* 
@@ -513,11 +609,17 @@ public class Specify extends JPanel
      */
     public void preferences()
     {
-        GenericFrame frame = new GenericFrame();
-        frame.setTitle("Preferences");
-        frame.getContentPane().add(new PropertyViewer(), BorderLayout.CENTER);
-        centerAndShow(frame);
-
+        
+        JDialog dlg = new JDialog();
+        dlg.setModal(true);
+        PrefMainPanel pane = new PrefMainPanel(dlg);
+        dlg.setContentPane(pane);
+        dlg.pack();
+        dlg.doLayout();
+        System.out.println(dlg.getPreferredSize());
+        dlg.setPreferredSize(dlg.getPreferredSize());
+        dlg.setSize(dlg.getPreferredSize());
+        UIHelper.centerAndShow(dlg); 
     }
     
     /**
