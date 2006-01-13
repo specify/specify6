@@ -16,6 +16,9 @@
         <plugin class="edu.ku.brc.specify.tasks.RecordSetTask">
 	    	<service command="Save" tableid="1" tooltip="CreateRecordSetTT"/>
 	    </plugin>
+        <plugin class="edu.ku.brc.specify.tasks.InfoRequestTask">
+	    	<service command="Save" tableid="1" tooltip="CreateInfoRequestTT"/>
+	    </plugin>
 	    <plugin class="edu.ku.brc.specify.tasks.ExpressSearchTask"/>
 	</core>
 	<external/>

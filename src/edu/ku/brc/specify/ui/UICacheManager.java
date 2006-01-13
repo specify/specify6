@@ -20,12 +20,16 @@
 package edu.ku.brc.specify.ui;
 
 import java.awt.Component;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.Hashtable;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
@@ -34,8 +38,23 @@ import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.exceptions.UIException;
 import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
-import java.util.prefs.*;
+import edu.ku.brc.specify.ui.forms.FormViewable;
+import edu.ku.brc.specify.ui.forms.ViewFactory;
+import edu.ku.brc.specify.ui.forms.ViewMgr;
+import edu.ku.brc.specify.ui.forms.persist.FormView;
 
+/**
+ * This class manages all things UI. It is the central clearing house for UI components. 
+ * Meaning you can register various UI components by name and then get them later.<br><br>
+ * <br>
+ * Using the <i>getMostRecentFrame</i> method<br>
+ * You <i>SHOULD</i> set the RECENTFRAME ui component when you are in a dialog and then any error dialogs
+ * can be parented to your dialog. But if you set it you MUST set it back to null. (NOte if you forget it will always return 
+ * the TOPFRAME, but don't rely on this)
+ *  
+ * @author rods
+ *
+ */
 public class UICacheManager
 {
     // Static Data Members
@@ -46,6 +65,7 @@ public class UICacheManager
     public static final String TOPFRAME  = "topframe";
     public static final String GLASSPANE = "glasspane";
     public static final String MAINPANE  = "mainpane";
+    public static final String RECENTFRAME  = "recentframe";
     
     private static Log            log      = LogFactory.getLog(UICacheManager.class);
     private static UICacheManager instance = new UICacheManager();
@@ -327,6 +347,59 @@ public class UICacheManager
         return ((GhostGlassPane)instance.components.get(GLASSPANE));
     }
     
+    /**
+     * Returns the most recent frame to be used, but note that there is no magic here. You
+     * must set the the most recent frame in order for it to be used by someone else. The one
+     * thing it does do for you, is that if you forgot to set it and someone else uses it it does
+     * check to make sure it is not null AND visible. If either of these are true then it returns the TOPFRAME.
+     * @return Returns the most recent frame to be used, but note that there is no magic here. You
+     * must set the the most recent frame in order for it to be used by someone else. The one
+     * thing it does do for you, is that if you forgot to set it and someone else uses it it does
+     * check to make sure it is not null AND visible. If either of these are true then it returns the TOPFRAME.
+     */
+    public static Component getMostRecentFrame()
+    {
+        Component recent = instance.components.get(RECENTFRAME);
+        return recent == null || !recent.isVisible() ? instance.components.get(TOPFRAME) : recent;
+    }
+    
+     /**
+      * Display an Error dialog
+     * @param msg the message to be displayed
+     */
+    public static void displayErrorDlg(final String msg)
+    {
+         JOptionPane.showMessageDialog(getMostRecentFrame(), msg, getResourceString("error"), JOptionPane.ERROR_MESSAGE);
+    }
+    
+    /**
+     * Helper to create a form component from the View Set Name and the Id
+     * @param viewSetName the view set name to get the ID from
+     * @param id the ID within the view set
+     * @param data the data to fill into the form
+     * @return the form component
+     */
+    public static Component createForm(final String viewSetName, final int id, final Object data)
+    {
+        // create form
+        FormView formDef = ViewMgr.getView(viewSetName, id);
+        if (formDef != null)
+        {
+            FormViewable form = ViewFactory.createView(formDef, data);
+            if (form != null)
+            {
+                return form.getUIComponent();
+            } else
+            {
+                UICacheManager.displayErrorDlg(getResourceString("cantcreateform")+" viewset name["+viewSetName+"]  id["+id+"]");
+            }
+        } else
+        {
+            UICacheManager.displayErrorDlg(getResourceString("cantfindviewdef")+" viewset name["+viewSetName+"]  id["+id+"]");
+        }
+        return null;
+    }
+    
     //----------------------------------------------------------------------------------
     // Prefs Section
     //----------------------------------------------------------------------------------
@@ -386,13 +459,24 @@ public class UICacheManager
         return Preferences.userNodeForPackage(getRootPrefClass());
     }
     
-    /*
-    public static Preferences getPrefSection(final String sectionName)
+    /**
+     * Formats a date per the preferences
+     * @param date the date to be formatted
+     * @return the string with the formatted date
+     */
+    public static String formatDate(final java.util.Date date)
     {
-        Preferences userRootNode = Preferences.userRoot();
+        Preferences userPrefNode = Preferences.userRoot();
+        Preferences prefNode     = userPrefNode.node("ui/formatting");
+        if (prefNode == null)
+        {
+            throw new RuntimeException("Could find pref for email!");
+        }
         
-        Preferences rootNode = Preferences.userNodeForPackage(getRootPrefClass());
+        String formatStr = prefNode.get("date", "MM/dd/yy");
+        Format formatter = new SimpleDateFormat(formatStr);
+        return formatter.format(date);
+    }
+    
 
-        
-    }*/
 }

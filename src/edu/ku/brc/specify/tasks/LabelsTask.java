@@ -44,8 +44,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListModel;
 
-
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -64,15 +62,16 @@ import edu.ku.brc.specify.ui.CommandAction;
 import edu.ku.brc.specify.ui.CommandDispatcher;
 import edu.ku.brc.specify.ui.IconListCellRenderer;
 import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.*;
+import edu.ku.brc.specify.ui.RolloverCommand;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
+import edu.ku.brc.specify.ui.Trash;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.db.ChooseRecordSetDlg;
 import edu.ku.brc.specify.ui.dnd.DataActionEvent;
 import edu.ku.brc.specify.ui.dnd.GhostActionable;
 import edu.ku.brc.specify.ui.dnd.GhostActionableDropManager;
-import edu.ku.brc.specify.ui.dnd.GhostMouseDropAdapter;
+import edu.ku.brc.specify.ui.dnd.GhostMouseInputAdapter;
 
 /**
  * A task to manage Labels and response to Label Commands
@@ -114,14 +113,18 @@ public class LabelsTask extends BaseTask
      * @return returns the new NavBoxItem
      */
     protected NavBoxItemIFace addToNavBoxAndRegisterAsDroppable(final java.util.List<NavBoxIFace> list, 
-                                                                final NavBox navBox, 
+                                                                final NavBox          navBox, 
                                                                 final NavBoxItemIFace nbi,
-                                                                final String fileName)
+                                                                final String          fileName)
     {
         RolloverCommand roc = (RolloverCommand)nbi;
         roc.setData(fileName);
+        
+        // When Being Dragged
         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
-        roc.addDragDataFlavor(LABEL_FLAVOR);        
+        roc.addDragDataFlavor(LABEL_FLAVOR); 
+        
+        // When something is dropped on it
         roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
         
         navBox.add(nbi);
@@ -168,7 +171,6 @@ public class LabelsTask extends BaseTask
         if (data instanceof RecordSet)
         {
             rs = (RecordSet)data;
-            
         }
         labelsPane.createReport(name, rs);
 
@@ -177,7 +179,7 @@ public class LabelsTask extends BaseTask
     /**
      * @return Return true if there is a small number of labels or whether the user wishes to continue.
      */
-    protected boolean checkForALostOfLabels(final RecordSet recordSet)
+    protected boolean checkForALotOfLabels(final RecordSet recordSet)
     {
         // 
         if (recordSet.getItems().size() > 200) // XXX Pref
@@ -222,7 +224,7 @@ public class LabelsTask extends BaseTask
         ChooseLabel dlg = new ChooseLabel();
         dlg.setVisible(true);
 
-        return dlg.getName(); //"fish_label.jrxml";
+        return dlg.getName();
     }
     
     /**
@@ -301,7 +303,7 @@ public class LabelsTask extends BaseTask
             {
                 RecordSet recordSet = (RecordSet)cmdAction.getData();
                             
-                if (checkForALostOfLabels(recordSet))
+                if (checkForALotOfLabels(recordSet))
                 {
                     String labelName = askForLabelName();
                     if (labelName != null)
@@ -314,8 +316,8 @@ public class LabelsTask extends BaseTask
         {
             if (cmdAction.getData() instanceof GhostActionable)
             {
-                GhostActionable       ga  = (GhostActionable)cmdAction.getData();
-                GhostMouseDropAdapter gpa = ga.getMouseDropAdapter();
+                GhostActionable        ga  = (GhostActionable)cmdAction.getData();
+                GhostMouseInputAdapter gpa = ga.getMouseInputAdapter();
                 
                 for (NavBoxItemIFace nbi : labelsList)
                 {

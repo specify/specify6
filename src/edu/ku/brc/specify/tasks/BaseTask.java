@@ -23,6 +23,7 @@ import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -36,11 +37,10 @@ import javax.swing.JPopupMenu;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.ku.brc.specify.core.*;
+import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.core.NavBoxIFace;
 import edu.ku.brc.specify.core.NavBoxItemIFace;
-import edu.ku.brc.specify.core.NavBoxMgr;
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.TaskPluginable;
@@ -51,11 +51,10 @@ import edu.ku.brc.specify.ui.CommandListener;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.RolloverCommand;
 import edu.ku.brc.specify.ui.SubPaneIFace;
+import edu.ku.brc.specify.ui.SubPaneMgrListener;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.dnd.GhostActionable;
-import edu.ku.brc.specify.ui.dnd.GhostActionableDropManager;
-import edu.ku.brc.specify.ui.dnd.GhostMouseDropAdapter;
 
 /**
  * Abstract class to provide a base level of functionality for implementing a task.
@@ -64,7 +63,7 @@ import edu.ku.brc.specify.ui.dnd.GhostMouseDropAdapter;
  * @author rods
  *
  */
-public abstract class BaseTask implements Taskable, TaskPluginable, CommandListener
+public abstract class BaseTask implements Taskable, TaskPluginable, CommandListener, SubPaneMgrListener
 {
     // Static Data Members
     private static Log log = LogFactory.getLog(BaseTask.class);
@@ -73,9 +72,15 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     protected final String        name;
     protected final String        title;
     
-    protected Vector<NavBoxIFace> navBoxes = new Vector<NavBoxIFace>(); 
-    protected ImageIcon           icon     = null;
+    protected Vector<NavBoxIFace> navBoxes      = new Vector<NavBoxIFace>(); 
+    protected ImageIcon           icon          = null;
     protected boolean             isInitialized = false;
+    
+    // SubPane List Management
+    protected List<SubPaneIFace>  subPanes          = new ArrayList<SubPaneIFace>();
+    protected Class               subPaneClassFilter = null;
+    
+    //protected boolean             ignoreNofications = false;
     
     /**
      * Constructor
@@ -87,6 +92,9 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
         this.title = title;
         
         ContextMgr.register(this);
+        
+        UICacheManager.getSubPaneMgr().addListener(this);
+        
     }
     
     /**
@@ -95,14 +103,17 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     public void finalize()
     {
         ContextMgr.unregister(this);
+        UICacheManager.getSubPaneMgr().removeListener(this);
+        
+
     }
     
      /**
      * Helper
-     * @param catName
-     * @param imageName
-     * @param hint
-     * @return
+     * @param catName catName
+     * @param imageName imageName
+     * @param hint v
+     * @return return
      */
     protected ToolBarDropDownBtn createToolbarButton(final String catName,
                                                      final String imageName,
@@ -115,10 +126,10 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     
     /**
      * Helper
-     * @param catName
-     * @param imageName
-     * @param hint
-     * @return
+     * @param catName catName
+     * @param imageName imageName
+     * @param hint hint
+     * @return drop down btn
      */
     protected ToolBarDropDownBtn createToolbarButton(final String catName,
                                                      final String imageName,
@@ -143,7 +154,12 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
 
     /**
      * Helper method to add an item to the navbox
-     * @param recordSet the recordset to be added
+     * @param navBox navBox
+     * @param labelText navBox
+     * @param cmdGroup navBox
+     * @param cmdStr cmdStr
+     * @param data data
+     * @return btn
      */
     protected NavBoxItemIFace addNavBoxItem(final NavBox navBox, 
                                             final String labelText, 
@@ -170,15 +186,51 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
         if (nb instanceof GhostActionable)
         {
             GhostActionable ga = (GhostActionable)nb;
-            ga.createMouseDropAdapter();
+            ga.createMouseInputAdapter(); // this makes it draggable
             ga.setData(data);
-            //GhostMouseDropAdapter gpa = ga.getMouseDropAdapter();  
-            //gpa.addGhostDropListener(new GhostActionableDropManager(UICacheManager.getGlassPane(), NavBoxMgr.getTrash(), ga));
-
         }
         return nb;
     }
     
+    
+    /**
+     * Adds a SubPane to the Mgr and caches a pointer to it
+     * @param subPane the subpane in question
+     */
+    protected void addSubPaneToMgr(final SubPaneIFace subPane)
+    {
+        boolean okToAdd = true;
+        if (subPaneClassFilter != null)
+        {
+            okToAdd = false;
+            // Now Check super classes 
+            Class superclass = subPane.getClass();
+            while (superclass != null) 
+            {
+                if (superclass == subPaneClassFilter)
+                {
+                    okToAdd = true;
+                    break;
+                }
+                superclass = superclass.getSuperclass();
+            }
+        }
+        
+        if (okToAdd)
+        {
+            UICacheManager.getSubPaneMgr().addPane(subPane);
+        }
+    }
+    
+    /**
+     * Removes a SubPane from the Mgr
+     * @param subPane the subpane in question
+     */
+    protected void removeSubPaneFromMgr(final SubPaneIFace subPane)
+    {
+        UICacheManager.getSubPaneMgr().removePane(subPane);
+    }
+
     /**
      * Returns the initial pane for this task, may be a blank (empty) pane, but shouldn't null
      * @return Returns the initial pane for this task, may be a blank (empty) pane, but shouldn't null
@@ -285,6 +337,40 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     {
         log.error("Command sent to task ["+name+"] and was not processed.");
     }
+    
+    //--------------------------------------------------------------
+    // SubPaneMgrListener Interface
+    //--------------------------------------------------------------
+    
+    /**
+     * Notication that a SubPane was added to the manager
+     * @param subPane the subpane that was added
+     */
+    public void subPaneAdded(SubPaneIFace subPane)
+    {
+        subPanes.add(subPane);
+    }
+    
+    /**
+     * Notication that a SubPane was removed from the manager
+     * @param subPane the subpane that was removed
+     */
+    public void subPaneRemoved(SubPaneIFace subPane)
+    {
+        subPanes.remove(subPane);
+    }
+    
+    
+    /**
+     * Notication that a SubPane was removed from the manager
+     * @param subPane the subpane that was removed
+     */
+    public void subPaneShown(SubPaneIFace subPane)
+    {
+        
+    }
+
+    
     
     //--------------------------------------------------------------
     // Inner Classes

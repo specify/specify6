@@ -23,6 +23,7 @@
     <icon name="ColObj"     file="catobj_fish.gif" sizes="all"/>
     <icon name="Address"    file="address.gif" sizes="all"/>
     <icon name="ColEvent"   file="collevent.gif" sizes="all"/>
+    <icon name="InfoRequest" file="information.gif" sizes="all"/>
     
     
     <icon name="UserInterface" file="form.gif" sizes="all"/>

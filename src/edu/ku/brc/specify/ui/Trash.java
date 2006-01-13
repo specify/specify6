@@ -49,11 +49,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
+import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.ui.dnd.DndDeletable;
 import edu.ku.brc.specify.ui.dnd.GhostActionable;
 import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
-import edu.ku.brc.specify.ui.dnd.GhostMotionAdapter;
-import edu.ku.brc.specify.ui.dnd.GhostMouseDropAdapter;
+import edu.ku.brc.specify.ui.dnd.GhostMouseInputAdapter;
 
 /**
  * Implements a "trash can" for deleting and recovering RecordSets, labels etc.
@@ -77,8 +77,7 @@ public class Trash extends JComponent implements GhostActionable
     protected ImageIcon              trashFullIcon;
     protected ImageIcon              paperIcon;
     
-    protected GhostMouseDropAdapter  mouseDropAdapter    = null;
-    protected Object                 data                = null;
+    protected GhostMouseInputAdapter  mouseInputAdapter    = null;
     protected RenderingHints         hints               = null;
     protected BufferedImage          shadowBuffer        = null;
     protected BufferedImage          buffer              = null;;
@@ -91,6 +90,8 @@ public class Trash extends JComponent implements GhostActionable
     protected JPopupMenu             popupMenu           = null;
     protected JMenuItem              emptyMenuItem       = null;
     protected JMenuItem              openMenuItem        = null;
+    
+    protected Object                 data                = null;
     
     // DnD
     protected List<DataFlavor>       dropFlavors         = new ArrayList<DataFlavor>(); 
@@ -298,22 +299,30 @@ public class Trash extends JComponent implements GhostActionable
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#createMouseDropAdapter()
+     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getDataForClass(java.lang.Class)
      */
-    public void createMouseDropAdapter()
+    public Object getDataForClass(Class classObj)
     {
-        mouseDropAdapter = new GhostMouseDropAdapter(UICacheManager.getGlassPane(), "action", this);
-        addMouseListener(mouseDropAdapter);
-        addMouseMotionListener(new GhostMotionAdapter(UICacheManager.getGlassPane()));
+        return UIHelper.getDataForClass(data, classObj);
+    }
+   
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#createMouseInputAdapter()
+     */
+    public void createMouseInputAdapter()
+    {
+        mouseInputAdapter = new GhostMouseInputAdapter(UICacheManager.getGlassPane(), "action", this);
+        addMouseListener(mouseInputAdapter);
+        addMouseMotionListener(mouseInputAdapter);
     }
     
     /**
      * Returns the adaptor for tracking mouse drop gestures
      * @return Returns the adaptor for tracking mouse drop gestures
      */
-    public GhostMouseDropAdapter getMouseDropAdapter()
+    public GhostMouseInputAdapter getMouseInputAdapter()
     {
-        return mouseDropAdapter;
+        return mouseInputAdapter;
     }
     
     /**

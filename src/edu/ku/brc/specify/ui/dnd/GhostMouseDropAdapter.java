@@ -20,7 +20,7 @@ import edu.ku.brc.specify.ui.UICacheManager;
  */
 public class GhostMouseDropAdapter extends GhostDropAdapter 
 {
-    private GhostActionable ghostActionable;
+    private GhostActionable    ghostActionable;
 
     /**
      * 

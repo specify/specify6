@@ -40,6 +40,12 @@ public interface SubPaneIFace
     public String getName();
     
     /**
+     * Sets a name
+     * @param name the new name
+     */
+    public void setName(String name);
+    
+    /**
      * Returns the title 
      * @return Returns the title 
      */

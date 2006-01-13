@@ -3,9 +3,12 @@ package edu.ku.brc.specify.helpers;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import edu.ku.brc.specify.ui.dnd.GhostDataAggregatable;
 
 public final class UIHelper
 {
@@ -190,6 +193,57 @@ public final class UIHelper
    }
     
 
-    
+     /**
+      * Helper method for returning data if it is of a particular Class. 
+      * Meaning is this data implementing an interface or is it derived from some other class.
+     * @param data the generic data
+     * @param classObj the class in questions
+     * @return the data if it is derived from or implements, can it be cast to
+     */
+    public static Object getDataForClass(final Object data, Class classObj)
+    {
+        // Short circut if all they are interested in is the generic "Object"
+        if (classObj == Object.class)
+        {
+            return data;
+        }
+        
+        // Check to see if it supports the aggrgation interface
+        if (data instanceof GhostDataAggregatable)
+        {
+            Object newData = ((GhostDataAggregatable)data).getDataForClass(classObj);
+            if (newData != null)
+            {
+                return newData;
+            }
+        }
+        
+        Vector<Class> classes = new Vector<Class>();
+        
+        // First Check interfaces
+        Class[] theInterfaces = data.getClass().getInterfaces();
+        for (Class co : theInterfaces) 
+        {
+            classes.add(co);
+        }
+        
+        if (classes.contains(classObj))
+        {
+            return data;
+        }
+        classes.clear();
+        
+        // Now Check super classes 
+        Class superclass = data.getClass().getSuperclass();
+        while (superclass != null) 
+        {
+            classes.addElement(superclass);
+            superclass = superclass.getSuperclass();
+        }
+        
+        // Wow, it doesn't support anything
+        return null;
+    }
+
 
 }

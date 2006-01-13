@@ -25,6 +25,9 @@ forms                -> 1.0.5 (JGoodies)
 looks                -> 1.3.2 (JGoodies)
 itext                -> 1.3
 
+jdom                 -> Version unknown (Mail)
+mstor                -> 0.9.7           (Mail)
+
 hibernate            -> 3.1 Beta 3
 lucene               -> 1.4.2
 jasperreports        -> 1.0.2

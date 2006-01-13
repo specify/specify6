@@ -113,7 +113,7 @@ public class PrefMainPanel extends JPanel
         
         JButton okButton = new javax.swing.JButton ("OK");
         JButton cancelButton = new javax.swing.JButton ("Cancel");
-        Component buttonBar = com.jgoodies.forms.factories.ButtonBarFactory.buildRightAlignedBar(new JButton[] {cancelButton, okButton});
+        Component buttonBar = com.jgoodies.forms.factories.ButtonBarFactory.buildRightAlignedBar(new JButton[] {okButton, cancelButton});
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) 
             {
@@ -137,7 +137,10 @@ public class PrefMainPanel extends JPanel
      */
     protected void saveChangedPrefs()
     {
-        
+        if (currentComp instanceof PrefsSavable)
+        {
+            ((PrefsSavable)currentComp).savePrefs();
+        }
     }
     
     /**

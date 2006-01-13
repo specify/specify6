@@ -356,18 +356,40 @@ public class ViewFactory
      */
     public static FormViewable createView(FormView formView)
     {
-        try
-        {
+        //try
+        //{
             if (formView.getType() == FormView.ViewType.form)
             {
                 FormViewObj formViewObj = buildFormView((FormFormView)formView, null, null);
                 return formViewObj; 
             }
             
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
+        //} catch (Exception ex)
+        //{
+        //    ex.printStackTrace();
+        //}
+        return null;
+    }
+    
+    /**
+     * Creates a FormView with a data object to fill it in
+     * @param view the definition of the form view to be created
+     * @param data the data to fill the form
+     * @return return a new FormView
+     */
+    public static FormViewable createView(FormView formView, Object data)
+    {
+        //try
+       // {
+            if (formView.getType() == FormView.ViewType.form)
+            {
+                return buildFormView((FormFormView)formView, data, null); 
+            }
+            
+        //} catch (Exception ex)
+        //{
+        //    ex.printStackTrace();
+        //}
         return null;
     }
     

@@ -25,22 +25,33 @@ public interface GhostActionable
     public void setData(final Object data);
     
     /**
-     * Return the data
+     * Returns the data as type Object
      * @return Return the data
      */
     public Object getData();
     
     /**
+     * Support Aggregation, allow consumers to ask for data of a specific class. 
+     * That way any data Object that supports the GhostDataAggregatable interface can be asked specifically for 
+     * a Class of data.If the data object does implement the  GhostDataAggregatable then the implmenetor should check to see
+     * if the data object is an instance of the Class in question.
+     * If the object can't vend it it will return null.
+     * @param classObj the object of this desired class type
+     * @return the object representing that type of object
+     */
+    public Object getDataForClass(Class classObj);
+    
+    /**
      * Creates a adpator for the DnD action 
      *
      */
-    public void createMouseDropAdapter();
+    public void createMouseInputAdapter();
     
     /**
      * Returns the adaptor for tracking mouse drop gestures
      * @return Returns the adaptor for tracking mouse drop gestures
      */
-    public GhostMouseDropAdapter getMouseDropAdapter();
+    public GhostMouseInputAdapter getMouseInputAdapter();
 
 
     /**

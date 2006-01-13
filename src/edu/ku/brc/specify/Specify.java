@@ -228,7 +228,8 @@ public class Specify extends JPanel
 //      XXX Temporary load of form because now form are being loaded right now
         try
         {
-            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("pref_forms.xml"));
+            //ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("pref_forms.xml"));
+            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("form.xml"));
             
         } catch (Exception ex)
         {

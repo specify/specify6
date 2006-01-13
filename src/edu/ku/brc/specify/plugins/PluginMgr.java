@@ -20,8 +20,6 @@
 
 package edu.ku.brc.specify.plugins;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
-
 import java.awt.Component;
 import java.util.Enumeration;
 import java.util.Hashtable;

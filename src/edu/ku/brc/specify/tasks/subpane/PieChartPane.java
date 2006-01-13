@@ -60,8 +60,8 @@ public class PieChartPane extends ChartPane implements QueryResultsListener, Que
     
 
     /**
-     * 
-     *
+     * @param name name of pane
+     * @param task the owning task
      */
     public PieChartPane(final String name, 
                         final Taskable task)

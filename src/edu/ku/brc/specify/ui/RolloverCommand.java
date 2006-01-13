@@ -42,7 +42,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.Icon;
@@ -60,11 +61,11 @@ import javax.swing.event.MouseInputAdapter;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 
 import edu.ku.brc.specify.core.NavBoxItemIFace;
+import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.ui.dnd.DataActionEvent;
 import edu.ku.brc.specify.ui.dnd.DndDeletable;
 import edu.ku.brc.specify.ui.dnd.GhostActionable;
-import edu.ku.brc.specify.ui.dnd.GhostMotionAdapter;
-import edu.ku.brc.specify.ui.dnd.GhostMouseDropAdapter;
+import edu.ku.brc.specify.ui.dnd.GhostMouseInputAdapter;
 import edu.ku.brc.specify.ui.dnd.ShadowFactory;
 
 /**
@@ -92,7 +93,7 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     protected BufferedImage          sizeBufImg       = null; 
     protected Dimension              preferredSize    = new Dimension(0,0);
     protected Vector<ActionListener> listeners        = new Vector<ActionListener>();
-    protected GhostMouseDropAdapter  mouseDropAdapter = null;
+    protected GhostMouseInputAdapter  mouseDropAdapter = null;
     
     protected Object                 data = null;
     
@@ -489,20 +490,28 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getDataForClass(java.lang.Class)
+     */
+    public Object getDataForClass(Class classObj)
+    {
+        return UIHelper.getDataForClass(data, classObj);
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.dnd.GhostActionable#createMouseDropAdapter()
      */
-    public void createMouseDropAdapter()
+    public void createMouseInputAdapter()
     {
-        mouseDropAdapter = new GhostMouseDropAdapter(UICacheManager.getGlassPane(), "action", this);
+        mouseDropAdapter = new GhostMouseInputAdapter(UICacheManager.getGlassPane(), "action", this);
         addMouseListener(mouseDropAdapter);
-        addMouseMotionListener(new GhostMotionAdapter(UICacheManager.getGlassPane()));
+        addMouseMotionListener(mouseDropAdapter);
     }
     
     /**
      * Returns the adaptor for tracking mouse drop gestures
      * @return Returns the adaptor for tracking mouse drop gestures
      */
-    public GhostMouseDropAdapter getMouseDropAdapter()
+    public GhostMouseInputAdapter getMouseInputAdapter()
     {
         return mouseDropAdapter;
     }

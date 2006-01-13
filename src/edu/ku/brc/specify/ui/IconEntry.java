@@ -19,15 +19,12 @@
  */
 package edu.ku.brc.specify.ui;
 
-import java.awt.Image;
 import java.util.Hashtable;
 
 import javax.swing.ImageIcon;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import edu.ku.brc.specify.ui.IconManager.IconSize;
+
 /**
  * An entry in the IconCacheManager
  * 
@@ -36,7 +33,7 @@ import edu.ku.brc.specify.ui.IconManager.IconSize;
  */
 public class IconEntry
 {
-    private static Log log = LogFactory.getLog(IconManager.class);
+    //private static Log log = LogFactory.getLog(IconManager.class);
     
     private String name;
     private Hashtable<String, ImageIcon> icons = new Hashtable<String, ImageIcon>();
