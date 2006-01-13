@@ -189,7 +189,7 @@ public class InfoRequestTask extends BaseTask
     protected void createFormPanel(RolloverCommand roc)
     {
         DroppableFormObject dfo = (DroppableFormObject)roc.getData();
-        if (recentFormPane.getComponentCount() == 0)
+        if (recentFormPane != null && recentFormPane.getComponentCount() == 0)
         {
             recentFormPane.createForm(dfo.getViewSetName(), dfo.getFormId(), dfo.getData());
         } else
