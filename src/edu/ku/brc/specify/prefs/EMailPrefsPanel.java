@@ -60,6 +60,7 @@ import edu.ku.brc.specify.helpers.Encryption;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.validation.*;
 
 /**
  * Preference Panel for setting EMail Preferences.
@@ -73,6 +74,8 @@ import edu.ku.brc.specify.ui.UICacheManager;
 public class EMailPrefsPanel extends JPanel implements PrefsSavable
 {
     private static Log log  = LogFactory.getLog(EMailPrefsPanel.class);
+    
+    protected FormValidator formValidator = new FormValidator();
 
     Preferences prefNode = null;
     
@@ -140,11 +143,11 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable
      * @return the updated column value (incremented by 4)
      */
     protected int addField(final PanelBuilder     builder, 
-                            final String          labelKey, 
-                            final JComponent      comp, 
-                            final CellConstraints cc,
-                            int                   col,
-                            int                   row)
+                           final String           labelKey, 
+                           final JComponent       comp, 
+                           final CellConstraints  cc,
+                           int                    col,
+                           int                    row)
     {
         JLabel label = new JLabel(getResourceString(labelKey)+":");
         labelHash.put(labelKey, label);
@@ -152,6 +155,10 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable
         col += 2;
         builder.add( comp, cc.xy(col,row));
         col += 2;
+        
+        formValidator.addUIComp(labelKey, comp);
+        formValidator.addUILabel(labelKey, label);
+        
         return col;        
     }
     
@@ -171,15 +178,18 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable
         builder.addSeparator(getResourceString("emailacctsettings"), cc.xy(col,row));
         row += 2;
         
-        col = 1;
-        addField(builder, "accounttype", acctTypeSelect = new JComboBox(new String[] {getResourceString("pop3"), getResourceString("imap")}), cc, col,row);
-        row += 2;
-        
-        addField(builder, "accountname", acctName = new JTextField(20), cc, col,row);
-        row += 2;
+        String notEmptyRule = "obj.isNotEmpty()";
         
         col = 1;
-        col = addField(builder, "servername", serverName = new JTextField(20), cc, col,row);
+        acctTypeSelect = formValidator.createComboBox("accounttype", new String[] {getResourceString("pop3"), getResourceString("imap")});
+        addField(builder, "accounttype", acctTypeSelect, cc, col,row);
+        row += 2;
+        
+        addField(builder, "accountname", acctName = formValidator.createTextField("accountname", 20, true, UIValidator.ValidationType.OK, notEmptyRule), cc, col,row);
+        row += 2;
+        
+        col = 1;
+        col = addField(builder, "servername", serverName = formValidator.createTextField("servername", 20, true, UIValidator.ValidationType.OK, notEmptyRule), cc, col,row);
         col = addField(builder, "smtp", smtp = new JTextField(20), cc, col,row);
         row += 2;
         
@@ -223,16 +233,22 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable
             }
         });    
         
-        acctTypeSelect.addActionListener(new ActionListener() {
+        /*acctTypeSelect.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) 
             {
                 updateUIState();
             }
-        });
+        });*/
 
+        formValidator.addEnableRule("localmailbox", "accounttype.getSelectedIndex() == 0");
 
         readDataFromPrefs();
         updateUIState();
+        
+        formValidator.processEnableRules();
+        
+        formValidator.resetFields();
+
     }
     
     /**
@@ -672,5 +688,12 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable
         }
     }
 
+    //---------------------------------------------------
+    // PrefPanelIFace
+    //---------------------------------------------------
+    public void setOKButton(JButton okBtn)
+    {
+        formValidator.registerOKButton(okBtn);
+    }
 
 }

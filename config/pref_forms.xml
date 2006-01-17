@@ -62,15 +62,16 @@
 				<cell type="separator" label="EMail Settings"/>
 			</row>
 			<row>
-				<cell type="field" name="username" label="Username"/>
-				<cell type="field" name="password" label="Password"/>
-				<cell type="field" name="email"    label="EMail"/>
+				<cell type="field" name="username" label="Username" isrequired="true"/>
+				<cell type="field" name="password" label="Password" isrequired="true"/>
+				<cell type="field" name="email"    label="EMail" isrequired="true"/>
 			</row>
 			<row>
 				<cell type="separator" label="MailBox"/>
 			</row>
 			<row>
-				<cell type="field" uitype="combobox" custom="edu.ku.brc.specify.prefs.EMailAccountType" name="accountype" label="Account Type"/>
+				<cell type="field" uitype="combobox" custom="edu.ku.brc.specify.prefs.EMailAccountType" 
+				     name="accountype" label="Account Type"/>
 			</row>
 
 		</rows>

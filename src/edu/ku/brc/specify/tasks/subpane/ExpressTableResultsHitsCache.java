@@ -139,7 +139,8 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
     //---------------------------------------------------
     //-- Table Model for Hit Results
     //---------------------------------------------------
-    @SuppressWarnings("serial") class HitsTableModel extends AbstractTableModel
+    @SuppressWarnings("serial") 
+    class HitsTableModel extends AbstractTableModel
     {
         private int[] displayIndexes = null;
         private int[] cols           = null;

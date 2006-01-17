@@ -208,7 +208,7 @@ public class PrefMainPanel extends JPanel
             if (oldSize != null)
             {
                 System.out.println(currentComp.getPreferredSize()+" = "+oldSize);
-                startAnimation(dialog, comp, currentComp.getPreferredSize().height - oldSize.height, true);
+                startAnimation(dialog, comp, currentComp.getPreferredSize().height - oldSize.height, false);
             }
         }
     }

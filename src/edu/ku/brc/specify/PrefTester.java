@@ -153,10 +153,10 @@ public class PrefTester
                 
                 // XXX Why???
                 //mainFrame.pack();
-                mainFrame.setSize(new Dimension(1024, 764));
+                mainFrame.setSize(new Dimension(500, 300));
                 //mainFrame.setSize(mainFrame.getPreferredSize());
                 //frame.pack();
-                UIHelper.centerAndShow(mainFrame);
+                UIHelper.positionAndShow(mainFrame);
                 //mainFrame.pack();
                 
             }
@@ -164,7 +164,7 @@ public class PrefTester
         SwingUtilities.invokeLater(new Runnable() {
             public void run() 
             {
-        try {Thread.sleep(500);showPrefs();}
+        try {Thread.sleep(100);showPrefs();}
         catch (InterruptedException ie) {}
             }
         });

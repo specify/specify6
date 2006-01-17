@@ -33,16 +33,12 @@ import javax.swing.UIManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
 
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
-import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.dbsupport.DBConnection;
-import edu.ku.brc.specify.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.helpers.EMailHelper;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.ui.ChooseFromListDlg;
@@ -97,20 +93,37 @@ public class FormEditor
                     //frame.pack();
                     UIHelper.centerAndShow(mainFrame);
                     
+                    boolean doSend = false;
+                    if (doSend)
+                    {
+                        String msg = "<!-- NUM_ITEMS 1 --><form name=\"form\"><table><tr><td><!-- ITEM0 101 -->[  ]</td><td>Megalotis</td></tr></table><form>";
+                        EMailHelper.sendMsg("imap.ku.edu", "rods", "Inverness1601*", "rods@ku.edu",  
+                                "rods@ku.edu",  
+                                "Catalog Items You Requested", 
+                                 msg, "text/html", null);
+                    } else
+                    {
+                        //EMailHelper.findRepliesFromResearch("imap.ku.edu", "rods", "Inverness1601*");
+                    }
+                    
+                    /*
                     DBConnection.setUsernamePassword("rods", "rods");
                     DBConnection.setDriver("com.mysql.jdbc.Driver");
                     DBConnection.setDBName("jdbc:mysql://localhost/demo_fish2");
                     
                     
                     //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class);
-                    Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setFetchMode(Accession.class.getName(), FetchMode.DEFAULT).setMaxResults(300);
-                    java.util.List list = criteria.list();//session.find("from collev");
-
+                    //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setFetchMode(Accession.class.getName(), FetchMode.DEFAULT).setMaxResults(300);
+                    //java.util.List list = criteria.list();//session.find("from collev");
+                    Query q = HibernateUtil.getCurrentSession().createQuery("from accession in class Accession where accession.accessionId in (74,68262114,508322272)");
+                    java.util.List list = q.list();
                     for (Object obj : list)
                     {
                         Accession accession = (Accession)obj;
-                        System.out.println(accession.getNumber());
+                        System.out.println(accession.getAccessionId());
                     }
+                    
+                    */
 
                 }
           });
