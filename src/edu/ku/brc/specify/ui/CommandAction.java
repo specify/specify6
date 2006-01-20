@@ -45,10 +45,10 @@ public class CommandAction
      */
     public CommandAction(final String type, final String action, final Object data)
     {
-        this.type   = type;
-        this.action = action;
+        this.type    = type;
+        this.action  = action;
         this.tableId = -1;
-        this.data   = data;
+        this.data    = data;
     }
     
     /**

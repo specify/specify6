@@ -22,15 +22,16 @@ package edu.ku.brc.specify;
 
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.util.List;
 
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -38,7 +39,9 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
-import edu.ku.brc.specify.helpers.EMailHelper;
+import edu.ku.brc.specify.helpers.*;
+import edu.ku.brc.specify.dbsupport.*;
+import edu.ku.brc.specify.datamodel.*;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.ui.ChooseFromListDlg;
@@ -48,10 +51,23 @@ import edu.ku.brc.specify.ui.forms.ViewFactory;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
 import edu.ku.brc.specify.ui.forms.persist.FormView;
 import edu.ku.brc.specify.ui.forms.persist.ViewSet;
+import org.apache.commons.jxpath.*;
+
+import org.hibernate.*;
+import org.hibernate.hql.*;
+import org.hibernate.tool.*;
+import org.hibernate.sql.*;
+import org.hibernate.criterion.*;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 
 /**
  * The stand alone part of the FormEditor (this is a prototype at the moment that is used for viewing forms) 
  * 
+ * @author rods
+ *
+ */
+/**
  * @author rods
  *
  */
@@ -71,7 +87,7 @@ public class FormEditor
         FormViewable form = ViewFactory.createView(formView);
         
         contentPane.removeAll();
-        JComponent comp = form.getUIComponent();
+        Component comp = form.getUIComponent();
         if (comp != null)
         {
             comp.invalidate();   
@@ -106,7 +122,7 @@ public class FormEditor
                         //EMailHelper.findRepliesFromResearch("imap.ku.edu", "rods", "Inverness1601*");
                     }
                     
-                    /*
+                    
                     DBConnection.setUsernamePassword("rods", "rods");
                     DBConnection.setDriver("com.mysql.jdbc.Driver");
                     DBConnection.setDBName("jdbc:mysql://localhost/demo_fish2");
@@ -115,15 +131,35 @@ public class FormEditor
                     //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class);
                     //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setFetchMode(Accession.class.getName(), FetchMode.DEFAULT).setMaxResults(300);
                     //java.util.List list = criteria.list();//session.find("from collev");
-                    Query q = HibernateUtil.getCurrentSession().createQuery("from accession in class Accession where accession.accessionId in (74,68262114,508322272)");
-                    java.util.List list = q.list();
-                    for (Object obj : list)
+                    boolean skip = true;
+                    if (skip)
                     {
-                        Accession accession = (Accession)obj;
-                        System.out.println(accession.getAccessionId());
+                        Query q = HibernateUtil.getCurrentSession().createQuery("from accession in class Accession where accession.accessionId in (74,68262114,508322272)");
+                        java.util.List list = q.list();
+                        for (Object obj : list)
+                        {
+                            Accession accession = (Accession)obj;
+                            System.out.println(accession.getAccessionId());
+                        }
                     }
                     
-                    */
+                    
+                    
+                    boolean doit = true;
+                    if (doit)
+                    {
+                        //Query q = HibernateUtil.getCurrentSession().createQuery("from accession in class Accession where accession.accessionId in (74,68262114,508322272)");
+                        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(InfoRequest.class);
+                        java.util.List list = criteria.list();
+                        for (Object obj : list)
+                        {
+                            InfoRequest infoReq = (InfoRequest)obj;
+                            JXPathContext context = JXPathContext.newContext(infoReq);
+                            
+                            System.out.println(context.getValue(""));
+                        }
+                        
+                    }
 
                 }
           });
@@ -139,9 +175,10 @@ public class FormEditor
     {
         List<ViewSet> viewSets = ViewMgr.getViewSets();
         
-        ViewSet viewSet = viewSets.get(0);
-        List<FormView> forms = viewSet.getViews();
-        ChooseFromListDlg dlg = new ChooseFromListDlg("Choose Form", forms); // XXX I18N
+        ViewSet           viewSet = viewSets.get(0);
+        List<FormView>    forms   = viewSet.getViews();
+        ChooseFromListDlg dlg     = new ChooseFromListDlg("Choose Form", forms); // XXX I18N
+        
         FormView form = (FormView)dlg.getSelectedObject();
         if (form != null)
         {
@@ -159,7 +196,8 @@ public class FormEditor
         // XXX Temporary load of form because now forma er being loaded right now
         try
         {
-            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("fish_forms.xml"));
+            //ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("form.xml"));
+            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("pref_forms.xml"));
             
         } catch (Exception ex)
         {
@@ -208,10 +246,18 @@ public class FormEditor
         //mainFrame.setVisible(true);
         
         // temp for testing 
-        List<ViewSet> viewSets = ViewMgr.getViewSets();
-        ViewSet viewSet = viewSets.get(0);
-        List<FormView> forms = viewSet.getViews();
-        createForm(forms.get(0));
+        int id = 1;
+        String name = "Preferences";
+        
+        FormView form = ViewMgr.getView(name, id);
+
+        if (form != null)
+        {
+            createForm(form);
+        } else
+        {
+            log.info("Couldn't load form with name ["+name+"] Id ["+id+"]");
+        }
          
     }   
     

@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: FormRow.java,v $
+/* Filename:    $RCSfile: FormCellLabel.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2005/10/12 16:52:27 $
@@ -19,53 +19,26 @@
  */
 package edu.ku.brc.specify.ui.forms.persist;
 
-import java.util.*;
-
-public class FormRow
+public class FormCellLabel extends FormCellSeparator
 {
-    Vector<FormCell> cells = new Vector<FormCell>();
+    protected String labelFor;
     
-    /**
-     * Default Constructor
-     *
-     */
-    public FormRow()
+    public FormCellLabel(String name, String label, String labelFor, int colspan)
     {
+        super(name, label, colspan);
         
+        this.type     = FormCell.CellType.label;        
+        this.labelFor = labelFor;
     }
     
-    /**
-     * Adds a FormCell and return the same FormCell
-     * @param aCell the cell to be added
-     * @return the same FormCell
-     */
-    public FormCell addCell(FormCell cell)
+    public String getLabelFor()
     {
-        cells.add(cell);
-        return cell;
-    }
-    
-    /**
-     * Clean up internal data
-     */
-    public void cleanUp()
-    {
-        cells.clear();
-    }
-    
-    /**
-     * @return Return the collection of cells
-     */
-    public List<FormCell> getCells()
-    {
-        return cells;
+        return labelFor;
     }
 
-    /**
-     * @param cells all the cells
-     */
-    public void setCells(Vector<FormCell> cells)
+    public void setLabelFor(String labelFor)
     {
-        this.cells = cells;
+        this.labelFor = labelFor;
     }
+
 }

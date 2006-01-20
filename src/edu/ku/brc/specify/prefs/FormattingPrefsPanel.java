@@ -1,17 +1,19 @@
 package edu.ku.brc.specify.prefs;
 
 import java.awt.BorderLayout;
-import java.util.List;
+import java.util.prefs.Preferences;
 
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import edu.ku.brc.specify.helpers.XMLHelper;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.forms.FormViewable;
 import edu.ku.brc.specify.ui.forms.ViewFactory;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
 import edu.ku.brc.specify.ui.forms.persist.FormView;
-import edu.ku.brc.specify.ui.forms.persist.ViewSet;
+import edu.ku.brc.specify.ui.validation.FormValidator;
 
 /**
  * This panel will handle all the various options for formatting of data.
@@ -20,38 +22,73 @@ import edu.ku.brc.specify.ui.forms.persist.ViewSet;
  *
  */
 @SuppressWarnings("serial")
-public class FormattingPrefsPanel extends JPanel
+public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, PrefsSavable
 {
-
+    private static Log log  = LogFactory.getLog(FormattingPrefsPanel.class);
+    
+    protected Preferences  prefNode = null;
+    protected FormView     formView = null;
+    protected FormViewable form     = null;
+    
     public FormattingPrefsPanel()
     {
-        super(new BorderLayout());
+        Preferences appsNode = UICacheManager.getAppPrefs();
+        prefNode = appsNode.node("ui/formatting");
+        if (prefNode == null)
+        {
+            throw new RuntimeException("Could find pref for formatting!");
+        }
         
-        // XXX Temporary load of form because now form aer being loaded right now
-        try
+        createUI();
+
+    }
+    
+    /**
+     * Create the UI for the panel
+     */
+    protected void createUI()
+    {
+        
+        int id = 2;
+        String name = "Preferences";
+        
+        formView = ViewMgr.getView(name, id);
+
+        if (formView != null)
         {
-            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("fish_forms.xml"));
+            form = ViewFactory.createView(formView, prefNode);
+            add(form.getUIComponent(), BorderLayout.CENTER);
             
-        } catch (Exception ex)
+        } else
         {
-            //log.fatal(ex);
-            ex.printStackTrace();
+            log.info("Couldn't load form with name ["+name+"] Id ["+id+"]");
         }
 
-        // temp for testing 
-        List<ViewSet> viewSets = ViewMgr.getViewSets();
-        ViewSet viewSet = viewSets.get(0);
-        List<FormView> forms = viewSet.getViews();
+        form.getValidator().processEnableRules();
+        form.getValidator().validateFields();
+
         
-        FormViewable form = ViewFactory.createView(forms.get(1));
-        
-        JComponent comp = form.getUIComponent();
-        if (comp != null)
-        {
-            comp.invalidate(); 
-            add(comp, BorderLayout.CENTER);
-        }
-        ViewMgr.clearAll();
+    }
+    
+    //--------------------------------------------------------------------
+    // PrefsSavable Interface
+    //--------------------------------------------------------------------
+   
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.prefs.PrefsSavable#savePrefs()
+     */
+    public void savePrefs()
+    {
+        form.getDataFromUI();
+    }
+    
+
+    //---------------------------------------------------
+    // PrefsPanelIFace
+    //---------------------------------------------------
+    public FormValidator getValidator()
+    {
+        return form.getValidator();
     }
 
 }

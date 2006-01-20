@@ -19,7 +19,6 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.specify.ui.UICacheManager.formatDate;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.Component;
@@ -45,7 +44,7 @@ import javax.mail.Store;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-
+import java.text.SimpleDateFormat;
 import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.core.NavBoxItemIFace;
 import edu.ku.brc.specify.core.NavBoxMgr;
@@ -65,6 +64,7 @@ import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.Trash;
 import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.prefs.*;
 
 /**
  * Takes care of offering up record sets, updating, deleteing and creating them.
@@ -83,7 +83,8 @@ public class InfoRequestTask extends BaseTask
     public static final String INFO_REQ_MESSAGE = "Specify Info Request";
     
     // Data Members
-    public FormPane recentFormPane = null;    
+    protected FormPane         recentFormPane = null;    
+    protected SimpleDateFormat scrDateFormat;
 
     // Data Members
     protected NavBox navBox = null;
@@ -98,6 +99,8 @@ public class InfoRequestTask extends BaseTask
         CommandDispatcher.register(INFOREQUEST, this);
         
         subPaneClassFilter = FormPane.class;
+        
+        scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
     }
     
     /**
@@ -107,7 +110,8 @@ public class InfoRequestTask extends BaseTask
      */
     protected String getTitle(final InfoRequest infoRequest)
     {
-        return infoRequest.getFirstName() + " " + infoRequest.getLastName() + " - " + formatDate(infoRequest.getRequestDate());
+        System.out.println(scrDateFormat.toPattern());
+        return infoRequest.getFirstName() + " " + infoRequest.getLastName() + " - " + scrDateFormat.format(infoRequest.getRequestDate());
     }
 
 
@@ -195,7 +199,6 @@ public class InfoRequestTask extends BaseTask
         } else
         {
             FormPane fp = getFormPane(dfo.getViewSetName(), dfo.getFormId(), dfo.getData());
-            System.out.println(UICacheManager.formatDate(((InfoRequest)dfo.getData()).getRequestDate()));
             if (fp != null)
             {
                 UICacheManager.getSubPaneMgr().showPane(fp.getName());

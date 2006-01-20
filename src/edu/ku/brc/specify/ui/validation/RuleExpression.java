@@ -87,5 +87,13 @@ public class RuleExpression
     {
         return name;
     }
+    
+    /**
+     * Cleanup internal data 
+     */
+    public void cleanUp()
+    {
+        expression = null;
+    }
 
 }

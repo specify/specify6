@@ -28,35 +28,45 @@ public class FormTableView extends FormView
     protected Vector<FormColumn> columns = new Vector<FormColumn>();
     
     /**
-     * Default Constructor
-     */
-    public FormTableView()
-    {
-        super(ViewType.table, -1, "", "", "", "");
-        
-    }
-    
-    /**
-     * @param id
-     * @param name
-     * @param className
-     * @param gettableClassName
-     * @param desc
+     * @param type the type (could be form or field)
+     * @param id the id
+     * @param name the name
+     * @param className the class name of the data object
+     * @param gettableClassName the class name of the gettable
+     * @param settableClassName the class name of the settable
+     * @param desc description
+     * @param isValidated whether to turn on validation
      */
     public FormTableView(final int    id, 
                          final String name, 
                          final String className, 
                          final String gettableClassName, 
-                         final String desc)
+                         final String settableClassName, 
+                         final String desc,
+                         final boolean isValidated)
     {
-        super(ViewType.table, id, name, className, gettableClassName, desc);
+        super(ViewType.table, id, name, className, gettableClassName, settableClassName, desc, isValidated);
         
     }
     
-    public FormColumn addColumn(FormColumn column)
+    /**
+     * Add a column definition
+     * @param column the column def to add
+     * @return the column def that was added
+     */
+    public FormColumn addColumn(final FormColumn column)
     {
         columns.add(column);
         return column;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.forms.persist.FormView#cleanUp()
+     */
+    public void cleanUp()
+    {
+        super.cleanUp();
+        columns.clear();
     }
     
     public List<FormColumn> getColumns()

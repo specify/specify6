@@ -1,7 +1,7 @@
-/* Filename:    $RCSfile: FormCellWithLabel.java,v $
+/* Filename:    $RCSfile: GetSetValueIFace,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
- * Date:        $Date: 2005/10/12 16:52:27 $
+ * Date:        $Date: 2006/01/20 01:01:01 $
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,48 +17,28 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.ui.forms.persist;
+package edu.ku.brc.specify.ui;
 
-public class FormCellWithLabel extends FormCell
+/**
+ * This interface enables any object to "play nice" within the form system. This way the machinery can always get and set values.
+ * (NOTE: this fires a Property change event "setValue")
+ * 
+ * @author rods
+ *
+ */
+public interface GetSetValueIFace
 {
-    protected String label;
+
+    /**
+     * Sets a value into the component
+     * @param value the new value (NOTE: this fires a Property change event "setValue")
+     */
+    public void setValue(Object value);
     
     /**
-     * 
-     *
+     * Returns a value for the component
+     * @return Returns a value for the component
      */
-    public FormCellWithLabel()
-    {
-        
-    }
-    
-    /**
-     * 
-     * @param aType
-     * @param aName
-     * @param aLabel
-     */
-    public FormCellWithLabel(CellType aType, String aName, String aLabel)
-    {
-        super(aType, aName);
-        label = aLabel;
-    }
-    
-    public String getLabel()
-    {
-        return label;
-    }
-
-    public void setLabel(String label)
-    {
-        this.label = label;
-    }
-
-    // Needed for Betwixt to work right
-    public String getName()
-    {
-        return name;
-    }
-
+    public Object getValue();
     
 }

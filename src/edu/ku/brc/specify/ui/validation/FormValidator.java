@@ -20,8 +20,10 @@
 package edu.ku.brc.specify.ui.validation;
 
 import java.awt.Component;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -58,11 +60,17 @@ public class FormValidator implements ValidationListener, DataChangeListener
     protected Expression  exp = null;
 
     protected Hashtable<String, DataChangeNotifier> dcNotifiers = new Hashtable<String, DataChangeNotifier>();
-    protected Hashtable<String, JComponent> fields      = new Hashtable<String, JComponent>();
+    protected Hashtable<String, Component>  fields      = new Hashtable<String, Component>();
     protected Hashtable<String, JLabel>     labels      = new Hashtable<String, JLabel>();
     protected Vector<RuleExpression>        enableRules = new Vector<RuleExpression>();
     protected boolean                       hasChanged  = false;
-    protected JButton                       okBtn       = null;            
+    protected JButton                       okBtn       = null;    
+    protected boolean                       okToEnable  = false;
+    
+    protected boolean                       ignoreValidationNotifications = false;
+    
+    // This is a list of listeners for when any data changes in the form
+    protected List<DataChangeListener>      dcListeners = new ArrayList<DataChangeListener>();
     
     /**
      * 
@@ -84,6 +92,15 @@ public class FormValidator implements ValidationListener, DataChangeListener
         okBtn = btn;
     }
     
+    /**
+     * Returns whether it is alright to enable the OK btn
+     * @return Returns whether it is alright to enable the OK btn
+     */
+    public boolean isOKToEnable()
+    {
+        return okToEnable;
+    }
+
     /**
      * Add a validation for enabling or disabling control by name
      * @param name the name of the rule
@@ -108,8 +125,12 @@ public class FormValidator implements ValidationListener, DataChangeListener
                 log.info("Result "+result+" for "+expRule.getName()+"  ");
                 if (result instanceof Boolean)
                 {
-                    JComponent comp = getComp(expRule.getName());
-                    comp.setEnabled((Boolean)result);
+                    Component comp = getComp(expRule.getName());
+                    if (comp != null)
+                    {
+                        log.info("comp.setEnabled("+result+") "+comp);
+                        comp.setEnabled((Boolean)result);
+                    }
                     
                     JLabel lbl = labels.get(expRule.getName());
                     if (lbl != null)
@@ -150,24 +171,72 @@ public class FormValidator implements ValidationListener, DataChangeListener
         tf.setRequired(isRequired);
         fields.put(name, tf);
         
+       
         UIValidator        uiv = createValidator(name, tf, isRequired, valType, valStr);
         DataChangeNotifier dcn = new DataChangeNotifier(name, tf, uiv);
         
         dcn.addDataChangeListener(this);
         dcNotifiers.put(name, dcn);
         
-        if (valType == UIValidator.ValidationType.Changed)
-        {
+        //if (valType == UIValidator.ValidationType.Changed)
+        //{
             tf.addKeyListener(dcn);
             
-        } else if (valType == UIValidator.ValidationType.Focus)
-        {
+       // } else if (valType == UIValidator.ValidationType.Focus)
+        //{
             tf.addFocusListener(dcn);
             
-        } else 
-        {
+        //} else 
+       // {
            // Do nothing for UIValidator.ValidationType.OK
-        }
+        //}
+
+        addRuleObjectMapping(name, tf);
+        return tf;
+            
+    }
+    
+    /**
+     * Create a new JTextField
+     * @param name The name of the control
+     * @param size the number of columns for the text control
+     * @param isRequired whether the field must be filled in
+     * @param valType the type of validation to do
+     * @param valStr the validation rule where the subject is "obj"
+     * @return returns a new JTextField thata is registered with the logical name
+     */
+    public JTextField createPasswordField(final String                     name, 
+                                          final int                        size, 
+                                          final boolean                    isRequired, 
+                                          final boolean                    isEncrypted, 
+                                          final UIValidator.ValidationType valType, 
+                                          final String                     valStr)
+    {
+        ValPasswordField tf = new ValPasswordField(size);
+        tf.setRequired(isRequired);
+        tf.setEncrypted(isEncrypted);
+        
+        fields.put(name, tf);
+        
+        UIValidator        uiv = createValidator(name, tf, isRequired, valType, valStr);
+        DataChangeNotifier dcn = new DataChangeNotifier(name, tf, uiv);
+        
+        dcn.addDataChangeListener(this);
+        dcNotifiers.put(name, dcn);
+        
+        //if (valType == UIValidator.ValidationType.Changed)
+        //{
+            tf.addKeyListener(dcn);
+            
+       // } else if (valType == UIValidator.ValidationType.Focus)
+        //{
+            tf.addFocusListener(dcn);
+            
+        //} else 
+       // {
+           // Do nothing for UIValidator.ValidationType.OK
+        //}
+    
         addRuleObjectMapping(name, tf);
         return tf;
             
@@ -232,6 +301,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      * @param isRequired whether the TextField MUSt have a value
      * @param valType the type of validation
      * @param valStr the default string value
+     * @param isPassword maike it a password field
      * @return the new TextControl
      */
     public JTextField createTextField(PanelBuilder    builder, 
@@ -243,9 +313,12 @@ public class FormValidator implements ValidationListener, DataChangeListener
                                       int             size, 
                                       boolean         isRequired, 
                                       UIValidator.ValidationType valType, 
-                                      String          valStr)
+                                      String          valStr,
+                                      boolean         isPassword,
+                                      boolean         isEncrypted)
     {
-        JTextField tf = createTextField(name, size, isRequired, valType, valStr);
+        JTextField tf = isPassword ? createPasswordField(name, size, isRequired, isEncrypted, valType, valStr) :
+                                     createTextField(name, size, isRequired, valType, valStr);
         
         addUILabel(name, builder.addTitle(labelName+":", cc.xy (col, row)));
         builder.add(tf, cc.xy(col+2, row));
@@ -262,7 +335,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public ValTextField getTextField(final String name)
     {
-        JComponent comp = fields.get(name);
+        Component comp = fields.get(name);
         if (comp instanceof ValTextField)
         {
             return (ValTextField)comp;
@@ -275,18 +348,18 @@ public class FormValidator implements ValidationListener, DataChangeListener
      * @param name the name of the component 
      * @return Returns a component by name
      */
-    public JComponent getComp(final String name)
+    public Component getComp(final String name)
     {
         return fields.get(name);
     }
     
     /**
-     * Adds a generic JComponent by name and return it
+     * Adds a generic Component by name and return it
      * @param name the logical name of the component
      * @param aComp
      * @return returns the passed in component after it is registered
      */
-    public Component addUIComp(final String name, final JComponent comp)
+    public Component addUIComp(final String name, final Component comp)
     {
         fields.put(name, comp);
         addRuleObjectMapping(name, comp);
@@ -347,27 +420,36 @@ public class FormValidator implements ValidationListener, DataChangeListener
     }
     
     /**
-     * Validate all the fields
+     * Validate all the fields, this is usually called manually when the OK or Apply button is pressed.
+     * Note that we turn off all the Validation notifications because we don't want them firing when 
+     * we manually call it.
      */
     public void validateFields()
     {
+        ignoreValidationNotifications = true;
+        
         processEnableRules();
 
+        okToEnable = true;
         for (Enumeration e=dcNotifiers.elements();e.hasMoreElements();)
         {
             DataChangeNotifier dcn = (DataChangeNotifier)e.nextElement();
             dcn.manualCheckForDataChanged();
             
             UIValidator uiv = dcn.getUIV();
+            
+            // Make sure we validate the fields that only get validated when the OK button is pressed
             if (uiv != null && uiv.getType() == UIValidator.ValidationType.OK)
             {
                 // XXX FIXME not sure what to do here
                 if (!uiv.validate())
                 {
-                    
+                    // I really don't think we need to do anything here
+                    okToEnable = false;
                 }
             }
-        }  
+        }
+        ignoreValidationNotifications = false;
     }
     
     /**
@@ -387,12 +469,67 @@ public class FormValidator implements ValidationListener, DataChangeListener
     }
     
     /**
+     * Creates and register a DataChangeNotifier
+     * @param name the name
+     * @param comp the component
+     * @param uiv the UI validator
+     * @return the dcn
+     */
+    public DataChangeNotifier createDataChangeNotifer(String name, Component comp, UIValidator uiv)
+    {
+        DataChangeNotifier dcn = new DataChangeNotifier(name, comp, uiv);
+        dcn.addDataChangeListener(this);
+        dcNotifiers.put(name, dcn);
+        return dcn;
+    }
+    
+    /**
      * Return an Enumeration of the DataChangeNotifier(s)
      * @return Return an Enumeration of the DataChangeNotifier(s)
      */
     public Enumeration<DataChangeNotifier> getDcNotifiers()
     {
         return dcNotifiers.elements();
+    }
+    
+    /**
+     * Clean up internal data 
+     */
+    public void cleanUp()
+    {
+        jc  = null;
+        exp = null;
+
+        for (Enumeration e=dcNotifiers.elements();e.hasMoreElements();) ((DataChangeNotifier)e.nextElement()).cleanUp();
+        dcNotifiers.clear();
+        
+        fields.clear();
+        labels.clear();
+        
+        for (Enumeration e=enableRules.elements();e.hasMoreElements();) ((RuleExpression)e.nextElement()).cleanUp();
+        enableRules.clear();
+        
+        okBtn = null;            
+
+    }
+    
+
+    /**
+     * Adds validation listener
+     * @param l the listener
+     */
+    public void addDataChangeListener(final DataChangeListener l)
+    {
+        dcListeners.add(l);
+    }
+
+    /**
+     * Removes validation listener
+     * @param l the listener
+     */
+    public void removeDataChangeListener(final DataChangeListener l)
+    {
+        dcListeners.remove(l);
     }
 
     //-----------------------------------------------------
@@ -405,6 +542,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     protected void turnOnOKButton(final boolean itsOKToEnable)
     {
+        okToEnable = hasChanged && itsOKToEnable;
         if (okBtn != null)
         {
             okBtn.setEnabled(hasChanged && itsOKToEnable);
@@ -416,35 +554,44 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void wasValidated(final UIValidator validator)
     {
-        log.debug("wasValidated "+validator.getComp());
-        processEnableRules();
-        
-        boolean isEnabled = okBtn != null && okBtn.isEnabled();
-        boolean isOK      = !validator.isInError();
-        if (isEnabled && !isOK)
+        // When the form has been asked manually to be validated then ignore the notifications 
+        if (!ignoreValidationNotifications)
         {
-            turnOnOKButton(false);
+            //log.debug("wasValidated "+validator.getComp());
+            processEnableRules();
             
-        } else if (!isEnabled && isOK)
-        {
-            turnOnOKButton(true);
+            boolean isEnabled = okBtn != null && okBtn.isEnabled();
+            boolean isOK      = !validator.isInError();
+            if (isEnabled && !isOK)
+            {
+                //okToEnable = false;
+                turnOnOKButton(false);
+                
+            } else if (!isEnabled && isOK)
+            {
+                //okToEnable = true;
+                turnOnOKButton(true);
+            }
         }
     }
     
-     //-----------------------------------------------------
+    //-----------------------------------------------------
     // DataChangeListener
     //-----------------------------------------------------
    
     /* (non-Javadoc)
      * @see DataChangeListener#dataChanged(java.lang.String, java.awt.Component)
      */
-    public void dataChanged(final String name, final Component aComp)
+    public void dataChanged(final String name, final Component comp)
     {
-        log.debug("DataChangeListener "+name + " was changed");
+        //log.debug("DataChangeListener "+name + " was changed");
         hasChanged = true;
         processEnableRules();
         turnOnOKButton(true);
+        
+        for (DataChangeListener dcl : dcListeners)
+        {
+            dcl.dataChanged(name, comp);
+        }
     }
-
-
 }

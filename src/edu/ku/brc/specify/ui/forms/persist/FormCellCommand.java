@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: FormRow.java,v $
+/* Filename:    $RCSfile: FormCellCommand.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2005/10/12 16:52:27 $
@@ -19,53 +19,38 @@
  */
 package edu.ku.brc.specify.ui.forms.persist;
 
-import java.util.*;
-
-public class FormRow
+public class FormCellCommand extends FormCellSeparator
 {
-    Vector<FormCell> cells = new Vector<FormCell>();
+    protected String commandType;
+    protected String action;
     
-    /**
-     * Default Constructor
-     *
-     */
-    public FormRow()
+    public FormCellCommand(String name, String label, String commandType, String action)
     {
+        super(name, label, 1);
         
-    }
-    
-    /**
-     * Adds a FormCell and return the same FormCell
-     * @param aCell the cell to be added
-     * @return the same FormCell
-     */
-    public FormCell addCell(FormCell cell)
-    {
-        cells.add(cell);
-        return cell;
-    }
-    
-    /**
-     * Clean up internal data
-     */
-    public void cleanUp()
-    {
-        cells.clear();
-    }
-    
-    /**
-     * @return Return the collection of cells
-     */
-    public List<FormCell> getCells()
-    {
-        return cells;
+        this.type        = FormCell.CellType.command;
+        this.commandType = commandType;
+        this.action      = action;
     }
 
-    /**
-     * @param cells all the cells
-     */
-    public void setCells(Vector<FormCell> cells)
+    public String getAction()
     {
-        this.cells = cells;
+        return action;
     }
+
+    public void setAction(String action)
+    {
+        this.action = action;
+    }
+
+    public String getCommandType()
+    {
+        return commandType;
+    }
+
+    public void setCommandType(String commandType)
+    {
+        this.commandType = commandType;
+    }
+
 }

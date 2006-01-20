@@ -82,7 +82,7 @@ import edu.ku.brc.specify.ui.RolloverCommand;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
 import edu.ku.brc.specify.ui.forms.persist.FormCell;
-import edu.ku.brc.specify.ui.forms.persist.FormCellWithLabel;
+import edu.ku.brc.specify.ui.forms.persist.FormCellLabel;
 import edu.ku.brc.specify.ui.forms.persist.FormColumn;
 import edu.ku.brc.specify.ui.forms.persist.FormFormView;
 import edu.ku.brc.specify.ui.forms.persist.FormRow;
@@ -546,7 +546,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         {
             for (FormCell cell : row.getCells())
             {
-                if (cell instanceof FormCellWithLabel)
+                if (cell instanceof FormCellLabel)
                 {
                     termsIndexed++;
                     Document doc = new Document();
@@ -554,7 +554,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     doc.add(Field.Keyword("table", "10000"));
                     
                     String formName = form.getName();
-                    String label    = ((FormCellWithLabel)cell).getLabel();
+                    String label    = ((FormCellLabel)cell).getLabel();
                     
                     StringBuffer strBuf = new StringBuffer();
                     strBuf.append(formName);

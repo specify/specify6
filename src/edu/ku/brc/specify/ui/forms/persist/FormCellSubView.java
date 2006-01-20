@@ -53,8 +53,6 @@ public class FormCellSubView extends FormCell
         this.id          = id;
         this.classDesc   = classDesc;
         this.viewSetName = viewSetName;
-        this.colspan = colspan;
-        this.viewSetName = viewSetName;
     }
     
     public String getClassDesc()

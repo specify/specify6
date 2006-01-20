@@ -285,8 +285,7 @@ public class EMailHelper
      */
     public static boolean hasEMailSettings()
     {
-        Preferences userPrefNode = Preferences.userRoot();
-        Preferences prefNode     = userPrefNode.node("settings/email");
+        Preferences prefNode = UICacheManager.getAppPrefs().node("settings/email");
         if (prefNode == null)
         {
             throw new RuntimeException("Could find pref for email!");

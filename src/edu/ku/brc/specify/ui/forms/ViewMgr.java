@@ -65,6 +65,10 @@ public class ViewMgr
      */
     public static void clearAll()
     {
+        for (Enumeration e=instance.viewsHash.elements();e.hasMoreElements();)
+        {
+            ((ViewSet)e.nextElement()).cleanUp();           
+        }
         instance.viewsHash.clear();
     }
     

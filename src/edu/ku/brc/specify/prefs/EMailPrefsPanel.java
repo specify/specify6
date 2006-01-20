@@ -23,30 +23,23 @@ import static edu.ku.brc.specify.helpers.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.awt.event.*;
 import java.awt.event.ActionListener;
-import java.util.Hashtable;
 import java.util.Properties;
 import java.util.prefs.Preferences;
 
-import javax.mail.Folder;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.URLName;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JProgressBar;
-import javax.swing.JTextField;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -58,9 +51,17 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.specify.helpers.EMailHelper;
 import edu.ku.brc.specify.helpers.Encryption;
 import edu.ku.brc.specify.helpers.UIHelper;
+import edu.ku.brc.specify.ui.CommandAction;
+import edu.ku.brc.specify.ui.CommandDispatcher;
+import edu.ku.brc.specify.ui.CommandListener;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.validation.*;
+import edu.ku.brc.specify.ui.forms.FormViewable;
+import edu.ku.brc.specify.ui.forms.ViewFactory;
+import edu.ku.brc.specify.ui.forms.ViewMgr;
+import edu.ku.brc.specify.ui.forms.persist.FormView;
+import edu.ku.brc.specify.ui.validation.FormValidator;
+import edu.ku.brc.specify.ui.validation.ValPasswordField;
 
 /**
  * Preference Panel for setting EMail Preferences.
@@ -71,30 +72,16 @@ import edu.ku.brc.specify.ui.validation.*;
  *
  */
 @SuppressWarnings("serial")
-public class EMailPrefsPanel extends JPanel implements PrefsSavable
+public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandListener, PrefsPanelIFace
 {
     private static Log log  = LogFactory.getLog(EMailPrefsPanel.class);
     
-    protected FormValidator formValidator = new FormValidator();
+    //protected FormValidator formValidator = new FormValidator();
 
-    Preferences prefNode = null;
+    protected Preferences  prefNode = null;
     
-    protected JComboBox   acctTypeSelect;
-    
-    protected JTextField acctName;
-    protected JTextField serverName;
-    protected JTextField username;
-    protected JTextField password;
-    protected JTextField email;
-    
-    protected JTextField localMailBox;
-    protected JButton    browseBtn;
-    protected JButton    testSettingsBtn;
-    
-    protected JTextField smtp;             // needed for outgoing
-    protected int        timeToCheck = 10; // minutes
-    
-    protected Hashtable<String, JLabel> labelHash = new Hashtable<String, JLabel>();
+    protected FormView     formView = null;
+    protected FormViewable form     = null;
     
     // Checker
     protected ImageIcon  checkIcon     = new ImageIcon(IconManager.getImagePath("check.gif"));  // Move to icons.xml
@@ -109,6 +96,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable
     protected JPanel       checkPanel;
     
     protected String testMessage = "Specify Test Message";
+
     
     
     protected EMailCheckerRunnable emailCheckerRunnable;
@@ -121,8 +109,8 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable
     {
         super(new BorderLayout());
         
-        Preferences userPrefNode = Preferences.userRoot();
-        prefNode = userPrefNode.node("settings/email");
+        Preferences appsNode = UICacheManager.getAppPrefs();
+        prefNode = appsNode.node("settings/email");
         if (prefNode == null)
         {
             throw new RuntimeException("Could find pref for email!");
@@ -133,211 +121,34 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable
     }
     
     /**
-     * Helper method for creating a field and label 
-     * @param builder the jgoodies builder
-     * @param labelKey the label key that uses to look up the actual string in a resource bundle
-     * @param comp the component to be added
-     * @param cc the CellConstraints
-     * @param col the column
-     * @param row the row
-     * @return the updated column value (incremented by 4)
-     */
-    protected int addField(final PanelBuilder     builder, 
-                           final String           labelKey, 
-                           final JComponent       comp, 
-                           final CellConstraints  cc,
-                           int                    col,
-                           int                    row)
-    {
-        JLabel label = new JLabel(getResourceString(labelKey)+":");
-        labelHash.put(labelKey, label);
-        builder.add(label , cc.xy(col,row));
-        col += 2;
-        builder.add( comp, cc.xy(col,row));
-        col += 2;
-        
-        formValidator.addUIComp(labelKey, comp);
-        formValidator.addUILabel(labelKey, label);
-        
-        return col;        
-    }
-    
-    /**
-     * CRate the UI for the panel
+     * Create the UI for the panel
      */
     protected void createUI()
     {
         
-        String rowDef = createDuplicateJGoodiesDef("p","4dlu", 14);
-        PanelBuilder    builder    = new PanelBuilder(new FormLayout("r:p, 2dlu, l:p, 5dlu, r:p, 2dlu, l:p", rowDef));
-        CellConstraints cc         = new CellConstraints();
+        int id = 1;
+        String name = "Preferences";
         
-        int row = 1;
-        int col = 1;
-        
-        builder.addSeparator(getResourceString("emailacctsettings"), cc.xy(col,row));
-        row += 2;
-        
-        String notEmptyRule = "obj.isNotEmpty()";
-        
-        col = 1;
-        acctTypeSelect = formValidator.createComboBox("accounttype", new String[] {getResourceString("pop3"), getResourceString("imap")});
-        addField(builder, "accounttype", acctTypeSelect, cc, col,row);
-        row += 2;
-        
-        addField(builder, "accountname", acctName = formValidator.createTextField("accountname", 20, true, UIValidator.ValidationType.OK, notEmptyRule), cc, col,row);
-        row += 2;
-        
-        col = 1;
-        col = addField(builder, "servername", serverName = formValidator.createTextField("servername", 20, true, UIValidator.ValidationType.OK, notEmptyRule), cc, col,row);
-        col = addField(builder, "smtp", smtp = new JTextField(20), cc, col,row);
-        row += 2;
-        
-        col = 1;
-        col = addField(builder, "localmailbox", localMailBox = new JTextField(20), cc, col,row);
-        builder.add(browseBtn = new JButton(getResourceString("browsedisk")), cc.xy(col,row));
-        row += 2;
-        
-        col = 1;
-        builder.addSeparator(getResourceString("userinfo"), cc.xy(col,row));
-        row += 2;
-        
-        col = 1;
-        col = addField(builder, "username",   username   = new JTextField(20), cc, col,row);
-        col = addField(builder, "password",   password   = new JPasswordField(20), cc, col,row);
-        //col = addField(builder, "password",   password   = new JTextField(20), cc, col,row);
-        row += 2;
-        
-        col = 1;
-        addField(builder, "email",      email  = new JTextField(20), cc, col,row);
-        row += 2;
-        
-        col = 3;
-        builder.add(testSettingsBtn = new JButton(getResourceString("testconnection")), cc.xy(col,row));
-        row += 2;
-        
-        builder.getPanel().setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-        add(builder.getPanel(), BorderLayout.CENTER);
-        
-        browseBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) 
-            {
-                browseForMailBox();
-            }
-        });    
+        formView = ViewMgr.getView(name, id);
 
-        testSettingsBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) 
-            {
-                startEMailSettingsTest();
-            }
-        });    
-        
-        /*acctTypeSelect.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) 
-            {
-                updateUIState();
-            }
-        });*/
-
-        formValidator.addEnableRule("localmailbox", "accounttype.getSelectedIndex() == 0");
-
-        readDataFromPrefs();
-        updateUIState();
-        
-        formValidator.processEnableRules();
-        
-        formValidator.resetFields();
-
-    }
-    
-    /**
-     * Set the data from the pref into the UI components
-     * @param pref the pref
-     * @param tf the text field
-     * @param prefName the name of the pref item
-     * @param defValue a default value
-     * @param focus adds a focus listener for updating UI
-     */
-    protected void setData(final Preferences pref, 
-                           final JTextField tf, 
-                           final String prefName, 
-                           final String defValue,
-                           final FocusAdapter focus)
-    {
-        tf.setText(pref.get(prefName, defValue));
-        if (focus != null)
+        if (formView != null)
         {
-            tf.addFocusListener(focus);
-        }
-    }
-    
-    /**
-     * Checks the that state of various UI components and enables/disables items appropriately
-     */
-    protected void updateUIState()
-    {
-        boolean localEnabled = acctTypeSelect.getSelectedItem().toString().equals(getResourceString("pop3"));
-        localMailBox.setEnabled(localEnabled);
-        labelHash.get("localmailbox").setEnabled(localEnabled);
-        browseBtn.setEnabled(localEnabled);
-        
-        String usernameStr   = username.getText();
-        String passwordStr   = password.getText();
-        String smtpStr       = smtp.getText();
-        String emailStr      = email.getText();
-        String serverNameStr = serverName.getText();
-        String acctTypeStr   = acctTypeSelect.getSelectedItem().toString();
-        String localMailBoxStr = localMailBox.getText();
-        
-        testSettingsBtn.setEnabled(EMailHelper.hasEMailSettings(usernameStr, passwordStr, emailStr, smtpStr, serverNameStr, acctTypeStr, localMailBoxStr));
-
-    }
-    
-    /**
-     * Read the data from the pref into all the UI components 
-     */
-    protected void readDataFromPrefs()
-    {
-        FocusAdapter focus = new FocusAdapter() {
-           public void  focusGained(FocusEvent e){}
-           public void focusLost(FocusEvent e) { updateUIState();}
-        };
-        
-        setData(prefNode, username,   "username", "", focus);
-        setData(prefNode, email,      "email", "", focus);
-        setData(prefNode, acctName,   "acctname", "", focus);
-        setData(prefNode, serverName, "servername", "", focus);
-        setData(prefNode, localMailBox, "localmailbox", "", focus);
-        setData(prefNode, smtp,         "smtp", "", focus);
-        
-        acctTypeSelect.setSelectedItem(prefNode.get("accountype", EMailHelper.POP3));
-        
-        password.setText(Encryption.decrypt(prefNode.get("password", "")));
-        password.addFocusListener(focus);
-     }
-
-    
-    /**
-     * Displays file dialog for user to locate their mailbox
-     */
-    protected void browseForMailBox()
-    {
-        JFileChooser chooser = new JFileChooser();
-        // Note: source for ExampleFileFilter can be found in FileChooserDemo,
-        // under the demo/jfc directory in the JDK.
-        /*ExampleFileFilter filter = new ExampleFileFilter();
-        filter.addExtension("jpg");
-        filter.addExtension("gif");
-        filter.setDescription("JPG & GIF Images");
-        chooser.setFileFilter(filter);
-        */
-        int returnVal = chooser.showOpenDialog(UICacheManager.get(UICacheManager.TOPFRAME));
-        if (returnVal == JFileChooser.APPROVE_OPTION) 
+            form = ViewFactory.createView(formView, prefNode);
+            add(form.getUIComponent(), BorderLayout.CENTER);
+            
+        } else
         {
-            localMailBox.setText(chooser.getSelectedFile().getName());
+            log.info("Couldn't load form with name ["+name+"] Id ["+id+"]");
         }
+
+        form.getValidator().processEnableRules();
+        form.getValidator().validateFields();
+        
+        CommandDispatcher.register("EmailPref", this);
+        
     }
+    
+
     
     /**
      * Test to make the mailbox is present and we can read it and 
@@ -345,15 +156,20 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable
      */
     protected void testSettings()
     {
-        String usernameStr   = username.getText();
-        String passwordStr   = password.getText();
-        String smtpStr       = smtp.getText();
-        String emailStr      = email.getText();
-        String serverNameStr = serverName.getText();
-        String acctTypeStr   = acctTypeSelect.getSelectedItem().toString();
-        String localMailBoxStr = localMailBox.getText();
+        String usernameStr     = (String)form.getDataFromUIComp("username");
+        String passwordStr     = (String)form.getDataFromUIComp("password");
+        String smtpStr         = (String)form.getDataFromUIComp("smtp");
+        String emailStr        = (String)form.getDataFromUIComp("email");
+        String serverNameStr   = (String)form.getDataFromUIComp("servername");
+        String acctTypeStr     = (String)form.getDataFromUIComp("accounttype");
+        String localMailBoxStr = (String)form.getDataFromUIComp("localmailbox");
         EMailHelper.AccountType acctType = EMailHelper.getAccountType(acctTypeStr);
 
+        Component comp = form.getValidator().getComp("password");
+        if (comp != null && comp instanceof ValPasswordField && ((ValPasswordField)comp).isEncrypted())
+        {
+            passwordStr = Encryption.decrypt(passwordStr);
+        }
         
         boolean checkSendMail = true;
         if (checkSendMail)
@@ -525,37 +341,23 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable
     }
     
     //--------------------------------------------------------------------
-    // PrefsSavable Interface
+    // CommandListener Interface
     //--------------------------------------------------------------------
-    
-    /**
-     * Helper method (not part of interface) to set the values back into the pref
-     * @param pref the pref object
-     * @param tf the text field (source)
-     * @param prefName the name of the pref field to be set
-     */
-    protected void putData(final Preferences pref, final JTextField tf, final String prefName)
+    public void doCommand(CommandAction cmdAction)
     {
-        String value = tf.getText();
-        pref.put(prefName, value == null ? "" : value);
+        startEMailSettingsTest(); 
     }
     
+    //--------------------------------------------------------------------
+    // PrefsSavable Interface
+    //--------------------------------------------------------------------
+   
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.prefs.PrefsSavable#savePrefs()
      */
     public void savePrefs()
     {
-        putData(prefNode, username,   "username");
-        putData(prefNode, email,      "email");
-        putData(prefNode, acctName,   "acctname");
-        putData(prefNode, serverName, "servername");
-        putData(prefNode, localMailBox, "localmailbox");
-        putData(prefNode, smtp,         "smtp");
-        
-        prefNode.put("accountype", acctTypeSelect.getSelectedItem().toString());
-        
-        prefNode.put("password", Encryption.encrypt(password.getText()));
-        
+        form.getDataFromUI();
     }
     
     /**
@@ -689,11 +491,11 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable
     }
 
     //---------------------------------------------------
-    // PrefPanelIFace
+    // PrefsPanelIFace
     //---------------------------------------------------
-    public void setOKButton(JButton okBtn)
+    public FormValidator getValidator()
     {
-        formValidator.registerOKButton(okBtn);
+        return form.getValidator();
     }
 
 }

@@ -22,8 +22,14 @@ package edu.ku.brc.specify.ui.forms.persist;
 import java.util.Vector;
 import edu.ku.brc.specify.ui.forms.*;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
+
 public class FormView implements Comparable<FormView>
 {
+    private final static Logger log = Logger.getLogger(FormView.class);
+    
     public enum ViewType {form, table, field};
     
     protected ViewType             type;
@@ -32,12 +38,15 @@ public class FormView implements Comparable<FormView>
     protected String               desc;
     protected String               className;
     protected String               dataGettableName;
+    protected String               dataSettableName;
     protected Vector<FormAltView>  altViews       = new Vector<FormAltView>();
     protected boolean              resourceLabels = false;
+    protected boolean              validated      = false;
     
     protected String               viewSetName    = null;
     
     protected DataObjectGettable   dataGettable   = null;
+    protected DataObjectSettable   dataSettable   = null;
     
     /**
      * Default Constructor
@@ -58,21 +67,40 @@ public class FormView implements Comparable<FormView>
                     final String   name, 
                     final String   className, 
                     final String   dataGettableName, 
-                    final String   desc)
+                    final String   dataSettableName, 
+                    final String   desc, 
+                    final boolean  validated)
     {
         this.type = type;
         this.id   = id;
         this.name = name;
         this.className = className;
         this.dataGettableName = dataGettableName;
+        this.dataSettableName = dataSettableName;
         this.desc = desc;
+        this.validated = validated;
         
         try
         {
-            dataGettable = (DataObjectGettable)DataObjectGettableFactory.get(className, dataGettableName);
+            // Can't imagine why you would not ALWAYS want to have a Gettable
+            if (dataGettableName != null && dataGettableName.length() > 0)
+            {
+                dataGettable = (DataObjectGettable)DataObjectGettableFactory.get(className, dataGettableName);
+            } else
+            {
+                log.info("dataGettableName or is null for "+id);
+            }
+           
+            // OK to NOT have a Settable
+            if (dataSettableName != null && dataSettableName.length() > 0)
+            {
+                dataSettable = (DataObjectSettable)DataObjectSettableFactory.get(className, dataSettableName);
+            }
             
         } catch (Exception ex)
         {
+            ex.printStackTrace(); // XXX REMOVE ME
+            log.error(ex);
         }
     }
     
@@ -87,6 +115,15 @@ public class FormView implements Comparable<FormView>
         return altView;
     }
 
+    /**
+     * Clean up internal data 
+     */
+    public void cleanUp()
+    {
+        altViews.clear();
+        dataGettable = null;
+        dataSettable = null;
+    }
     
     public int compareTo(FormView obj)
     {
@@ -193,6 +230,21 @@ public class FormView implements Comparable<FormView>
     public DataObjectGettable getDataGettable()
     {
         return dataGettable;
+    }
+
+    public DataObjectSettable getDataSettable()
+    {
+        return dataSettable;
+    }
+
+    public boolean isValidated()
+    {
+        return validated;
+    }
+
+    public void setValidated(boolean validated)
+    {
+        this.validated = validated;
     }
 
      

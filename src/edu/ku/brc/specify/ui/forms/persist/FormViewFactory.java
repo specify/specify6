@@ -19,12 +19,15 @@
  */
 package edu.ku.brc.specify.ui.forms.persist;
 
+import static edu.ku.brc.specify.helpers.UIHelper.createDuplicateJGoodiesDef;
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.commons.betwixt.XMLIntrospector;
 import org.apache.commons.betwixt.io.BeanWriter;
@@ -45,7 +48,7 @@ public class FormViewFactory
 {
     // Statics
     private final static Logger     log = Logger.getLogger(FormViewFactory.class);
-    private static  FormViewFactory instance = new FormViewFactory();;
+    private static  FormViewFactory instance = new FormViewFactory();
     
     private static final String NAME  = "name";
     private static final String ID    = "id";
@@ -53,7 +56,8 @@ public class FormViewFactory
     private static final String LABEL = "label";
     private static final String DESC  = "desc";
     private static final String CLASSNAME  = "class";
-    private static final String GETTABLE  = "gettable";
+    private static final String GETTABLE   = "gettable";
+    private static final String SETTABLE   = "settable";
 
     // Data Members
     protected boolean doingResourceLabels = false;
@@ -69,24 +73,24 @@ public class FormViewFactory
     
      /**
      * Creates the view object hierarchy
-     * @param element
+     * @param element the element to build the FormView from
      * @return a form view
      */
     public static FormView createView(final Element element) throws Exception
     {
-        String bStr = element.attributeValue("resourceLabels");
-        if (bStr != null)
-        {
-            instance.doingResourceLabels = Boolean.parseBoolean(bStr);
-        }
+        // set a global value while creating this form as to whether the labels are keys to a resource bundle
+        // or whether they are the actual label
+        instance.doingResourceLabels = getAttr(element, "useresourcelabels", "false").equals("true");
         
-        FormView view      = null;
-        int      id        = Integer.parseInt(element.attributeValue(ID));
-        String   name      = element.attributeValue(NAME);
-        String   className = element.attributeValue(CLASSNAME);
+        FormView view        = null;
+        int      id          = Integer.parseInt(element.attributeValue(ID));
+        String   name        = element.attributeValue(NAME);
+        String   className   = element.attributeValue(CLASSNAME);
         String   gettableClassName = element.attributeValue(GETTABLE);
-        String   desc      = "";
-        
+        String   settableClassName = element.attributeValue(SETTABLE);
+        String   desc        = "";
+        boolean  isValidated = getAttr(element, "validated", "false").equals("true");
+       
         Element descElement = (Element)element.selectSingleNode(DESC);
         if (descElement != null)
         {
@@ -106,15 +110,19 @@ public class FormViewFactory
         switch (type)
         {
             case form :
-                view = createFormView(FormView.ViewType.form, element, id, name, className, gettableClassName, desc, instance.doingResourceLabels);
+                view = createFormView(FormView.ViewType.form, element, id, name, 
+                                      className, gettableClassName, settableClassName, 
+                                      desc, instance.doingResourceLabels, isValidated);
                 break;
         
             case table :
-                view = createTableView(element, id, name, className, gettableClassName, desc, instance.doingResourceLabels);
+                view = createTableView(element, id, name, className, gettableClassName, settableClassName, 
+                                       desc, instance.doingResourceLabels, isValidated);
                 break;
                 
             case field :
-                view = createFormView(FormView.ViewType.field, element, id, name, gettableClassName, className, desc, instance.doingResourceLabels);
+                view = createFormView(FormView.ViewType.field, element, id, name, gettableClassName, settableClassName, 
+                                      className, desc, instance.doingResourceLabels, isValidated);
                break;
         }
         
@@ -164,16 +172,6 @@ public class FormViewFactory
     }
     
     /**
-     * Returns the Resource bundle string for a label (not implemented fully)
-     * @param aLabel the label to be localized
-     * @return a string that has been localized using a ResourceBundle
-     */
-    protected static String getResourceLabel(final String aLabel)
-    {
-        return aLabel;
-    }
-    
-    /**
      * Processes all the AltViews
      * @param aFormView the form they should be associated with
      * @param aElement the element to process
@@ -192,7 +190,7 @@ public class FormViewFactory
                     
                     String label = element.attributeValue(LABEL);
                     int id = Integer.parseInt(element.attributeValue(ID));
-                    aFormView.addAltView(new FormAltView(id, instance.doingResourceLabels && label != null ? getResourceLabel(label) : label));
+                    aFormView.addAltView(new FormAltView(id, getResourceLabel(label)));
                 }
             }
         } else
@@ -202,51 +200,134 @@ public class FormViewFactory
     }
     
     /**
-     * Gets the list of defs (cellDef or rowDef)
-     * @param aElement the DOM lement to process
-     * @param aDefName the name of the element to go get all the elements (strings) from
-     * @return a vector of Strings with all the cell or row definitions
+     * Processes all the AltViews
+     * @param aFormView the form they should be associated with
+     * @param aElement the element to process
      */
-    protected static Vector<String> getDefs(final Element aElement, final String aDefName)
+    protected static Map<String, String> getEnableRules(final Element element)
     {
-        Vector<String> defs = new Vector<String>();
-        Element cellDef = (Element)aElement.selectSingleNode(aDefName);
+        Map<String, String> rulesList = new Hashtable<String, String>();
         
-        if (cellDef != null)
+        if (element != null)
         {
-            for ( Iterator i = cellDef.elementIterator( "cellDef" ); i.hasNext(); )
+            Element enableRules = (Element)element.selectSingleNode("enableRules");        
+            if (enableRules != null)
             {
-                defs.add(((Element) i.next()).getText());         
+                // iterate through child elements of root with element name "foo"
+                for ( Iterator i = enableRules.elementIterator( "rule" ); i.hasNext(); )
+                {
+                    Element ruleElement = (Element) i.next();
+                    String name = getAttr(ruleElement, "name", "");
+                    if (name != null && name.length() > 0)
+                    {
+                        rulesList.put(name, ruleElement.getTextTrim());
+                    } else
+                    {
+                        throw new RuntimeException("The name is missing for rule["+ruleElement.getTextTrim()+"] is missing.");
+                    }
+                }
             }
         } else
         {
-            log.error("Element ["+aElement.getName()+"] must have a "+aDefName);
+            log.error("View Set ["+instance.viewSetName+"] element ["+element+"] is null.");
         }
-        return defs;
+        return rulesList;
     }
     
     /**
-     *  Creates a particular type of form
+     * Gets the string (or creates one) from a columnDef
+     * @param element the DOM lement to process
+     * @param attrName the name of the element to go get all the elements (strings) from
+     * @return the String representing the column definition for JGoodies
+     */
+    protected static String createDef(final Element element, final String attrName)
+    {
+        Element cellDef = (Element)element.selectSingleNode(attrName);
+        if (cellDef != null)
+        {
+            int dup = getAttr(cellDef, "dup", -1);
+            if (dup > 0)
+            {
+                String cellStr = getAttr(cellDef, "cell", null);
+                String sepStr  = getAttr(cellDef, "sep", null);
+                if (cellStr != null && sepStr != null)
+                {
+                    return createDuplicateJGoodiesDef(cellStr, sepStr, dup);
+                } else
+                {
+                    throw new RuntimeException("Element ["+element.getName()+"] Cell or Sep is null for 'dup' on column def.");
+                }
+            } else
+            {
+                return cellDef.getText();
+            }
+        } else
+        {
+            log.error("Element ["+element.getName()+"] must have a columnDef");
+        }
+        return "";
+    }
+
+
+    /**
+     * Returns a resource string if it is suppose to
+     * @param label the label or the label key
+     * @return Returns a resource string if it is suppose to
+     */
+    protected static String getResourceLabel(final String label)
+    {
+        if (label != null && label.length() > 0)
+        {
+            return instance.doingResourceLabels  ? getResourceString(label) : label;
+        } else
+        {
+            return "";
+        }
+        
+    }
+    
+    /**
+     * Returns a Label from the cell and gets the resource string for it if necessary
+     * @param cellElement the cell
+     * @param labelId the Id of the resource or the string 
+     * @return the localized string (if necessary)
+     */
+    protected static String getLabel(final Element cellElement)
+    {
+        return getResourceLabel(getAttr(cellElement, LABEL, ""));
+    }
+    
+    /**
      * @param type the type of form to be built
      * @param element the DOM element for building the form
      * @param id the id of the form
+     * @param name the name of the form
+     * @param className the class name of the data object
+     * @param gettableClassName the class name of the getter
+     * @param settableClassName the class name of the setter
+     * @param desc the description
      * @param resLabels indicates whether the labels are really resource identifiers so the labels should come froma resource bundle
+     * @param isValidated whether to turn on validation
      * @return a form view of type "form"
      */
     protected static FormFormView createFormView(final FormView.ViewType type, 
                                                  final Element element, 
-                                                 final int id, 
-                                                 final String name, 
-                                                 final String className, 
-                                                 final String gettableClassName, 
-                                                 final String desc, 
-                                                 final boolean resLabels)
+                                                 final int     id, 
+                                                 final String  name, 
+                                                 final String  className, 
+                                                 final String  gettableClassName, 
+                                                 final String  settableClassName, 
+                                                 final String  desc, 
+                                                 final boolean resLabels,
+                                                 final boolean isValidated)
     {
-        FormFormView formView = new FormFormView(type, id, name, className, gettableClassName, desc);
+        FormFormView formView = new FormFormView(type, id, name, className, gettableClassName, settableClassName, desc, isValidated);
         
         formView.setResourceLabels(resLabels);
-        formView.setColumnDef(getDefs(element, "columnDef"));
-        formView.setRowDef(getDefs(element, "rowDef"));
+        formView.setColumnDef(createDef(element, "columnDef"));
+        formView.setRowDef(createDef(element, "rowDef"));
+        formView.setEnableRules(getEnableRules(element));
+        formView.setValidated(getAttr(element, "validate", "false").equals("true"));
         
         Element rowsElement = (Element)element.selectSingleNode("rows");        
         if (rowsElement != null)
@@ -259,26 +340,47 @@ public class FormViewFactory
                 for ( Iterator cellIter = rowElement.elementIterator( "cell" ); cellIter.hasNext(); )
                 {
                     Element cellElement = (Element) cellIter.next();
-                    String cellName  = getAttr(cellElement, NAME, "");
-                    String label     = getAttr(cellElement, LABEL, "");
-                    String uitype    = getAttr(cellElement, "uitype", "");
-                    String format    = getAttr(cellElement, "format", "");
-                    int    cols      = getAttr(cellElement, "cols", 10); // XXX PREF for default width of text field
-                    int    rows      = getAttr(cellElement, "rows", 5);  // XXX PREF for default heightof text area
+                    String  cellName  = getAttr(cellElement, NAME, "");
+                    
                     int    colspan   = getAttr(cellElement, "colspan", 1);
                     int    rowspan   = getAttr(cellElement, "rowspan", 1);
-                    
                     FormCell.CellType cellType = FormCell.CellType.valueOf(cellElement.attributeValue(TYPE));
                     switch (cellType)
                     {
                         case label:
-                        case separator:
-                        case field:
-                            formRow.createCell(cellType, 
-                                               cellName, 
-                                               instance.doingResourceLabels && label != null ? getResourceLabel(label) : label, 
-                                               uitype, format, cols, rows, colspan, rowspan);
+                            formRow.addCell(new FormCellLabel(cellName, getLabel(cellElement), getAttr(cellElement, "labelfor", ""), colspan));
                             break;
+                        
+                        case separator:
+                            formRow.addCell(new FormCellSeparator(cellName, getLabel(cellElement), colspan));
+                            break;
+                        
+                        case field:
+                        {
+                            String uitype         = getAttr(cellElement, "uitype", "");
+                            String format         = getAttr(cellElement, "format", "");
+                            int    cols           = getAttr(cellElement, "cols", 10); // XXX PREF for default width of text field
+                            int    rows           = getAttr(cellElement, "rows", 5);  // XXX PREF for default heightof text area
+                            String validationType = getAttr(cellElement, "valtype", "OK");
+                            String validationRule = getAttr(cellElement, "validation", "");
+                            String initialize     = getAttr(cellElement, "initialize", "");
+                            boolean isRequired    = getAttr(cellElement, "isrequired", "false").equals("true");
+                            boolean isEncrypted    = getAttr(cellElement, "isencrypted", "false").equals("true");
+                            
+                            FormCellField field = new FormCellField(FormCell.CellType.field, 
+                                                                    cellName, uitype, format, isRequired,  
+                                                                    cols, rows, colspan, rowspan, validationType, validationRule, isEncrypted);
+                            field.setInitialize(initialize);
+                            formRow.addCell(field);
+                        } break;
+                            
+                        case command:
+                        {
+                            formRow.addCell(new FormCellCommand(cellName, 
+                                                                getLabel(cellElement), 
+                                                                getAttr(cellElement, "commandtype", ""),
+                                                                getAttr(cellElement, "action", "")));
+                        } break;
                             
                         case subview:
                         {
@@ -287,12 +389,12 @@ public class FormViewFactory
                             {
                                 vsName = instance.viewSetName;
                             }
-                            formRow.createSubView(cellElement.attributeValue(NAME),
+                            formRow.addCell(new FormCellSubView(cellElement.attributeValue(NAME),
                                                   vsName,
                                                   Integer.parseInt(cellElement.attributeValue(ID)),
                                                   cellElement.attributeValue("class"),
                                                   colspan,
-                                                  rowspan);
+                                                  rowspan));
                         }
                         break;
                     }        
@@ -305,10 +407,11 @@ public class FormViewFactory
     }
     
     /**
-     * @param element
-     * @param attrName
-     * @param defValue
-     * @return
+     * Get a string attribute value from an element value
+     * @param element the element to get the attribute from
+     * @param attrName the name of the attribute to get
+     * @param defValue the default value if the attribute isn't there
+     * @return the attr value or the default value
      */
     public static String getAttr(final Element element, final String attrName, final String defValue)
     {
@@ -317,10 +420,11 @@ public class FormViewFactory
     }
     
     /**
-     * @param element
-     * @param attrName
-     * @param defValue
-     * @return
+     * Get a int attribute value from an element value
+     * @param element the element to get the attribute from
+     * @param attrName the name of the attribute to get
+     * @param defValue the default value if the attribute isn't there
+     * @return the attr value or the default value
      */
     public static int getAttr(final Element element, final String attrName, final int defValue)
     {
@@ -330,11 +434,16 @@ public class FormViewFactory
     
     /**
      * Creates a Table Form View
-     * @param element the DOM element to process
-     * @param id the id of the table
-     * @param name the name of the table
-     * @param desc the desc of the table
+     * @param type the type of form to be built
+     * @param element the DOM element for building the form
+     * @param id the id of the form
+     * @param name the name of the form
+     * @param className the class name of the data object
+     * @param gettableClassName the class name of the getter
+     * @param settableClassName the class name of the setter
+     * @param desc the description
      * @param resLabels indicates whether the labels are really resource identifiers so the labels should come froma resource bundle
+     * @param isValidated whether to turn on validation
      * @return a form view of type "table"
      */
     protected static FormTableView createTableView(final Element element,
@@ -342,10 +451,12 @@ public class FormViewFactory
                                                    final String  name,
                                                    final String  className,
                                                    final String  gettableClassName,
+                                                   final String  settableClassName,
                                                    final String  desc,
-                                                   final boolean resLabels)
+                                                   final boolean resLabels,
+                                                   final boolean isValidated)
     {
-        FormTableView tableView = new FormTableView(id, name, className, gettableClassName, desc);
+        FormTableView tableView = new FormTableView(id, name, className, gettableClassName, settableClassName, desc, isValidated);
         
         tableView.setResourceLabels(resLabels);
         
@@ -392,14 +503,19 @@ public class FormViewFactory
         }
     }
     
-    public static void save(final ViewSet aViewSet, final String aFileName)
+    /**
+     * Save out a viewSet to a file
+     * @param aViewSet the viewSet to save
+     * @param aFileName the filename (full path) as to where to save it
+     */
+    public static void save(final ViewSet viewSet, final String filename)
     {
         try
         {
             Vector<ViewSet> viewsets = new Vector<ViewSet>();
-            viewsets.add(aViewSet);
+            viewsets.add(viewSet);
             
-            File       file = new File(aFileName);
+            File       file = new File(filename);
             FileWriter fw   = new FileWriter(file);
             
             fw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
@@ -411,7 +527,7 @@ public class FormViewFactory
             beanWriter.setWriteEmptyElements(false);
             
             beanWriter.enablePrettyPrint();
-            beanWriter.write(aViewSet);
+            beanWriter.write(viewSet);
             
             fw.close();
             

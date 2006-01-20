@@ -28,6 +28,8 @@ import java.util.Vector;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.jxpath.*;
+import org.apache.commons.lang.*;
 
 /**
  * This knows how to get a field's value from a POJO.<br><br>
@@ -132,34 +134,25 @@ public class DataGetterForObj implements DataObjectGettable
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.DataObjectGettable#getFieldValue(java.lang.Object, java.lang.String, java.lang.String)
      */
-    public Object getFieldValue(Object dataObj, String fieldName, String format) 
+    public Object getFieldValue(final Object dataObj, final String fieldName, final String format) 
     {
-        
+        /*
         if (format != null && format.length() > 0 && fieldName.indexOf(",") > -1)
         {
-            StringTokenizer st = new StringTokenizer(fieldName, ",");
-            
-            Vector<Object> vals = new Vector<Object>();
-            while (dataObj != null && st.hasMoreTokens()) {
-                Object retVal = getFieldValue(dataObj, st.nextToken());
-                if (retVal != null)
-                {
-                    vals.addElement(retVal);
-                }
-            }
-            
-            String valStr = format;
-            for (int i=0;i<vals.size();i++)
+            String[] fields = StringUtils.split(fieldName, ",");
+            String   valStr = format;
+            for (int i=0;i<fields.length;i++)
             {
                 String token = Integer.toString(i);
-                Object data = vals.elementAt(i);
-                valStr = valStr.replace(token, data != null ? data.toString() : "");
+                valStr = valStr.replace(token, fields != null ? fields.toString() : "");
             }
             return valStr;
         }
         
         Object value = getFieldValue(dataObj, fieldName);
-        return value == null ? "" : value; 
+        return value == null ? "" : value;
+        */
+        return null;
     }    
     
 

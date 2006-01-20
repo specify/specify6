@@ -55,6 +55,21 @@ public class ViewSet
     }
     
     /**
+     * Cleans up intneral data 
+     */
+    public void cleanUp()
+    {
+        comparable.cleanUp();
+        comparable = null;
+        
+        for (FormView fv : views)
+        {
+            fv.cleanUp();
+        }
+        views.clear();
+    }
+    
+    /**
      * Added a form to the view set
      * @param aFormView the form to be added
      */

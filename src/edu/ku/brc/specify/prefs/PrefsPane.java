@@ -59,7 +59,7 @@ public class PrefsPane extends JPanel
     public static final String PANEL_CLASS = "panelClass";
     public static final String ICON_PATH   = "iconPath";
            
-    protected Preferences   userPrefNode = Preferences.userRoot();
+    protected Preferences   appsNode = UICacheManager.getAppPrefs();
     protected PrefMainPanel mainPanel;
     
     /**
@@ -172,9 +172,13 @@ public class PrefsPane extends JPanel
                     {
                         Class panelClassObj = Class.forName(panelClass);
                         Component comp = (Component)panelClassObj.newInstance(); 
-                        mainPanel.addPanel(title, comp);
-                        
-                        rowPanel.add(btn);
+                        if (!mainPanel.addPanel(title, comp))
+                        {
+                            log.error("The Class ["+panelClass+"] couldn't loaded into prefs because it doesn't implement the proper interfaces");
+                        } else
+                        {
+                            rowPanel.add(btn);
+                        }
                         
                     } catch (Exception ex)
                     {

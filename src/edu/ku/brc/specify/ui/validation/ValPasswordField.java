@@ -23,9 +23,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 
-import javax.swing.JTextField;
+import javax.swing.JPasswordField;
 import javax.swing.text.Document;
 
+import edu.ku.brc.specify.helpers.Encryption;
 import edu.ku.brc.specify.prefs.ColorWrapper;
 import edu.ku.brc.specify.prefs.PrefsCache;
 
@@ -36,41 +37,45 @@ import edu.ku.brc.specify.prefs.PrefsCache;
  *
  */
 @SuppressWarnings("serial")
-public class ValTextField extends JTextField implements UIValidatable
+public class ValPasswordField extends JPasswordField implements UIValidatable
 {
-    protected boolean isInError  = false;
-    protected boolean isRequired = false;
-    protected Color   bgColor    = null;
-    
+    protected boolean isInError   = false;
+    protected boolean isRequired  = false;
+    protected boolean isEncrypted = false;
+    protected Color   bgColor     = null;
+
     protected static ColorWrapper valtextcolor       = null;
     protected static ColorWrapper requiredfieldcolor = null;
-
-    
-
-    public ValTextField()
+   
+    public ValPasswordField()
     {
         super();
         init();
     }
 
-    public ValTextField(String arg0)
+    public ValPasswordField(String arg0)
     {
         super(arg0);       
         init();
     }
 
-    public ValTextField(int arg0)
+    public ValPasswordField(int arg0)
     {
         super(arg0);     
         init();
     }
 
-    public ValTextField(String arg0, int arg1)
+    public ValPasswordField(String arg0, int arg1)
     {
         super(arg0, arg1);   
-        init();
     }
 
+    public ValPasswordField(Document arg0, String arg1, int arg2)
+    {
+        super(arg0, arg1, arg2);
+        init();
+    }
+    
     public void init()
     {
         bgColor = getBackground();
@@ -80,6 +85,8 @@ public class ValTextField extends JTextField implements UIValidatable
             requiredfieldcolor = PrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
     }
+    
+
     
     public boolean isNotEmpty()
     {
@@ -109,6 +116,33 @@ public class ValTextField extends JTextField implements UIValidatable
         super.setEnabled(enabled);
         
         setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+    }
+    
+    /* (non-Javadoc)
+     * @see javax.swing.text.JTextComponent#setText(java.lang.String)
+     */
+    public void setText(String text)
+    {
+            super.setText(isEncrypted ? Encryption.decrypt(text) : text);
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.text.JTextComponent#getText()
+     */
+    public String getText()
+    {
+        String text = new String(super.getPassword());
+        return isEncrypted ? Encryption.encrypt(text) : text;
+    }
+    
+    public boolean isEncrypted()
+    {
+        return isEncrypted;
+    }
+
+    public void setEncrypted(boolean isEncrypted)
+    {
+        this.isEncrypted = isEncrypted;
     }
 
     //--------------------------------------------------

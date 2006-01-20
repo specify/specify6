@@ -33,7 +33,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.prefs.BackingStoreException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -47,6 +50,9 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.validation.DataChangeListener;
+
 
 /**
  * 
@@ -56,11 +62,12 @@ import com.jgoodies.forms.layout.FormLayout;
  *
  */
 @SuppressWarnings("serial")
-public class PrefMainPanel extends JPanel
+public class PrefMainPanel extends JPanel implements DataChangeListener
 {
     protected JDialog       dialog;
     protected JTextField    searchText;
     protected JButton       searchBtn;
+    protected JButton       okButton;
     
     protected PrefsToolbar  prefsToolbar  = null;  
     protected PrefsToolbar  prefsPane     = null;  
@@ -68,9 +75,13 @@ public class PrefMainPanel extends JPanel
     protected Color         textBGColor = null;
     protected Color         badSearchColor = new Color(255,235,235);
     
-    protected Component currentComp = null;
+    protected Component     currentComp = null;
+    
     protected Hashtable<String, Component> compsHash      = new Hashtable<String, Component>();
     protected String                       firstPanelName = null;
+    
+    protected List<PrefsPanelIFace>        prefPanels = new ArrayList<PrefsPanelIFace>();
+    
 
     /**
      * Constructor
@@ -111,20 +122,26 @@ public class PrefMainPanel extends JPanel
         builder.getPanel().setBackground(lighter);
         add(builder.getPanel(), BorderLayout.NORTH);
         
-        JButton okButton = new javax.swing.JButton ("OK");
+        okButton = new javax.swing.JButton ("OK");
+        okButton.setEnabled(false);
+        
         JButton cancelButton = new javax.swing.JButton ("Cancel");
         Component buttonBar = com.jgoodies.forms.factories.ButtonBarFactory.buildRightAlignedBar(new JButton[] {okButton, cancelButton});
+        
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) 
             {
                 saveChangedPrefs();
                 dialog.setVisible(false);
             }
-        });    
+        }); 
+        
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) 
             {
+                removeDataChangeListeners();
                 dialog.setVisible(false);
+                //cleanUp();
             }
         });    
         add(buttonBar, BorderLayout.SOUTH);
@@ -133,13 +150,36 @@ public class PrefMainPanel extends JPanel
     }
     
     /**
+     * Remove self as a validation listener
+     */
+    protected void removeDataChangeListeners()
+    {
+        for (PrefsPanelIFace pp : prefPanels)
+        {
+            pp.getValidator().removeDataChangeListener(this);
+        }
+    }
+    
+    /**
      * Save any prefs that have changed
      */
     protected void saveChangedPrefs()
     {
-        if (currentComp instanceof PrefsSavable)
+        //if (currentComp instanceof PrefsSavable)
+        //{
+        //    ((PrefsSavable)currentComp).savePrefs();
+        //}
+        for (PrefsPanelIFace pp : prefPanels)
         {
-            ((PrefsSavable)currentComp).savePrefs();
+            ((PrefsSavable)pp).savePrefs();
+        }
+        
+        try
+        {
+            UICacheManager.getAppPrefs().flush();
+        } catch (BackingStoreException ex)
+        {
+            // XXX FIXME
         }
     }
     
@@ -186,12 +226,13 @@ public class PrefMainPanel extends JPanel
             return;
         }
         
-        boolean makeVis = false;
+        boolean   makeVis = false;
         Dimension oldSize = null;
         if (currentComp != null)
         {
             oldSize = currentComp.getSize();
             remove(currentComp);
+            
         } else
         {
             makeVis = true;
@@ -207,7 +248,6 @@ public class PrefMainPanel extends JPanel
             currentComp = comp;
             if (oldSize != null)
             {
-                System.out.println(currentComp.getPreferredSize()+" = "+oldSize);
                 startAnimation(dialog, comp, currentComp.getPreferredSize().height - oldSize.height, false);
             }
         }
@@ -218,17 +258,30 @@ public class PrefMainPanel extends JPanel
      * @param name the name of the panel
      * @param comp the comp (Panel) to be added
      */
-    public void addPanel(final String name, final Component comp)
+    public boolean addPanel(final String name, final Component comp)
     {
         // XXX need to check for duplicates
 
         compsHash.put(name, comp);
+        
+        if (!(comp instanceof PrefsSavable) || !(comp instanceof PrefsPanelIFace))
+        {
+            return false;
+        }
+        
+        if (comp instanceof PrefsPanelIFace)
+        {
+            PrefsPanelIFace pp = (PrefsPanelIFace)comp;
+            pp.getValidator().addDataChangeListener(this);
+            prefPanels.add(pp);
+        }
         
         if (firstPanelName == null)
         {
             firstPanelName = name;
         }
 
+        return true;
     }
     
     /**
@@ -254,7 +307,7 @@ public class PrefMainPanel extends JPanel
         
         searchBtn   = new JButton(getResourceString("Search"));
         
-        searchText  = new JTextField("megalotis", 10);
+        searchText  = new JTextField("", 10);
         textBGColor = searchText.getBackground();
         
         searchText.setMinimumSize(new Dimension(50, searchText.getPreferredSize().height));
@@ -309,6 +362,32 @@ public class PrefMainPanel extends JPanel
         new Timer(10, new SlideInOutAnimation(window, comp, delta, fullStep)).start();
     }
 
+    
+    //-----------------------------------------------------
+    // DataChangeListener
+    //-----------------------------------------------------
+
+    public void dataChanged(String name, Component comp)
+    {
+        boolean okToEnable = true;
+        for (PrefsPanelIFace pp : prefPanels)
+        {
+            // Only validate the current form
+            if ((Component)pp == currentComp)
+            {
+                pp.getValidator().validateFields();
+            }
+            // but check all the forms
+            if (!pp.getValidator().isOKToEnable())
+            {
+                System.err.println("false!"+pp);
+                okToEnable = false;
+                break;
+            }
+        }
+        okButton.setEnabled(okToEnable);
+    }
+    
     //------------------------------------------------------------
     // Inner Class
     //------------------------------------------------------------

@@ -19,24 +19,31 @@
  */
 package edu.ku.brc.specify.ui;
 
-import java.util.List;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import javax.swing.Icon;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JComponent;
-import javax.swing.JMenuItem;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JSeparator;
 import javax.swing.JWindow;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
-import javax.swing.plaf.metal.MetalComboBoxIcon;
 
 /**
  * Toolbar button derived from DropDownBtn, this provides a way to set menu items
@@ -45,7 +52,7 @@ import javax.swing.plaf.metal.MetalComboBoxIcon;
  *
  */
 @SuppressWarnings("serial")
-public class ColorChooser extends JButton implements AncestorListener 
+public class ColorChooser extends JButton implements AncestorListener, GetSetValueIFace
 {
     protected JComponent drop_down_comp;
     protected JComponent visible_comp;
@@ -53,6 +60,8 @@ public class ColorChooser extends JButton implements AncestorListener
     protected JWindow    popup;
     protected ColorSelectionPanel colorPanel;
     protected ColorChooser itself;
+    
+    
     
      /**
      * Creates a toolbar item with label and icon and their positions.
@@ -69,7 +78,7 @@ public class ColorChooser extends JButton implements AncestorListener
         itself       = this;
         
         setBackground(color);
-        setPreferredSize(new Dimension(24,24));
+        setPreferredSize(new Dimension(16,16));
         
         init();
     }
@@ -78,23 +87,23 @@ public class ColorChooser extends JButton implements AncestorListener
     {
         g.setColor(getBackground());
         Dimension size = getSize();
-        Insets insets = getInsets();
-        System.out.println(size+"  "+insets);
-        //g.fillRect(insets.left,insets.top,size.width-(insets.left+insets.right),size.height-(insets.top+insets.bottom));
         g.fillRect(0,0,size.width,size.height);
         g.setColor(Color.BLACK);
         g.drawRect(0,0,size.width-1,size.height-1);
     }
-    
+
+
     protected void init()
     {
         drop_down_comp = new ColorSelectionPanel();      
         drop_down_comp.addPropertyChangeListener("selectedColor",new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
+            public void propertyChange(PropertyChangeEvent evt) 
+            {
                 itself.hidePopup();
                 Color color = (Color)evt.getNewValue();
-                System.out.println(color);
-                visible_comp.setBackground((Color)evt.getNewValue());
+                setValue(color);
+                //System.out.println(color);
+                //visible_comp.setBackground((Color)evt.getNewValue());
             }
         });
 
@@ -109,10 +118,23 @@ public class ColorChooser extends JButton implements AncestorListener
     protected void createColorPanelWindow()
     {
         // build popup window
-        popup = new JWindow(getFrame(null));
+        System.out.println(getDialog(this));
+        
+        Dialog parentDlg = getDialog(this);
+        if (parentDlg != null)
+        {
+            popup = new JWindow(parentDlg);
+        } else
+        {
+            popup = new JWindow(getFrame(this));
+        }
+        
         popup.getContentPane().add(drop_down_comp);
-        popup.addWindowFocusListener(new WindowAdapter() {
-            public void windowLostFocus(WindowEvent evt) {
+        
+        popup.addWindowFocusListener(new WindowAdapter() 
+        {
+            public void windowLostFocus(WindowEvent evt) 
+            {
                 popup.setVisible(false);
             }
         });
@@ -120,9 +142,7 @@ public class ColorChooser extends JButton implements AncestorListener
         
         // show the popup window
         Point pt = visible_comp.getLocationOnScreen();
-        System.out.println("pt = " + pt);
         pt.translate(visible_comp.getWidth()-popup.getWidth(),visible_comp.getHeight());
-        System.out.println("pt = " + pt);
         popup.setLocation(pt);
         popup.toFront();
         popup.setVisible(true);
@@ -130,35 +150,83 @@ public class ColorChooser extends JButton implements AncestorListener
     }
 
     
-    protected Frame getFrame(Component comp) {
-        if(comp == null) {
+    protected Frame getFrame(Component comp) 
+    {
+        if (comp == null) 
+        {
             comp = this;
         }
-        if(comp.getParent() instanceof Frame) {
+        if(comp.getParent() instanceof Frame) 
+        {
             return (Frame)comp.getParent();
         }
         return getFrame(comp.getParent());
     }
     
-    public void ancestorAdded(AncestorEvent event){ 
+    protected java.awt.Dialog getDialog(Component comp) 
+    {
+        if (comp.getParent() instanceof Dialog) 
+        {
+            return (Dialog)comp.getParent();
+        }
+        return getDialog(comp.getParent());
+    }
+    
+    public void ancestorAdded(AncestorEvent event)
+    { 
         hidePopup();
     }
     
-    public void ancestorRemoved(AncestorEvent event){ 
+    public void ancestorRemoved(AncestorEvent event)
+    { 
         hidePopup();
     }
     
     public void ancestorMoved(AncestorEvent event){ 
-        if (event.getSource() != popup) {
+        if (event.getSource() != popup)
+        {
             hidePopup();
         }
     }
     
-    public void hidePopup() {
-        if(popup != null && popup.isVisible()) {
+    public void hidePopup() 
+    {
+        if (popup != null && popup.isVisible()) 
+        {
             popup.setVisible(false);
         }
     }
+    
+    //-----------------------------------------------------
+    // GetSetValueIFace
+    //-----------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object)
+     */
+    public void setValue(Object value)
+    {
+        if (value instanceof Color)
+        {
+            Color newValue = (Color)value;
+            Color oldColor = color;
+            color = newValue;
+            visible_comp.setBackground(color);
+            firePropertyChange("setValue", oldColor, newValue); 
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.GetSetValueIFace#getValue()
+     */
+    public Object getValue()
+    {
+        return color;
+    }
+
+    //-----------------------------------------------------
+    // Inner Classes
+    //-----------------------------------------------------
 
     class ColorSelectionPanel extends JPanel 
     {
@@ -170,7 +238,10 @@ public class ColorChooser extends JButton implements AncestorListener
             
             ActionListener color_listener = new ActionListener() 
             {
-                public void actionPerformed(ActionEvent evt) {
+                public void actionPerformed(ActionEvent evt) 
+                {
+                    System.out.println("Here!");
+                    hidePopup();
                     selectColor(((JButton)evt.getSource()).getBackground());
                 }
             };
@@ -190,55 +261,57 @@ public class ColorChooser extends JButton implements AncestorListener
                     }
                 }
             };
-            
-            Color[] colors = new Color[12];
-            colors[0] = Color.white;
-            colors[1] = Color.black;
-            
-            colors[2] = Color.blue;
-            colors[3] = Color.cyan;
-            colors[4] = Color.gray;
-            colors[5] = Color.green;
-            colors[6] = Color.lightGray;
-            colors[7] = Color.magenta;
-            colors[8] = Color.orange;
-            colors[9] = Color.pink;
-            colors[10] = Color.red;
-            colors[11] = Color.yellow;
-            
+
             c.gridheight = 1;
             c.gridwidth = 1;
             c.fill = GridBagConstraints.NONE;
             c.weightx = 1.0;
             c.weighty = 1.0;
             
-            for(int i=0; i<3; i++) {
-                for(int j=0; j<4; j++) {
+            int numCols = 8;
+            int numRows = (rgbs.length / 3) / numCols;
+                       
+            Dimension dim = new Dimension(15,15);
+            int inx = 0;
+            for(int i=0; i<numRows; i++) {
+                for(int j=0; j<numCols; j++) {
                     c.gridx=j;
                     c.gridy=i;
                     
-                    JButton button = new JButton("");
-                    Dimension dim = new Dimension(15,15);
-                    button.setSize(dim);
-                    button.setPreferredSize(dim);
-                    button.setMinimumSize(dim);
-                    button.setBackground(colors[j+i*4]);
-                    button.setForeground(colors[j+i*4]);
-                    button.setOpaque(true);
-                    button.setBorderPainted(false);
-                    button.setBorder(BorderFactory.createEtchedBorder());
-                    gbl.setConstraints(button,c);
-                    add(button);
-                    button.addActionListener(color_listener);
+                    if (inx > rgbs.length)
+                    {
+                        JLabel lbl = new JLabel();
+                        gbl.setConstraints(lbl,c);
+                        lbl.setSize(dim);
+                        lbl.setPreferredSize(dim);
+                        lbl.setMinimumSize(dim);
+                        add(lbl);
+                        
+                    } else
+                    {
+                        JButton button = new JButton("");
+                        button.setSize(dim);
+                        button.setPreferredSize(dim);
+                        button.setMinimumSize(dim);
+                        Color color = new Color(rgbs[inx++], rgbs[inx++], rgbs[inx++]);
+                        button.setBackground(color);
+                        button.setForeground(color);
+                        button.setOpaque(true);
+                        button.setBorderPainted(false);
+                        button.setBorder(BorderFactory.createEtchedBorder());
+    
+                        gbl.setConstraints(button,c);
+                        add(button);
+                        button.addActionListener(color_listener);
+                    }
                 }
 
             }
             JButton button = new JButton("Other...");
-            //button.setBorderPainted(false);
             button.setBorder(BorderFactory.createEtchedBorder());
             c.fill = GridBagConstraints.BOTH;
             c.gridx=0;
-            c.gridy=4;
+            c.gridy=numRows;
             c.gridwidth = GridBagConstraints.REMAINDER;
             gbl.setConstraints(button,c);
             add(button);            
@@ -246,13 +319,72 @@ public class ColorChooser extends JButton implements AncestorListener
         }
         
         protected Color selectedColor = Color.black;
-        public void selectColor(Color newColor) {
+        public void selectColor(Color newColor) 
+        {
             Color oldColor = selectedColor;
             selectedColor = newColor;
             firePropertyChange("selectedColor",oldColor, newColor);
         }
 
     }
-
-
+    
+    // The 56 Standard Colors
+    protected static int[] rgbs = {
+                            0,0,0,
+                            255,255,255,
+                            255,0,0,
+                            0,255,0,
+                            0,0,255,
+                            255,255,0,
+                            255,0,255,
+                            0,255,255,
+                            128,0,0,
+                            0,128,0,
+                            0,0,128,
+                            128,128,0,
+                            128,0,128,
+                            0,128,128,
+                            192,192,192,
+                            128,128,128,
+                            153,153,255,
+                            153,51,102,
+                            255,255,204,
+                            204,255,255,
+                            102,0,102,
+                            255,128,128,
+                            0,102,204,
+                            204,204,255,
+                            0,0,128,
+                            255,0,255,
+                            255,255,0,
+                            0,255,255,
+                            128,0,128,
+                            128,0,0,
+                            0,128,128,
+                            0,0,255,
+                            0,204,255,
+                            204,255,255,
+                            204,255,204,
+                            255,255,153,
+                            153,204,255,
+                            255,153,204,
+                            204,153,255,
+                            255,204,153,
+                            51,102,255,
+                            51,204,204,
+                            153,204,0,
+                            255,204,0,
+                            255,153,0,
+                            255,102,0,
+                            102,102,153,
+                            150,150,150,
+                            0,51,102,
+                            51,153,102,
+                            0,51,0,
+                            51,51,0,
+                            153,51,0,
+                            153,51,102,
+                            51,51,153,
+                            51,51,51};
+  
  }

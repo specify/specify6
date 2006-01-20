@@ -21,10 +21,12 @@
 package edu.ku.brc.specify;
 
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -36,6 +38,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -49,7 +52,9 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.helpers.XMLHelper;
+import edu.ku.brc.specify.prefs.ColorWrapper;
 import edu.ku.brc.specify.prefs.PrefMainPanel;
+import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
@@ -67,6 +72,7 @@ public class PrefTester
     protected JPanel contentPane;
     protected JFrame mainFrame;
     
+    SimpleDateFormat screenDateFormat = null;
 
     
      /**
@@ -102,17 +108,30 @@ public class PrefTester
         JFrame.setDefaultLookAndFeelDecorated(true);
 
         // Create and set up the window.
-        mainFrame = new JFrame("Specify Form Editor");
+        mainFrame = new JFrame("Preference Tester");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         UICacheManager.register(UICacheManager.TOPFRAME, mainFrame);
         
         
         //initPrefs();
+        
+        FastDateFormat fastDateFormat = FastDateFormat.getDateInstance(FastDateFormat.SHORT);      
+        screenDateFormat = new SimpleDateFormat(fastDateFormat.getPattern());
+        PrefsCache.register(screenDateFormat, "ui", "formatting", "scrdateformat");
+        
+
+        ColorWrapper valtextcolor = new ColorWrapper(Color.RED);
+        PrefsCache.register(valtextcolor, "ui", "formatting", "valtextcolor");
+
+        ColorWrapper requiredFieldColor = new ColorWrapper(215,230, 253);
+        PrefsCache.register(requiredFieldColor, "ui", "formatting", "requiredfieldcolor");
+
         // load form definitions for Preferences (Might want to move this to a preference Class
         try
         {
             ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("pref_forms.xml"));
+            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("form.xml"));
             
         } catch (Exception ex)
         {
@@ -207,7 +226,6 @@ public class PrefTester
             List sections = root.selectNodes("/prefs/section");
             for ( Iterator iter = sections.iterator(); iter.hasNext(); ) 
             {
-                boolean isNew = false;
                 org.dom4j.Element section = (org.dom4j.Element)iter.next();
                 
                 String      title       = section.attributeValue("title");
@@ -216,7 +234,6 @@ public class PrefTester
                 {
                     sectionNode.put("title", title);
                     sectionNode.putBoolean("isApp", true);
-                    isNew = true;
                 }
                 
                 List prefs = section.selectNodes("pref");

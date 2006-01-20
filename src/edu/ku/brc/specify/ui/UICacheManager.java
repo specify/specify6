@@ -20,8 +20,6 @@
 package edu.ku.brc.specify.ui;
 
 import java.awt.Component;
-import java.text.Format;
-import java.text.SimpleDateFormat;
 import java.util.Hashtable;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -459,24 +457,4 @@ public class UICacheManager
         return Preferences.userNodeForPackage(getRootPrefClass());
     }
     
-    /**
-     * Formats a date per the preferences
-     * @param date the date to be formatted
-     * @return the string with the formatted date
-     */
-    public static String formatDate(final java.util.Date date)
-    {
-        Preferences userPrefNode = Preferences.userRoot();
-        Preferences prefNode     = userPrefNode.node("ui/formatting");
-        if (prefNode == null)
-        {
-            throw new RuntimeException("Could find pref for email!");
-        }
-        
-        String formatStr = prefNode.get("date", "MM/dd/yy");
-        Format formatter = new SimpleDateFormat(formatStr);
-        return formatter.format(date);
-    }
-    
-
 }

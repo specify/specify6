@@ -20,87 +20,103 @@
 package edu.ku.brc.specify.ui.forms.persist;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 
 public class FormFormView extends FormView
 {
-    protected Vector<String>  columnDef = new Vector<String>();
-    protected Vector<String>  rowDef    = new Vector<String>();
-    protected Vector<FormRow> rows      = new Vector<FormRow>(); 
+    protected String        columnDef = "";
+    protected String        rowDef    = "";
+    protected List<FormRow> rows      = new Vector<FormRow>(); 
+    
+    protected Map<String, String>  enableRules = null;
 
     /**
-     * 
-     *
-     */
-    public FormFormView()
-    {
-        super(ViewType.form, -1, "", "", "", "");
-        
-    }
-
-    /**
-     * Creates a Form View
      * @param type the type (could be form or field)
      * @param id the id
      * @param name the name
+     * @param className the class name of the data object
+     * @param gettableClassName the class name of the gettable
+     * @param settableClassName the class name of the settable
      * @param desc description
+     * @param isValidated whether to turn on validation
      */
     public FormFormView(final FormView.ViewType type, 
-                        final int    id, 
-                        final String name, 
-                        final String className, 
-                        final String gettableClassName, 
-                        final String desc)
+                        final int     id, 
+                        final String  name, 
+                        final String  className, 
+                        final String  gettableClassName, 
+                        final String  settableClassName, 
+                        final String  desc, 
+                        final boolean isValidated)
     {
-        super(type, id, name, className, gettableClassName, desc);
+        super(type, id, name, className, gettableClassName, settableClassName, desc, isValidated);
         
     }
     
-    public void addColDef(String aColDef)
+    /**
+     * Add a row to the form
+     * @param row the row to add
+     * @return the row that was added
+     */
+    public FormRow addRow(FormRow row)
     {
-        columnDef.add(aColDef);
+        rows.add(row);
+        return row;
     }
 
-    public void addRowDef(String aRowDef)
-    {
-        rowDef.add(aRowDef);
-    }
-    
-    public FormRow addRow(FormRow aRow)
-    {
-        rows.add(aRow);
-        return aRow;
-    }
-
-    public List<String> getColumnDef()
-    {
-        return columnDef;
-    }
-
-    public List<String> getRowDef()
-    {
-        return rowDef;
-    }
-
+    /**
+     * @return all the rows
+     */
     public List<FormRow> getRows()
     {
         return rows;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.forms.persist.FormView#cleanUp()
+     */
+    public void cleanUp()
+    {
+        super.cleanUp();
+        for (FormRow row : rows)
+        {
+            row.cleanUp();
+        }
+        rows.clear();
+        enableRules.clear();
+    }
 
-    public void setColumnDef(Vector<String> columnDef)
+    public String getColumnDef()
+    {
+        return columnDef;
+    }
+
+    public void setColumnDef(String columnDef)
     {
         this.columnDef = columnDef;
     }
 
-    public void setRowDef(Vector<String> rowDef)
+    public String getRowDef()
+    {
+        return rowDef;
+    }
+
+    public void setRowDef(String rowDef)
     {
         this.rowDef = rowDef;
     }
 
-    public void setRows(Vector<FormRow> rows)
+    public Map<String, String> getEnableRules()
     {
-        this.rows = rows;
+        return enableRules;
     }
+
+    public void setEnableRules(Map<String, String> enableRules)
+    {
+        this.enableRules = enableRules;
+    }
+
     
 }

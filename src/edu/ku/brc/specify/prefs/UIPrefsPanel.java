@@ -27,17 +27,7 @@ public class UIPrefsPanel extends JPanel
     {
         super(new BorderLayout());
         
-        // XXX Temporary load of form because now forma er being loaded right now
-        try
-        {
-            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("fish_forms.xml"));
-            
-        } catch (Exception ex)
-        {
-            //log.fatal(ex);
-            ex.printStackTrace();
-        }
-
+        /*
         // temp for testing 
         List<ViewSet> viewSets = ViewMgr.getViewSets();
         ViewSet viewSet = viewSets.get(0);
@@ -51,7 +41,8 @@ public class UIPrefsPanel extends JPanel
             comp.invalidate(); 
             add(comp, BorderLayout.CENTER);
         }
-        ViewMgr.clearAll();
+        */
+        
     }
 
 }

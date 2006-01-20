@@ -35,6 +35,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -58,6 +61,7 @@ import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
@@ -75,6 +79,8 @@ import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.plugins.PluginMgr;
 import edu.ku.brc.specify.prefs.PrefMainPanel;
+import edu.ku.brc.specify.prefs.PrefsCache;
+import edu.ku.brc.specify.prefs.ColorWrapper;
 import edu.ku.brc.specify.tasks.DataEntryTask;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.InteractionsTask;
@@ -139,7 +145,9 @@ public class Specify extends JPanel
     private boolean useLogonDialog = false;
     */  
     private GraphicsConfiguration grc;
-
+    
+    // Global Prefs Registered into the Cache
+    SimpleDateFormat screenDateFormat = null;
     
 
   
@@ -312,13 +320,23 @@ public class Specify extends JPanel
      */
     protected void initPrefs()
     {
+        FastDateFormat fastDateFormat = FastDateFormat.getDateInstance(FastDateFormat.SHORT);      
+        screenDateFormat = new SimpleDateFormat(fastDateFormat.getPattern());
+        PrefsCache.register(screenDateFormat, "ui", "formatting", "scrdateformat");
+        
+        ColorWrapper valtextcolor = new ColorWrapper(Color.RED);
+        PrefsCache.register(valtextcolor, "ui", "formatting", "valtextcolor");
+        
+        boolean skip = false;
+        if (skip)
+        {
+            return;
+        }
+        
         Preferences appPrefs = UICacheManager.getAppPrefs();
         
         try
         {
-            
-            appPrefs = UICacheManager.getAppPrefs();
-            
             Element root = XMLHelper.readDOMFromConfigDir("prefsInit.xml");
             if (root == null)
             {

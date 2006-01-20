@@ -4,77 +4,97 @@
     <view id="1" type="form" 
                  name="EMail" 
                  class="java.util.prefs.Preferences" 
-                 getter="edu.ku.brc.specify.ui.forms.PrefsGetterForObj"
-                 resourceLabels="false" 
+                 gettable="edu.ku.brc.specify.prefs.PrefsGettableImpl"
+                 settable="edu.ku.brc.specify.prefs.PrefsSettableImpl"
+                 useresourcelabels="true"
+                 validate="true"
                  >
     	<desc><![CDATA[EMail Preference Form.]]></desc>
-		<columnDef>
-			<cellDef>max(50dlu;p)</cellDef>
-			<cellDef>3dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>3dlu</cellDef>
-			<cellDef>max(50dlu;p)</cellDef>
-			<cellDef>3dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>max(88dlu;p)</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>3dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>f:p:g</cellDef>
-		</columnDef>
-
-		<rowDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>10dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-		</rowDef>
+    	
+    	<enableRules>
+    		<rule name="localmailbox"><![CDATA[accounttype.getSelectedIndex() == 0]]></rule>
+    	</enableRules>
+    	
+		<columnDef>r:p, 2dlu, l:p, 5dlu, r:p, 2dlu, l:p</columnDef>
+		<rowDef dup="14" cell="p" sep="4dlu"/>
 
 		<rows>
 			<row>
-				<cell type="separator" label="EMail Settings"/>
+				<cell type="separator" label="emailacctsettings"/>
 			</row>
 			<row>
-				<cell type="field" name="username" label="Username" isrequired="true"/>
-				<cell type="field" name="password" label="Password" isrequired="true"/>
-				<cell type="field" name="email"    label="EMail" isrequired="true"/>
+				<cell type="label" name="accounttypeLabel" labelfor="accounttype" label="accounttype"/>
+				<cell type="field" uitype="combobox" name="accounttype" initialize="POP3, IMAP"/>
+			</row>				
+			<row>
+				<cell type="label" name="accountnameLabel" labelfor="accountname" label="accountname"/>
+				<cell type="field" uitype="text" cols="20" name="accountname" isrequired="true"/>
+			</row>				
+			<row>
+				<cell type="label" name="servernameLabel" labelfor="servername" label="servername"/>
+				<cell type="field" uitype="text" cols="20" name="servername" isrequired="true"/>
+				
+				<cell type="label" name="smtpLabel" labelfor="smtp" label="smtp"/>
+				<cell type="field" uitype="text" cols="20" name="smtp" isrequired="true"/>
+			</row>				
+			<row>
+				<cell type="label" ame="localmailboxLabel" labelfor="localmailbox" label="localmailbox"/>
+				<cell type="field" name="localmailbox" cols="20" colspan="5" uitype="browse" isrequired="true"/>
 			</row>
 			<row>
-				<cell type="separator" label="MailBox"/>
+				<cell type="separator" label="userinfo"/>
 			</row>
 			<row>
-				<cell type="field" uitype="combobox" custom="edu.ku.brc.specify.prefs.EMailAccountType" 
-				     name="accountype" label="Account Type"/>
+				<cell type="label" name="usernameLabel" labelfor="username" label="username"/>
+				<cell type="field" name="username" cols="20" isrequired="true"/>
+				
+				<cell type="label" name="passwordLabel" labelfor="password" label="password"/>
+				<cell type="field" name="password" cols="20" uitype="password" ispassword="true" isrequired="true" isencrypted="true"/>
 			</row>
-
+			<row>				
+				<cell type="label" name="emailLabel" labelfor="email" label="email" />
+				<cell type="field" name="email" cols="20" isrequired="true"/>
+			</row>
+			<row>				
+				<cell type="label" labelfor="" label="" />
+				<cell type="command" name="testconnection" label="testconnection" commandtype="EmailPref" action="test"/>
+				
+			</row>
 		</rows>
 	</view>
+
+    <view id="2" type="form" 
+                 name="Formatting" 
+                 class="java.util.prefs.Preferences" 
+                 gettable="edu.ku.brc.specify.prefs.PrefsGettableImpl"
+                 settable="edu.ku.brc.specify.prefs.PrefsSettableImpl"
+                 useresourcelabels="true"
+                 validate="true"
+                 >
+    	<desc><![CDATA[Formatting Preference Form.]]></desc>
+
+    	
+		<columnDef>r:p, 2dlu, l:p, 5dlu, r:p, 2dlu, l:p</columnDef>
+		<rowDef dup="14" cell="p" sep="4dlu"/>
+
+		<rows>
+			<row>
+				<cell type="separator" label="formatting"/>
+			</row>
+			<row>
+				<cell type="label" name="scrdateformatLabel" labelfor="scrdateformat" label="scrdateformat"/>
+				<cell type="field" uitype="text" cols="10" name="scrdateformat" isrequired="true"/>
+			</row>				
+			<row>
+				<cell type="label" labelfor="valtextcolor" label="valtextcolor"/>
+				<cell type="field" uitype="colorchooser" name="valtextcolor"/>
+			</row>				
+			<row>
+				<cell type="label" labelfor="requiredfieldcolor" label="requiredfieldcolor"/>
+				<cell type="field" uitype="colorchooser" name="requiredfieldcolor"/>
+			</row>				
+		</rows>
+	</view>
+	
 	
 </viewset>	

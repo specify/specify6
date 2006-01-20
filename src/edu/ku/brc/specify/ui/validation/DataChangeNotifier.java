@@ -19,6 +19,7 @@
  */
 package edu.ku.brc.specify.ui.validation;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -27,8 +28,7 @@ import java.awt.event.KeyListener;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import javax.swing.JComboBox;
-import javax.swing.JToggleButton;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListDataEvent;
@@ -38,6 +38,11 @@ import javax.swing.text.JTextComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import edu.ku.brc.specify.ui.GetSetValueIFace;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 /**
  * Implements several listener interfaces and listens for the various types of notifications
  * to figure out if the component has changed.
@@ -45,7 +50,7 @@ import org.apache.commons.logging.LogFactory;
  * @author rods
  *
  */
-public class DataChangeNotifier implements FocusListener, KeyListener, ChangeListener, ListDataListener
+public class DataChangeNotifier implements FocusListener, KeyListener, ChangeListener, ListDataListener, PropertyChangeListener
 {
     private static Log log = LogFactory.getLog(DataChangeNotifier.class);
     
@@ -61,13 +66,25 @@ public class DataChangeNotifier implements FocusListener, KeyListener, ChangeLis
      * Constructor
      * @param name the name
      * @param comp the component
-     * @param uiv
+     * @param uiv the UI validator
      */
     public DataChangeNotifier(String name, Component comp, UIValidator uiv)
     {
         this.name = name;
         this.comp = comp;
         this.uiv  = uiv;
+    }
+    
+    /**
+     * Constructor with no validator
+     * @param name the name
+     * @param comp the component
+     */
+    public DataChangeNotifier(String name, Component comp)
+    {
+        this.name = name;
+        this.comp = comp;
+        this.uiv  = null;
     }
     
     /**
@@ -121,6 +138,11 @@ public class DataChangeNotifier implements FocusListener, KeyListener, ChangeLis
         } else if (comp instanceof JComboBox)
         {
             return ((JComboBox)comp).getSelectedItem().toString();
+            
+        } else if (comp instanceof GetSetValueIFace)
+        {
+            return ((GetSetValueIFace)comp).getValue().toString();
+            
         } else
         {
             throw new RuntimeException("Can't get a value for component: "+comp);
@@ -203,6 +225,16 @@ public class DataChangeNotifier implements FocusListener, KeyListener, ChangeLis
         return uiv;
     }
     
+    /**
+     * Clean up 
+     */
+    public void cleanUp()
+    {
+        uiv = null;
+        dcListeners.clear();
+        comp = null;
+    }
+    
     //---------------------------
     // FocusListener
     //---------------------------
@@ -228,7 +260,10 @@ public class DataChangeNotifier implements FocusListener, KeyListener, ChangeLis
         
         if (uiv != null)
         {
-            uiv.validate();
+            if (uiv.getType() == UIValidator.ValidationType.Focus || uiv.isRequired())
+            {
+                uiv.validate();
+            }
         }
     }
     
@@ -257,7 +292,7 @@ public class DataChangeNotifier implements FocusListener, KeyListener, ChangeLis
     public void keyReleased(KeyEvent e)
     {
         notifyDataChangeListeners();
-        if (uiv != null)
+        if (uiv != null && uiv.getType() == UIValidator.ValidationType.Changed)
         {
             uiv.validate();
         }
@@ -281,7 +316,7 @@ public class DataChangeNotifier implements FocusListener, KeyListener, ChangeLis
     {
         log.info("contentsChanged "+e);
         notifyDataChangeListeners();
-        if (uiv != null)
+        if (uiv != null && uiv.getType() == UIValidator.ValidationType.Changed)
         {
             uiv.validate();
         }
@@ -293,7 +328,7 @@ public class DataChangeNotifier implements FocusListener, KeyListener, ChangeLis
     public void intervalAdded(ListDataEvent e)
     {
         notifyDataChangeListeners();
-        if (uiv != null)
+        if (uiv != null && uiv.getType() == UIValidator.ValidationType.Changed)
         {
             uiv.validate();
         }
@@ -305,10 +340,21 @@ public class DataChangeNotifier implements FocusListener, KeyListener, ChangeLis
     public void intervalRemoved(ListDataEvent e)
     {
         notifyDataChangeListeners();
-        if (uiv != null)
+        if (uiv != null && uiv.getType() == UIValidator.ValidationType.Changed)
         {
             uiv.validate();
         }
     }
-
+    
+    //--------------------------------------------------------
+    // PropertyChangeListener
+    //--------------------------------------------------------
+    public void propertyChange(PropertyChangeEvent evt) 
+    {
+        notifyDataChangeListeners();
+        if (uiv != null && uiv.getType() == UIValidator.ValidationType.Changed)
+        {
+            uiv.validate();
+        }
+    }
 }

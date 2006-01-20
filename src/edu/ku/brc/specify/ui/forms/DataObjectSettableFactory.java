@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: DataObjectGettableFactory.java,v $
+/* Filename:    $RCSfile: DataObjectSettableFactory.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2005/10/12 16:52:27 $
@@ -22,59 +22,59 @@ package edu.ku.brc.specify.ui.forms;
 import java.util.Hashtable;
 
 /**
- * This class is responsible for creating and caching objects that implment the DataGettabable interface.<br>
+ * This class is responsible for creating and caching objects that implment the DataSettabable interface.<br>
  * The cache is to support reuse by any number forms that will need it.
  * 
  * @author rods
  *
  */
-public class DataObjectGettableFactory
+public class DataObjectSettableFactory
 {
     // Static Data Members
-    protected static DataObjectGettableFactory instance  = new DataObjectGettableFactory();
+    protected static DataObjectSettableFactory instance  = new DataObjectSettableFactory();
     
     // Data Members
-    protected Hashtable<String, Hashtable<String, DataObjectGettable>> hashTable = new Hashtable<String, Hashtable<String, DataObjectGettable>>();
+    protected Hashtable<String, Hashtable<String, DataObjectSettable>> hashTable = new Hashtable<String, Hashtable<String, DataObjectSettable>>();
     
     /**
      * Constructor of singleton
      */
-    protected DataObjectGettableFactory()
+    protected DataObjectSettableFactory()
     {
         
     }
     
     /**
-     * Creates a DataGettable from a class name and caches it
+     * Creates a DataSettable from a class name and caches it
      * 
-     * @param className the name of the DataGettable implementation class
-     * @return the data gettable object
+     * @param className the name of the DataSettable implementation class
+     * @return the data settable object
      */
-    public static DataObjectGettable get(final String gettableClassName, final String className)
+    public static DataObjectSettable get(final String settableClassName, final String className)
     {
         if (className == null || className.length() == 0) return null;
         
-        Hashtable<String, DataObjectGettable> gettableHash = instance.hashTable.get(gettableClassName);
-        if (gettableHash == null)
+        Hashtable<String, DataObjectSettable> settableHash = instance.hashTable.get(settableClassName);
+        if (settableHash == null)
         {
-            gettableHash = new Hashtable<String, DataObjectGettable>();
-            instance.hashTable.put(gettableClassName, gettableHash);
+            settableHash = new Hashtable<String, DataObjectSettable>();
+            instance.hashTable.put(settableClassName, settableHash);
         }
         
-        DataObjectGettable dataGettable = gettableHash.get(className);
-        if (dataGettable == null)
+        DataObjectSettable dataSettable = settableHash.get(className);
+        if (dataSettable == null)
         {
             try
             {
-                dataGettable = (DataObjectGettable)Class.forName(className).newInstance();
-                gettableHash.put(className, dataGettable);
+                dataSettable = (DataObjectSettable)Class.forName(className).newInstance();
+                settableHash.put(className, dataSettable);
                 
             } catch (Exception ex)
             {
                 ex.printStackTrace(); // XXX FIXME
             }
         }
-        return dataGettable;
+        return dataSettable;
     }   
 
 }

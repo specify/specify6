@@ -174,9 +174,7 @@ public class DataEntryTask extends BaseTask
        {
            
        }
-       
-       Preferences userPrefNode = Preferences.userRoot();
-       //userPrefNode.get
+
 
         */
     }

@@ -54,7 +54,7 @@ public class PrefsToolbar extends JPanel
     public static final String PANEL_CLASS = "panelClass";
     public static final String ICON_PATH   = "iconPath";
            
-    protected Preferences                userPrefNode = Preferences.userRoot();
+    protected Preferences                appsNode = UICacheManager.getAppPrefs();
     protected PrefMainPanel              mainPanel;
     protected int                        iconSize     = 24;  // XXX PREF (Possible???)
     
