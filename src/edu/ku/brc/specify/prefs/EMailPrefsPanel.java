@@ -141,6 +141,9 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
             log.info("Couldn't load form with name ["+name+"] Id ["+id+"]");
         }
 
+        form.setDataObj(prefNode);
+        form.setDataIntoUI();
+
         form.getValidator().processEnableRules();
         form.getValidator().validateFields();
         

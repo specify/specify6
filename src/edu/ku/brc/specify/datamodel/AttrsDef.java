@@ -15,7 +15,7 @@ public class AttrsDef  implements java.io.Serializable {
     // Fields    
 
      protected Integer attrsDefId;
-     protected Integer disciplineType;
+     protected Short disciplineType;
      protected Short tableType;
      protected Short subType;
      protected String fieldName;
@@ -56,14 +56,14 @@ public class AttrsDef  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="disciplineType"
-     *             length="10"
+     *             length="5"
      *         
      */
-    public Integer getDisciplineType() {
+    public Short getDisciplineType() {
         return this.disciplineType;
     }
     
-    public void setDisciplineType(Integer disciplineType) {
+    public void setDisciplineType(Short disciplineType) {
         this.disciplineType = disciplineType;
     }
 

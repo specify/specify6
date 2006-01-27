@@ -42,7 +42,7 @@ public class ExternalFileRepository implements ExternalFileRepositoryIFace
     
     private static Log log = LogFactory.getLog(ExternalFileRepository.class);
     
-    protected static ExternalFileRepository instance = null;
+    protected static final ExternalFileRepository instance = new ExternalFileRepository();
     
     
     protected File reposDir = null;
@@ -51,10 +51,9 @@ public class ExternalFileRepository implements ExternalFileRepositoryIFace
      * 
      * @param aPath path of the repository
      */
-    protected ExternalFileRepository(String aPath)
+    protected ExternalFileRepository()
     {
-        //reposDir = new File(aPath); 
-    }
+     }
     
     /**
      * 
@@ -147,7 +146,7 @@ public class ExternalFileRepository implements ExternalFileRepositoryIFace
             throw new NoSuchElementException(msg);
         }
 
-        instance = new ExternalFileRepository(path);
+        instance.reposDir = new File(path);
     }
     
     /**

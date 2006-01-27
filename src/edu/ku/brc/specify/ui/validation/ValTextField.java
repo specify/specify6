@@ -26,8 +26,8 @@ import java.awt.Graphics;
 import javax.swing.JTextField;
 import javax.swing.text.Document;
 
-import edu.ku.brc.specify.prefs.ColorWrapper;
 import edu.ku.brc.specify.prefs.PrefsCache;
+import edu.ku.brc.specify.ui.ColorWrapper;
 
 /**
  * A JTextControl that implements UIValidatable for participating in validation

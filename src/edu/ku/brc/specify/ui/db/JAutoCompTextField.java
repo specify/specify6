@@ -262,5 +262,13 @@ public class JAutoCompTextField extends JTextField
         }        
     }
 
-
+    /**
+     * Creates an AutoComplete JComboBox with the "ID" of the pick list it is to use.
+     * @param id the id of the pick list
+     * @return the AutoComplete JComboBox
+     */
+    public static JAutoCompTextField create(final int id)
+    {
+        return new JAutoCompTextField(new PickListDBAdapter(id));
+    }
 }

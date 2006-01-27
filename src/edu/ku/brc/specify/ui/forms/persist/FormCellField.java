@@ -30,6 +30,7 @@ public class FormCellField extends FormCell
     protected String   format;   
     protected boolean  isRequired     = false;
     protected boolean  isEncrypted    = false;
+    protected String   label          = null;
     
     // Needed for Text Components
     protected int      cols    = 10; // TextField and TextArea
@@ -196,6 +197,20 @@ public class FormCellField extends FormCell
     public void setEncrypted(boolean isEncrypted)
     {
         this.isEncrypted = isEncrypted;
+    }
+
+
+
+    public String getLabel()
+    {
+        return label;
+    }
+
+
+
+    public void setLabel(String label)
+    {
+        this.label = label;
     }
     
 }

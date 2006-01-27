@@ -51,7 +51,7 @@ public class PrefsGettableImpl implements DataObjectGettable
     {
         if (!(dataObj instanceof Preferences))
         {
-            throw new RuntimeException("dataObj is not a Preference in call getFieldValue."+dataObj);
+            throw new RuntimeException("dataObj is not a Preference in call getFieldValue fieldName["+fieldName+"] data["+dataObj+"]");
         }
 
         //System.out.println("getFieldValue["+dataObj+"]  ["+fieldName+"]  ["+ ((Preferences)dataObj).get(fieldName, "")+"]");

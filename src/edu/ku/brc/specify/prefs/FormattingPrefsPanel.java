@@ -63,7 +63,10 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
         {
             log.info("Couldn't load form with name ["+name+"] Id ["+id+"]");
         }
-
+        
+        form.setDataObj(prefNode);
+        form.setDataIntoUI();
+        
         form.getValidator().processEnableRules();
         form.getValidator().validateFields();
 

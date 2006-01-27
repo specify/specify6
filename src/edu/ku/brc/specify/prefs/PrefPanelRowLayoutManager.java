@@ -172,7 +172,7 @@ public class PrefPanelRowLayoutManager implements LayoutManager, LayoutManager2
         title.setBounds(x, y, size.width, size.height);
         
         y += size.height + titleSeparation;
-        System.out.println("Row Hgt: "+actualRowSize.height+" Y: "+y+"  Cell Hgt: "+actualCellSize.height+"  Space: "+(actualRowSize.height - y));
+        //System.out.println("Row Hgt: "+actualRowSize.height+" Y: "+y+"  Cell Hgt: "+actualCellSize.height+"  Space: "+(actualRowSize.height - y));
         
         int height = actualRowSize.height - y;
         y += (height - actualCellSize.height) / 2;

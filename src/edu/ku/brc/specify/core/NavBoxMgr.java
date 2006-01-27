@@ -40,8 +40,9 @@ import edu.ku.brc.specify.ui.Trash;
 public class NavBoxMgr extends JPanel
 {
     // Static Data Members
-    private static NavBoxMgr instance = new NavBoxMgr();
-    private static Trash     trash;
+    private static final NavBoxMgr instance = new NavBoxMgr();
+    
+    private static Trash trash;
     
     // Data Members
     private List<NavBoxIFace>   list   = Collections.synchronizedList(new ArrayList<NavBoxIFace>());

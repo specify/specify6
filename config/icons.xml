@@ -28,6 +28,13 @@
     
     <icon name="UserInterface" file="form.gif" sizes="all"/>
     
+    <icon name="FirstRec" file="first.gif" sizes="NonStd"/>
+    <icon name="PrevRec"  file="prev.gif"  sizes="NonStd"/>
+    <icon name="NextRec"  file="next.gif"  sizes="NonStd"/>
+    <icon name="LastRec"  file="last.gif"  sizes="NonStd"/>
+    
+    <icon name="EditIcon"  file="edit_icon.gif"  sizes="NonStd"/>
+    
     <icon name="Green Arrow Down" file="green_arrow_down.gif" sizes="16"/>
     <icon name="Green Arrow Up" file="green_arrow_up.gif" sizes="16"/>
 </icons>

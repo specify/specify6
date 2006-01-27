@@ -206,13 +206,21 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
      */
     public void setValue(Object value)
     {
-        if (value instanceof Color)
+        
+        Object data = value;
+        if (data instanceof String)
         {
-            Color newValue = (Color)value;
+            data = (new ColorWrapper((String)data)).getColor();
+        }
+        
+        if (data instanceof Color)
+        {
+            Color newValue = (Color)data;
             Color oldColor = color;
             color = newValue;
             visible_comp.setBackground(color);
             firePropertyChange("setValue", oldColor, newValue); 
+            
         }
     }
     

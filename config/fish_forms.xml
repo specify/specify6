@@ -2,100 +2,73 @@
 <viewset name="Fish Views" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="form.xsd">
 
     <view id="1" type="form" 
-                 name="Accession" 
-                 class="edu.ku.brc.specify.datamodel.Accession" 
-                 getter="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+                 name="CollectionObj" 
+                 class="edu.ku.brc.specify.datamodel.CollectionObj" 
+                 gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
                  resourceLabels="false" 
+                 validate="true"
                  >
     	<desc><![CDATA[The Main Accession form.]]></desc>
-		<columnDef>
-			<cellDef>max(50dlu;p)</cellDef>
-			<cellDef>3dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>3dlu</cellDef>
-			<cellDef>max(50dlu;p)</cellDef>
-			<cellDef>3dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>max(88dlu;p)</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>3dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>f:p:g</cellDef>
-		</columnDef>
-
-		<rowDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>10dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-		</rowDef>
+    	
+		<columnDef>100px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+		<rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
 
 		<rows>
 			<row>
-				<cell type="separator" label="KU Fish"/>
+				<cell type="separator" label="KU Fish" colspan="12"/>
 			</row>
 			<row>
-				<cell type="field" name="catalogNumber" label="Catalog Number"/>
-				<cell type="field" name="catalogSery.seriesName" label="Catalog Series"/>
+			    <cell type="label" labelfor="catalogNumber" label="Catalog Number"/>
+				<cell type="field" name="catalogNumber" format="%.0f"/>
+				
+                <cell type="label" labelfor="catalogSeries.seriesName" label="Catalog Series"/>
+				<cell type="field" uitype="label" name="catalogSeries.seriesName"/>
 			</row>
 			<row>
-				<cell type="field" name="accession.number" label="Accession #"/>
-				<cell type="field" name="agent.lastName,agent.firstName" label="Cataloger" format="0, 1"/>
-				<cell type="field" name="catalogedDate" label="Date"/>
+                <cell type="label" labelfor="accession.number" label="Accession #"/>
+				<cell type="field" name="accession.number"/>
+				
+                <cell type="label" labelfor="agent.lastName,agent.firstName" label="Cataloger"/>
+				<cell type="field" name="agent.lastName,agent.firstName" format="%s,%s"/>
+				
+                <cell type="label" labelfor="catalogedDate" label="Date"/>
+				<cell type="field" name="catalogedDate" format="date"/>
 			</row>
 			<row>
-				<cell type="separator" label="Determination"/>
+				<cell type="separator" label="Determination" colspan="12"/>
+			</row>
+
+			<row>
+				<cell type="subview" id="6" name="determinationsByBiologicalObjectId" class="edu.ku.brc.specify.datamodel.Determination"  colspan="12"/>
+			</row>
+
+			<row>
+				<cell type="separator" label="Locality" colspan="12"/>
 			</row>
 			<row>
-				<cell type="subview" id="6" name="determinationsByBiologicalObjectId" class="edu.ku.brc.specify.datamodel.Determination"/>
+                <cell type="label" labelfor="fieldNumber" label="Field No"/>
+				<cell type="field" name="fieldNumber"/>
+				
+                <cell type="label" labelfor="collectingEvent.locality.localityName" label="Locality"/>
+				<cell type="field" name="collectingEvent.locality.localityName" cols="41" colspan="6"/>
+			</row>
+			
+			<row>
+				<cell type="separator" label="Preparations" colspan="12"/>
 			</row>
 			<row>
-				<cell type="separator" label="Locality"/>
+				<cell type="subview" id="7" name="preparations" class="edu.ku.brc.specify.datamodel.PrepsObj" colspan="12"/>
+			</row>
+
+			<row>
+				<cell type="separator" label="" colspan="12"/>
 			</row>
 			<row>
-				<!-- <cell type="field" name="fieldNumber,collectingEvent.locality.localityName" label="FieldNo:Locality" format="0, 1"/> -->
-				<cell type="field" name="fieldNumber" label="FieldNo"/>
-				<cell type="field" name="collectingEvent.locality.localityName" label="Locality" cols="41" colspan="6"/>
-			</row>
-			<row>
-				<cell type="separator" label="Preparations"/>
-			</row>
-			<row>
-				<cell type="subview" id="7" name="preparations" class="edu.ku.brc.specify.datamodel.PrepsObj"/>
-			</row>
-			<row>
-				<cell type="separator" label=""/>
-			</row>
-			<row>
-				<cell type="field" name="lastEditedBy" label="Edited By"/>
-				<cell type="field" name="timestampModified" label="Last Edited" cols="20" colspan="2"/>
+                <cell type="label" labelfor="lastEditedBy" label="Edited By"/>
+				<cell type="field" name="lastEditedBy"/>
+				
+                <cell type="label" labelfor="timestampModified" label="Last Edited"/>
+				<cell type="field" name="timestampModified" cols="20" colspan="2"/>
 			</row>
 		</rows>
 	</view>
@@ -103,51 +76,41 @@
 	<view id="6" type="form" 
                  name="Accession" 
                  class="edu.ku.brc.specify.datamodel.TaxonName" 
-                 getter="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+                 gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
                  resourceLabels="false" 
+                 validate="true"
                  >
 	    <altviews>
 			<alt id="6" label="Form"/>
 			<!-- <alt id="66" label="Table"/> -->
 		</altviews>
-		<columnDef>
-			<cellDef>max(50dlu;p)</cellDef>
-			<cellDef>3dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>3dlu</cellDef>
-			<cellDef>max(50dlu;p)</cellDef>
-			<cellDef>3dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>3dlu</cellDef>
-			<cellDef>max(50dlu;p)</cellDef>
-			<cellDef>3dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>f:p:g</cellDef>
-		</columnDef>
-	  
-		<rowDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p:g</cellDef>
-			<cellDef>2dlu</cellDef>
-		</rowDef>
+		
+		<columnDef>100px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+		<rowDef>p,2dlu,p,2dlu,p,2dlu,p:g,2dlu</rowDef>
 	  
 		<rows>
 			<row>
-				<cell type="field" name="taxonName.fullTaxonName" label="Taxon"/>	
+                <cell type="label" labelfor="fieldNumber" label="Taxon"/>
+				<cell type="field" name="taxonName.fullTaxonName" label="Taxon" colspan="5"/>	
+				
+                <cell type="label" labelfor="current1" label=""/>
+				<cell type="field" name="current1" uitype="checkbox" label="Is Current"/>
+			</row>
+			<row>
+				
+                <cell type="label" labelfor="agent.lastName,agent.firstName" label="Determiner"/>
+				<cell type="field" name="agent.lastName,agent.firstName" format="%s, %s" cols="20"/>
+				
+                <cell type="label" labelfor="confidenceId" label="Confidence"/>
 				<cell type="field" name="confidenceId" label="Confidence"/>
+				
+                <cell type="label" labelfor="date1" label="Date"/>
+				<cell type="field" name="date1" format="date" isrequired="true"/>
 			</row>
+			
 			<row>
-				<cell type="field" name="current1" label="Is Current" uiType=""/>
-				<cell type="field" name="agent.lastName,agent.firstName" label="Determiner" format="0, 1" cols="20"/>
-				<cell type="field" name="date1" label="Date"/>
-			</row>
-			<row>
-				<cell type="field" name="remarks" label="Remarks" colspan="9" cols="50"/>	
+                <cell type="label" labelfor="remarks" label="Remarks"/>
+				<cell type="field" name="remarks" colspan="9" cols="50"/>	
 			</row>
 		</rows>
 	</view>
@@ -155,57 +118,53 @@
 	<view id="7" type="form" 
                  name="Accession" 
                  class="edu.ku.brc.specify.datamodel.PrepsObj" 
-                 getter="edu.ku.brc.specify.ui.forms.DataGetterForObj"
-                 resourceLabels="false" 
+                 gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+                 resourceLabels="false"
+                 validate="true"
                  >
 		<altviews>
 			<alt id="7" label="Form"/>	
 			<!-- <alt id="8" label="Table"/> -->
 		</altviews>
-		<columnDef>
-			<cellDef>max(50dlu;p)</cellDef>
-			<cellDef>3dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>3dlu</cellDef>
-			<cellDef>max(50dlu;p)</cellDef>
-			<cellDef>3dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>3dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>3dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>p:g</cellDef>
-		</columnDef>
-	  
-		<rowDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-			<cellDef>p</cellDef>
-			<cellDef>2dlu</cellDef>
-		</rowDef>
+		
+		<columnDef>100px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+		<rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu</rowDef>
 	  
 		<rows>
 			<row>
-				<cell type="field" name="preparationMethod" label="Prep Method"/>
-				<cell type="field" name="subNumber" label="Sub No"/>
-				<cell type="field" name="remarks" label="Remarks" rowspan="8" cols="25"/>
+                <cell type="label" labelfor="preparationMethod" label="Prep Method"/>
+				<cell type="field" uitype="combobox" name="preparationMethod" initialize="EtOH, Skeleton, Tissue, Clear Stained, X-Ray, Misc"/>
+				
+                <cell type="label" labelfor="subNumber" label="Sub No"/>
+				<cell type="field" name="subNumber"/>
+				
+                <cell type="label" labelfor="remarks" label="Remarks"/>
+				<cell type="field" name="remarks" rowspan="8" cols="25"/>
 			</row>
 			<row>
-				<cell type="field" name="preparedDate" label="Prepared Date"/>
-				<cell type="field" name="agent.lastName,agent.firstName" label="Prepared By" format="0, 1"/>
+                <cell type="label" labelfor="preparedDate" label="Prepared Date"/>
+				<cell type="field" name="preparedDate" format="date"/>
+				
+                <cell type="label" labelfor="agent.lastName,agent.firstName" label="Prepared By"/>
+				<cell type="field" name="agent.lastName, agent.firstName" format="%s, %s"/>
 			</row>
 			<row>
-				<cell type="field" name="count" label="Count"/>
-				<cell type="field" name="storagelocation" label="Storage" format="0, 1"/>
+                <cell type="label" labelfor="count" label="Count"/>
+				<cell type="field" name="count"/>
+				
+                <cell type="label" labelfor="storagelocation" label="Storage"/>
+				<cell type="field" name="storagelocation"/>
 			</row>
 			<row>
+				<cell type="label" labelfor="url" label="URL"/>
 				<cell type="field" name="url" label="URL" colspan="5" cols="50"/>	
+			</row>
+            <row>
+			    <cell type="label" labelfor="prepAttrs.size" label="Size"/>
+				<cell type="field" name="prepAttrs.size"/>
+				
+				<cell type="label" labelfor="prepAttrs.sex" label="Sex"/>
+				<cell type="field" uitype="combobox" name="prepAttrs.sex" initialize="Unknown, Male, Female"/>
 			</row>
 			
 			<!--
@@ -225,11 +184,15 @@
 			-->
 			
 			<!-- <row>
-				<cell type="field" name="prepAttrs.size" label="Size"/>
-				<cell type="field" name="prepAttrs.sex" label="Sex"/>
+                <cell type="label" labelfor="prepAttrs.size" label="Size"/>
+				<cell type="field" name="prepAttrs.size"/>
+				
+                <cell type="label" labelfor="prepAttrs.sex" label="Sex"/>
+				<cell type="field" name="prepAttrs.sex"/>
 			</row>
 			<row>
-				<cell type="field" name="prepAttrs.url" label="URL" colspan="5"/>
+                <cell type="label" labelfor="prepAttrs.url" label="URL"/>
+				<cell type="field" name="prepAttrs.url" colspan="5"/>
 			</row>
 			-->
 			

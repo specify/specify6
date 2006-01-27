@@ -247,5 +247,9 @@ public class FormView implements Comparable<FormView>
         this.validated = validated;
     }
 
+    public String toString()
+    {
+        return this.viewSetName + " - " + this.name;
+    }
      
 }

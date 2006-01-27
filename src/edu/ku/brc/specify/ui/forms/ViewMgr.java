@@ -43,9 +43,10 @@ import edu.ku.brc.specify.ui.forms.persist.ViewSet;
 public class ViewMgr
 {
     // Statics
-    private final static Logger     log        = Logger.getLogger(ViewMgr.class);
-    private static ViewMgr          instance   = new ViewMgr();
-    private static SAXReader        saxReader  = null;    
+    private final static Logger  log        = Logger.getLogger(ViewMgr.class);
+    private static final ViewMgr instance   = new ViewMgr();
+    
+    private static SAXReader saxReader  = null;    
     
     
     // Data Members
@@ -233,7 +234,7 @@ public class ViewMgr
         {
             Vector<FormView> views = new Vector<FormView>(); // will eventually be moved to where it can be reused
             
-            // Note this will check for the uniqueness of the view sets name
+            // Note this will check for the uniqueness of the ViewSet's name
             // so we can assume the ViewSet is unique (throws an exception if not unique)
             String viewsName = FormViewFactory.getViews(root, views, true);
             

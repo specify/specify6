@@ -65,8 +65,8 @@ public class UICacheManager
     public static final String MAINPANE  = "mainpane";
     public static final String RECENTFRAME  = "recentframe";
     
-    private static Log            log      = LogFactory.getLog(UICacheManager.class);
-    private static UICacheManager instance = new UICacheManager();
+    private static final Log            log      = LogFactory.getLog(UICacheManager.class);
+    private static final UICacheManager instance = new UICacheManager();
     
     // Data Members
     protected Hashtable<String, Component> components = new Hashtable<String, Component>();

@@ -23,13 +23,16 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.jxpath.*;
 import org.apache.commons.lang.*;
+
+import edu.ku.brc.specify.dbsupport.*;
+import edu.ku.brc.specify.datamodel.*;
 
 /**
  * This knows how to get a field's value from a POJO.<br><br>
@@ -60,29 +63,44 @@ public class DataGetterForObj implements DataObjectGettable
      */
     public Object getFieldValueInternal(Object dataObj, String fieldName) 
     {
+        //System.out.println("["+fieldName+"]["+(dataObj != null ? dataObj.getClass().toString() : "N/A")+"]");
         Object value = null;
         if (dataObj != null)
         {
-            try {
+            try 
+            {
+                Iterator iter = null;
                 if (dataObj instanceof Set)
                 {
-                    /* XXX Uncomment me when class is checked in
-                    for (Iterator iter=((Set)dataObj).iterator();iter.hasNext();)
+                    iter = ((Set)dataObj).iterator();
+                } else if (dataObj instanceof org.hibernate.collection.PersistentSet)
+                {
+                    iter = ((org.hibernate.collection.PersistentSet)dataObj).iterator();
+                }
+               if (iter != null)
+                {
+                    while (iter.hasNext())
                     {
                         Object obj = iter.next();
-                        if (obj instanceof PrepAttrs) // Not scalable (needs interface)
+                        if (obj instanceof AttrsSettableGettable) // Not scalable (needs interface)
                         {
-                            PrepAttrs ad = (PrepAttrs)obj;
-                            if (ad.getName().equals(fieldName))
+                            AttrsSettableGettable asg = (AttrsSettableGettable)obj;
+                            if (asg.getName().equals(fieldName))
                             {
-                                return ad.getValue();
+                                if (asg.getFieldType() == AttrsMgr.VARC_TYPE)
+                                {
+                                   return asg.getStrValue();
+                                   
+                                } else if (asg.getFieldType() == AttrsMgr.INT_TYPE)
+                                {
+                                    return asg.getIntValue();
+                                }
                             }
                         } else
                         {
                             return null;
                         }
-                    }*/
-                    
+                    }                   
                 }
                 PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, fieldName.trim());
                 if (descr != null)
@@ -113,22 +131,34 @@ public class DataGetterForObj implements DataObjectGettable
      */
     public Object getFieldValue(Object dataObj, String fieldName) 
     {
-        // XXX need to replace this code with the library that does this from the Cookbook
         
-        int inx = fieldName.indexOf(".");
-        if (inx > -1)
+        // XXX need to replace this code with the library that does this from the Cookbook
+        String[] fieldsNames = StringUtils.split(fieldName, " ,");
+        Object[] values = new Object[fieldsNames.length];
+        int cnt = 0;
+        for (String fldName : fieldsNames)
         {
-            StringTokenizer st = new StringTokenizer(fieldName, ".");
-            
-            Object data = dataObj;
-            while (data != null && st.hasMoreTokens()) {
-                data = getFieldValueInternal(data, st.nextToken());
+            int inx = fldName.indexOf(".");
+            if (inx > -1)
+            {
+                StringTokenizer st = new StringTokenizer(fldName, ".");
+                Object data = dataObj;
+                while (data != null && st.hasMoreTokens()) 
+                {
+                    data = getFieldValueInternal(data, st.nextToken());
+                }
+                values[cnt++] = data == null ? "" : data;
+            } else
+            {
+                values[cnt++] = getFieldValueInternal(dataObj, fieldName);
             }
-            return data == null ? "" : data;
         }
         
-        Object value = getFieldValueInternal(dataObj, fieldName);
-        return value == null ? "" : value; 
+        if (values.length == 1)
+        {
+            return values[0] == null ? "" : values[0];
+        }
+        return values;
     }  
     
     /* (non-Javadoc)

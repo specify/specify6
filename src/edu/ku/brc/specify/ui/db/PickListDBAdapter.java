@@ -73,7 +73,7 @@ public class PickListDBAdapter
      }
     
     /**
-     * Gets the PickList ITem from the Database
+     * Gets the PickList Item from the Database
      * @param id the id of the picklist to get
      * @return the picklist item
      */
@@ -81,8 +81,7 @@ public class PickListDBAdapter
     {
         try
         {
-	        Class    classObj = Class.forName("edu.ku.brc.specify.datamodel.PickList");
-	        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(classObj).add(Expression.eq("picklist_id", new Integer(id)));
+	        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(PickList.class).add(Expression.eq("picklist_id", new Integer(id)));
             
 	        List items = criteria.list();
 	        if (items != null && items.size() > 0)

@@ -36,7 +36,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
-import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.exceptions.ConfigurationException;
 import edu.ku.brc.specify.helpers.XMLHelper;
 
@@ -63,7 +62,8 @@ public class IconManager
         Std16BW(16, false, true),
         Std32FadeBW(32, true, true),
         Std24FadeBW(24, true, true),
-        Std16FadeBW(16, true, true);
+        Std16FadeBW(16, true, true),
+        NonStd(-1, false, false);
         
         IconSize(final int size, final boolean faded, final boolean blackWhite)
         { 
@@ -86,10 +86,11 @@ public class IconManager
         
     };
     
-    protected static String      relativePath = "images/";
-    private   static IconManager instance      = new IconManager();
+    protected static final String      relativePath = "images/";
+    protected static final IconManager instance     = new IconManager();
     
-    protected Hashtable<String, IconEntry> entries       = new Hashtable<String, IconEntry>();
+    protected Class                        appClass = null;
+    protected Hashtable<String, IconEntry> entries = new Hashtable<String, IconEntry>();
     
     /**
      * 
@@ -97,8 +98,22 @@ public class IconManager
      */
     protected IconManager()
     {
-        instance = this;
-        loadIcons();
+    }
+    
+    /**
+     * This sets the application class so the IconManager knows where the icon images are stored
+     * which is ALWAYS in the "images" directory relative to the application class, this is REQUIRED before
+     * using any methods in the IconManager.
+     * @param appClass the application's Class object
+     */
+    public static void setApplicationClass(Class appClass)
+    {
+        instance.appClass = appClass;
+        
+        if (instance.entries.size() == 0)
+        {
+            IconManager.loadIcons();
+        }
     }
     
     /**
@@ -234,7 +249,15 @@ public class IconManager
                     return entry.getScaledIcon(getIconSize(32, id.blackWhite(), id.faded()), id);
                 } else
                 {
-                    log.error("Couldn't find Std size for icon ["+ iconName+"] is not registered.");
+                    // last ditch effort to see if it is a non-Standard size
+                    icon = entry.getIcon(IconSize.NonStd);
+                    if (icon == null)
+                    {
+                        log.error("Couldn't find Std size for icon ["+ iconName+"] is not registered.");
+                    } else
+                    {
+                        return icon;
+                    }
                 }
             } else
             {
@@ -290,15 +313,10 @@ public class IconManager
                     
                     entry.addScaled(IconSize.Std32, IconSize.Std24);
                     entry.addScaled(IconSize.Std32, IconSize.Std16);
-                    
-                    //ImageIcon icon = entry.getIcon(IconSize.Std32);
-                    //entry.add(IconSize.Std32BW, createBWImage(icon));
-                    
-                    //icon = entry.getIcon(IconSize.Std24);
-                    //entry.add(IconSize.Std24BW, createBWImage(icon));
-                    
-                    //icon = entry.getIcon(IconSize.Std16);
-                    //entry.add(IconSize.Std16, createBWImage(icon));
+                                        
+                } else if (sizes.toLowerCase().equals("nonstd"))
+                {
+                    register(name, file, IconSize.NonStd);
                     
                 } else
                 {
@@ -334,13 +352,14 @@ public class IconManager
     }
 
     /**
-     * Returns an URL for the path to the image
+     * Returns an URL for the path to the image in the "images" directory that is relative to the application class.
+     * <br> For example &lt;app class&gt;/images/&lt;file name&gt;
      * @param imageName the image name
      * @return Returns an URL for the path to the image
      */
     public static URL getImagePath(final String imageName)
     {
-        return Specify.class.getResource(relativePath+imageName);
+        return instance.appClass.getResource(relativePath+imageName);
     }
 
     /**

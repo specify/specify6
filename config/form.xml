@@ -1,6 +1,139 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <viewset name="view valid" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="form.xsd">
 
+  <view id="0" 
+	  type="form" 
+	  name="TestObject" 
+	  class="edu.ku.brc.specify.tests.forms.TestDataObj" 
+	  gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+	  resourceLabels="false">
+  	<desc><![CDATA[Test the Main form]]></desc>
+    <altviews>
+      <alt id="2" label="Alt. Form"/>
+      <alt id="3" label="Table"/>
+      <alt id="4" label=" Alt. Table 2"/>
+      <alt id="5" label="Field"/>
+    </altviews>
+    
+    <columnDef>f:p, 1dlu, p, 2dlu, p, 1dlu, p, p:g</columnDef>
+    <rowDef>p, 2dlu, p, 2dlu, p, 2dlu, p, 7dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 7dlu, p, 2dlu, p, 2dlu, p, 2dlu, p</rowDef>
+
+    <rows>
+      <row>
+        <cell type="separator" label="TestObject" colspan="8"/>
+      </row>
+      
+      <row>
+        <cell type="label" labelfor="textField" label="Catalog Number"/>
+        <cell type="field" name="textField" isrequired="true"/>
+      </row>
+      
+	  <row>
+        <cell type="label" labelfor="textArea" label="Remarks"/>
+        <cell type="field" name="textArea" uitype="textarea" cols="60" colspan="6" rowspan="6"/>
+      </row>
+      
+	  <row>
+          <cell type="label" name="x" labelfor="" label=""/>
+      </row>
+      
+	  <row>
+          <cell type="label" name="x" labelfor="" label=""/>
+      </row>
+      
+	  <row>
+		  <cell type="label" name="browseFieldLabel" labelfor="browseField" label="Browse Field"/>
+		  <cell type="field" name="browseField" colspan="5" uitype="browse" isrequired="true"/>
+	  </row>
+      <row>
+          <cell type="label" labelfor="checkBox" label=""/>
+          <cell type="field" name="checkBox" label="CheckBox" uitype="checkbox" />
+          
+		  <cell type="label" name="comboBoxLabel" labelfor="comboBox" label="Combo Box"/>
+	      <cell type="field" uitype="combobox" name="comboBox" initialize="Item 1, Item 2"/>
+      </row>
+	  <row>
+		  <cell type="label" name="dateLabel" labelfor="date" label="Date"/>
+		  <cell type="field" name="date" uitype="text" isrequired="true"/>
+	  </row>
+	  <row>
+		  <cell type="label" name="imagePathURLLabel" labelfor="imagePathURL" label="Image (URL)"/>
+		  <cell type="field" name="imagePathURL" uitype="image" isrequired="true" initialize="size=100,100"/>
+
+		  <cell type="label" name="imagePathLabel" labelfor="imagePath" label="Image (File)"/>
+		  <cell type="field" name="imagePath" uitype="image" isrequired="true" initialize="size=100,100"/>
+	  </row>
+	  <row>
+		  <cell type="label" name="noImageLabel" labelfor="noImage" label="No Image"/>
+		  <cell type="field" name="noImage" uitype="image" isrequired="true" initialize="size=100,100"/>
+	  </row>
+      <row>
+          <cell type="subview" id="3000" name="subObjects"  class="edu.ku.brc.specify.tests.forms.TestDataSubObj" colspan="8"/>
+      </row>
+      <row>
+        <cell type="separator" label="" colspan="8"/>
+      </row>
+    </rows>
+  </view>
+  
+  <view id="3000" 
+	  type="form" 
+	  name="TestSubObject" 
+	  class="edu.ku.brc.specify.tests.forms.TestDataSubObj" 
+	  gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+	  resourceLabels="false">
+  	<desc><![CDATA[Test Sub Form.]]></desc>
+    <altviews>
+      <alt id="2" label="Alt. Form"/>
+      <alt id="3" label="Table"/>
+      <alt id="4" label=" Alt. Table 2"/>
+      <alt id="5" label="Field"/>
+    </altviews>
+    
+    <columnDef>p, 1dlu, p, 2dlu, p, 1dlu, p, p:g</columnDef>
+    <rowDef>p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p</rowDef>
+
+    <rows>
+      <row>
+        <cell type="separator" label="TestObject" colspan="8"/>
+      </row>
+      
+      <row>
+        <cell type="label" labelfor="textField" label="Text Field"/>
+        <cell type="field" name="textField" isrequired="true"/>
+      </row>
+      
+	  <row>
+        <cell type="label" labelfor="textArea" label="Text Area"/>
+        <cell type="field" name="textArea" uitype="textarea" cols="40" colspan="6" rowspan="6"/>
+      </row>
+      
+	  <row>
+          <cell type="label" name="x" labelfor="" label=""/>
+      </row>
+      
+	  <row>
+          <cell type="label" name="x" labelfor="" label=""/>
+      </row>
+      
+	  <row>
+		  <cell type="label" name="browseFieldLabel" labelfor="browseField" label="Browse Field"/>
+		  <cell type="field" name="browseField" colspan="5" uitype="browse" isrequired="true"/>
+	  </row>
+      <row>
+          <cell type="label" labelfor="checkBox" label=""/>
+          <cell type="field" name="checkBox" label="CheckBox" uitype="checkbox" />
+          
+		  <cell type="label" name="comboBoxLabel" labelfor="comboBox" label="Combo Box"/>
+	      <cell type="field" uitype="combobox" name="comboBox" initialize="Item 1, Item 2"/>
+      </row>
+	  <row>
+		  <cell type="label" name="dateLabel" labelfor="date" label="Date"/>
+		  <cell type="field" name="date" uitype="text" isrequired="true"/>
+	  </row>
+    </rows>
+  </view>
+
   <view id="1" type="form" name="Accession" class="edu.ku.brc.specify.datamodel.Accession" resourceLabels="false">
   	<desc><![CDATA[The Main Accession form.]]></desc>
     <altviews>
@@ -38,6 +171,7 @@
       </row>
     </rows>
   </view>
+  
   <view id="2" name="Accession" class="" type="form">
   	<desc><![CDATA[The alternate Accession form.]]></desc>
     <altviews>
@@ -176,7 +310,6 @@
         <cell type="separator" label="Misc."/>
       </row>
       <row>
-        <cell type="field" name="stationFieldNumber" label="Station Field Number"/>
         <cell type="field" name="method" label="Method"/>
       </row>
       <row>
@@ -269,8 +402,7 @@
         <cell type="separator" label="Collection Object Catalog"/>
       </row>
       <row>
-        <cell type="field" name="collectionObjectCatalogId"
-          label="collectionObjectCatalogId"/>
+        <cell type="field" name="collectionObjectCatalogId" label="collectionObjectCatalogId"/>
         <cell type="field" name="catalogNumber" label="Catalog Number"/>
       </row>
       <row>

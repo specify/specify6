@@ -39,8 +39,8 @@ import edu.ku.brc.specify.ui.CommandAction;
 public class ContextMgr
 {
     // Static Data Members
-    private static Log         log      = LogFactory.getLog(ContextMgr.class);
-    private static ContextMgr  instance = new ContextMgr();
+    private static final Log         log      = LogFactory.getLog(ContextMgr.class);
+    private static final ContextMgr  instance = new ContextMgr();
     
     // Data Members
     protected Taskable         currentContext         = null;
@@ -55,7 +55,6 @@ public class ContextMgr
      */
     protected ContextMgr()
     { 
-        instance = this; // safety
     }
     
     /**

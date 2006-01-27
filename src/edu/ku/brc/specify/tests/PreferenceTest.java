@@ -14,8 +14,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.Specify;
-import edu.ku.brc.specify.prefs.ColorWrapper;
 import edu.ku.brc.specify.prefs.PrefsCache;
+import edu.ku.brc.specify.ui.ColorWrapper;
+import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.UICacheManager;
 
 /**
@@ -36,6 +37,7 @@ public class PreferenceTest extends TestCase
     public void setUp()
     {
         UICacheManager.setRootPrefClass(Specify.class);
+        IconManager.setApplicationClass(Specify.class);
         appPrefs = UICacheManager.getAppPrefs();
     }
     

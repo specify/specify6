@@ -311,13 +311,6 @@ public class VectorButton extends JButton implements MouseListener
     {
         pressed = true;
     }
-    
-    
-    
-    public static void p(String s) 
-    {
-        System.out.println(s);
-    }
 
     public boolean isDrawHighlight()
     {

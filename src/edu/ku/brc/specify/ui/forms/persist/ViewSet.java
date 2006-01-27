@@ -59,9 +59,6 @@ public class ViewSet
      */
     public void cleanUp()
     {
-        comparable.cleanUp();
-        comparable = null;
-        
         for (FormView fv : views)
         {
             fv.cleanUp();
@@ -103,6 +100,8 @@ public class ViewSet
     public void setViews(Vector<FormView> views)
     {
         this.views = views;
+        
+        Collections.sort(views);
     }
 
     public String getName()

@@ -38,7 +38,7 @@ public class CommandDispatcher
     // Static Data Members
     //private static Log log  = LogFactory.getLog(CommandDispatcher.class);
     
-    private static CommandDispatcher instance = new CommandDispatcher();
+    private static final CommandDispatcher instance = new CommandDispatcher();
     
     // Data Members
     protected Hashtable<String, Vector<CommandListener>> listeners = new Hashtable<String, Vector<CommandListener>>();

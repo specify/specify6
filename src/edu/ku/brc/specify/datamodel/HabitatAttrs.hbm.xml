@@ -20,7 +20,8 @@
        @hibernate.class
         table="habitatattrs"
     </meta>
-
+    <meta attribute="implements">AttrsSettableGettable</meta>
+ 
     <id
         name="habitatAttrsId"
         type="java.lang.Integer"
@@ -51,16 +52,30 @@
     </property>
 
     <property
-        name="value"
+        name="strValue"
         type="java.lang.String"
-        column="value"
+        column="strValue"
         length="128"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="value"
+            column="strValue"
             length="128"
+        </meta>    
+    </property>
+
+    <property
+        name="intValue"
+        type="java.lang.Integer"
+        column="intValue"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="intValue"
+            length="10"
         </meta>    
     </property>
 
@@ -93,16 +108,30 @@
     </property>
 
     <property
-        name="habitatDate"
-        type="java.lang.Integer"
-        column="habitatDate"
-        length="10"
+        name="timestampCreated"
+        type="java.sql.Timestamp"
+        column="TimestampCreated"
+        length="23"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="habitatDate"
-            length="10"
+            column="TimestampCreated"
+            length="23"
+        </meta>    
+    </property>
+    
+    <property
+        name="timestampModified"
+        type="java.sql.Timestamp"
+        column="TimestampModified"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampModified"
+            length="23"
         </meta>    
     </property>
 	

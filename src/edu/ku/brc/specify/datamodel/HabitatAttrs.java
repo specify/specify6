@@ -10,16 +10,18 @@ import java.util.*;
  *         table="habitatattrs"
  *     
  */
-public class HabitatAttrs  implements java.io.Serializable {
+public class HabitatAttrs  implements AttrsSettableGettable,java.io.Serializable {
 
     // Fields    
 
      protected Integer habitatAttrsId;
      protected String name;
-     protected String value;
+     protected String strValue;
+     protected Integer intValue;
      protected Integer fieldType;
      protected Integer unit;
-     protected Integer habitatDate;
+     protected Date timestampCreated;
+     protected Date timestampModified;
      protected String remarks;
      protected CollectingEvent collectingEvent;
      protected CollectionObjectType collectionObjectType;
@@ -73,16 +75,30 @@ public class HabitatAttrs  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="value"
+     *             column="strValue"
      *             length="128"
      *         
      */
-    public String getValue() {
-        return this.value;
+    public String getStrValue() {
+        return this.strValue;
     }
     
-    public void setValue(String value) {
-        this.value = value;
+    public void setStrValue(String strValue) {
+        this.strValue = strValue;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="intValue"
+     *             length="10"
+     *         
+     */
+    public Integer getIntValue() {
+        return this.intValue;
+    }
+    
+    public void setIntValue(Integer intValue) {
+        this.intValue = intValue;
     }
 
     /**
@@ -115,16 +131,30 @@ public class HabitatAttrs  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="habitatDate"
-     *             length="10"
+     *             column="TimestampCreated"
+     *             length="23"
      *         
      */
-    public Integer getHabitatDate() {
-        return this.habitatDate;
+    public Date getTimestampCreated() {
+        return this.timestampCreated;
     }
     
-    public void setHabitatDate(Integer habitatDate) {
-        this.habitatDate = habitatDate;
+    public void setTimestampCreated(Date timestampCreated) {
+        this.timestampCreated = timestampCreated;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="TimestampModified"
+     *             length="23"
+     *         
+     */
+    public Date getTimestampModified() {
+        return this.timestampModified;
+    }
+    
+    public void setTimestampModified(Date timestampModified) {
+        this.timestampModified = timestampModified;
     }
 
     /**

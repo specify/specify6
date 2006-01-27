@@ -171,7 +171,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
             int returnVal = chooser.showOpenDialog(UICacheManager.get(UICacheManager.TOPFRAME));
             if (returnVal == JFileChooser.APPROVE_OPTION) 
             {
-                textField.setText(chooser.getSelectedFile().getName());
+                textField.setText(chooser.getSelectedFile().getAbsolutePath());
             }
         }
     }

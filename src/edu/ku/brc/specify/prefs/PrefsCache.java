@@ -21,9 +21,9 @@ package edu.ku.brc.specify.prefs;
 
 import java.text.SimpleDateFormat;
 import java.util.Hashtable;
-import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.*;
 
+import edu.ku.brc.specify.ui.ColorWrapper;
 import edu.ku.brc.specify.ui.UICacheManager;
 import org.apache.commons.lang.*;
 
@@ -38,7 +38,7 @@ import org.apache.commons.lang.*;
  */
 public class PrefsCache
 {
-    protected static PrefsCache instance = null;
+    protected static final PrefsCache instance = new PrefsCache();
     
     protected Preferences                        appPrefs = UICacheManager.getAppPrefs();
     protected Hashtable<String, PrefsCacheEntry> hash     = new Hashtable<String, PrefsCacheEntry>();
@@ -55,11 +55,7 @@ public class PrefsCache
     
     public static PrefsCache getInstance()
     {
-        if (instance == null)
-        {
-            instance = new PrefsCache();    
-        }
-        return instance;
+         return instance;
     }
     
     /**
@@ -179,10 +175,10 @@ public class PrefsCache
         String prefVal;
         try
         {
-            for (String s : prefNode.keys())
-            {
-                System.out.println("["+s+"]");
-            }
+            //for (String s : prefNode.keys())
+            //{
+            //    System.out.println("["+s+"]");
+            //}
             if (!ArrayUtils.contains(prefNode.keys(), attrName))
             {
                     prefNode.put(attrName, defValue);
@@ -290,8 +286,8 @@ public class PrefsCache
         Preferences prefNode = instance.getPrefNode(section, pref);
         if (prefNode != null)
         {
-            System.out.println("["+appPrefs+"]");
-            System.out.println("["+prefNode+"]");
+            //System.out.println("["+appPrefs+"]");
+            //System.out.println("["+prefNode+"]");
             
             String defValue = simpleFormat.toPattern();
             String prefVal  = checkForPref(prefNode, attrName, defValue);

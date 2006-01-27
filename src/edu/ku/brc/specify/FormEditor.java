@@ -21,29 +21,49 @@
 package edu.ku.brc.specify;
 
 
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
+import org.hibernate.Query;
 
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
-import edu.ku.brc.specify.helpers.*;
-import edu.ku.brc.specify.dbsupport.*;
-import edu.ku.brc.specify.datamodel.*;
+import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.CollectionObj;
+import edu.ku.brc.specify.datamodel.InfoRequest;
+import edu.ku.brc.specify.dbsupport.DBConnection;
+import edu.ku.brc.specify.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.helpers.EMailHelper;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.helpers.XMLHelper;
+import edu.ku.brc.specify.tests.forms.TestDataObj;
+import edu.ku.brc.specify.tests.forms.TestDataSubObj;
 import edu.ku.brc.specify.ui.ChooseFromListDlg;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.forms.FormViewable;
@@ -51,15 +71,6 @@ import edu.ku.brc.specify.ui.forms.ViewFactory;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
 import edu.ku.brc.specify.ui.forms.persist.FormView;
 import edu.ku.brc.specify.ui.forms.persist.ViewSet;
-import org.apache.commons.jxpath.*;
-
-import org.hibernate.*;
-import org.hibernate.hql.*;
-import org.hibernate.tool.*;
-import org.hibernate.sql.*;
-import org.hibernate.criterion.*;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 /**
  * The stand alone part of the FormEditor (this is a prototype at the moment that is used for viewing forms) 
@@ -78,6 +89,18 @@ public class FormEditor
     protected JPanel contentPane;
     protected JFrame mainFrame;
     
+    protected String currViewSetName;
+    protected int    currFormId;
+    
+    protected Object            dataObj     = null;
+    protected TestDataObj       testDataObj = null;
+    protected List<TestDataObj> list        = new ArrayList<TestDataObj>();
+
+    
+    public FormEditor()
+    {
+    }
+    
     /**
      * Create a form
      * @param formView the definition of the form to create
@@ -93,9 +116,9 @@ public class FormEditor
             comp.invalidate();   
             contentPane.add(comp, BorderLayout.CENTER);
             
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() 
-                {
+            //SwingUtilities.invokeLater(new Runnable() {
+            //    public void run() 
+            //    {
                     contentPane.doLayout();
                     UICacheManager.forceTopFrameRepaint();
                     
@@ -122,50 +145,109 @@ public class FormEditor
                         //EMailHelper.findRepliesFromResearch("imap.ku.edu", "rods", "Inverness1601*");
                     }
                     
-                    
                     DBConnection.setUsernamePassword("rods", "rods");
                     DBConnection.setDriver("com.mysql.jdbc.Driver");
                     DBConnection.setDBName("jdbc:mysql://localhost/demo_fish2");
                     
-                    
-                    //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class);
-                    //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setFetchMode(Accession.class.getName(), FetchMode.DEFAULT).setMaxResults(300);
-                    //java.util.List list = criteria.list();//session.find("from collev");
-                    boolean skip = true;
-                    if (skip)
+                    if (currViewSetName.equals("view valid") && currFormId == 0)
                     {
-                        Query q = HibernateUtil.getCurrentSession().createQuery("from accession in class Accession where accession.accessionId in (74,68262114,508322272)");
-                        java.util.List list = q.list();
-                        for (Object obj : list)
-                        {
-                            Accession accession = (Accession)obj;
-                            System.out.println(accession.getAccessionId());
-                        }
-                    }
-                    
-                    
-                    
-                    boolean doit = true;
-                    if (doit)
+                        form.setDataObj(dataObj);
+                        form.setDataIntoUI();
+                        
+                    } else if (currViewSetName.equals("Fish Views") && currFormId == 1)
                     {
-                        //Query q = HibernateUtil.getCurrentSession().createQuery("from accession in class Accession where accession.accessionId in (74,68262114,508322272)");
-                        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(InfoRequest.class);
-                        java.util.List list = criteria.list();
-                        for (Object obj : list)
+                    
+                    
+                        //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class);
+                        //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setFetchMode(Accession.class.getName(), FetchMode.DEFAULT).setMaxResults(300);
+                        //java.util.List list = criteria.list();//session.find("from collev");
+                        boolean skip = false;
+                        if (skip)
                         {
-                            InfoRequest infoReq = (InfoRequest)obj;
-                            JXPathContext context = JXPathContext.newContext(infoReq);
-                            
-                            System.out.println(context.getValue(""));
+                            Query q = HibernateUtil.getCurrentSession().createQuery("from accession in class Accession where accession.accessionId in (74,68262114,508322272)");
+                            java.util.List list = q.list();
+                            for (Object obj : list)
+                            {
+                                Accession accession = (Accession)obj;
+                                System.out.println(accession.getAccessionId());
+                            }
                         }
                         
+                        
+                        boolean doCatalogItems = true;
+                        if (doCatalogItems)
+                        {
+                            Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CollectionObj.class).setMaxResults(300);
+                            //criteria.add(Expression.isNull("derivedFromId"));
+                            
+                            
+                            java.util.List data = criteria.list();
+                            System.out.println("Items Returned: "+data.size());
+                            
+                            dataObj = data;
+                        }
+                        
+                        
+                        
+                        boolean doit = false;
+                        if (doit)
+                        {
+                            //Query q = HibernateUtil.getCurrentSession().createQuery("from accession in class Accession where accession.accessionId in (74,68262114,508322272)");
+                            Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(InfoRequest.class);
+                            java.util.List list = criteria.list();
+                            for (Object obj : list)
+                            {
+                                InfoRequest infoReq = (InfoRequest)obj;
+                                JXPathContext context = JXPathContext.newContext(infoReq);
+                                
+                                System.out.println(context.getValue(""));
+                            }
+                            
+                        }
+                        
+                        form.setDataObj(dataObj);
+                        form.setDataIntoUI();
+
                     }
 
                 }
-          });
+          //});
             
-        }
+        //}
 
+    }
+    
+    /**
+     * 
+     */
+    protected void load()
+    {
+        // XXX Temporary load of form because now forma er being loaded right now
+        try
+        {
+           ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("form.xml"));
+           ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("fish_forms.xml"));
+           ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("pref_forms.xml"));
+            
+        } catch (Exception ex)
+        {
+            log.fatal(ex);
+            ex.printStackTrace();
+        }
+       
+    
+    }
+    
+    /**
+     * 
+     */
+    protected void reload()
+    {
+        ViewMgr.clearAll();
+        
+        load();
+        
+        createForm(ViewMgr.getView(currViewSetName, currFormId));
     }
     
     /**
@@ -173,15 +255,24 @@ public class FormEditor
      */
     protected void selectForm()
     {
-        List<ViewSet> viewSets = ViewMgr.getViewSets();
+        List<FormView>    fullFormsList = new ArrayList<FormView>();
         
-        ViewSet           viewSet = viewSets.get(0);
-        List<FormView>    forms   = viewSet.getViews();
-        ChooseFromListDlg dlg     = new ChooseFromListDlg("Choose Form", forms); // XXX I18N
+        for (ViewSet viewSet : ViewMgr.getViewSets())
+        {
+
+            List<FormView>    forms   = viewSet.getViews();
+            fullFormsList.addAll(forms);
+        }
+        ChooseFromListDlg dlg = new ChooseFromListDlg("Choose Form", fullFormsList); // XXX I18N
+        dlg.setVisible(true);
+        
         
         FormView form = (FormView)dlg.getSelectedObject();
         if (form != null)
         {
+            currViewSetName = form.getViewSetName();
+            currFormId      = form.getId();
+            
             createForm(form);
         }
     }
@@ -193,18 +284,32 @@ public class FormEditor
      */
     private void initialize() 
     {
-        // XXX Temporary load of form because now forma er being loaded right now
-        try
+        AppPrefs.initialPrefs(); // Must be done first thing!
+        
+        for (int i=0;i<10;i++)
         {
-            //ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("form.xml"));
-            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("pref_forms.xml"));
+            testDataObj = new TestDataObj();
             
-        } catch (Exception ex)
-        {
-            log.fatal(ex);
-            ex.printStackTrace();
+            Set<Object> set = new HashSet<Object>();
+            for (int j=0;j<4;j++)
+            {
+                TestDataSubObj subObj = new TestDataSubObj();
+                subObj.setTextField("Sub Obj Item #"+Integer.toString(j));
+                set.add(subObj);
+            }
+            
+            if (i == 2)
+            {
+                testDataObj.setImagePathURL("");
+            }
+            
+            testDataObj.setSubObjects(set);
+            testDataObj.setTextField("Item #"+Integer.toString(i));
+            list.add(testDataObj);
         }
        
+        dataObj = list;
+        
         try 
         { 
             //System.out.println(System.getProperty("os.name"));
@@ -239,27 +344,181 @@ public class FormEditor
         contentPane.setOpaque(true); //content panes must be opaque
         mainFrame.setContentPane(contentPane);
 
-        //Display the window.
-        //mainFrame.pack();
-        //mainFrame.setSize(new Dimension(1024, 764));
-        //frame.pack();
-        //mainFrame.setVisible(true);
+        JMenuBar menuBar = createMenus();
+        if (menuBar != null)
+        {
+            //top.add(menuBar, BorderLayout.NORTH);
+            mainFrame.setJMenuBar(menuBar);
+        }
+
+        load();
         
         // temp for testing 
-        int id = 1;
-        String name = "Preferences";
+        currFormId      = 0;
+        currViewSetName =  "view valid";
         
-        FormView form = ViewMgr.getView(name, id);
+        currFormId      = 1;
+        currViewSetName =   "Fish Views";
+        
+       
+        
+        FormView form = ViewMgr.getView(currViewSetName, currFormId);
 
         if (form != null)
         {
             createForm(form);
         } else
         {
-            log.info("Couldn't load form with name ["+name+"] Id ["+id+"]");
+            log.info("Couldn't load form with name ["+currViewSetName+"] Id ["+currFormId+"]");
         }
          
-    }   
+    }
+    
+    /**
+     * Create menus
+     */
+    public JMenuBar createMenus()
+    {
+        JMenuBar mb = new JMenuBar();
+        JMenuItem mi;
+        
+        JMenu menu = createMenu(mb, "FileMenu", "FileMneu");
+        mi = createMenuItem(menu, "Select Form", "s", "Select Form", false, null);
+        mi.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        selectForm();
+                    }
+                });
+        
+        mi = createMenuItem(menu, "Reload", "r", "Reload", false, null);
+        mi.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        reload();
+                    }
+                });
+        
+        mi = createMenuItem(menu, "Exit", "x", "Exit Appication", false, null);
+        mi.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        doExit();
+                    }
+                });   
+        
+        menu = createMenu(mb, "EditMenu", "EditMneu");
+        mi = createMenuItem(menu, "Preferences", "P", "Preferences", false, null);
+        mi.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        //preferences();
+                    }
+                });    
+
+
+         return mb;
+    }
+    
+
+    /**
+     * Create a menu 
+     * @param mennuBar the menubar
+     * @param labelKey the label key to be localized
+     * @param mneuKey the mneu key to be localized
+     * @return returns a menu
+     */
+    protected JMenu createMenu(final JMenuBar menuBar, final String labelKey, final String mneuKey)
+    {
+        JMenu menu = null;
+        try
+        {
+            menu = (JMenu) menuBar.add(new JMenu(getResourceString(labelKey)));
+            menu.setMnemonic(getResourceString(mneuKey).charAt(0));
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            log.info("Couldn't create menu for " + labelKey + "  " + mneuKey);
+        }
+        return menu;
+    }
+    
+    /**
+     * Checks to see if cache has changed before exiting
+     *
+     */
+    protected void doExit()
+    {
+        System.exit(0);
+    }
+
+    /**
+     * @param b
+     * @return
+     */
+    protected PropertyChangeListener createActionChangeListener(final JMenuItem b)
+    {
+        return new ActionChangedListener(b);
+    }
+    
+    /**
+     * 
+     *
+     * TODO To change the template for this generated type comment go to
+     * Window - Preferences - Java - Code Generation - Code and Comments
+     */
+    private class ActionChangedListener implements PropertyChangeListener
+    {
+        JMenuItem menuItem;
+        ActionChangedListener(JMenuItem mi)
+        {
+            super();
+            this.menuItem = mi;
+        }
+        public void propertyChange(PropertyChangeEvent e)
+        {
+            String propertyName = e.getPropertyName();
+            if (e.getPropertyName().equals(Action.NAME))
+            {
+                String text = (String) e.getNewValue();
+                menuItem.setText(text);
+            } else if (propertyName.equals("enabled"))
+            {
+                Boolean enabledState = (Boolean) e.getNewValue();
+                menuItem.setEnabled(enabledState.booleanValue());
+            }
+        }
+    }
+    
+  /**
+   * Creates a generic menu item
+   */
+    protected JMenuItem createMenuItem(final JMenu aMenu,
+                                       final String aLabel,
+                                       final String aMnemonic,
+                                       final String aAccessibleDescription,
+                                       final boolean aEnabled,
+                                       final AbstractAction aAction)
+    {
+        JMenuItem mi = (JMenuItem) aMenu.add(new JMenuItem(aLabel));
+        if (aMnemonic.length() > 0)
+        {
+            mi.setMnemonic(aMnemonic.charAt(0));
+        }
+        mi.getAccessibleContext().setAccessibleDescription(aAccessibleDescription);
+        mi.addActionListener(aAction);
+        if (aAction != null)
+        {
+          aAction.addPropertyChangeListener(createActionChangeListener(mi));
+          aAction.setEnabled(aEnabled);
+        }
+        //mi.setEnabled(aEnabled);
+        return mi;
+    }
     
     /**
      * @param args

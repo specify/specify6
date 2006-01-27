@@ -27,8 +27,8 @@ import javax.swing.JPasswordField;
 import javax.swing.text.Document;
 
 import edu.ku.brc.specify.helpers.Encryption;
-import edu.ku.brc.specify.prefs.ColorWrapper;
 import edu.ku.brc.specify.prefs.PrefsCache;
+import edu.ku.brc.specify.ui.ColorWrapper;
 
 /**
  * A JTextControl that implements UIValidatable for participating in validation

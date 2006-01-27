@@ -132,7 +132,7 @@ abstract class ExpressTableResultsBase extends JPanel
         for (ServiceInfo serviceInfo : services)
         {
             GradiantButton btn = new GradiantButton(serviceInfo.getIcon(IconManager.IconSize.Std16));
-            btn.setToolTipText(serviceInfo.getTooltip());
+            btn.setToolTipText(getResourceString(serviceInfo.getTooltip()));
             btn.setForeground(bannerColor);
             builder.add(btn, cc.xy(col,1));
             

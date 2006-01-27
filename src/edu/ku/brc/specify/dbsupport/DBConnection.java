@@ -43,7 +43,7 @@ public class DBConnection
     protected String dbName;
     
     // Static Data Members
-    protected static DBConnection instance = new DBConnection();
+    protected static final DBConnection instance = new DBConnection();
     
     /**
      * Protected Default constructor

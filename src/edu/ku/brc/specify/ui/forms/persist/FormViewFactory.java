@@ -47,8 +47,8 @@ import edu.ku.brc.specify.ui.forms.ViewMgr;
 public class FormViewFactory
 {
     // Statics
-    private final static Logger     log = Logger.getLogger(FormViewFactory.class);
-    private static  FormViewFactory instance = new FormViewFactory();
+    private static final Logger     log = Logger.getLogger(FormViewFactory.class);
+    private static final FormViewFactory instance = new FormViewFactory();
     
     private static final String NAME  = "name";
     private static final String ID    = "id";
@@ -370,6 +370,7 @@ public class FormViewFactory
                             FormCellField field = new FormCellField(FormCell.CellType.field, 
                                                                     cellName, uitype, format, isRequired,  
                                                                     cols, rows, colspan, rowspan, validationType, validationRule, isEncrypted);
+                            field.setLabel(getAttr(cellElement, "label", ""));
                             field.setInitialize(initialize);
                             formRow.addCell(field);
                         } break;

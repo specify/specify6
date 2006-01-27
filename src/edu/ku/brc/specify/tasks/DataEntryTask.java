@@ -30,9 +30,11 @@ import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.core.NavBoxIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.DataEntryPane;
+import edu.ku.brc.specify.tasks.subpane.FormPane;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.specify.ui.CommandAction;
 import edu.ku.brc.specify.ui.CommandDispatcher;
@@ -40,8 +42,16 @@ import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.forms.*;
+import edu.ku.brc.specify.ui.forms.persist.*;
 
-
+import org.hibernate.*;
+import org.hibernate.hql.*;
+import org.hibernate.tool.*;
+import org.hibernate.sql.*;
+import org.hibernate.criterion.*;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 /**
  * This task controls the data entry forms
  * 
@@ -103,6 +113,27 @@ public class DataEntryTask extends BaseTask
         DataEntryPane formPane = new DataEntryPane(name, this);
         UICacheManager.getSubPaneMgr().addPane(formPane);
 
+    }
+    
+    /**
+     * CReate a form for a recordset
+     * @param recordSet the record to create a form for
+     */
+    protected void createFormFor(final RecordSet recordSet)
+    {
+        DBTableIdMgr.getInClause(recordSet);
+
+        int tableId = recordSet.getTableId();
+        //FormView formView = ViewMgr.getView("Fish Views", tableId);
+        
+        Query query = DBTableIdMgr.getQueryForTable(recordSet);
+        java.util.List list = query.list();
+        
+        System.out.println(query.toString());
+        System.out.println("ResultSet: "+list.size());
+        
+        FormPane form = new FormPane(name, this, "Fish Views", 1, query.list()); 
+        addSubPaneToMgr(form);
     }
     
     /*
@@ -199,8 +230,9 @@ public class DataEntryTask extends BaseTask
             if (cmdAction.getData() instanceof RecordSet)
             {
                 RecordSet recordSet = (RecordSet)cmdAction.getData();
-                            
-                UICacheManager.addSubPane(new SimpleDescPane(title, this, "This is where we would be editing the "+recordSet.getItems().size()+" records in the RecordSet."));
+                createFormFor(recordSet);
+                
+                //UICacheManager.addSubPane(new SimpleDescPane(title, this, "This is where we would be editing the "+recordSet.getItems().size()+" records in the RecordSet."));
             }
         }
     }

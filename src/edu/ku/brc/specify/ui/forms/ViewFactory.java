@@ -22,7 +22,6 @@ package edu.ku.brc.specify.ui.forms;
 import static edu.ku.brc.specify.ui.validation.UIValidator.parseValidationType;
 
 import java.awt.*;
-import java.awt.Component;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -44,16 +43,15 @@ import javax.swing.JTextField;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.prefs.PrefsCache;
-import edu.ku.brc.specify.ui.BrowseBtnPanel;
-import edu.ku.brc.specify.ui.ColorChooser;
-import edu.ku.brc.specify.ui.CommandAction;
-import edu.ku.brc.specify.ui.CommandActionWrapper;
+import edu.ku.brc.specify.ui.*;
 import edu.ku.brc.specify.ui.forms.persist.FormCell;
 import edu.ku.brc.specify.ui.forms.persist.FormCellCommand;
 import edu.ku.brc.specify.ui.forms.persist.FormCellField;
@@ -75,15 +73,19 @@ import edu.ku.brc.specify.prefs.*;
 public class ViewFactory
 {
     // Statics
-    //private final static Logger log        = Logger.getLogger(ViewMgr.class);
-    private static ViewFactory  instance = new ViewFactory();
+    private static Log log = LogFactory.getLog(ViewFactory.class);
+    private static final ViewFactory  instance = new ViewFactory();
+    
+    private Font  boldLabelFont = null;
     
     // Data Members 
-    protected SimpleDateFormat scrDateFormat;
+    protected static SimpleDateFormat scrDateFormat = null;
     
     protected ViewFactory()
     {
-        scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+        JLabel label = new JLabel();
+        Font font = label.getFont();
+        boldLabelFont = new Font(font.getFontName(), Font.BOLD, font.getSize());
         
     }
     
@@ -103,8 +105,6 @@ public class ViewFactory
     public JPanel createIconPanel(JComponent aComp)
     {
         JPanel  panel = new JPanel(new BorderLayout());
-        //panel.setOpaque(true);
-        //panel.setBackground(Color.RED);
         JButton btn   = new JButton("...");
         panel.add(btn, BorderLayout.WEST);
         panel.add(aComp, BorderLayout.EAST);
@@ -246,7 +246,14 @@ public class ViewFactory
             Class classObj = dataObj != null ? dataObj.getClass() : null;
             if (classObj == null)
             {
-                classObj = Class.forName(formView.getClassName());
+                try
+                {
+                    classObj = Class.forName(formView.getClassName());
+                    
+                } catch (ClassNotFoundException ex)
+                {
+                    log.error(ex);
+                }
             }
             
             Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
@@ -254,6 +261,8 @@ public class ViewFactory
             FormViewObj     formViewObj    = new FormViewObj(parentView, formView, dataObj);
             ValidatedJPanel validatedPanel = null;
             FormValidator   validator      = null;
+            
+            Object currDataObj = formViewObj.getCurrentDataObj();
             
             if (formView.isValidated())
             {
@@ -266,21 +275,31 @@ public class ViewFactory
             PanelBuilder    builder    = new PanelBuilder(formLayout);
             CellConstraints cc         = new CellConstraints();
             
-            int rowInx = 1;
+            int rowInx    = 1;
+            int curMaxRow = 1;
+            
             for (FormRow row : formView.getRows())
             {
                 int colInx = 1;
+                
+                if (rowInx < curMaxRow)
+                {
+                    //rowInx = curMaxRow;
+                }
                 for (FormCell cell : row.getCells()) 
                 {
                     JComponent compToAdd = null;    
+                    JComponent compToReg = null;    
                     
                     String     fieldName = cell.getName();                 
                     int        colspan   = cell.getColspan();
                     int        rowspan   = cell.getRowspan();
                     
                     boolean    addToValidator = true;
+                    boolean    addControl     = true;
                     
                     Object value = null;
+                    
                     /** XXX Don't forget the Attrs!
                     if (!aIsAttrs && _dataGetter != null)
                     {
@@ -288,24 +307,46 @@ public class ViewFactory
                     }
                     */
                     
-                    if (cell.getType() != FormCell.CellType.field && formView.getDataGettable() != null)
+                    if (cell.getType() != FormCell.CellType.field && 
+                        cell.getType() != FormCell.CellType.label && 
+                        cell.getType() != FormCell.CellType.separator && 
+                        cell.getType() != FormCell.CellType.command && 
+                        formView.getDataGettable() != null)
                     {
-                        value = formView.getDataGettable().getFieldValue(dataObj, fieldName);
+                        value = formView.getDataGettable().getFieldValue(currDataObj, fieldName);
                     }
 
 
                     if (cell.getType() == FormCell.CellType.label)
                     {
                         FormCellLabel cellLabel = (FormCellLabel)cell;
-                        JLabel        lbl       = new JLabel(cellLabel.getLabel());
-                        labelsForHash.put(cellLabel.getLabelFor(), lbl);
-                        compToAdd      = lbl;
-                        addToValidator = false;
-                       
+
+                        String lblStr = cellLabel.getLabel();
+                        if (false)
+                        {
+                            builder.addLabel(lblStr.length() > 0 ? lblStr + ":" : "  ", cc.xywh(colInx, rowInx, colspan, rowspan));
+                            compToAdd      = null;
+                            addToValidator = false;
+                            addControl     = false;
+                            colInx += colspan + 1;
+                            
+                        } else
+                        {
+                            JLabel        lbl       = new JLabel(lblStr.length() > 0 ? lblStr + ":" : "  ", JLabel.RIGHT);
+                            //lbl.setFont(boldLabelFont);
+                            labelsForHash.put(cellLabel.getLabelFor(), lbl);
+                            
+                            compToAdd      =  lbl;
+                            addToValidator = false;
+                            addControl     = false;
+                        }
+                           
                     } else if (cell.getType() == FormCell.CellType.field)
                     {
                         FormCellField cellField = (FormCellField)cell;
                         
+                        /* ZZZ Removing Setting of Value
+                         
                         String format = cellField.getFormat();
                         if (format != null && format.length() > 0)
                         {
@@ -313,7 +354,7 @@ public class ViewFactory
                             Object[] values = new Object[fields.length];
                             for (int i=0;i<values.length;i++)
                             {
-                                values[i] = formView.getDataGettable().getFieldValue(dataObj, fields[i]);
+                                values[i] = formView.getDataGettable().getFieldValue(currDataObj, fields[i]);
                             }
                             if (values.length == 1 && values[0] instanceof java.util.Date)
                             {
@@ -328,16 +369,17 @@ public class ViewFactory
                             }
                         } else 
                         {
-                            value = formView.getDataGettable().getFieldValue(dataObj, fieldName);
-                            if (value != null)
-                            {
-                                System.out.println("*** "+value.getClass().toString());
-                            }
+                            value = currDataObj == null ? "" : formView.getDataGettable().getFieldValue(currDataObj, fieldName);
+                            //if (value != null)
+                            //{
+                            //    System.out.println("*** "+value.getClass().toString());
+                            //}
                             if (value instanceof Date)
                             {
                                 value = scrDateFormat.format(value);
                             }
                         }
+                        */
                         
                         String uiType = cellField.getUiType();
                         
@@ -359,10 +401,38 @@ public class ViewFactory
                             addToValidator = validator == null;
                             
                         
-                        } else if (uiType.equals("img")) 
+                        } else if (uiType.equals("label")) 
                         {
-                            //ImageDisplay imgDisp = new ImageDisplay();
-                            compToAdd = null;//imgDisp;
+                            compToAdd = new JLabel("", JLabel.LEFT);
+                            
+                        } else if (uiType.equals("image")) 
+                        {
+                            int w = 150;
+                            int h = 150;
+                            String str = cellField.getInitialize();
+                            if (str != null && str.length() > 0)
+                            {
+                                int inx = str.indexOf("size=");
+                                if (inx > -1)
+                                {
+                                    String[] wh = StringUtils.split(str.substring(inx+5), ",");
+                                    if (wh.length == 2)
+                                    {
+                                        try
+                                        {
+                                            w = Integer.parseInt(wh[0]);
+                                            h = Integer.parseInt(wh[1]);
+                                            
+                                        } catch (Exception ex)
+                                        {
+                                            log.error("Initialize string for Image is incorrect ["+str+"]");
+                                        }
+                                    }
+                                }
+                            }
+                            ImageDisplay imgDisp = new ImageDisplay(w, h, true);
+                            compToAdd = imgDisp;
+                            
                             addToValidator = false;
                             
                         } else if (uiType.equals("url")) 
@@ -375,9 +445,9 @@ public class ViewFactory
                         {
                             JComboBox cbx;
                             
-                            String valStr = value.toString();
+                            //String valStr = value.toString();
                             String[] initArray = getStringArray(cellField.getInitialize());
-                            int inx = -1;
+                            /*int inx = -1;
                             for (int i =0;i<initArray.length;i++)
                             {
                                 if (initArray[i].equals(valStr))
@@ -385,7 +455,7 @@ public class ViewFactory
                                     inx = i;
                                     break;
                                 }
-                            }
+                            }*/
                             
                             if (validator != null)
                             {
@@ -395,13 +465,13 @@ public class ViewFactory
                             } else
                             { 
                                 cbx = new JComboBox(initArray);
-                             }
-                            cbx.setSelectedIndex(inx);
+                            }
+                            //cbx.setSelectedIndex(inx);
                             compToAdd = cbx;
                             
                         } else if (uiType.equals("checkbox")) 
                         {
-                            compToAdd = new JCheckBox("", value.toString().equals("true")); 
+                            compToAdd = new JCheckBox(cellField.getLabel()); 
                             
                         } else if (uiType.equals("password")) 
                         {
@@ -425,11 +495,24 @@ public class ViewFactory
                             
                         } else if (uiType.equals("textarea")) 
                         {
-                            JTextArea ta = new JTextArea(value.toString(), cellField.getRows(), cellField.getCols());
-                            JScrollPane scrollPane = new JScrollPane(ta);
-                            //sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                            //sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+                            JTextArea ta = new JTextArea("", cellField.getRows(), cellField.getCols());
                             
+                            //System.out.println(ta.getPreferredScrollableViewportSize());
+                            System.out.println(ta.getPreferredSize());
+                            
+                            ta.setLineWrap(true);
+                            ta.setWrapStyleWord(true);
+                            
+                            JScrollPane scrollPane = new JScrollPane(ta);
+                            System.out.println(scrollPane.getPreferredSize());
+
+                            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+                            
+                            //String str = scrollPane.getPreferredSize().width+"px,p";
+                            //builder.add(compToAdd, cc.xywh(colInx, rowInx, colspan, rowspan, str));
+                            
+                            compToReg = ta;
                             compToAdd = scrollPane;
                             
                         } else if (uiType.equals("browse")) 
@@ -499,13 +582,18 @@ public class ViewFactory
                         FormCellCommand cellCmd = (FormCellCommand)cell;
                         JButton btn  = new JButton(cellCmd.getLabel());
                         btn.addActionListener(new CommandActionWrapper(new CommandAction(cellCmd.getCommandType(), cellCmd.getAction(), value)));
+                        addToValidator = false;
                         compToAdd = btn;
                         
                     } else if (cell.getType() == FormCell.CellType.separator) 
                     {
                         compToAdd = null;
                         Component sep = builder.addSeparator(((FormCellSeparator)cell).getLabel(), cc.xyw(colInx, rowInx, cell.getColspan()));
-                        formViewObj.addControl(cell.getName(), sep);
+                        if (cell.getName().length() > 0)
+                        {
+                            formViewObj.addControl(cell, sep);
+                        }
+                        curMaxRow = rowInx;
                         colInx += 2;
                         
                     } else if (cell.getType() == FormCell.CellType.subview) 
@@ -518,8 +606,333 @@ public class ViewFactory
                         if (subFormView != null)
                         {
                             FormViewObj subView = buildFormView(subFormView, null, formViewObj);
+                            
+                            
+                            //JPanel panel = (JPanel)subView.getUIComponent();
+                            //panel.setBackground(Color.BLUE);
+                            //panel.getComponent(0).setBackground(Color.RED);
+                            //panel.getComponent(0).getComponent(0).setBackground(Color.YELLOW);
+                            
+                            builder.add(subView.getUIComponent(), cc.xywh(colInx, rowInx, cellSubView.getColspan(), 1, "fill,fill"));
+                            formViewObj.addSubView(cell, subView);
+                            curMaxRow = rowInx;
+                            
+                        } else 
+                        {
+                            System.err.println("buildFormView - Could find subview's with name["+cellSubView.getViewSetName()+"] id["+subViewId+"]");
+                        }
+                        compToAdd = null;
+                        colInx += 2;
+                    }
+                    
+                    if (compToAdd != null)
+                    {
+                        //System.out.println(colInx+"  "+rowInx+"  "+colspan+"  "+rowspan+"  "+compToAdd.getClass().toString());
+                        
+                        
+                        builder.add(compToAdd, cc.xywh(colInx, rowInx, colspan, rowspan));
+
+                        curMaxRow = Math.max(curMaxRow, rowspan+rowInx);
+                        
+                        if (addControl)
+                        {
+                            formViewObj.addControl(cell, compToReg == null ? compToAdd : compToReg);
+                        }
+                        
+                        if (validator != null && addToValidator)
+                        {
+
+                            validator.addUIComp(cell.getName(), compToReg == null ? compToAdd : compToReg);
+                        }
+                        colInx += colspan + 1;
+                     }
+                    
+                }                
+                rowInx += 2;
+            }
+            
+            if (parentView == null)
+            {
+                builder.getPanel().setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+            }
+            
+            if (formView.isValidated())
+            {
+                validatedPanel.addPanel(builder.getPanel());
+                
+                // Here we add all the components whether they are used or not
+                // XXX possible optimization is to only load the ones being used (although I am not sure how we will know that)
+                Map<String, Component> mapping = formViewObj.getControlMapping();
+                for (String name : mapping.keySet())
+                {
+                    validatedPanel.addValidationComp(name, mapping.get(name));
+                }               
+                Map<String, String> enableRules = formView.getEnableRules();
+                
+                // Load up validation Rules
+                FormValidator fv = validatedPanel.getFormValidator();
+                formViewObj.setValidator(fv);
+                
+                for (String name : enableRules.keySet())
+                {
+                    fv.addEnableRule(name, enableRules.get(name));
+                }
+                
+                // Load up labels and associate them with there component
+                for (String nameFor : labelsForHash.keySet())
+                {
+                    fv.addUILabel(nameFor, labelsForHash.get(nameFor));
+                }
+                
+                
+                formViewObj.setFormComp(validatedPanel);
+            } else
+            {
+                formViewObj.setFormComp(builder.getPanel());
+            }
+            
+            return formViewObj;
+
+        } catch (Exception e)
+        {
+            System.err.println("buildPanel - Outer id["+formView.getId()+"]  Name["+formView.getName()+"]");
+            e.printStackTrace();
+        }
+        return null;
+    } 
+    
+    /**
+     * @param formView
+     * @param dataObj
+     * @param classObj
+     * @param parentView
+     * @return
+     */
+    /*public FormViewObj buildFormViewNew(final FormFormView formView, 
+                                        final Object       dataObj, 
+                                        final FormViewObj  parentView)
+    {
+        if (formView == null) return null;
+        
+        try 
+        {
+            Class classObj = dataObj != null ? dataObj.getClass() : null;
+            if (classObj == null)
+            {
+                classObj = Class.forName(formView.getClassName());
+            }
+            
+            Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
+            
+            FormViewObj     formViewObj    = new FormViewObj(parentView, formView, dataObj);
+            ValidatedJPanel validatedPanel = null;
+            FormValidator   validator      = null;
+            
+            Object currDataObj = formViewObj.getCurrentDataObj();
+            
+            if (formView.isValidated())
+            {
+                validatedPanel = new ValidatedJPanel();
+                validator      = validatedPanel.getFormValidator();
+            }
+            
+            // Figure columns
+            PanelBuilder    builder    = new PanelBuilder(new FormLayout(formView.getColumnDef(), formView.getRowDef()));
+            CellConstraints cc         = new CellConstraints();
+            
+            int rowInx = 1;
+            for (FormRow row : formView.getRows())
+            {
+                int colInx = 1;
+                for (FormCell cell : row.getCells()) 
+                {
+                    JComponent compToAdd = null;    
+                    
+                    String     fieldName = cell.getName();                 
+                    int        colspan   = cell.getColspan();
+                    int        rowspan   = cell.getRowspan();
+                    
+                    boolean    addToValidator = true;
+                    
+                    if (cell.getType() == FormCell.CellType.label)
+                    {
+                        FormCellLabel cellLabel = (FormCellLabel)cell;
+                        String        lblStr    = cellLabel.getLabel();
+                        JLabel        lbl        = new JLabel(lblStr.length() > 0 ? lblStr + ":" : lblStr, JLabel.RIGHT);
+                        labelsForHash.put(cellLabel.getLabelFor(), lbl);
+                        
+                        compToAdd      = lbl;
+                        addToValidator = false;
+                       
+                    } else if (cell.getType() == FormCell.CellType.field)
+                    {
+                        FormCellField cellField = (FormCellField)cell;
+                        String uiType = cellField.getUiType();
+                        
+                        
+                        if (uiType == null || uiType.length() == 0)
+                        {
+                            uiType = "text";
+                        }
+                        
+                        if (uiType.equals("text"))
+                        {
+                            compToAdd = createTextField(validator, 
+                                                        "",
+                                                        cellField.getName(), 
+                                                        cellField.getCols(), 
+                                                        cellField.isRequired(),
+                                                        cellField.getValidationType(),  
+                                                        cellField.getValidationRule());
+                            addToValidator = validator == null;
+                            
+                        
+                        } else if (uiType.equals("label")) 
+                        {
+                            compToAdd = new JLabel("", JLabel.LEFT);
+                            
+                        } else if (uiType.equals("img")) 
+                        {
+                            //ImageDisplay imgDisp = new ImageDisplay();
+                            compToAdd = null;//imgDisp;
+                            addToValidator = false;
+                            
+                        } else if (uiType.equals("url")) 
+                        {
+                            JButton btn = new JButton("Show");
+                            compToAdd = btn;
+                            addToValidator = false;
+                            
+                        } else if (uiType.equals("combobox")) 
+                        {
+                            JComboBox cbx;
+                            
+                            String valStr = formView.getDataGettable() != null ? formView.getDataGettable().getFieldValue(currDataObj, fieldName).toString() : "";
+                            String[] initArray = getStringArray(cellField.getInitialize());
+                            int inx = -1;
+                            for (int i =0;i<initArray.length;i++)
+                            {
+                                if (initArray[i].equals(valStr))
+                                {
+                                    inx = i;
+                                    break;
+                                }
+                            }
+                            
+                            if (validator != null)
+                            {
+                                cbx = validator.createComboBox(cellField.getName(), initArray);
+                                addToValidator = false;
+                                
+                            } else
+                            { 
+                                cbx = new JComboBox(initArray);
+                             }
+                            cbx.setSelectedIndex(inx);
+                            compToAdd = cbx;
+                            
+                        } else if (uiType.equals("checkbox")) 
+                        {
+                            compToAdd = new JCheckBox(cellField.getName()); 
+                            
+                        } else if (uiType.equals("password")) 
+                        {
+                            JTextField txt;
+                            if (validator != null && (cellField.isRequired() || cellField.getValidationRule().length() > 0))
+                            {
+                                
+                                txt = validator.createPasswordField(cellField.getName(), 
+                                                                    cellField.getCols(), 
+                                                                    cellField.isRequired(),
+                                                                    cellField.isEncrypted(),
+                                                                    parseValidationType(cellField.getValidationType()),  // "OK" if error parsing
+                                                                    cellField.getValidationRule());
+                                addToValidator = false;
+                            } else
+                            {
+                                txt = new JTextField(cellField.getCols());
+                            }
+                            compToAdd = txt;     
+                            
+                        } else if (uiType.equals("textarea")) 
+                        {
+                            JTextArea ta = new JTextArea("", cellField.getRows(), cellField.getCols());
+                            
+                            System.out.println(ta.getPreferredScrollableViewportSize());
+                            System.out.println(ta.getPreferredSize());
+                            
+                            ta.setLineWrap(true);
+                            ta.setWrapStyleWord(true);
+                            JScrollPane scrollPane = new JScrollPane(ta);
+                            //sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                            //sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+                            
+                            compToAdd = scrollPane;
+                            
+                        } else if (uiType.equals("browse")) 
+                        {
+                            
+                            JTextField textField = createTextField(validator, 
+                                                                   "",
+                                                                   cellField.getName(), 
+                                                                   cellField.getCols(), 
+                                                                   cellField.isRequired(),
+                                                                   cellField.getValidationType(),  
+                                                                   cellField.getValidationRule());
+
+                            BrowseBtnPanel bbp = new BrowseBtnPanel(textField);
+                            compToAdd = bbp;
+                            
+                        } else if (uiType.equals("colorchooser")) 
+                        {
+                            ColorWrapper cw           = new ColorWrapper(Color.WHITE); // set a default (arbitrary color)
+                            ColorChooser colorChooser = new ColorChooser(cw.getColor());
+                            
+                            if (validator != null)
+                            {
+                                DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getName(), colorChooser, null);
+                                colorChooser.addPropertyChangeListener("setValue", dcn);
+                            }
+                            compToAdd = colorChooser;
+                                
+                            
+                        } else
+                        {
+                            throw new RuntimeException("Don't recognize uitype=["+uiType+"]");
+                        }
+
+
+                    } else if (cell.getType() == FormCell.CellType.command) 
+                    {
+                        Object value = formView.getDataGettable() != null ? formView.getDataGettable().getFieldValue(currDataObj, fieldName) : null;
+                        FormCellCommand cellCmd = (FormCellCommand)cell;
+                        JButton btn  = new JButton(cellCmd.getLabel());
+                        btn.addActionListener(new CommandActionWrapper(new CommandAction(cellCmd.getCommandType(), cellCmd.getAction(), value)));
+                        addToValidator = false;
+                        compToAdd = btn;
+                        
+                    } else if (cell.getType() == FormCell.CellType.separator) 
+                    {
+                        compToAdd = null;
+                        Component sep = builder.addSeparator(((FormCellSeparator)cell).getLabel(), cc.xyw(colInx, rowInx, cell.getColspan()));
+                        if (cell.getName().length() > 0)
+                        {
+                            formViewObj.addControl(cell, sep);
+                        }
+                        colInx += 2;
+                        
+                    } else if (cell.getType() == FormCell.CellType.subview) 
+                    {
+                        FormCellSubView cellSubView = (FormCellSubView)cell;
+                        
+                        int    subViewId     = cellSubView.getId();
+                        
+                        FormView subFormView = ViewMgr.getView(cellSubView.getViewSetName(), subViewId);                       
+                        if (subFormView != null)
+                        {
+                            FormViewObj subView = buildFormView(subFormView, null, null);//formViewObj);
                             builder.add(subView.getUIComponent(), cc.xyw(colInx, rowInx, cellSubView.getColspan()));
-                            formViewObj.addControl(cell.getName(), subView.getUIComponent());
+                            formViewObj.addControl(cell, subView.getUIComponent());
                         
                         } else 
                         {
@@ -534,7 +947,7 @@ public class ViewFactory
                         builder.add(compToAdd, cc.xywh(colInx, rowInx, colspan, rowspan));
                         if (!(compToAdd instanceof JLabel))
                         {
-                            formViewObj.addControl(cell.getName(), compToAdd);
+                            formViewObj.addControl(cell, compToAdd);
                         }
                         
                         if (validator != null && addToValidator)
@@ -582,10 +995,10 @@ public class ViewFactory
                 }
                 
                 
-                formViewObj.setComp(validatedPanel);
+                formViewObj.setFormComp(validatedPanel);
             } else
             {
-                formViewObj.setComp(builder.getPanel());
+                formViewObj.setFormComp(builder.getPanel());
             }
             
             return formViewObj;
@@ -596,7 +1009,7 @@ public class ViewFactory
             e.printStackTrace();
         }
         return null;
-    } 
+    } */
     
     /**
      * Creates a FormView
@@ -605,6 +1018,10 @@ public class ViewFactory
      */
     public static FormViewable createView(FormView formView)
     {
+        if (scrDateFormat == null)
+        {
+            scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+        }
         //try
         //{
             if (formView.getType() == FormView.ViewType.form)

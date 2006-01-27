@@ -3,7 +3,10 @@ package edu.ku.brc.specify.helpers;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Vector;
+import java.util.GregorianCalendar;
 
 import javax.swing.UIManager;
 
@@ -19,8 +22,9 @@ import edu.ku.brc.specify.ui.dnd.GhostDataAggregatable;
 public final class UIHelper
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(UIHelper.class);
-
+    private static Log        log      = LogFactory.getLog(UIHelper.class);
+    protected static Calendar calendar = new GregorianCalendar();
+    
     /**
      * Center and make the window visible
      * @param window the window to center
@@ -87,6 +91,48 @@ public final class UIHelper
         return strBuf.toString();
     }
     
+    /**
+     * Converts an integer time in the form of YYYYMMDD to the proper Date
+     * @param iDate the int to be converted
+     * @return the date object 
+     */
+    public static Date convertIntToDate(final int iDate)
+    {
+        calendar.clear();
+        
+        int year  = iDate / 10000;
+        if (year > 1800)
+        {
+            int tmp   = (iDate - (year * 10000));
+            int month = tmp / 100;
+            int day   = (tmp - (month * 100));
+            
+            calendar.set(year, month-1, day);
+        } else
+        {
+            calendar.setTimeInMillis(0);
+        }
+        
+        return calendar.getTime();    
+    }
+    
+    /**
+     * Converts a Date to an Integer formated as YYYYMMDD
+     * @param date the date to be converted
+     * @return the date object 
+     */
+    public static int convertDateToInt(final Date date)
+    {
+        calendar.setTimeInMillis(date.getTime());
+        
+        return (calendar.get(Calendar.YEAR) * 10000) + ((calendar.get(Calendar.MONTH)+1) * 100) + calendar.get(Calendar.DAY_OF_MONTH);  
+    }
+    
+    /**
+     * Converts Object to a Float
+     * @param valObj the object in question
+     * @return a float
+     */
     public static float getFloat(Object valObj)
     {
         float value = 0.0f;

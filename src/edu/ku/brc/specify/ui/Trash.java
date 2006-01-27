@@ -67,7 +67,7 @@ public class Trash extends JComponent implements GhostActionable
     // Static Data Members
     public static final DataFlavor TRASH_FLAVOR = new DataFlavor(Trash.class, "Trash");
     
-    private static Trash instance = new Trash();
+    private static final Trash instance = new Trash();
     
     // These used for the Ghosting
     protected static final int SHADOW_SIZE = 10;

@@ -44,8 +44,8 @@ public class PluginMgr
 {
 
     // Static Data Members
-    private static Log log = LogFactory.getLog(PluginMgr.class);
-    private static PluginMgr instance = new PluginMgr();
+    private static final Log log = LogFactory.getLog(PluginMgr.class);
+    private static final PluginMgr instance = new PluginMgr();
     
     // Data Members
     protected Hashtable<String, TaskPluginable> plugins = new Hashtable<String, TaskPluginable>();

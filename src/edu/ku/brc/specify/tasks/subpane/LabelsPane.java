@@ -23,30 +23,34 @@ package edu.ku.brc.specify.tasks.subpane;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
+import java.io.File;
 import java.util.HashMap;
-import java.util.*;
-import java.io.*;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import net.sf.jasperreports.engine.*;
-import net.sf.jasperreports.engine.util.*;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.fill.AsynchronousFillHandle;
 import net.sf.jasperreports.engine.fill.AsynchronousFilllListener;
+import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.view.JRViewer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.core.Taskable;
-import edu.ku.brc.specify.dbsupport.*;
+import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.RecordSetItem;
+import edu.ku.brc.specify.dbsupport.DBConnection;
+import edu.ku.brc.specify.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.datamodel.*;
 
 
 /**
@@ -151,25 +155,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                     itemnum = "= " + itemnum;
                 } else
                 {
-                    StringBuffer strBuf = new StringBuffer(" in (");
-                    Set set = recordSet.getItems();
-                    if (set == null)
-                    {
-                        throw new RuntimeException("RecordSet items is null!");
-                    }                    
-                    int i = 0;
-                    for (Iterator iter=set.iterator();iter.hasNext();)
-                    {
-                        RecordSetItem rsi = (RecordSetItem)iter.next();
-                        if (i > 0)
-                        {
-                            strBuf.append(",");
-                        }
-                        strBuf.append(rsi.getRecordId());
-                        i++;
-                    }
-                    strBuf.append(")");
-                    itemnum = strBuf.toString();
+                    itemnum = DBTableIdMgr.getInClause(recordSet);
                 }
                 
                 JasperReport jasperReport = (JasperReport)JRLoader.loadObject(compiledFile.getAbsoluteFile());

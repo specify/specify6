@@ -10,16 +10,18 @@ import java.util.*;
  *         table="prepattrs"
  *     
  */
-public class PrepAttrs  implements java.io.Serializable {
+public class PrepAttrs  implements AttrsSettableGettable,java.io.Serializable {
 
     // Fields    
 
      protected Integer prepAttrsId;
      protected String name;
-     protected String value;
+     protected String strValue;
+     protected Integer intValue;
      protected Integer fieldType;
      protected Integer unit;
-     protected Integer prepDate;
+     protected Date timestampCreated;
+     protected Date timestampModified;
      protected String remarks;
      private PrepsObj prepsObj;
      private TaxonName taxonName;
@@ -72,16 +74,30 @@ public class PrepAttrs  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="value"
+     *             column="strValue"
      *             length="128"
      *         
      */
-    public String getValue() {
-        return this.value;
+    public String getStrValue() {
+        return this.strValue;
     }
     
-    public void setValue(String value) {
-        this.value = value;
+    public void setStrValue(String strValue) {
+        this.strValue = strValue;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="intValue"
+     *             length="10"
+     *         
+     */
+    public Integer getIntValue() {
+        return this.intValue;
+    }
+    
+    public void setIntValue(Integer intValue) {
+        this.intValue = intValue;
     }
 
     /**
@@ -114,16 +130,30 @@ public class PrepAttrs  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="prepDate"
-     *             length="10"
+     *             column="TimestampCreated"
+     *             length="23"
      *         
      */
-    public Integer getPrepDate() {
-        return this.prepDate;
+    public Date getTimestampCreated() {
+        return this.timestampCreated;
     }
     
-    public void setPrepDate(Integer prepDate) {
-        this.prepDate = prepDate;
+    public void setTimestampCreated(Date timestampCreated) {
+        this.timestampCreated = timestampCreated;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="TimestampModified"
+     *             length="23"
+     *         
+     */
+    public Date getTimestampModified() {
+        return this.timestampModified;
+    }
+    
+    public void setTimestampModified(Date timestampModified) {
+        this.timestampModified = timestampModified;
     }
 
     /**

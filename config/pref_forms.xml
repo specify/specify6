@@ -12,7 +12,15 @@
     	<desc><![CDATA[EMail Preference Form.]]></desc>
     	
     	<enableRules>
-    		<rule name="localmailbox"><![CDATA[accounttype.getSelectedIndex() == 0]]></rule>
+    		<rule name="localmailbox"><![CDATA[accounttype.getSelectedIndex() == 1]]></rule>
+    		
+    		<rule name="accountname"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
+    		<rule name="servername"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
+    		<rule name="smtp"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
+    		<rule name="username"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
+    		<rule name="password"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
+    		<rule name="email"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
+    		
     	</enableRules>
     	
 		<columnDef>r:p, 2dlu, l:p, 5dlu, r:p, 2dlu, l:p</columnDef>
@@ -24,7 +32,7 @@
 			</row>
 			<row>
 				<cell type="label" name="accounttypeLabel" labelfor="accounttype" label="accounttype"/>
-				<cell type="field" uitype="combobox" name="accounttype" initialize="POP3, IMAP"/>
+				<cell type="field" uitype="combobox" name="accounttype" initialize="Not in use, POP3, IMAP"/>
 			</row>				
 			<row>
 				<cell type="label" name="accountnameLabel" labelfor="accountname" label="accountname"/>
@@ -38,7 +46,7 @@
 				<cell type="field" uitype="text" cols="20" name="smtp" isrequired="true"/>
 			</row>				
 			<row>
-				<cell type="label" ame="localmailboxLabel" labelfor="localmailbox" label="localmailbox"/>
+				<cell type="label" name="localmailboxLabel" labelfor="localmailbox" label="localmailbox"/>
 				<cell type="field" name="localmailbox" cols="20" colspan="5" uitype="browse" isrequired="true"/>
 			</row>
 			<row>

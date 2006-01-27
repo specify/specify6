@@ -80,7 +80,6 @@ import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.plugins.PluginMgr;
 import edu.ku.brc.specify.prefs.PrefMainPanel;
 import edu.ku.brc.specify.prefs.PrefsCache;
-import edu.ku.brc.specify.prefs.ColorWrapper;
 import edu.ku.brc.specify.tasks.DataEntryTask;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.InteractionsTask;
@@ -90,6 +89,7 @@ import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.specify.tasks.ReportsTask;
 import edu.ku.brc.specify.tasks.StartUpTask;
 import edu.ku.brc.specify.tasks.StatsTask;
+import edu.ku.brc.specify.ui.ColorWrapper;
 import edu.ku.brc.specify.ui.GenericFrame;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.MainPanel;
@@ -147,7 +147,7 @@ public class Specify extends JPanel
     private GraphicsConfiguration grc;
     
     // Global Prefs Registered into the Cache
-    SimpleDateFormat screenDateFormat = null;
+
     
 
   
@@ -171,10 +171,12 @@ public class Specify extends JPanel
      */
     public Specify(GraphicsConfiguration gc)
     {
-        UICacheManager.setRootPrefClass(Specify.class);
+        AppPrefs.initialPrefs();
+        
         UICacheManager.register(UICacheManager.MAINPANE, this); // important to be done immediately
         
         initPrefs();
+        
         
         // Create and throw the splash screen up. Since this will
         // physically throw bits on the screen, we need to do this
@@ -238,6 +240,7 @@ public class Specify extends JPanel
         {
             //ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("pref_forms.xml"));
             ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("form.xml"));
+            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("fish_forms.xml"));
             
         } catch (Exception ex)
         {
@@ -320,13 +323,7 @@ public class Specify extends JPanel
      */
     protected void initPrefs()
     {
-        FastDateFormat fastDateFormat = FastDateFormat.getDateInstance(FastDateFormat.SHORT);      
-        screenDateFormat = new SimpleDateFormat(fastDateFormat.getPattern());
-        PrefsCache.register(screenDateFormat, "ui", "formatting", "scrdateformat");
-        
-        ColorWrapper valtextcolor = new ColorWrapper(Color.RED);
-        PrefsCache.register(valtextcolor, "ui", "formatting", "valtextcolor");
-        
+
         boolean skip = false;
         if (skip)
         {

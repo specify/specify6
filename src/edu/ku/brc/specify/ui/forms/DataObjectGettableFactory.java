@@ -31,7 +31,7 @@ import java.util.Hashtable;
 public class DataObjectGettableFactory
 {
     // Static Data Members
-    protected static DataObjectGettableFactory instance  = new DataObjectGettableFactory();
+    protected static final DataObjectGettableFactory instance  = new DataObjectGettableFactory();
     
     // Data Members
     protected Hashtable<String, Hashtable<String, DataObjectGettable>> hashTable = new Hashtable<String, Hashtable<String, DataObjectGettable>>();

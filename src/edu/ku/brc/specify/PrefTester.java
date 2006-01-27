@@ -52,9 +52,9 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.helpers.XMLHelper;
-import edu.ku.brc.specify.prefs.ColorWrapper;
 import edu.ku.brc.specify.prefs.PrefMainPanel;
 import edu.ku.brc.specify.prefs.PrefsCache;
+import edu.ku.brc.specify.ui.ColorWrapper;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
@@ -82,8 +82,8 @@ public class PrefTester
      */
     private void initialize() 
     {
-        UICacheManager.setRootPrefClass(Specify.class);
-       
+        AppPrefs.initialPrefs();
+        
         try 
         { 
             //System.out.println(System.getProperty("os.name"));
@@ -115,17 +115,7 @@ public class PrefTester
         
         
         //initPrefs();
-        
-        FastDateFormat fastDateFormat = FastDateFormat.getDateInstance(FastDateFormat.SHORT);      
-        screenDateFormat = new SimpleDateFormat(fastDateFormat.getPattern());
-        PrefsCache.register(screenDateFormat, "ui", "formatting", "scrdateformat");
-        
 
-        ColorWrapper valtextcolor = new ColorWrapper(Color.RED);
-        PrefsCache.register(valtextcolor, "ui", "formatting", "valtextcolor");
-
-        ColorWrapper requiredFieldColor = new ColorWrapper(215,230, 253);
-        PrefsCache.register(requiredFieldColor, "ui", "formatting", "requiredfieldcolor");
 
         // load form definitions for Preferences (Might want to move this to a preference Class
         try

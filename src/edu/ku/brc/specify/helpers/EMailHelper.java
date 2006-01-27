@@ -69,7 +69,7 @@ public class EMailHelper
     public static final String PLAIN_TEXT = "text/plain";
     public static final String HTML_TEXT  = "text/html";
     
-    protected static EMailHelper instance     = new EMailHelper();
+    protected static final EMailHelper instance     = new EMailHelper();
     
     // Data Members
     protected String            lastErrorMsg = "";
