@@ -130,7 +130,7 @@ public class PickListDBAdapter
     {
         searchablePLI.setTitle(title);
         int index = Collections.binarySearch(items, searchablePLI);
-        if (index == -1)
+        if (index < 0)
         {
             PickListItem item = new PickListItem(title, value);
             items.add(item);

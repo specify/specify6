@@ -91,7 +91,8 @@ public class JAutoCompTextField extends JTextField
                     String s = getText();
                     if (foundMatch)
                     {
-                        System.out.println(s+"["+s.substring(0, s.length()-1)+"]");
+                        //System.out.println("len ["+s.length()+"]");
+                        //System.out.println(s+"["+s.substring(0, s.length()-1)+"]");
                         setText(s.substring(0, s.length()-1));
                         
                     }
@@ -103,18 +104,15 @@ public class JAutoCompTextField extends JTextField
                     {
                         addNewItemFromTextField();
                     }
-                    System.out.println("Key Code "+ev.getKeyCode()+"  Pos: "+getCaretPosition()+"  Del: "+KeyEvent.VK_DELETE);
+                    //System.out.println("Key Code "+ev.getKeyCode()+"  Pos: "+getCaretPosition()+"  Del: "+KeyEvent.VK_DELETE);
                     
                     if (ev.getKeyCode() == KeyEvent.VK_END)// || ev.getKeyCode() == KeyEvent.VK_SHIFT)
                     {
                         setSelectionStart(prevCaretPos);
                         setSelectionEnd(getText().length());
                     }
-
-                    //System.out.println("Returning...");                            
                     return;
                 }
-                //System.out.println("NOT Returning");
                 
                 caretPos = getCaretPosition();
                 String text = "";
@@ -234,7 +232,6 @@ public class JAutoCompTextField extends JTextField
     {
 
         int inx = dbAdapter.getList().indexOf(getText());
-        System.out.println(inx);
         
         if (inx != -1) // accepting value and setting the selection to null 
         {

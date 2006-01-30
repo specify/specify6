@@ -29,10 +29,12 @@ import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
+import javax.swing.text.BadLocationException;
 
 /**
  * An editable JComboBox that enables auto-completion which is supported through PickList/PickListItem. 
- * The searches in the list can be case-sensitive or insensitive
+ * The searches in the list can be case-sensitive or insensitive. 
+ * You can also set it to ask if new items should be added.
  * 
  * @author rods
  *
@@ -45,10 +47,9 @@ public class JAutoCompComboBox extends JComboBox
     protected boolean            caseInsensitve  = true;
 
     protected JTextField         tf              = null;
-    protected JAutoCompComboBox  cbx             = null;
     protected boolean            foundMatch      = false;
     protected boolean            ignoreFocus     = false;
-    protected boolean            askBeforeSave   = true;
+    protected boolean            askBeforeSave   = false;
     
     protected PickListDBAdapter  dbAdapter       = null;
 
@@ -71,7 +72,6 @@ public class JAutoCompComboBox extends JComboBox
     {
         this.setEditor(new BasicComboBoxEditor());
         this.setEditable(true);
-        cbx = this;
         setSelectedItem("");     
     }
     
@@ -183,6 +183,64 @@ public class JAutoCompComboBox extends JComboBox
             }
         }        
     }
+    
+    protected void lookForMatch()
+    {
+        String s   = tf.getText();
+        int    len = s.length();
+        if (len == 0)
+        {
+            setSelectedIndex(-1);
+            foundMatch = false;
+            return;
+        }
+        
+        //System.out.println(s);
+        caretPos = tf.getCaretPosition();
+        String text = "";
+        try
+        {
+            text = tf.getText(0, caretPos);
+            
+        } catch (BadLocationException ex)
+        {
+            ex.printStackTrace();
+        }
+        
+        String textLowerCase = text.toLowerCase();
+        
+        foundMatch = true;
+        int n = getItemCount();
+        for (int i = 0; i < n; i++)
+        {
+            int ind;
+            if (caseInsensitve) 
+            {
+                String item = ((PickListItem)getItemAt(i)).getTitle().toLowerCase();
+                ind = item.indexOf(textLowerCase);
+            } else
+            {
+                ind = ((PickListItem)getItemAt(i)).getTitle().indexOf(text);
+            }
+            
+            if (ind == 0)
+            {
+                setSelectedIndex(i);
+                return;
+            }
+        }
+        
+        // When not doing "additions" ...
+        // At this point there was no match so "if" there had been one before there isn't now
+        // so remove the last character typed and check to see if there is a match again.
+        if (!enableAdditions && len > 0)
+        {
+            tf.setText(s.substring(0, len-1));
+            lookForMatch();
+            return;
+        }
+        foundMatch = false;        
+    }
 
     /* (non-Javadoc)
      * @see javax.swing.JComboBox#setEditor(javax.swing.ComboBoxEditor)
@@ -193,7 +251,8 @@ public class JAutoCompComboBox extends JComboBox
         if (anEditor.getEditorComponent() instanceof JTextField)
         {
             tf = (JTextField) anEditor.getEditorComponent();
-            tf.addFocusListener(new FocusAdapter() {
+            tf.addFocusListener(new FocusAdapter() 
+            {
                 public void focusLost(FocusEvent e)
                 {
                     addNewItemFromTextField();
@@ -215,17 +274,32 @@ public class JAutoCompComboBox extends JComboBox
                     char key = ev.getKeyChar();
                     if (ev.getKeyCode() == KeyEvent.VK_BACK_SPACE)
                     {
-                        String s = tf.getText();
+                        String s   = tf.getText();
+                        int    len = s.length();
                         //System.out.println(s+" getSelectedIndex() "+getSelectedIndex());
-                        if (foundMatch)
+                        if (len == 0)
                         {
-                            //System.out.println(s+"["+s.substring(0, s.length()-1)+"]");
-                            tf.setText(s.substring(0, s.length()-1));
+                            foundMatch = false;
+                            setSelectedIndex(-1);
+                            return;
                             
+                        } else
+                        {
+                            if (foundMatch)
+                            {
+                                //System.out.println(s+"["+s.substring(0, s.length()-1)+"]");
+                                tf.setText(s.substring(0, len-1));
+                                
+                            } else if (!enableAdditions && len > 0)
+                            {
+                                tf.setText(s.substring(0, len-1));
+                                lookForMatch();
+                                return;
+                            }
                         }
                         
                     } else if ((!(Character.isLetterOrDigit(key) || Character.isSpaceChar(key))) && 
-                            ev.getKeyCode() != KeyEvent.VK_DELETE)
+                                 ev.getKeyCode() != KeyEvent.VK_DELETE)
                     {
                         if (ev.getKeyCode() == KeyEvent.VK_ENTER) 
                         {
@@ -244,45 +318,7 @@ public class JAutoCompComboBox extends JComboBox
                     }
                     //System.out.println("NOT Returning");
                     
-                    String s = tf.getText();
-                    if (s.length() == 0)
-                    {
-                        setSelectedIndex(-1);
-                    }
-                    //System.out.println(s);
-                    caretPos = tf.getCaretPosition();
-                    String text = "";
-                    try
-                    {
-                        text = tf.getText(0, caretPos);
-                        
-                    } catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                    }
-                    
-                    String textLowerCase = text.toLowerCase();
-                    
-                    foundMatch = true;
-                    int n = getItemCount();
-                    for (int i = 0; i < n; i++)
-                    {
-                        int ind;
-                        if (caseInsensitve) 
-                        {
-                            String item = ((PickListItem)getItemAt(i)).getTitle().toLowerCase();
-                            ind = item.indexOf(textLowerCase);
-                        } else
-                        {
-                            ind = ((PickListItem)getItemAt(i)).getTitle().indexOf(text);
-                        }
-                        if (ind == 0)
-                        {
-                            setSelectedIndex(i);
-                            return;
-                        }
-                    }
-                    foundMatch = false;
+                    lookForMatch();
                 }
             });
         }
@@ -296,7 +332,7 @@ public class JAutoCompComboBox extends JComboBox
      */
     public static JAutoCompComboBox create(final int id)
     {
-        PickListDBAdapter adaptor = new PickListDBAdapter(1);
+        PickListDBAdapter adaptor = new PickListDBAdapter(id);
         return new JAutoCompComboBox(adaptor);
     }
   
