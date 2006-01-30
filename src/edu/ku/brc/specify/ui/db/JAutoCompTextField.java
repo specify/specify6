@@ -260,12 +260,23 @@ public class JAutoCompTextField extends JTextField
     }
 
     /**
-     * Creates an AutoComplete JComboBox with the "ID" of the pick list it is to use.
-     * @param id the id of the pick list
+     * Creates an AutoComplete JComboBox with the name of the pick list it is to use.
+     * @param name the name of the picklist to create
+     * @param readOnly whether new items can be added to it or not
+     * @param sizeLimit the size of list when items can be added (arg is ignored when enableAdditions is false)
+     * @param createWhenNotFound indicates whether to automatically create the picklist when the name is not found,
+     * or throw a runtime exception
      * @return the AutoComplete JComboBox
      */
-    public static JAutoCompTextField create(final int id)
+    public static JAutoCompTextField create(final String  name, 
+                                            final boolean readOnly, 
+                                            final int     sizeLimit,
+                                            final boolean createWhenNotFound)
     {
-        return new JAutoCompTextField(new PickListDBAdapter(id));
+        PickListDBAdapter adaptor = new PickListDBAdapter(name, createWhenNotFound);
+        adaptor.getPickList().setReadOnly(readOnly);
+        adaptor.getPickList().setSizeLimit(sizeLimit);
+        
+        return new JAutoCompTextField(adaptor);
     }
 }

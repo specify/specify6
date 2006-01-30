@@ -157,7 +157,7 @@ public class PickListTestApp
             PanelBuilder    builder    = new PanelBuilder(formLayout);
             CellConstraints cc         = new CellConstraints();
             
-          JAutoCompComboBox cb = JAutoCompComboBox.create(2);
+          JAutoCompComboBox cb = JAutoCompComboBox.create("test_combobox", false, 50, true);
           
           // Create and register the key listener
           cb.setEditable(true); 
@@ -168,7 +168,7 @@ public class PickListTestApp
           builder.add(new JLabel(" (Editable)"), cc.xy(5,y));
           y += 2;
           
-          cb = JAutoCompComboBox.create(1);
+          cb = JAutoCompComboBox.create("states", true, 50, false);
           
           // Create and register the key listener
           cb.setEditable(true); 
@@ -180,7 +180,7 @@ public class PickListTestApp
           builder.add(new JLabel(" (Not Editable)"), cc.xy(5,y));
           y += 2;
           
-          JAutoCompTextField text = JAutoCompTextField.create(3);
+          JAutoCompTextField text = JAutoCompTextField.create("test_textfield", false, 2, true);
           
           text.setAskBeforeSave(false);
           
@@ -393,12 +393,15 @@ public class PickListTestApp
               System.out.println("["+states[i]+"]["+states[i+1]+"]");
               pli.setValue(states[i++]);
               pli.setTitle(states[i]);
+              pli.setCreatedDate(new Date());
               list.add(pli);
           }
                
           PickList pl = new PickList();
-          pl.setPicklist_id(new Integer(1));
+          pl.setName("states");
           pl.setItems(list);
+          pl.setSizeLimit(50); // doesn't matter when readonly
+          pl.setReadOnly(true);
           pl.setCreated(new Date());
           session.save(pl);
 
@@ -427,7 +430,7 @@ public class PickListTestApp
         DBConnection.setDriver("com.mysql.jdbc.Driver");
         DBConnection.setDBName("jdbc:mysql://localhost/demo_fish2");
         
-        // loadData();
+        //loadData();
 
         PickListTestApp pickListTestApp = new PickListTestApp();
         pickListTestApp.initialize();

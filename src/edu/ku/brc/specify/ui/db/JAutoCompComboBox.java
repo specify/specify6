@@ -132,6 +132,7 @@ public class JAutoCompComboBox extends JComboBox
         {
             ignoreFocus = true;
             
+            // XXX I18N
 	        if (!askBeforeSave || JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, 
                                                             "Add new value `"+strArg+"` to the list?", "Add New Item", JOptionPane.YES_NO_OPTION))
 	        {
@@ -141,7 +142,7 @@ public class JAutoCompComboBox extends JComboBox
                     pli = dbAdapter.addItem(strArg, null);
 	            } else
                 {
-                    pli = new PickListItem(strArg, null);
+                    pli = new PickListItem(strArg, null, null); // this is ok because the items will not be saved.
                 }
                 this.addItem(pli);
                 this.setSelectedItem(pli);
@@ -324,15 +325,24 @@ public class JAutoCompComboBox extends JComboBox
         }
     }
     
-  
     /**
-     * Creates an AutoComplete JComboBox with the "ID" of the pick list it is to use.
-     * @param id the id of the pick list
-     * @return the AutoComplete JComboBox
+     * Creates an AutoComplete JComboBox with a name of the pick list it is to use.
+     * @param name the name of the picklist to create
+     * @param readOnly whether new items can be added to it
+     * @param sizeLimit the size of list when items can be added (arg is ignored when enableAdditions is false)
+     * @param createWhenNotFound indicates whether to automatically create the picklist when the name is not found,
+     * or throw a runtime exception
+     * @return the new autocomplete JComboBox
      */
-    public static JAutoCompComboBox create(final int id)
+    public static JAutoCompComboBox create(final String  name, 
+                                           final boolean readOnly, 
+                                           final int     sizeLimit,
+                                           final boolean createWhenNotFound)
     {
-        PickListDBAdapter adaptor = new PickListDBAdapter(id);
+        PickListDBAdapter adaptor = new PickListDBAdapter(name, createWhenNotFound);
+        adaptor.getPickList().setReadOnly(readOnly);
+        adaptor.getPickList().setSizeLimit(sizeLimit);
+        
         return new JAutoCompComboBox(adaptor);
     }
   

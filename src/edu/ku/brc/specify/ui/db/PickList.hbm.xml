@@ -15,25 +15,77 @@
 
     <id name="picklist_id" type="int" column="picklist_id">
       <meta attribute="scope-set">public</meta>
-      <generator class="assigned"/>
+      <meta attribute="scope-field">protected</meta>
+      <generator class="native"/>
     </id>
+    
+    <property
+        name="name"
+        type="java.lang.String"
+        column="name"
+        not-null="true"
+        unique="true"
+        length="64"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="name"
+            length="64"
+            not-null="true"
+        </meta>    
+    </property>
+    
+    <property
+        name="readOnly"
+        type="boolean"
+        column="readonly"
+        not-null="true"
+        length="1"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="readonly"
+            not-null="true"
+            length="1"
+        </meta>    
+    </property>
+    
+    <property
+        name="sizeLimit"
+        type="java.lang.Integer"
+        column="sizeimit"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="sizeimit"
+            length="10"
+        </meta>    
+    </property>
 
 	<!-- We can't change the creation time, so map it with update="false". -->
 	<property   name="created"
 				column="CREATED"
 				type="java.util.Date"
 				update="false"
-				not-null="true"/>
+				not-null="true">
+        <meta attribute="scope-field">protected</meta>
+    </property>    
 
     <!-- Associations -->
 
     <!-- bi-directional one-to-many association to PickListItem -->
     <set
         name="items" table="picklist_items" lazy="false">
-    	<key column="pl_id"/>
+        <meta attribute="scope-field">protected</meta>
+        <key column="pl_id"/>
     	<composite-element class="PickListItem">
     		<property name="title" not-null="true" unique="false" length="64"/>
     		<property name="value" not-null="false" unique="false" length="64"/>
+    		<property name="createdDate" not-null="true"/>
         </composite-element>
     </set>
 	

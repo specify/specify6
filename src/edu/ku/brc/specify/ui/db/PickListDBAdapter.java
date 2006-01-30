@@ -46,12 +46,13 @@ public class PickListDBAdapter
     
     
     /**
-     * Constructor with ID
-     * @param id the id of the picklist
+     * Constructor with a unique name
+     * @param name the name of the picklist
+     * @param createWhenNotFound indicates whether to automatically create the picklist when the name is not found,
      */
-    public PickListDBAdapter(int id)
+    public PickListDBAdapter(final String name, final boolean createWhenNotFound)
     {
-        pickList = getPickListItem(id);
+        pickList = getPickListItem(name);
         
         if (pickList != null)
         {
@@ -63,25 +64,29 @@ public class PickListDBAdapter
             // Always keep the list sorted
             Collections.sort(items);
             
-         } else
+         } else if (createWhenNotFound) 
          {
              pickList = new PickList();
              pickList.setCreated(new Date());
-             pickList.setPicklist_id(id);
+             pickList.setName(name);
              pickList.setItems(new HashSet());
+             
+         } else 
+         {
+             throw new RuntimeException("PickList ["+name+"] was not found and shouldn't have been created!");
          }
      }
     
     /**
      * Gets the PickList Item from the Database
-     * @param id the id of the picklist to get
+     * @param name the name of the picklist to get
      * @return the picklist item
      */
-    protected PickList getPickListItem(int id)
+    protected PickList getPickListItem(final String name)
     {
         try
         {
-	        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(PickList.class).add(Expression.eq("picklist_id", new Integer(id)));
+	        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(PickList.class).add(Expression.eq("name", name));
             
 	        List items = criteria.list();
 	        if (items != null && items.size() > 0)
@@ -101,6 +106,15 @@ public class PickListDBAdapter
         
     }
     
+    /**
+     * Returns the pciklist object
+     * @return Returns the pciklist object
+     */
+    public PickList getPickList()
+    {
+        return pickList;
+    }
+
     /**
      * Returns the list of PickList items
      * @return Returns the list of PickList items
@@ -128,11 +142,40 @@ public class PickListDBAdapter
      */
     public PickListItem addItem(final String title, final String value)
     {
+        // this should never happen!
+        if (pickList.getReadOnly())
+        {
+            throw new RuntimeException("Trying to add an item to a readonly picklist ["+pickList.getName()+"]");
+        }
+        
+        int sizeLimit = 50; // arbitrary size could be a pref (XXX PREF)
+        Integer sizeLimitInt = pickList.getSizeLimit();
+        if (sizeLimitInt != null)
+        {
+            sizeLimit = sizeLimitInt.intValue();
+        }
+        
         searchablePLI.setTitle(title);
         int index = Collections.binarySearch(items, searchablePLI);
         if (index < 0)
         {
-            PickListItem item = new PickListItem(title, value);
+            // find oldest item and remove it
+            if (items.size() >= sizeLimit) 
+            {
+                PickListItem oldest = null;
+                for (PickListItem pli : items)
+                {
+                    if (oldest == null || pli.getCreatedDate().getTime() < oldest.getCreatedDate().getTime())
+                    {
+                        oldest = pli;
+                    }
+                }
+                System.out.println("Removing old item["+oldest.getTitle()+"]");
+                items.remove(oldest);
+                pickList.getItems().remove(oldest);
+            }
+            
+            PickListItem item = new PickListItem(title, value, new Date());
             items.add(item);
             Collections.sort(items);
             
@@ -140,15 +183,9 @@ public class PickListDBAdapter
             {
                 pickList.getItems().add(item);
             }
-            
-            try 
-            {
-                save();
-                
-            } catch (Exception e)
-            {
-                e.printStackTrace();
-            }
+
+            save();
+
             return item;
             
         } else
@@ -161,7 +198,7 @@ public class PickListDBAdapter
      * Persists the picklist and it's items
      * @throws Exception some strange DB exception
      */
-    public void save() throws Exception
+    public void save()
     {
         Session session = HibernateUtil.getCurrentSession();
         
@@ -175,7 +212,7 @@ public class PickListDBAdapter
         } catch (Exception e) 
         {
             HibernateUtil.rollbackTransaction();
-            throw e;
+            e.printStackTrace();
             
         } finally 
         {

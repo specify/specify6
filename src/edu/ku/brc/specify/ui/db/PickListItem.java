@@ -12,6 +12,7 @@ public class PickListItem  implements java.io.Serializable, Comparable<PickListI
 
      private String title;
      private String value;
+     private Date createdDate;
 
 
     // Constructors
@@ -26,12 +27,12 @@ public class PickListItem  implements java.io.Serializable, Comparable<PickListI
 
     // Property accessors
 
-    public PickListItem(String title, String value)
+    public PickListItem(String title, String value, Date createdDate)
     {
         super();
-        // TODO Auto-generated constructor stub
         this.title = title;
         this.value = value;
+        this.createdDate = createdDate;
     }
 
 
@@ -77,5 +78,15 @@ public class PickListItem  implements java.io.Serializable, Comparable<PickListI
         return title;
     }
 
+    /**
+     * 
+     */
+    public Date getCreatedDate() {
+        return this.createdDate;
+    }
+    
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
 
 }
