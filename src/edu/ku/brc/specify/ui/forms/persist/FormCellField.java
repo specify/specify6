@@ -32,6 +32,8 @@ public class FormCellField extends FormCell
     protected boolean  isEncrypted    = false;
     protected String   label          = null;
     
+    protected String   pickListName       = null; // Comboboxes and TextFields
+    
     // Needed for Text Components
     protected int      cols    = 10; // TextField and TextArea
     protected int      rows    = 1; // Text Area Only
@@ -142,6 +144,16 @@ public class FormCellField extends FormCell
     public int getRows()
     {
         return rows;
+    }
+
+    public String getPickListName()
+    {
+        return pickListName;
+    }
+
+    public void setPickListName(String pickListName)
+    {
+        this.pickListName = pickListName;
     }
 
     public void setRows(int rows)

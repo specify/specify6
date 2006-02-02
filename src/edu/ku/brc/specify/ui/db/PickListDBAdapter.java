@@ -170,7 +170,6 @@ public class PickListDBAdapter
                         oldest = pli;
                     }
                 }
-                System.out.println("Removing old item["+oldest.getTitle()+"]");
                 items.remove(oldest);
                 pickList.getItems().remove(oldest);
             }

@@ -19,6 +19,8 @@
  */
 package edu.ku.brc.specify.ui.db;
 
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
@@ -30,7 +32,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
 import javax.swing.text.BadLocationException;
-
 /**
  * An editable JComboBox that enables auto-completion which is supported through PickList/PickListItem. 
  * The searches in the list can be case-sensitive or insensitive. 
@@ -128,7 +129,7 @@ public class JAutoCompComboBox extends JComboBox
             return false;
         }
         
-        if (strArg != null && strArg.length() > 0)
+        if (isNotEmpty(strArg))
         {
             ignoreFocus = true;
             
@@ -139,10 +140,10 @@ public class JAutoCompComboBox extends JComboBox
                 PickListItem pli;
 	            if (dbAdapter != null)
 	            {
-                    pli = dbAdapter.addItem(strArg, null);
+                    pli = dbAdapter.addItem(strArg, strArg);
 	            } else
                 {
-                    pli = new PickListItem(strArg, null, null); // this is ok because the items will not be saved.
+                    pli = new PickListItem(strArg, strArg, null); // this is ok because the items will not be saved.
                 }
                 this.addItem(pli);
                 this.setSelectedItem(pli);
@@ -185,6 +186,9 @@ public class JAutoCompComboBox extends JComboBox
         }        
     }
     
+    /**
+     * 
+     */
     protected void lookForMatch()
     {
         String s   = tf.getText();
@@ -275,9 +279,8 @@ public class JAutoCompComboBox extends JComboBox
                     char key = ev.getKeyChar();
                     if (ev.getKeyCode() == KeyEvent.VK_BACK_SPACE)
                     {
-                        String s   = tf.getText();
-                        int    len = s.length();
-                        //System.out.println(s+" getSelectedIndex() "+getSelectedIndex());
+                        String textStr = tf.getText();
+                        int    len     = textStr.length();
                         if (len == 0)
                         {
                             foundMatch = false;
@@ -288,12 +291,11 @@ public class JAutoCompComboBox extends JComboBox
                         {
                             if (foundMatch)
                             {
-                                //System.out.println(s+"["+s.substring(0, s.length()-1)+"]");
-                                tf.setText(s.substring(0, len-1));
+                                tf.setText(textStr.substring(0, len-1));
                                 
                             } else if (!enableAdditions && len > 0)
                             {
-                                tf.setText(s.substring(0, len-1));
+                                tf.setText(textStr.substring(0, len-1));
                                 lookForMatch();
                                 return;
                             }
@@ -305,20 +307,14 @@ public class JAutoCompComboBox extends JComboBox
                         if (ev.getKeyCode() == KeyEvent.VK_ENTER) 
                         {
                             addNewItemFromTextField();
-                        }
-                        //System.out.println("Key Code "+ev.getKeyCode()+"  Pos: "+tf.getCaretPosition()+"  Del: "+KeyEvent.VK_DELETE);
-                        
-                        if (ev.getKeyCode() == KeyEvent.VK_END)// || ev.getKeyCode() == KeyEvent.VK_SHIFT)
+                            
+                        } else if (ev.getKeyCode() == KeyEvent.VK_END)
                         {
                             tf.setSelectionStart(prevCaretPos);
                             tf.setSelectionEnd(tf.getText().length());
                         }
-
-                        //System.out.println("Returning...");                            
                         return;
                     }
-                    //System.out.println("NOT Returning");
-                    
                     lookForMatch();
                 }
             });

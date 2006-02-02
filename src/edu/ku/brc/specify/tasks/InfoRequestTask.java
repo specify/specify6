@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: QueryTask.java,v $
+/* Filename:    $RCSfile: InfoRequestTask.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2005/10/19 19:59:54 $
@@ -65,6 +65,7 @@ import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.Trash;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.prefs.*;
+import edu.ku.brc.specify.dbsupport.*;
 
 /**
  * Takes care of offering up record sets, updating, deleteing and creating them.
@@ -83,7 +84,6 @@ public class InfoRequestTask extends BaseTask
     public static final String INFO_REQ_MESSAGE = "Specify Info Request";
     
     // Data Members
-    protected FormPane         recentFormPane = null;    
     protected SimpleDateFormat scrDateFormat;
 
     // Data Members
@@ -97,8 +97,6 @@ public class InfoRequestTask extends BaseTask
     {
         super(INFOREQUEST, getResourceString(INFOREQUEST));
         CommandDispatcher.register(INFOREQUEST, this);
-        
-        subPaneClassFilter = FormPane.class;
         
         scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
     }
@@ -146,7 +144,8 @@ public class InfoRequestTask extends BaseTask
     protected void addInfoRequest(final InfoRequest infoRequest)
     {
         // These value should not be hard coded here
-        DroppableFormObject dfo = new DroppableFormObject("view valid", 80, infoRequest);
+        int tableId = DBTableIdMgr.lookupIdByShortName("inforequest");
+        DroppableFormObject dfo = new DroppableFormObject("view valid", tableId, infoRequest);
         NavBoxItemIFace     nbi = addNavBoxItem(navBox, getTitle(infoRequest), INFOREQUEST, "Delete", dfo);
         RolloverCommand     roc = (RolloverCommand)nbi;
         roc.addActionListener(new ActionListener()
@@ -157,58 +156,6 @@ public class InfoRequestTask extends BaseTask
             }
         });
         addDraggableDataFlavors(roc);
-    }
-    
-    /**
-     * Looks up a SubPane by the viewset name and form id and data
-     * @param viewSetName the view set name
-     * @param formId the form id
-     * @return the subpane that matches
-     */
-    protected FormPane getFormPane(final String viewSetName, final int formId, final Object data)
-    {
-        for (SubPaneIFace sp : subPanes)
-        {
-            if (sp instanceof FormPane) // should always a FormPane
-            {
-                FormPane fp = (FormPane)sp;
-                System.out.println(viewSetName+" "+fp.getViewSetName());
-                System.out.println(formId+" "+fp.getFormId());
-                System.out.println(data+" "+fp.getData());
-                if (viewSetName.equals(fp.getViewSetName()) && 
-                    formId == fp.getFormId() && 
-                    data == fp.getData())
-                {
-                    return fp;
-                }
-            }
-        }
-        return null;
-    }
-    
-    /**
-     * Looks to see if a form already exists for this request and show it
-     * otherwise it creates a form and add it to the SubPaneMgr
-     */
-    protected void createFormPanel(RolloverCommand roc)
-    {
-        DroppableFormObject dfo = (DroppableFormObject)roc.getData();
-        if (recentFormPane != null && recentFormPane.getComponentCount() == 0)
-        {
-            recentFormPane.createForm(dfo.getViewSetName(), dfo.getFormId(), dfo.getData());
-        } else
-        {
-            FormPane fp = getFormPane(dfo.getViewSetName(), dfo.getFormId(), dfo.getData());
-            if (fp != null)
-            {
-                UICacheManager.getSubPaneMgr().showPane(fp.getName());
-                
-            } else
-            {
-                recentFormPane = new FormPane(name, this, dfo.getViewSetName(), dfo.getFormId(), dfo.getData());            
-                addSubPaneToMgr(recentFormPane);
-            }
-        }
     }
     
     /**

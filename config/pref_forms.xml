@@ -47,7 +47,7 @@
 			</row>				
 			<row>
 				<cell type="label" name="localmailboxLabel" labelfor="localmailbox" label="localmailbox"/>
-				<cell type="field" name="localmailbox" cols="20" colspan="5" uitype="browse" isrequired="true"/>
+				<cell type="field" name="localmailbox" cols="20" colspan="5" uitype="browse" isrequired="true" validation="obj.isNotEmpty()" valtype="Changed"/>
 			</row>
 			<row>
 				<cell type="separator" label="userinfo"/>

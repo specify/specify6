@@ -22,6 +22,7 @@ package edu.ku.brc.specify.ui.validation;
 import java.awt.Component;
 /**
  * Interface for listening to whether a component's value has changed
+ * 
  * @author rods
  *
  */
@@ -31,6 +32,7 @@ public interface DataChangeListener
      * Notify that data has changed in a component
      * @param name the name of the component
      * @param comp the component
+     * @param dcn the DataChangeNotifier (may be null)
      */
-    public void dataChanged(String name, Component comp);
+    public void dataChanged(String name, Component comp, DataChangeNotifier dcn);
 }

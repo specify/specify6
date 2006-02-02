@@ -19,32 +19,52 @@
  */
 package edu.ku.brc.specify.ui.forms;
 
-import java.awt.*;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
+import java.awt.Component;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Collections;
 
-import javax.swing.*;
-
-import edu.ku.brc.specify.ui.forms.persist.*;
-import edu.ku.brc.specify.ui.validation.FormValidator;
-import edu.ku.brc.specify.ui.*;
-import edu.ku.brc.specify.prefs.*;
-import edu.ku.brc.specify.helpers.*;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultListModel;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.ListModel;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.*;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+
+import edu.ku.brc.specify.helpers.UIHelper;
+import edu.ku.brc.specify.prefs.PrefsCache;
+import edu.ku.brc.specify.ui.ColorChooser;
+import edu.ku.brc.specify.ui.ColorWrapper;
+import edu.ku.brc.specify.ui.GetSetValueIFace;
+import edu.ku.brc.specify.ui.db.JAutoCompComboBox;
+import edu.ku.brc.specify.ui.db.PickListItem;
+import edu.ku.brc.specify.ui.forms.persist.FormCell;
+import edu.ku.brc.specify.ui.forms.persist.FormCellField;
+import edu.ku.brc.specify.ui.forms.persist.FormFormView;
+import edu.ku.brc.specify.ui.forms.persist.FormView;
+import edu.ku.brc.specify.ui.validation.FormValidator;
 
 /**
  * Implmentation of the FormViewable interface for the ui
@@ -71,8 +91,8 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
     protected ResultSetController           rsController   = null;
     protected java.util.List                list           = null;
     
-    protected PanelBuilder                  mainBuilder    = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p"));
-    protected CellConstraints               cc         = new CellConstraints();
+    protected PanelBuilder                  mainBuilder;
+    protected CellConstraints               cc             = new CellConstraints();
     
     // Data Members 
     protected static SimpleDateFormat scrDateFormat = null;
@@ -93,6 +113,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
             scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
         }
         
+        mainBuilder    = new PanelBuilder(new FormLayout("f:p:g", parent == null ? "p,2px,p": "p:g,2px,p"));
         mainComp = mainBuilder.getPanel();
     }
     
@@ -180,6 +201,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
                 throw new RuntimeException("Two controls have the same name ["+formCell.getName()+"] "+formViewDef.getViewSetName()+" "+formViewDef.getId());
             }
             controls.put(formCell.getName(), new FieldInfo(formCell, subView));
+            kids.add(subView);
         }
     }
     
@@ -307,6 +329,12 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
             data = Collections.list(Collections.enumeration(dataSet));
         }
         
+        if (validator != null)
+        {
+            validator.addRuleObjectMapping("dataObj", dataObj);
+            validator.setDataChangeNotification(false);
+        }
+        
         if (data instanceof java.util.List)
         {
             list = (java.util.List)data;
@@ -318,10 +346,13 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
             {
                 addRecordSetController();
             }
+            setDataIntoUI();
+
         } else
         {
             this.dataObj = dataObj;
             this.list    = null;
+            setDataIntoUI();
             
             // Don't remove the rsController if the data is NULL because the next non-null one may be a list
             // mostly likely it will be
@@ -334,6 +365,12 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
                 }
             }
         }
+        
+        if (validator != null)
+        {
+            validator.setDataChangeNotification(true);
+        }
+        
     }
 
     /* (non-Javadoc)
@@ -356,17 +393,22 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
             {
                 Object data = null;//dg.getFieldValue(dataObj, fieldInfo.getName());
                 
+                if (fieldInfo.getFormCell().isIgnoreSetGet())
+                {
+                    continue;
+                }
+                
                 if (fieldInfo.getFormCell().getType() == FormCell.CellType.field)
                 {
                     // Do Formatting here
                     FormCellField cellField = (FormCellField)fieldInfo.getFormCell();
                     
                     String format = cellField.getFormat();
-                    if (format != null && format.length() > 0)
+                    if (isNotEmpty(format))
                     {
-                        boolean allFieldsNull = true;
-                        String[] fields = StringUtils.split(cellField.getName(), ",");
-                        Object[] values = new Object[fields.length];
+                        boolean  allFieldsNull = true;
+                        String[] fields        = StringUtils.split(cellField.getName(), ",");
+                        Object[] values        = new Object[fields.length];
                         for (int i=0;i<values.length;i++)
                         {
                             values[i] = dg.getFieldValue(dataObj, fields[i]);
@@ -439,8 +481,13 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
         {
             if (formViewDef instanceof FormFormView)
             {
-                for (String name : controls.keySet())
+                for (FieldInfo fieldInfo : controls.values())
                 {
+                    if (fieldInfo.getFormCell().isIgnoreSetGet())
+                    {
+                        continue;
+                    }
+                    String name = fieldInfo.getFormCell().getName();
                     Object uiData = getDataFromUIComp(name);
                     ds.setFieldValue(dataObj, name, uiData);
                 }
@@ -466,11 +513,19 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
                 {
                     return ((JTextField)formComp).getText();
                     
-                } else if(formComp instanceof JComboBox)
+                } else if (formComp instanceof JComboBox)
                 {
-                    return ((JComboBox)formComp).getSelectedItem().toString();
+                    if (formComp instanceof JAutoCompComboBox)
+                    {
+                        PickListItem pli = (PickListItem)((JAutoCompComboBox)formComp).getSelectedItem();
+                        return pli.getValue();
+                        
+                    } else
+                    {
+                        return ((JComboBox)formComp).getSelectedItem().toString();
+                    }
                     
-                } else if(formComp instanceof JLabel)
+                } else if (formComp instanceof JLabel)
                 {
                     return ((JLabel)formComp).getText();
                     
@@ -482,7 +537,11 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
                 {
                     return ((GetSetValueIFace)formComp).getValue().toString();
                     
-                } else
+                } else if(formComp instanceof JList)
+                {
+                    return ((JList)formComp).getSelectedValue().toString();
+                    
+               } else
                 {
                     log.error("Not sure how to get data from object "+formComp);
                 }
@@ -493,6 +552,22 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
         } else
         {
             log.error("FieldInfo is null "+name);
+        }
+        return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.forms.FormViewable#getSubView(java.lang.String)
+     */
+    public FormViewable getSubView(final String name)
+    {
+        // do linear search because there will never be very many of them
+        for (FormViewObj fvo : kids)
+        {
+            if (fvo.formViewDef.getName().equals(name))
+            {
+                return fvo;
+            }
         }
         return null;
     }
@@ -529,27 +604,108 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
             
         } else if (formComp instanceof JComboBox)
         {
-            JComboBox      cbx   = (JComboBox)formComp;
-            ComboBoxModel  model = cbx.getModel();
-            for (int i=0;i<cbx.getItemCount();i++)
+            setComboboxValue((JComboBox)formComp, data);
+            
+        } else if (formComp instanceof JList)
+        {
+            setListValue((JList)formComp, data);
+            
+
+        } else if (formComp instanceof GetSetValueIFace)
+        {
+            ((GetSetValueIFace)formComp).setValue(data == null ? "" : data.toString());
+        }
+    }
+    
+    /**
+     * Sets the appropriate index in the combobox for the value
+     * @param comboBox the combobox
+     * @param data the data value
+     */
+    protected void setComboboxValue(final JComboBox comboBox, final Object data)
+    {
+        ComboBoxModel  model = comboBox.getModel();
+        
+        if (formComp instanceof JAutoCompComboBox)
+        {
+            for (int i=0;i<comboBox.getItemCount();i++)
+            {
+                PickListItem pli = (PickListItem)model.getElementAt(i);
+                if (pli.getValue().equals(data.toString()))
+                {
+                    comboBox.setSelectedIndex(i);
+                    break;
+                }
+            }            
+        
+        } else
+        {
+            for (int i=0;i<comboBox.getItemCount();i++)
             {
                 Object item = model.getElementAt(i);
                 if (item instanceof String)
                 {
                     if (((String)item).equals(data))
                     {
-                        cbx.setSelectedIndex(i);
+                        comboBox.setSelectedIndex(i);
+                        break;
+                    } 
+                } else if (item.equals(data))
+                {
+                    comboBox.setSelectedIndex(i);
+                    break;
+                }
+            }            
+        }
+
+    }
+    
+    /**
+     * Sets the appropriate ndex in the list box
+     * @param list the list box
+     * @param data the data value
+     */
+    protected void setListValue(final JList list, final Object data)
+    {
+
+        Iterator iter = null;
+        if (data instanceof Set)
+        {
+            iter = ((Set)data).iterator();
+            
+        } else if (data instanceof org.hibernate.collection.PersistentSet)
+        {
+            iter = ((org.hibernate.collection.PersistentSet)data).iterator();
+        }
+        
+        if (iter != null)
+        {        
+            DefaultListModel defModel = new DefaultListModel(); 
+            while (iter.hasNext())
+            {
+                defModel.addElement(iter.next());
+            }
+            list.setModel(defModel);
+            
+        } else 
+        {
+            ListModel  model = list.getModel();
+            for (int i=0;i<model.getSize();i++)
+            {
+                Object item = model.getElementAt(i);
+                if (item instanceof String)
+                {
+                    if (((String)item).equals(data))
+                    {
+                        list.setSelectedIndex(i);
                         return;
                     } 
                 } else if (item.equals(data))
                 {
-                    cbx.setSelectedIndex(i);
+                    list.setSelectedIndex(i);
                     return;
                 }
             }
-        } else if (formComp instanceof GetSetValueIFace)
-        {
-            ((GetSetValueIFace)formComp).setValue(data == null ? "" : data.toString());
         }
     }
     

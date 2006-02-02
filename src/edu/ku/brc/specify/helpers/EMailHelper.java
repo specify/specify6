@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.helpers;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -243,16 +244,6 @@ public class EMailHelper
     }
     
     /**
-     * Returns whether the string has at least one character
-     * @param str string to be checked
-     * @return Returns whether the string has at least one character
-     */
-    protected static boolean isStrValid(final String str)
-    {
-        return str != null && str.length() > 0;
-    }
-    
-    /**
      * Returns whether the email settings have been filled in (but this doesn't indicate whether they will actually work)
      * @param usernameStr username
      * @param passwordStr password
@@ -274,9 +265,9 @@ public class EMailHelper
         EMailHelper.AccountType acctType = EMailHelper.getAccountType(acctTypeStr);
         
         return acctType != AccountType.Unknown &&
-               isStrValid(usernameStr) && isStrValid(passwordStr) && isStrValid(emailStr) && 
-               isStrValid(smtpStr) && isStrValid(serverNameStr) && 
-               (acctType == AccountType.IMAP || isStrValid(localMailBoxStr));
+               isNotEmpty(usernameStr) && isNotEmpty(passwordStr) && isNotEmpty(emailStr) && 
+               isNotEmpty(smtpStr) && isNotEmpty(serverNameStr) && 
+               (acctType == AccountType.IMAP || isNotEmpty(localMailBoxStr));
     }
     
     /**

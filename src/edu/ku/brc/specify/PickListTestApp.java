@@ -27,11 +27,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -46,6 +53,17 @@ import javax.swing.UIManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.WildcardQuery;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.hibernate.Session;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -64,13 +82,6 @@ import edu.ku.brc.specify.ui.db.JAutoCompComboBox;
 import edu.ku.brc.specify.ui.db.JAutoCompTextField;
 import edu.ku.brc.specify.ui.db.PickList;
 import edu.ku.brc.specify.ui.db.PickListItem;
-
-/**
- * The stand alone part of the PickListTestApp (this is a prototype at the moment that is used for viewing forms) 
- * 
- * @author rods
- *
- */
 /**
  * @author rods
  *
@@ -419,6 +430,133 @@ public class PickListTestApp
        
     }
     
+    //-----------------------------------------------------------------------
+    // Taxon Stuff
+    //-----------------------------------------------------------------------
+    
+    protected static void buildTaxaSearch()
+    {
+        File lucenePath = getIndexDirPath(); // must be initialized here
+        try
+        {
+            Directory   dir    = FSDirectory.getDirectory(lucenePath, true);
+            IndexWriter writer = new IndexWriter(dir, new StandardAnalyzer(), true);
+            writer.mergeFactor   = 1000;
+            writer.maxMergeDocs  = 9999999;
+            writer.minMergeDocs  = 1000;
+            
+            Connection dbConnection = DBConnection.getConnection();
+            Statement  dbStatement  = dbConnection.createStatement();
+
+            ResultSet rs = dbStatement.executeQuery("SELECT DISTINCT tx.taxonName FROM taxonname AS tx where tx.taxonName is not null;");
+            rs.first();
+            do
+            {
+                Document doc = new Document();
+                doc.add(Field.Keyword("id", rs.getString(1)));
+                //doc.add(Field.UnIndexed("table", Integer.toString(tableId)));
+                
+                writer.addDocument(doc);
+                
+            } while(rs.next());
+            
+            dbStatement.close();
+            dbConnection.close();
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
+        
+    }
+    
+    protected static void testLookUpDB()
+    {
+        try
+        {
+            Connection dbConnection = DBConnection.getConnection();
+            Statement  dbStatement  = dbConnection.createStatement();
+    
+            Vector<String> list = new Vector<String>();
+            long start = System.currentTimeMillis();
+            ResultSet rs = dbStatement.executeQuery(" select taxonname from taxonname where taxonname like 's%'");
+            rs.first();
+            do
+            {
+                list.addElement(rs.getString(1));
+                
+            } while(rs.next());
+            long end = System.currentTimeMillis();
+            
+            System.out.println(end - start + " Items: "+list.size());
+            
+            dbStatement.close();
+            dbConnection.close();
+            
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
+        
+    }
+    
+    protected static void testLookUpLucene()
+    {
+        File lucenePath = getIndexDirPath(); // must be initialized here
+        try
+        {
+            Vector<String> list     = new Vector<String>();
+            IndexSearcher  searcher = new IndexSearcher(FSDirectory.getDirectory(lucenePath, false));
+            
+            long           start    = System.currentTimeMillis();
+            Query query = new WildcardQuery(new Term("id", "s*"));
+            
+            //Query query = QueryParser.parse("", "id", new SimpleAnalyzer());
+            Hits  hits  = searcher.search(query);
+            
+            for (int i=0;i<hits.length();i++)
+            {
+                list.addElement(hits.doc(i).get("id"));
+            }
+            long end = System.currentTimeMillis();
+            
+            System.out.println(end - start + " Items: "+list.size());
+            
+
+            
+        //} catch (ParseException ex)
+        //{
+        //    ex.printStackTrace();
+        //    
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+        
+    }
+    
+    /**
+     * Helper function to return the path to the express search directory
+     * @return return the path to the express search directory
+     */
+    public static File getIndexDirPath()
+    {
+        File path = new File(System.getProperty("user.home")+File.separator+"Specify"+File.separator+"taxa-index-dir");
+        if (!path.exists())
+        {
+            if (!path.mkdirs())
+            {
+                String msg = "unable to create directory [" + path.getAbsolutePath() + "]";
+                log.error(msg); 
+                throw new RuntimeException(msg);
+            }
+        }
+        return path;
+    }    
+    
     
     
     /**
@@ -429,6 +567,11 @@ public class PickListTestApp
         DBConnection.setUsernamePassword("rods", "rods");
         DBConnection.setDriver("com.mysql.jdbc.Driver");
         DBConnection.setDBName("jdbc:mysql://localhost/demo_fish2");
+        
+        //buildTaxaSearch();
+        
+        testLookUpDB();
+        testLookUpLucene();
         
         //loadData();
 

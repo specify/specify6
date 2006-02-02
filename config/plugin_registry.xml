@@ -19,9 +19,10 @@
         <plugin class="edu.ku.brc.specify.tasks.InfoRequestTask">
 	    	<service command="Save" tableid="1" tooltip="CreateInfoRequestTT"/>
 	    </plugin>
-		
+	    <plugin class="edu.ku.brc.specify.tasks.SystemSetupTask"/>
 		<plugin class="edu.ku.brc.specify.tasks.WorkbenchTask"/>
 	    <plugin class="edu.ku.brc.specify.tasks.ExpressSearchTask"/>
+
 	</core>
 	<external/>
 </plugins>

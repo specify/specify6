@@ -142,10 +142,8 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
         }
 
         form.setDataObj(prefNode);
-        form.setDataIntoUI();
 
-        form.getValidator().processEnableRules();
-        form.getValidator().validateFields();
+        form.getValidator().validateForm();
         
         CommandDispatcher.register("EmailPref", this);
         

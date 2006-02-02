@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -54,7 +55,6 @@ import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.UICacheManager;
-
 /**
  * The StatsTask is responsible gettng and displaying all various idfferent kinds of stats
  * 
@@ -166,7 +166,7 @@ public class StatsTask extends BaseTask
         chartPane.setYAxis(getChartInfo(element, "yaxis"));
         
         String vert = getChartInfo(element, "vertical");
-        if (vert != null && vert.length() > 0)
+        if (isNotEmpty(vert))
         {
             chartPane.setVertical(vert.toLowerCase().equals("true"));
         }

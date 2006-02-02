@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: FormValidator.java,v $
+/* Filename:    $RCSfile: RuleExpression.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2006/01/16 19:59:54 $
@@ -25,12 +25,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.jexl.JexlContext;
 
+import edu.ku.brc.specify.ui.validation.FormValidationRuleIFace.Scope;
+
 /**
+ * This class is an implementation of a JEXL expression. The rule has a name and the Java expression
+ * and it is passed in a context to which it evaludates the rule. The conttext comes from the form so all the
+ * ui controls are available by name in the context.
  * 
  * @author rods
  *
  */
-public class RuleExpression
+public class RuleExpression implements FormValidationRuleIFace
 {
     private static Log log = LogFactory.getLog(RuleExpression.class);
     
@@ -52,40 +57,12 @@ public class RuleExpression
         try
         {
             expression = ExpressionFactory.createExpression( rule );
+            
         } catch (Exception ex)
         {
             log.error(ex);
-            ex.printStackTrace();
+            //ex.printStackTrace();
         }
-    }
-    
-    /**
-     * Evaluates the rule within the context
-     * @param context the context to evaluate the expression
-     * @return returns the return Object of the evaluation
-     * @throws Exception
-     */
-    public Object evaluate(final JexlContext context) throws Exception
-    {
-        Object result = expression.evaluate(context);
-        log.info("Result "+result+" for "+name+"  "+rule);
-        return result;
-    }
-    
-    /**
-     * @return Returns the exp.
-     */
-    public Expression getExpressionX()
-    {
-        return expression;
-    }
-
-    /**
-     * @return Returns the name.
-     */
-    public String getName()
-    {
-        return name;
     }
     
     /**
@@ -95,5 +72,49 @@ public class RuleExpression
     {
         expression = null;
     }
+
+    //-----------------------------------------------------------
+    // FormValidationRuleIFace
+    //-----------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.validation.FormValidationRuleIFace#evaluate(org.apache.commons.jexl.JexlContext)
+     */
+    public boolean evaluate(final JexlContext context) 
+    {
+        try
+        {
+            Object result = expression.evaluate(context);
+            //log.info("Result "+result+" for "+name+"  "+rule);
+            if (result instanceof Boolean)
+            {
+                return (Boolean)result;
+            } else
+            {
+                log.info("the return from the evaluation is of class "+result);
+            }
+        } catch (Exception ex)
+        {
+            log.error(ex);
+        }
+        return false;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.validation.FormValidationRuleIFace#getScope()
+     */
+    public Scope getScope()
+    {
+        return FormValidationRuleIFace.Scope.Field;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.validation.FormValidationRuleIFace#getName()
+     */
+    public String getName()
+    {
+        return name;
+    }
+    
 
 }

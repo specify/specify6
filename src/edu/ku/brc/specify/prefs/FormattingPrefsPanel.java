@@ -65,10 +65,8 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
         }
         
         form.setDataObj(prefNode);
-        form.setDataIntoUI();
         
-        form.getValidator().processEnableRules();
-        form.getValidator().validateFields();
+        form.getValidator().validateForm();
 
         
     }

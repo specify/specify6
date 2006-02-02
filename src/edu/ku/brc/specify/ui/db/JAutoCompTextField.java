@@ -19,6 +19,8 @@
  */
 package edu.ku.brc.specify.ui.db;
 
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
@@ -26,8 +28,6 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-
-import edu.ku.brc.specify.ui.db.PickListItem;
 
 /**
  * An auto-complete text field which is supported through PickList/PickListItem.
@@ -50,6 +50,56 @@ public class JAutoCompTextField extends JTextField
     protected PickListDBAdapter  dbAdapter       = null;
 
     /**
+     * Constructor without Adaptor
+     */
+    public JAutoCompTextField()
+    {
+        super();
+    }
+    
+    /**
+     * Constructor
+     * @param arg0 initial value
+     */    
+    public JAutoCompTextField(String arg0)
+    {
+        super(arg0);       
+        init();
+    }
+    
+    /**
+     * Constructor
+     * @param arg0 initial number of columns
+     */
+    public JAutoCompTextField(int arg0)
+    {
+        super(arg0);     
+        init();
+    }
+    
+    /**
+     * Constructor
+     * @param arg0 initial number of columns
+     */
+    public JAutoCompTextField(int arg0, PickListDBAdapter pickListDBAdapter)
+    {
+        super(arg0);
+        dbAdapter = pickListDBAdapter;
+        init();
+    }
+   
+    /**
+     * Constructor
+     * @param arg0 initial value
+     * @param arg1 initial number of columns
+     */
+    public JAutoCompTextField(String arg0, int arg1)
+    {
+        super(arg0, arg1);   
+        init();
+    }
+    
+    /**
      * Constructor with Adaptor
      * @param dBAdaptor the adaptor for enabling autocomplete
      */
@@ -66,91 +116,94 @@ public class JAutoCompTextField extends JTextField
      */
     protected void init()
     {
-        addFocusListener(new FocusAdapter() {
-            public void focusLost(FocusEvent e)
-            {
-                addNewItemFromTextField();
-            }
-        });
-        
-        
-        addKeyListener(new KeyAdapter()
+        if (dbAdapter != null)
         {
-            protected int prevCaretPos = -1;
-            
-            public void keyPressed(KeyEvent ev)
-            {
-                prevCaretPos = getCaretPosition();
-            }
-            
-            public void keyReleased(KeyEvent ev)
-            {
-                char key = ev.getKeyChar();
-                if (ev.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+            addFocusListener(new FocusAdapter() {
+                public void focusLost(FocusEvent e)
                 {
-                    String s = getText();
-                    if (foundMatch)
+                    addNewItemFromTextField();
+                }
+            });
+            
+            
+            addKeyListener(new KeyAdapter()
+            {
+                protected int prevCaretPos = -1;
+                
+                public void keyPressed(KeyEvent ev)
+                {
+                    prevCaretPos = getCaretPosition();
+                }
+                
+                public void keyReleased(KeyEvent ev)
+                {
+                    char key = ev.getKeyChar();
+                    if (ev.getKeyCode() == KeyEvent.VK_BACK_SPACE)
                     {
-                        //System.out.println("len ["+s.length()+"]");
-                        //System.out.println(s+"["+s.substring(0, s.length()-1)+"]");
-                        setText(s.substring(0, s.length()-1));
+                        String s = getText();
+                        if (foundMatch)
+                        {
+                            //System.out.println("len ["+s.length()+"]");
+                            //System.out.println(s+"["+s.substring(0, s.length()-1)+"]");
+                            setText(s.substring(0, s.length()-1));
+                            
+                        }
                         
-                    }
-                    
-                } else if ((!(Character.isLetterOrDigit(key) || Character.isSpaceChar(key))) && 
-                             ev.getKeyCode() != KeyEvent.VK_DELETE)
-                {
-                    if (ev.getKeyCode() == KeyEvent.VK_ENTER) 
+                    } else if ((!(Character.isLetterOrDigit(key) || Character.isSpaceChar(key))) && 
+                                 ev.getKeyCode() != KeyEvent.VK_DELETE)
                     {
-                        addNewItemFromTextField();
-                    }
-                    //System.out.println("Key Code "+ev.getKeyCode()+"  Pos: "+getCaretPosition()+"  Del: "+KeyEvent.VK_DELETE);
-                    
-                    if (ev.getKeyCode() == KeyEvent.VK_END)// || ev.getKeyCode() == KeyEvent.VK_SHIFT)
-                    {
-                        setSelectionStart(prevCaretPos);
-                        setSelectionEnd(getText().length());
-                    }
-                    return;
-                }
-                
-                caretPos = getCaretPosition();
-                String text = "";
-                try
-                {
-                    text = getText(0, caretPos);
-                    
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                }
-                
-                String lowerCaseText = text.toLowerCase();
-                
-                foundMatch = true;
-                int inx = 0;
-                for (PickListItem pli : dbAdapter.getList())
-                {
-                    //System.out.println("str: "+str);
-                    String title = pli.getTitle();
-                    int ind;
-                    if (caseInsensitve) 
-                    {
-                        ind = title.toLowerCase().indexOf(lowerCaseText);
-                    } else
-                    {
-                        ind = title.indexOf(text);
-                    }
-                    if (ind == 0)
-                    {
-                        setSelectedIndex(inx);
+                        if (ev.getKeyCode() == KeyEvent.VK_ENTER) 
+                        {
+                            addNewItemFromTextField();
+                        }
+                        //System.out.println("Key Code "+ev.getKeyCode()+"  Pos: "+getCaretPosition()+"  Del: "+KeyEvent.VK_DELETE);
+                        
+                        if (ev.getKeyCode() == KeyEvent.VK_END)// || ev.getKeyCode() == KeyEvent.VK_SHIFT)
+                        {
+                            setSelectionStart(prevCaretPos);
+                            setSelectionEnd(getText().length());
+                        }
                         return;
                     }
-                    inx++;
+                    
+                    caretPos = getCaretPosition();
+                    String text = "";
+                    try
+                    {
+                        text = getText(0, caretPos);
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                    
+                    String lowerCaseText = text.toLowerCase();
+                    
+                    foundMatch = true;
+                    int inx = 0;
+                    for (PickListItem pli : dbAdapter.getList())
+                    {
+                        //System.out.println("str: "+str);
+                        String title = pli.getTitle();
+                        int ind;
+                        if (caseInsensitve) 
+                        {
+                            ind = title.toLowerCase().indexOf(lowerCaseText);
+                        } else
+                        {
+                            ind = title.indexOf(text);
+                        }
+                        if (ind == 0)
+                        {
+                            setSelectedIndex(inx);
+                            return;
+                        }
+                        inx++;
+                    }
+                    foundMatch = false;
                 }
-                foundMatch = false;
-            }
-        });
+            });
+        }
     }
     
     /**
@@ -159,7 +212,7 @@ public class JAutoCompTextField extends JTextField
      */
     public void setSelectedIndex(int index)
     {
-        if (index > -1)
+        if (index > -1 && dbAdapter != null)
         {
             setText(dbAdapter.getItem(index).getTitle());
             setSelectionEnd(caretPos + getText().length());
@@ -207,7 +260,7 @@ public class JAutoCompTextField extends JTextField
             return false;
         }
         
-        if (strArg != null && strArg.length() > 0)
+        if (isNotEmpty(strArg))
         {
             ignoreFocus = true;
 	        if (!askBeforeSave || JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, "Remember value `"+strArg+"`?", "Remember Value", 

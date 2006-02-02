@@ -19,12 +19,16 @@
  */
 package edu.ku.brc.specify.ui.forms.persist;
 
-import java.util.Vector;
-import edu.ku.brc.specify.ui.forms.*;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.Vector;
+
 import org.apache.log4j.Logger;
+
+import edu.ku.brc.specify.ui.forms.DataObjectGettable;
+import edu.ku.brc.specify.ui.forms.DataObjectGettableFactory;
+import edu.ku.brc.specify.ui.forms.DataObjectSettable;
+import edu.ku.brc.specify.ui.forms.DataObjectSettableFactory;
 
 public class FormView implements Comparable<FormView>
 {
@@ -83,7 +87,7 @@ public class FormView implements Comparable<FormView>
         try
         {
             // Can't imagine why you would not ALWAYS want to have a Gettable
-            if (dataGettableName != null && dataGettableName.length() > 0)
+            if (isNotEmpty(dataGettableName))
             {
                 dataGettable = (DataObjectGettable)DataObjectGettableFactory.get(className, dataGettableName);
             } else
@@ -92,7 +96,7 @@ public class FormView implements Comparable<FormView>
             }
            
             // OK to NOT have a Settable
-            if (dataSettableName != null && dataSettableName.length() > 0)
+            if (isNotEmpty(dataSettableName))
             {
                 dataSettable = (DataObjectSettable)DataObjectSettableFactory.get(className, dataSettableName);
             }

@@ -26,11 +26,13 @@ package edu.ku.brc.specify.ui.forms.persist;
  */
 public class FormCell
 {
-    public enum CellType {separator, field, label, subview, command};
+    public enum CellType {separator, field, label, subview, command, panel};
     
     // Required fields
     protected CellType type;
     protected String   name;
+    protected boolean  ignoreSetGet       = false;
+    protected boolean  changeListenerOnly = false;
 
     protected int      colspan = 1;
     protected int      rowspan = 1;
@@ -48,6 +50,7 @@ public class FormCell
      * Constructor
      * @param type type of cell
      * @param name the name
+     * @param ignoreSetGet indicates whether it should be igmored when setting and getting data
      */
     public FormCell(final CellType type, final String name)
     {
@@ -61,6 +64,7 @@ public class FormCell
      * @param name the name
      * @param colspan the number of columns to span
      * @param rowspan the number of rows to span
+     * @param ignoreSetGet indicates whether it should be igmored when setting and getting data
      */
     public FormCell(final CellType type, 
                     final String   name, 
@@ -111,6 +115,26 @@ public class FormCell
     public void setType(CellType type)
     {
         this.type = type;
+    }
+
+    public boolean isIgnoreSetGet()
+    {
+        return ignoreSetGet;
+    }
+
+    public void setIgnoreSetGet(boolean ignoreSetGet)
+    {
+        this.ignoreSetGet = ignoreSetGet;
+    }
+
+    public boolean isChangeListenerOnly()
+    {
+        return changeListenerOnly;
+    }
+
+    public void setChangeListenerOnly(boolean changeListenerOnly)
+    {
+        this.changeListenerOnly = changeListenerOnly;
     }
 
  }

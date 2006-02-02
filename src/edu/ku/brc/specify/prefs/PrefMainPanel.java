@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.prefs;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -52,6 +53,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.validation.DataChangeListener;
+import edu.ku.brc.specify.ui.validation.DataChangeNotifier;
 
 
 /**
@@ -316,7 +318,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
             public void actionPerformed(ActionEvent e) 
             {
                 String text = searchText.getText();
-                if (text != null && text.length() > 0)
+                if (isNotEmpty(text))
                 {
                     doPrefSearch();
                 }
@@ -367,18 +369,16 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
     // DataChangeListener
     //-----------------------------------------------------
 
-    public void dataChanged(String name, Component comp)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.specify.ui.validation.DataChangeNotifier)
+     */
+    public void dataChanged(String name, Component comp, DataChangeNotifier dcn)
     {
         boolean okToEnable = true;
         for (PrefsPanelIFace pp : prefPanels)
         {
-            // Only validate the current form
-            if ((Component)pp == currentComp)
-            {
-                pp.getValidator().validateFields();
-            }
             // but check all the forms
-            if (!pp.getValidator().isOKToEnable())
+            if (!pp.getValidator().isFormValid())
             {
                 System.err.println("false!"+pp);
                 okToEnable = false;

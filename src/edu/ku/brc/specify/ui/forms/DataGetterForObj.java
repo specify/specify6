@@ -77,7 +77,8 @@ public class DataGetterForObj implements DataObjectGettable
                 {
                     iter = ((org.hibernate.collection.PersistentSet)dataObj).iterator();
                 }
-               if (iter != null)
+                
+                if (iter != null)
                 {
                     while (iter.hasNext())
                     {

@@ -45,6 +45,8 @@ import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.TaskPluginable;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
+import edu.ku.brc.specify.tasks.subpane.DroppableFormObject;
+import edu.ku.brc.specify.tasks.subpane.FormPane;
 import edu.ku.brc.specify.ui.CommandAction;
 import edu.ku.brc.specify.ui.CommandDispatcher;
 import edu.ku.brc.specify.ui.CommandListener;
@@ -78,9 +80,12 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     
     // SubPane List Management
     protected List<SubPaneIFace>  subPanes          = new ArrayList<SubPaneIFace>();
-    protected Class               subPaneClassFilter = null;
+    protected boolean             taskCentricPanesOnly = true;
     
-    //protected boolean             ignoreNofications = false;
+    // Data Memebers needed for support "recent form pane" management
+    protected FormPane  recentFormPane = null;    
+
+
     
     /**
      * Constructor
@@ -165,7 +170,8 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
                                             final String labelText, 
                                             final String cmdGroup,
                                             final String cmdStr, 
-                                            final Object data)
+                                            final Object data,
+                                            final int    position)
     {
         NavBoxItemIFace nb = NavBox.createBtn(labelText, name, IconManager.IconSize.Std16);
         RolloverCommand rb = (RolloverCommand)nb;
@@ -175,13 +181,23 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
         CommandAction delRSCmd = new CommandAction(cmdGroup, cmdStr, data);
         rb.setCommandAction(delRSCmd);
         
-        JPopupMenu popupMenu = rb.getPopupMenu();
-        
-        JMenuItem delMenuItem = new JMenuItem(getResourceString("Delete"));
-        delMenuItem.addActionListener(new RSAction(delRSCmd));
-        popupMenu.add(delMenuItem);
-        
-        navBox.add(nb);
+        if (cmdStr != null)
+        {       
+            JPopupMenu popupMenu = rb.getPopupMenu();
+            
+            JMenuItem delMenuItem = new JMenuItem(getResourceString("Delete"));
+            delMenuItem.addActionListener(new RSAction(delRSCmd));
+            popupMenu.add(delMenuItem);
+        }
+            
+        if (position == -1)
+        {
+            navBox.add(nb);
+            
+        } else
+        {
+            navBox.insert(nb, false, position);
+        }
         
         if (nb instanceof GhostActionable)
         {
@@ -192,34 +208,38 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
         return nb;
     }
     
+    /**
+     * Helper method to add an item to the navbox
+     * @param navBox navBox
+     * @param labelText navBox
+     * @param cmdGroup navBox
+     * @param cmdStr cmdStr
+     * @param data data
+     * @return btn
+     */
+    protected NavBoxItemIFace addNavBoxItem(final NavBox navBox, 
+                                            final String labelText, 
+                                            final String cmdGroup,
+                                            final String cmdStr, 
+                                            final Object data)
+    {
+        return addNavBoxItem(navBox, labelText,  cmdGroup, cmdStr, data, -1);
+    }
     
+   
     /**
      * Adds a SubPane to the Mgr and caches a pointer to it
      * @param subPane the subpane in question
      */
     protected void addSubPaneToMgr(final SubPaneIFace subPane)
     {
-        boolean okToAdd = true;
-        if (subPaneClassFilter != null)
-        {
-            okToAdd = false;
-            // Now Check super classes 
-            Class superclass = subPane.getClass();
-            while (superclass != null) 
-            {
-                if (superclass == subPaneClassFilter)
-                {
-                    okToAdd = true;
-                    break;
-                }
-                superclass = superclass.getSuperclass();
-            }
-        }
+        //if (isSuperClassOf(subPane, subPaneClassFilter))
+        //{
+        //    UICacheManager.getSubPaneMgr().addPane(subPane);
+        //}
         
-        if (okToAdd)
-        {
-            UICacheManager.getSubPaneMgr().addPane(subPane);
-        }
+        UICacheManager.getSubPaneMgr().addPane(subPane);
+
     }
     
     /**
@@ -236,6 +256,113 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
      * @return Returns the initial pane for this task, may be a blank (empty) pane, but shouldn't null
      */
     public abstract SubPaneIFace getStarterPane();
+    
+    
+    //-------------------------------------------------------
+    // Recent Pane Management
+    //-------------------------------------------------------
+ 
+    /**
+     * Looks up a SubPane by the viewset name and form id and data
+     * @param viewSetName the view set name
+     * @param formId the form id
+     * @return the subpane that matches
+     */
+    protected FormPane getFormPane(final String viewSetName, final int formId, final Object data)
+    {
+        for (SubPaneIFace sp : subPanes)
+        {
+            if (sp instanceof FormPane) // should always a FormPane
+            {
+                FormPane fp = (FormPane)sp;
+                
+                if (viewSetName.equals(fp.getViewSetName()) && 
+                    formId == fp.getFormId() && 
+                    data == fp.getData())
+                {
+                    return fp;
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Looks to see if a form already exists for this request and shows it
+     * otherwise it creates a form and add it to the SubPaneMgr
+     */
+    protected FormPane createFormPanel(RolloverCommand roc)
+    {
+        DroppableFormObject dfo = (DroppableFormObject)roc.getData();
+        return createFormPanel(dfo.getViewSetName(), dfo.getFormId(), dfo.getData());
+    }
+    
+    /**
+     * Looks to see if a form already exists for this request and shows it
+     * otherwise it creates a form and add it to the SubPaneMgr
+     */
+    protected FormPane createFormPanel(final String viewsetName, final int formId, final Object data)
+    {
+        FormPane fp = null;
+        
+        if (recentFormPane != null && recentFormPane.getComponentCount() == 0)
+        {
+            recentFormPane.createForm(viewsetName, formId, data);
+            fp = recentFormPane;
+            
+        } else
+        {
+            fp = getFormPane(viewsetName, formId, data);
+            if (fp != null)
+            {
+                UICacheManager.getSubPaneMgr().showPane(fp.getName());
+                
+            } else
+            {
+                recentFormPane = new FormPane(name, this, viewsetName, formId, data);            
+                addSubPaneToMgr(recentFormPane);
+                fp = recentFormPane; 
+            }
+        }
+        return fp;
+    }
+    
+    /**
+     * Checks to see if it is the the only panel of its kind and
+     * if it is it clears the panel instead of removing it, if there are more panels of that kind
+     * then it removes it. The idea is that it doesn't want to remove all the panels of a certain kind. 
+     * @param viewName the view name
+     * @param viewId the form's id
+     * @param data the data in the form
+     */
+    protected void removePanelForData(final String viewName, final int viewId, Object data)
+    {
+        FormPane currPane   = null;
+        FormPane fp         = null;
+        int      cnt        = 0;
+        for (SubPaneIFace subPane : subPanes)
+        {
+            fp = (FormPane)subPane;
+            if (viewName.equals(fp.getViewSetName()) &&  viewId == fp.getFormId())
+            {
+                if (fp.getData() == data)
+                {
+                    currPane = fp;
+                }
+                cnt++;
+            }               
+        }
+        if (cnt == 1)
+        {
+            currPane.clearForm();
+            
+        } else if (cnt > 0)  // wierd we should always find something
+        {
+            UICacheManager.getSubPaneMgr().removePane(fp);
+        } 
+    }
+    
+
 
     //-------------------------------------------------------
     // Taskable
@@ -348,7 +475,10 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
      */
     public void subPaneAdded(SubPaneIFace subPane)
     {
-        subPanes.add(subPane);
+        if (!taskCentricPanesOnly || subPane.getTask() == this)
+        {
+            subPanes.add(subPane);
+        }
     }
     
     /**
@@ -375,7 +505,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     //--------------------------------------------------------------
     // Inner Classes
     //--------------------------------------------------------------
- 
+    
     /**
      * XXX This is now generic and should be moved out of here 
      * @author rods

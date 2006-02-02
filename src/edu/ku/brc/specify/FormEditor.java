@@ -37,6 +37,7 @@ import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -66,6 +67,8 @@ import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.specify.tests.forms.TestDataSubObj;
 import edu.ku.brc.specify.ui.ChooseFromListDlg;
 import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.db.PickList;
+import edu.ku.brc.specify.ui.forms.FormViewObj;
 import edu.ku.brc.specify.ui.forms.FormViewable;
 import edu.ku.brc.specify.ui.forms.ViewFactory;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
@@ -152,7 +155,16 @@ public class FormEditor
                     if (currViewSetName.equals("view valid") && currFormId == 0)
                     {
                         form.setDataObj(dataObj);
-                        form.setDataIntoUI();
+                        
+                    } else if (currViewSetName.equals("SystemSetup") && currFormId == 500)
+                    {
+                        PickList pl = new PickList();
+                        pl.setItems(new HashSet());
+                        form.setDataObj(pl);
+                        
+                        FormViewObj fvo = (FormViewObj)form;
+                        fvo.getValidator().registerOKButton((JButton)form.getComp("savePL"));
+                        fvo.getValidator().validateForm();
                         
                     } else if (currViewSetName.equals("Fish Views") && currFormId == 1)
                     {
@@ -228,6 +240,7 @@ public class FormEditor
            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("form.xml"));
            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("fish_forms.xml"));
            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("pref_forms.xml"));
+           ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("system.forms.xml"));
             
         } catch (Exception ex)
         {
@@ -359,6 +372,9 @@ public class FormEditor
         
         currFormId      = 1;
         currViewSetName =   "Fish Views";
+        
+        currFormId      = 500;
+        currViewSetName =   "SystemSetup";
         
        
         

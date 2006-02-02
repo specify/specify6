@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.ui;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -10,13 +11,7 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -25,16 +20,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
-
-import org.apache.commons.httpclient.DefaultMethodRetryHandler;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpConnection;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpRecoverableException;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.methods.GetMethod;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -48,8 +34,6 @@ import com.jgoodies.forms.layout.FormLayout;
 @SuppressWarnings("serial")
 public class ImageDisplay extends JPanel implements GetSetValueIFace
 {
-    private static int   imgIdCnt  = 0;
-    
     private ImageIcon    imgIcon   = null;
     protected boolean    isError   = false; 
     protected String     url;
@@ -173,7 +157,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
      */
     public void loadImage()
     {
-        if (url != null && url.length() > 0)
+        if (isNotEmpty(url))
         {
             imagePanel.setNoImage(false); // means it is loading it
             repaint();

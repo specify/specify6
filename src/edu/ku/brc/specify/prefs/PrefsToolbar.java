@@ -156,6 +156,7 @@ public class PrefsToolbar extends JPanel
                     } catch (Exception ex)
                     {
                         log.error(ex); // XXX FIXME
+                        ex.printStackTrace();
                     }
                     btn.addActionListener(new ShowAction(title)); 
                 }

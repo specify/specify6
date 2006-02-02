@@ -122,20 +122,43 @@ public class NavBox extends JPanel implements NavBoxIFace
      * Adds a NavBoxItemIFace item to the box and returns the UI component for that item
      * @param item the NavBoxItemIFace item to be added
      * @param notify whether to have it relayout or not (true -> does layout)
+     * @param position the position in the list
      * @return the UI component for this item
      */
-    public Component add(final NavBoxItemIFace item, boolean notify)
+    public Component insert(final NavBoxItemIFace item, boolean notify, int position)
     {
-        super.add(item.getUIComponent());
-        
-        items.add(item);
-        
+        if (position == -1 || position == items.size())
+        {
+            super.add(item.getUIComponent());
+            items.addElement(item);
+            
+        } else
+        {
+            items.insertElementAt(item, position);
+            removeAll();
+            for (NavBoxItemIFace nb : items)
+            {
+                super.add(nb.getUIComponent());
+            }
+        }
+       
         if (notify && mgr != null)
         {
             mgr.invalidate();
             mgr.doLayout();
         }
         return item.getUIComponent();
+    }
+       
+    /**
+     * Adds a NavBoxItemIFace item to the box and returns the UI component for that item
+     * @param item the NavBoxItemIFace item to be added
+     * @param notify whether to have it relayout or not (true -> does layout)
+     * @return the UI component for this item
+     */
+    public Component add(final NavBoxItemIFace item, boolean notify)
+    {
+        return insert(item, notify, items.size());
     }
        
     /**
@@ -148,6 +171,17 @@ public class NavBox extends JPanel implements NavBoxIFace
         return add(item, false);
     }
     
+    /**
+     * Removes an item from the navbox
+     * @param item the item to be removed
+     */
+    public void remove(final NavBoxItemIFace item)
+    {
+        remove(item.getUIComponent());
+        items.remove(item);
+        doLayout();
+    }
+
     
     /* (non-Javadoc)
      * @see java.awt.Component#getPreferredSize()

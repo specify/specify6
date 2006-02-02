@@ -19,6 +19,8 @@
  */
 package edu.ku.brc.specify.prefs;
 
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
 import java.util.prefs.Preferences;
 
 import edu.ku.brc.specify.ui.forms.DataObjectGettable;
@@ -64,7 +66,7 @@ public class PrefsGettableImpl implements DataObjectGettable
     public Object getFieldValue(Object dataObj, String fieldName, String format) 
     {
         
-        if (format != null && format.length() > 0 && fieldName.indexOf(",") > -1)
+        if (isNotEmpty(format) && fieldName.indexOf(",") > -1)
         {
 
         }

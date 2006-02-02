@@ -29,6 +29,7 @@ public class FormCellSeparator extends FormCell
         
         this.label   = label;
         this.colspan = colspan;
+        this.ignoreSetGet = true;
     }
 
     public String getLabel()
@@ -40,4 +41,6 @@ public class FormCellSeparator extends FormCell
     {
         this.label = label;
     }
+    
+    
 }

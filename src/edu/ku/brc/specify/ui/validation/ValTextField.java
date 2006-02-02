@@ -19,15 +19,15 @@
  */
 
 package edu.ku.brc.specify.ui.validation;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 
-import javax.swing.JTextField;
-import javax.swing.text.Document;
-
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.ColorWrapper;
+import edu.ku.brc.specify.ui.db.JAutoCompTextField;
+import edu.ku.brc.specify.ui.db.PickListDBAdapter;
 
 /**
  * A JTextControl that implements UIValidatable for participating in validation
@@ -36,7 +36,7 @@ import edu.ku.brc.specify.ui.ColorWrapper;
  *
  */
 @SuppressWarnings("serial")
-public class ValTextField extends JTextField implements UIValidatable
+public class ValTextField extends JAutoCompTextField implements UIValidatable
 {
     protected boolean isInError  = false;
     protected boolean isRequired = false;
@@ -47,32 +47,63 @@ public class ValTextField extends JTextField implements UIValidatable
 
     
 
+    /**
+     * Constructor
+     */
     public ValTextField()
     {
         super();
         init();
     }
 
+    /**
+     * Constructor
+     * @param arg0 initial value
+     */
     public ValTextField(String arg0)
     {
         super(arg0);       
         init();
     }
 
+    /**
+     * Constructor
+     * @param arg0 initial number of columns
+     */
     public ValTextField(int arg0)
     {
         super(arg0);     
         init();
     }
 
+    /**
+     * Constructor
+     * @param arg0 initial number of columns
+     */
+    public ValTextField(int arg0, PickListDBAdapter pickListDBAdapter)
+    {
+        super(arg0, pickListDBAdapter);     
+        init();
+    }
+
+    /**
+     * Constructor
+     * @param arg0 initial value
+     * @param arg1 initial number of columns
+     */
     public ValTextField(String arg0, int arg1)
     {
         super(arg0, arg1);   
         init();
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.db.JAutoCompTextField#init()
+     */
     public void init()
     {
+        super.init();
+        
         bgColor = getBackground();
         if (valtextcolor == null || requiredfieldcolor == null)
         {
@@ -81,6 +112,10 @@ public class ValTextField extends JTextField implements UIValidatable
         }
     }
     
+    /**
+     * Helper method for validation sripting to see if the text field is empty
+     * @return whether the text field is empty or not
+     */
     public boolean isNotEmpty()
     {
         return getText().length() > 0;

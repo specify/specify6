@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: MenuItemDesc.java,v $
+/* Filename:    $RCSfile: FormProcessor.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2005/10/19 19:59:54 $
@@ -17,40 +17,21 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+package edu.ku.brc.specify.tasks.subpane;
 
-package edu.ku.brc.specify.plugins;
-
-import javax.swing.MenuElement;
-
-public class MenuItemDesc
+/**
+ * Objects implementing this interface can be used by the FormPane to perform processing
+ * 
+ * @author rods
+ *
+ */
+public interface FormProcessor
 {
-    protected MenuElement menuItem;
-    protected String      menuPath;
-    
-    public MenuItemDesc(final MenuElement menuItem, final String menuPath)
-    {
-        this.menuItem = menuItem;
-        this.menuPath = menuPath;
-    }
 
-    public MenuElement getMenuItem()
-    {
-        return menuItem;
-    }
-
-    public void setMenuItem(MenuElement menuItem)
-    {
-        this.menuItem = menuItem;
-    }
-
-    public String getMenuPath()
-    {
-        return menuPath;
-    }
-
-    public void setMenuPath(String menuPath)
-    {
-        this.menuPath = menuPath;
-    }
+    /**
+     * The form pane that the process will work on. This enables it to have access to the UI components.
+     * @param formPane the form pane
+     */
+    public void setFormViewable(final FormPane formPane); 
     
 }

@@ -36,6 +36,12 @@ import org.hibernate.criterion.*;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+/**
+ * This manages all the tables and maps names to ids and can create queries for recordsets
+ *  
+ * @author rods
+ *
+ */
 public class DBTableIdMgr
 {
     private static final   Log          log      = LogFactory.getLog(DBTableIdMgr.class);
@@ -44,20 +50,50 @@ public class DBTableIdMgr
     Hashtable<Integer, TableInfo> hash = new Hashtable<Integer, TableInfo>();
     
      
+    /**
+     * Protected COnstructor for Singleton 
+     */
     protected DBTableIdMgr()
     {
         try
         {
             //hash.put(1, new TableInfo(1, "edu.ku.brc.specify.datamodel.CollectionObj", "collectionobj", "collectionObjectId"));
             hash.put(1, new TableInfo(1, "edu.ku.brc.specify.datamodel.CollectionObj", "collectionobj", "catalogNumber"));
+            hash.put(80, new TableInfo(80, "edu.ku.brc.specify.datamodel.InfoRequest", "inforequest", "infoRequestID"));
+            hash.put(500, new TableInfo(500, "edu.ku.brc.specify.ui.db.PickList", "picklist", "picklist_id"));
             
         } catch (Exception ex)
         {
             log.error(ex);
         }
-        
     }
     
+    /**
+     * This looks it up by table name (not Object name) the look up is case insensitive
+     * @param name the name 
+     * @return the id of the table
+     */
+    public static int lookupIdByShortName(final String name)
+    {
+        for (TableInfo tableInfo : instance.hash.values())
+        {
+            String tableName = tableInfo.getTableName();
+            int    inx       = tableName.lastIndexOf('.');
+            
+            tableName = inx > -1 ? tableName.substring(inx+1) : tableName;
+            if (tableName.equalsIgnoreCase(name))
+            {
+                return tableInfo.getTableId();
+            }
+        }
+        throw new RuntimeException("Couldn't find table id for table name["+name+"]");
+    }
+    
+    /**
+     * Creates a Query object for a table from a recordset, it uses an "in" clause
+     * @param recordSet the recordset containing the record ids
+     * @return a query object
+     */
     public static Query getQueryForTable(final RecordSet recordSet)
     {
         Query     query     = null;
@@ -80,6 +116,11 @@ public class DBTableIdMgr
         return query;
     }
     
+    /**
+     * Returns an "in" clause for a recordset
+     * @param recordSet the recordset of ids
+     * @return a string "in" clause
+     */
     public static String getInClause(final RecordSet recordSet)
     {
         StringBuffer strBuf = new StringBuffer(" in (");

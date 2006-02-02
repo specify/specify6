@@ -19,6 +19,8 @@
  */
 package edu.ku.brc.specify.ui;
 
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -123,7 +125,7 @@ public class GradiantButton extends JButton implements MouseListener
         }
         
        String text = getText();
-        if (text != null && text.length() > 0)
+        if (isNotEmpty(text))
         {
             drawText(g2, w,h, getText());
         }

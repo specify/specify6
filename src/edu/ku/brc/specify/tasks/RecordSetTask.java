@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
@@ -46,7 +47,6 @@ import edu.ku.brc.specify.ui.RolloverCommand;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.Trash;
 import edu.ku.brc.specify.ui.UICacheManager;
-
 /**
  * Takes care of offering up record sets, updating, deleteing and creating them.
  * 
@@ -247,7 +247,7 @@ public class RecordSetTask extends BaseTask
             if (data instanceof RecordSet)
             {
                 String rsName  = JOptionPane.showInputDialog(UICacheManager.get(UICacheManager.FRAME), getResourceString("AskForRSName"));
-                if (rsName != null && rsName.length() > 0)
+                if (isNotEmpty(rsName))
                 {
                     RecordSet rs = (RecordSet)data;
                     rs.setName(rsName);

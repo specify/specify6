@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<viewset name="SystemSetup" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="form.xsd">
+  
+  <view id="500" name="Pick List" 
+         class="edu.ku.brc.specify.ui.db.PickList" 
+         gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+         type="form"
+         useresourcelabels="false"
+         validate="true">
+   	<desc><![CDATA[Form for editing an Info Request]]></desc>
+	<enableRules>
+		<rule name="sizeLimit"><![CDATA[readOnly.isSelected() == false]]></rule>
+		<rule name="RemoveItem"><![CDATA[items.getSelectedIndex() != -1]]></rule>
+		<rule name="AddItem"><![CDATA[title.isNotEmpty() && value.isNotEmpty()]]></rule>
+		<rule name="name"><![CDATA[dataObj.getCreated() == null]]></rule>
+		<rule name="deletePL"><![CDATA[dataObj.getCreated() != null && processor.getNumUsed() == 0]]></rule>
+	</enableRules>
+    <columnDef>r:p, 2dlu, l:p</columnDef>
+    <rowDef>p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p</rowDef>
+    <rows>
+      <row>
+        <cell type="separator" label="Pick List" colspan="3"/>
+      </row>
+      <row>
+        <cell type="label" labelfor="name" label="Name"/>
+        <cell type="field" name="name" isrequired="true" valtype="Changed">
+        	<validation><![CDATA[processor.doEvaluate()]]></validation>
+        </cell>
+      </row>
+      <row>
+        <cell type="label" labelfor="checkBox" label=""/>
+        <cell type="field" name="readOnly" label="Read Only" uitype="checkbox" />
+      </row>
+      <row>
+        <cell type="label" labelfor="sizeLimit" label="Size Limit"/>
+        <cell type="field" name="sizeLimit" cols="5" isrequired="true"/>
+      </row>
+      <row>
+        <cell type="label" labelfor="items" label="Items"/>
+        <cell type="panel" name="outerPanel" coldef="max(120px;p),5px,p" rowdef="p">
+		    <rows>
+		      <row>
+		         <cell type="field" name="items" uitype="list"/>
+		         <cell type="panel" name="innerPanel" coldef="p" rowdef="p,20px,p">
+				    <rows>
+				      <row>
+				         <cell type="command" name="RemoveItem" label="Remove Item" commandtype="" action="" ignore="true"/>
+				      </row>
+				      <row>
+				         <cell type="command" name="AddItem" label="Add Item" commandtype="" action="" ignore="true"/>
+				      </row>
+				    </rows>
+		         </cell>
+		      </row>
+		    </rows>
+        </cell>
+      </row>
+       <row>
+        <cell type="label" labelfor="title" label="Item Title"/>
+        <cell type="field" name="title" cols="25" ignore="true" changesonly="true"/>
+      </row>
+       <row>
+        <cell type="label" labelfor="value" label="Value"/>
+        <cell type="field" name="value" cols="25" ignore="true" changesonly="true"/>
+      </row>
+       <row>
+        <cell type="label" labelfor="value" label="Used In Forms" />
+        <cell type="field" name="usedInForms" uitype="list" ignore="true" initialize="rows=5"/>
+      </row>
+       <row>
+         <cell type="panel" name="BtnPanel" coldef="f:p:g,p,p,5px,p,p,f:p:g" rowdef="p" colspan="3">
+		    <rows>
+		      <row>
+				 <cell type="label" label=""/>
+		         <cell type="command" name="deletePL" label="Delete" commandtype="" action="" ignore="true"/>
+		         <cell type="command" name="savePL" label="Save Changes" commandtype="" action="" ignore="true"/>
+				 <cell type="label" label=""/>
+		      </row>
+		    </rows>
+         </cell>
+      </row>
+    </rows>
+  </view>
+  
+</viewset>

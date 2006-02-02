@@ -20,13 +20,15 @@
 
 package edu.ku.brc.specify.plugins;
 
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+
 import java.awt.Component;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.JMenuBar;
+import javax.swing.*;
 import javax.swing.JToolBar;
 
 import org.apache.commons.logging.Log;
@@ -39,6 +41,7 @@ import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.ui.CommandAction;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.UICacheManager;
+import static org.apache.commons.lang.StringUtils.split;
 
 public class PluginMgr
 {
@@ -153,16 +156,69 @@ public class PluginMgr
         {
             for (MenuItemDesc menuItem : plugin.getMenuItems())
             {
-                Component toolBarComp = menuItem.getMenuItem();
-                if (toolBarComp != null)
-                {
-                    toolBar.add(toolBarComp);
-                }
+                String[] menuPath = split(menuItem.getMenuPath(), "/");
+                buildMenuTree(menuBar, menuItem, menuPath, 0);
             }
         } else
         {
             throw new NullPointerException("The MenuBar component cannot be null!");
         }
+    }
+    
+    public static void buildMenuTree(final MenuElement  parent, 
+                                     final MenuItemDesc menuItemDesc, 
+                                     final String[]     menuPath, 
+                                     final int          currIndex)
+    {
+        
+        
+        if (currIndex == menuPath.length)
+        {
+            MenuElement me = menuItemDesc.getMenuItem();
+            if (parent instanceof JMenuBar)
+            {
+                ((JMenuBar)parent).add((JMenu)me);
+                
+            } else if (parent instanceof JMenu)
+            {
+                ((JMenu)parent).add((JMenuItem)me);
+            }
+        } else
+        {
+            String label = getResourceString(menuPath[currIndex]);
+            
+            MenuElement menuElement = getMenuByName(parent, label);
+            if (menuElement == null)
+            {
+                throw new RuntimeException("Couldn't find menu element ["+label+"]");
+            }
+            buildMenuTree(menuElement, menuItemDesc, menuPath, currIndex+1);
+        }
+    }
+    
+    public static MenuElement getMenuByName(final MenuElement parent, final String name)
+    {
+        for (MenuElement mi : parent.getSubElements())
+        {
+            if (mi instanceof AbstractButton)
+            {
+                System.out.println("["+((AbstractButton)mi).getText()+"]["+name+"]");
+                if (((AbstractButton)mi).getText().equals(name))
+                {
+                    return mi;
+                }
+            } else if (mi instanceof JPopupMenu)
+            {
+                return getMenuByName(mi, name);
+                
+                /*System.out.println("["+((JPopupMenu)mi).getLabel()+"]["+name+"]");
+                if (((JPopupMenu)mi).getLabel().equals(name))
+                {
+                    return mi;
+                }*/
+            }
+        }
+        return null;
     }
 
     /**
@@ -222,11 +278,13 @@ public class PluginMgr
     
                     Class cls = Class.forName(name);
                     newObj = cls.newInstance();
+                    
                 } catch (ClassNotFoundException ex)
                 {
                     log.error(ex);
                     // XXX Do we need a dialog here ???
                 }
+                
                 if (newObj instanceof TaskPluginable)
                 {
                     TaskPluginable tp = (TaskPluginable)newObj;

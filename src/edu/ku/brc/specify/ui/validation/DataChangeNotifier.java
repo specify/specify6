@@ -19,29 +19,35 @@
  */
 package edu.ku.brc.specify.ui.validation;
 
-import java.awt.Color;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JList;
+import javax.swing.JToggleButton;
+import javax.swing.event.*;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.text.JTextComponent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.ui.GetSetValueIFace;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 /**
  * Implements several listener interfaces and listens for the various types of notifications
@@ -50,17 +56,24 @@ import java.beans.PropertyChangeListener;
  * @author rods
  *
  */
-public class DataChangeNotifier implements FocusListener, KeyListener, ChangeListener, ListDataListener, PropertyChangeListener
+public class DataChangeNotifier implements FocusListener, 
+                                           KeyListener, 
+                                           ChangeListener, 
+                                           ListDataListener,
+                                           ListSelectionListener,
+                                           PropertyChangeListener, 
+                                           ActionListener,
+                                           DocumentListener
 {
     private static Log log = LogFactory.getLog(DataChangeNotifier.class);
     
     protected UIValidator                uiv;
-    protected boolean                    dataChanged = false;
+    protected boolean                    hasDataChanged = false;
     protected Vector<DataChangeListener> dcListeners = new Vector<DataChangeListener>();
 
-    protected Component   comp;
-    protected String      name;
-    protected String      cachedData = null;
+    protected Component                  comp;
+    protected String                     name;
+    protected String                     cachedData = null;
     
     /**
      * Constructor
@@ -111,11 +124,13 @@ public class DataChangeNotifier implements FocusListener, KeyListener, ChangeLis
     protected void notifyDataChangeListeners()
     {
         log.info("DataChangeNotifier - notifyDataChangeListeners");
-        dataChanged = true;
+        
+        hasDataChanged = true;
+        
         for (Enumeration e=dcListeners.elements();e.hasMoreElements();)
         {
             DataChangeListener dcl = (DataChangeListener)e.nextElement();
-            dcl.dataChanged(name, comp);
+            dcl.dataChanged(name, comp, this);
         }
     }
     
@@ -127,6 +142,7 @@ public class DataChangeNotifier implements FocusListener, KeyListener, ChangeLis
     public String getValueForControl(Component comp)
     {
         log.info("DataChangeNotifier - getValueForControl "+comp);
+        
         if (comp instanceof JTextComponent)
         {
             return  ((JTextComponent)comp).getText();
@@ -138,6 +154,16 @@ public class DataChangeNotifier implements FocusListener, KeyListener, ChangeLis
         } else if (comp instanceof JComboBox)
         {
             return ((JComboBox)comp).getSelectedItem().toString();
+            
+        } else if (comp instanceof JList)
+        {
+            JList list = (JList)comp;
+            int   inx = list.getSelectedIndex();
+            return inx == -1 ? "" : list.getModel().getElementAt(inx).toString();
+            
+        } else if (comp instanceof JCheckBox)
+        {
+            return ((JCheckBox)comp).isSelected() ? "true" : "false";
             
         } else if (comp instanceof GetSetValueIFace)
         {
@@ -154,7 +180,7 @@ public class DataChangeNotifier implements FocusListener, KeyListener, ChangeLis
      */
     public void reset()
     {
-        dataChanged = false;
+        hasDataChanged = false;
         cachedData  = getValueForControl(comp);
     }
     
@@ -164,41 +190,41 @@ public class DataChangeNotifier implements FocusListener, KeyListener, ChangeLis
      */
     public boolean manualCheckForDataChanged()
     {
-        if (!dataChanged)
+        if (!hasDataChanged)
         {
             if (cachedData != null)
             {
                 if (!cachedData.equals(getValueForControl(comp)))
                 {
-                    dataChanged = true;
+                    hasDataChanged = true;
                 }
             } else 
             {
                 String str = getValueForControl(comp);
-                if (str != null && str.length() > 0)
+                if (isNotEmpty(str))
                 {
-                  dataChanged = true;
+                  hasDataChanged = true;
                 }
             }
         }
-        return dataChanged;
+        return hasDataChanged;
     }
     
 
     /**
-     * @return Returns the dataChanged.
+     * @return Returns the hasDataChanged.
      */
     public boolean isDataChanged()
     {
-        return dataChanged;
+        return hasDataChanged;
     }
 
     /**
-     * @param dataChanged The dataChanged to set.
+     * @param hasDataChanged The hasDataChanged to set.
      */
-    public void setDataChanged(boolean dataChanged)
+    public void setDataChanged(boolean hasDataChanged)
     {
-        this.dataChanged = dataChanged;
+        this.hasDataChanged = hasDataChanged;
     }
 
     /**
@@ -260,7 +286,7 @@ public class DataChangeNotifier implements FocusListener, KeyListener, ChangeLis
         
         if (uiv != null)
         {
-            if (uiv.getType() == UIValidator.ValidationType.Focus || uiv.isRequired())
+            if (uiv.getType() == UIValidator.Type.Focus || uiv.isRequired())
             {
                 uiv.validate();
             }
@@ -292,7 +318,7 @@ public class DataChangeNotifier implements FocusListener, KeyListener, ChangeLis
     public void keyReleased(KeyEvent e)
     {
         notifyDataChangeListeners();
-        if (uiv != null && uiv.getType() == UIValidator.ValidationType.Changed)
+        if (uiv != null && uiv.getType() == UIValidator.Type.Changed)
         {
             uiv.validate();
         }
@@ -305,6 +331,18 @@ public class DataChangeNotifier implements FocusListener, KeyListener, ChangeLis
     {
     }
     
+    /**
+     * Helper for processing a change in the data
+     */
+    protected void doValidateOnChange()
+    {
+        if (uiv != null && uiv.getType() == UIValidator.Type.Changed)
+        {
+            uiv.validate();
+        }        
+        notifyDataChangeListeners();
+    }
+    
     //--------------------------------------------------------
     // ListDataListener (JComboxBox)
     //--------------------------------------------------------
@@ -314,12 +352,7 @@ public class DataChangeNotifier implements FocusListener, KeyListener, ChangeLis
      */
     public void contentsChanged(ListDataEvent e)
     {
-        log.info("contentsChanged "+e);
-        notifyDataChangeListeners();
-        if (uiv != null && uiv.getType() == UIValidator.ValidationType.Changed)
-        {
-            uiv.validate();
-        }
+        doValidateOnChange();
     }
     
     /* (non-Javadoc)
@@ -327,11 +360,7 @@ public class DataChangeNotifier implements FocusListener, KeyListener, ChangeLis
      */
     public void intervalAdded(ListDataEvent e)
     {
-        notifyDataChangeListeners();
-        if (uiv != null && uiv.getType() == UIValidator.ValidationType.Changed)
-        {
-            uiv.validate();
-        }
+        doValidateOnChange();
     }
     
     /* (non-Javadoc)
@@ -339,11 +368,7 @@ public class DataChangeNotifier implements FocusListener, KeyListener, ChangeLis
      */
     public void intervalRemoved(ListDataEvent e)
     {
-        notifyDataChangeListeners();
-        if (uiv != null && uiv.getType() == UIValidator.ValidationType.Changed)
-        {
-            uiv.validate();
-        }
+        doValidateOnChange();
     }
     
     //--------------------------------------------------------
@@ -351,10 +376,42 @@ public class DataChangeNotifier implements FocusListener, KeyListener, ChangeLis
     //--------------------------------------------------------
     public void propertyChange(PropertyChangeEvent evt) 
     {
-        notifyDataChangeListeners();
-        if (uiv != null && uiv.getType() == UIValidator.ValidationType.Changed)
-        {
-            uiv.validate();
-        }
+        doValidateOnChange();
+    }
+    
+    //--------------------------------------------------------
+    // ActionListener
+    //--------------------------------------------------------
+    public void actionPerformed(ActionEvent e) 
+    {
+        doValidateOnChange();
+    }
+    
+    //--------------------------------------------------------
+    // ListSelectionListener
+    //--------------------------------------------------------
+    public void valueChanged(ListSelectionEvent e) 
+    {
+        doValidateOnChange();
+    }
+    
+    //--------------------------------------------------------
+    // DocumentListener
+    //--------------------------------------------------------
+
+    
+    public void changedUpdate(DocumentEvent e)
+    {
+        doValidateOnChange();
+    }
+    
+    public void insertUpdate(DocumentEvent e)
+    {
+        doValidateOnChange();
+    }
+    
+    public void removeUpdate(DocumentEvent e) 
+    {
+        doValidateOnChange();
     }
 }

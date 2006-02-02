@@ -369,34 +369,7 @@ public class UICacheManager
     {
          JOptionPane.showMessageDialog(getMostRecentFrame(), msg, getResourceString("error"), JOptionPane.ERROR_MESSAGE);
     }
-    
-    /**
-     * Helper to create a form component from the View Set Name and the Id
-     * @param viewSetName the view set name to get the ID from
-     * @param id the ID within the view set
-     * @param data the data to fill into the form
-     * @return the form component
-     */
-    public static Component createForm(final String viewSetName, final int id, final Object data)
-    {
-        // create form
-        FormView formDef = ViewMgr.getView(viewSetName, id);
-        if (formDef != null)
-        {
-            FormViewable form = ViewFactory.createView(formDef, data);
-            if (form != null)
-            {
-                return form.getUIComponent();
-            } else
-            {
-                UICacheManager.displayErrorDlg(getResourceString("cantcreateform")+" viewset name["+viewSetName+"]  id["+id+"]");
-            }
-        } else
-        {
-            UICacheManager.displayErrorDlg(getResourceString("cantfindviewdef")+" viewset name["+viewSetName+"]  id["+id+"]");
-        }
-        return null;
-    }
+
     
     //----------------------------------------------------------------------------------
     // Prefs Section

@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -49,7 +50,9 @@ import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.store.FSDirectory;
 import org.dom4j.Element;
 
@@ -62,7 +65,6 @@ import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.UICacheManager;
-
 /**
  * This task will enable the user to index there database and preform express searches
  * 
@@ -328,7 +330,7 @@ public class ExpressSearchTask extends BaseTask
             public void actionPerformed(ActionEvent e) 
             {
                 String text = searchText.getText();
-                if (text != null && text.length() > 0)
+                if (isNotEmpty(text))
                 {
                     doQuery(text);
                 }

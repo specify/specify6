@@ -19,6 +19,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane;
 
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import edu.ku.brc.specify.core.Taskable;
 
 /**
@@ -51,7 +52,7 @@ public class ChartPane extends BaseSubPane implements Chartable
      */
     public String getName()
     {
-        return title != null && title.length() > 0 ? title : super.getName();
+        return isNotEmpty(title) ? title : super.getName();
     }
        
     /* (non-Javadoc)

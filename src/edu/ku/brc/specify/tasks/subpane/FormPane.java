@@ -1,11 +1,16 @@
 package edu.ku.brc.specify.tasks.subpane;
 
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+
 import java.awt.BorderLayout;
-import java.awt.Component;
 
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.dnd.GhostActionable;
+import edu.ku.brc.specify.ui.forms.FormViewable;
+import edu.ku.brc.specify.ui.forms.ViewFactory;
+import edu.ku.brc.specify.ui.forms.ViewMgr;
+import edu.ku.brc.specify.ui.forms.persist.FormView;
 
 /**
  * A class that can display a form, it is dervied from DroppableTaskPane which means objects can be
@@ -17,18 +22,23 @@ import edu.ku.brc.specify.ui.dnd.GhostActionable;
 @SuppressWarnings("serial")
 public class FormPane extends DroppableTaskPane
 {
-    protected String viewSetName = null;
-    protected int    formId      = -1;
-    protected Object data        = null; 
+    protected String        viewSetName   = null;
+    protected int           formId        = -1;
+    protected Object        data          = null;
     
+    protected FormViewable  formViewable  = null;
+    protected FormProcessor formProcessor = null;
+    
+    protected String        cacheDesc   = null;
+   
     /**
      * @param name the name of the pane
      * @param task the owning task
      * @param desc a description to display until a component is added to the pane
      */
-    public FormPane(final String name, 
+    public FormPane(final String   name, 
                     final Taskable task,
-                    final String desc)
+                    final String   desc)
     {
         super(name, task, desc);
     }
@@ -40,11 +50,11 @@ public class FormPane extends DroppableTaskPane
      * @param formId the ID of the form to be created from within the ViewSet
      * @param data the data to fill the form
      */
-    public FormPane(final String name, 
+    public FormPane(final String   name, 
                     final Taskable task,
-                    final String viewSetName,
-                    final int    formId,
-                    final Object data)
+                    final String   viewSetName,
+                    final int      formId,
+                    final Object   data)
     {
         this(name, task, null);
         
@@ -56,19 +66,28 @@ public class FormPane extends DroppableTaskPane
     }
     
     /**
-     * Cleanup
+     * Returns the processor
+     * @return the processor
      */
-    public void finalize()
+    public FormProcessor getFormProcessor()
     {
-        this.viewSetName = null;
-        this.formId      = -1;
-        this.data        = null;
+        return formProcessor;
     }
 
+    /**
+     * Sets the processor
+     * @param formProcessor the processor
+     */
+    public void setFormProcessor(FormProcessor formProcessor)
+    {
+        this.formProcessor = formProcessor;
+        formProcessor.setFormViewable(this);
+    }
+    
     //-----------------------------------------------
     // GhostActionable Interface
     //-----------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.dnd.GhostActionable#doAction(edu.ku.brc.specify.ui.dnd.GhostActionable)
      */
@@ -97,8 +116,8 @@ public class FormPane extends DroppableTaskPane
                            final int    formId,
                            final Object data)
     {
-        Component comp = UICacheManager.createForm(viewSetName, formId, data);
-        if (comp != null)
+        formViewable = createFormView(viewSetName, formId, data);
+        if (formViewable != null)
         {
             this.viewSetName = viewSetName;
             this.formId      = formId;
@@ -106,15 +125,73 @@ public class FormPane extends DroppableTaskPane
             
             this.removeAll();
             
-            comp.invalidate(); 
-            add(comp, BorderLayout.CENTER);
+            formViewable.getUIComponent().invalidate(); 
+            add(formViewable.getUIComponent(), BorderLayout.CENTER);
+            
+            if (data != null)
+            {
+                formViewable.setDataObj(data);
+            }
+            
+            if (formViewable.getValidator() != null)
+            {
+                formViewable.getValidator().validateForm();
+            }
+            
+            cacheDesc = desc;
             desc = null;
             doLayout();
             UICacheManager.forceTopFrameRepaint();
+            
         }
-
     }
-
+    
+    /**
+     * Removes any forms that have been created and the default message displays
+     */
+    public void clearForm()
+    {
+        this.removeAll();
+        desc = cacheDesc;
+        data = null;
+        
+        if (formProcessor != null)
+        {
+            formProcessor.setFormViewable(null);
+            formProcessor = null;
+        }
+        doLayout();
+        UICacheManager.forceTopFrameRepaint();
+    }
+    
+    /**
+     * Helper to create a form component from the View Set Name and the Id
+     * @param viewSetName the view set name to get the ID from
+     * @param id the ID within the view set
+     * @param data the data to fill into the form
+     * @return the form component
+     */
+    public static FormViewable createFormView(final String viewSetName, final int id, final Object data)
+    {
+        // create form
+        FormView formDef = ViewMgr.getView(viewSetName, id);
+        if (formDef != null)
+        {
+            FormViewable form = ViewFactory.createView(formDef, data);
+            if (form != null)
+            {
+                return form;
+            } else
+            {
+                UICacheManager.displayErrorDlg(getResourceString("cantcreateform")+" viewset name["+viewSetName+"]  id["+id+"]");
+            }
+        } else
+        {
+            UICacheManager.displayErrorDlg(getResourceString("cantfindviewdef")+" viewset name["+viewSetName+"]  id["+id+"]");
+        }
+        return null;
+    }
+    
     /**
      * Return the ID of the form
      * @return Return the ID of the form
@@ -141,4 +218,14 @@ public class FormPane extends DroppableTaskPane
         return data;
     }
 
+    /**
+     * Returns the FormViewable for this FormPane
+     * @return the FormViewable for this FormPane
+     */
+    public FormViewable getFormViewable()
+    {
+        return formViewable;
+    }
+
+    
 }

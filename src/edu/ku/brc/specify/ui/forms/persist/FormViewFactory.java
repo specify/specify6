@@ -21,13 +21,17 @@ package edu.ku.brc.specify.ui.forms.persist;
 
 import static edu.ku.brc.specify.helpers.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import org.apache.commons.betwixt.XMLIntrospector;
 import org.apache.commons.betwixt.io.BeanWriter;
@@ -89,7 +93,7 @@ public class FormViewFactory
         String   gettableClassName = element.attributeValue(GETTABLE);
         String   settableClassName = element.attributeValue(SETTABLE);
         String   desc        = "";
-        boolean  isValidated = getAttr(element, "validated", "false").equals("true");
+        boolean  isValidated = getAttr(element, "validated", false);
        
         Element descElement = (Element)element.selectSingleNode(DESC);
         if (descElement != null)
@@ -218,7 +222,7 @@ public class FormViewFactory
                 {
                     Element ruleElement = (Element) i.next();
                     String name = getAttr(ruleElement, "name", "");
-                    if (name != null && name.length() > 0)
+                    if (isNotEmpty(name))
                     {
                         rulesList.put(name, ruleElement.getTextTrim());
                     } else
@@ -276,7 +280,7 @@ public class FormViewFactory
      */
     protected static String getResourceLabel(final String label)
     {
-        if (label != null && label.length() > 0)
+        if (isNotEmpty(label))
         {
             return instance.doingResourceLabels  ? getResourceString(label) : label;
         } else
@@ -295,6 +299,121 @@ public class FormViewFactory
     protected static String getLabel(final Element cellElement)
     {
         return getResourceLabel(getAttr(cellElement, LABEL, ""));
+    }
+    
+    /**
+     * Processes all the rows
+     * @param element the parent DOM element of the rows 
+     * @param cellRows the list the rows are to be added to
+     */
+    protected static void processRows(Element element, List<FormRow> cellRows)
+    {
+        Element rowsElement = (Element)element.selectSingleNode("rows");        
+        if (rowsElement != null)
+        {
+            for ( Iterator i = rowsElement.elementIterator( "row" ); i.hasNext(); ) {
+                Element rowElement = (Element) i.next();      
+                
+                FormRow formRow = new FormRow();
+                
+                for ( Iterator cellIter = rowElement.elementIterator( "cell" ); cellIter.hasNext(); )
+                {
+                    Element cellElement = (Element)cellIter.next();
+                    String  cellName    = getAttr(cellElement, NAME, "");
+                    int     colspan     = getAttr(cellElement, "colspan", 1);
+                    int     rowspan     = getAttr(cellElement, "rowspan", 1);
+                    
+                    FormCell.CellType cellType = FormCell.CellType.valueOf(cellElement.attributeValue(TYPE));
+                    FormCell          cell     = null;
+                    
+                    switch (cellType)
+                    {
+                        case label:
+                            cell = formRow.addCell(new FormCellLabel(cellName, getLabel(cellElement), getAttr(cellElement, "labelfor", ""), colspan));
+                            break;
+                        
+                        case separator:
+                            cell = formRow.addCell(new FormCellSeparator(cellName, getLabel(cellElement), colspan));
+                            break;
+                        
+                        case field:
+                        {
+                            String uitype         = getAttr(cellElement, "uitype", "");
+                            String format         = getAttr(cellElement, "format", "");
+                            int    cols           = getAttr(cellElement, "cols", 10); // XXX PREF for default width of text field
+                            int    rows           = getAttr(cellElement, "rows", 5);  // XXX PREF for default heightof text area
+                            String validationType = getAttr(cellElement, "valtype", "OK");
+                            String validationRule = getAttr(cellElement, "validation", "");
+                            String initialize     = getAttr(cellElement, "initialize", "");
+                            boolean isRequired    = getAttr(cellElement, "isrequired", false);
+                            boolean isEncrypted    = getAttr(cellElement, "isencrypted", false);
+                            
+                            // check to see see if the validation is a node in the cell
+                            if (isEmpty(validationRule))
+                            {
+                                Element valNode = (Element)cellElement.selectSingleNode("validation");
+                                if (valNode != null)
+                                {
+                                    String str = valNode.getTextTrim();;
+                                    if (isNotEmpty(str))
+                                    {
+                                        validationRule = str;
+                                    }
+                                }
+                            }
+                            
+                            FormCellField field = new FormCellField(FormCell.CellType.field, 
+                                                                    cellName, uitype, format, isRequired,  
+                                                                    cols, rows, colspan, rowspan, validationType, validationRule, isEncrypted);
+                            field.setLabel(getAttr(cellElement, "label", ""));
+                            field.setPickListName(getAttr(cellElement, "picklist", ""));
+                            field.setChangeListenerOnly(getAttr(cellElement, "changesonly", false));
+                            System.out.println(cellName+"  "+field.isChangeListenerOnly());
+                            field.setInitialize(initialize);
+                            
+                            cell = formRow.addCell(field);
+                        } break;
+                            
+                        case command:
+                        {
+                            cell =  formRow.addCell(new FormCellCommand(cellName, 
+                                                                getLabel(cellElement), 
+                                                                getAttr(cellElement, "commandtype", ""),
+                                                                getAttr(cellElement, "action", "")));
+                        } break;
+                            
+                        case panel:
+                        {
+                            FormCellPanel cellPanel = new FormCellPanel(cellName, 
+                                                                        getAttr(cellElement, "coldef", "p"), 
+                                                                        getAttr(cellElement, "rowdef", "p"),
+                                                                        colspan, rowspan);
+                            processRows(cellElement, cellPanel.getRows());
+                            cell = formRow.addCell(cellPanel);
+                        } break;
+                        
+                        case subview:
+                        {
+                            String vsName = cellElement.attributeValue("viewsetname");
+                            if (vsName == null ||vsName.length() == 0)
+                            {
+                                vsName = instance.viewSetName;
+                            }
+                            cell = formRow.addCell(new FormCellSubView(cellElement.attributeValue(NAME),
+                                                  vsName,
+                                                  Integer.parseInt(cellElement.attributeValue(ID)),
+                                                  cellElement.attributeValue("class"),
+                                                  colspan,
+                                                  rowspan));
+                        }
+                        break;
+                    } // switch
+                    cell.setIgnoreSetGet(getAttr(cellElement, "ignore", false));
+                }
+                cellRows.add(formRow);                    
+            }
+        }
+   
     }
     
     /**
@@ -329,80 +448,7 @@ public class FormViewFactory
         formView.setEnableRules(getEnableRules(element));
         formView.setValidated(getAttr(element, "validate", "false").equals("true"));
         
-        Element rowsElement = (Element)element.selectSingleNode("rows");        
-        if (rowsElement != null)
-        {
-            for ( Iterator i = rowsElement.elementIterator( "row" ); i.hasNext(); ) {
-                Element rowElement = (Element) i.next();      
-                
-                FormRow formRow = new FormRow();
-                
-                for ( Iterator cellIter = rowElement.elementIterator( "cell" ); cellIter.hasNext(); )
-                {
-                    Element cellElement = (Element) cellIter.next();
-                    String  cellName  = getAttr(cellElement, NAME, "");
-                    
-                    int    colspan   = getAttr(cellElement, "colspan", 1);
-                    int    rowspan   = getAttr(cellElement, "rowspan", 1);
-                    FormCell.CellType cellType = FormCell.CellType.valueOf(cellElement.attributeValue(TYPE));
-                    switch (cellType)
-                    {
-                        case label:
-                            formRow.addCell(new FormCellLabel(cellName, getLabel(cellElement), getAttr(cellElement, "labelfor", ""), colspan));
-                            break;
-                        
-                        case separator:
-                            formRow.addCell(new FormCellSeparator(cellName, getLabel(cellElement), colspan));
-                            break;
-                        
-                        case field:
-                        {
-                            String uitype         = getAttr(cellElement, "uitype", "");
-                            String format         = getAttr(cellElement, "format", "");
-                            int    cols           = getAttr(cellElement, "cols", 10); // XXX PREF for default width of text field
-                            int    rows           = getAttr(cellElement, "rows", 5);  // XXX PREF for default heightof text area
-                            String validationType = getAttr(cellElement, "valtype", "OK");
-                            String validationRule = getAttr(cellElement, "validation", "");
-                            String initialize     = getAttr(cellElement, "initialize", "");
-                            boolean isRequired    = getAttr(cellElement, "isrequired", "false").equals("true");
-                            boolean isEncrypted    = getAttr(cellElement, "isencrypted", "false").equals("true");
-                            
-                            FormCellField field = new FormCellField(FormCell.CellType.field, 
-                                                                    cellName, uitype, format, isRequired,  
-                                                                    cols, rows, colspan, rowspan, validationType, validationRule, isEncrypted);
-                            field.setLabel(getAttr(cellElement, "label", ""));
-                            field.setInitialize(initialize);
-                            formRow.addCell(field);
-                        } break;
-                            
-                        case command:
-                        {
-                            formRow.addCell(new FormCellCommand(cellName, 
-                                                                getLabel(cellElement), 
-                                                                getAttr(cellElement, "commandtype", ""),
-                                                                getAttr(cellElement, "action", "")));
-                        } break;
-                            
-                        case subview:
-                        {
-                            String vsName = cellElement.attributeValue("viewsetname");
-                            if (vsName == null ||vsName.length() == 0)
-                            {
-                                vsName = instance.viewSetName;
-                            }
-                            formRow.addCell(new FormCellSubView(cellElement.attributeValue(NAME),
-                                                  vsName,
-                                                  Integer.parseInt(cellElement.attributeValue(ID)),
-                                                  cellElement.attributeValue("class"),
-                                                  colspan,
-                                                  rowspan));
-                        }
-                        break;
-                    }        
-                }
-                formView.addRow(formRow);                    
-            }
-        }
+        processRows(element, formView.getRows());
 
         return formView;
     }
@@ -430,7 +476,20 @@ public class FormViewFactory
     public static int getAttr(final Element element, final String attrName, final int defValue)
     {
         String str = element.attributeValue(attrName);
-        return str != null && str.length() > 0 ? Integer.parseInt(str) : defValue;
+        return isNotEmpty(str) ? Integer.parseInt(str) : defValue;
+    }
+    
+    /**
+     * Get a int attribute value from an element value
+     * @param element the element to get the attribute from
+     * @param attrName the name of the attribute to get
+     * @param defValue the default value if the attribute isn't there
+     * @return the attr value or the default value
+     */
+    public static boolean getAttr(final Element element, final String attrName, final boolean defValue)
+    {
+        String str = element.attributeValue(attrName);
+        return isNotEmpty(str) ? Boolean.parseBoolean(str.toLowerCase()) : defValue;
     }
     
     /**

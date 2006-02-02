@@ -114,5 +114,11 @@ public interface FormViewable
      */
     public void setDataIntoUIComp(final String name, Object data);
 
-    
+
+    /**
+     * Returns a subform by name
+     * @param name the name of the sub form to be returned
+     * @return a subform (FormViewable)
+     */
+    public FormViewable getSubView(final String name);
 }

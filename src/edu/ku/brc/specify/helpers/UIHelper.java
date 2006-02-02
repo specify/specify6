@@ -1,24 +1,25 @@
 package edu.ku.brc.specify.helpers;
 
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Vector;
 import java.util.GregorianCalendar;
+import java.util.Vector;
 
-import javax.swing.UIManager;
+import javax.swing.AbstractAction;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
-import com.jgoodies.looks.plastic.PlasticLookAndFeel;
-import com.jgoodies.looks.plastic.theme.DesertBlue;
-
 import edu.ku.brc.specify.ui.dnd.GhostDataAggregatable;
-
 public final class UIHelper
 {
     // Static Data Members
@@ -315,6 +316,68 @@ public final class UIHelper
         // Wow, it doesn't support anything
         return null;
     }
+    
+    //-----------------------------------------------------------------------------------------
+    // Menu Helpers
+    //-----------------------------------------------------------------------------------------
+   
 
+    /**
+     * @param menu
+     * @param label
+     * @param mnemonic
+     * @param accessibleDescription
+     * @param enabled
+     * @param action
+     * @return
+     */
+    public static JMenuItem createMenuItem(final JMenu          menu,
+                                           final String         label,
+                                           final String         mnemonic,
+                                           final String         accessibleDescription,
+                                           final boolean        enabled,
+                                           final AbstractAction action)
+    {
+        JMenuItem mi = new JMenuItem(label);
+        if (menu != null)
+        {
+            menu.add(mi);
+        }
+        if (isNotEmpty(mnemonic))
+        {
+            mi.setMnemonic(mnemonic.charAt(0));
+        }
+        mi.getAccessibleContext().setAccessibleDescription(accessibleDescription);
+        mi.addActionListener(action);
+        if (action != null)
+        {
+            action.addPropertyChangeListener(new MenuItemPropertyChangeListener(mi));
+            action.setEnabled(enabled);
+        }
+
+        return mi;
+    }
+
+    /**
+     * Create a menu 
+     * @param mennuBar the menubar
+     * @param labelKey the label key to be localized
+     * @param mneuKey the mneu key to be localized
+     * @return returns a menu
+     */
+    public static JMenu createMenu(final JMenuBar menuBar, final String labelKey, final String mneuKey)
+    {
+        JMenu menu = null;
+        try
+        {
+            menu = (JMenu) menuBar.add(new JMenu(getResourceString(labelKey)));
+            menu.setMnemonic(getResourceString(mneuKey).charAt(0));
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            log.info("Couldn't create menu for " + labelKey + "  " + mneuKey);
+        }
+        return menu;
+    }    
 
 }
