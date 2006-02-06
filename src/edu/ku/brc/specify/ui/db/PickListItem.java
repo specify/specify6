@@ -1,4 +1,4 @@
-package edu.ku.brc.specify.ui.db;
+ package edu.ku.brc.specify.ui.db;
 
 import java.util.*;
 
@@ -8,7 +8,7 @@ import java.util.*;
  */
 public class PickListItem  implements java.io.Serializable, Comparable<PickListItem> {
 
-    // Fields    
+    // Fields
 
      private String title;
      private String value;
@@ -20,10 +20,10 @@ public class PickListItem  implements java.io.Serializable, Comparable<PickListI
     /** default constructor */
     public PickListItem() {
     }
-    
-   
-    
-    
+
+
+
+
 
     // Property accessors
 
@@ -40,23 +40,23 @@ public class PickListItem  implements java.io.Serializable, Comparable<PickListI
 
 
     /**
-     * 
+     *
      */
     public String getTitle() {
         return this.title;
     }
-    
+
     public void setTitle(String title) {
         this.title = title;
     }
 
     /**
-     * 
+     *
      */
     public String getValue() {
         return this.value;
     }
-    
+
     public void setValue(String value) {
         this.value = value;
     }
@@ -66,25 +66,25 @@ public class PickListItem  implements java.io.Serializable, Comparable<PickListI
         if (title.equals(obj.title))
         {
             return 0;
-            
+
         } else
         {
            return title.compareTo(obj.title);
         }
     }
-    
+
     public String toString()
     {
         return title;
     }
 
     /**
-     * 
+     *
      */
     public Date getCreatedDate() {
         return this.createdDate;
     }
-    
+
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }

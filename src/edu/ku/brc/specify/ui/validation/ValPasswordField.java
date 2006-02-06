@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: ValidationListener.java,v $
+/* Filename:    $RCSfile: ValPasswordField.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2006/01/16 19:59:54 $
@@ -24,6 +24,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 
 import javax.swing.JPasswordField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 
 import edu.ku.brc.specify.helpers.Encryption;
@@ -37,10 +39,11 @@ import edu.ku.brc.specify.ui.ColorWrapper;
  *
  */
 @SuppressWarnings("serial")
-public class ValPasswordField extends JPasswordField implements UIValidatable
+public class ValPasswordField extends JPasswordField implements UIValidatable, DocumentListener
 {
     protected boolean isInError   = false;
     protected boolean isRequired  = false;
+    protected boolean isChanged   = false;    
     protected boolean isEncrypted = false;
     protected Color   bgColor     = null;
 
@@ -185,5 +188,39 @@ public class ValPasswordField extends JPasswordField implements UIValidatable
         setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
         this.isRequired = isRequired;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.validation.UIValidatable#isChanged()
+     */
+    public boolean isChanged()
+    {
+        return isChanged;
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.validation.UIValidatable#setChanged(boolean)
+     */
+    public void setChanged(boolean isChanged)
+    {
+        this.isChanged = isChanged;
+    }
+    
+    //--------------------------------------------------------
+    // DocumentListener
+    //--------------------------------------------------------
+    
+    public void changedUpdate(DocumentEvent e)
+    {
+        isChanged = true;
+    }
+    
+    public void insertUpdate(DocumentEvent e)
+    {
+        isChanged = true;
+    }
+    
+    public void removeUpdate(DocumentEvent e) 
+    {
+        isChanged = true;
+    }
 }

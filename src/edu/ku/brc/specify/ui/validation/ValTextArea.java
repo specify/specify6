@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: ValTextField.java,v $
+/* Filename:    $RCSfile: ValTextArea.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2006/01/16 19:59:54 $
@@ -24,22 +24,22 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 
+import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
 
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.ColorWrapper;
-import edu.ku.brc.specify.ui.db.JAutoCompTextField;
-import edu.ku.brc.specify.ui.db.PickListDBAdapter;
 
 /**
- * A JTextControl that implements UIValidatable for participating in validation
+ * A JTextArea that implements UIValidatable for participating in validation
  * 
  * @author rods
  *
  */
 @SuppressWarnings("serial")
-public class ValTextField extends JAutoCompTextField implements UIValidatable, DocumentListener
+public class ValTextArea extends JTextArea implements UIValidatable, DocumentListener
 {
     protected boolean isInError  = false;
     protected boolean isRequired = false;
@@ -49,12 +49,10 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable, D
     protected static ColorWrapper valtextcolor       = null;
     protected static ColorWrapper requiredfieldcolor = null;
 
-    
-
     /**
      * Constructor
      */
-    public ValTextField()
+    public ValTextArea()
     {
         super();
         init();
@@ -64,40 +62,33 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable, D
      * Constructor
      * @param arg0 initial value
      */
-    public ValTextField(String arg0)
+    public ValTextArea(String arg0)
     {
         super(arg0);       
         init();
     }
 
-    /**
-     * Constructor
-     * @param arg0 initial number of columns
-     */
-    public ValTextField(int arg0)
+    public ValTextArea(int arg0, int arg1)
     {
-        super(arg0);     
+        super(arg0, arg1);
         init();
     }
 
-    /**
-     * Constructor
-     * @param arg0 initial number of columns
-     */
-    public ValTextField(int arg0, PickListDBAdapter pickListDBAdapter)
+    public ValTextArea(String arg0, int arg1, int arg2)
     {
-        super(arg0, pickListDBAdapter);     
+        super(arg0, arg1, arg2);
         init();
     }
 
-    /**
-     * Constructor
-     * @param arg0 initial value
-     * @param arg1 initial number of columns
-     */
-    public ValTextField(String arg0, int arg1)
+    public ValTextArea(Document arg0)
     {
-        super(arg0, arg1);   
+        super(arg0);
+        init();
+    }
+
+    public ValTextArea(Document arg0, String arg1, int arg2, int arg3)
+    {
+        super(arg0, arg1, arg2, arg3);
         init();
     }
 
@@ -106,7 +97,6 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable, D
      */
     public void init()
     {
-        super.init();
         
         bgColor = getBackground();
         if (valtextcolor == null || requiredfieldcolor == null)

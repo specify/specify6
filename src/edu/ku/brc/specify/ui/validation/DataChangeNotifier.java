@@ -69,11 +69,11 @@ public class DataChangeNotifier implements FocusListener,
     
     protected UIValidator                uiv;
     protected boolean                    hasDataChanged = false;
-    protected Vector<DataChangeListener> dcListeners = new Vector<DataChangeListener>();
+    protected Vector<DataChangeListener> dcListeners    = new Vector<DataChangeListener>();
 
     protected Component                  comp;
     protected String                     name;
-    protected String                     cachedData = null;
+    protected String                     cachedData     = null;
     
     /**
      * Constructor
@@ -181,7 +181,17 @@ public class DataChangeNotifier implements FocusListener,
     public void reset()
     {
         hasDataChanged = false;
-        cachedData  = getValueForControl(comp);
+        
+        if (comp instanceof UIValidatable)
+        {
+            UIValidatable uiv = (UIValidatable)comp;
+            uiv.setChanged(false);
+            uiv.setInError(false);
+            
+        } else
+        {
+            cachedData  = getValueForControl(comp);
+        }
     }
     
     /**
@@ -192,7 +202,11 @@ public class DataChangeNotifier implements FocusListener,
     {
         if (!hasDataChanged)
         {
-            if (cachedData != null)
+            if (comp instanceof UIValidatable)
+            {
+                hasDataChanged = ((UIValidatable)comp).isChanged();
+                
+            } else if (cachedData != null)
             {
                 if (!cachedData.equals(getValueForControl(comp)))
                 {
@@ -261,6 +275,18 @@ public class DataChangeNotifier implements FocusListener,
         comp = null;
     }
     
+    /**
+     * Helper for processing a change in the data
+     */
+    protected void doValidateOnChange()
+    {
+        if (uiv != null && uiv.getType() == UIValidator.Type.Changed)
+        {
+            uiv.validate();
+        }        
+        notifyDataChangeListeners();
+    }
+    
     //---------------------------
     // FocusListener
     //---------------------------
@@ -270,7 +296,10 @@ public class DataChangeNotifier implements FocusListener,
      */
     public void focusGained(FocusEvent e)
     {
-        cachedData = getValueForControl(comp);
+        if (!(comp instanceof UIValidatable))
+        {
+            cachedData = getValueForControl(comp);
+        }  
     }
     
     /* (non-Javadoc)
@@ -279,18 +308,28 @@ public class DataChangeNotifier implements FocusListener,
     public void focusLost(FocusEvent e)
     {
         //log.info("["+((JTextComponent)comp).getText()+"]["+cachedData+"]");
-        if (cachedData != null && !cachedData.equals(getValueForControl(comp)))
+        
+        if (comp instanceof UIValidatable)
         {
-            notifyDataChangeListeners();
+            if (((UIValidatable)comp).isChanged())
+            {
+                notifyDataChangeListeners();
+            }
+            
+        } else
+        {
+            if (cachedData != null && !cachedData.equals(getValueForControl(comp)))
+            {
+                notifyDataChangeListeners();
+            } 
         }
         
-        if (uiv != null)
+
+        if (uiv != null && uiv.getType() == UIValidator.Type.Focus)
         {
-            if (uiv.getType() == UIValidator.Type.Focus || uiv.isRequired())
-            {
-                uiv.validate();
-            }
+            uiv.validate();
         }
+
     }
     
     //--------------------------------------------------------
@@ -318,6 +357,7 @@ public class DataChangeNotifier implements FocusListener,
     public void keyReleased(KeyEvent e)
     {
         notifyDataChangeListeners();
+        
         if (uiv != null && uiv.getType() == UIValidator.Type.Changed)
         {
             uiv.validate();
@@ -327,21 +367,7 @@ public class DataChangeNotifier implements FocusListener,
     /* (non-Javadoc)
      * @see java.awt.event.KeyListener#keyTyped(java.awt.event.KeyEvent)
      */
-    public void keyTyped(KeyEvent e)
-    {
-    }
-    
-    /**
-     * Helper for processing a change in the data
-     */
-    protected void doValidateOnChange()
-    {
-        if (uiv != null && uiv.getType() == UIValidator.Type.Changed)
-        {
-            uiv.validate();
-        }        
-        notifyDataChangeListeners();
-    }
+    public void keyTyped(KeyEvent e) {}
     
     //--------------------------------------------------------
     // ListDataListener (JComboxBox)
@@ -398,7 +424,6 @@ public class DataChangeNotifier implements FocusListener,
     //--------------------------------------------------------
     // DocumentListener
     //--------------------------------------------------------
-
     
     public void changedUpdate(DocumentEvent e)
     {

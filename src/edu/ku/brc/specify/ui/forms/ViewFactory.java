@@ -21,17 +21,17 @@ package edu.ku.brc.specify.ui.forms;
 
 import static edu.ku.brc.specify.ui.validation.UIValidator.parseValidationType;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.split;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -50,7 +50,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.builder.*;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -73,6 +73,10 @@ import edu.ku.brc.specify.ui.forms.persist.FormRow;
 import edu.ku.brc.specify.ui.forms.persist.FormView;
 import edu.ku.brc.specify.ui.validation.DataChangeNotifier;
 import edu.ku.brc.specify.ui.validation.FormValidator;
+import edu.ku.brc.specify.ui.validation.ValComboBox;
+import edu.ku.brc.specify.ui.validation.ValListBox;
+import edu.ku.brc.specify.ui.validation.ValTextArea;
+import edu.ku.brc.specify.ui.validation.ValTextField;
 import edu.ku.brc.specify.ui.validation.ValidatedJPanel;
 
 /**
@@ -87,16 +91,16 @@ public class ViewFactory
     private static Log log = LogFactory.getLog(ViewFactory.class);
     private static final ViewFactory  instance = new ViewFactory();
     
-    private Font  boldLabelFont = null;
+    //private Font  boldLabelFont = null;
     
     // Data Members 
     protected static SimpleDateFormat scrDateFormat = null;
     
     protected ViewFactory()
     {
-        JLabel label = new JLabel();
-        Font font = label.getFont();
-        boldLabelFont = new Font(font.getFontName(), Font.BOLD, font.getSize());
+        //JLabel label = new JLabel();
+        //Font font = label.getFont();
+        //boldLabelFont = new Font(font.getFontName(), Font.BOLD, font.getSize());
         
     }
     
@@ -336,22 +340,26 @@ public class ViewFactory
                     } else if (uiType.equals("combobox")) 
                     {
                         String[] initArray = split(cellField.getInitialize(), ",");
+                        for (int i=0;i<initArray.length;i++)
+                        {
+                            initArray[i] = initArray[i].trim();
+                        }
                         
                         JComboBox cbx;
                         if (validator != null)
                         {
-                            //cbx = validator.createComboBox(cellField.getName(), initArray);
-                            cbx = new JComboBox(initArray);
-                            DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getName(), cbx, null);
-                            cbx.getModel().addListDataListener(dcn);
-                            
-                            addToValidator = false;
-                            
+                            cbx = validator.createComboBox(cellField.getName(),
+                                                             initArray, 
+                                                             cellField.isRequired(),
+                                                             parseValidationType(cellField.getValidationType()),
+                                                             cellField.getValidationRule(),
+                                                             cellField.getPickListName());
                         } else
-                        { 
-                            cbx = new JComboBox(initArray);
+                        {
+                            cbx = initArray == null ? new ValComboBox() : new ValComboBox(initArray);
+                            //DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getName(), cbx, null);
+                            //cbx.getModel().addListDataListener(dcn);
                         }
-                        //cbx.setSelectedIndex(inx);
                         compToAdd = cbx;
                         
                     } else if (uiType.equals("checkbox")) 
@@ -380,14 +388,24 @@ public class ViewFactory
                             addToValidator = false;
                         } else
                         {
-                            txt = new JTextField(cellField.getCols());
+                            txt = new ValTextField(cellField.getCols());
+                            //DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getName(), txt, null);
+                            //txt.addActionListener(dcn);
                         }
                         
                         compToAdd = txt;
                         
                     } else if (uiType.equals("textarea")) 
                     {
-                        JTextArea ta = new JTextArea("", cellField.getRows(), cellField.getCols());
+                        JTextArea ta;
+                        if (validator != null)
+                        {
+                            ta = validator.createTextArea(cellField.getName(), cellField.getRows(), cellField.getCols());
+                            addToValidator = false;
+                        } else
+                        {
+                            ta = new ValTextArea("", cellField.getRows(), cellField.getCols());
+                        }
                         
                         ta.setLineWrap(true);
                         ta.setWrapStyleWord(true);
@@ -400,34 +418,61 @@ public class ViewFactory
                         compToAdd = scrollPane;
                         
                     } else if (uiType.equals("browse")) 
-                    {
-                        
-                        JTextField textField = createTextField(validator, "", cellField);
-
-                        BrowseBtnPanel bbp = new BrowseBtnPanel(textField);
+                    {                      
+                        BrowseBtnPanel bbp = new BrowseBtnPanel(createTextField(validator, "", cellField));
                         compToAdd = bbp;
                         
                     } else if (uiType.equals("list")) 
                     {
                         int numRows = 15;
-                        String[] initArray = split(cellField.getInitialize(), "=");
-                        if (initArray.length == 2 && initArray[0].equals("rows"))
+                        String[] initArray = null;
+                        
+                        String initStr = cellField.getInitialize();
+                        if (isNotEmpty(initStr))
                         {
-                            numRows = Integer.parseInt(initArray[1]);
+                            String[] initSections = split(initStr, ";");
+                            if (initSections[0].indexOf("rows=") > -1)
+                            {
+                                String[] nameValPair = split(initStr, "=");
+                                if (nameValPair.length == 2 && nameValPair[0].equals("rows"))
+                                {
+                                    numRows = Integer.parseInt(nameValPair[1]);
+                                }
+                                if (initSections.length == 2)
+                                {
+                                    initArray = split(initStr, ",");
+                                    for (int i=0;i<initArray.length;i++)
+                                    {
+                                        initArray[i] = initArray[i].trim();
+                                    }
+                                }
+                            } else
+                            {
+                                initArray = split(initSections[0], ",");
+                            }
                         }
                         
-                        JList list = new JList();
-                        list.setVisibleRowCount(numRows);
+                        JList list;
+                        if (validator != null && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
+                        {
+    
+                            list = validator.createList(cellField.getName(), 
+                                                        initArray,
+                                                        numRows,
+                                                        cellField.isRequired(),
+                                                        parseValidationType(cellField.getValidationType()),  // "OK" if error parsing
+                                                        cellField.getValidationRule());
+                        } else
+                        {
+                            list = initArray == null ? new ValListBox() : new ValListBox(initArray);
+                            list.setVisibleRowCount(numRows);
+                            //DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getName(), list, null);
+                            //list.addListSelectionListener(dcn);
+                        }
                         
                         JScrollPane scrollPane = new JScrollPane(list);
                         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
                         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-                        
-                        if (validator != null)
-                        {
-                            DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getName(), list, null);
-                            list.addListSelectionListener(dcn);
-                        }
 
                         compToReg = list;
                         compToAdd = scrollPane;
@@ -504,16 +549,27 @@ public class ViewFactory
                 } else if (cell.getType() == FormCell.CellType.panel) 
                 {
                     FormCellPanel cellPanel = (FormCellPanel)cell;
+                    String panelType = cellPanel.getPanelType();
                     
-                    DefaultFormBuilder panelBuilder = new DefaultFormBuilder(new FormLayout(cellPanel.getColDef(), cellPanel.getRowDef()));
-                    
-                    //Color[] colors = new Color[] {Color.YELLOW, Color.GREEN, Color.BLUE, Color.ORANGE, Color.MAGENTA};
-                    //panelBuilder.getPanel().setBackground(colors[cnt % colors.length]);
-                    //cnt++;
-                    
-                    processRows(formView, validator, formViewObj, panelBuilder, labelsForHash, new CellConstraints(), currDataObj, cellPanel.getRows());
-                    
-                    compToAdd      = panelBuilder.getPanel();
+                    if (isEmpty(panelType))
+                    {
+                        DefaultFormBuilder panelBuilder = new DefaultFormBuilder(new FormLayout(cellPanel.getColDef(), cellPanel.getRowDef()));
+                        
+                        //Color[] colors = new Color[] {Color.YELLOW, Color.GREEN, Color.BLUE, Color.ORANGE, Color.MAGENTA};
+                        //panelBuilder.getPanel().setBackground(colors[cnt % colors.length]);
+                        //cnt++;
+                        
+                        processRows(formView, validator, formViewObj, panelBuilder, labelsForHash, new CellConstraints(), currDataObj, cellPanel.getRows());
+                        
+                        compToAdd = panelBuilder.getPanel();
+                        
+                    } else if (panelType.equalsIgnoreCase("buttonbar"))
+                    {
+                        
+                        JButton[] btns = processRows(formView, validator, formViewObj, cellPanel.getRows());
+                        compToAdd      = com.jgoodies.forms.factories.ButtonBarFactory.buildCenteredBar(btns);
+                   }
+
                     addControl     = false;
                     addToValidator = false;
                     
@@ -547,6 +603,51 @@ public class ViewFactory
     }
     //public static int cnt = 0;
     
+    /**
+     * @param formView
+     * @param validator
+     * @param formViewObj
+     * @param builder
+     * @param labelsForHash
+     * @param cc
+     * @param currDataObj
+     */
+    protected JButton[] processRows(final FormFormView    formView, 
+                                    final FormValidator   validator, 
+                                    final FormViewObj     formViewObj,
+                                    final List<FormRow>   formRows)
+    {   
+        List<JButton> btns = new ArrayList<JButton>();
+        
+        for (FormRow row : formRows)
+        {
+            for (FormCell cell : row.getCells()) 
+            {
+                if (cell.getType() == FormCell.CellType.command) 
+                {
+                    FormCellCommand cellCmd = (FormCellCommand)cell;
+                    JButton btn  = new JButton(cellCmd.getLabel());
+                    if (cellCmd.getCommandType().length() > 0)
+                    {
+                        btn.addActionListener(new CommandActionWrapper(new CommandAction(cellCmd.getCommandType(), cellCmd.getAction(), "")));
+                    }
+                    formViewObj.addControl(cell, btn);
+                    btns.add(btn);
+                } 
+            }                
+        }
+        
+        JButton[] btnsArray = new JButton[btns.size()];
+        int i = 0;
+        for (JButton b : btns)
+        {
+            btnsArray[i++] = b;
+        }
+        btns.clear();
+        return btnsArray;
+  
+    }
+   
     /**
      * @param formView
      * @param dataObj
@@ -588,7 +689,10 @@ public class ViewFactory
             {
                 validatedPanel = new ValidatedJPanel();
                 validator      = validatedPanel.getFormValidator();
-                validator.addRuleObjectMapping("dataObj", dataObj);
+                if (dataObj != null)
+                {
+                    validator.addRuleObjectMapping("dataObj", dataObj);
+                }
             }
             
             // Figure columns

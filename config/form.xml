@@ -75,7 +75,72 @@
       </row>
     </rows>
   </view>
-  
+
+  <view id="333" 
+	  type="form" 
+	  name="TestObject" 
+	  class="edu.ku.brc.specify.tests.forms.TestDataObj" 
+	  gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+	  resourceLabels="false"
+	  validate="true">
+  	<desc><![CDATA[Test the Main form]]></desc>
+    <altviews>
+    </altviews>
+    
+    <columnDef>f:p, 1dlu, p, 2dlu, p, 1dlu, p, p:g</columnDef>
+    <rowDef>p, 2dlu, p, 2dlu, p, 2dlu, p, 7dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 7dlu, p, 2dlu, p, 2dlu, p, 2dlu, p</rowDef>
+
+    <rows>
+      <row>
+        <cell type="separator" label="TestObject" colspan="8"/>
+      </row>
+      
+      <row>
+        <cell type="label" labelfor="textField" label="Catalog Number"/>
+        <cell type="field" name="textField" isrequired="true"/>
+      </row>
+      
+	  <row>
+        <cell type="label" labelfor="textArea" label="Remarks"/>
+        <cell type="field" name="textArea" uitype="textarea" cols="60" colspan="6" rowspan="6"  isrequired="true"/>
+      </row>
+      
+	  <row>
+          <cell type="label" name="x" labelfor="" label=""/>
+      </row>
+      
+	  <row>
+          <cell type="label" name="x" labelfor="" label=""/>
+      </row>
+      
+	  <row>
+		  <cell type="label" name="browseFieldLabel" labelfor="browseField" label="Browse Field"/>
+		  <cell type="field" name="browseField" colspan="5" uitype="browse" isrequired="true"/>
+	  </row>
+      <row>
+          <cell type="label" labelfor="checkBox" label=""/>
+          <cell type="field" name="checkBox" label="CheckBox" uitype="checkbox" />
+          
+		  <cell type="label" name="comboBoxLabel" labelfor="comboBox" label="Combo Box"/>
+	      <cell type="field" uitype="combobox" name="comboBox" initialize="Item 1, Item 2"/>
+      </row>
+	  <row>
+		  <cell type="label" name="dateLabel" labelfor="date" label="Date"/>
+		  <cell type="field" name="date" uitype="text" valtype="OK" validation="date.isNotEmpty()"/>
+	  </row>
+	  <row> 
+        <cell type="panel" name="outerPanel" paneltype="buttonbar" colspan="8">
+		    <rows>
+		      <row>
+				  <cell type="command" name="OK" label="OK"/>
+				  <cell type="command" name="validateBtn" label="Validate"/>
+		      </row>
+		    </rows>
+		</cell>
+	  </row>
+    </rows>
+  </view>
+    
   <view id="3000" 
 	  type="form" 
 	  name="TestSubObject" 

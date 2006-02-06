@@ -385,6 +385,7 @@ public class FormViewFactory
                         case panel:
                         {
                             FormCellPanel cellPanel = new FormCellPanel(cellName, 
+                                                                        getAttr(cellElement, "paneltype", ""), 
                                                                         getAttr(cellElement, "coldef", "p"), 
                                                                         getAttr(cellElement, "rowdef", "p"),
                                                                         colspan, rowspan);

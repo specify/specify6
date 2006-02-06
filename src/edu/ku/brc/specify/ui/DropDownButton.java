@@ -273,7 +273,7 @@ public abstract class DropDownButton extends JButton implements ChangeListener, 
                     
                 } else if (comp instanceof JSeparator)
                 {
-                    popupMenu.add((JSeparator)comp);                    
+                    popupMenu.add(comp);                    
                 }
             }           
             return popupMenu;

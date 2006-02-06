@@ -68,16 +68,14 @@
         <cell type="field" name="usedInForms" uitype="list" ignore="true" initialize="rows=5"/>
       </row>
        <row>
-         <cell type="panel" name="BtnPanel" coldef="f:p:g,p,p,5px,p,p,f:p:g" rowdef="p" colspan="3">
+          <cell type="panel" name="btnPanel" paneltype="buttonbar" colspan="3">
 		    <rows>
 		      <row>
-				 <cell type="label" label=""/>
 		         <cell type="command" name="deletePL" label="Delete" commandtype="" action="" ignore="true"/>
 		         <cell type="command" name="savePL" label="Save Changes" commandtype="" action="" ignore="true"/>
-				 <cell type="label" label=""/>
 		      </row>
 		    </rows>
-         </cell>
+		</cell>
       </row>
     </rows>
   </view>

@@ -29,40 +29,40 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.*;
+import java.util.Map;
+import java.util.Vector;
 
 import javax.swing.JTextField;
 
 import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
 import org.apache.commons.jexl.JexlContext;
-import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 /**
  *  Validates a single UI Component the component is to be referred to in the validation script as "obj"
- *  
+ *
  * @author rods
  *
  */
 public class UIValidator implements FocusListener, KeyListener, PropertyChangeListener
 {
     public enum Type {None, Focus, Changed, OK};
-    
+
     private static Log log = LogFactory.getLog(UIValidator.class);
-   
+
     protected JexlContext    jc  = null;
     protected Expression     exp = null;
-    
+
     protected Component      comp = null;
     protected UIValidatable  uiv  = null;
-    
+
     protected Type type = Type.OK;
-    
+
     protected Vector<ValidationListener> listeners = new Vector<ValidationListener>();
-    
+
     /**
-     * Constructor 
+     * Constructor
      * @param comp component
      * @param type the type of validation
      */
@@ -70,13 +70,13 @@ public class UIValidator implements FocusListener, KeyListener, PropertyChangeLi
     {
         this.comp = comp;
         this.type = type;
-        
+
         if (comp instanceof UIValidatable)
         {
             uiv  = (UIValidatable)comp;
         }
     }
-    
+
     /**
      * Constructor
      * @param comp UI Cinponent that MUST implement UIValidatable
@@ -86,17 +86,17 @@ public class UIValidator implements FocusListener, KeyListener, PropertyChangeLi
     public UIValidator(Component comp, Type type, String expression)
     {
         this(comp, type);
-        
+
         // Only create Jexl objects if we have a "real" rule,
         if (isNotEmpty(expression))
         {
             //jc  = JexlHelper.createContext();
             //jc.getVars().put("obj", comp);
-            
-            try 
+
+            try
             {
                 exp = ExpressionFactory.createExpression( expression );
-                
+
             } catch (Exception e)
             {
                 log.info("Exp["+expression+"]");
@@ -109,7 +109,7 @@ public class UIValidator implements FocusListener, KeyListener, PropertyChangeLi
         }
 
     }
-    
+
     /**
      * Parse string for Type and return None if there is a parse error
      * @param type the string with the Type
@@ -131,7 +131,7 @@ public class UIValidator implements FocusListener, KeyListener, PropertyChangeLi
     {
         return uiv != null && uiv.isRequired();
     }
-    
+
     /**
      * Validate the control
      * @return true if it passes, and false if it didn't
@@ -144,25 +144,25 @@ public class UIValidator implements FocusListener, KeyListener, PropertyChangeLi
             uiv.setInError(false);
             return true;
         }
-        
-        boolean isInError   = false;      
+
+        boolean isInError   = false;
         boolean isTextField = comp instanceof JTextField;
-        
+
          // If it is required then it MUST have a value or it is in error
         if (uiv != null && uiv.isRequired() && isTextField && ((JTextField)comp).getText().length() == 0)
         {
             isInError = true;
             uiv.setInError(isInError);
         }
-               
+
         // Skip processing the field if it is already in error as a required field
         if (!isInError && isTextField && jc != null && exp != null)
         {
-            try 
+            try
             {
                 Object result = exp.evaluate(jc);
-                
-                Map map = jc.getVars();               
+
+                Map map = jc.getVars();
                 Object[] keys = map.keySet().toArray();
                 for (Object key : keys)
                 {
@@ -173,33 +173,33 @@ public class UIValidator implements FocusListener, KeyListener, PropertyChangeLi
                 {
                     isInError = !((Boolean)result).booleanValue();
                 }
-              
+
             } catch (Exception e)
             {
                 // XXX FIXME
                 e.printStackTrace();
             }
-            
+
             if (uiv != null)
             {
                 uiv.setInError(isInError);
             }
         }
-        
+
         // Don't notify any of the listeners if we are validating it for an OK button
         if (isTextField && uiv.isRequired())
         {
             uiv.setInError(isInError);
             notifyValidationListeners();
-            
+
         } else if (type != Type.OK)
         {
             notifyValidationListeners();
-        } 
-                
-        return !isInError;    
+        }
+
+        return !isInError;
     }
-    
+
     /**
      * Returns whether it is in error, meaning whether it passed the validation
      * @return Returns whether it is in error, meaning whether it passed the validation
@@ -209,7 +209,7 @@ public class UIValidator implements FocusListener, KeyListener, PropertyChangeLi
 
         return uiv != null ? uiv.isInError() : false;
     }
-    
+
     /**
      * Add a validation listener
      * @param l the listener
@@ -218,7 +218,7 @@ public class UIValidator implements FocusListener, KeyListener, PropertyChangeLi
     {
         listeners.addElement(l);
     }
-    
+
     /**
      * remove the validation listener
      * @param l the listener
@@ -227,9 +227,9 @@ public class UIValidator implements FocusListener, KeyListener, PropertyChangeLi
     {
         listeners.remove(l);
     }
-    
+
     /**
-     * Notify all the listeners that it was 
+     * Notify all the listeners that it was
      */
     protected void notifyValidationListeners()
     {
@@ -238,7 +238,7 @@ public class UIValidator implements FocusListener, KeyListener, PropertyChangeLi
             vl.wasValidated(this);
         }
     }
-    
+
     /**
      * Sets the JEXL Context into the validator
      * @param jc JEXL Context
@@ -255,36 +255,36 @@ public class UIValidator implements FocusListener, KeyListener, PropertyChangeLi
     {
         validate();
     }
-    
+
     public void focusLost(FocusEvent e)
     {
         validate();
     }
-    
+
     //----------------------------------------
     // KeyListener
     //----------------------------------------
-    public void keyPressed(KeyEvent e)    
+    public void keyPressed(KeyEvent e)
     {
-        
+
     }
-    
+
     public void keyReleased(KeyEvent e)
     {
-        validate();  
+        validate();
     }
-    
+
     public void keyTyped(KeyEvent e)
     {
         //validate();
     }
-    
+
     //----------------------------------------
     // PropertyChangeListener
     //----------------------------------------
     public void propertyChange(PropertyChangeEvent evt)
     {
-        
+
         //System.out.println(evt);
     }
 

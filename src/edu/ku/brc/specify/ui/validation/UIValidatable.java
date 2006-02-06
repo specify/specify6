@@ -20,26 +20,47 @@
 
 package edu.ku.brc.specify.ui.validation;
 
+/**
+ * Interface for validatable components.
+ * 
+ * @author rods
+ *
+ */
 public interface UIValidatable
 {
     /**
+     * Returns the isInError.
      * @return Returns the isInError.
      */
     public boolean isInError();
 
     /**
+     * Sets whether it is in error.
      * @param isInError The isInError to set.
      */
     public void setInError(boolean isInError);
 
     /**
+     * Returns the isRequired.
      * @return Returns the isRequired.
      */
     public boolean isRequired();
 
     /**
+     * Sets whether it is required
      * @param isRequired The isRequired to set.
      */
     public void setRequired(boolean isRequired);
 
+    /**
+     * Returns whether it has changed
+     * @return whether it has changed
+     */
+    public boolean isChanged();
+
+    /**
+     * Sets whether it has changed
+     * @param isChanged whether it has changed.
+     */
+    public void setChanged(boolean isChanged);
 }

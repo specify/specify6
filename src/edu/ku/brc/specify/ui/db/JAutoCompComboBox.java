@@ -25,8 +25,10 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Vector;
 
 import javax.swing.ComboBoxEditor;
+import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -55,6 +57,41 @@ public class JAutoCompComboBox extends JComboBox
     protected PickListDBAdapter  dbAdapter       = null;
 
     /**
+     * Constructor
+     */
+    public JAutoCompComboBox()
+    {
+        super();
+    }
+    
+    /**
+     * Constructor
+     * @param arg0 with a model
+     */
+    public JAutoCompComboBox(ComboBoxModel arg0)
+    {
+        super(arg0);
+    }
+
+    /**
+     * Constructor
+     * @param arg0 object array of items
+     */
+    public JAutoCompComboBox(Object[] arg0)
+    {
+        super(arg0);
+    }
+
+    /**
+     * Constructor
+     * @param arg0 vector of items
+     */
+    public JAutoCompComboBox(Vector<?> arg0)
+    {
+        super(arg0);
+    }
+
+    /**
      * Constructor with Adaptor
      * @param dBAdaptor the adaptor for enabling autocomplete
      */
@@ -63,17 +100,21 @@ public class JAutoCompComboBox extends JComboBox
         super(dbAdapter.getList());
         
         this.dbAdapter = dbAdapter;
-        init();
+        init(true);
     }
     
     /**
      * Initializes the combobox to enable the typing of values 
+     * @param makeEditable indicates to make it an editable combobox
      */
-    protected void init()
+    protected void init(final boolean makeEditable)
     {
-        this.setEditor(new BasicComboBoxEditor());
-        this.setEditable(true);
-        setSelectedItem("");     
+        if (makeEditable)
+        {
+            this.setEditor(new BasicComboBoxEditor());
+            this.setEditable(true);
+            setSelectedIndex(-1);  
+        }
     }
     
     /**
@@ -109,11 +150,15 @@ public class JAutoCompComboBox extends JComboBox
     public void setSelectedIndex(int index)
     {
         super.setSelectedIndex(index);
-        if (index > -1)
+        if (dbAdapter != null && index > -1)
         {
-	        tf.setText(((PickListItem)getItemAt(index)).getTitle());
-	        tf.setSelectionEnd(caretPos + tf.getText().length());
-	        tf.moveCaretPosition(caretPos);
+            Object item = getItemAt(index);
+            if (item instanceof PickListItem)
+            {
+    	        tf.setText(((PickListItem)item).getTitle());
+    	        tf.setSelectionEnd(caretPos + tf.getText().length());
+    	        tf.moveCaretPosition(caretPos);
+            }
         }
     }
     

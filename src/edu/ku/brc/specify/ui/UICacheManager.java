@@ -36,20 +36,16 @@ import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.exceptions.UIException;
 import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
-import edu.ku.brc.specify.ui.forms.FormViewable;
-import edu.ku.brc.specify.ui.forms.ViewFactory;
-import edu.ku.brc.specify.ui.forms.ViewMgr;
-import edu.ku.brc.specify.ui.forms.persist.FormView;
 
 /**
- * This class manages all things UI. It is the central clearing house for UI components. 
+ * This class manages all things UI. It is the central clearing house for UI components.
  * Meaning you can register various UI components by name and then get them later.<br><br>
  * <br>
  * Using the <i>getMostRecentFrame</i> method<br>
  * You <i>SHOULD</i> set the RECENTFRAME ui component when you are in a dialog and then any error dialogs
- * can be parented to your dialog. But if you set it you MUST set it back to null. (NOte if you forget it will always return 
+ * can be parented to your dialog. But if you set it you MUST set it back to null. (NOte if you forget it will always return
  * the TOPFRAME, but don't rely on this)
- *  
+ *
  * @author rods
  *
  */
@@ -64,21 +60,21 @@ public class UICacheManager
     public static final String GLASSPANE = "glasspane";
     public static final String MAINPANE  = "mainpane";
     public static final String RECENTFRAME  = "recentframe";
-    
+
     private static final Log            log      = LogFactory.getLog(UICacheManager.class);
     private static final UICacheManager instance = new UICacheManager();
-    
+
     // Data Members
     protected Hashtable<String, Component> components = new Hashtable<String, Component>();
-    
+
     protected Hashtable<String, Hashtable<String, JComponent>> uiItems = new Hashtable<String, Hashtable<String, JComponent>>();
-    
+
     protected ResourceBundle resourceBundle = null;
     protected String         resourceName   = "resources";
-    
+
     protected SubPaneMgr     subPaneMgr     = null;
     protected Class          rootPrefClass   = null;
-    
+
     /**
      * Default private constructor for singleton
      *
@@ -90,35 +86,35 @@ public class UICacheManager
             try {
                 // Get the resource bundle for the default locale
                 resourceBundle = ResourceBundle.getBundle(resourceName);
-            
+
             } catch (MissingResourceException ex) {
                 log.error("Couldn't find Resource Bundle Name["+resourceName+"]", ex);
             }
         }
     }
-    
+
     /**
-     * 
+     *
      * @return the singleton instance
      */
     public static UICacheManager getInstance()
     {
         return instance;
     }
-    
+
     /**
-     * 
+     *
      * @return the current ResourceBundle
      */
     public static ResourceBundle getResourceBundleInternal()
     {
         return instance.getResourceBundle();
     }
-    
+
     /**
      * Registers a uicomp
      * @param category the category to be registered
-     * @param name the name 
+     * @param name the name
      * @param uiComp the ui component
      * @throws UIException throws exception if it is already registered
      */
@@ -132,15 +128,15 @@ public class UICacheManager
         }
         if (compsHash.containsKey(name))
         {
-           throw new UIException("UI component with Name["+name+"] has already been registered to ["+category+"]."); 
+           throw new UIException("UI component with Name["+name+"] has already been registered to ["+category+"].");
         }
         compsHash.put(name, uiComp);
     }
-    
+
     /**
      * Unregisters a uicomp
      * @param category the category to be registered
-     * @param name the name 
+     * @param name the name
      * @param uiComp the ui component
      * @throws UIException throws exception if it is not registered
      */
@@ -149,26 +145,26 @@ public class UICacheManager
         Hashtable<String, JComponent> compsHash = instance.uiItems.get(aCategory);
         if (compsHash == null)
         {
-            throw new UIException("Couldn't find UI Category with Name["+aCategory+"]."); 
+            throw new UIException("Couldn't find UI Category with Name["+aCategory+"].");
         }
         JComponent comp = compsHash.get(aName);
         if (comp == null)
         {
-           throw new UIException("Couldn't find UI component with Name["+aName+"]."); 
+           throw new UIException("Couldn't find UI component with Name["+aName+"].");
         }
         compsHash.remove(comp);
     }
-    
+
     /**
      * Returns a UI component by name
-     * @param name the name of the component to be retrieved 
+     * @param name the name of the component to be retrieved
      * @return a UI component by name
      */
     public static Component get(final String name)
     {
         return instance.components.get(name);
     }
-    
+
     /**
      * Returns the main ResourceBundle
      * @return Returns the main ResourceBundle
@@ -195,7 +191,7 @@ public class UICacheManager
     {
         this.resourceName = resourceName;
     }
-    
+
     /**
      * Returns a localized string from the resource bundle (masks the thrown expecption)
      * @param key the key to look up
@@ -242,7 +238,7 @@ public class UICacheManager
             throw new NullPointerException("Trying to register a null UI Component!");
         }
     }
-    
+
     /**
      * Unregisters a uiComp from the application
      * @param name the name of the UI component to be unregistered
@@ -284,15 +280,15 @@ public class UICacheManager
     public static void displayLocalizedStatusBarText(final String key)
     {
         if (key == null) throw new NullPointerException("Call to displayLocalizedStatusBarText cannot be null!");
-        
+
         String localizedStr = instance.getResourceStringInternal(key);
         assert localizedStr != null : "Localized String for key["+key+"]";
-        
+
         displayStatusBarText(localizedStr);
-        
-        
+
+
     }
-    
+
     /**
      * Convience method for adding a subpane to the subpane manager
      * @param subPane the sub pane to be added
@@ -303,7 +299,7 @@ public class UICacheManager
     }
 
     /**
-     * 
+     *
      * @return the sub pane manager
      */
     public static SubPaneMgr getSubPaneMgr()
@@ -312,14 +308,14 @@ public class UICacheManager
     }
 
     /**
-     * 
+     *
      * @param subPaneMgr
      */
     public static void setSubPaneMgr(SubPaneMgr subPaneMgr)
     {
         instance.subPaneMgr = subPaneMgr;
     }
-    
+
     /**
      * repaints the top most frame
      *
@@ -327,7 +323,7 @@ public class UICacheManager
     public static void forceTopFrameRepaint()
     {
         SwingUtilities.invokeLater(new Runnable() {
-            public void run() 
+            public void run()
             {
                 JFrame frame = ((JFrame)instance.components.get(TOPFRAME));
                 assert frame != null : "The top frame has not been registered";
@@ -335,7 +331,7 @@ public class UICacheManager
             }
           });
     }
-    
+
     /**
      * Returns the glass pane from the mgr
      * @return Returns the glass pane from the mgr
@@ -344,7 +340,7 @@ public class UICacheManager
     {
         return ((GhostGlassPane)instance.components.get(GLASSPANE));
     }
-    
+
     /**
      * Returns the most recent frame to be used, but note that there is no magic here. You
      * must set the the most recent frame in order for it to be used by someone else. The one
@@ -360,7 +356,7 @@ public class UICacheManager
         Component recent = instance.components.get(RECENTFRAME);
         return recent == null || !recent.isVisible() ? instance.components.get(TOPFRAME) : recent;
     }
-    
+
      /**
       * Display an Error dialog
      * @param msg the message to be displayed
@@ -370,7 +366,7 @@ public class UICacheManager
          JOptionPane.showMessageDialog(getMostRecentFrame(), msg, getResourceString("error"), JOptionPane.ERROR_MESSAGE);
     }
 
-    
+
     //----------------------------------------------------------------------------------
     // Prefs Section
     //----------------------------------------------------------------------------------
@@ -396,9 +392,9 @@ public class UICacheManager
     {
         instance.rootPrefClass = rootPrefClass;
     }
-    
+
     /**
-     * Helper method to assist in building pref node names. 
+     * Helper method to assist in building pref node names.
      * It takes the parent name and then appends a slash and then the child's name
      * @param parentName the parent name
      * @param childName the new child name to be appended
@@ -408,9 +404,9 @@ public class UICacheManager
     {
         return parentName + "/" + childName;
     }
-    
+
     /**
-     * Helper method to assist in building pref node names. 
+     * Helper method to assist in building pref node names.
      * It takes the parent name and then appends a slash and then the child's name
      * @param parentName the parent name
      * @param childName the new child name to be appended
@@ -420,7 +416,7 @@ public class UICacheManager
     {
         return parentName + "/" + childName+ "/" + subChildName;
     }
-    
+
     /**
      * Return the Preferences node for the application
      * @return Return the Preferences node for the application
@@ -429,5 +425,5 @@ public class UICacheManager
     {
         return Preferences.userNodeForPackage(getRootPrefClass());
     }
-    
+
 }

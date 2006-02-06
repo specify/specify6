@@ -21,20 +21,23 @@
 package edu.ku.brc.specify.tasks.subpane;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
 
-import org.apache.commons.jexl.JexlContext;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import edu.ku.brc.specify.tasks.SystemSetupTask;
 import edu.ku.brc.specify.ui.CommandAction;
@@ -42,7 +45,6 @@ import edu.ku.brc.specify.ui.CommandDispatcher;
 import edu.ku.brc.specify.ui.db.PickList;
 import edu.ku.brc.specify.ui.db.PickListItem;
 import edu.ku.brc.specify.ui.forms.FormViewable;
-import edu.ku.brc.specify.ui.validation.FormValidationRuleIFace;
 
 /**
  * The process for the pick list "editor" form

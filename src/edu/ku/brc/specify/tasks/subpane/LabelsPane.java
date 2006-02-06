@@ -25,9 +25,7 @@ import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 import java.awt.BorderLayout;
 import java.io.File;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -46,7 +44,6 @@ import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.helpers.XMLHelper;

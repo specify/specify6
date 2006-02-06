@@ -98,6 +98,8 @@ public class FormEditor
     protected Object            dataObj     = null;
     protected TestDataObj       testDataObj = null;
     protected List<TestDataObj> list        = new ArrayList<TestDataObj>();
+    
+    protected FormViewable fvo;
 
     
     public FormEditor()
@@ -108,9 +110,10 @@ public class FormEditor
      * Create a form
      * @param formView the definition of the form to create
      */
-    protected void createForm(FormView formView)
+    protected FormViewable createForm(FormView formView)
     {       
         FormViewable form = ViewFactory.createView(formView);
+        fvo = form;
         
         contentPane.removeAll();
         Component comp = form.getUIComponent();
@@ -152,9 +155,26 @@ public class FormEditor
                     DBConnection.setDriver("com.mysql.jdbc.Driver");
                     DBConnection.setDBName("jdbc:mysql://localhost/demo_fish2");
                     
-                    if (currViewSetName.equals("view valid") && currFormId == 0)
+                    if (currViewSetName.equals("view valid") && (currFormId == 0 || currFormId == 333))
                     {
                         form.setDataObj(dataObj);
+                        
+                        JButton btn = (JButton)form.getComp("OK");
+                        if (btn != null)
+                        {
+                            ((FormViewObj)form).getValidator().registerOKButton(btn);
+                        }                        
+                        
+                        btn = (JButton)form.getComp("validateBtn");
+                        if (btn != null)
+                        {
+                            btn.addActionListener(new ActionListener() {
+                                public void actionPerformed(ActionEvent ae)
+                                {
+                                    fvo.getValidator().validateFormForOK();
+                                }
+                            });
+                        }
                         
                     } else if (currViewSetName.equals("SystemSetup") && currFormId == 500)
                     {
@@ -227,6 +247,7 @@ public class FormEditor
             
         //}
 
+        return form;
     }
     
     /**
@@ -260,7 +281,7 @@ public class FormEditor
         
         load();
         
-        createForm(ViewMgr.getView(currViewSetName, currFormId));
+        fvo = createForm(ViewMgr.getView(currViewSetName, currFormId));
     }
     
     /**
@@ -286,7 +307,7 @@ public class FormEditor
             currViewSetName = form.getViewSetName();
             currFormId      = form.getId();
             
-            createForm(form);
+            fvo = createForm(form);
         }
     }
     
@@ -367,8 +388,6 @@ public class FormEditor
         load();
         
         // temp for testing 
-        currFormId      = 0;
-        currViewSetName =  "view valid";
         
         currFormId      = 1;
         currViewSetName =   "Fish Views";
@@ -376,7 +395,9 @@ public class FormEditor
         currFormId      = 500;
         currViewSetName =   "SystemSetup";
         
-       
+        currFormId      = 333;
+        currViewSetName =  "view valid";
+    
         
         FormView form = ViewMgr.getView(currViewSetName, currFormId);
 

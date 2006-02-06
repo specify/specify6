@@ -21,52 +21,50 @@ package edu.ku.brc.specify.ui.validation;
 
 import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
+import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.jexl.JexlContext;
-
-import edu.ku.brc.specify.ui.validation.FormValidationRuleIFace.Scope;
 
 /**
  * This class is an implementation of a JEXL expression. The rule has a name and the Java expression
  * and it is passed in a context to which it evaludates the rule. The conttext comes from the form so all the
  * ui controls are available by name in the context.
- * 
+ *
  * @author rods
  *
  */
 public class RuleExpression implements FormValidationRuleIFace
 {
     private static Log log = LogFactory.getLog(RuleExpression.class);
-    
+
     protected String     name;
     protected String     rule;
     protected Expression expression;
-    
+
     /**
      * Constructor
-     * @param name the name of the rule 
-     * @param rule the rule 
+     * @param name the name of the rule
+     * @param rule the rule
      */
-    public RuleExpression(final String name, 
+    public RuleExpression(final String name,
                           final String rule)
     {
         this.name = name;
         this.rule = rule;
-        
+
         try
         {
             expression = ExpressionFactory.createExpression( rule );
-            
+
         } catch (Exception ex)
         {
             log.error(ex);
             //ex.printStackTrace();
         }
     }
-    
+
     /**
-     * Cleanup internal data 
+     * Cleanup internal data
      */
     public void cleanUp()
     {
@@ -76,11 +74,11 @@ public class RuleExpression implements FormValidationRuleIFace
     //-----------------------------------------------------------
     // FormValidationRuleIFace
     //-----------------------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.validation.FormValidationRuleIFace#evaluate(org.apache.commons.jexl.JexlContext)
      */
-    public boolean evaluate(final JexlContext context) 
+    public boolean evaluate(final JexlContext context)
     {
         try
         {
@@ -99,7 +97,7 @@ public class RuleExpression implements FormValidationRuleIFace
         }
         return false;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.validation.FormValidationRuleIFace#getScope()
      */
@@ -107,7 +105,7 @@ public class RuleExpression implements FormValidationRuleIFace
     {
         return FormValidationRuleIFace.Scope.Field;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.validation.FormValidationRuleIFace#getName()
      */
@@ -115,6 +113,6 @@ public class RuleExpression implements FormValidationRuleIFace
     {
         return name;
     }
-    
+
 
 }

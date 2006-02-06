@@ -24,27 +24,27 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.LayoutManager;
 import java.awt.LayoutManager2;
-import java.util.Vector;
 import java.util.List;
+import java.util.Vector;
 
-import edu.ku.brc.specify.ui.*;
+import edu.ku.brc.specify.ui.Trash;
 
 /**
  * The layout manager for laying out NavBoxes in a vertical fashion (only)
- * 
+ *
  * @author rods
  *
  */
 public class NavBoxLayoutManager implements LayoutManager, LayoutManager2
 {
-    
+
     private Vector<Component> comps         = new Vector<Component>();
     private Dimension         preferredSize = new Dimension();
     private int               borderPadding = 2;
     private int               ySeparation   = 5;
 
     /**
-     * Contructs a layout manager for layting out NavBoxes. It lays out all the NavBoxes vertically 
+     * Contructs a layout manager for layting out NavBoxes. It lays out all the NavBoxes vertically
      * and uses the 'ySeparator' as the spacing in between the boxes. It uses borderPadding as a 'margin'
      * aroound all the boxes
      * @param borderPadding the margin around the boxes
@@ -55,7 +55,7 @@ public class NavBoxLayoutManager implements LayoutManager, LayoutManager2
         this.borderPadding = borderPadding;
         this.ySeparation   = ySeparation;
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.LayoutManager#addLayoutComponent(java.lang.String, java.awt.Component)
      */
@@ -106,10 +106,10 @@ public class NavBoxLayoutManager implements LayoutManager, LayoutManager2
         Dimension parentSize =  arg0.getSize();
         parentSize.width  -= 2 * borderPadding;
         parentSize.height -= 2 * borderPadding;
-        
+
         int x = borderPadding;
         int y = borderPadding;
-        
+
         for (Component comp : comps)
         {
             Dimension size = comp.getPreferredSize();
@@ -119,14 +119,14 @@ public class NavBoxLayoutManager implements LayoutManager, LayoutManager2
             } else
             {
                 comp.setBounds(x, y, parentSize.width, size.height);
-                y += size.height + ySeparation;                
+                y += size.height + ySeparation;
             }
         }
 
     }
-    
+
     /**
-     * Calculates the preferred size of the contain. It lays out all the NavBoxes vertically 
+     * Calculates the preferred size of the contain. It lays out all the NavBoxes vertically
      * and uses the 'ySeparator' as the spacing in between the boxes. It uses borderPadding as a 'margin'
      * around all the boxes
      *
@@ -134,7 +134,7 @@ public class NavBoxLayoutManager implements LayoutManager, LayoutManager2
     protected void calcPreferredSize()
     {
         preferredSize.setSize(borderPadding*2, borderPadding);
-        
+
         for (Component comp : comps)
         {
             Dimension size = comp.getPreferredSize();
@@ -143,7 +143,7 @@ public class NavBoxLayoutManager implements LayoutManager, LayoutManager2
         }
         preferredSize.height -= ySeparation;
     }
-    
+
     /**
      * Return the list of all the components that have been added to the alyout manager
      * @return the list of all the components that have been added to the alyout manager
@@ -152,7 +152,7 @@ public class NavBoxLayoutManager implements LayoutManager, LayoutManager2
     {
         return comps;
     }
-    
+
     /*
      * Remove all the componets that have been added to the layout manager
      */
@@ -160,7 +160,7 @@ public class NavBoxLayoutManager implements LayoutManager, LayoutManager2
     {
         comps.clear();
     }
-    
+
     // LayoutManager2
     public void  addLayoutComponent(Component comp, Object constraints)
     {
@@ -183,10 +183,10 @@ public class NavBoxLayoutManager implements LayoutManager, LayoutManager2
         preferredSize.setSize(0, 0);
         calcPreferredSize();
     }
-    public Dimension maximumLayoutSize(Container target) 
+    public Dimension maximumLayoutSize(Container target)
     {
-        calcPreferredSize();        
-        return new Dimension(preferredSize); 
+        calcPreferredSize();
+        return new Dimension(preferredSize);
     }
 
 }

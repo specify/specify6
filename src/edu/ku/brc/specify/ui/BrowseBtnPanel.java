@@ -22,7 +22,6 @@ package edu.ku.brc.specify.ui;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -40,7 +39,7 @@ import edu.ku.brc.specify.ui.validation.ValTextField;
 /**
  * This is a JPanel that contains a JTextField abd a Button that enables the user to browser for a file
  * and sets the the file and path into the text field
- * 
+ *
  * @author rods
  *
  */
@@ -49,20 +48,20 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
 {
     protected JTextField textField;
     protected JButton    browseBtn;
-    
+
     /**
      * Constructor
      * @param value the value is set into the text field using "toString"
      * @param cols the number of columns for the text field
      */
-    public BrowseBtnPanel(Object  value, 
+    public BrowseBtnPanel(Object  value,
                           int     cols)
     {
         super(new BorderLayout());
-        
+
         createUI(value, cols);
     }
-    
+
     /**
      * Constructor
      * @param textField the text field to use (most likely is a ValTextField)
@@ -71,10 +70,10 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
     {
         super(new BorderLayout());
         this.textField = textField;
-        
+
         createUI(null, -1);
    }
-    
+
     /**
      * CReates the UI and figures out whether it needs to create a JTextField or use the one it was given
      * @param value the value for the new TextField
@@ -84,21 +83,21 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
     {
         PanelBuilder panelBuilder = new PanelBuilder(new FormLayout("f:p:g, 2dlu, r:p", "p"));
         CellConstraints cc = new CellConstraints();
-        
+
         if (textField == null)
         {
             textField = new ValTextField(value != null ? value.toString() : "", cols);
         }
         panelBuilder.add(textField, cc.xy(1,1));
-        
+
         browseBtn = new JButton(getResourceString("browse"));
         browseBtn.addActionListener(new BrowseAction(textField));
         panelBuilder.add(browseBtn, cc.xy(3,1));
 
         add(panelBuilder.getPanel(), BorderLayout.CENTER);
-        
+
     }
-    
+
     /**
      * @return the text field
      */
@@ -106,8 +105,8 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
     {
         return textField;
     }
-    
-  
+
+
     /* (non-Javadoc)
      * @see java.awt.Component#setEnabled(boolean)
      */
@@ -117,11 +116,11 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
         textField.setEnabled(enabled);
         browseBtn.setEnabled(enabled);
     }
-    
+
     //-----------------------------------------------------
     // GetSetValueIFace
     //-----------------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object)
      */
@@ -132,26 +131,26 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
             String newValue = (String)value;
             String oldValue = textField.getText();
             textField.setText(newValue);
-            firePropertyChange("setValue", oldValue, newValue); 
+            firePropertyChange("setValue", oldValue, newValue);
         }
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.GetSetValueIFace#getValue()
      */
     public Object getValue()
     {
         return textField.getText();
-    }  
-    
+    }
+
     //---------------------------------------------------------
     // Inner Class
     //---------------------------------------------------------
-    
-    public class BrowseAction implements ActionListener 
+
+    public class BrowseAction implements ActionListener
     {
         private JTextField textField;
-        
+
         /**
          * Constructor with Commandaction
          * @param commandAction the command action to send
@@ -160,16 +159,16 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
         {
             this.textField = textField;
         }
-        
+
         /* (non-Javadoc)
          * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
          */
-        public void actionPerformed(ActionEvent e) 
+        public void actionPerformed(ActionEvent e)
         {
             JFileChooser chooser = new JFileChooser();
 
             int returnVal = chooser.showOpenDialog(UICacheManager.get(UICacheManager.TOPFRAME));
-            if (returnVal == JFileChooser.APPROVE_OPTION) 
+            if (returnVal == JFileChooser.APPROVE_OPTION)
             {
                 textField.setText(chooser.getSelectedFile().getAbsolutePath());
             }

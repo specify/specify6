@@ -33,6 +33,7 @@ public class FormCellPanel extends FormCell
 {
     protected String colDef;
     protected String rowDef;
+    protected String panelType;
     protected List<FormRow> rows = new Vector<FormRow>(); 
 
     /**
@@ -44,15 +45,17 @@ public class FormCellPanel extends FormCell
      * @param rowspan the number of rows to span
      */
     public FormCellPanel(final String            name,
+                         final String            panelType, 
                          final String            colDef, 
                          final String            rowDef,
                          final int               colspan, 
                          final int               rowspan)
     {
         super(FormCell.CellType.panel, name, colspan, rowspan);
+        this.panelType    = panelType;
         this.ignoreSetGet = true;
-        this.colDef = colDef;
-        this.rowDef = rowDef;
+        this.colDef       = colDef;
+        this.rowDef       = rowDef;
     }
     
     /**
@@ -74,6 +77,11 @@ public class FormCellPanel extends FormCell
     public String getRowDef()
     {
         return rowDef;
+    }
+
+    public String getPanelType()
+    {
+        return panelType;
     }
 
     public List<FormRow> getRows()

@@ -35,16 +35,16 @@ import com.jgoodies.forms.layout.FormLayout;
 public class ImageDisplay extends JPanel implements GetSetValueIFace
 {
     private ImageIcon    imgIcon   = null;
-    protected boolean    isError   = false; 
+    protected boolean    isError   = false;
     protected String     url;
     protected boolean    isEditMode = true;
     protected ImagePanel imagePanel;
     protected JButton    editBtn;
-    
-    protected ImageGetter getter = null;
-    
 
-    
+    protected ImageGetter getter = null;
+
+
+
     /**
      * @param imgWidth
      * @param imgHeight
@@ -54,39 +54,39 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
     {
         super(new BorderLayout());
         setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-        
+
         this.isEditMode = isEditMode;
         imagePanel = new ImagePanel(imgWidth, imgHeight);
         createUI();
     }
-    
+
     /**
-     * 
+     *
      */
     protected void createUI()
     {
         PanelBuilder    builder = new PanelBuilder(new FormLayout("f:p:g,2px,p", "p"));
         CellConstraints cc      = new CellConstraints();
-        
-        
+
+
         builder.add(imagePanel, cc.xy(1,1));
-        
+
        if (isEditMode)
        {
            ImageIcon icon = IconManager.getImage("EditIcon", IconManager.IconSize.NonStd);
-           
+
            editBtn = new JButton(icon);
            editBtn.setMargin(new Insets(1,1,1,1));
            editBtn.addActionListener(new ActionListener()
-           {  
-               public void actionPerformed(ActionEvent ae) 
-               { 
+           {
+               public void actionPerformed(ActionEvent ae)
+               {
                    // XXX Need to add a filter for just images
-                   
+
                    JFileChooser chooser = new JFileChooser();
 
                    int returnVal = chooser.showOpenDialog(UICacheManager.get(UICacheManager.TOPFRAME));
-                   if (returnVal == JFileChooser.APPROVE_OPTION) 
+                   if (returnVal == JFileChooser.APPROVE_OPTION)
                    {
                        File file = new File(chooser.getSelectedFile().getAbsolutePath());
                        try
@@ -97,63 +97,63 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
                        {
                            // XXX FIXME - Do pop up here ?
                        }
-                       
+
                    }
-               } 
+               }
            });
            builder.add(editBtn, cc.xy(3,1));
-        }    
+        }
        add(builder.getPanel(), BorderLayout.CENTER);
     }
-    
+
     /**
      * @param imgIcon
      */
     public synchronized void setImage(ImageIcon imgIcon)
     {
         this.imgIcon = imgIcon;
-        
+
         if (imgIcon != null && imgIcon.getIconWidth() > 0 && imgIcon.getIconHeight() > 0)
         {
-            imagePanel.setImage(imgIcon); 
-            
+            imagePanel.setImage(imgIcon);
+
         } else
         {
             imgIcon = null;
             imagePanel.setImage(imgIcon);
             imagePanel.setNoImage(true);
-        }       
+        }
         imagePanel.repaint();
-        
+
        doLayout();
 
     }
 
-    
+
     /**
-     * 
+     *
      */
     protected void simpleLoad()
     {
         try
         {
             imagePanel.setNoImage(false); // means it is loading it
-           
+
             //imgIcon = new ImageIcon(new URL(url));
             Image img = getToolkit().getImage(new URL(url));
-            
+
             imgIcon = new ImageIcon(img);
             setImage(imgIcon);
-            
+
         } catch (Exception e)
         {
             //log.error(e);
             e.printStackTrace();
         }
     }
-    
+
     /**
-     * 
+     *
      */
     public void loadImage()
     {
@@ -161,17 +161,17 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
         {
             imagePanel.setNoImage(false); // means it is loading it
             repaint();
-         
+
             if (getter != null)
             {
                 getter.stop();
             }
             getter = new ImageGetter(url);
             getter.start();
-            
+
             /*if (url.indexOf("http") != -1)
             {
-                
+
             } else
             {
                 SwingUtilities.invokeLater(new Runnable() {
@@ -180,7 +180,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
                     }
                 });
             }*/
-            
+
         } else
         {
             imagePanel.setNoImage(true);
@@ -190,12 +190,12 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
     }
 
 
-    
-    
+
+
     //--------------------------------------------------------------
     //-- GetSetValueIFace
     //--------------------------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object)
      */
@@ -207,7 +207,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
             loadImage();
         }
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.GetSetValueIFace#getValue()
      */
@@ -215,7 +215,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
     {
         return url;
     }
-    
+
     //--------------------------------------------------------------
     //-- Inner Class JPanel for displaying an image
     //--------------------------------------------------------------
@@ -225,25 +225,25 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
         protected Dimension preferredSize;
         protected String    noImageStr      = getResourceString("noimage");
         protected String    loadingImageStr = getResourceString("loadingimage");
-        
+
         protected boolean   isNoImage = true;
-        
+
         public ImagePanel(final int x, final int y)
         {
             this.imgIcon = null;
             preferredSize = new Dimension(x, y);
         }
-        
+
         public ImagePanel(ImageIcon imgIcon)
         {
             this.imgIcon  = imgIcon;
         }
-        
+
         public void setImage(final ImageIcon imgIcon)
         {
             this.imgIcon  = imgIcon;
         }
-        
+
         public Dimension getPreferredSize()
         {
             return preferredSize;
@@ -251,29 +251,29 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
         public void paint(Graphics g)
         {
            super.paint(g);
-           
+
            Dimension size = imagePanel.getSize();
            if (imgIcon != null)
            {
-              
+
                Insets    insets = imagePanel.getInsets();
-               
+
                int w = size.width - insets.left - insets.right;
                int h = size.height - insets.top - insets.bottom;
-               
+
                g.setClip(insets.left, insets.top, w, h);
                int x = insets.left;
                int y = insets.top;
-               
+
                int imgW = imgIcon.getIconWidth();
                int imgH = imgIcon.getIconHeight();
-               
-               if (imgW > w || imgH > h) 
-               { 
+
+               if (imgW > w || imgH > h)
+               {
                    double scaleW = 1.0;
                    double scaleH = 1.0;
                    double scale  = 1.0;
-        
+
                    if (imgW > w)
                    {
                        scaleW = (double) w / imgW;
@@ -283,11 +283,11 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
                        scaleH = (double) h / imgH;
                    }
                    scale = Math.min(scaleW, scaleH);
-        
+
                    imgW = (int) ((double) imgW * scale);
                    imgH = (int) ((double) imgH * scale);
                }
-                   
+
                if (imgW < w)
                {
                    x = (w - imgW) / 2;
@@ -304,22 +304,22 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
                FontMetrics fm = g.getFontMetrics();
                g.drawString(label, (size.width - fm.stringWidth(label))/2, (size.height-fm.getAscent())/2);
            }
-           
+
         }
 
         public void setNoImage(boolean isNoImage)
         {
             this.isNoImage = isNoImage;
-        } 
-        
+        }
+
     }
-    
+
     //--------------------------------------------------------------
     //-- Inner Class JPanel for displaying an image
-    //--------------------------------------------------------------   
+    //--------------------------------------------------------------
     public class ImageGetter implements Runnable
     {
-      
+
       // Error Code
       public int kNoError      = 0;
       public int kError        = 1;
@@ -327,24 +327,24 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
       public int kNotDoneError = 3;
       public int kIOError      = 4;
       public int kURLError     = 5;
-      
-      private int           _status         = kNoError;
-      private  Thread       thread         = null;
+
+      //private int           status         = kNoError;
+      private Thread        thread         = null;
       private String        url;
-      
+
 
       public ImageGetter(String url)
       {
            this.url = url;
       }
-      
-       
+
+
        //----------------------------------------------------------------
        //-- Runnable Interface
        //----------------------------------------------------------------
-       public void start() 
+       public void start()
        {
-           if (thread == null) 
+           if (thread == null)
            {
                thread = new Thread(this);
                //thread.setPriority(Thread.MIN_PRIORITY);
@@ -353,12 +353,12 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
        }
 
        /**
-        * 
+        *
         *
         */
-       public synchronized void stop() 
+       public synchronized void stop()
        {
-           if (thread != null) 
+           if (thread != null)
            {
                thread.interrupt();
            }
@@ -367,33 +367,33 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
        }
 
        /**
-        * 
+        *
         */
-       public void run() 
+       public void run()
        {
-           Thread me = Thread.currentThread();
-           
+           //Thread me = Thread.currentThread();
+
            try
            {
                imagePanel.setNoImage(false); // means it is loading it
-               
+
                Image img = getToolkit().getImage(new URL(url));
                ImageIcon imageIcon = new ImageIcon(img);
-               
+
                setImage(imageIcon);
-               
+
                getter = null;
-               
+
            } catch (Exception e)
            {
                //log.error(e);
                e.printStackTrace();
            }
 
-        
+
            stop();
        }
     }
 
- 
+
 }
