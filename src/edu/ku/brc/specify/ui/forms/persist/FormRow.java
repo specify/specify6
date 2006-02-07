@@ -19,7 +19,8 @@
  */
 package edu.ku.brc.specify.ui.forms.persist;
 
-import java.util.*;
+import java.util.List;
+import java.util.Vector;
 
 public class FormRow
 {

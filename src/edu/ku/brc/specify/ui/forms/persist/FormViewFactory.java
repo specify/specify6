@@ -21,8 +21,8 @@ package edu.ku.brc.specify.ui.forms.persist;
 
 import static edu.ku.brc.specify.helpers.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -368,7 +368,6 @@ public class FormViewFactory
                             field.setLabel(getAttr(cellElement, "label", ""));
                             field.setPickListName(getAttr(cellElement, "picklist", ""));
                             field.setChangeListenerOnly(getAttr(cellElement, "changesonly", false));
-                            System.out.println(cellName+"  "+field.isChangeListenerOnly());
                             field.setInitialize(initialize);
                             
                             cell = formRow.addCell(field);

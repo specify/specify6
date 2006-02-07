@@ -21,8 +21,9 @@ package edu.ku.brc.specify.ui;
 
 import java.awt.Component;
 
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-import javax.swing.*;
+import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 /**

@@ -21,6 +21,7 @@
 package edu.ku.brc.specify.plugins;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static org.apache.commons.lang.StringUtils.split;
 
 import java.awt.Component;
 import java.util.Enumeration;
@@ -28,8 +29,13 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
+import javax.swing.MenuElement;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,7 +47,6 @@ import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.ui.CommandAction;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.UICacheManager;
-import static org.apache.commons.lang.StringUtils.split;
 
 public class PluginMgr
 {

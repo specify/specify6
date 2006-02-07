@@ -20,8 +20,8 @@
 package edu.ku.brc.specify.ui.forms;
 
 import static edu.ku.brc.specify.ui.validation.UIValidator.parseValidationType;
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.split;
 
 import java.awt.BorderLayout;
@@ -29,14 +29,14 @@ import java.awt.Color;
 import java.awt.Component;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -50,7 +50,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.jgoodies.forms.builder.*;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -345,10 +345,10 @@ public class ViewFactory
                             initArray[i] = initArray[i].trim();
                         }
                         
-                        JComboBox cbx;
+
                         if (validator != null)
                         {
-                            cbx = validator.createComboBox(cellField.getName(),
+                            compToAdd = validator.createComboBox(cellField.getName(),
                                                              initArray, 
                                                              cellField.isRequired(),
                                                              parseValidationType(cellField.getValidationType()),
@@ -356,11 +356,11 @@ public class ViewFactory
                                                              cellField.getPickListName());
                         } else
                         {
-                            cbx = initArray == null ? new ValComboBox() : new ValComboBox(initArray);
+                            compToAdd = initArray == null ? new ValComboBox() : new ValComboBox(initArray);
                             //DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getName(), cbx, null);
                             //cbx.getModel().addListDataListener(dcn);
                         }
-                        compToAdd = cbx;
+
                         
                     } else if (uiType.equals("checkbox")) 
                     {

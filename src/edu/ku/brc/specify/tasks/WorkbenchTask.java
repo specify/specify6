@@ -6,23 +6,19 @@ import java.awt.datatransfer.DataFlavor;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JComponent;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.ku.brc.specify.tasks.LabelsTask.DisplayAction;
-import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
-import edu.ku.brc.specify.tasks.subpane.WorkbenchPane;
+import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
+import edu.ku.brc.specify.tasks.subpane.WorkbenchPane;
 import edu.ku.brc.specify.ui.CommandDispatcher;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
-import edu.ku.brc.specify.core.*;
-
-import java.awt.datatransfer.DataFlavor;
-
-import javax.swing.JComponent;
 
 
 public class WorkbenchTask extends BaseTask {

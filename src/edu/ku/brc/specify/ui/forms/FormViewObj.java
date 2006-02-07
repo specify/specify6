@@ -509,7 +509,11 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
             Component formComp = fieldInfo.getComp();
             if (formComp != null)
             {
-                if (formComp instanceof JTextField)
+                if (formComp instanceof GetSetValueIFace)
+                {
+                    return ((GetSetValueIFace)formComp).getValue().toString();
+                    
+                } else if (formComp instanceof JTextField)
                 {
                     return ((JTextField)formComp).getText();
                     
@@ -532,10 +536,6 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
                 } else if (formComp instanceof ColorChooser)
                 {
                     return ColorWrapper.toString(((ColorChooser)formComp).getBackground());
-                    
-                } else if (formComp instanceof GetSetValueIFace)
-                {
-                    return ((GetSetValueIFace)formComp).getValue().toString();
                     
                 } else if(formComp instanceof JList)
                 {
@@ -578,7 +578,11 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
     public void setDataIntoUIComp(final String name, Object data)
     {
         Component formComp = controls.get(name).getComp();
-        if (formComp instanceof JTextField)
+        if (formComp instanceof GetSetValueIFace)
+        {
+            ((GetSetValueIFace)formComp).setValue(data == null ? "" : data.toString());
+            
+        } else if (formComp instanceof JTextField)
         {
             ((JTextField)formComp).setText(data == null ? "" : data.toString());
             
@@ -589,7 +593,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
             
         } else if (formComp instanceof JCheckBox)
         {
-            System.out.println(name+" - "+formComp.getPreferredSize()+formComp.getSize());
+            //System.out.println(name+" - "+formComp.getPreferredSize()+formComp.getSize());
             if (data != null)
             {
                 ((JCheckBox)formComp).setSelected((data instanceof Boolean) ? ((Boolean)data).booleanValue() : data.toString().equalsIgnoreCase("true"));
@@ -611,10 +615,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
             setListValue((JList)formComp, data);
             
 
-        } else if (formComp instanceof GetSetValueIFace)
-        {
-            ((GetSetValueIFace)formComp).setValue(data == null ? "" : data.toString());
-        }
+        } 
     }
     
     /**
@@ -626,37 +627,22 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
     {
         ComboBoxModel  model = comboBox.getModel();
         
-        if (formComp instanceof JAutoCompComboBox)
+        for (int i=0;i<comboBox.getItemCount();i++)
         {
-            for (int i=0;i<comboBox.getItemCount();i++)
+            Object item = model.getElementAt(i);
+            if (item instanceof String)
             {
-                PickListItem pli = (PickListItem)model.getElementAt(i);
-                if (pli.getValue().equals(data.toString()))
-                {
+                if (((String)item).equals(data))
+                {       
                     comboBox.setSelectedIndex(i);
                     break;
-                }
-            }            
-        
-        } else
-        {
-            for (int i=0;i<comboBox.getItemCount();i++)
+                } 
+            } else if (item.equals(data))
             {
-                Object item = model.getElementAt(i);
-                if (item instanceof String)
-                {
-                    if (((String)item).equals(data))
-                    {
-                        comboBox.setSelectedIndex(i);
-                        break;
-                    } 
-                } else if (item.equals(data))
-                {
-                    comboBox.setSelectedIndex(i);
-                    break;
-                }
-            }            
-        }
+                comboBox.setSelectedIndex(i);
+                break;
+            }
+        } 
 
     }
     

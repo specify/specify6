@@ -1,10 +1,16 @@
 package edu.ku.brc.specify.dbsupport;
 
-import org.hibernate.*;
-import org.hibernate.cfg.*;
-import org.apache.commons.logging.*;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
-import javax.naming.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.Interceptor;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
 
 /**
  * Basic Hibernate helper class, handles SessionFactory, Session and Transaction.

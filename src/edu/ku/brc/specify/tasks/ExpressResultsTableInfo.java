@@ -21,14 +21,17 @@
 package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.specify.helpers.UIHelper.getBoolean;
-import edu.ku.brc.specify.exceptions.*;
 
 import java.awt.Color;
-import java.util.*;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Vector;
+
 import org.dom4j.Element;
+
+import edu.ku.brc.specify.exceptions.ConfigurationException;
 
 /**
  * Hold information about the subset of returns results. Each Express Search can return results from several different 

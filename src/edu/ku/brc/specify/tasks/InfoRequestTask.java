@@ -25,6 +25,7 @@ import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Enumeration;
@@ -44,16 +45,18 @@ import javax.mail.Store;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import java.text.SimpleDateFormat;
+
 import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.core.NavBoxItemIFace;
 import edu.ku.brc.specify.core.NavBoxMgr;
 import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.EMailHelper;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
+import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.specify.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.specify.tasks.subpane.FormPane;
@@ -64,8 +67,6 @@ import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.Trash;
 import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.prefs.*;
-import edu.ku.brc.specify.dbsupport.*;
 
 /**
  * Takes care of offering up record sets, updating, deleteing and creating them.

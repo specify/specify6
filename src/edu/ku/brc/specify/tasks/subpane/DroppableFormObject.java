@@ -19,8 +19,8 @@
  */
 package edu.ku.brc.specify.tasks.subpane;
 
-import edu.ku.brc.specify.ui.dnd.*;
-import edu.ku.brc.specify.helpers.*;
+import edu.ku.brc.specify.helpers.UIHelper;
+import edu.ku.brc.specify.ui.dnd.GhostDataAggregatable;
 
 /**
  * This Clads enables both data and the associated form information to be dropped.

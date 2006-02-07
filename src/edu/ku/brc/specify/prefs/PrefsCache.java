@@ -21,11 +21,14 @@ package edu.ku.brc.specify.prefs;
 
 import java.text.SimpleDateFormat;
 import java.util.Hashtable;
-import java.util.prefs.*;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.Preferences;
+
+import org.apache.commons.lang.ArrayUtils;
 
 import edu.ku.brc.specify.ui.ColorWrapper;
 import edu.ku.brc.specify.ui.UICacheManager;
-import org.apache.commons.lang.*;
 
 /**
  * Creates and maintains a cache of preference entries that listen for changes to the preferences so they can always be up-to-date

@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.prefs;
 
-import edu.ku.brc.specify.ui.validation.*;
+import edu.ku.brc.specify.ui.validation.FormValidator;
 
 public interface PrefsPanelIFace
 {

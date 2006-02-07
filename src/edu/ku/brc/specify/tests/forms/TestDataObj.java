@@ -1,11 +1,8 @@
 package edu.ku.brc.specify.tests.forms;
 
-import java.net.URL;
 import java.util.Set;
 
-import javax.swing.*;
-
-import edu.ku.brc.specify.ui.*;
+import edu.ku.brc.specify.ui.IconManager;
 
 public class TestDataObj
 {
@@ -19,6 +16,7 @@ public class TestDataObj
     protected String  browseField  = "this needs to be a path";
     protected java.util.Date date;
     protected String  noImage = "";
+    protected String  stateCode;
     
     protected Set subObjects;
 
@@ -141,6 +139,16 @@ public class TestDataObj
     public void setNoImage(String noImage)
     {
         this.noImage = noImage;
+    }
+
+    public String getStateCode()
+    {
+        return stateCode;
+    }
+
+    public void setStateCode(String stateCode)
+    {
+        this.stateCode = stateCode;
     }
 
 }

@@ -1,7 +1,7 @@
 package edu.ku.brc.specify.ui.dnd;
 
-import java.awt.Point;
 import java.awt.Component;
+import java.awt.Point;
 
 /**
  * 
@@ -9,7 +9,7 @@ import java.awt.Component;
  * 
  * @author rods
  * @author Romain Guy <romain.guy@mac.com>
- * @author Sébastien Petrucci <sebastien_petrucci@yahoo.fr>*
+ * @author Sï¿½bastien Petrucci <sebastien_petrucci@yahoo.fr>*
  *
  */
 public class GhostDropEvent 

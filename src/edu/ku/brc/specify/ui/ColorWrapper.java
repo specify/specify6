@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.ui;
 
 import java.awt.Color;
+
 import org.apache.commons.lang.StringUtils;
 
 /**

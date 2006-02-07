@@ -19,8 +19,12 @@
  */
 package edu.ku.brc.specify.ui;
 
-import java.awt.*;
-import javax.swing.border.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Insets;
+
+import javax.swing.border.AbstractBorder;
 
 /**
  * This Border class draws a curved border

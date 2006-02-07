@@ -20,6 +20,9 @@
 
 package edu.ku.brc.specify.ui.validation;
 
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import org.apache.commons.lang.*;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -29,6 +32,7 @@ import javax.swing.event.DocumentListener;
 
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.ColorWrapper;
+import edu.ku.brc.specify.ui.GetSetValueIFace;
 import edu.ku.brc.specify.ui.db.JAutoCompTextField;
 import edu.ku.brc.specify.ui.db.PickListDBAdapter;
 
@@ -39,7 +43,7 @@ import edu.ku.brc.specify.ui.db.PickListDBAdapter;
  *
  */
 @SuppressWarnings("serial")
-public class ValTextField extends JAutoCompTextField implements UIValidatable, DocumentListener
+public class ValTextField extends JAutoCompTextField implements UIValidatable, GetSetValueIFace, DocumentListener
 {
     protected boolean isInError  = false;
     protected boolean isRequired = false;
@@ -204,6 +208,41 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable, D
     {
         this.isChanged = isChanged;
     }
+    
+    //--------------------------------------------------------
+    // GetSetValueIFace
+    //--------------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object)
+     */
+    public void setValue(Object value)
+    {
+        String data;
+        
+        if (value instanceof String)
+        {
+            data = (String)value;
+            setText(data);
+            
+        } else
+        {
+            data = value.toString();
+        }
+        
+        this.isInError = (isRequired && StringUtils.isEmpty(data));
+        
+        repaint();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.GetSetValueIFace#getValue()
+     */
+    public Object getValue()
+    {
+        return getText();
+    }
+
     
     //--------------------------------------------------------
     // DocumentListener

@@ -26,6 +26,8 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
 
+import org.hibernate.Query;
+
 import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.core.NavBoxIFace;
@@ -42,16 +44,6 @@ import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.forms.*;
-import edu.ku.brc.specify.ui.forms.persist.*;
-
-import org.hibernate.*;
-import org.hibernate.hql.*;
-import org.hibernate.tool.*;
-import org.hibernate.sql.*;
-import org.hibernate.criterion.*;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 /**
  * This task controls the data entry forms
  * 

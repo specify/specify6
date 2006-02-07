@@ -19,8 +19,8 @@
  */
 package edu.ku.brc.specify.ui.forms.persist;
 
-import java.util.Vector;
 import java.util.Collections;
+import java.util.Vector;
 
 /**
  * Class that manages all the forms for a given view set (which is read from a single file)

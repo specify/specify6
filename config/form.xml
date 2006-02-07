@@ -127,6 +127,8 @@
 	  <row>
 		  <cell type="label" name="dateLabel" labelfor="date" label="Date"/>
 		  <cell type="field" name="date" uitype="text" valtype="OK" validation="date.isNotEmpty()"/>
+		  <cell type="label" name="stateLabel" labelfor="stateCode" label="State"/>
+		  <cell type="field" name="stateCode" uitype="combobox" picklist="states" isrequired="true"/>
 	  </row>
 	  <row> 
         <cell type="panel" name="outerPanel" paneltype="buttonbar" colspan="8">

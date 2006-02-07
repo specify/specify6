@@ -127,9 +127,8 @@ public class DataChangeNotifier implements FocusListener,
         
         hasDataChanged = true;
         
-        for (Enumeration e=dcListeners.elements();e.hasMoreElements();)
+        for (DataChangeListener dcl : dcListeners)
         {
-            DataChangeListener dcl = (DataChangeListener)e.nextElement();
             dcl.dataChanged(name, comp, this);
         }
     }

@@ -19,9 +19,11 @@
  */
 package edu.ku.brc.specify.ui.dnd;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.event.*;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;

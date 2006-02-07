@@ -22,9 +22,10 @@ package edu.ku.brc.specify.ui;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.*;
-import java.util.Vector;
+import java.awt.LayoutManager;
+import java.awt.LayoutManager2;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * The layout manager for laying out the toolbar in a horizontal fashion ONLY. 

@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.helpers;
 
-import java.io.*;
+import java.io.File;
 
 public class DiskFileFilter implements java.io.FileFilter 
 {

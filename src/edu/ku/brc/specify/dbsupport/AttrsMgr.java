@@ -6,20 +6,17 @@
  */
 package edu.ku.brc.specify.dbsupport;
 
-import java.util.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.*;
-import java.util.HashSet;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
-import org.hibernate.*;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
+import org.hibernate.Criteria;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
-import  edu.ku.brc.specify.datamodel.*;
-import  edu.ku.brc.specify.dbsupport.*;
+import edu.ku.brc.specify.datamodel.AttrsDef;
+import edu.ku.brc.specify.datamodel.PrepTypes;
 
 /**
  * Work in Progress (this will probably not be needed)

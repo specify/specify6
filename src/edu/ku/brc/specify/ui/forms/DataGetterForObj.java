@@ -21,18 +21,17 @@ package edu.ku.brc.specify.ui.forms;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.*;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.jxpath.*;
-import org.apache.commons.lang.*;
 
-import edu.ku.brc.specify.dbsupport.*;
-import edu.ku.brc.specify.datamodel.*;
+import edu.ku.brc.specify.datamodel.AttrsSettableGettable;
+import edu.ku.brc.specify.dbsupport.AttrsMgr;
 
 /**
  * This knows how to get a field's value from a POJO.<br><br>

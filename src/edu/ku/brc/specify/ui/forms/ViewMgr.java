@@ -21,8 +21,10 @@ package edu.ku.brc.specify.ui.forms;
 
 import java.io.FileInputStream;
 import java.net.URL;
-import java.util.*;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -37,7 +39,7 @@ import edu.ku.brc.specify.ui.forms.persist.FormCellSubView;
 import edu.ku.brc.specify.ui.forms.persist.FormFormView;
 import edu.ku.brc.specify.ui.forms.persist.FormRow;
 import edu.ku.brc.specify.ui.forms.persist.FormView;
-import edu.ku.brc.specify.ui.forms.persist.*;
+import edu.ku.brc.specify.ui.forms.persist.FormViewFactory;
 import edu.ku.brc.specify.ui.forms.persist.ViewSet;
 
 public class ViewMgr

@@ -23,8 +23,11 @@ package edu.ku.brc.specify.ui.validation;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.ListModel;
 import javax.swing.event.ListSelectionEvent;
@@ -32,6 +35,7 @@ import javax.swing.event.ListSelectionListener;
 
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.ColorWrapper;
+import edu.ku.brc.specify.ui.GetSetValueIFace;
 
 /**
  * A JList that implements UIValidatable for participating in validation
@@ -40,7 +44,7 @@ import edu.ku.brc.specify.ui.ColorWrapper;
  *
  */
 @SuppressWarnings("serial")
-public class ValListBox extends JList implements UIValidatable, ListSelectionListener
+public class ValListBox extends JList implements UIValidatable, ListSelectionListener, GetSetValueIFace
 {
     protected boolean isInError  = false;
     protected boolean isRequired = false;
@@ -168,5 +172,79 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
     {
         isChanged = true;
     }
+    
+    //--------------------------------------------------------
+    // GetSetValueIFace
+    //--------------------------------------------------------
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object)
+     */
+    public void setValue(Object value)
+    {
+
+        Iterator iter = null;
+        if (value instanceof Set)
+        {
+            iter = ((Set)value).iterator();
+            
+        } else if (value instanceof org.hibernate.collection.PersistentSet)
+        {
+            iter = ((org.hibernate.collection.PersistentSet)value).iterator();
+        }
+        
+        
+        if (iter != null)
+        {        
+            DefaultListModel defModel = new DefaultListModel(); 
+            while (iter.hasNext())
+            {
+                defModel.addElement(iter.next());
+            }
+            setModel(defModel);
+            setSelectedIndex(-1);
+        } else 
+        {
+            boolean fnd = false;
+            ListModel  model = getModel();
+            for (int i=0;i<model.getSize();i++)
+            {
+                Object item = model.getElementAt(i);
+                if (item instanceof String)
+                {
+                    if (((String)item).equals(value))
+                    {
+                        setSelectedIndex(i);
+                        fnd = true;
+                        break;
+                    } 
+                } else if (item.equals(value))
+                {
+                    setSelectedIndex(i);
+                    fnd = true;
+                    break;
+                }
+            }
+            
+            if (!fnd)
+            {
+                setSelectedIndex(-1);
+                this.isInError = isRequired;
+                
+            } else
+            {
+                this.isInError = false;
+            }
+        }
+
+        repaint();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.GetSetValueIFace#getValue()
+     */
+    public Object getValue()
+    {
+        return getSelectedValue();
+    }
 }

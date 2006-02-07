@@ -367,6 +367,15 @@ public class JAutoCompComboBox extends JComboBox
     }
     
     /**
+     * Returns whether the ComboBox has a PickList Adapter
+     * @return true if it has a dbAdapter
+     */
+    public boolean hasAdapter()
+    {
+        return this.dbAdapter != null;
+    }
+    
+    /**
      * Creates an AutoComplete JComboBox with a name of the pick list it is to use.
      * @param name the name of the picklist to create
      * @param readOnly whether new items can be added to it

@@ -19,9 +19,9 @@
  */
 package edu.ku.brc.specify.prefs;
 
-import java.util.prefs.*;
+import java.util.prefs.Preferences;
 
-import edu.ku.brc.specify.ui.forms.*;
+import edu.ku.brc.specify.ui.forms.DataObjectSettable;
 
 /**
  * Class that implements the DataObjectSettable for preferences

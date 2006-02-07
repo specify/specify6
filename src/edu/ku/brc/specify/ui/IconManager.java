@@ -297,36 +297,41 @@ public class IconManager
         try
         {
             Element root  = XMLHelper.readDOMFromConfigDir("icons.xml");
-            
-            List boxes = root.selectNodes("/icons/icon");
-            for ( Iterator iter = boxes.iterator(); iter.hasNext(); ) 
+            if (root != null)
             {
-                org.dom4j.Element iconElement = (org.dom4j.Element) iter.next();
-                
-                String name  = iconElement.attributeValue("name");
-                String sizes = iconElement.attributeValue("sizes");
-                String file  = iconElement.attributeValue("file");
-                if (sizes == null || sizes.length() == 0 || sizes.toLowerCase().equals("all"))
+                List boxes = root.selectNodes("/icons/icon");
+                for ( Iterator iter = boxes.iterator(); iter.hasNext(); ) 
                 {
+                    org.dom4j.Element iconElement = (org.dom4j.Element) iter.next();
                     
-                    IconEntry entry = register(name, file, IconManager.IconSize.Std32);
-                    
-                    entry.addScaled(IconSize.Std32, IconSize.Std24);
-                    entry.addScaled(IconSize.Std32, IconSize.Std16);
-                                        
-                } else if (sizes.toLowerCase().equals("nonstd"))
-                {
-                    register(name, file, IconSize.NonStd);
-                    
-                } else
-                {
-                   StringTokenizer st = new StringTokenizer(sizes, ",");
-                   while (st.hasMoreTokens())
-                   {
-                       String sz = st.nextToken();
-                       register(name, file, getSizeFromInt(Integer.parseInt(sz)));
-                   }
+                    String name  = iconElement.attributeValue("name");
+                    String sizes = iconElement.attributeValue("sizes");
+                    String file  = iconElement.attributeValue("file");
+                    if (sizes == null || sizes.length() == 0 || sizes.toLowerCase().equals("all"))
+                    {
+                        
+                        IconEntry entry = register(name, file, IconManager.IconSize.Std32);
+                        
+                        entry.addScaled(IconSize.Std32, IconSize.Std24);
+                        entry.addScaled(IconSize.Std32, IconSize.Std16);
+                                            
+                    } else if (sizes.toLowerCase().equals("nonstd"))
+                    {
+                        register(name, file, IconSize.NonStd);
+                        
+                    } else
+                    {
+                       StringTokenizer st = new StringTokenizer(sizes, ",");
+                       while (st.hasMoreTokens())
+                       {
+                           String sz = st.nextToken();
+                           register(name, file, getSizeFromInt(Integer.parseInt(sz)));
+                       }
+                    }
                 }
+            } else
+            {
+                log.debug("Couldn't open icons.xml");
             }
         } catch (Exception ex)
         {

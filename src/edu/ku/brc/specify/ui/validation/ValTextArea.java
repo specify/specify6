@@ -23,14 +23,19 @@ package edu.ku.brc.specify.ui.validation;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.util.Iterator;
+import java.util.Set;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JTextArea;
+import javax.swing.ListModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.ColorWrapper;
+import edu.ku.brc.specify.ui.GetSetValueIFace;
 
 /**
  * A JTextArea that implements UIValidatable for participating in validation
@@ -39,7 +44,7 @@ import edu.ku.brc.specify.ui.ColorWrapper;
  *
  */
 @SuppressWarnings("serial")
-public class ValTextArea extends JTextArea implements UIValidatable, DocumentListener
+public class ValTextArea extends JTextArea implements UIValidatable, DocumentListener, GetSetValueIFace
 {
     protected boolean isInError  = false;
     protected boolean isRequired = false;
@@ -214,4 +219,24 @@ public class ValTextArea extends JTextArea implements UIValidatable, DocumentLis
     {
         isChanged = true;
     }
+    
+    //--------------------------------------------------------
+    // GetSetValueIFace
+    //--------------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object)
+     */
+    public void setValue(Object value)
+    {
+        setText(value.toString());
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.GetSetValueIFace#getValue()
+     */
+    public Object getValue()
+    {
+        return getText();
+    }    
 }

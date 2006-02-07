@@ -22,13 +22,12 @@ package edu.ku.brc.specify.tasks.subpane;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
-import java.util.*;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -42,12 +41,19 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.specify.core.*;
+import edu.ku.brc.specify.core.ContextMgr;
+import edu.ku.brc.specify.core.ServiceInfo;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
-import edu.ku.brc.specify.helpers.*;
-import edu.ku.brc.specify.ui.*;
-import edu.ku.brc.specify.ui.db.*;
+import edu.ku.brc.specify.ui.CloseButton;
+import edu.ku.brc.specify.ui.CommandAction;
+import edu.ku.brc.specify.ui.CommandDispatcher;
+import edu.ku.brc.specify.ui.GradiantButton;
+import edu.ku.brc.specify.ui.GradiantLabel;
+import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.specify.ui.TriangleButton;
+import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
 
 /**
  * This is a single set of of results and is derived from a query where all the record numbers where 

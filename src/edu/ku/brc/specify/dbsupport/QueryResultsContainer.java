@@ -20,7 +20,8 @@
 
 package edu.ku.brc.specify.dbsupport;
 
-import java.util.*;
+import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

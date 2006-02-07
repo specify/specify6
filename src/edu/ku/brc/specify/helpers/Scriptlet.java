@@ -28,10 +28,10 @@
  */
 package edu.ku.brc.specify.helpers;
 
+import java.text.DecimalFormat;
+
 import net.sf.jasperreports.engine.JRDefaultScriptlet;
 import net.sf.jasperreports.engine.JRScriptletException;
-
-import java.text.DecimalFormat;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
@@ -222,8 +222,8 @@ public class Scriptlet extends JRDefaultScriptlet
         //return str;
         //try {
         //String degress = new String("&#8600;?".getBytes("UTF-8"), "UTF-8");
-        //"½"
-        return df.format(coord) + "º" + dir;
+        //"ï¿½"
+        return df.format(coord) + "ï¿½" + dir;
         //} catch (Exception ex)
         //{
             
