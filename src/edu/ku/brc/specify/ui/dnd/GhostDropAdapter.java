@@ -11,7 +11,7 @@ import java.util.List;
  * 
  * @author rods
  * @author Romain Guy <romain.guy@mac.com>
- * @author Sébastien Petrucci <sebastien_petrucci@yahoo.fr>*
+ * @author Sebastien Petrucci <sebastien_petrucci@yahoo.fr>*
  *
  */
 public class GhostDropAdapter extends MouseAdapter 

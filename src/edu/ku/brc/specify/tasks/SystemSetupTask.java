@@ -196,8 +196,7 @@ public class SystemSetupTask extends BaseTask
     /**
      * Save a info request
      * @param pickList the ir to be saved
-     * @param recordSet the recordSet to be saved with itfp
-     */
+      */
     public void savePickList(final PickList pickList)
     {
         

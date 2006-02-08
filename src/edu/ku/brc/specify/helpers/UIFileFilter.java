@@ -121,13 +121,9 @@ public class UIFileFilter extends FileFilter
         }
     }
 
-    /**
-     * Return true if this file should be shown in the directory pane, false if it shouldn't.
-     * 
-     * Files that begin with "." are ignored.
-     * 
-     * @see #getExtension
-     * @see FileFilter#accepts
+
+    /* (non-Javadoc)
+     * @see javax.swing.filechooser.FileFilter#accept(java.io.File)
      */
     public boolean accept(File f)
     {
@@ -144,6 +140,7 @@ public class UIFileFilter extends FileFilter
     /**
      * Return the extension portion of the file's name .
      * 
+     * @param f the file to get the extension of
      * @see #getExtension
      * @see FileFilter#accept
      */
@@ -181,14 +178,8 @@ public class UIFileFilter extends FileFilter
         fullDescription = null;
     }
 
-    /**
-     * Returns the human readable description of this filter. For example: "JPEG and GIF Image
-     * Files (*.jpg, *.gif)"
-     * 
-     * @see setDescription
-     * @see setExtensionListInDescription
-     * @see isExtensionListInDescription
-     * @see FileFilter#getDescription
+    /* (non-Javadoc)
+     * @see javax.swing.filechooser.FileFilter#getDescription()
      */
     public String getDescription()
     {
@@ -216,13 +207,10 @@ public class UIFileFilter extends FileFilter
         return fullDescription;
     }
 
-    /**
+   /**
      * Sets the human readable description of this filter. For example: filter.setDescription("Gif
      * and JPG Images");
-     * 
-     * @see setDescription
-     * @see setExtensionListInDescription
-     * @see isExtensionListInDescription
+     * @param description the description
      */
     public void setDescription(final String description)
     {
@@ -235,6 +223,7 @@ public class UIFileFilter extends FileFilter
      * description.
      * 
      * Only relevent if a description was provided in the constructor or using setDescription();
+     * @param b indicates whether to use the description
      * 
      * @see getDescription
      * @see setDescription
@@ -248,14 +237,10 @@ public class UIFileFilter extends FileFilter
 
     /**
      * Returns whether the extension list (.jpg, .gif, etc) should
-     * show up in the human readable description.
-     *
-     * Only relevent if a description was provided in the constructor
+     * show up in the human readable description. Only relevent if a description was provided in the constructor
      * or using setDescription();
-     *
-     * @see getDescription
-     * @see setDescription
-     * @see setExtensionListInDescription
+     * @return hether the extension list (.jpg, .gif, etc) should
+     * show up in the human readable description.
      */
     public boolean isExtensionListInDescription()
     {

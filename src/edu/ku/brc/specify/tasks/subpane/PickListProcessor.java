@@ -85,14 +85,12 @@ public class PickListProcessor implements FormProcessor
      */
     public int getNumUsed()
     {
-        System.out.println("*********** usedInList.size() ["+usedInList.size()+"]");
-        return usedInList.size();
+       return usedInList.size();
     }
 
     public boolean doEvaluate()
     {
         String nameStr = name.getText();
-        System.out.println("*************** ["+nameStr+"]["+(Collections.binarySearch(titlesList, nameStr) < 0)+"]");
         return isNotEmpty(nameStr) && Collections.binarySearch(titlesList, nameStr) < 0;
     }
     

@@ -23,12 +23,8 @@ package edu.ku.brc.specify.ui.validation;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.util.Iterator;
-import java.util.Set;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JTextArea;
-import javax.swing.ListModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;

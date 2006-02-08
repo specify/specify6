@@ -39,8 +39,10 @@ public class FormCellSubView extends FormCell
      * Constructor
      * @param name name of field for this view
      * @param viewSetName name of view set that this subview is referencing
-     * @param aId the id of the view within the view set
-     * @param aClass the class of of the field
+     * @param id the id of the view within the view set
+     * @param classDesc the class name of the field
+     * @param colspan column span
+     * @param rowspan row span
      */
     public FormCellSubView(String    name, 
                            String    viewSetName, 

@@ -323,13 +323,13 @@ public final class UIHelper
    
 
     /**
-     * @param menu
-     * @param label
-     * @param mnemonic
-     * @param accessibleDescription
-     * @param enabled
-     * @param action
-     * @return
+     * @param menu xxxxx
+     * @param label xxxxx
+     * @param mnemonic xxxxx
+     * @param accessibleDescription xxxxx
+     * @param enabled xxxxx
+     * @param action xxxxx
+     * @return xxxxx
      */
     public static JMenuItem createMenuItem(final JMenu          menu,
                                            final String         label,
@@ -359,8 +359,8 @@ public final class UIHelper
     }
 
     /**
-     * Create a menu 
-     * @param mennuBar the menubar
+     * Create a menu
+     * @param menuBar the menubar
      * @param labelKey the label key to be localized
      * @param mneuKey the mneu key to be localized
      * @return returns a menu

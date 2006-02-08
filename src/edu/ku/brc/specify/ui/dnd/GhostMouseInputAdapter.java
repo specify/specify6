@@ -56,10 +56,10 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
     protected GhostActionable         ghostActionable;
 
     /**
-     * 
+     * Constructor
      * @param glassPane the glass pane 
      * @param action the action command
-     * @param image the image to be drawn on the glassPane
+     * @param ghostActionable the actionable for the adapter
      */
     public GhostMouseInputAdapter(GhostGlassPane  glassPane,
                                   String          action,

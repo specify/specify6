@@ -312,12 +312,9 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     /**
      * Performs a query and then indexes all the results for each orw and column
      * @param writer the lucene writer
-     * @param sqlStr the SQL to be executed
-     * @param tableId the table ID 
-     * @param fields the column positions in the results of those items to be indexed
-     * @return the time it took in milliseconds
+     * @param tableInfo info describing the table (hold the table ID)
      */
-    public long indexQuery(final IndexWriter writer,ExpressResultsTableInfo tableInfo)
+    public long indexQuery(final IndexWriter writer, ExpressResultsTableInfo tableInfo)
     {
         Connection dbConnection = DBConnection.getConnection();
         Statement  dbStatement = null;

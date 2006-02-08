@@ -115,7 +115,7 @@ public class DataEntryTask extends BaseTask
     {
         DBTableIdMgr.getInClause(recordSet);
 
-        int tableId = recordSet.getTableId();
+        //int tableId = recordSet.getTableId();
         //FormView formView = ViewMgr.getView("Fish Views", tableId);
         
         Query query = DBTableIdMgr.getQueryForTable(recordSet);

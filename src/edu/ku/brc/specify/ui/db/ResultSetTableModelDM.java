@@ -22,7 +22,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
     
     /**
      * Construct with a ResultSet
-     * @param resultsSet the recordset
+     * @param resultSet the recordset
      */
     public ResultSetTableModelDM(ResultSet resultSet)
     {

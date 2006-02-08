@@ -264,9 +264,10 @@ public class InfoRequestTask extends BaseTask
     }
     
     /**
-     * @param commentId
-     * @param content
-     * @return
+     * (WORK IN PROGRESS)
+     * @param commentId (WORK IN PROGRESS)
+     * @param content (WORK IN PROGRESS)
+     * @return (WORK IN PROGRESS)
      */
     public static String getCommentValueAsStr(final String commentId, final String content)
     {
@@ -281,9 +282,10 @@ public class InfoRequestTask extends BaseTask
     }
     
     /**
-     * @param commentId
-     * @param content
-     * @return
+     * (WORK IN PROGRESS)
+     * @param commentId (WORK IN PROGRESS)
+     * @param content (WORK IN PROGRESS)
+     * @return (WORK IN PROGRESS)
      */
     public static int getCommentValueAsInt(final String commentId, final String content)
     {
@@ -296,9 +298,9 @@ public class InfoRequestTask extends BaseTask
     }
     
     /**
-     * @param commentId
-     * @param content
-     * @return
+     * @param commentId (WORK IN PROGRESS)
+     * @param content (WORK IN PROGRESS)
+     * @return (WORK IN PROGRESS)
      */
     public static boolean getCommentValueAsCheck(final String commentId, final String content)
     {
@@ -316,8 +318,9 @@ public class InfoRequestTask extends BaseTask
     }
     
     /**
-     * @param content
-     * @return
+     * (work in progress)
+     * @param content xxxxxxx
+     * @return (work in progress)
      */
     public static List<String> parseForCollectionObjects(final String content)
     {
@@ -339,9 +342,9 @@ public class InfoRequestTask extends BaseTask
     
 
     /**
-     * @param host
-     * @param username
-     * @param password
+     * @param host host name
+     * @param username the username of the email account
+     * @param password the pasword of the email account
      */
     public static void findRepliesFromResearch(String host, String username, String password)
     {
@@ -406,9 +409,7 @@ public class InfoRequestTask extends BaseTask
     
     
     /**
-     * @param host
-     * @param username
-     * @param password
+     * 
      */
     public static void findReplies()
     {
@@ -426,9 +427,9 @@ public class InfoRequestTask extends BaseTask
                         // Need to make sure it isn't a reply of a reply
                         // we do that by storing requests in the database and then check dates
                         
-                        System.out.println(msg.getSubject());
-                        System.out.println(msg.getContentType());
-                        System.out.println(msg.getContent());
+                        //System.out.println(msg.getSubject());
+                        //System.out.println(msg.getContentType());
+                        //System.out.println(msg.getContent());
                     
                         if (msg.getContent() instanceof Multipart)
                         {

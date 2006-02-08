@@ -42,8 +42,6 @@ public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListen
      * @param sql the SQL statement to be executed
      * @param descCol the column where the description comes form
      * @param valCol the column where the value comes from
-     * @param valCol the column where the value comes from
-     * @param linkStr name of the query to link to
      */
     public StatGroupFromQuery(final String name, 
                               final String sql, 
@@ -65,7 +63,6 @@ public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListen
      * @param sql the SQL statement to be executed
      * @param descCol the column where the description comes form
      * @param valCol the column where the value comes from
-     * @param linkStr name of the query to link to
      * @param useSeparator use non-border separator titles
      */
     public StatGroupFromQuery(final String name, 

@@ -97,7 +97,7 @@
       
       <row>
         <cell type="label" labelfor="textField" label="Catalog Number"/>
-        <cell type="field" name="textField" isrequired="true"/>
+        <cell type="field" name="textField" isrequired="true" validation="textField.getText().length() > 5" valtype="Changed"/>
       </row>
       
 	  <row>

@@ -114,15 +114,15 @@ public class ViewFactory
     }
     
     /**
-     * 
-     * @param aObj
+     * CReates a panel with the "..." icon
+     * @param comp the component to put into the panel
      */
-    public JPanel createIconPanel(JComponent aComp)
+    public JPanel createIconPanel(JComponent comp)
     {
         JPanel  panel = new JPanel(new BorderLayout());
         JButton btn   = new JButton("...");
         panel.add(btn, BorderLayout.WEST);
-        panel.add(aComp, BorderLayout.EAST);
+        panel.add(comp, BorderLayout.EAST);
         return panel;
     }
     
@@ -152,11 +152,11 @@ public class ViewFactory
     }    
     
     /**
-     * @param formView
-     * @param dataObj
-     * @param classObj
-     * @param parentView
-     * @return
+     * Returns a FormView Obj with the form UI built
+     * @param formView the form definition
+     * @param dataObj the data object that will fill the form
+     * @param parentView the parent's view of the form (might be null)
+     * @return a FormView Obj with the form UI built
      */
     public FormViewObj buildFormView(final FormView     formView, 
                                      final Object       dataObj, 
@@ -649,11 +649,11 @@ public class ViewFactory
     }
    
     /**
-     * @param formView
-     * @param dataObj
-     * @param classObj
-     * @param parentView
-     * @return
+     * Returns a FormView Obj with the form UI built
+     * @param formView the form definition
+     * @param dataObj the data object that will fill the form
+     * @param parentView the parent's view of the form (might be null)
+     * @return a FormView Obj with the form UI built
      */
     public FormViewObj buildFormView(final FormFormView formView, 
                                      final Object       dataObj, 
@@ -755,7 +755,7 @@ public class ViewFactory
     
     /**
      * Creates a FormView
-     * @param view the definition of the form view to be created
+     * @param formView the definition of the form view to be created
      * @return return a new FormView
      */
     public static FormViewable createView(FormView formView)
@@ -781,7 +781,7 @@ public class ViewFactory
     
     /**
      * Creates a FormView with a data object to fill it in
-     * @param view the definition of the form view to be created
+     * @param formView the definition of the form view to be created
      * @param data the data to fill the form
      * @return return a new FormView
      */

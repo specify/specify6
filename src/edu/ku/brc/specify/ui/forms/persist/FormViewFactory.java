@@ -565,8 +565,8 @@ public class FormViewFactory
     
     /**
      * Save out a viewSet to a file
-     * @param aViewSet the viewSet to save
-     * @param aFileName the filename (full path) as to where to save it
+     * @param viewSet the viewSet to save
+     * @param filename the filename (full path) as to where to save it
      */
     public static void save(final ViewSet viewSet, final String filename)
     {

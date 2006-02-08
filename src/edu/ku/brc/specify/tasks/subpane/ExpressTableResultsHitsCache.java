@@ -56,13 +56,13 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
     protected int      rowCacheIndex = -1;
     protected int      numCols       = 0;
     protected int[]    indexes       = null;
+    
     /**
      * Constructor of a results "table" which is really a panel
      * @param esrPane the parent 
      * @param tableInfo the info describing the results
      * @param hits the hits results
-     * @param bannerColor the color of the banner (or bar)
-     */
+    */
     public ExpressTableResultsHitsCache(final ExpressSearchResultsPane esrPane, 
                                         final ExpressResultsTableInfo tableInfo,
                                         final Hits hits)
@@ -125,9 +125,9 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
     
     /**
      * Returns a RecordSet object from the table
-      * @param rows
-     * @param column
-     * @return
+     * @param rows The array of indexes into the rows
+     * @param column the column to get the indexes from
+     * @return  a RecordSet object from the table
      */
     public RecordSet getRecordSet(final int[] rows, final int column)
     {

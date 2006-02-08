@@ -189,7 +189,7 @@ public class StatsTask extends BaseTask
     /**
      * Creates a chart from an XML definition. The query may be defined in the XML for it could be a custom query
      * that comes from an instance of a class.
-     * @param actionName the action name (this is the name of the statistic to look up in the XML)
+     * @param element the DOM element of the chart
      * @param qrProcessable the processor to take care of the results
      * @param subPane the sub pane to be added to the UI
      * @param listener the listener who nneds to know when the query is done and all the results are available

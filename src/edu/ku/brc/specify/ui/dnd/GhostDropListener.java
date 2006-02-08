@@ -5,7 +5,7 @@ package edu.ku.brc.specify.ui.dnd;
  * 
  * @author rods
  * @author Romain Guy <romain.guy@mac.com>
- * @author Sébastien Petrucci <sebastien_petrucci@yahoo.fr>*
+ * @author Sebastien Petrucci <sebastien_petrucci@yahoo.fr>*
  *
  */
 public interface GhostDropListener 

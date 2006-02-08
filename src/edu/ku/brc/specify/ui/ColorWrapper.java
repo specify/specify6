@@ -60,7 +60,7 @@ public class ColorWrapper
 
     /**
      * Constructor with color
-     * @param color the color to initialize it with
+     * @param rgbStr the color to initialize it with
      */
     public ColorWrapper(final String rgbStr)
     {

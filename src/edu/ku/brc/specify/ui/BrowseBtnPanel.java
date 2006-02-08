@@ -153,7 +153,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
 
         /**
          * Constructor with Commandaction
-         * @param commandAction the command action to send
+         * @param textField the text control of the Browse Action
          */
         public BrowseAction(final JTextField textField)
         {

@@ -142,7 +142,6 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
     /**
      * Helper to that adds a validation for enabling or disabling control by name
-     * @param name the name of the rule
      * @param rule the rule that will be validated
      */
     public void addRule(final FormValidationRuleIFace rule)
@@ -503,7 +502,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     /**
      * Adds a generic Component by name and return it
      * @param name the logical name of the component
-     * @param aComp
+     * @param comp the component to add
      * @return returns the passed in component after it is registered
      */
     public Component addUIComp(final String name, final Component comp)

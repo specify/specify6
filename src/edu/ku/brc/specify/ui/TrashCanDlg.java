@@ -1,3 +1,23 @@
+/* Filename:    $RCSfile: TrashCanDlg.java,v $
+ * Author:      $Author: rods $
+ * Revision:    $Revision: 1.1 $
+ * Date:        $Date: 2006/01/19 19:59:54 $
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 package edu.ku.brc.specify.ui;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
@@ -33,6 +53,12 @@ import com.jgoodies.forms.builder.ButtonBarBuilder;
 import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.specify.ui.dnd.DndDeletable;
 
+/**
+ * This dialoig enables the user to view the contents of the trash can. It can be used to send commands to have the items recovered.
+ * 
+ * @author rods
+ *
+ */
 @SuppressWarnings("serial")
 public class TrashCanDlg extends JDialog implements ActionListener, ListSelectionListener
 {
@@ -50,6 +76,7 @@ public class TrashCanDlg extends JDialog implements ActionListener, ListSelectio
     protected Trash          trash;
     
     /**
+     * Constructor
      * @throws HeadlessException
      */
     public TrashCanDlg() throws HeadlessException
@@ -143,6 +170,10 @@ public class TrashCanDlg extends JDialog implements ActionListener, ListSelectio
         setVisible(false);
     }
     
+    /**
+     * Returns the deletable item
+     * @return the deletable item
+     */
     public DndDeletable getDeletable()
     {
         int inx = list.getSelectedIndex();
@@ -156,6 +187,10 @@ public class TrashCanDlg extends JDialog implements ActionListener, ListSelectio
     //------------------------------------------------------
     // ListSelectionListener
     //------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
+     */
     public void valueChanged(ListSelectionEvent e)
     {
        restoreBtn.setEnabled(list.getSelectedIndex() != -1); 

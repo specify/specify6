@@ -92,8 +92,8 @@ public class JAutoCompComboBox extends JComboBox
     }
 
     /**
-     * Constructor with Adaptor
-     * @param dBAdaptor the adaptor for enabling autocomplete
+     * Constructor with Adapter
+     * @param dbAdapter the adaptor for enabling autocomplete
      */
     public JAutoCompComboBox(PickListDBAdapter dbAdapter)
     {

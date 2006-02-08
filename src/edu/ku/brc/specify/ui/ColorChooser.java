@@ -65,9 +65,7 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
     
      /**
      * Creates a toolbar item with label and icon and their positions.
-     * @param label label of the toolbar item
-     * @param icon the icon
-     * @param textPosition the position of the text as related to the icon
+     * @param color the initial awt Color
      */
     public ColorChooser(Color color)
     {

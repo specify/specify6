@@ -137,20 +137,19 @@ public class UICacheManager
      * Unregisters a uicomp
      * @param category the category to be registered
      * @param name the name
-     * @param uiComp the ui component
      * @throws UIException throws exception if it is not registered
      */
-    public static void unregisterUI(final String aCategory, final String aName, final JComponent aUIComp) throws UIException
+    public static void unregisterUI(final String category, final String name) throws UIException
     {
-        Hashtable<String, JComponent> compsHash = instance.uiItems.get(aCategory);
+        Hashtable<String, JComponent> compsHash = instance.uiItems.get(category);
         if (compsHash == null)
         {
-            throw new UIException("Couldn't find UI Category with Name["+aCategory+"].");
+            throw new UIException("Couldn't find UI Category with Name["+category+"].");
         }
-        JComponent comp = compsHash.get(aName);
+        JComponent comp = compsHash.get(name);
         if (comp == null)
         {
-           throw new UIException("Couldn't find UI component with Name["+aName+"].");
+           throw new UIException("Couldn't find UI component with Name["+name+"].");
         }
         compsHash.remove(comp);
     }

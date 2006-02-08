@@ -170,7 +170,6 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
     
     /**
      * Adds a control by name so it can be looked up later
-     * @param name the name of the control (must be unique or it throws a runtime exception
      * @param formCell the FormCell def that describe the cell
      * @param control the control
      */
@@ -188,9 +187,8 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
     
     /**
      * Adds a control by name so it can be looked up later
-     * @param name the name of the control (must be unique or it throws a runtime exception
      * @param formCell the FormCell def that describe the cell
-     * @param control the control
+     * @param subView the subView
      */
     public void addSubView(final FormCell formCell, final FormViewObj subView)
     {

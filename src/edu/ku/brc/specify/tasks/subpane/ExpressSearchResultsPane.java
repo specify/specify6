@@ -76,9 +76,9 @@ public class ExpressSearchResultsPane extends BaseSubPane
     }
     
     /**
-     * Adds a new results table to the panel
-     * @param title the title of the table of results
-     * @param sqlStr the sql to be executed to fill in the table (box)
+     * Add serach results box to UI
+     * @param tableInfo the information about the table being added
+     * @param hits the "hits" results of the search
      */
     public void addSearchResults(final ExpressResultsTableInfo tableInfo, final Hits hits)
     {

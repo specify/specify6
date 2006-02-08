@@ -99,8 +99,8 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     }
 
     /**
-     * Constructor with Adaptor
-     * @param dBAdaptor the adaptor for enabling autocomplete
+     * Constructor with dbAdapter
+     * @param dbAdapter the adaptor for enabling autocomplete
      */
     public ValComboBox(PickListDBAdapter dbAdapter)
     {

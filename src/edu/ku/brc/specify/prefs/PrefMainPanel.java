@@ -355,9 +355,12 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
         return searchPanel;
     }
     
-    /**
-     * Start animation where painting will occur for the given rect
-     * @param visibleRect the rect to be painted
+   /**
+     *  Start animation where painting will occur for the given rect
+     * @param window the window to start it in
+     * @param comp the component
+     * @param delta the delta each time
+     * @param fullStep the step
      */
     public void startAnimation(final Window window, final Component comp, final int delta, final boolean fullStep) 
     {

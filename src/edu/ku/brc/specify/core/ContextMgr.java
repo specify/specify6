@@ -132,9 +132,9 @@ public class ContextMgr
     }
 
     /**
-     * Returns a task by a given name
-     * @param name name of task to be returned
-     * @return Returns a task by a given name
+     * Returns a task by a given Class
+     * @param theClass the class of task to be returned
+     * @return Returns a task by a given Class
      */
     public static Taskable getTaskByClass(final Class theClass)
     {
@@ -182,7 +182,7 @@ public class ContextMgr
      * Returns the ServiceInfo object for a given service and the table it is to act upon.
      * @param name name of service to be provided
      * @param tableId the table ID of the data to be serviced
-     * @return
+     * @return the ServiceInfo object for a given service and the table it is to act upon.
      */
     public static ServiceInfo checkForService(final String name, final int tableId)
     {

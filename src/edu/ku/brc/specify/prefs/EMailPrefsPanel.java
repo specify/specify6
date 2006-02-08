@@ -443,8 +443,6 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
 
         /**
          * Constructs a an object to execute an SQL staement and then notify the listener
-         * @param listener the listener
-         * @param sqlStr the SQL statement to be executed.
          */
         public EMailCheckerRunnable()
         {

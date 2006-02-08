@@ -58,8 +58,7 @@ public class PrefPanelRowLayoutManager implements LayoutManager, LayoutManager2
      * Contructs a layout manager for layting out NavBoxes. It lays out all the NavBoxes vertically 
      * and uses the 'ySeparator' as the spacing in between the boxes. It uses borderPadding as a 'margin'
      * aroound all the boxes
-     * @param borderPadding the margin around the boxes
-     * @param ySeparation the vertical separation inbetween the boxes.
+     * @param title the JLabel title
      */
     public PrefPanelRowLayoutManager(final JLabel title)
     {

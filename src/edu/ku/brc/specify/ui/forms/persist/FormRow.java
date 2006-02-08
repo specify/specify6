@@ -37,7 +37,7 @@ public class FormRow
     
     /**
      * Adds a FormCell and return the same FormCell
-     * @param aCell the cell to be added
+     * @param cell the cell to be added
      * @return the same FormCell
      */
     public FormCell addCell(FormCell cell)

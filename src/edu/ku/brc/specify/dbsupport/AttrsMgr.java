@@ -130,7 +130,7 @@ public class AttrsMgr
      * @param discipline
      * @param subType
      * @param tableType
-     * @return
+     * @return (WORK in PROGRESS)
      */
     public List getAttrDefs(short discipline, short subType, short tableType)
     {
@@ -142,7 +142,7 @@ public class AttrsMgr
                                                 " and ad.subType = "+subType+
                                                 " and ad.tableType = "+tableType+
                                                 " ORDER BY ad.disciplineType ASC, ad.subType ASC, ad.tableType ASC");
-                                        Vector list = new Vector();
+            Vector<Object> list = new Vector<Object>();
             for (Iterator iter=query.iterate();iter.hasNext();)
             {
                 list.add(iter.next());
@@ -159,7 +159,7 @@ public class AttrsMgr
     
     class SubAttrType 
     {
-        protected Vector _atttTypes = new Vector();
+        protected Vector<Object> _atttTypes = new Vector<Object>();
         
         public SubAttrType()
         {

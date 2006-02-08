@@ -49,7 +49,7 @@ public class IconEntry
 
     /**
      * Returns an icon for a given size in pixels
-     * @param size the size of the icon
+     * @param id the ID of the size of the icon
      * @return the icon for that size in pixels
      */
     public ImageIcon getIcon(final IconSize id)
@@ -60,7 +60,7 @@ public class IconEntry
     
     /**
      * Adds an icon of a particular size
-     * @param size the IconSize
+     * @param id the IconSize
      * @param icon the icon to be added
      */
     public void add(final IconSize id, final ImageIcon icon)
@@ -72,8 +72,8 @@ public class IconEntry
 
     /**
      * Adds an icon of a particular size
-     * @param size the IconSize
-     * @param icon the icon to be added
+     * @param id the IconSize
+     * @param newId the new size
      */
     public void addScaled(final IconSize id, final IconSize newId)
     {

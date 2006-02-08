@@ -25,6 +25,13 @@ import javax.swing.JTabbedPane;
 
 import edu.ku.brc.specify.core.NavBoxMgr;
 
+/**
+ * The MainPanel contains a splitter that divdes the window into two parts, the NavBox area and the TabbedPane area.<br><br>
+ * The NavBox area is managed by the NavBoxMgr and the Sub pane area is managed by the SubPaneMgr.
+ * 
+ * @author rods
+ *
+ */
 @SuppressWarnings("serial")
 public class MainPanel extends JSplitPane
 {

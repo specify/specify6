@@ -28,7 +28,7 @@ public class FormTableView extends FormView
     protected Vector<FormColumn> columns = new Vector<FormColumn>();
     
     /**
-     * @param type the type (could be form or field)
+     * Constructor
      * @param id the id
      * @param name the name
      * @param className the class name of the data object

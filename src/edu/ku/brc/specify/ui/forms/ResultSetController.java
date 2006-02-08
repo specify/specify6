@@ -159,7 +159,7 @@ public class ResultSetController
     
     /**
      * 
-     * @return
+     * @return the length (the number of records)
      */
     public int getLength()
     {
@@ -167,19 +167,16 @@ public class ResultSetController
     }
     
     /**
-     * @return
+     * @return the current index
      */
     public int getCurrentIndex()
     {
         return currentInx;
     }
     
+
     /**
-     * 
-     * @return
-     */
-    /**
-     * @return
+     * @return the panel
      */
     public JPanel getPanel()
     {

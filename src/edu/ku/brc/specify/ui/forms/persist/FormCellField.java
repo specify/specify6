@@ -56,20 +56,20 @@ public class FormCellField extends FormCell
     {
         super(type, name, colspan, rowspan);
     }
-    
-    
 
     /**
-     * Creates a form cell object
      * @param type type of cell
      * @param name the name
-     * @param label the label
      * @param uiType the type of ui component to be created (i.e. "checkbox", "textfield")
      * @param format the format for a text field
+     * @param isRequired whether the control MUST have value
      * @param cols the number of default columns to make the text field/area
      * @param rows the number of default rows to make TextArea
      * @param colspan the number of columns to span
      * @param rowspan the number of rows to span
+     * @param validationType the type of validation (when to validate)
+     * @param validationRule the rule on how to validate
+     * @param isEncrypted whether the control should have its value encrypted
      */
     public FormCellField(final FormCell.CellType type, 
                          final String  name, 

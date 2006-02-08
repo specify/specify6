@@ -20,15 +20,14 @@
 
 package edu.ku.brc.specify.ui.validation;
 
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
-import org.apache.commons.lang.*;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.ColorWrapper;

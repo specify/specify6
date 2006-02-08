@@ -294,7 +294,8 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         /**
          * Constructs a an object to execute an SQL staement and then notify the listener
          * @param listener the listener
-         * @param sqlStr the SQL statement to be executed.
+         * @param reportFile the file that contains the report
+         * @param compiledFile the file that will contain the compiled report
          */
         public JasperCompilerRunnable(final LabelsPane listener, final File reportFile, final File compiledFile)
         {

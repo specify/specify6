@@ -115,7 +115,6 @@ public class PrefsCache
      * @param section the section or category of the pref
      * @param pref the pref's name
      * @param attrName the actual attribute
-     * @param defValue the default value
      */
     public static boolean remove(final String section, final String pref, final String attrName)
     {
@@ -157,7 +156,6 @@ public class PrefsCache
      * @param section the section or category of the pref
      * @param pref the pref's name
      * @param attrName the actual attribute
-     * @param defValue the default value
      * @return the string value or default value
      */
     public static String getValue(final String section, final String pref, final String attrName)
@@ -168,9 +166,9 @@ public class PrefsCache
     
     /**
      * Get the prefValue, if it is new than it sets the default into the prefs, if not it gets the value and returns it
-     * @param pref the pref's name
+     * @param prefNode the pref's name
      * @param attrName the actual attribute
-    * @param defValue the default value
+     * @param defValue the default value
      * @return return the pref's value
      */
     protected String checkForPref(final Preferences prefNode, final String attrName, final String defValue)

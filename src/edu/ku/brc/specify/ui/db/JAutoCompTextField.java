@@ -100,8 +100,8 @@ public class JAutoCompTextField extends JTextField
     }
     
     /**
-     * Constructor with Adaptor
-     * @param dBAdaptor the adaptor for enabling autocomplete
+     * Constructor with Adapter
+     * @param dbAdapter the adaptor for enabling autocomplete
      */
     public JAutoCompTextField(PickListDBAdapter dbAdapter)
     {

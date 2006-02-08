@@ -81,7 +81,7 @@ public class UIValidator implements FocusListener, KeyListener, PropertyChangeLi
      * Constructor
      * @param comp UI Cinponent that MUST implement UIValidatable
      * @param type the type of validation
-     * @param val the initial value
+     * @param expression the validation expression to evaluate
      */
     public UIValidator(Component comp, Type type, String expression)
     {

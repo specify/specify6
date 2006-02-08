@@ -51,7 +51,7 @@ public class ResultSetTableModel extends AbstractTableModel
     
     /**
      * Construct with a ResultSet
-     * @param resultsSet the recordset
+     * @param resultSet the recordset
      */
     public ResultSetTableModel(ResultSet resultSet)
     {

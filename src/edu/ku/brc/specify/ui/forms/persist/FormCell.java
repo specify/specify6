@@ -50,7 +50,6 @@ public class FormCell
      * Constructor
      * @param type type of cell
      * @param name the name
-     * @param ignoreSetGet indicates whether it should be igmored when setting and getting data
      */
     public FormCell(final CellType type, final String name)
     {
@@ -64,7 +63,6 @@ public class FormCell
      * @param name the name
      * @param colspan the number of columns to span
      * @param rowspan the number of rows to span
-     * @param ignoreSetGet indicates whether it should be igmored when setting and getting data
      */
     public FormCell(final CellType type, 
                     final String   name, 

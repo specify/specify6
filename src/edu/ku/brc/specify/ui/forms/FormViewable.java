@@ -42,7 +42,7 @@ public interface FormViewable
     
     /**
      * Returns the form's type (field, form, table)
-     * @return
+     * @return the form's type (field, form, table)
      */
     public FormView.ViewType getType();
     

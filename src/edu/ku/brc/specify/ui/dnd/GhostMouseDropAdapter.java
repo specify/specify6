@@ -23,10 +23,10 @@ public class GhostMouseDropAdapter extends GhostDropAdapter
     private GhostActionable    ghostActionable;
 
     /**
-     * 
+     * Constructor
      * @param glassPane the glass pane 
      * @param action the action command
-     * @param image the image to be drawn on the glassPane
+     * @param ghostActionable the actionable
      */
     public GhostMouseDropAdapter(GhostGlassPane glassPane,
                                String           action,

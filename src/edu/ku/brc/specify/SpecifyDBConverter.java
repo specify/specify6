@@ -36,9 +36,9 @@ public class SpecifyDBConverter
     }
     
      /**
-     * @param oldNames
-     * @param newName
-     * @return
+     * @param oldNames xxxxx
+     * @param newName xxxx
+     * @return xxxx
      */
     public static int getIndex(String[] oldNames, String newName)
     {
@@ -56,9 +56,9 @@ public class SpecifyDBConverter
     
    
     /**
-     * @param id
-     * @param name
-     * @return
+     * @param id  xxxx
+     * @param name xxxx
+     * @return xxxx
      */
     public static PrepTypes loadPrepType(final int id, final String name)
     {
@@ -87,12 +87,12 @@ public class SpecifyDBConverter
     }
     
     /**
-     * 
-     * @param aSession
-     * @param aNames
-     * @param aTypes
-     * @param aDiscipline
-     * @param aTableType
+     * @param discipline xxxx
+     * @param tableType xxxx
+     * @param subType xxxx
+     * @param attrNames xxxx
+     * @param dataTypes xxxx
+     * @return xxxx
      */
     public static List loadAttrDefs(final short    discipline, 
                                     final short    tableType, 
@@ -519,9 +519,9 @@ public class SpecifyDBConverter
     }
     
     /**
-     * @param stmt
-     * @param cmdStr
-     * @return
+     * @param stmt xxxx
+     * @param cmdStr xxxx
+     * @return xxxx
      */
     public static int exeUpdateCmd(Statement stmt, String cmdStr)
     {

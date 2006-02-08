@@ -142,7 +142,6 @@ public class IconManager
     /**
      * Registers an icon (group or category), it creates an icon of "id" size and stores it
      * @param iconName the group name of icons of various sizes
-     * @param fileName the file name of the icon
      * @param id the size of the icon
      * @return the icon that was created at the "id" size
      */
