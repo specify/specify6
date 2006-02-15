@@ -25,7 +25,7 @@
 		<!-- Specify mapping files. -->
 		<mapping resource="edu/ku/brc/specify/ui/db/PickList.hbm.xml"/>
 		
-		<!--
+		
 		<mapping resource="edu/ku/brc/specify/extfilerepos/impl/ExternalFileEntry.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/RecordSet.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/InfoRequest.hbm.xml"/>
@@ -102,7 +102,7 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/TaxonomicUnitType.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/TaxonomyType.hbm.xml"/>
 		
-		-->
+		
 
         <!-- Settings for the second-level cache -->
         <!--
