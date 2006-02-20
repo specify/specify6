@@ -16,48 +16,84 @@
                 </statement>
             </sql>
         </item>
-        <item title="Unique Families">
+        <item title="Unique Families" useprogress="true">
             <sql>
                 <statement>
-                  <![CDATA[xcreate temporary table UniqueFamilies select (select lev.taxonnameid from taxonname as lev where lev.rankid = 140 and tax.nodenumber between lev.nodenumber and lev.HighestChildNodeNumber LIMIT 1)  as txids from taxonname as tax where tax.accepted <> 0 and tax.taxonnameid in (select taxonnameid from determination where current1 <> 0)]]>
-                </statement>
-                <statement row="1" col="1">
-                  <![CDATA[select count(taxonnameid) from taxonname,UniqueFamilies where taxonname.taxonnameid = UniqueFamilies.txids]]>
+                  <![CDATA[create temporary table Families1 select taxonnameid from determination where current1 <> 0]]>
                 </statement>
                 <statement>
-                  <![CDATA[drop table UniqueFamilies]]>
+                  <![CDATA[create temporary table Families2 select DISTINCT tax.taxonnameid,tax.nodenumber from Families1,taxonname as tax where tax.accepted <> 0 and tax.taxonnameid = Families1.taxonnameid]]>
+                </statement>
+               <statement>
+                  <![CDATA[create temporary table Families3 select DISTINCT lev.taxonnameid from Families2, taxonname as lev where lev.rankid = 140 and Families2.nodenumber between lev.nodenumber and lev.HighestChildNodeNumber]]>
+                </statement>
+                <statement row="1" col="1">
+                  <![CDATA[select count(*) from Families3]]>
+                </statement>
+                <statement>
+                  <![CDATA[drop table Families1]]>
+                </statement>
+                <statement>
+                  <![CDATA[drop table Families2]]>
+                </statement>
+                <statement>
+                  <![CDATA[drop table Families3]]>
                 </statement>
             </sql>
         </item>
-        <item title="Unique Genera">
+        <item title="Unique Genera" useprogress="true">
             <sql>
                 <statement>
-                  <![CDATA[xcreate temporary table UniqueGenera select (select lev.taxonnameid from taxonname as lev where lev.rankid = 180 and tax.nodenumber between lev.nodenumber and lev.HighestChildNodeNumber LIMIT 1)  as txids from taxonname as tax where tax.accepted <> 0 and tax.taxonnameid in (select taxonnameid from determination where current1 <> 0)]]>
-                </statement>
-                <statement row="1" col="1">
-                  <![CDATA[select count(taxonnameid) from taxonname,UniqueGenera where taxonname.taxonnameid = UniqueGenera.txids]]>
+                  <![CDATA[create temporary table Genera1 select taxonnameid from determination where current1 <> 0]]>
                 </statement>
                 <statement>
-                  <![CDATA[drop table UniqueGenera]]>
+                  <![CDATA[create temporary table Genera2 select DISTINCT tax.taxonnameid,tax.nodenumber from Genera1,taxonname as tax where tax.accepted <> 0 and tax.taxonnameid = Genera1.taxonnameid]]>
+                </statement>
+               <statement>
+                  <![CDATA[create temporary table Genera3 select DISTINCT lev.taxonnameid from Genera2, taxonname as lev where lev.rankid = 180 and Genera2.nodenumber between lev.nodenumber and lev.HighestChildNodeNumber]]>
+                </statement>
+                <statement row="1" col="1">
+                  <![CDATA[select count(*) from Genera3]]>
+                </statement>
+                <statement>
+                  <![CDATA[drop table Genera1]]>
+                </statement>
+                <statement>
+                  <![CDATA[drop table Genera2]]>
+                </statement>
+                <statement>
+                  <![CDATA[drop table Genera3]]>
                 </statement>
             </sql>
         </item>
-        <item title="Unique Species">
+        <item title="Unique Species" useprogress="true">
             <sql>
                 <statement>
-                  <![CDATA[xcreate temporary table UniqueSpecies select (select lev.taxonnameid from taxonname as lev where lev.rankid = 220 and tax.nodenumber between lev.nodenumber and lev.HighestChildNodeNumber LIMIT 1)  as txids from taxonname as tax where tax.accepted <> 0 and tax.taxonnameid in (select taxonnameid from determination where current1 <> 0)]]>
-                </statement>
-                <statement row="1" col="1">
-                  <![CDATA[select count(taxonnameid) from taxonname,UniqueSpecies where taxonname.taxonnameid = UniqueSpecies.txids]]>
+                  <![CDATA[create temporary table Species1 select taxonnameid from determination where current1 <> 0]]>
                 </statement>
                 <statement>
-                  <![CDATA[drop table UniqueSpecies]]>
+                  <![CDATA[create temporary table Species2 select DISTINCT tax.taxonnameid,tax.nodenumber from Species1,taxonname as tax where tax.accepted <> 0 and tax.taxonnameid = Species1.taxonnameid]]>
+                </statement>
+               <statement>
+                  <![CDATA[create temporary table Species3 select DISTINCT lev.taxonnameid from Species2, taxonname as lev where lev.rankid = 220 and Species2.nodenumber between lev.nodenumber and lev.HighestChildNodeNumber]]>
+                </statement>
+                <statement row="1" col="1">
+                  <![CDATA[select count(*) from Species3]]>
+                </statement>
+                <statement>
+                  <![CDATA[drop table Species1]]>
+                </statement>
+                <statement>
+                  <![CDATA[drop table Species2]]>
+                </statement>
+                <statement>
+                  <![CDATA[drop table Species3]]>
                 </statement>
             </sql>
         </item>
-        <item title="Taxa in Collection">
+        <item title="Taxa in Collection" useprogress="true">
             <sql><statement><![CDATA[select count(taxonnameid) AS TaxaInCollectionCount from taxonname where taxonnameid in (select taxonnameid from determination where current1 <> 0)]]></statement></sql>
-        </item>        
+        </item>
       </box>
       <box title="Data Entry">
         <item title="Cataloged in Last 7 Days">
@@ -95,7 +131,7 @@
         <item title="Number of Geographies">
             <sql><statement><![CDATA[select count(*) from geography]]></statement></sql>
         </item>
-        <item title="Number of Countries">
+        <item title="Number of Countries" useprogress="true">
             <sql><statement><![CDATA[select count(country) AS CountryCount from (select distinct country from geography as g inner join locality as l on l.geographyid = g.geographyid inner join collectingevent as ce on ce.localityid = l.localityid inner join collectionobject as co on co.collectingeventid = ce.collectingeventid) AS UCountries;]]></statement></sql>
         </item>
         <item title="Percent Geo Referenced">
@@ -104,7 +140,7 @@
     </box>
   </row>
   <row>
-    <box title="Taxonomic Tree Information">    
+    <box title="Taxonomic Tree Information">
         <item title="Class">
             <sql><statement><![CDATA[select count(*) from taxonname where taxonname.rankid = 60]]></statement></sql>
         </item>
@@ -121,12 +157,12 @@
             <sql><statement><![CDATA[select count(*) from taxonname where taxonname.rankid = 220]]></statement></sql>
         </item>
     </box>
-    <box title="Taxa Type Counts" descCol="1" valCol="2">    
+    <box title="Taxa Type Counts" descCol="1" valCol="2">
 		<sql><![CDATA[select TypeStatusName, count(determinationid) AS DeterminationCount from determination where TypeStatusName is not null group by TypeStatusName]]></sql>
     </box>
   </row>
   <row>
-    <box title="Taxa Type Counts" descCol="1" valCol="2">    
+    <box title="Taxa Type Counts" descCol="1" valCol="2">
 		<sql><![CDATA[select CollectionObjectTypeName, ObjectCount from (select CollectionObjectTypeID AS ObjectType, Count(CollectionObjectID) AS ObjectCount from collectionobject Group By CollectionObjectTypeID) AS T2, collectionobjecttype where T2.ObjectType = collectionobjecttype.CollectionObjectTypeID]]></sql>
     </box>
   </row>

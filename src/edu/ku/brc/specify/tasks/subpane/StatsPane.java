@@ -21,6 +21,7 @@
 package edu.ku.brc.specify.tasks.subpane;
 
 import static edu.ku.brc.specify.helpers.UIHelper.createDuplicateJGoodiesDef;
+import static edu.ku.brc.specify.helpers.XMLHelper.getAttr;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -45,7 +46,7 @@ import edu.ku.brc.specify.stats.StatItem;
 
 /**
  * A class that loads a page of statistics from an XML description
- * 
+ *
  * @author rods
  *
  */
@@ -54,12 +55,12 @@ public class StatsPane extends BaseSubPane
 {
     // Static Data Members
     private static Log log = LogFactory.getLog(StatsPane.class);
-    
+
     // Data Members
     protected String  fileName           = null;
     protected Color   bgColor            = Color.WHITE;
     protected boolean useSeparatorTitles = false;
-    
+
     /**
      * Creates a StatsPane
      * @param name name of pane
@@ -68,48 +69,28 @@ public class StatsPane extends BaseSubPane
      * @param useSeparatorTitles indicates the group panels should use separator titles instead of boxes
      * @param bgColor the background color
     */
-    public StatsPane(final String name, 
+    public StatsPane(final String name,
                      final Taskable task,
                      final String fileName,
                      final boolean useSeparatorTitles,
                      final Color bgColor)
     {
         super(name, task);
-        
+
         this.fileName = fileName;
         this.useSeparatorTitles = useSeparatorTitles;
-        
+
         if (bgColor != null)
         {
             this.bgColor = bgColor;
         }
         setLayout(new BorderLayout());
-        
+
         setBackground(bgColor);
-        
+
         init();
     }
-    
-    /**
-     * Helper - Needs to be moved
-     * @param element XXX
-     * @param attrName XXX
-     * @param defaultValue XXX
-     * @return the int for the string
-     */
-    public static int getIntFromAttr(Element element, String attrName, int defaultValue)
-    {
-        String attr = element.attributeValue(attrName);
-        if (attr != null)
-        {
-            try
-            {
-                return Integer.parseInt(attr);
-            } catch (Exception e){}
-        }
-        return defaultValue;
-    }
-    
+
     /**
      * Loads all the panels
      *
@@ -120,13 +101,13 @@ public class StatsPane extends BaseSubPane
         try
         {
             rootElement = XMLHelper.readDOMFromConfigDir(fileName);
-            
+
             // count up rows and column
             StringBuffer rowsDef = new StringBuffer();
-                
+
             List rows = rootElement.selectNodes("/panel/row");
             int maxCols = 0;
-            for (Object obj : rows) 
+            for (Object obj : rows)
             {
                 Element rowElement = (Element)obj;
                 List boxes = rowElement.selectNodes("box");
@@ -137,26 +118,26 @@ public class StatsPane extends BaseSubPane
                 }
                 rowsDef.append("top:p");
             }
-                       
+
             FormLayout      formLayout = new FormLayout(createDuplicateJGoodiesDef("f:max(250px;p)", "35dlu", maxCols), rowsDef.toString());
             PanelBuilder    builder    = new PanelBuilder(formLayout);
             CellConstraints cc         = new CellConstraints();
 
             int y = 1;
-            for (Object obj : rows) 
+            for (Object obj : rows)
             {
                 Element rowElement = (Element)obj;
-                
+
                 int x = 1;
                 List boxes = rowElement.selectNodes("box");
-                for (Object bo : boxes) 
+                for (Object bo : boxes)
                 {
                     Element boxElement = (Element)bo;
-                    
-                    int descCol = getIntFromAttr(boxElement, "descCol", -1);
-                    int valCol  = getIntFromAttr(boxElement, "valCol", -1);
+
+                    int descCol = getAttr(boxElement, "descCol", -1);
+                    int valCol  = getAttr(boxElement, "valCol", -1);
                     Element sqlElement = (Element)boxElement.selectSingleNode("sql");
-                    
+
                     StatGroup group = null;
                     if (descCol > -1 && valCol > -1 && sqlElement != null)
                     {
@@ -168,44 +149,44 @@ public class StatsPane extends BaseSubPane
                             linkStr = link.getTextTrim();
                             colId   = Integer.parseInt(link.attributeValue("colid"));
                         }
-                        group = new StatGroupFromQuery(boxElement.attributeValue("title"), 
-                                                       sqlElement.getText(), 
-                                                       descCol, 
+                        group = new StatGroupFromQuery(boxElement.attributeValue("title"),
+                                                       sqlElement.getText(),
+                                                       descCol,
                                                        valCol,
                                                        useSeparatorTitles);
                         ((StatGroupFromQuery)group).setLinkInfo(linkStr, colId);
-                        
+
                     } else
                     {
                         group = new StatGroup(boxElement.attributeValue("title"), useSeparatorTitles);
-                        
+
                         List items = boxElement.selectNodes("item");
                         for (Object io : items)
                         {
                             Element itemElement = (Element)io;
-                            
+
                             Element link = (Element)itemElement.selectSingleNode("link");
                             String linkStr = null;
                             if (link != null)
-                            {                               
-                                linkStr = link.getTextTrim();  
+                            {
+                                linkStr = link.getTextTrim();
                             }
-                            
-                            StatItem statItem   = new StatItem(itemElement.attributeValue("title"), linkStr);
+
+                            StatItem statItem   = new StatItem(itemElement.attributeValue("title"), linkStr, getAttr(itemElement, "useprogress", false));
                             List     statements = itemElement.selectNodes("sql/statement");
 
                              if (statements.size() == 1)
                             {
                                 statItem.add(((Element)statements.get(0)).getText(), 1, 1, StatItem.VALUE_TYPE.Value);
-                                
+
                             } else if (statements.size() > 0)
                             {
                                 int cnt = 0;
-                                for (Object stObj : statements) 
+                                for (Object stObj : statements)
                                 {
                                     Element stElement = (Element)stObj;
-                                    int vRowInx = getIntFromAttr(stElement, "row", -1);
-                                    int vColInx = getIntFromAttr(stElement, "col", -1);
+                                    int vRowInx = getAttr(stElement, "row", -1);
+                                    int vColInx = getAttr(stElement, "col", -1);
                                     if (vRowInx == -1 || vColInx == -1)
                                     {
                                         statItem.add(stElement.getText()); // ignore return object
@@ -226,21 +207,21 @@ public class StatsPane extends BaseSubPane
                 }
                 y += 2;
             }
-            
+
             JPanel statPanel = builder.getPanel();
             statPanel.setBackground(bgColor);
-            
+
             builder    = new PanelBuilder(new FormLayout("C:P:G", "p"));
             builder.add(statPanel, cc.xy(1,1));
- 
+
             builder.getPanel().setBackground(Color.WHITE);
-            builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5)); 
-            
+            builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
             add(builder.getPanel(), BorderLayout.CENTER);
-            
+
             builder.getPanel().invalidate();
             doLayout();
-            
+
         } catch (Exception ex)
         {
             log.error(ex);
@@ -248,5 +229,5 @@ public class StatsPane extends BaseSubPane
         }
 
     }
-    
+
 }

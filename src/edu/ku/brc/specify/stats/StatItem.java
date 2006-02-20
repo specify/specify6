@@ -22,6 +22,7 @@ package edu.ku.brc.specify.stats;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
@@ -43,13 +44,14 @@ import edu.ku.brc.specify.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.specify.dbsupport.QueryResultsListener;
 import edu.ku.brc.specify.dbsupport.QueryResultsSerializedGetter;
 import edu.ku.brc.specify.tasks.StatsTask;
+import edu.ku.brc.specify.ui.InfiniteProgressIndicator;
 
 /**
  * A Single Statitem that creates a QueryResultsContainer and then gets the result and displays it.
  * It is capable of getting both the descriptive part (label) and the the value.
- * 
+ *
  * @author rods
- * 
+ *
  */
 @SuppressWarnings("serial")
 public class StatItem extends JPanel implements QueryResultsListener
@@ -59,22 +61,22 @@ public class StatItem extends JPanel implements QueryResultsListener
      * The "Description" is the right side, the "Value" is the left side, and it can be asked to be ignored
      */
     public enum VALUE_TYPE {Description, Value, Ignore};
-    
+
     protected String  description;
     protected String  sql;
     protected String  link       = null;
-    
+
     protected boolean hasStarted = false;
-    
+
     protected Vector<QueryResultsContainer> qrcs       = new Vector<QueryResultsContainer>();
     protected Vector<VALUE_TYPE>            valuesType = new Vector<VALUE_TYPE>();
-    
+
     // UI
     protected JLabel  descLabel     = null;
     protected JButton descBtn       = null;
-    
-    protected JLabel  resultsLabel;
-    //protected InfiniteProgressPanel infProgress;
+
+    protected JLabel  resultsLabel  = null;
+    //protected InfiniteProgressIndicator infProgress;
 
     // XXX need to get Colors from L&F
     protected Color      linkColor = Color.BLUE;
@@ -83,17 +85,21 @@ public class StatItem extends JPanel implements QueryResultsListener
     protected static final Cursor handCursor    = new Cursor(Cursor.HAND_CURSOR);
     protected static final Cursor defCursor     = new Cursor(Cursor.DEFAULT_CURSOR);
 
+    protected PanelBuilder builder = new PanelBuilder(new FormLayout("left:p:g,4dlu,right:p:g", "p"));
 
-    
+    protected InfiniteProgressIndicator ipp = null;
+
+
+
     /**
      * Constructor for a single statistical item
      * @param description the textual description of the statistic
      */
-    public StatItem(final String description, final String link)
+    public StatItem(final String description, final String link, final boolean useProgress)
     {
         this.description = description;
         this.link        = link;
-        initUI();
+        initUI(useProgress);
     }
 
     /**
@@ -101,34 +107,34 @@ public class StatItem extends JPanel implements QueryResultsListener
      * @param description the textual description of the statistic
      * @param sql the SQL string that returns a single number
      */
-    public StatItem(final String description, final String sql, final String link)
+    public StatItem(final String description, final String sql, final String link, final boolean useProgress)
     {
-        
+
         this.description = description;
         this.sql         = sql;
         this.link        = link;
-        
-        initUI();
-        
+
+        initUI(useProgress);
+
         QueryResultsContainer qrc = new QueryResultsContainer(sql);
         qrc.add(new QueryResultsDataObj(1, 1));
-        
+
         qrcs.addElement(qrc);
-        
+
         valuesType.addElement(VALUE_TYPE.Value);
-        
-        startUp(); 
+
+        startUp();
     }
-    
+
     /**
      * Creates the two labels and lays them out left and right
      *
      */
-    protected void initUI()
+    protected void initUI(final boolean useProgress)
     {
         setLayout(new BorderLayout());
         setOpaque(false);
-        
+
         JComponent descComp;
         if (link != null)
         {
@@ -137,7 +143,7 @@ public class StatItem extends JPanel implements QueryResultsListener
             descBtn.setBorder(new EmptyBorder(1,1,1,1));
             descBtn.setCursor(handCursor);
             descBtn.setForeground(linkColor);
-            
+
             descBtn.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
@@ -145,22 +151,22 @@ public class StatItem extends JPanel implements QueryResultsListener
                             StatsTask statTask = (StatsTask)ContextMgr.getTaskByName(StatsTask.STATISTICS);
                             statTask.createStatPane(link);
                         }
-                    }); 
-            
+                    });
+
             /*MouseInputAdapter mouseMotionListener = new MouseInputAdapter() {
-                public void mouseEntered(MouseEvent e) 
+                public void mouseEntered(MouseEvent e)
                 {
                     defColor = getForeground();
                     descBtn.setForeground(linkColor); // XXX need to get highlight
                     repaint();
-                }                
-                public void mouseExited(MouseEvent e) 
+                }
+                public void mouseExited(MouseEvent e)
                 {
                     descBtn.setForeground(defColor); // XXX need to get highlight
                     repaint();
                }
             };
-            descBtn.addMouseListener(mouseMotionListener);   */     
+            descBtn.addMouseListener(mouseMotionListener);   */
 
             descComp = descBtn;
         } else
@@ -169,36 +175,58 @@ public class StatItem extends JPanel implements QueryResultsListener
             descLabel.setOpaque(false);
             descComp = descLabel;
         }
-        resultsLabel = new JLabel("?", JLabel.RIGHT);
-                
-        FormLayout      formLayout = new FormLayout("left:p:g,4dlu,right:p:g", "p");
-        PanelBuilder    builder    = new PanelBuilder(formLayout);
+
+
+        JComponent comp;
+        if (useProgress)
+        {
+            ipp = new InfiniteProgressIndicator("", 10);
+            ipp.setPreferredSize(new Dimension(16,16));
+            ipp.setSize(new Dimension(16,16));
+            comp = ipp;
+
+        } else
+        {
+            resultsLabel = new JLabel("?", JLabel.RIGHT);
+            comp = resultsLabel;
+        }
+
         CellConstraints cc         = new CellConstraints();
-       
+
         builder.add(descComp,     cc.xy(1,1));
-        builder.add(resultsLabel, cc.xy(3,1));
-        
-        //infProgress = new InfiniteProgressPanel(); 
+        builder.add(comp, cc.xy(3,1));
+
+        //builder.add(resultsLabel, cc.xy(3,1));
+
+        //infProgress = new InfiniteProgressIndicator();
         //infProgress.setForeground(Color.GRAY);
         //infProgress.setPreferredSize(new Dimension(25,descLabel.getPreferredSize().height));
         //infProgress.setMinimumSize(infProgress.getPreferredSize());
-        
+
         //builder.add(infProgress, cc.xy(3,1));
         //infProgress.start();
-        
+
         builder.getPanel().setOpaque(false);
-        add(builder.getPanel(), BorderLayout.CENTER);       
+        add(builder.getPanel(), BorderLayout.CENTER);
     }
-    
+
     /**
      * sets a strin into the results label
      * @param value the value to be set into the label
      */
     public void setValueText(final String value)
     {
+        if (resultsLabel == null)
+        {
+            ipp.stop();
+            CellConstraints cc = new CellConstraints();
+            builder.getPanel().remove(ipp);
+            resultsLabel = new JLabel("?", JLabel.RIGHT);
+            builder.add(resultsLabel, cc.xy(3,1));
+        }
         resultsLabel.setText(value);
     }
-    
+
     /**
      * Returns a QueryResultsContainer with a single QueryResultsDataObj initialized to 1,1
      * @param sql the SQl statement
@@ -214,10 +242,10 @@ public class StatItem extends JPanel implements QueryResultsListener
         qrc.add( new QueryResultsDataObj(1, 1));
         valuesType.addElement(VALUE_TYPE.Ignore);
         qrcs.addElement(qrc);
-        
+
         return qrc;
     }
-    
+
     /**
      * Returns a QueryResultsContainer with a single QueryResultsDataObj initialized to row,col
      * @param sql the SQL to be executed
@@ -235,10 +263,10 @@ public class StatItem extends JPanel implements QueryResultsListener
         qrc.add( new QueryResultsDataObj(row, col));
         valuesType.addElement(valType);
         qrcs.addElement(qrc);
-        
+
         return qrc;
     }
-    
+
     /**
      * Returns a QueryResultsContainer with a single QueryResultsDataObj initialized to row,col
      * @param qrc the QueryResultsContainer to be executed
@@ -250,7 +278,7 @@ public class StatItem extends JPanel implements QueryResultsListener
     {
         qrc.add( new QueryResultsDataObj(row, col));
     }
-    
+
     /**
      * Creates a SQLExecutionProcessor to go get the statisitic
      *
@@ -261,9 +289,14 @@ public class StatItem extends JPanel implements QueryResultsListener
         {
             throw new RuntimeException("The execution has already been started!");
         }
-        
+
         hasStarted = true;
-        
+
+        if (ipp != null)
+        {
+            ipp.start();
+        }
+
         QueryResultsSerializedGetter getter = new QueryResultsSerializedGetter(this);
         getter.add(qrcs); // NOTE: this start up the entire process
 
@@ -297,7 +330,7 @@ public class StatItem extends JPanel implements QueryResultsListener
     {
         return link;
     }
-    
+
     /**
      * Set the appropriate control
      * @param str the new title string
@@ -323,10 +356,10 @@ public class StatItem extends JPanel implements QueryResultsListener
         {
             throw new RuntimeException("There is an unequal number of QRCs and Value Types!["+description+"]");
         }
-        
+
         Vector<Object> list = new Vector<Object>();
-        int inx = 0;        
-        for (QueryResultsContainer qrc : qrcs) 
+        int inx = 0;
+        for (QueryResultsContainer qrc : qrcs)
         {
             for (QueryResultsDataObj qrcdo : qrc.getQueryResultsDataObjs())
             {
@@ -338,20 +371,20 @@ public class StatItem extends JPanel implements QueryResultsListener
                 } else if (valType == VALUE_TYPE.Description)
                 {
                     setDesc(dataObj.toString());
-                    
+
                 } else if (valType == VALUE_TYPE.Value)
                 {
-                    resultsLabel.setText(dataObj.toString());
-                    
+                    setValueText(dataObj.toString());
+
                 } else if (valType == VALUE_TYPE.Ignore)
                 {
                     // no-op (Leave this here in case others are added
                 }
                 inx++;
             }
-            list.clear();  
+            list.clear();
         }
-        
+
         refreshUI();
     }
 
@@ -360,8 +393,8 @@ public class StatItem extends JPanel implements QueryResultsListener
      */
     public void resultsInError(final QueryResultsContainer qrc)
     {
-        resultsLabel.setText("#");
-    }    
-    
-    
+        setValueText("N/A"); // XXX I18N
+    }
+
+
 }
