@@ -9,9 +9,15 @@
   <property name="externallib.dir" value="external_libs"/>
   <property name="hibernate.properties" value="hibernate.properties"/>
   <property name="dir.dest" value="dest"/>
-	
-	
+
   <property name="data.dir" value="data"/>
+
+	<!-- Needed for Packing on the Mac -->
+	<property name="packaging" value="packaging"/>
+	<property name="app.name" value="Specify"/>
+	<property name="jar.name" value="specify"/>
+	<property name="dist-mac" value="mac-dest"/>
+
 
   <!-- Set up the class path for compilation and execution -->
   <path id="project.class.path">
@@ -26,9 +32,9 @@
     </fileset>
     <fileset dir="${externallib.dir}">
       <include name="**/*.jar"/>
-    </fileset>    
+    </fileset>
   </path>
-	
+
   <!--<include name="**/*.jar"/>-->
   <target name="db" description="Runs HSQLDB database management UI against the database file--use when application is not running">
       <java classname="org.hsqldb.util.DatabaseManager"
@@ -47,18 +53,18 @@
   <!--<taskdef name="hbm2java"
            classname="net.sf.hibernate.tool.hbm2java.Hbm2JavaTask"
            classpathref="project.class.path"/>-->
-		   
+
   <taskdef name="hbm2java"
            classname="org.hibernate.tool.ant.Hbm2JavaGeneratorTask"
-           classpathref="project.class.path"/>		   
-		   
+           classpathref="project.class.path"/>
+
 
 <!-- Formally introduce Ant to the toolset -->
    <taskdef name="hibernatetool"
            classname="org.hibernate.tool.ant.HibernateToolTask">
          <classpath refid="project.class.path" />
    </taskdef>
-   
+
    <!-- bit of a best guess, I'm afraid -->
    <!-- <hibernatetool destdir="${source.root}">
        <configuration propertyFile="src/${hibernate.properties}">
@@ -99,24 +105,24 @@
   <target name="run" description="Runs prototype" depends="compile">
     <java classname="edu.ku.brc.specify.Specify" fork="true">
       <classpath refid="project.class.path"/>
-    	 <jvmarg value= "-Xmx900m"/> 
+    	 <jvmarg value= "-Xmx900m"/>
     </java>
   </target>
 
   <target name="initData" description="Runs Initialize Data" depends="compile">
     <java classname="edu.ku.brc.specify.InitializeData" fork="true">
       <classpath refid="project.class.path"/>
-    	 <jvmarg value= "-Xmx900m"/> 
+    	 <jvmarg value= "-Xmx900m"/>
     </java>
   </target>
 
   <target name="runwb" description="Runs prototype" depends="compile">
     <java classname="edu.ku.brc.specify.WorkBench" fork="true">
       <classpath refid="project.class.path"/>
-    	 <jvmarg value= "-Xmx900m"/> 
+    	 <jvmarg value= "-Xmx900m"/>
     </java>
-  </target>  
-       
+  </target>
+
    <target name="gencode">
       <!-- bit of a best guess, I'm afraid -->
       <hibernatetool destdir="${source.root}">
@@ -142,5 +148,48 @@
          <hbm2ddl update="true"/>
       </hibernatetool>
    </target>
-	
+
+	<target name="jar" depends="compile">
+	    <jar destfile="${jar.name}.jar" basedir="${class.root}"/>
+	</target>
+
+	<target name="clean-jar">
+	   <delete file="${jar.name}.jar" />
+	</target>
+
+	<target name="dist-mac" depends="jar">
+	    <property name="appdir" value="${dist-mac}/${app.name}.app"/>
+
+	    <mkdir dir="${dist-mac}"/>
+	    <mkdir dir="${appdir}"/>
+	    <mkdir dir="${appdir}/Contents"/>
+	    <mkdir dir="${appdir}/Contents/MacOS"/>
+	    <mkdir dir="${appdir}/Contents/Resources"/>
+	    <mkdir dir="${appdir}/Contents/Resources/Java"/>
+
+		<!-- Copy Application Stub Compile the java source of the project -->
+		<copy file="${packaging}/JavaApplicationStub" todir="${appdir}/Contents/MacOS"/>
+		<exec command="chmod 755 ${appdir}/Contents/MacOS/JavaApplicationStub"/>
+
+		<!-- Copy info list -->
+		<copy file="${packaging}/Info.plist" todir="${appdir}/Contents"/>
+
+		<!-- Copy Icons -->
+		<copy file="${packaging}/specify.icns" todir="${appdir}/Contents/Resources"/>
+
+		<!-- Copy the app -->
+		<copy file="${jar.name}.jar" todir="${appdir}/Contents/Resources/Java"/>
+
+		<copy todir="${appdir}/Contents/Resources/Java">
+		    <fileset dir="libs">
+		        <include name="*.jar"/>
+		    </fileset>
+		</copy>
+
+		<!-- Tell OS the dir is an App -->
+		<exec command="/Developer/Tools/SetFile -a B ${appdir}"/>
+
+    </target>
+
+
 </project>
