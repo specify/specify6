@@ -19,16 +19,19 @@
  */
 package edu.ku.brc.specify.helpers;
 
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
 import java.io.File;
 import java.io.FileInputStream;
 
 import org.apache.log4j.Logger;
+import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 
 /**
  * An XML Helper, this currently is for w3c DOM, probably won't need this since we will be switch to DOM4J
- * 
+ *
  * @author Rod Spears
  */
 public class XMLHelper
@@ -44,7 +47,7 @@ public class XMLHelper
     {
         return readFileToDOM4J(new FileInputStream(file));
     }
-   
+
    /**
     * Reads a DOM from a stream
     * @param fileinputStream the stream to be read
@@ -53,19 +56,19 @@ public class XMLHelper
    public static org.dom4j.Element readFileToDOM4J(final FileInputStream fileinputStream) throws Exception
    {
        SAXReader saxReader= new SAXReader();
-        
+
        saxReader.setValidation(false);
        saxReader.setStripWhitespaceText(true);
-       
+
        //saxReader.setFeature("http://apache.org/xml/features/validation/schema", false);
        //saxReader.setFeature("http://xml.org/sax/features/validation", false);
-       //saxReader.setProperty("http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation", 
+       //saxReader.setProperty("http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation",
        //                   (FormViewFactory.class.getResource("../form.xsd")).getPath());
-       
+
        org.dom4j.Document document = saxReader.read( fileinputStream );
        return document.getRootElement();
    }
-   
+
    /**
      * Returns full path to file in config directory
      * @param fileName the name of the file to be read
@@ -76,7 +79,7 @@ public class XMLHelper
        java.io.File f = new java.io.File(".");
        return f.getAbsolutePath() +  File.separator + "config" + (fileName != null ? (File.separator + fileName) : "");
    }
-   
+
    /**
      * Reads file from the config directory
      * @param fileName the name of the file to be read
@@ -89,16 +92,55 @@ public class XMLHelper
        {
            java.io.File f = new java.io.File(".");
            String cwd = f.getAbsolutePath() +  File.separator + "config" + File.separator + fileName;
-           
+
            return XMLHelper.readFileToDOM4J(new File(cwd));
-           
+
        } catch (Exception ex)
        {
            log.error(ex);
        }
        return null;
    }
-   
+
+   /**
+    * Get a string attribute value from an element value
+    * @param element the element to get the attribute from
+    * @param attrName the name of the attribute to get
+    * @param defValue the default value if the attribute isn't there
+    * @return the attr value or the default value
+    */
+   public static String getAttr(final Element element, final String attrName, final String defValue)
+   {
+       String str = element.attributeValue(attrName);
+       return str != null ? str : defValue;
+   }
+
+   /**
+    * Get a int attribute value from an element value
+    * @param element the element to get the attribute from
+    * @param attrName the name of the attribute to get
+    * @param defValue the default value if the attribute isn't there
+    * @return the attr value or the default value
+    */
+   public static int getAttr(final Element element, final String attrName, final int defValue)
+   {
+       String str = element.attributeValue(attrName);
+       return isNotEmpty(str) ? Integer.parseInt(str) : defValue;
+   }
+
+   /**
+    * Get a int attribute value from an element value
+    * @param element the element to get the attribute from
+    * @param attrName the name of the attribute to get
+    * @param defValue the default value if the attribute isn't there
+    * @return the attr value or the default value
+    */
+   public static boolean getAttr(final Element element, final String attrName, final boolean defValue)
+   {
+       String str = element.attributeValue(attrName);
+       return isNotEmpty(str) ? Boolean.parseBoolean(str.toLowerCase()) : defValue;
+   }
+
    /**
     * Escape String for HTML/XML (code borrowed from DiGIR
     * @param s string to be escaped
@@ -153,17 +195,17 @@ public class XMLHelper
         case '': sb.append("&Oslash;");break;
         case '': sb.append("&szlig;");break;
         case '': sb.append("&ugrave;");break;
-        case '': sb.append("&Ugrave;");break;         
-        case '': sb.append("&ucirc;");break;         
+        case '': sb.append("&Ugrave;");break;
+        case '': sb.append("&ucirc;");break;
         case '': sb.append("&Ucirc;");break;
         case '': sb.append("&uuml;");break;
         case '': sb.append("&Uuml;");break;
-        case '': sb.append("&reg;");break;         
-        case '': sb.append("&copy;");break;   
+        case '': sb.append("&reg;");break;
+        case '': sb.append("&copy;");break;
         case '': sb.append("&euro;"); break;
         // be carefull with this one (non-breaking whitee space)
         case ' ': sb.append("&nbsp;");break;
-        */         
+        */
         default:  sb.append(c); break;
       }
     }
@@ -171,5 +213,5 @@ public class XMLHelper
     return sb.toString();
   }
 
-  
+
 }

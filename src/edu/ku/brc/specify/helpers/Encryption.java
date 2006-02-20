@@ -37,7 +37,7 @@ import org.apache.commons.logging.LogFactory;
  * This will encrypt and decrypt strings. I added a couple of helper methods for getting to and from an array of bytes to a string.
  * THis is mostly needed so passwords are not stored in clear text.<br><br>
  * This was taken from a news group on www.codecomments.com I changed it a little for our needs.
- * 
+ *
  * @author chris (some guy on the web)
  * @author rods
  *
@@ -46,7 +46,7 @@ public class Encryption
 {
     private static Log log  = LogFactory.getLog(Encryption.class);
     private static String encryptDecryptPassword = "KU BRC Specify";
-    
+
     /*
      * The "iteration count" for the key generation algorithm. Basically, this means that the
      * processing that is done to generate the key happens 1000 times. You won't even notice the
@@ -176,7 +176,7 @@ public class Encryption
         keyspec.clearPassword();
         return output;
     }
-    
+
     /**
      * Makes a string representing the byte array, each byte is two characters
      * @param bytes the byte array to be converted
@@ -187,18 +187,18 @@ public class Encryption
         StringBuffer strBuf = new StringBuffer();
         for (int i = 0; i < bytes.length; i++)
         {
-            String s = Integer.toHexString(((int) bytes[i]) & 0xFF);
+            String s = Integer.toHexString(bytes[i] & 0xFF);
             if (s.length() == 1)
                 s = "0" + s;
             strBuf.append(s.toUpperCase());
         }
         return strBuf.toString();
     }
-    
+
     /**
      * Take a string where each two characters represents a HEX byte and convert it back to a byte array
      * @param str the string to be converted
-     * @return the byte array 
+     * @return the byte array
      */
     public static byte[] reverseHEXStr(final String str)
     {
@@ -213,7 +213,7 @@ public class Encryption
         }
         return bytes;
     }
-    
+
     /**
      * Helper to decrypt a string
      * @param str the string to be decrypted
@@ -225,19 +225,19 @@ public class Encryption
         {
             return "";
         }
-        
+
         // decrypt the password
         try
         {
             return new String(Encryption.decrypt(Encryption.reverseHEXStr(str), encryptDecryptPassword.toCharArray()));
-            
+
         } catch (Exception ex)
         {
             log.error("Error decrypting password."); // XXX FIXME Probably want to display a dialog here
             return str;
-        } 
+        }
     }
-    
+
     /**
      * Encrypts a string and converts it to a string of Hex characaters where each character is two chars
      * @param str the string to be encrypted
@@ -249,19 +249,19 @@ public class Encryption
         {
             return "";
         }
-        
+
         // Encrypt the password before setting it into the pref
         try
         {
             return Encryption.makeHEXStr(Encryption.encrypt(str.getBytes(), encryptDecryptPassword.toCharArray()));
-            
+
         } catch (Exception ex)
         {
             log.error("Error endcrypting password."); // XXX FIXME Probably want to display a dialog here
             return str;
-        }        
+        }
     }
-    
+
 
 
     /** I am leaving this here for documentation purposes
@@ -292,7 +292,7 @@ public class Encryption
         String input           = "Hello World!";
         String password        = "abcd";
 
-        
+
         byte[] inputBytes    = input.getBytes();
         char[] passwordChars = password.toCharArray();
 
@@ -313,7 +313,7 @@ public class Encryption
         int i;
         for (i = 0; i < ciphertext.length; i++)
         {
-            String s = Integer.toHexString(((int) ciphertext[i]) & 0xFF);
+            String s = Integer.toHexString(ciphertext[i] & 0xFF);
             if (s.length() == 1)
                 s = "0" + s;
             System.out.print(s);
@@ -326,7 +326,7 @@ public class Encryption
         String hexText = makeHEXStr(ciphertext);
         System.out.println("To:   ["+hexText+"]");
         System.out.println("From: ["+reverseHEXStr(hexText)+"]****");
-        
+
         /*
          * Now, decrypt the data. Note that all we need is the password and the ciphertext.
          */
