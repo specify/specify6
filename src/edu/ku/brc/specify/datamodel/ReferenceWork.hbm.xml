@@ -105,15 +105,15 @@
         </meta>    
     </property>
     <property
-        name="date1"
+        name="dateField"
         type="java.lang.String"
-        column="Date1"
+        column="DateField"
         length="25"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="Date1"
+            column="DateField"
             length="25"
         </meta>    
     </property>

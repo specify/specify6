@@ -37,15 +37,15 @@
     </id>
 
     <property
-        name="order1"
+        name="orderNumber"
         type="int"
-        column="Order1"
+        column="OrderNumber"
         not-null="true"
         length="10"
     >
         <meta attribute="field-description">
            @hibernate.property
-            column="Order1"
+            column="OrderNumber"
             length="10"
             not-null="true"
         </meta>    

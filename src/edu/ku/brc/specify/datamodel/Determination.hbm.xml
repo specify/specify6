@@ -38,16 +38,16 @@
     </id>
 
     <property
-        name="current1"
+        name="isCurrent"
         type="boolean"
-        column="Current1"
+        column="IsCurrent"
         not-null="true"
         length="1"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="Current1"
+            column="IsCurrent"
             length="1"
             not-null="true"
         </meta>    
@@ -66,15 +66,15 @@
         </meta>    
     </property>
     <property
-        name="date1"
+        name="dateField"
         type="java.lang.Integer"
-        column="Date1"
+        column="DateField"
         length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="Date1"
+            column="DateField"
             length="10"
         </meta>    
     </property>

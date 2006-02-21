@@ -50,15 +50,15 @@
         </meta>    
     </property>
     <property
-        name="group1"
+        name="lithoGroup"
         type="java.lang.String"
-        column="Group1"
+        column="LithoGroup"
         length="50"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="Group1"
+            column="LithoGroup"
             length="50"
         </meta>    
     </property>

@@ -38,15 +38,15 @@
     </id>
 
     <property
-        name="date1"
+        name="dateField"
         type="java.lang.Integer"
-        column="Date1"
+        column="DateField"
         length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="Date1"
+            column="DateField"
             length="10"
         </meta>    
     </property>
