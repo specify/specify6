@@ -106,10 +106,11 @@
         </meta>
         <column name="ReferenceWorkID" />
     </many-to-one>
-    <!-- bi-directional many-to-one association to CollectionObj -->
+    
+    <!-- bi-directional many-to-one association to CollectionObject -->
     <many-to-one
         name="collectionObject"
-        class="edu.ku.brc.specify.datamodel.CollectionObj"
+        class="edu.ku.brc.specify.datamodel.CollectionObject"
         not-null="true"
 		outer-join="true"
 		cascade="delete"
@@ -121,20 +122,6 @@
         </meta>
         <column name="BiologicalObjectID" />
     </many-to-one>
-    <!-- bi-directional many-to-one association to CollectionObject -->
-    <!--<many-to-one
-        name="collectionObject"
-        class="edu.ku.brc.specify.datamodel.CollectionObj"
-        not-null="true"
-		outer-join="true"
-    >
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="BiologicalObjectID"         
-        </meta>
-        <column name="BiologicalObjectID" />
-    </many-to-one>	-->
 
 </class>
 </hibernate-mapping>

@@ -23,6 +23,8 @@ package edu.ku.brc.specify.extfilerepos;
 
 import java.io.File;
 
+import edu.ku.brc.specify.datamodel.Agent;
+
 /**
  * Interface representing the external file repository
  *
@@ -33,34 +35,39 @@ public interface ExternalFileRepositoryIFace
 {
     /**
      * Copies file into the repository
-     * @param aName Logical name of file (must be unique
-     * @param aDesc a description of the file
-     * @param aMimeType the mime type of the file, it can be null then it will assume it is a octet-stream
+     * @param fileName Logical name of file (must be unique
+     * @param mimeType the mime type of the file, it can be null then it will assume it is a octet-stream
      *                   (see http://www.iana.org/assignments/media-types/application/)
-     * @param aLocation the external file location
-     * @return true if the file was successfully put into the repository
+     * @param externalLocation the external file location
+     * @param remarks a description of the file (optional)
+     * @param agent agent that added the file
+     * @return returns true if file is put in repos, false if not
      */
-    public boolean put(String aName, String aDesc, String aMimeType, String aLocation);
+    public boolean put(final String fileName, 
+                       final String mimeType, 
+                       final String externalLocation, 
+                       final String remarks,
+                       final Agent  agent);
     
     /**
      * Removes a ExternalFileEntry
-     * @param aId
+     * @param id the id of the item to be removed
      * @return true if the file with the Id was remove, false it it wasn't
      */
-    public boolean remove(Long aId);
+    public boolean remove(Integer id);
     
     /**
-     * Returns an image by logical name
-     * @param aLogicalName
+     * Returns an image by file name
+     * @param fileName the file to retrieve
      * @return the image or null if it wasn't found
      */
-    public File get(String aLogicalName);
+    public File get(String fileName);
     
     /**
      * Returns an image by records ID
-     * @param aImageID
+     * @param imageID
      * @return the image or null if it wasn't found
      */
-    public File get(long aImageID);
+    public File get(long imageID);
     
 }

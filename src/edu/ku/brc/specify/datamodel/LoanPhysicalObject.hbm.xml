@@ -157,25 +157,10 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional many-to-one association to CollectionObjectCatalog -->
-   <!-- <many-to-one
-        name="collectionObjectCatalog"
-        class="edu.ku.brc.specify.datamodel.CollectionObjectCatalog"
-        not-null="true"
-		outer-join="true"
-    >
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="PhysicalObjectID"         
-        </meta>
-        <column name="PhysicalObjectID" />
-    </many-to-one>-->
-	
-    <!-- bi-directional many-to-one association to CollectionObj -->
+    <!-- bi-directional many-to-one association to CollectionObject -->
     <many-to-one
-        name="collectionObjectCatalog"
-        class="edu.ku.brc.specify.datamodel.CollectionObj"
+        name="collectionObject"
+        class="edu.ku.brc.specify.datamodel.CollectionObject"
         not-null="true"
 		outer-join="true"
     >
@@ -187,7 +172,6 @@
         <column name="PhysicalObjectID" />
     </many-to-one>
 	
-		
     <!-- bi-directional many-to-one association to Loan -->
     <many-to-one
         name="loan"
@@ -204,6 +188,7 @@
         </meta>
         <column name="LoanID" />
     </many-to-one>
+    
     <!-- bi-directional one-to-many association to LoanReturnPhysicalObject -->
     <set
         name="loanReturnPhysicalObjects"

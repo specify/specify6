@@ -30,8 +30,6 @@ public class Agent  implements java.io.Serializable {
      private Set authors;
      private Set loanReturnPhysicalObjects;
      private Set borrowReturnMaterials;
-     private Set imagesByCopyrightOwnerId;
-     private Set imagesByMadeById;
      private Set exchangeIns;
      private Set agents;
      private Agent agent;
@@ -44,11 +42,9 @@ public class Agent  implements java.io.Serializable {
      private Set agentAddressesByOrganizationId;
      private Set agentAddressesByAgentId;
      private Set shipments;
-     private Set collectionObjectCatalogs;
-     private Set collections;
-     private Set imageAgents;
      private Set collectors;
      private Set exchangeOuts;
+     private Set externalFiles;
 
 
     // Constructors
@@ -316,44 +312,6 @@ public class Agent  implements java.io.Serializable {
      *             inverse="true"
      *             cascade="none"
      *            @hibernate.collection-key
-     *             column="CopyrightOwnerID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Image"
-     *         
-     */
-    public Set getImagesByCopyrightOwnerId() {
-        return this.imagesByCopyrightOwnerId;
-    }
-    
-    public void setImagesByCopyrightOwnerId(Set imagesByCopyrightOwnerId) {
-        this.imagesByCopyrightOwnerId = imagesByCopyrightOwnerId;
-    }
-
-    /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="MadeByID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Image"
-     *         
-     */
-    public Set getImagesByMadeById() {
-        return this.imagesByMadeById;
-    }
-    
-    public void setImagesByMadeById(Set imagesByMadeById) {
-        this.imagesByMadeById = imagesByMadeById;
-    }
-
-    /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
      *             column="CatalogedByID"
      *            @hibernate.collection-one-to-many
      *             class="edu.ku.brc.specify.datamodel.ExchangeIn"
@@ -427,7 +385,7 @@ public class Agent  implements java.io.Serializable {
      *            @hibernate.collection-key
      *             column="PreparedByID"
      *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.PrepsObj"
+     *             class="edu.ku.brc.specify.datamodel.Preparation"
      *         
      */
     public Set getPreparations() {
@@ -577,63 +535,6 @@ public class Agent  implements java.io.Serializable {
      *             inverse="true"
      *             cascade="none"
      *            @hibernate.collection-key
-     *             column="CatalogerID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.CollectionObjectCatalog"
-     *         
-     */
-    public Set getCollectionObjectCatalogs() {
-        return this.collectionObjectCatalogs;
-    }
-    
-    public void setCollectionObjectCatalogs(Set collectionObjectCatalogs) {
-        this.collectionObjectCatalogs = collectionObjectCatalogs;
-    }
-
-    /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="OrganizationID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Collection"
-     *         
-     */
-    public Set getCollections() {
-        return this.collections;
-    }
-    
-    public void setCollections(Set collections) {
-        this.collections = collections;
-    }
-
-    /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="AgentID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.ImageAgent"
-     *         
-     */
-    public Set getImageAgents() {
-        return this.imageAgents;
-    }
-    
-    public void setImageAgents(Set imageAgents) {
-        this.imageAgents = imageAgents;
-    }
-
-    /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
      *             column="AgentID"
      *            @hibernate.collection-one-to-many
      *             class="edu.ku.brc.specify.datamodel.Collector"
@@ -664,6 +565,17 @@ public class Agent  implements java.io.Serializable {
     
     public void setExchangeOuts(Set exchangeOuts) {
         this.exchangeOuts = exchangeOuts;
+    }
+
+    /**
+     * 
+     */
+    public Set getExternalFiles() {
+        return this.externalFiles;
+    }
+    
+    public void setExternalFiles(Set externalFiles) {
+        this.externalFiles = externalFiles;
     }
 
 

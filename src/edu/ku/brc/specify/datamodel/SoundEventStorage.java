@@ -26,7 +26,7 @@ public class SoundEventStorage  implements java.io.Serializable {
      protected String lastEditedBy;
      protected Short yesNo1;
      protected Short yesNo2;
-     private CollectionObj collectionObject;
+     private CollectionObject collectionObject;
      private Sound sound;
 
 
@@ -222,11 +222,11 @@ public class SoundEventStorage  implements java.io.Serializable {
      *            @hibernate.column name="SoundRecordingID"         
      *         
      */
-    public CollectionObj getCollectionObject() {
+    public CollectionObject getCollectionObject() {
         return this.collectionObject;
     }
     
-    public void setCollectionObject(CollectionObj collectionObject) {
+    public void setCollectionObject(CollectionObject collectionObject) {
         this.collectionObject = collectionObject;
     }
 

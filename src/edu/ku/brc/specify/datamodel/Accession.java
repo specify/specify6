@@ -34,8 +34,7 @@ public class Accession  implements java.io.Serializable {
      protected Integer typeId;
      protected Short yesNo1;
      protected Short yesNo2;
-     protected Collection collection;
-     protected Set collectionObjectCatalogs;
+     protected Set collectionObjects;
      protected Set accessionAuthorizations;
      protected Set accessionAgents;
 
@@ -339,20 +338,6 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="CollectionID"         
-     *         
-     */
-    public Collection getCollection() {
-        return this.collection;
-    }
-    
-    public void setCollection(Collection collection) {
-        this.collection = collection;
-    }
-
-    /**
      *      *            @hibernate.set
      *             lazy="true"
      *             inverse="true"
@@ -360,15 +345,15 @@ public class Accession  implements java.io.Serializable {
      *            @hibernate.collection-key
      *             column="AccessionID"
      *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.CollectionObjectCatalog"
+     *             class="edu.ku.brc.specify.datamodel.CollectionObject"
      *         
      */
-    public Set getCollectionObjectCatalogs() {
-        return this.collectionObjectCatalogs;
+    public Set getCollectionObjects() {
+        return this.collectionObjects;
     }
     
-    public void setCollectionObjectCatalogs(Set collectionObjectCatalogs) {
-        this.collectionObjectCatalogs = collectionObjectCatalogs;
+    public void setCollectionObjects(Set collectionObjects) {
+        this.collectionObjects = collectionObjects;
     }
 
     /**

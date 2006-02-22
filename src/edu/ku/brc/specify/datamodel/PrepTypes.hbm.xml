@@ -22,18 +22,13 @@
     </meta>
 
     <id
-        name="prepTypeID"
+        name="prepTypeId"
         type="java.lang.Integer"
-        column="PrepTypeID">
-        <meta attribute="field-description">
-           @hibernate.id
-            generator-class="assigned"
-            type="java.lang.Integer"
-            column="PrepTypeID"
-
-        </meta>
-        <meta attribute="scope-field">protected</meta>
-        <generator class="assigned" />
+        column="prepTypeID"
+    >
+      <meta attribute="scope-set">public</meta>
+      <meta attribute="scope-field">protected</meta>
+      <generator class="native"/>
     </id>
 	
     <property
@@ -54,11 +49,9 @@
 	
 	<!-- Associations -->
 	
-		 
-	
-    <!-- bi-directional one-to-many association to PrepsObj -->
+    <!-- bi-directional one-to-many association to Preparation -->
     <set
-        name="prepsObjs"
+        name="preparation"
         lazy="true"
         inverse="true"
 		cascade="none"
@@ -71,16 +64,16 @@
             cascade="none"
 
            @hibernate.collection-key
-            column="preparationId"
+            column="PreparationID"
 
            @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.PrepsObj"
+            class="edu.ku.brc.specify.datamodel.Preparation"
         </meta>
         <key>
-            <column name="preparationId" />
+            <column name="PreparationID" />
         </key>
         <one-to-many 
-            class="edu.ku.brc.specify.datamodel.PrepsObj"
+            class="edu.ku.brc.specify.datamodel.Preparation"
         />
     </set>
 

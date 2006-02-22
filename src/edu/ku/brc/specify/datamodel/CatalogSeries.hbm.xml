@@ -118,74 +118,17 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional one-to-many association to CatalogSeriesDefinition -->
+    <!-- bi-directional many-to-many association to CollectionObjDef -->
     <set
-        name="catalogSeriesDefinitions"
+        name="collectionObjDefItems"
+        table="catseries_colobjdef"
         lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="CatalogSeriesID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.CatalogSeriesDefinition"
-        </meta>
+		cascade="save-update">
         <key>
             <column name="CatalogSeriesID" />
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.CatalogSeriesDefinition"
-        />
+        <many-to-many class="edu.ku.brc.specify.datamodel.CollectionObjDef" column="CollectionObjDefID"/>
     </set>
-    <!-- bi-directional one-to-many association to CollectionObj -->
-    <set
-        name="collectionObjectCatalogs"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="CatalogSeriesID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.CollectionObj"
-        </meta>
-        <key>
-            <column name="CatalogSeriesID" />
-        </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.CollectionObj"
-        />
-    </set>
-    <!-- bi-directional many-to-one association to Collection -->
-    <many-to-one
-        name="collection"
-        class="edu.ku.brc.specify.datamodel.Collection"
-        not-null="true"
-		outer-join="true"
-		cascade="delete"
-    >
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="CollectionID"  
-		   cascade="delete"       
-        </meta>
-        <column name="CollectionID" />
-    </many-to-one>
 
 </class>
 </hibernate-mapping>

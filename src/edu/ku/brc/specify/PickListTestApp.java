@@ -566,7 +566,7 @@ public class PickListTestApp
     {
         DBConnection.setUsernamePassword("rods", "rods");
         DBConnection.setDriver("com.mysql.jdbc.Driver");
-        DBConnection.setDBName("jdbc:mysql://localhost/demo_fish2");
+        DBConnection.setDBName("jdbc:mysql://localhost/demo_fish3");
         
         //buildTaxaSearch();
         

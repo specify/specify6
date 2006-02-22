@@ -31,6 +31,7 @@ import org.jfree.chart.JFreeChart;
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class SquareChartPanel extends ChartPanel
 {
 

@@ -35,6 +35,7 @@ public class Permit  implements java.io.Serializable {
      private Set accessionAuthorizations;
      private AgentAddress agentAddressByIssueeId;
      private AgentAddress agentAddressByIssuerId;
+     private Set externalFiles;
 
 
     // Constructors
@@ -352,6 +353,17 @@ public class Permit  implements java.io.Serializable {
     
     public void setAgentAddressByIssuerId(AgentAddress agentAddressByIssuerId) {
         this.agentAddressByIssuerId = agentAddressByIssuerId;
+    }
+
+    /**
+     * 
+     */
+    public Set getExternalFiles() {
+        return this.externalFiles;
+    }
+    
+    public void setExternalFiles(Set externalFiles) {
+        this.externalFiles = externalFiles;
     }
 
 

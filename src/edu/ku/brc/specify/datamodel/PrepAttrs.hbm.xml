@@ -25,29 +25,24 @@
     <id
         name="prepAttrsId"
         type="java.lang.Integer"
-        column="PrepAttrsID">
-        <meta attribute="field-description">
-           @hibernate.id
-            generator-class="assigned"
-            type="java.lang.Integer"
-            column="PrepAttrsID"
-
-        </meta>
-        <meta attribute="scope-field">protected</meta>
-        <generator class="assigned" />
+        column="PrepAttrsID"
+    >
+      <meta attribute="scope-set">public</meta>
+      <meta attribute="scope-field">protected</meta>
+      <generator class="native"/>
     </id>
 	
     <property
         name="name"
         type="java.lang.String"
-        column="name"
-        length="50"
+        column="Name"
+        length="32"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="name"
-            length="50"
+            column="Name"
+            length="32"
         </meta>    
     </property>
 
@@ -81,21 +76,21 @@
 
     <property
         name="fieldType"
-        type="java.lang.Integer"
+        type="java.lang.Short"
         column="fieldType"
-        length="10"
+        length="2"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="fieldType"
-            length="10"
+            length="2"
         </meta>    
     </property>
 
     <property
         name="unit"
-        type="java.lang.Integer"
+        type="java.lang.Short"
         column="unit"
         length="2"
     >
@@ -153,33 +148,33 @@
 	<!-- Associations -->
 
 	
-    <!-- bi-directional many-to-one association to PrepsObj -->
+    <!-- bi-directional many-to-one association to Preparation -->
     <many-to-one
-        name="prepsObj"
-        class="edu.ku.brc.specify.datamodel.PrepsObj"
+        name="preparation"
+        class="edu.ku.brc.specify.datamodel.Preparation"
         not-null="true"
 		outer-join="true"
     >
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="PrepsObjID"
+           @hibernate.column name="PreparationId"
         </meta>
-        <column name="PrepsObjID" />
+        <column name="PreparationId" />
     </many-to-one>	
 
-    <!-- bi-directional many-to-one association to TaxonName -->
+    <!-- bi-directional many-to-one association to Taxon -->
     <many-to-one
-        name="taxonName"
-        class="edu.ku.brc.specify.datamodel.TaxonName"
+        name="Taxon"
+        class="edu.ku.brc.specify.datamodel.Taxon"
         not-null="true"
     >
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="ParasiteTaxonNameID"         
+           @hibernate.column name="ParasiteTaxonID"         
         </meta>
-        <column name="ParasiteTaxonNameID" />
+        <column name="ParasiteTaxonID" />
     </many-to-one>	
 </class>
 </hibernate-mapping>

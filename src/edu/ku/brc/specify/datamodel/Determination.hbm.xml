@@ -65,6 +65,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="dateField"
         type="java.lang.Integer"
@@ -78,6 +79,7 @@
             length="10"
         </meta>    
     </property>
+    
     <property
         name="confidence"
         type="java.lang.String"
@@ -104,6 +106,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="featureOrBasis"
         type="java.lang.String"
@@ -117,6 +120,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="remarks"
         type="java.lang.String"
@@ -130,6 +134,7 @@
             length="1073741823"
         </meta>    
     </property>
+    
     <property
         name="text1"
         type="java.lang.String"
@@ -143,6 +148,7 @@
             length="300"
         </meta>    
     </property>
+    
     <property
         name="text2"
         type="java.lang.String"
@@ -156,6 +162,7 @@
             length="300"
         </meta>    
     </property>
+    
     <property
         name="number1"
         type="java.lang.Float"
@@ -169,6 +176,7 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="number2"
         type="java.lang.Float"
@@ -182,6 +190,7 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="timestampCreated"
         type="java.sql.Timestamp"
@@ -195,6 +204,7 @@
             length="23"
         </meta>    
     </property>
+    
     <property
         name="timestampModified"
         type="java.sql.Timestamp"
@@ -208,6 +218,7 @@
             length="23"
         </meta>    
     </property>
+    
     <property
         name="lastEditedBy"
         type="java.lang.String"
@@ -221,6 +232,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="typeStatusNameId"
         type="java.lang.Integer"
@@ -234,6 +246,7 @@
             length="10"
         </meta>    
     </property>
+    
     <property
         name="confidenceId"
         type="java.lang.Integer"
@@ -247,6 +260,7 @@
             length="10"
         </meta>    
     </property>
+    
     <property
         name="methodId"
         type="java.lang.Integer"
@@ -260,6 +274,7 @@
             length="10"
         </meta>    
     </property>
+    
     <property
         name="yesNo1"
         type="java.lang.Short"
@@ -273,6 +288,7 @@
             length="5"
         </meta>    
     </property>
+    
     <property
         name="yesNo2"
         type="java.lang.Short"
@@ -286,15 +302,13 @@
             length="5"
         </meta>    
     </property>
-	
-
 
     <!-- Associations -->
   
-    <!-- bi-directional many-to-one association to CollectionObjectType -->
+    <!-- bi-directional many-to-one association to Taxon -->
     <many-to-one
-        name="collectionObjectType"
-        class="edu.ku.brc.specify.datamodel.CollectionObjectType"
+        name="Taxon"
+        class="edu.ku.brc.specify.datamodel.Taxon"
         not-null="true"
 		outer-join="true"
     >
@@ -302,44 +316,15 @@
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="BiologicalObjectTypeID"         
+           @hibernate.column name="TaxonID"         
         </meta>
-        <column name="BiologicalObjectTypeID" />
+        <column name="TaxonID" />
     </many-to-one>
-    <!-- bi-directional many-to-one association to TaxonName -->
-    <many-to-one
-        name="taxonName"
-        class="edu.ku.brc.specify.datamodel.TaxonName"
-        not-null="true"
-		outer-join="true"
-    >
-	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="TaxonNameID"         
-        </meta>
-        <column name="TaxonNameID" />
-    </many-to-one>
+    
     <!-- bi-directional many-to-one association to CollectionObject -->
-    <!--<many-to-one
-        name="collectionObjectByBiologicalObjectId"
-        class="edu.ku.brc.specify.datamodel.CollectionObject"
-        not-null="true"
-		outer-join="true"
-    >
-	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="BiologicalObjectID"         
-        </meta>
-        <column name="BiologicalObjectID" />
-    </many-to-one>-->
-    <!-- bi-directional many-to-one association to CollectionObj -->
     <many-to-one
-        name="collectionObjectByBiologicalObjectId"
-        class="edu.ku.brc.specify.datamodel.CollectionObj"
+        name="collectionObject"
+        class="edu.ku.brc.specify.datamodel.CollectionObject"
         not-null="true"
 		outer-join="true"
 		cascade="delete"
@@ -349,29 +334,15 @@
            @hibernate.many-to-one
             not-null="true"
 			cascade="delete"
-           @hibernate.column name="BiologicalObjectID"         
+           @hibernate.column name="CollectionObjectID"         
         </meta>
-        <column name="BiologicalObjectID" />
+        <column name="CollectionObjectID" />
     </many-to-one>	
-    <!-- bi-directional many-to-one association to CollectionObject -->
-    <!--<many-to-one
-        name="collectionObjectByPreparationId"
-        class="edu.ku.brc.specify.datamodel.CollectionObject"
-        not-null="true"
-		outer-join="true"
-    >
-	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="PreparationID"         
-        </meta>
-        <column name="PreparationID" />
-    </many-to-one>-->
-    <!-- bi-directional many-to-one association to CollectionObj -->
+
+    <!-- bi-directional many-to-one association to Preparation -->
     <many-to-one
-        name="collectionObjectByPreparationId"
-        class="edu.ku.brc.specify.datamodel.CollectionObj"
+        name="preparations"
+        class="edu.ku.brc.specify.datamodel.Preparation"
         not-null="true"
 		outer-join="true"
 		cascade="delete"
@@ -385,6 +356,7 @@
         </meta>
         <column name="PreparationID" />
     </many-to-one>	
+
     <!-- bi-directional one-to-many association to DeterminationCitation -->
     <set
         name="determinationCitations"
@@ -415,7 +387,7 @@
 	
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one
-        name="agent"
+        name="determiner"
         class="edu.ku.brc.specify.datamodel.Agent"
         not-null="true"
 		outer-join="true"

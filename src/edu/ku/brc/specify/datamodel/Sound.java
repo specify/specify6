@@ -19,7 +19,7 @@ public class Sound  implements java.io.Serializable {
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
-     private CollectionObj collectionObject;
+     private CollectionObject collectionObject;
      private Set soundEventStorages;
      private Agent agent;
 
@@ -113,17 +113,17 @@ public class Sound  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.one-to-one
-     *             class="edu.ku.brc.specify.datamodel.CollectionObj"
+     *             class="edu.ku.brc.specify.datamodel.CollectionObject"
      *             outer-join="auto"
      *             constrained="true"
      * 			cascade="delete"
      *         
      */
-    public CollectionObj getCollectionObject() {
+    public CollectionObject getCollectionObject() {
         return this.collectionObject;
     }
     
-    public void setCollectionObject(CollectionObj collectionObject) {
+    public void setCollectionObject(CollectionObject collectionObject) {
         this.collectionObject = collectionObject;
     }
 

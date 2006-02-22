@@ -20,7 +20,7 @@ public class OtherIdentifier  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     private CollectionObj collectionObjectCatalog;
+     private CollectionObject collectionObject;
 
 
     // Constructors
@@ -132,12 +132,12 @@ public class OtherIdentifier  implements java.io.Serializable {
      *            @hibernate.column name="CollectionObjectID"         
      *         
      */
-    public CollectionObj getCollectionObjectCatalog() {
-        return this.collectionObjectCatalog;
+    public CollectionObject getCollectionObject() {
+        return this.collectionObject;
     }
     
-    public void setCollectionObjectCatalog(CollectionObj collectionObjectCatalog) {
-        this.collectionObjectCatalog = collectionObjectCatalog;
+    public void setCollectionObject(CollectionObject collectionObject) {
+        this.collectionObject = collectionObject;
     }
 
 

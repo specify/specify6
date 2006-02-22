@@ -16,7 +16,7 @@ public class Stratigraphy  implements java.io.Serializable {
 
      protected Integer stratigraphyId;
      protected String superGroup;
-     protected String group1;
+     protected String lithoGroup;
      protected String formation;
      protected String member;
      protected String bed;
@@ -81,16 +81,16 @@ public class Stratigraphy  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="Group1"
+     *             column="LithoGroup"
      *             length="50"
      *         
      */
-    public String getGroup1() {
-        return this.group1;
+    public String getLithoGroup() {
+        return this.lithoGroup;
     }
     
-    public void setGroup1(String group1) {
-        this.group1 = group1;
+    public void setLithoGroup(String lithoGroup) {
+        this.lithoGroup = lithoGroup;
     }
 
     /**

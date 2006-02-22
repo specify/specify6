@@ -25,16 +25,11 @@
     <id
         name="bioAttrsId"
         type="java.lang.Integer"
-        column="BioAttrsID">
-        <meta attribute="field-description">
-           @hibernate.id
-            generator-class="assigned"
-            type="java.lang.Integer"
-            column="BioAttrsID"
-
-        </meta>
-        <meta attribute="scope-field">protected</meta>
-        <generator class="assigned" />
+        column="BioAttrsID"
+    >
+      <meta attribute="scope-set">public</meta>
+      <meta attribute="scope-field">protected</meta>
+      <generator class="native"/>
     </id>
 	
     <property
@@ -81,21 +76,21 @@
 
     <property
         name="fieldType"
-        type="java.lang.Integer"
+        type="java.lang.Short"
         column="fieldType"
-        length="10"
+        length="2"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="fieldType"
-            length="10"
+            length="2"
         </meta>    
     </property>
 
     <property
         name="unit"
-        type="java.lang.Integer"
+        type="java.lang.Short"
         column="unit"
         length="2"
     >
@@ -152,11 +147,10 @@
 	
 	<!-- Associations -->
 	
-	
-    <!-- bi-directional many-to-one association to CollectionObj -->
+    <!-- bi-directional many-to-one association to CollectionObject -->
     <many-to-one
         name="collectionObj"
-        class="edu.ku.brc.specify.datamodel.CollectionObj"
+        class="edu.ku.brc.specify.datamodel.CollectionObject"
         not-null="true"
 		outer-join="true"
     >
@@ -168,23 +162,5 @@
         <column name="CollectionObjectID" />
     </many-to-one>	
 	
-	<!-- ADDED - WAS NOT PART OF ORIGINAL MAPPING FILES - RELATIONSHIPE
-		WAS PREVIOUSLY ENFORCED HARD-CODED IN THE SPECIFY APPLICATION
-		AND NOT THROUGH THE DATABASE -->	
-    <!-- bi-directional one-to-one association to CollectionObjectType -->
-    <one-to-one
-        name="collectionobjecttypes"
-        class="edu.ku.brc.specify.datamodel.CollectionObjectType"
-        outer-join="auto"
-        constrained="true"
-    >
-	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.one-to-one
-            class="edu.ku.brc.specify.datamodel.CollectionObjectType"
-            outer-join="auto"
-            constrained="true"
-        </meta>    
-    </one-to-one>	
 </class>
 </hibernate-mapping>

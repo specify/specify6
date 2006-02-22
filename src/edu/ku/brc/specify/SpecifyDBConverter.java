@@ -1,29 +1,40 @@
 package edu.ku.brc.specify;
 
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.*;
-import java.util.HashSet;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
-import org.hibernate.*;
-import org.hibernate.SessionFactory;
-
-import org.hibernate.cfg.Configuration;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 
-import  edu.ku.brc.specify.datamodel.*;
-import  edu.ku.brc.specify.dbsupport.*;
-
-import java.text.SimpleDateFormat;
+import edu.ku.brc.specify.conversion.FishConversion;
+import edu.ku.brc.specify.conversion.GenericDBConversion;
+import edu.ku.brc.specify.datamodel.CatalogSeries;
+import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.DataType;
+import edu.ku.brc.specify.datamodel.User;
+import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
+import edu.ku.brc.specify.dbsupport.DBConnection;
+import edu.ku.brc.specify.dbsupport.HibernatePage;
+import edu.ku.brc.specify.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.dbsupport.Pagable;
+import edu.ku.brc.specify.dbsupport.ResultsPager;
 
 /**
  * Create more sample data, letting Hibernate persist it for us.
  */
 public class SpecifyDBConverter 
 {
+    protected static Log log = LogFactory.getLog(SpecifyDBConverter.class);
+    
     protected static Hashtable<String, Integer> prepTypeMapper    = new Hashtable<String, Integer>();
     protected static int                        attrsId           = 0;
     protected static SimpleDateFormat           dateFormatter     = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -40,7 +51,7 @@ public class SpecifyDBConverter
      * @param newName xxxx
      * @return xxxx
      */
-    public static int getIndex(String[] oldNames, String newName)
+    /*public static int getIndex(String[] oldNames, String newName)
     {
         for (int i=0;i<oldNames.length;i++)
         {
@@ -52,7 +63,7 @@ public class SpecifyDBConverter
             }
         }
         return -1;
-    }
+    }*/
     
    
     /**
@@ -60,7 +71,7 @@ public class SpecifyDBConverter
      * @param name xxxx
      * @return xxxx
      */
-    public static PrepTypes loadPrepType(final int id, final String name)
+    /*public static PrepTypes loadPrepType(final int id, final String name)
     {
         try 
         {
@@ -70,7 +81,7 @@ public class SpecifyDBConverter
 
             PrepTypes prepType = new PrepTypes(new Integer(id+1));
             prepType.setName(name);
-            prepType.setPrepsObjs(null);
+            prepType.setPreparation(null);
             
             session.save(prepType);
             
@@ -84,7 +95,7 @@ public class SpecifyDBConverter
             HibernateUtil.rollbackTransaction();
         } 
         return null;
-    }
+    }*/
     
     /**
      * @param discipline xxxx
@@ -94,7 +105,7 @@ public class SpecifyDBConverter
      * @param dataTypes xxxx
      * @return xxxx
      */
-    public static List loadAttrDefs(final short    discipline, 
+    /*public static List loadAttrDefs(final short    discipline, 
                                     final short    tableType, 
                                     final int      subType, 
                                     final String[] attrNames, 
@@ -136,7 +147,7 @@ public class SpecifyDBConverter
                     + dataTypes.length);
         }
         return null;
-    }
+    }*/
     
     /**
      * 
@@ -189,31 +200,11 @@ public class SpecifyDBConverter
       }
     }*/
     
-    protected static void deleteAllRecordsFromTable(final String tableName)
-    {
-        try
-        {
-            Connection connect = DBConnection.getConnection();
-            
-            Statement updateStatement = connect.createStatement();
-           
-            exeUpdateCmd(updateStatement, "delete from "+tableName);
-            
-            updateStatement.clearBatch();
-            updateStatement.close();
-            
-            System.out.println("Deleted all records from "+tableName);
-            
-        } catch (SQLException ex)
-        {
-            ex.printStackTrace();
-        }
-    }
     
     /*
      * 
      */
-    public static void loadAttrs()
+    /*public static void loadAttrs()
     {
         try
         {
@@ -437,7 +428,7 @@ public class SpecifyDBConverter
             // Load Habtitat Attrs
             //------------------------------
 
-            /*
+            
             String[] habitatAttrs = {
                     "airTempC",
                     "waterTempC",
@@ -485,7 +476,7 @@ public class SpecifyDBConverter
                     AttrsMgr.FLT_TYPE,
                     AttrsMgr.FLT_TYPE,
                     AttrsMgr.TAXON_TYPE};
-            */
+            
             String[] fishHabitatAttrs = {
                     "waterpH",
                     "turbidity",
@@ -516,31 +507,12 @@ public class SpecifyDBConverter
             e.printStackTrace();
         }
         
-    }
+    }*/
     
-    /**
-     * @param stmt xxxx
-     * @param cmdStr xxxx
-     * @return xxxx
-     */
-    public static int exeUpdateCmd(Statement stmt, String cmdStr)
-    {
-        try 
-        {
-            //System.out.println(cmdStr);
-            return stmt.executeUpdate(cmdStr); 
-            
-        } catch (Exception e) 
-        {
-            e.printStackTrace();
-        }
-        return -1;
-    }
-
     /**
      * 
      */
-    public static void createDataRecordsForNewSchema()
+    /*public static void createDataRecordsForNewSchema()
     {
         
         Connection connect = DBConnection.getConnection();
@@ -812,24 +784,6 @@ public class SpecifyDBConverter
                 //------------------------------------------
                 // Physical Records to PrepObjs
                 //------------------------------------------
-                /* create table PrepsObj (
-                            PrepsObjID integer not null,
-                            disciplineType integer,
-                            tableType smallint,
-                            fieldName varchar(32),
-                            dataType smallint,
-                            PreparationMethod varchar(50),
-                            SubNumber integer,
-                            PreparedDate integer,
-                            TimestampCreated datetime,
-                            TimestampModified datetime,
-                            LastEditedBy varchar(50),
-                            PhysicalObjectTypeID integer,
-                            ParasiteTaxonNameID integer,
-                            PreparedByID integer,
-                            primary key (PrepsObjID)
-                         )
-                         */
                 
                 StringBuffer sql = new StringBuffer();
                 sql.setLength(0);
@@ -1024,23 +978,7 @@ public class SpecifyDBConverter
                      Date timeStamp = new Date();
                      Date modified  = new Date();
                      
-                     /*
-                     +---------------------+--------------+------+-----+---------+-------+
-                     | Field               | Type         | Null | Key | Default | Extra |
-                     +---------------------+--------------+------+-----+---------+-------+
-                     | PrepAttrsID         | int(11)      |      | PRI | 0       |       |
-                     | name                | varchar(50)  | YES  |     | NULL    |       |
-                     | strValue            | varchar(128) | YES  |     | NULL    |       |
-                     | intValue            | int(11)      | YES  |     | NULL    |       |
-                     | fieldType           | int(11)      | YES  |     | NULL    |       |
-                     | unit                | int(11)      | YES  |     | NULL    |       |
-                     | TimestampCreated    | datetime     | YES  |     | NULL    |       |
-                     | TimestampModified   | datetime     | YES  |     | NULL    |       |
-                     | Remarks             | longtext     | YES  |     | NULL    |       |
-                     | PrepsObjID          | int(11)      | YES  | MUL | NULL    |       |
-                     | ParasiteTaxonNameID | int(11)      | YES  | MUL | NULL    |       |
-                     +---------------------+--------------+------+-----+---------+-------+
-                     */
+
                      try
                      {
                          switch (rsVal2)
@@ -1118,58 +1056,22 @@ public class SpecifyDBConverter
         {
             e.printStackTrace();
         }        
-    }
+    }*/
+
+    
+    
     /*
-    +---------------------+--------------+------+-----+---------+-------+
-    | Field               | Type         | Null | Key | Default | Extra |
-    +---------------------+--------------+------+-----+---------+-------+
-    | PrepAttrsID         | int(11)      |      | PRI | 0       |       |
-    | name                | varchar(50)  | YES  |     | NULL    |       |
-    | strValue            | varchar(128) | YES  |     | NULL    |       |
-    | intValue            | int(11)      | YES  |     | NULL    |       |
-    | fieldType           | int(11)      | YES  |     | NULL    |       |
-    | unit                | int(11)      | YES  |     | NULL    |       |
-    | TimestampCreated    | datetime     | YES  |     | NULL    |       |
-    | TimestampModified   | datetime     | YES  |     | NULL    |       |
-    | Remarks             | longtext     | YES  |     | NULL    |       |
-    | PrepsObjID          | int(11)      | YES  | MUL | NULL    |       |
-    | ParasiteTaxonNameID | int(11)      | YES  | MUL | NULL    |       |
-    +---------------------+--------------+------+-----+---------+-------+
-    */
-    protected static String getStrValue(Object obj)
-    {
-        if (obj instanceof String)
-        {
-            return obj == null ? "null" : "'"+((String)obj)+"'";
-            
-        } else if (obj instanceof Integer)
-        {
-            return obj == null ? "null" : ((Integer)obj).toString();
-            
-        } else if (obj instanceof Date)
-        {
-            
-            return obj == null ? "null" : "'"+dateFormatter.format((Date)obj) + "'";
-            
-        } else
-        {
-            return obj == null ? "null" : obj.toString();
-        }
-    }
-    
-    
-    
     protected static String createPrepsInsert(int     prepAttrsID, 
-                                       String  name,
-                                       String  strValue, 
-                                       Integer intValue, 
-                                       Short   fieldType, 
-                                       Short   unit, 
-                                       Date    timeStamp, 
-                                       Date    modifiedDate, 
-                                       String  remarks, 
-                                       int     prepsObjID,
-                                       Integer parasiteTaxonNameID)
+                                           String  name,
+                                           String  strValue, 
+                                           Integer intValue, 
+                                           Short   fieldType, 
+                                           Short   unit, 
+                                           Date    timeStamp, 
+                                           Date    modifiedDate, 
+                                           String  remarks, 
+                                           int     prepsObjID,
+                                           Integer parasiteTaxonNameID)
     {
         strBuf.setLength(0);
         strBuf.append("INSERT INTO prepattrs VALUES (");
@@ -1197,7 +1099,7 @@ public class SpecifyDBConverter
         strBuf.append(')');
 
         return strBuf.toString();
-    }
+    }*/
 
     
     public static void loadData() throws Exception
@@ -1231,11 +1133,12 @@ public class SpecifyDBConverter
             for (Iterator iter=data.iterator();iter.hasNext();)
             {
                 CollectionObject        colObj    = (CollectionObject)iter.next();
+                /*
                 CollectionObjectCatalog colObjCat = colObj.getCollectionObjectCatalog();
                 System.out.println(colObj.getCollectionObjectId());
                 
                 CollectionObj newColObj = new CollectionObj();
-                
+                */
                 
                 /*newColObj.setAccession(colObjCat.getAccession());
                 newColObj.setAgent(colObjCat.getAgent());
@@ -1296,8 +1199,9 @@ public class SpecifyDBConverter
                 newColObj.setTimestampModified(colObj.getTimestampModified());
                 newColObj.setYesNo1(colObj.getYesNo1());
                 newColObj.setYesNo2(colObj.getYesNo2());
-                */
+               
                 session.save(newColObj);
+                 */
             }
             // We're done; make our changes permanent
             HibernateUtil.commitTransaction();
@@ -1314,28 +1218,7 @@ public class SpecifyDBConverter
         }
         
     }
-    
-    public static void doLoadAttrsMgr() throws Exception 
-    {
-        
-        AttrsMgr attrMgr = new AttrsMgr();  
-        
-        System.out.println("BIO_TABLE_TYPE");
-        attrMgr.getAttrDefs(AttrsMgr.FISH_DISCIPLINE, (short)0, AttrsMgr.BIO_TABLE_TYPE);
-        
-        System.out.println("HABITAT_TABLE_TYPE");
-        attrMgr.getAttrDefs(AttrsMgr.FISH_DISCIPLINE, (short)0, AttrsMgr.HABITAT_TABLE_TYPE);
-        
-        System.out.println("PREP_TABLE_TYPE 0");
-        attrMgr.getAttrDefs(AttrsMgr.FISH_DISCIPLINE, (short)0, AttrsMgr.PREP_TABLE_TYPE);
-        
-        System.out.println("PREP_TABLE_TYPE 1");
-        attrMgr.getAttrDefs(AttrsMgr.FISH_DISCIPLINE, (short)1, AttrsMgr.PREP_TABLE_TYPE);
-        
-        System.out.println("PREP_TABLE_TYPE 2");
-        attrMgr.getAttrDefs(AttrsMgr.FISH_DISCIPLINE, (short)2, AttrsMgr.PREP_TABLE_TYPE);
 
-    }
     
     /**
      * Utility method to associate an artist with a catObj
@@ -1348,20 +1231,104 @@ public class SpecifyDBConverter
     {
         DBConnection.setUsernamePassword("rods", "rods");
         DBConnection.setDriver("com.mysql.jdbc.Driver");
-        DBConnection.setDBName("jdbc:mysql://localhost/demo_fish2");
+        DBConnection.setDBName("jdbc:mysql://localhost/demo_fish3");
         
         boolean doingHibernate = false;
         if (doingHibernate) 
         {
            
-            loadData();
+            //loadData();
+            
+            BasicSQLUtils.cleanAllTables();
 
-            System.out.println("Done.");
+            
         } else
         {
-            loadAttrs();
-            createDataRecordsForNewSchema();
+            //loadAttrs();
+            //createDataRecordsForNewSchema();
             //doLoadAttrsMgr();
+            
+            //BasicSQLUtils.cleanAllTables();
+            
+            boolean doConvert = false;
+            if (doConvert)
+            {
+                GenericDBConversion conversion = new GenericDBConversion();
+                
+                boolean copyTables = false;
+                if (copyTables)
+                {               
+                    conversion.copyTables();
+                    conversion.createCollectionRecords();
+                }
+                
+                BasicSQLUtils.deleteAllRecordsFromTable("datatype");
+                BasicSQLUtils.deleteAllRecordsFromTable("usysusers");
+                BasicSQLUtils.deleteAllRecordsFromTable("collectionobjdef");
+                
+                DataType          dataType  = conversion.createDataTypes("Animal");        
+                User              user      = conversion.createNewUser("rods", "rods", 0);
+                
+                Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CatalogSeries.class);
+                criteria.add(Expression.eq("catalogSeriesId", new Integer(0)));
+                java.util.List catalogSeriesList = criteria.list();
+                
+                Set<Object>  colObjDefSet = conversion.createCollectionObjDef("Fish", dataType, user, null, (CatalogSeries)catalogSeriesList.get(0));
+                
+    
+    
+                Object obj = colObjDefSet.iterator().next();
+                CollectionObjDef colObjDef = (CollectionObjDef)obj;
+                FishConversion fishConversion = new FishConversion(colObjDef);
+                fishConversion.loadAttrs(true);
+                
+                
+                DBConnection oldDB     = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/demo_fish2", "rods", "rods");
+                Connection   oldDBConn = oldDB.getConnectionToDB();
+                fishConversion.loadPrepAttrs(oldDBConn, DBConnection.getConnection());
+                oldDBConn.close();
+            }
+            
+            boolean testPaging = true;
+            if (testPaging)
+            {
+                /*
+                HibernatePage.setDriverName("com.mysql.jdbc.Driver");
+                
+                int pageNo = 1;
+                Pagable page = HibernatePage.getHibernatePageInstance(HibernateUtil.getCurrentSession().createQuery("from collectionobject in class CollectionObject"), 0, 100);
+                log.info("Number Pages: "+page.getLastPageNumber());
+                int cnt = 0;
+                for (Object list : page.getThisPageElements()) 
+                {
+                    //cnt += list.size();
+                    
+                    log.info("******************** Page "+pageNo++);
+                }
+                */
+                ResultsPager pager = new ResultsPager(HibernateUtil.getCurrentSession().createQuery("from collectionobject in class CollectionObject"), 0, 10);
+                //ResultsPager pager = new ResultsPager(HibernateUtil.getCurrentSession().createCriteria(CollectionObject.class), 0, 100);
+                int pageNo = 1;
+                do
+                {
+                    long start = System.currentTimeMillis();
+                    List list = pager.getList();
+                    log.info("******************** Page "+pageNo+" "+(System.currentTimeMillis() - start));
+                    pageNo++;
+                    
+                    for (Object co : list)
+                    {
+                        if (pageNo % 100 == 0)
+                        {
+                            log.info(((CollectionObject)co).getCatalogNumber());
+                        }
+                    }
+                } while (pager.isNextPage());
+                
+            }
+
+            
         }
+        System.out.println("Done.");
     }
 }

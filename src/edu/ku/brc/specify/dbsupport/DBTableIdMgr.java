@@ -40,27 +40,39 @@ import edu.ku.brc.specify.datamodel.RecordSetItem;
 public class DBTableIdMgr
 {
     private static final   Log          log      = LogFactory.getLog(DBTableIdMgr.class);
-    protected static final DBTableIdMgr instance = new DBTableIdMgr();
+    protected static final DBTableIdMgr instance;
 
     Hashtable<Integer, TableInfo> hash = new Hashtable<Integer, TableInfo>();
 
+    static {
+        instance = new DBTableIdMgr();
+        instance.initialize();
+    }
 
     /**
-     * Protected COnstructor for Singleton
+     * Protected Constructor for Singleton
      */
     protected DBTableIdMgr()
+    {
+    }
+    
+    /**
+     * Temporary - Waiting for an XML or SOMETHING
+     */
+    protected void initialize()
     {
         try
         {
             //hash.put(1, new TableInfo(1, "edu.ku.brc.specify.datamodel.CollectionObj", "collectionobj", "collectionObjectId"));
-            hash.put(1, new TableInfo(1, "edu.ku.brc.specify.datamodel.CollectionObj", "collectionobj", "catalogNumber"));
-            hash.put(80, new TableInfo(80, "edu.ku.brc.specify.datamodel.InfoRequest", "inforequest", "infoRequestID"));
-            hash.put(500, new TableInfo(500, "edu.ku.brc.specify.ui.db.PickList", "picklist", "picklist_id"));
+            instance.hash.put(1, new TableInfo(1, "edu.ku.brc.specify.datamodel.CollectionObject", "collectionobject", "catalogNumber"));
+            instance.hash.put(80, new TableInfo(80, "edu.ku.brc.specify.datamodel.InfoRequest", "inforequest", "infoRequestID"));
+            instance.hash.put(500, new TableInfo(500, "edu.ku.brc.specify.ui.db.PickList", "picklist", "picklist_id"));
 
         } catch (Exception ex)
         {
             log.error(ex);
         }
+        
     }
 
     /**

@@ -100,6 +100,7 @@ public class InitializeData
 
         // Tell it about the classes we want mapped, taking advantage of
         // the way we've named their mapping documents.
+        /*
         config.addClass(Accession.class);
         config.addClass(CollectingEvent.class);
         config.addClass(CollectionObject.class);
@@ -180,7 +181,7 @@ public class InitializeData
         config.addClass(GroupPerson.class);
         config.addClass(Stratigraphy.class);
         
-        
+        */
         // Get the session factory we can use for persistence
         SessionFactory sessionFactory = config.buildSessionFactory();
 

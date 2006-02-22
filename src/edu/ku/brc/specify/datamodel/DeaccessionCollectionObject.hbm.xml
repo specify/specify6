@@ -50,6 +50,7 @@
             length="5"
         </meta>    
     </property>
+    
     <property
         name="remarks"
         type="java.lang.String"
@@ -63,6 +64,7 @@
             length="1073741823"
         </meta>    
     </property>
+    
     <property
         name="timestampModified"
         type="java.sql.Timestamp"
@@ -76,6 +78,7 @@
             length="23"
         </meta>    
     </property>
+    
     <property
         name="timestampCreated"
         type="java.sql.Timestamp"
@@ -89,6 +92,7 @@
             length="23"
         </meta>    
     </property>
+    
     <property
         name="lastEditedBy"
         type="java.lang.String"
@@ -105,10 +109,10 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional many-to-one association to CollectionObjectCatalog -->
+    <!-- bi-directional many-to-one association to CollectionObject -->
     <many-to-one
         name="collectionObjectCatalog"
-        class="edu.ku.brc.specify.datamodel.CollectionObjectCatalog"
+        class="edu.ku.brc.specify.datamodel.CollectionObject"
         not-null="true"
 		outer-join="true"
     >
@@ -119,6 +123,7 @@
         </meta>
         <column name="CollectionObjectID" />
     </many-to-one>
+    
     <!-- bi-directional many-to-one association to Deaccession -->
     <many-to-one
         name="deaccession"
@@ -133,6 +138,7 @@
         </meta>
         <column name="DeaccessionID" />
     </many-to-one>
+    
     <!-- bi-directional one-to-many association to LoanReturnPhysicalObject -->
     <set
         name="loanReturnPhysicalObjects"

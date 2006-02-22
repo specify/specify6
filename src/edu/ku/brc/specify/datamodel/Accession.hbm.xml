@@ -184,6 +184,7 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="remarks"
         type="java.lang.String"
@@ -197,6 +198,7 @@
             length="1073741823"
         </meta>    
     </property>
+    
     <property
         name="timestampCreated"
         type="java.sql.Timestamp"
@@ -291,25 +293,9 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional many-to-one association to Collection -->
-    <many-to-one
-        name="collection"
-        class="edu.ku.brc.specify.datamodel.Collection"
-        not-null="true"
-		outer-join="true"
-    >
-	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="CollectionID"         
-        </meta>
-        <column name="CollectionID" />
-    </many-to-one>
-	
-    <!-- bi-directional one-to-many association to CollectionObjectCatalog -->
+    <!-- bi-directional one-to-many association to CollectionObject -->
     <set
-        name="collectionObjectCatalogs"
+        name="collectionObjects"
         lazy="true"
         inverse="true"
 		cascade="none"
@@ -325,13 +311,13 @@
             column="AccessionID"
 
            @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.CollectionObjectCatalog"
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
         </meta>
         <key>
             <column name="AccessionID" />
         </key>
         <one-to-many 
-            class="edu.ku.brc.specify.datamodel.CollectionObjectCatalog"
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
         />
     </set>
     <!-- bi-directional one-to-many association to AccessionAuthorizations -->

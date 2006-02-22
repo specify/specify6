@@ -20,7 +20,7 @@ public class CollectionObjectCitation  implements java.io.Serializable {
      protected Date timestampCreated;
      protected String lastEditedBy;
      private ReferenceWork referenceWork;
-     private CollectionObj collectionObject;
+     private CollectionObject collectionObject;
 
 
     // Constructors
@@ -130,11 +130,11 @@ public class CollectionObjectCitation  implements java.io.Serializable {
      *            @hibernate.column name="BiologicalObjectID"         
      *         
      */
-    public CollectionObj getCollectionObject() {
+    public CollectionObject getCollectionObject() {
         return this.collectionObject;
     }
     
-    public void setCollectionObject(CollectionObj collectionObject) {
+    public void setCollectionObject(CollectionObject collectionObject) {
         this.collectionObject = collectionObject;
     }
 

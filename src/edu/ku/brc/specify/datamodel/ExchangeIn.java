@@ -29,7 +29,6 @@ public class ExchangeIn  implements java.io.Serializable {
      protected Short yesNo1;
      protected Short yesNo2;
      private AgentAddress agentAddress;
-     private Collection collection;
      private Agent agent;
 
 
@@ -258,20 +257,6 @@ public class ExchangeIn  implements java.io.Serializable {
     
     public void setAgentAddress(AgentAddress agentAddress) {
         this.agentAddress = agentAddress;
-    }
-
-    /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="CollectionID"         
-     *         
-     */
-    public Collection getCollection() {
-        return this.collection;
-    }
-    
-    public void setCollection(Collection collection) {
-        this.collection = collection;
     }
 
     /**

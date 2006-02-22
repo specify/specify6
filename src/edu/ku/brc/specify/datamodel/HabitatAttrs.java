@@ -18,14 +18,13 @@ public class HabitatAttrs  implements AttrsSettableGettable,java.io.Serializable
      protected String name;
      protected String strValue;
      protected Integer intValue;
-     protected Integer fieldType;
-     protected Integer unit;
+     protected Short fieldType;
+     protected Short unit;
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String remarks;
      protected CollectingEvent collectingEvent;
-     protected CollectionObjectType collectionObjectType;
-     protected TaxonName taxonName;
+     protected Taxon Taxon;
 
 
     // Constructors
@@ -45,11 +44,7 @@ public class HabitatAttrs  implements AttrsSettableGettable,java.io.Serializable
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="assigned"
-     *             type="java.lang.Integer"
-     *             column="HabitatAttrsID"
-     *         
+     * 
      */
     public Integer getHabitatAttrsId() {
         return this.habitatAttrsId;
@@ -104,14 +99,14 @@ public class HabitatAttrs  implements AttrsSettableGettable,java.io.Serializable
     /**
      *      *            @hibernate.property
      *             column="fieldType"
-     *             length="10"
+     *             length="2"
      *         
      */
-    public Integer getFieldType() {
+    public Short getFieldType() {
         return this.fieldType;
     }
     
-    public void setFieldType(Integer fieldType) {
+    public void setFieldType(Short fieldType) {
         this.fieldType = fieldType;
     }
 
@@ -121,11 +116,11 @@ public class HabitatAttrs  implements AttrsSettableGettable,java.io.Serializable
      *             length="2"
      *         
      */
-    public Integer getUnit() {
+    public Short getUnit() {
         return this.unit;
     }
     
-    public void setUnit(Integer unit) {
+    public void setUnit(Short unit) {
         this.unit = unit;
     }
 
@@ -172,11 +167,9 @@ public class HabitatAttrs  implements AttrsSettableGettable,java.io.Serializable
     }
 
     /**
-     *      *            @hibernate.one-to-one
-     *             class="edu.ku.brc.specify.datamodel.CollectingEvent"
-     *             outer-join="auto"
-     *             constrained="true"
-     * 			cascade="delete"
+     *      *            @hibernate.many-to-one
+     *             not-null="true"
+     *            @hibernate.column name="CollectingEventID"         
      *         
      */
     public CollectingEvent getCollectingEvent() {
@@ -190,29 +183,15 @@ public class HabitatAttrs  implements AttrsSettableGettable,java.io.Serializable
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="BiologicalObjectTypeCollectedID"         
-     *         
-     */
-    public CollectionObjectType getCollectionObjectType() {
-        return this.collectionObjectType;
-    }
-    
-    public void setCollectionObjectType(CollectionObjectType collectionObjectType) {
-        this.collectionObjectType = collectionObjectType;
-    }
-
-    /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
      *            @hibernate.column name="HostTaxonID"         
      *         
      */
-    public TaxonName getTaxonName() {
-        return this.taxonName;
+    public Taxon getTaxon() {
+        return this.Taxon;
     }
     
-    public void setTaxonName(TaxonName taxonName) {
-        this.taxonName = taxonName;
+    public void setTaxon(Taxon Taxon) {
+        this.Taxon = Taxon;
     }
 
 

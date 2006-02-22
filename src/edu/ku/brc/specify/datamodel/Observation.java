@@ -30,7 +30,7 @@ public class Observation  implements java.io.Serializable {
      protected Integer observationMethodId;
      protected Short yesNo1;
      protected Short yesNo2;
-     private CollectionObj collectionObject;
+     private CollectionObject collectionObject;
 
 
     // Constructors
@@ -277,15 +277,14 @@ public class Observation  implements java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     * 			cascade="delete"
      *            @hibernate.column name="BiologicalObjectID"         
      *         
      */
-    public CollectionObj getCollectionObject() {
+    public CollectionObject getCollectionObject() {
         return this.collectionObject;
     }
     
-    public void setCollectionObject(CollectionObj collectionObject) {
+    public void setCollectionObject(CollectionObject collectionObject) {
         this.collectionObject = collectionObject;
     }
 

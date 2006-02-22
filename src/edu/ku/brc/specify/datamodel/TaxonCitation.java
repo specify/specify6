@@ -26,7 +26,7 @@ public class TaxonCitation  implements java.io.Serializable {
      protected Short yesNo1;
      protected Short yesNo2;
      private ReferenceWork referenceWork;
-     private TaxonName taxonName;
+     private Taxon Taxon;
 
 
     // Constructors
@@ -218,15 +218,15 @@ public class TaxonCitation  implements java.io.Serializable {
      *      *            @hibernate.many-to-one
      *             not-null="true"
      * 			cascade="delete"
-     *            @hibernate.column name="TaxonNameID"         
+     *            @hibernate.column name="TaxonID"         
      *         
      */
-    public TaxonName getTaxonName() {
-        return this.taxonName;
+    public Taxon getTaxon() {
+        return this.Taxon;
     }
     
-    public void setTaxonName(TaxonName taxonName) {
-        this.taxonName = taxonName;
+    public void setTaxon(Taxon Taxon) {
+        this.Taxon = Taxon;
     }
 
 

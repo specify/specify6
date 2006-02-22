@@ -28,7 +28,8 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * A singleton that remembers all the information needed for creating a Database connection. 
- * After setting the necessary parameters you can ask it for a connection at anytime.
+ * After setting the necessary parameters you can ask it for a connection at anytime.<br><br>
+ * Also, has a factory method for creating instances so users can connect to more than one database ata time.
  * 
  * @author rods
  *
@@ -53,6 +54,29 @@ public class DBConnection
     {
         
     }
+    
+    /**
+     * Returns a new connection to the database from an instance of DBConnection.
+     * It uses the database name, driver, username and password to connect.
+     * @return the JDBC connection to the database
+     */
+    public Connection getConnectionToDB()
+    {
+        Connection con = null;
+        try
+        {
+            Class.forName(dbDriver); // load driver
+            
+            con = DriverManager.getConnection(dbName, dbUserid, dbPassword);
+            
+        } catch (Exception ex)
+        {
+            log.error("Error in getConnection", ex);
+        }
+        return con;
+    }
+    
+
     
     /**
      * Returns the instance to the singleton
@@ -98,18 +122,25 @@ public class DBConnection
      */
     public static Connection getConnection()
     {
-        Connection con = null;
-        try
-        {
-            Class.forName(instance.dbDriver); // load driver
-            
-            con = DriverManager.getConnection(instance.dbName, instance.dbUserid, instance.dbPassword );
-            
-        } catch (Exception ex)
-        {
-            log.error("Error in getConnection", ex);
-        }
-        return con;
+        return instance.getConnectionToDB();
+    }
+    
+    /**
+     * @param dbDriver the driver name
+     * @param bName the database name
+     * @param dbUserid the username
+     * @param dbPassword the password
+     * @return a new instance of a DBConnection
+     */
+    public static DBConnection createInstance(final String dbDriver, final String dbName, final String dbUserid, final String dbPassword)
+    {
+        DBConnection dbConnection = new DBConnection();
+        dbConnection.dbDriver   = dbDriver;
+        dbConnection.dbName     = dbName;
+        dbConnection.dbUserid   = dbUserid;
+        dbConnection.dbPassword = dbPassword;
+        
+        return dbConnection;
     }
 
 }

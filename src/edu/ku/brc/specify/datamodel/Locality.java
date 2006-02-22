@@ -58,10 +58,10 @@ public class Locality  implements java.io.Serializable {
      protected String lat2text;
      protected String long1text;
      protected String long2text;
-     protected Geography geographyByGeographyId1;
+     protected Geography geography;
      protected Set localityCitations;
      protected Set collectingEvents;
-     protected Set imageLocalities;
+     private Set externalFiles;
 
 
     // Constructors
@@ -704,12 +704,12 @@ public class Locality  implements java.io.Serializable {
      *            @hibernate.column name="GeographyID"         
      *         
      */
-    public Geography getGeographyByGeographyId1() {
-        return this.geographyByGeographyId1;
+    public Geography getGeography() {
+        return this.geography;
     }
     
-    public void setGeographyByGeographyId1(Geography geographyByGeographyId1) {
-        this.geographyByGeographyId1 = geographyByGeographyId1;
+    public void setGeography(Geography geography) {
+        this.geography = geography;
     }
 
     /**
@@ -751,22 +751,14 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="LocalityID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.ImageLocality"
-     *         
+     * 
      */
-    public Set getImageLocalities() {
-        return this.imageLocalities;
+    public Set getExternalFiles() {
+        return this.externalFiles;
     }
     
-    public void setImageLocalities(Set imageLocalities) {
-        this.imageLocalities = imageLocalities;
+    public void setExternalFiles(Set externalFiles) {
+        this.externalFiles = externalFiles;
     }
 
 

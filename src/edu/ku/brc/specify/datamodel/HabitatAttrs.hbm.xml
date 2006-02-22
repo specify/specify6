@@ -25,16 +25,11 @@
     <id
         name="habitatAttrsId"
         type="java.lang.Integer"
-        column="HabitatAttrsID">
-        <meta attribute="field-description">
-           @hibernate.id
-            generator-class="assigned"
-            type="java.lang.Integer"
-            column="HabitatAttrsID"
-
-        </meta>
-        <meta attribute="scope-field">protected</meta>
-        <generator class="assigned" />
+        column="HabitatAttrsID"
+    >
+      <meta attribute="scope-set">public</meta>
+      <meta attribute="scope-field">protected</meta>
+      <generator class="native"/>
     </id>
 	
     <property
@@ -81,21 +76,21 @@
 
     <property
         name="fieldType"
-        type="java.lang.Integer"
+        type="java.lang.Short"
         column="fieldType"
-        length="10"
+        length="2"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="fieldType"
-            length="10"
+            length="2"
         </meta>    
     </property>
 
     <property
         name="unit"
-        type="java.lang.Integer"
+        type="java.lang.Short"
         column="unit"
         length="2"
     >
@@ -152,28 +147,10 @@
 	
 	<!-- Associations -->
 	
-   <!-- bi-directional one-to-one association to CollectingEvent -->
-    <one-to-one
+    <!-- bi-directional many-to-one association to CollectingEvent -->
+    <many-to-one
         name="collectingEvent"
         class="edu.ku.brc.specify.datamodel.CollectingEvent"
-        outer-join="auto"
-        constrained="true"
-		cascade="delete"
-    >
-	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.one-to-one
-            class="edu.ku.brc.specify.datamodel.CollectingEvent"
-            outer-join="auto"
-            constrained="true"
-			cascade="delete"
-        </meta>    
-    </one-to-one>
-    
-		<!-- bi-directional many-to-one association to CollectionObjectType -->
-    <many-to-one
-        name="collectionObjectType"
-        class="edu.ku.brc.specify.datamodel.CollectionObjectType"
         not-null="true"
 		outer-join="true"
     >
@@ -181,15 +158,16 @@
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="BiologicalObjectTypeCollectedID"         
+           @hibernate.column name="CollectingEventID"         
         </meta>
-        <column name="BiologicalObjectTypeCollectedID" />
+        <column name="CollectingEventID" />
     </many-to-one>
     
-		<!-- bi-directional many-to-one association to TaxonName -->
+   
+    <!-- bi-directional many-to-one association to Taxon -->
     <many-to-one
-        name="taxonName"
-        class="edu.ku.brc.specify.datamodel.TaxonName"
+        name="Taxon"
+        class="edu.ku.brc.specify.datamodel.Taxon"
         not-null="true"
 		outer-join="true"
     >

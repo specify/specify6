@@ -184,10 +184,10 @@
         </meta>
         <column name="ReferenceWorkID" />
     </many-to-one>
-    <!-- bi-directional many-to-one association to TaxonName -->
+    <!-- bi-directional many-to-one association to Taxon -->
     <many-to-one
-        name="taxonName"
-        class="edu.ku.brc.specify.datamodel.TaxonName"
+        name="Taxon"
+        class="edu.ku.brc.specify.datamodel.Taxon"
         not-null="true"
 		outer-join="true"
 		cascade="delete"
@@ -196,9 +196,9 @@
            @hibernate.many-to-one
             not-null="true"
 			cascade="delete"
-           @hibernate.column name="TaxonNameID"         
+           @hibernate.column name="TaxonID"         
         </meta>
-        <column name="TaxonNameID" />
+        <column name="TaxonID" />
     </many-to-one>
 
 </class>

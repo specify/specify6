@@ -18,13 +18,12 @@ public class BioAttrs  implements AttrsSettableGettable,java.io.Serializable {
      protected String name;
      protected String strValue;
      protected Integer intValue;
-     protected Integer fieldType;
-     protected Integer unit;
+     protected Short fieldType;
+     protected Short unit;
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String remarks;
-     private CollectionObj collectionObj;
-     protected CollectionObjectType collectionobjecttypes;
+     private CollectionObject collectionObj;
 
 
     // Constructors
@@ -44,11 +43,7 @@ public class BioAttrs  implements AttrsSettableGettable,java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="assigned"
-     *             type="java.lang.Integer"
-     *             column="BioAttrsID"
-     *         
+     * 
      */
     public Integer getBioAttrsId() {
         return this.bioAttrsId;
@@ -103,14 +98,14 @@ public class BioAttrs  implements AttrsSettableGettable,java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="fieldType"
-     *             length="10"
+     *             length="2"
      *         
      */
-    public Integer getFieldType() {
+    public Short getFieldType() {
         return this.fieldType;
     }
     
-    public void setFieldType(Integer fieldType) {
+    public void setFieldType(Short fieldType) {
         this.fieldType = fieldType;
     }
 
@@ -120,11 +115,11 @@ public class BioAttrs  implements AttrsSettableGettable,java.io.Serializable {
      *             length="2"
      *         
      */
-    public Integer getUnit() {
+    public Short getUnit() {
         return this.unit;
     }
     
-    public void setUnit(Integer unit) {
+    public void setUnit(Short unit) {
         this.unit = unit;
     }
 
@@ -176,27 +171,12 @@ public class BioAttrs  implements AttrsSettableGettable,java.io.Serializable {
      *            @hibernate.column name="CollectionObjectID"         
      *         
      */
-    public CollectionObj getCollectionObj() {
+    public CollectionObject getCollectionObj() {
         return this.collectionObj;
     }
     
-    public void setCollectionObj(CollectionObj collectionObj) {
+    public void setCollectionObj(CollectionObject collectionObj) {
         this.collectionObj = collectionObj;
-    }
-
-    /**
-     *      *            @hibernate.one-to-one
-     *             class="edu.ku.brc.specify.datamodel.CollectionObjectType"
-     *             outer-join="auto"
-     *             constrained="true"
-     *         
-     */
-    public CollectionObjectType getCollectionobjecttypes() {
-        return this.collectionobjecttypes;
-    }
-    
-    public void setCollectionobjecttypes(CollectionObjectType collectionobjecttypes) {
-        this.collectionobjecttypes = collectionobjecttypes;
     }
 
 

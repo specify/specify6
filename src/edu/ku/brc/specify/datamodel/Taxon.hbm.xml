@@ -1,0 +1,504 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="edu.ku.brc.specify.datamodel.Taxon" 
+    table="taxon"
+	lazy="true"
+>
+    <meta attribute="class-description" inherit="false">
+       @hibernate.class
+        table="taxon"
+    </meta>
+
+    <id
+        name="taxonId"
+        type="java.lang.Integer"
+        column="TaxonID"
+    >
+        <meta attribute="field-description">
+           @hibernate.id
+            generator-class="assigned"
+            type="java.lang.Integer"
+            column="TaxonID"
+
+        </meta>
+        <meta attribute="scope-field">protected</meta>
+        <generator class="assigned" />
+    </id>
+
+    <property
+        name="parentTaxonId"
+        type="java.lang.Integer"
+        column="ParentTaxonID"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="ParentTaxonID"
+            length="10"
+        </meta>    
+    </property>
+    <property
+        name="taxonomicSerialNumber"
+        type="java.lang.String"
+        column="TaxonomicSerialNumber"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TaxonomicSerialNumber"
+            length="50"
+        </meta>    
+    </property>
+    
+    <property
+        name="Taxon"
+        type="java.lang.String"
+        column="Taxon"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Taxon"
+            length="50"
+        </meta>    
+    </property>
+    
+    <property
+        name="unitInd1"
+        type="java.lang.String"
+        column="UnitInd1"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="UnitInd1"
+            length="50"
+        </meta>    
+    </property>
+    
+    <property
+        name="unitName1"
+        type="java.lang.String"
+        column="UnitName1"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="UnitName1"
+            length="50"
+        </meta>    
+    </property>
+    
+    <property
+        name="unitInd2"
+        type="java.lang.String"
+        column="UnitInd2"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="UnitInd2"
+            length="50"
+        </meta>    
+    </property>
+    
+    <property
+        name="unitName2"
+        type="java.lang.String"
+        column="UnitName2"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="UnitName2"
+            length="50"
+        </meta>    
+    </property>
+    
+    <property
+        name="unitInd3"
+        type="java.lang.String"
+        column="UnitInd3"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="UnitInd3"
+            length="50"
+        </meta>    
+    </property>
+    
+    <property
+        name="unitName3"
+        type="java.lang.String"
+        column="UnitName3"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="UnitName3"
+            length="50"
+        </meta>    
+    </property>
+    
+    <property
+        name="unitInd4"
+        type="java.lang.String"
+        column="UnitInd4"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="UnitInd4"
+            length="50"
+        </meta>    
+    </property>
+    
+    <property
+        name="unitName4"
+        type="java.lang.String"
+        column="UnitName4"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="UnitName4"
+            length="50"
+        </meta>    
+    </property>
+    
+    <property
+        name="fullTaxon"
+        type="java.lang.String"
+        column="FullTaxon"
+        length="255"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="FullTaxon"
+            length="255"
+        </meta>    
+    </property>
+    
+    <property
+        name="commonName"
+        type="java.lang.String"
+        column="CommonName"
+        length="128"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="CommonName"
+            length="128"
+        </meta>    
+    </property>
+    
+    <property
+        name="author"
+        type="java.lang.String"
+        column="Author"
+        length="128"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Author"
+            length="128"
+        </meta>    
+    </property>
+    
+    <property
+        name="source"
+        type="java.lang.String"
+        column="Source"
+        length="64"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Source"
+            length="64"
+        </meta>    
+    </property>
+    
+    <property
+        name="groupPermittedToView"
+        type="java.lang.Integer"
+        column="GroupPermittedToView"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="GroupPermittedToView"
+            length="10"
+        </meta>    
+    </property>
+    
+    <property
+        name="environmentalProtectionStatus"
+        type="java.lang.String"
+        column="EnvironmentalProtectionStatus"
+        length="64"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="EnvironmentalProtectionStatus"
+            length="64"
+        </meta>    
+    </property>
+    
+    <property
+        name="remarks"
+        type="java.lang.String"
+        column="Remarks"
+        length="1073741823"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Remarks"
+            length="1073741823"
+        </meta>    
+    </property>
+    
+    <property
+        name="left"
+        type="java.lang.Integer"
+        column="NodeNumber"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="NodeNumber"
+            length="10"
+        </meta>    
+    </property>
+    
+    <property
+        name="highestChildNodeNumber"
+        type="java.lang.Integer"
+        column="HighestChildNodeNumber"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="HighestChildNodeNumber"
+            length="10"
+        </meta>    
+    </property>
+    
+    <property
+        name="timestampCreated"
+        type="java.sql.Timestamp"
+        column="TimestampCreated"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampCreated"
+            length="23"
+        </meta>    
+    </property>
+    
+    <property
+        name="timestampModified"
+        type="java.sql.Timestamp"
+        column="TimestampModified"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampModified"
+            length="23"
+        </meta>    
+    </property>
+    
+    <property
+        name="lastEditedBy"
+        type="java.lang.String"
+        column="LastEditedBy"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="LastEditedBy"
+            length="50"
+        </meta>    
+    </property>
+    
+    <property
+        name="accepted"
+        type="java.lang.Short"
+        column="Accepted"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Accepted"
+            length="5"
+        </meta>    
+    </property>
+    
+    <property
+        name="rankId"
+        type="java.lang.Integer"
+        column="RankID"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="RankID"
+            length="10"
+        </meta>    
+    </property>
+    
+    <property
+        name="groupNumber"
+        type="java.lang.String"
+        column="GroupNumber"
+        length="20"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="GroupNumber"
+            length="20"
+        </meta>    
+    </property>
+
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-many association to Taxon -->
+    <set
+        name="children"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="AcceptedID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.Taxon"
+        </meta>
+        <key>
+            <column name="AcceptedID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.Taxon"
+        />
+    </set>
+    
+    <!-- bi-directional many-to-one association to Taxon -->
+    <many-to-one
+        name="acceptedTaxon"
+        class="edu.ku.brc.specify.datamodel.Taxon"
+        not-null="true"
+		outer-join="true"
+    >
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="AcceptedID"         
+        </meta>
+        <column name="AcceptedID" />
+    </many-to-one>
+    
+    <!-- bi-directional one-to-many association to TaxonCitation -->
+    <set
+        name="taxonCitations"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="TaxonID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.TaxonCitation"
+        </meta>
+        <key>
+            <column name="TaxonID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.TaxonCitation"
+        />
+    </set>
+    
+    <!-- bi-directional many-to-one association to TaxonomyTreeDef -->
+    <many-to-one
+        name="taxonomyTreeDef"
+        class="edu.ku.brc.specify.datamodel.TaxonomyTreeDef"
+        not-null="true"
+		outer-join="true"
+    >
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="TaxonomyTreeDefID"         
+        </meta>
+        <column name="TaxonomyTreeDefID" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-many association to TaxonExternalFile -->
+    <set
+        name="externalFiles"
+        table="taxon_extfiles"
+        lazy="true"
+        inverse="true"
+		cascade="save-update">
+        <key>
+            <column name="TaxonID" />
+        </key>
+        <many-to-many class="edu.ku.brc.specify.datamodel.TaxonExternalFile" column="TaxonExternalFileID"/>
+    </set>
+    
+
+</class>
+</hibernate-mapping>

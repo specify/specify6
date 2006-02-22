@@ -14,9 +14,9 @@ public class PrepTypes  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer prepTypeID;
+     protected Integer prepTypeId;
      protected String name;
-     protected Set prepsObjs;
+     protected Set preparation;
 
 
     // Constructors
@@ -26,8 +26,8 @@ public class PrepTypes  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public PrepTypes(Integer prepTypeID) {
-        this.prepTypeID = prepTypeID;
+    public PrepTypes(Integer prepTypeId) {
+        this.prepTypeId = prepTypeId;
     }
    
     
@@ -36,18 +36,14 @@ public class PrepTypes  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="assigned"
-     *             type="java.lang.Integer"
-     *             column="PrepTypeID"
-     *         
+     * 
      */
-    public Integer getPrepTypeID() {
-        return this.prepTypeID;
+    public Integer getPrepTypeId() {
+        return this.prepTypeId;
     }
     
-    public void setPrepTypeID(Integer prepTypeID) {
-        this.prepTypeID = prepTypeID;
+    public void setPrepTypeId(Integer prepTypeId) {
+        this.prepTypeId = prepTypeId;
     }
 
     /**
@@ -70,17 +66,17 @@ public class PrepTypes  implements java.io.Serializable {
      *             inverse="true"
      *             cascade="none"
      *            @hibernate.collection-key
-     *             column="preparationId"
+     *             column="PreparationID"
      *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.PrepsObj"
+     *             class="edu.ku.brc.specify.datamodel.Preparation"
      *         
      */
-    public Set getPrepsObjs() {
-        return this.prepsObjs;
+    public Set getPreparation() {
+        return this.preparation;
     }
     
-    public void setPrepsObjs(Set prepsObjs) {
-        this.prepsObjs = prepsObjs;
+    public void setPreparation(Set preparation) {
+        this.preparation = preparation;
     }
 
 

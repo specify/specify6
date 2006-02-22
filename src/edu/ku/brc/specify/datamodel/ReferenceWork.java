@@ -20,7 +20,7 @@ public class ReferenceWork  implements java.io.Serializable {
      protected String title;
      protected String publisher;
      protected String placeOfPublication;
-     protected String date1;
+     protected String dateField;
      protected String volume;
      protected String pages;
      protected String url;
@@ -148,16 +148,16 @@ public class ReferenceWork  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="Date1"
+     *             column="DateField"
      *             length="25"
      *         
      */
-    public String getDate1() {
-        return this.date1;
+    public String getDateField() {
+        return this.dateField;
     }
     
-    public void setDate1(String date1) {
-        this.date1 = date1;
+    public void setDateField(String dateField) {
+        this.dateField = dateField;
     }
 
     /**

@@ -15,11 +15,11 @@ public class AttrsDef  implements java.io.Serializable {
     // Fields    
 
      protected Integer attrsDefId;
-     protected Short disciplineType;
      protected Short tableType;
      protected Short subType;
      protected String fieldName;
      protected Short dataType;
+     protected CollectionObjDef collectionObjDefID;
 
 
     // Constructors
@@ -39,11 +39,7 @@ public class AttrsDef  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="assigned"
-     *             type="java.lang.Integer"
-     *             column="AttrsDefID"
-     *         
+     * 
      */
     public Integer getAttrsDefId() {
         return this.attrsDefId;
@@ -51,20 +47,6 @@ public class AttrsDef  implements java.io.Serializable {
     
     public void setAttrsDefId(Integer attrsDefId) {
         this.attrsDefId = attrsDefId;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="disciplineType"
-     *             length="5"
-     *         
-     */
-    public Short getDisciplineType() {
-        return this.disciplineType;
-    }
-    
-    public void setDisciplineType(Short disciplineType) {
-        this.disciplineType = disciplineType;
     }
 
     /**
@@ -121,6 +103,20 @@ public class AttrsDef  implements java.io.Serializable {
     
     public void setDataType(Short dataType) {
         this.dataType = dataType;
+    }
+
+    /**
+     *      *            @hibernate.many-to-one
+     *             not-null="true"
+     *            @hibernate.column name="CollectionObjDefID"
+     *         
+     */
+    public CollectionObjDef getCollectionObjDefID() {
+        return this.collectionObjDefID;
+    }
+    
+    public void setCollectionObjDefID(CollectionObjDef collectionObjDefID) {
+        this.collectionObjDefID = collectionObjDefID;
     }
 
 

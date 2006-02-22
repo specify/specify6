@@ -15,7 +15,7 @@ public class LoanReturnPhysicalObject  implements java.io.Serializable {
     // Fields    
 
      protected Integer loanReturnPhysicalObjectId;
-     protected Integer date1;
+     protected Integer dateField;
      protected Short quantity;
      protected String remarks;
      protected Date timestampCreated;
@@ -59,16 +59,16 @@ public class LoanReturnPhysicalObject  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="Date1"
+     *             column="DateField"
      *             length="10"
      *         
      */
-    public Integer getDate1() {
-        return this.date1;
+    public Integer getDateField() {
+        return this.dateField;
     }
     
-    public void setDate1(Integer date1) {
-        this.date1 = date1;
+    public void setDateField(Integer dateField) {
+        this.dateField = dateField;
     }
 
     /**

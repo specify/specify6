@@ -183,10 +183,10 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional many-to-one association to CollectionObj -->
+    <!-- bi-directional many-to-one association to CollectionObject -->
     <many-to-one
         name="collectionObject"
-        class="edu.ku.brc.specify.datamodel.CollectionObj"
+        class="edu.ku.brc.specify.datamodel.CollectionObject"
         not-null="true"
 		outer-join="true"
 		cascade="delete"

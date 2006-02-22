@@ -21,9 +21,7 @@ public class CatalogSeries  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     private Set catalogSeriesDefinitions;
-     private Set collectionObjectCatalogs;
-     private Collection collection;
+     private Set collectionObjDefItems;
 
 
     // Constructors
@@ -142,56 +140,14 @@ public class CatalogSeries  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="CatalogSeriesID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.CatalogSeriesDefinition"
-     *         
+     * 
      */
-    public Set getCatalogSeriesDefinitions() {
-        return this.catalogSeriesDefinitions;
+    public Set getCollectionObjDefItems() {
+        return this.collectionObjDefItems;
     }
     
-    public void setCatalogSeriesDefinitions(Set catalogSeriesDefinitions) {
-        this.catalogSeriesDefinitions = catalogSeriesDefinitions;
-    }
-
-    /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="CatalogSeriesID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.CollectionObj"
-     *         
-     */
-    public Set getCollectionObjectCatalogs() {
-        return this.collectionObjectCatalogs;
-    }
-    
-    public void setCollectionObjectCatalogs(Set collectionObjectCatalogs) {
-        this.collectionObjectCatalogs = collectionObjectCatalogs;
-    }
-
-    /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="CollectionID"  
-     * 		   cascade="delete"       
-     *         
-     */
-    public Collection getCollection() {
-        return this.collection;
-    }
-    
-    public void setCollection(Collection collection) {
-        this.collection = collection;
+    public void setCollectionObjDefItems(Set collectionObjDefItems) {
+        this.collectionObjDefItems = collectionObjDefItems;
     }
 
 

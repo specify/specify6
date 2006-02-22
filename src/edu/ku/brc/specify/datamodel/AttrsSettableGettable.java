@@ -20,14 +20,14 @@ public interface AttrsSettableGettable
     public void setIntValue(Integer intValue);
     
 
-    public Integer getFieldType();
+    public Short getFieldType();
     
-    public void setFieldType(Integer fieldType);
+    public void setFieldType(Short fieldType);
     
     
-    public Integer getUnit();
+    public Short getUnit();
     
-    public void setUnit(Integer unit);
+    public void setUnit(Short unit);
     
 
     public Date getTimestampCreated();

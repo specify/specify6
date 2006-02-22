@@ -15,41 +15,43 @@ public class CollectionObject  implements java.io.Serializable {
     // Fields    
 
      protected Integer collectionObjectId;
-     protected Integer derivedFromId;
      protected String fieldNumber;
      protected String description;
-     protected String preparationMethod;
      protected String containerType;
      protected Integer containerTypeId;
      protected String text1;
      protected String text2;
      protected Float number1;
      protected Float number2;
-     protected Date timestampCreated;
-     protected Date timestampModified;
-     protected String lastEditedBy;
-     protected Integer preparationMethodId;
      protected Short yesNo1;
      protected Short yesNo2;
      protected Integer count1;
      protected String remarks;
-     protected CollectionObjectType collectionObjectType;
+     protected Integer subNumber;
+     protected String name;
+     protected String modifier;
+     protected Integer catalogedDate;
+     protected Date timestampCreated;
+     protected Date timestampModified;
+     protected String lastEditedBy;
+     protected Short deaccessioned;
+     protected String catalogNumber;
      protected CollectingEvent collectingEvent;
      protected Set observations;
      protected Set soundEventStorages;
-     protected Image image;
-     protected Set imageCollectionObjects;
      protected Set collectionObjectCitations;
-     protected CollectionObjectCatalog collectionObjectCatalog;
-     protected BiologicalObjectAttribute biologicalObjectAttribute;
-     protected Set biologicalObjectRelationsByRelatedBiologicalObjectId;
-     protected Set biologicalObjectRelationsByBiologicalObjectId;
-     protected Preparation preparation;
+     protected Set bioAttrs;
+     protected Set preparations;
      protected Sound sound;
-     protected Set collectionObjects;
-     protected CollectionObject collectionObject;
-     protected Set determinationsByBiologicalObjectId;
-     protected Set determinationsByPreparationId;
+     protected Set determinations;
+     protected Set projectCollectionObjects;
+     protected Set deaccessionCollectionObjects;
+     protected Set otherIdentifiers;
+     protected CatalogSeries catalogSeries;
+     protected Accession accession;
+     protected Agent agent;
+     private Set loanPhysicalObjects;
+     private Set externalFiles;
 
 
     // Constructors
@@ -85,20 +87,6 @@ public class CollectionObject  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="DerivedFromID"
-     *             length="10"
-     *         
-     */
-    public Integer getDerivedFromId() {
-        return this.derivedFromId;
-    }
-    
-    public void setDerivedFromId(Integer derivedFromId) {
-        this.derivedFromId = derivedFromId;
-    }
-
-    /**
-     *      *            @hibernate.property
      *             column="FieldNumber"
      *             length="50"
      *         
@@ -123,20 +111,6 @@ public class CollectionObject  implements java.io.Serializable {
     
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="PreparationMethod"
-     *             length="50"
-     *         
-     */
-    public String getPreparationMethod() {
-        return this.preparationMethod;
-    }
-    
-    public void setPreparationMethod(String preparationMethod) {
-        this.preparationMethod = preparationMethod;
     }
 
     /**
@@ -225,62 +199,6 @@ public class CollectionObject  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *         
-     */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-    
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *         
-     */
-    public Date getTimestampModified() {
-        return this.timestampModified;
-    }
-    
-    public void setTimestampModified(Date timestampModified) {
-        this.timestampModified = timestampModified;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
-     */
-    public String getLastEditedBy() {
-        return this.lastEditedBy;
-    }
-    
-    public void setLastEditedBy(String lastEditedBy) {
-        this.lastEditedBy = lastEditedBy;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="PreparationMethodID"
-     *             length="10"
-     *         
-     */
-    public Integer getPreparationMethodId() {
-        return this.preparationMethodId;
-    }
-    
-    public void setPreparationMethodId(Integer preparationMethodId) {
-        this.preparationMethodId = preparationMethodId;
-    }
-
-    /**
-     *      *            @hibernate.property
      *             column="YesNo1"
      *             length="5"
      *         
@@ -336,17 +254,129 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="CollectionObjectTypeID"         
+     *      *            @hibernate.property
+     *             column="SubNumber"
+     *             length="10"
      *         
      */
-    public CollectionObjectType getCollectionObjectType() {
-        return this.collectionObjectType;
+    public Integer getSubNumber() {
+        return this.subNumber;
     }
     
-    public void setCollectionObjectType(CollectionObjectType collectionObjectType) {
-        this.collectionObjectType = collectionObjectType;
+    public void setSubNumber(Integer subNumber) {
+        this.subNumber = subNumber;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="Name"
+     *             length="50"
+     *         
+     */
+    public String getName() {
+        return this.name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="Modifier"
+     *             length="50"
+     *         
+     */
+    public String getModifier() {
+        return this.modifier;
+    }
+    
+    public void setModifier(String modifier) {
+        this.modifier = modifier;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="CatalogedDate"
+     *             length="10"
+     *         
+     */
+    public Integer getCatalogedDate() {
+        return this.catalogedDate;
+    }
+    
+    public void setCatalogedDate(Integer catalogedDate) {
+        this.catalogedDate = catalogedDate;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="TimestampCreated"
+     *             length="23"
+     *         
+     */
+    public Date getTimestampCreated() {
+        return this.timestampCreated;
+    }
+    
+    public void setTimestampCreated(Date timestampCreated) {
+        this.timestampCreated = timestampCreated;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="TimestampModified"
+     *             length="23"
+     *         
+     */
+    public Date getTimestampModified() {
+        return this.timestampModified;
+    }
+    
+    public void setTimestampModified(Date timestampModified) {
+        this.timestampModified = timestampModified;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="LastEditedBy"
+     *             length="50"
+     *         
+     */
+    public String getLastEditedBy() {
+        return this.lastEditedBy;
+    }
+    
+    public void setLastEditedBy(String lastEditedBy) {
+        this.lastEditedBy = lastEditedBy;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="Deaccessioned"
+     *             length="5"
+     *         
+     */
+    public Short getDeaccessioned() {
+        return this.deaccessioned;
+    }
+    
+    public void setDeaccessioned(Short deaccessioned) {
+        this.deaccessioned = deaccessioned;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="CatalogNumber"
+     *             length="32"
+     *         
+     */
+    public String getCatalogNumber() {
+        return this.catalogNumber;
+    }
+    
+    public void setCatalogNumber(String catalogNumber) {
+        this.catalogNumber = catalogNumber;
     }
 
     /**
@@ -403,38 +433,6 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.one-to-one
-     *             outer-join="auto"
-     *         
-     */
-    public Image getImage() {
-        return this.image;
-    }
-    
-    public void setImage(Image image) {
-        this.image = image;
-    }
-
-    /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="CollectionlObjectID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.ImageCollectionObject"
-     *         
-     */
-    public Set getImageCollectionObjects() {
-        return this.imageCollectionObjects;
-    }
-    
-    public void setImageCollectionObjects(Set imageCollectionObjects) {
-        this.imageCollectionObjects = imageCollectionObjects;
-    }
-
-    /**
      *      *            @hibernate.set
      *             lazy="true"
      *             inverse="true"
@@ -454,80 +452,41 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.one-to-one
-     *             outer-join="auto"
+     *      *            @hibernate.set
+     *             lazy="true"
+     *             inverse="true"
+     *             cascade="delete"
+     *            @hibernate.collection-key
+     *             column="BioAttrsID"
+     *            @hibernate.collection-one-to-many
+     *             class="edu.ku.brc.specify.datamodel.BioAttrs"
      *         
      */
-    public CollectionObjectCatalog getCollectionObjectCatalog() {
-        return this.collectionObjectCatalog;
+    public Set getBioAttrs() {
+        return this.bioAttrs;
     }
     
-    public void setCollectionObjectCatalog(CollectionObjectCatalog collectionObjectCatalog) {
-        this.collectionObjectCatalog = collectionObjectCatalog;
-    }
-
-    /**
-     *      *            @hibernate.one-to-one
-     *             outer-join="auto"
-     *         
-     */
-    public BiologicalObjectAttribute getBiologicalObjectAttribute() {
-        return this.biologicalObjectAttribute;
-    }
-    
-    public void setBiologicalObjectAttribute(BiologicalObjectAttribute biologicalObjectAttribute) {
-        this.biologicalObjectAttribute = biologicalObjectAttribute;
+    public void setBioAttrs(Set bioAttrs) {
+        this.bioAttrs = bioAttrs;
     }
 
     /**
      *      *            @hibernate.set
      *             lazy="true"
      *             inverse="true"
-     *             cascade="none"
+     *             cascade="delete"
      *            @hibernate.collection-key
-     *             column="RelatedBiologicalObjectID"
+     *             column="CollectionObjID"
      *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.BiologicalObjectRelation"
+     *             class="edu.ku.brc.specify.datamodel.Preparation"
      *         
      */
-    public Set getBiologicalObjectRelationsByRelatedBiologicalObjectId() {
-        return this.biologicalObjectRelationsByRelatedBiologicalObjectId;
+    public Set getPreparations() {
+        return this.preparations;
     }
     
-    public void setBiologicalObjectRelationsByRelatedBiologicalObjectId(Set biologicalObjectRelationsByRelatedBiologicalObjectId) {
-        this.biologicalObjectRelationsByRelatedBiologicalObjectId = biologicalObjectRelationsByRelatedBiologicalObjectId;
-    }
-
-    /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="BiologicalObjectID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.BiologicalObjectRelation"
-     *         
-     */
-    public Set getBiologicalObjectRelationsByBiologicalObjectId() {
-        return this.biologicalObjectRelationsByBiologicalObjectId;
-    }
-    
-    public void setBiologicalObjectRelationsByBiologicalObjectId(Set biologicalObjectRelationsByBiologicalObjectId) {
-        this.biologicalObjectRelationsByBiologicalObjectId = biologicalObjectRelationsByBiologicalObjectId;
-    }
-
-    /**
-     *      *            @hibernate.one-to-one
-     *             outer-join="auto"
-     *         
-     */
-    public Preparation getPreparation() {
-        return this.preparation;
-    }
-    
-    public void setPreparation(Preparation preparation) {
-        this.preparation = preparation;
+    public void setPreparations(Set preparations) {
+        this.preparations = preparations;
     }
 
     /**
@@ -547,39 +506,6 @@ public class CollectionObject  implements java.io.Serializable {
      *      *            @hibernate.set
      *             lazy="true"
      *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="ContainerID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.CollectionObject"
-     *         
-     */
-    public Set getCollectionObjects() {
-        return this.collectionObjects;
-    }
-    
-    public void setCollectionObjects(Set collectionObjects) {
-        this.collectionObjects = collectionObjects;
-    }
-
-    /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="ContainerID"         
-     *         
-     */
-    public CollectionObject getCollectionObject() {
-        return this.collectionObject;
-    }
-    
-    public void setCollectionObject(CollectionObject collectionObject) {
-        this.collectionObject = collectionObject;
-    }
-
-    /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
      *             cascade="delete"
      *            @hibernate.collection-key
      *             column="BiologicalObjectID"
@@ -587,12 +513,50 @@ public class CollectionObject  implements java.io.Serializable {
      *             class="edu.ku.brc.specify.datamodel.Determination"
      *         
      */
-    public Set getDeterminationsByBiologicalObjectId() {
-        return this.determinationsByBiologicalObjectId;
+    public Set getDeterminations() {
+        return this.determinations;
     }
     
-    public void setDeterminationsByBiologicalObjectId(Set determinationsByBiologicalObjectId) {
-        this.determinationsByBiologicalObjectId = determinationsByBiologicalObjectId;
+    public void setDeterminations(Set determinations) {
+        this.determinations = determinations;
+    }
+
+    /**
+     *      *            @hibernate.set
+     *             lazy="true"
+     *             inverse="true"
+     *             cascade="none"
+     *            @hibernate.collection-key
+     *             column="CollectionObjectID"
+     *            @hibernate.collection-one-to-many
+     *             class="edu.ku.brc.specify.datamodel.ProjectCollectionObject"
+     *         
+     */
+    public Set getProjectCollectionObjects() {
+        return this.projectCollectionObjects;
+    }
+    
+    public void setProjectCollectionObjects(Set projectCollectionObjects) {
+        this.projectCollectionObjects = projectCollectionObjects;
+    }
+
+    /**
+     *      *            @hibernate.set
+     *             lazy="true"
+     *             inverse="true"
+     *             cascade="none"
+     *            @hibernate.collection-key
+     *             column="CollectionObjectID"
+     *            @hibernate.collection-one-to-many
+     *             class="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject"
+     *         
+     */
+    public Set getDeaccessionCollectionObjects() {
+        return this.deaccessionCollectionObjects;
+    }
+    
+    public void setDeaccessionCollectionObjects(Set deaccessionCollectionObjects) {
+        this.deaccessionCollectionObjects = deaccessionCollectionObjects;
     }
 
     /**
@@ -601,17 +565,89 @@ public class CollectionObject  implements java.io.Serializable {
      *             inverse="true"
      *             cascade="delete"
      *            @hibernate.collection-key
-     *             column="PreparationID"
+     *             column="CollectionObjectID"
      *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Determination"
+     *             class="edu.ku.brc.specify.datamodel.OtherIdentifier"
      *         
      */
-    public Set getDeterminationsByPreparationId() {
-        return this.determinationsByPreparationId;
+    public Set getOtherIdentifiers() {
+        return this.otherIdentifiers;
     }
     
-    public void setDeterminationsByPreparationId(Set determinationsByPreparationId) {
-        this.determinationsByPreparationId = determinationsByPreparationId;
+    public void setOtherIdentifiers(Set otherIdentifiers) {
+        this.otherIdentifiers = otherIdentifiers;
+    }
+
+    /**
+     *      *            @hibernate.many-to-one
+     *             not-null="true"
+     *            @hibernate.column name="CatalogSeriesID"         
+     *         
+     */
+    public CatalogSeries getCatalogSeries() {
+        return this.catalogSeries;
+    }
+    
+    public void setCatalogSeries(CatalogSeries catalogSeries) {
+        this.catalogSeries = catalogSeries;
+    }
+
+    /**
+     *      *            @hibernate.many-to-one
+     *             not-null="true"
+     *            @hibernate.column name="AccessionID"         
+     *         
+     */
+    public Accession getAccession() {
+        return this.accession;
+    }
+    
+    public void setAccession(Accession accession) {
+        this.accession = accession;
+    }
+
+    /**
+     *      *            @hibernate.many-to-one
+     *             not-null="true"
+     *            @hibernate.column name="CatalogerID"         
+     *         
+     */
+    public Agent getAgent() {
+        return this.agent;
+    }
+    
+    public void setAgent(Agent agent) {
+        this.agent = agent;
+    }
+
+    /**
+     *      *            @hibernate.set
+     *             lazy="true"
+     *             inverse="true"
+     *             cascade="none"
+     *            @hibernate.collection-key
+     *             column="PhysicalObjectID"
+     *            @hibernate.collection-one-to-many
+     *             class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"
+     *         
+     */
+    public Set getLoanPhysicalObjects() {
+        return this.loanPhysicalObjects;
+    }
+    
+    public void setLoanPhysicalObjects(Set loanPhysicalObjects) {
+        this.loanPhysicalObjects = loanPhysicalObjects;
+    }
+
+    /**
+     * 
+     */
+    public Set getExternalFiles() {
+        return this.externalFiles;
+    }
+    
+    public void setExternalFiles(Set externalFiles) {
+        this.externalFiles = externalFiles;
     }
 
 

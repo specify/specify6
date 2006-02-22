@@ -52,6 +52,7 @@
             not-null="true"
         </meta>    
     </property>
+    
     <property
         name="type"
         type="java.lang.String"
@@ -65,6 +66,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="issuedDate"
         type="java.lang.Integer"
@@ -78,6 +80,7 @@
             length="10"
         </meta>    
     </property>
+    
     <property
         name="startDate"
         type="java.lang.Integer"
@@ -91,6 +94,7 @@
             length="10"
         </meta>    
     </property>
+    
     <property
         name="endDate"
         type="java.lang.Integer"
@@ -104,6 +108,7 @@
             length="10"
         </meta>    
     </property>
+    
     <property
         name="renewalDate"
         type="java.lang.Integer"
@@ -117,6 +122,7 @@
             length="10"
         </meta>    
     </property>
+    
     <property
         name="remarks"
         type="java.lang.String"
@@ -143,6 +149,7 @@
             length="300"
         </meta>    
     </property>
+    
     <property
         name="text2"
         type="java.lang.String"
@@ -156,6 +163,7 @@
             length="300"
         </meta>    
     </property>
+    
     <property
         name="number1"
         type="java.lang.Float"
@@ -169,6 +177,7 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="number2"
         type="java.lang.Float"
@@ -182,6 +191,7 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="timestampCreated"
         type="java.sql.Timestamp"
@@ -195,6 +205,7 @@
             length="23"
         </meta>    
     </property>
+    
     <property
         name="timestampModified"
         type="java.sql.Timestamp"
@@ -208,6 +219,7 @@
             length="23"
         </meta>    
     </property>
+    
     <property
         name="lastEditedBy"
         type="java.lang.String"
@@ -221,6 +233,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="typeId"
         type="java.lang.Integer"
@@ -234,6 +247,7 @@
             length="10"
         </meta>    
     </property>
+    
     <property
         name="yesNo1"
         type="java.lang.Short"
@@ -247,6 +261,7 @@
             length="5"
         </meta>    
     </property>
+    
     <property
         name="yesNo2"
         type="java.lang.Short"
@@ -289,6 +304,7 @@
             class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
         />
     </set>
+    
     <!-- bi-directional many-to-one association to AgentAddress -->
     <many-to-one
         name="agentAddressByIssueeId"
@@ -303,6 +319,7 @@
         </meta>
         <column name="IssueeID" />
     </many-to-one>
+    
     <!-- bi-directional many-to-one association to AgentAddress -->
     <many-to-one
         name="agentAddressByIssuerId"
@@ -317,6 +334,19 @@
         </meta>
         <column name="IssuerID" />
     </many-to-one>
+
+    <!-- bi-directional many-to-many association to PermitExternalFile -->
+    <set
+        name="externalFiles"
+        table="permit_extfiles"
+        lazy="true"
+        inverse="true"
+		cascade="save-update">
+        <key>
+            <column name="PermitID" />
+        </key>
+        <many-to-many class="edu.ku.brc.specify.datamodel.PermitExternalFile" column="PermitExternalFile"/>
+    </set>
 
 </class>
 </hibernate-mapping>

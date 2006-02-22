@@ -24,7 +24,7 @@ public class LoanPhysicalObject  implements java.io.Serializable {
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
-     private CollectionObj collectionObjectCatalog;
+     private CollectionObject collectionObject;
      private Loan loan;
      private Set loanReturnPhysicalObjects;
 
@@ -192,12 +192,12 @@ public class LoanPhysicalObject  implements java.io.Serializable {
      *            @hibernate.column name="PhysicalObjectID"         
      *         
      */
-    public CollectionObj getCollectionObjectCatalog() {
-        return this.collectionObjectCatalog;
+    public CollectionObject getCollectionObject() {
+        return this.collectionObject;
     }
     
-    public void setCollectionObjectCatalog(CollectionObj collectionObjectCatalog) {
-        this.collectionObjectCatalog = collectionObjectCatalog;
+    public void setCollectionObject(CollectionObject collectionObject) {
+        this.collectionObject = collectionObject;
     }
 
     /**

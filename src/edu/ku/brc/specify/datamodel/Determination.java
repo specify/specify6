@@ -15,9 +15,9 @@ public class Determination  implements java.io.Serializable {
     // Fields    
 
      protected Integer determinationId;
-     protected Boolean current1;
+     protected Boolean isCurrent;
      protected String typeStatusName;
-     protected Integer date1;
+     protected Integer dateField;
      protected String confidence;
      protected String method;
      protected String featureOrBasis;
@@ -34,12 +34,11 @@ public class Determination  implements java.io.Serializable {
      protected Integer methodId;
      protected Short yesNo1;
      protected Short yesNo2;
-     protected CollectionObjectType collectionObjectType;
-     protected TaxonName taxonName;
-     protected CollectionObj collectionObjectByBiologicalObjectId;
-     protected CollectionObj collectionObjectByPreparationId;
+     protected Taxon Taxon;
+     protected CollectionObject collectionObject;
+     protected Preparation preparations;
      private Set determinationCitations;
-     private Agent agent;
+     private Agent determiner;
 
 
     // Constructors
@@ -75,17 +74,17 @@ public class Determination  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="Current1"
+     *             column="IsCurrent"
      *             length="1"
      *             not-null="true"
      *         
      */
-    public Boolean getCurrent1() {
-        return this.current1;
+    public Boolean getIsCurrent() {
+        return this.isCurrent;
     }
     
-    public void setCurrent1(Boolean current1) {
-        this.current1 = current1;
+    public void setIsCurrent(Boolean isCurrent) {
+        this.isCurrent = isCurrent;
     }
 
     /**
@@ -104,16 +103,16 @@ public class Determination  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="Date1"
+     *             column="DateField"
      *             length="10"
      *         
      */
-    public Integer getDate1() {
-        return this.date1;
+    public Integer getDateField() {
+        return this.dateField;
     }
     
-    public void setDate1(Integer date1) {
-        this.date1 = date1;
+    public void setDateField(Integer dateField) {
+        this.dateField = dateField;
     }
 
     /**
@@ -343,44 +342,30 @@ public class Determination  implements java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="BiologicalObjectTypeID"         
+     *            @hibernate.column name="TaxonID"         
      *         
      */
-    public CollectionObjectType getCollectionObjectType() {
-        return this.collectionObjectType;
+    public Taxon getTaxon() {
+        return this.Taxon;
     }
     
-    public void setCollectionObjectType(CollectionObjectType collectionObjectType) {
-        this.collectionObjectType = collectionObjectType;
-    }
-
-    /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="TaxonNameID"         
-     *         
-     */
-    public TaxonName getTaxonName() {
-        return this.taxonName;
-    }
-    
-    public void setTaxonName(TaxonName taxonName) {
-        this.taxonName = taxonName;
+    public void setTaxon(Taxon Taxon) {
+        this.Taxon = Taxon;
     }
 
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
      * 			cascade="delete"
-     *            @hibernate.column name="BiologicalObjectID"         
+     *            @hibernate.column name="CollectionObjectID"         
      *         
      */
-    public CollectionObj getCollectionObjectByBiologicalObjectId() {
-        return this.collectionObjectByBiologicalObjectId;
+    public CollectionObject getCollectionObject() {
+        return this.collectionObject;
     }
     
-    public void setCollectionObjectByBiologicalObjectId(CollectionObj collectionObjectByBiologicalObjectId) {
-        this.collectionObjectByBiologicalObjectId = collectionObjectByBiologicalObjectId;
+    public void setCollectionObject(CollectionObject collectionObject) {
+        this.collectionObject = collectionObject;
     }
 
     /**
@@ -390,12 +375,12 @@ public class Determination  implements java.io.Serializable {
      *            @hibernate.column name="PreparationID"         
      *         
      */
-    public CollectionObj getCollectionObjectByPreparationId() {
-        return this.collectionObjectByPreparationId;
+    public Preparation getPreparations() {
+        return this.preparations;
     }
     
-    public void setCollectionObjectByPreparationId(CollectionObj collectionObjectByPreparationId) {
-        this.collectionObjectByPreparationId = collectionObjectByPreparationId;
+    public void setPreparations(Preparation preparations) {
+        this.preparations = preparations;
     }
 
     /**
@@ -424,12 +409,12 @@ public class Determination  implements java.io.Serializable {
      *            @hibernate.column name="DeterminerID"         
      *         
      */
-    public Agent getAgent() {
-        return this.agent;
+    public Agent getDeterminer() {
+        return this.determiner;
     }
     
-    public void setAgent(Agent agent) {
-        this.agent = agent;
+    public void setDeterminer(Agent determiner) {
+        this.determiner = determiner;
     }
 
 

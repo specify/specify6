@@ -206,6 +206,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="methodId"
         type="java.lang.Integer"
@@ -221,59 +222,15 @@
     </property>
 
     <!-- Associations -->
-	<!-- ADDED - WAS NOT PART OF ORIGINAL MAPPING FILES - RELATIONSHIP
-		WAS ENFORCED, PREVIOUSLY, THROUGH HARD-CODES IN THE SPECIFY APPLICATION
-		AND NOT THROUGH THE DATABASE ENGINE -->
-    <!-- bi-directional many-to-one association to CollectionObjectType -->
-    <many-to-one
-        name="collectionObjectType"
-        class="edu.ku.brc.specify.datamodel.CollectionObjectType"
-        not-null="true"
-		outer-join="true"
-    >
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="BiologicalObjectTypeCollectedID"         
-        </meta>
-        <column name="BiologicalObjectTypeCollectedID" />
-    </many-to-one> 
 
-    <!-- bi-directional one-to-one association to Habitat -->
-    <one-to-one
-        name="habitat"
-        class="edu.ku.brc.specify.datamodel.Habitat"
-        outer-join="auto"
-		cascade="delete"
-    >
-	<meta attribute="scope-field">protected</meta> <!-- meg added -->
-        <meta attribute="field-description">
-           @hibernate.one-to-one
-            outer-join="auto"
-			cascade="delete"
-        </meta>
-    </one-to-one>
-    <!-- bi-directional one-to-one association to Stratigraphy -->
-    <one-to-one
-        name="stratigraphy"
-        class="edu.ku.brc.specify.datamodel.Stratigraphy"
-        outer-join="auto"
-		cascade="delete"
-    >
-        <meta attribute="field-description">
-           @hibernate.one-to-one
-            outer-join="auto"
-			cascade="delete"
-        </meta>
-    </one-to-one>
-    <!-- bi-directional one-to-many association to CollectionObj -->
+    <!-- bi-directional one-to-many association to CollectionObject -->
     <set
         name="collectionObjects"
         lazy="true"
         inverse="true"
 		cascade="none"
     >    
-	<meta attribute="scope-field">protected</meta> <!-- meg added -->
+	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.set
             lazy="true"
@@ -284,13 +241,13 @@
             column="CollectingEventID"
 
            @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.CollectionObj"
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
         </meta> 
         <key>
             <column name="CollectingEventID" />
         </key>
         <one-to-many 
-            class="edu.ku.brc.specify.datamodel.CollectionObj"
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
         />
     </set>
 	
@@ -320,6 +277,7 @@
             class="edu.ku.brc.specify.datamodel.Collector"
         />
     </set>
+    
     <!-- bi-directional many-to-one association to Locality -->
    <many-to-one 
         name="locality"
@@ -335,13 +293,35 @@
         </meta>
         <column name="LocalityID" />
     </many-to-one>
+    
+    <!-- bi-directional one-to-many association to HabitatAttrs -->
+    <set
+        name="habitatAttrs"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="delete"
 
-     <!-- NEED TO BE REOMOVE - HACK FOR DEMO -->
-        <many-to-one name="accession"
-                 column="accessionId"
-                 class="edu.ku.brc.specify.datamodel.Accession">
-      <meta attribute="scope-field">protected</meta>
-	</many-to-one>
+           @hibernate.collection-key
+            column="HabitatAttrsID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.HabitatAttrs"
+        </meta>
+        <key>
+            <column name="HabitatAttrsID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.HabitatAttrs"
+        />
+    </set>	
+    
 
 </class>
 </hibernate-mapping>

@@ -18,13 +18,13 @@ public class PrepAttrs  implements AttrsSettableGettable,java.io.Serializable {
      protected String name;
      protected String strValue;
      protected Integer intValue;
-     protected Integer fieldType;
-     protected Integer unit;
+     protected Short fieldType;
+     protected Short unit;
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String remarks;
-     private PrepsObj prepsObj;
-     private TaxonName taxonName;
+     private Preparation preparation;
+     private Taxon Taxon;
 
 
     // Constructors
@@ -44,11 +44,7 @@ public class PrepAttrs  implements AttrsSettableGettable,java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="assigned"
-     *             type="java.lang.Integer"
-     *             column="PrepAttrsID"
-     *         
+     * 
      */
     public Integer getPrepAttrsId() {
         return this.prepAttrsId;
@@ -60,8 +56,8 @@ public class PrepAttrs  implements AttrsSettableGettable,java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="name"
-     *             length="50"
+     *             column="Name"
+     *             length="32"
      *         
      */
     public String getName() {
@@ -103,14 +99,14 @@ public class PrepAttrs  implements AttrsSettableGettable,java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="fieldType"
-     *             length="10"
+     *             length="2"
      *         
      */
-    public Integer getFieldType() {
+    public Short getFieldType() {
         return this.fieldType;
     }
     
-    public void setFieldType(Integer fieldType) {
+    public void setFieldType(Short fieldType) {
         this.fieldType = fieldType;
     }
 
@@ -120,11 +116,11 @@ public class PrepAttrs  implements AttrsSettableGettable,java.io.Serializable {
      *             length="2"
      *         
      */
-    public Integer getUnit() {
+    public Short getUnit() {
         return this.unit;
     }
     
-    public void setUnit(Integer unit) {
+    public void setUnit(Short unit) {
         this.unit = unit;
     }
 
@@ -173,29 +169,29 @@ public class PrepAttrs  implements AttrsSettableGettable,java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="PrepsObjID"
+     *            @hibernate.column name="PreparationId"
      *         
      */
-    public PrepsObj getPrepsObj() {
-        return this.prepsObj;
+    public Preparation getPreparation() {
+        return this.preparation;
     }
     
-    public void setPrepsObj(PrepsObj prepsObj) {
-        this.prepsObj = prepsObj;
+    public void setPreparation(Preparation preparation) {
+        this.preparation = preparation;
     }
 
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="ParasiteTaxonNameID"         
+     *            @hibernate.column name="ParasiteTaxonID"         
      *         
      */
-    public TaxonName getTaxonName() {
-        return this.taxonName;
+    public Taxon getTaxon() {
+        return this.Taxon;
     }
     
-    public void setTaxonName(TaxonName taxonName) {
-        this.taxonName = taxonName;
+    public void setTaxon(Taxon Taxon) {
+        this.Taxon = Taxon;
     }
 
 

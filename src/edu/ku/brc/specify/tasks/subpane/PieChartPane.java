@@ -30,7 +30,6 @@ import java.awt.Color;
 import javax.swing.Icon;
 
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
 

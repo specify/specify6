@@ -24,32 +24,12 @@
     <id
         name="attrsDefId"
         type="java.lang.Integer"
-        column="AttrsDef"
+        column="AttrsDefID"
     >
-        <meta attribute="field-description">
-           @hibernate.id
-            generator-class="assigned"
-            type="java.lang.Integer"
-            column="AttrsDefID"
-
-        </meta>
-        <meta attribute="scope-field">protected</meta>
-        <generator class="assigned" />
+      <meta attribute="scope-set">public</meta>
+      <meta attribute="scope-field">protected</meta>
+      <generator class="native"/>
     </id>
-
-    <property
-        name="disciplineType"
-        type="java.lang.Short"
-        column="disciplineType"
-        length="5"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="disciplineType"
-            length="5"
-        </meta>    
-    </property>
 
     <!--
 		Indicates whether it is for Habitat or Biological
@@ -116,7 +96,24 @@
             length="5"
         </meta>    
     </property>
-
-
+    
+    <!-- Associations -->
+    
+    <!-- many-to-one association to CollectionObjDef -->
+    <many-to-one
+        name="collectionObjDefID"
+        class="edu.ku.brc.specify.datamodel.CollectionObjDef"
+        not-null="true"
+		outer-join="true"
+    >
+	    <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="CollectionObjDefID"
+        </meta>
+        <column name="CollectionObjDefID" />
+    </many-to-one>
+    
 </class>
 </hibernate-mapping>

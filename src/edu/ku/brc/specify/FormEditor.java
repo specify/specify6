@@ -56,7 +56,7 @@ import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.CollectionObj;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
@@ -153,7 +153,7 @@ public class FormEditor
                     
                     DBConnection.setUsernamePassword("rods", "rods");
                     DBConnection.setDriver("com.mysql.jdbc.Driver");
-                    DBConnection.setDBName("jdbc:mysql://localhost/demo_fish2");
+                    DBConnection.setDBName("jdbc:mysql://localhost/demo_fish3");
                     
                     if (currViewSetName.equals("view valid") && (currFormId == 0 || currFormId == 333))
                     {
@@ -209,7 +209,7 @@ public class FormEditor
                         boolean doCatalogItems = true;
                         if (doCatalogItems)
                         {
-                            Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CollectionObj.class).setMaxResults(300);
+                            Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CollectionObject.class).setMaxResults(300);
                             //criteria.add(Expression.isNull("derivedFromId"));
                             
                             

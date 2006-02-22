@@ -31,7 +31,6 @@ public class Deaccession  implements java.io.Serializable {
      protected Short yesNo2;
      private Set deaccessionAgents;
      private Set deaccessionCollectionObjects;
-     private Collection collection;
 
 
     // Constructors
@@ -297,20 +296,6 @@ public class Deaccession  implements java.io.Serializable {
     
     public void setDeaccessionCollectionObjects(Set deaccessionCollectionObjects) {
         this.deaccessionCollectionObjects = deaccessionCollectionObjects;
-    }
-
-    /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="CollectionID"         
-     *         
-     */
-    public Collection getCollection() {
-        return this.collection;
-    }
-    
-    public void setCollection(Collection collection) {
-        this.collection = collection;
     }
 
 

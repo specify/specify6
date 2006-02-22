@@ -20,14 +20,12 @@
 package edu.ku.brc.specify.extfilerepos.impl;
 
 import java.io.File;
-import java.util.Date;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Session;
 
-import edu.ku.brc.specify.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.extfilerepos.ExternalFileRepositoryIFace;
 import edu.ku.brc.specify.helpers.AskForDirectory;
 
@@ -75,19 +73,19 @@ public class ExternalFileRepository implements ExternalFileRepositoryIFace
      
     /**
      * 
-     * @param aPath the directory path to check
+     * @param path the directory path to check
      * @return return null if no errors or returns a string describing the error
      */
-    protected static String checkPath(String aPath)
+    protected static String checkPath(final String path)
     {
         String errMsg = null;
-        File   dir    = new File(aPath);
+        File   dir    = new File(path);
         if (!dir.exists())
         {
-            errMsg = "Directory " + aPath + " doesn`t exist."; // XXX LOCALIZE
+            errMsg = "Directory " + path + " doesn`t exist."; // XXX LOCALIZE
         } else if (!dir.isDirectory())
         {
-            errMsg = "Path " + aPath + " is not a directory"; // XXX LOCALIZE         
+            errMsg = "Path " + path + " is not a directory"; // XXX LOCALIZE         
         }
         return errMsg;
     }
@@ -95,41 +93,41 @@ public class ExternalFileRepository implements ExternalFileRepositoryIFace
    
     /**
      * 
-     * @param aAskForDir Can be null, a class that is used as the UI to get a valid directory path for the repository
-     * @param aConfig config object
+     * @param askForDir Can be null, a class that is used as the UI to get a valid directory path for the repository
+     * @param config config object
      * @throws NoSuchElementException throws expection if ultimately no path is found or given
      */
-    public static void createInstance(AskForDirectory aAskForDir, 
-                                      org.apache.commons.configuration.Configuration aConfig) throws NoSuchElementException
+    public static void createInstance(final AskForDirectory askForDir, 
+                                      final org.apache.commons.configuration.Configuration config) throws NoSuchElementException
     {
         String  msg   = null;
-        String  path  = aConfig.getString(EXTERNAL_FILE_REPOS_PATH);
+        String  path  = config.getString(EXTERNAL_FILE_REPOS_PATH);
         if (path == null)
         {
             msg = "Properties file is missing setting `" + EXTERNAL_FILE_REPOS_PATH + "`"; // XXX LOCALIZE
-            if (aAskForDir != null)
+            if (askForDir != null)
             {
-                aAskForDir.showErrorDialog(msg);
+                askForDir.showErrorDialog(msg);
             }            
             log.fatal(msg);
         }
         
-        if (aAskForDir != null)
+        if (askForDir != null)
         {
             // the dir prop didn't exist so ask for one
             if (msg != null || path == null)
             {
-                path = aAskForDir.getDirectory();
-                aConfig.addProperty(EXTERNAL_FILE_REPOS_PATH, path);
+                path = askForDir.getDirectory();
+                config.addProperty(EXTERNAL_FILE_REPOS_PATH, path);
             } else
             {
                 // Property existed, now check to see if it is valid
                 msg = checkPath(path);
                 if (msg == null)
                 {
-                    aAskForDir.showErrorDialog(msg);
-                    path = aAskForDir.getDirectory();
-                    aConfig.addProperty(EXTERNAL_FILE_REPOS_PATH, path);
+                    askForDir.showErrorDialog(msg);
+                    path = askForDir.getDirectory();
+                    config.addProperty(EXTERNAL_FILE_REPOS_PATH, path);
                 }
             }
         } else 
@@ -149,27 +147,34 @@ public class ExternalFileRepository implements ExternalFileRepositoryIFace
         instance.reposDir = new File(path);
     }
     
-    /**
-     * Copies file into the repository
-     * @param aName Logical name of file (must be unique
-     * @param aDesc a description of the file
-     * @param aMimeType the mime type of the file, it can be null then it will assume it is a octet-stream
-     *                   (see http://www.iana.org/assignments/media-types/application/)
-     * @param aLocation the external file location
-     * @return returns true if file is put in repos, false if not
+    //--------------------------------------
+    // ExternalFileRepositoryIFace Interface
+    //--------------------------------------
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.extfilerepos.ExternalFileRepositoryIFace#put(java.lang.String, java.lang.String, java.lang.String, java.lang.String, edu.ku.brc.specify.datamodel.Agent)
      */
-    public boolean put(String aName, String aDesc, String aMimeType, String aLocation)
+    public boolean put(final String fileName, 
+                       final String mimeType, 
+                       final String externalLocation, 
+                       final String remarks,
+                       final Agent  agent)
     {
+        /*
         try
         {
             Session session = HibernateUtil.getCurrentSession();
             HibernateUtil.beginTransaction();
             
-            ExternalFileEntry entry = new ExternalFileEntry();
-            entry.setName(aName);
-            entry.setDescr(aDesc);
-            entry.setMimeType(aMimeType);
-            entry.setCreated(new Date());
+            ExternalFile entry = new ExternalFile();
+            entry.setFileName(fileName);
+            entry.setRemarks(remarks);
+            entry.setMimeType(mimeType);
+            entry.setExternalLocation(externalLocation);
+            entry.setCreatedByAgent(agent);
+            entry.setTimestampCreated(new Date());
+            entry.setTimestampModified(new Date());
         
             session.save(entry);
         
@@ -180,24 +185,23 @@ public class ExternalFileRepository implements ExternalFileRepositoryIFace
             log.error("Error saving ExternalFileEntry to database.", ex);
             return false;
         }
-        
+        */
         return true;
     }
     
-    /**
-     * Removes a ExternalFileEntry
-     * @param aId ID of file to be deleted
-     * @return true is file is deleted, false if not or if it couldn't be found
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.extfilerepos.ExternalFileRepositoryIFace#remove(java.lang.Integer)
      */
-    public boolean remove(Long aId)
+    public boolean remove(final Integer id)
     {
+        /*
         try
         {
             Session session = HibernateUtil.getCurrentSession();
             HibernateUtil.beginTransaction();
             
-            ExternalFileEntry entry = new ExternalFileEntry();
-            entry.setId(aId);
+            ExternalFile entry = new ExternalFile();
+            entry.setExternalFileId(id);
         
             session.delete(entry);
         
@@ -207,28 +211,22 @@ public class ExternalFileRepository implements ExternalFileRepositoryIFace
         {
             log.error("Error saving ExternalFileEntry to database.", ex);
             return false;
-        }
+        }*/
         return true;
     }
     
-
-    
-    /**
-     * Returns an image by logical name (not implemented)
-     * @param aLogicalName
-     * @return the image or null if it wasn't found
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.extfilerepos.ExternalFileRepositoryIFace#get(java.lang.String)
      */
-    public File get(String aLogicalName)
+    public File get(final String fileName)
     {
         return null;
     }
     
-    /**
-     * Returns an image by records ID (not implemented)
-     * @param aImageID
-     * @return the image or null if it wasn't found
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.extfilerepos.ExternalFileRepositoryIFace#get(long)
      */
-    public File get(long aImageID)
+    public File get(final long imageID)
     {
         return null;
     }

@@ -29,13 +29,10 @@ public class CollectingEvent  implements java.io.Serializable {
      protected Date timestampCreated;
      protected String lastEditedBy;
      protected Integer methodId;
-     private CollectionObjectType collectionObjectType;
-     protected Habitat habitat;
-     private Stratigraphy stratigraphy;
      protected Set collectionObjects;
      private Set collectors;
      protected Locality locality;
-     protected Accession accession;
+     protected Set habitatAttrs;
 
 
     // Constructors
@@ -266,48 +263,6 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="BiologicalObjectTypeCollectedID"         
-     *         
-     */
-    public CollectionObjectType getCollectionObjectType() {
-        return this.collectionObjectType;
-    }
-    
-    public void setCollectionObjectType(CollectionObjectType collectionObjectType) {
-        this.collectionObjectType = collectionObjectType;
-    }
-
-    /**
-     *      *            @hibernate.one-to-one
-     *             outer-join="auto"
-     * 			cascade="delete"
-     *         
-     */
-    public Habitat getHabitat() {
-        return this.habitat;
-    }
-    
-    public void setHabitat(Habitat habitat) {
-        this.habitat = habitat;
-    }
-
-    /**
-     *      *            @hibernate.one-to-one
-     *             outer-join="auto"
-     * 			cascade="delete"
-     *         
-     */
-    public Stratigraphy getStratigraphy() {
-        return this.stratigraphy;
-    }
-    
-    public void setStratigraphy(Stratigraphy stratigraphy) {
-        this.stratigraphy = stratigraphy;
-    }
-
-    /**
      *      *            @hibernate.set
      *             lazy="true"
      *             inverse="true"
@@ -315,7 +270,7 @@ public class CollectingEvent  implements java.io.Serializable {
      *            @hibernate.collection-key
      *             column="CollectingEventID"
      *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.CollectionObj"
+     *             class="edu.ku.brc.specify.datamodel.CollectionObject"
      *         
      */
     public Set getCollectionObjects() {
@@ -360,14 +315,22 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     * 
+     *      *            @hibernate.set
+     *             lazy="true"
+     *             inverse="true"
+     *             cascade="delete"
+     *            @hibernate.collection-key
+     *             column="HabitatAttrsID"
+     *            @hibernate.collection-one-to-many
+     *             class="edu.ku.brc.specify.datamodel.HabitatAttrs"
+     *         
      */
-    public Accession getAccession() {
-        return this.accession;
+    public Set getHabitatAttrs() {
+        return this.habitatAttrs;
     }
     
-    public void setAccession(Accession accession) {
-        this.accession = accession;
+    public void setHabitatAttrs(Set habitatAttrs) {
+        this.habitatAttrs = habitatAttrs;
     }
 
 

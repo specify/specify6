@@ -20,7 +20,7 @@ public class DeaccessionCollectionObject  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     private CollectionObjectCatalog collectionObjectCatalog;
+     private CollectionObject collectionObjectCatalog;
      private Deaccession deaccession;
      private Set loanReturnPhysicalObjects;
 
@@ -132,11 +132,11 @@ public class DeaccessionCollectionObject  implements java.io.Serializable {
      *            @hibernate.column name="CollectionObjectID"         
      *         
      */
-    public CollectionObjectCatalog getCollectionObjectCatalog() {
+    public CollectionObject getCollectionObjectCatalog() {
         return this.collectionObjectCatalog;
     }
     
-    public void setCollectionObjectCatalog(CollectionObjectCatalog collectionObjectCatalog) {
+    public void setCollectionObjectCatalog(CollectionObject collectionObjectCatalog) {
         this.collectionObjectCatalog = collectionObjectCatalog;
     }
 

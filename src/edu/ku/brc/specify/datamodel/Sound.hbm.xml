@@ -92,22 +92,23 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional one-to-one association to CollectionObj -->
+    <!-- bi-directional one-to-one association to CollectionObject -->
     <one-to-one
         name="collectionObject"
-        class="edu.ku.brc.specify.datamodel.CollectionObj"
+        class="edu.ku.brc.specify.datamodel.CollectionObject"
         outer-join="auto"
         constrained="true"
 		cascade="delete"
     >
         <meta attribute="field-description">
            @hibernate.one-to-one
-            class="edu.ku.brc.specify.datamodel.CollectionObj"
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
             outer-join="auto"
             constrained="true"
 			cascade="delete"
         </meta>    
     </one-to-one>
+    
     <!-- bi-directional one-to-many association to SoundEventStorage -->
     <set
         name="soundEventStorages"

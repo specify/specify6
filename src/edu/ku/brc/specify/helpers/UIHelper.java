@@ -375,7 +375,7 @@ public final class UIHelper
      * @param includeCutCopyPaste
      * @return
      */
-    public static JMenuBar getBasicMenuBar(final AppIFace app, final boolean isPlatformSpecific, final boolean includeCutCopyPaste)
+    public static JMenuBar getBasicMenuBar(final Object app, final boolean isPlatformSpecific, final boolean includeCutCopyPaste)
     {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = createMenu(menuBar, getResourceString("FileMenu"), getResourceString("FileMneu"));
@@ -386,7 +386,7 @@ public final class UIHelper
             fileMenu.add(createMenu(getResourceString("ExitMenu"), getResourceString("ExitAccl").charAt(0), getResourceString("ExitMneu")));
         } else
         {
-            new MacOSAppHandler(app);
+            //new MacOSAppHandler((AppIFace)app);
         }
 
         if (includeCutCopyPaste)

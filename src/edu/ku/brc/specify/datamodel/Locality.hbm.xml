@@ -602,25 +602,8 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to Geography -->
-  <!--  <many-to-one
-        name="geographyByGeographyId"
-        class="edu.ku.brc.specify.datamodel.Geography"
-        not-null="true"
-		outer-join="true"
-    >
-	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="GeographyID"         
-        </meta>
-        <column name="GeographyID" />
-    </many-to-one>-->
-	
-	
-    <!-- bi-directional many-to-one association to Geography -->
     <many-to-one
-        name="geographyByGeographyId1"
+        name="geography"
         class="edu.ku.brc.specify.datamodel.Geography"
         not-null="true"
 		outer-join="true"
@@ -633,6 +616,7 @@
         </meta>
         <column name="GeographyID" />
     </many-to-one>
+    
     <!-- bi-directional one-to-many association to LocalityCitation -->
     <set
         name="localityCitations"
@@ -688,33 +672,19 @@
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
         />
     </set>
-    <!-- bi-directional one-to-many association to ImageLocality -->
+    
+    <!-- bi-directional many-to-many association to LocalityExternalFile -->
     <set
-        name="imageLocalities"
+        name="externalFiles"
+        table="locality_extfiles"
         lazy="true"
         inverse="true"
-		cascade="none"
-    >
-	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="LocalityID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.ImageLocality"
-        </meta>
+		cascade="save-update">
         <key>
             <column name="LocalityID" />
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.ImageLocality"
-        />
+        <many-to-many class="edu.ku.brc.specify.datamodel.LocalityExternalFile" column="LocalityExternalFileID"/>
     </set>
-
+    
 </class>
 </hibernate-mapping>

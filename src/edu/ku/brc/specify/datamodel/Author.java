@@ -15,7 +15,7 @@ public class Author  implements java.io.Serializable {
     // Fields    
 
      protected Integer authorsId;
-     protected Short order1;
+     protected Short orderNumber;
      protected String remarks;
      protected Date timestampModified;
      protected Date timestampCreated;
@@ -57,17 +57,17 @@ public class Author  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="Order1"
+     *             column="OrderNumber"
      *             length="5"
      *             not-null="true"
      *         
      */
-    public Short getOrder1() {
-        return this.order1;
+    public Short getOrderNumber() {
+        return this.orderNumber;
     }
     
-    public void setOrder1(Short order1) {
-        this.order1 = order1;
+    public void setOrderNumber(Short orderNumber) {
+        this.orderNumber = orderNumber;
     }
 
     /**

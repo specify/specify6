@@ -15,7 +15,7 @@ public class Collector  implements java.io.Serializable {
     // Fields    
 
      protected Integer collectorsId;
-     private Integer order1;
+     private Integer orderNumber;
      private String remarks;
      private Date timestampModified;
      private Date timestampCreated;
@@ -57,17 +57,17 @@ public class Collector  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="Order1"
+     *             column="OrderNumber"
      *             length="10"
      *             not-null="true"
      *         
      */
-    public Integer getOrder1() {
-        return this.order1;
+    public Integer getOrderNumber() {
+        return this.orderNumber;
     }
     
-    public void setOrder1(Integer order1) {
-        this.order1 = order1;
+    public void setOrderNumber(Integer orderNumber) {
+        this.orderNumber = orderNumber;
     }
 
     /**
