@@ -23,9 +23,7 @@ import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.User;
 import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.DBConnection;
-import edu.ku.brc.specify.dbsupport.HibernatePage;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.dbsupport.Pagable;
 import edu.ku.brc.specify.dbsupport.ResultsPager;
 
 /**
@@ -1132,7 +1130,7 @@ public class SpecifyDBConverter
             
             for (Iterator iter=data.iterator();iter.hasNext();)
             {
-                CollectionObject        colObj    = (CollectionObject)iter.next();
+                //CollectionObject        colObj    = (CollectionObject)iter.next();
                 /*
                 CollectionObjectCatalog colObjCat = colObj.getCollectionObjectCatalog();
                 System.out.println(colObj.getCollectionObjectId());
