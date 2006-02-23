@@ -4,52 +4,60 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
     
 <hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class 
-    name="edu.ku.brc.specify.datamodel.GeologicTimePeriod" 
-    table="geologictimeperiod"
+    name="edu.ku.brc.specify.datamodel.Location" 
+    table="location"
 	lazy="true"
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="geologictimeperiod"
+        table="location"
     </meta>
 
     <id
-        name="geologicTimePeriodId"
+        name="locationId"
         type="java.lang.Integer"
-        column="GeologicTimePeriodID"
+        column="LocationID"
     >
         <meta attribute="field-description">
            @hibernate.id
             generator-class="assigned"
             type="java.lang.Integer"
-            column="GeologicTimePeriodID"
+            column="LocationID"
 
         </meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="assigned" />
     </id>
-
+    
     <property
         name="parentId"
         type="java.lang.Integer"
         column="ParentID"
         length="10"
-        index="IX_GTP_ParentID"
+        index="index_name"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="ParentTaxonID"
             length="10"
-            index="IX_GTP_ParentID"
+            index="index_name"
+        </meta>    
+    </property>
+
+    <property
+        name="name"
+        type="java.lang.String"
+        column="name"
+        length="128"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="name"
+            length="128"
         </meta>    
     </property>
     
@@ -58,44 +66,29 @@
         type="java.lang.Integer"
         column="RankID"
         length="10"
-        index="IX_GTP_RankId"
+        index="index_name"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="RankID"
             length="10"
-            index="IX_GTP_RankId"
         </meta>    
     </property>
     
-    <property
-        name="name"
-        type="java.lang.String"
-        column="Name"
-        length="64"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Name"
-            length="64"
-        </meta>    
-    </property>
     
     <property
         name="nodeNumber"
         type="java.lang.Integer"
         column="NodeNumber"
         length="10"
-        index="IX_GTP_NodeNumber"
+        index="index_name"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="NodeNumber"
             length="10"
-            index="IX_GTP_NodeNumber"
         </meta>    
     </property>
     
@@ -104,85 +97,83 @@
         type="java.lang.Integer"
         column="HighestChildNodeNumber"
         length="10"
-        index="IX_GTP_NighestChildNodeNumber"
+        index="index_name"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="HighestChildNodeNumber"
             length="10"
-            index="IX_GTP_NighestChildNodeNumber"
         </meta>    
     </property>
     
     <property
-        name="standard"
+        name="abbrev"
         type="java.lang.String"
-        column="Standard"
-        length="64"
+        column="abbrev"
+        length="16"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="Standard"
-            length="64"
+            column="abbrev"
+            length="16"
         </meta>    
     </property>
     
     <property
-        name="age"
-        type="java.lang.Float"
-        column="Age"
-        length="24"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Age"
-            length="24"
-        </meta>    
-    </property>
-    
-    <property
-        name="ageUncertainty"
-        type="java.lang.Float"
-        column="AgeUncertainty"
-        length="24"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="AgeUncertainty"
-            length="24"
-        </meta>    
-    </property>
-    
-    
-    <property
-        name="remarks"
+        name="text1"
         type="java.lang.String"
-        column="Remarks"
-        length="1073741823"
+        column="State"
+        length="32"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="Remarks"
-            length="1073741823"
+            column="text1"
+            length="32"
         </meta>    
     </property>
     
     <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
+        name="text2"
+        type="java.lang.String"
+        column="State"
+        length="32"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="TimestampModified"
-            length="23"
+            column="text2"
+            length="32"
+        </meta>    
+    </property>
+    
+    <property
+        name="number1"
+        type="java.lang.Integer"
+        column="Number1"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Number1"
+            length="10"
+        </meta>    
+    </property>
+    
+    <property
+        name="number2"
+        type="java.lang.Integer"
+        column="Number2"
+        length="10"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Number2"
+            length="10"
         </meta>    
     </property>
     
@@ -196,6 +187,20 @@
         <meta attribute="field-description">
            @hibernate.property
             column="TimestampCreated"
+            length="23"
+        </meta>    
+    </property>
+    
+    <property
+        name="timestampModified"
+        type="java.sql.Timestamp"
+        column="TimestampModified"
+        length="23"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampModified"
             length="23"
         </meta>    
     </property>
@@ -218,76 +223,48 @@
         name="lastEditedBy"
         type="java.lang.String"
         column="LastEditedBy"
-        length="32"
+        length="50"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="LastEditedBy"
-            length="32"
+            length="50"
+        </meta>    
+    </property>
+    
+    <property
+        name="isCurrent"
+        type="java.lang.Short"
+        column="IsCurrent"
+        length="5"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="IsCurrent"
+            length="5"
         </meta>    
     </property>
 
     <!-- Associations -->
-  
-    <!-- bi-directional one-to-many association to Stratigraphy -->
-    <!-- <set
-        name="children"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="GeologicTimePeriodID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.Stratigraphy"
-        </meta>
-        <key>
-            <column name="StratigraphyID" />
-        </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.Stratigraphy"
-        />
-    </set> -->
     
-    <!-- bi-directional many-to-one association to Stratigraphy -->
-    <!-- <many-to-one
-        name="parent"
-        class="edu.ku.brc.specify.datamodel.Stratigraphy"
-        not-null="true"
-		outer-join="true"
-    >
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="StratigraphyID"         
-        </meta>
-        <column name="StratigraphyID" />
-    </many-to-one> -->
-    
-    <!-- bi-directional many-to-one association to GeologicTimePeriodTreeDef -->
+    <!-- bi-directional many-to-one association to LocationTreeDef -->
     <many-to-one
         name="definition"
-        class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"
+        class="edu.ku.brc.specify.datamodel.LocationTreeDef"
         not-null="true"
 		outer-join="true"
     >
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="GeologicTimePeriodID"         
+           @hibernate.column name="LocationTreeDefID"         
         </meta>
-        <column name="GeologicTimePeriodID" />        
-    </many-to-one>
-            
-    <!-- bi-directional one-to-many association to GeologicTimePeriod -->
+        <column name="LocationTreeDefID" />
+    </many-to-one>    
+  
+    <!-- bi-directional one-to-many association to Location -->
     <set
         name="children"
         lazy="true"
@@ -301,23 +278,23 @@
             cascade="delete"
 
            @hibernate.collection-key
-            column="GeologicTimePeriodID"
+            column="LocationID"
 
            @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            class="edu.ku.brc.specify.datamodel.Location"
         </meta>
         <key>
-            <column name="GeologicTimePeriodID" />
+            <column name="LocationID" />
         </key>
         <one-to-many 
-            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            class="edu.ku.brc.specify.datamodel.Location"
         />
     </set>
     
-    <!-- bi-directional many-to-one association to GeologicTimePeriod -->
+    <!-- bi-directional many-to-one association to Location -->
     <many-to-one
         name="parent"
-        class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+        class="edu.ku.brc.specify.datamodel.Location"
         not-null="true"
 		outer-join="true"
     >

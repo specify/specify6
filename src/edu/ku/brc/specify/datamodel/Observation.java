@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
 
 
 
@@ -275,9 +275,11 @@ public class Observation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="BiologicalObjectID"         
+     *      *            @hibernate.one-to-one
+     *             class="edu.ku.brc.specify.datamodel.CollectionObject"
+     *             outer-join="auto"
+     *             constrained="true"
+     * 			cascade="delete"
      *         
      */
     public CollectionObject getCollectionObject() {

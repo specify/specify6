@@ -50,6 +50,7 @@
             length="255"
         </meta>    
     </property>
+    
     <property
         name="relationToNamedPlace"
         type="java.lang.String"
@@ -63,6 +64,7 @@
             length="120"
         </meta>    
     </property>
+    
     <property
         name="localityName"
         type="java.lang.String"
@@ -78,6 +80,7 @@
             not-null="true"
         </meta>    
     </property>
+    
     <property
         name="baseMeridian"
         type="java.lang.String"
@@ -91,6 +94,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="range"
         type="java.lang.String"
@@ -104,6 +108,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="rangeDirection"
         type="java.lang.String"
@@ -117,6 +122,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="township"
         type="java.lang.String"
@@ -130,6 +136,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="townshipDirection"
         type="java.lang.String"
@@ -143,6 +150,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="section"
         type="java.lang.String"
@@ -156,6 +164,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="sectionPart"
         type="java.lang.String"
@@ -169,6 +178,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="verbatimElevation"
         type="java.lang.String"
@@ -182,6 +192,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="originalElevationUnit"
         type="java.lang.String"
@@ -195,6 +206,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="minElevation"
         type="java.lang.Float"
@@ -208,6 +220,7 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="maxElevation"
         type="java.lang.Float"
@@ -221,6 +234,7 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="elevationMethod"
         type="java.lang.String"
@@ -234,6 +248,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="elevationAccuracy"
         type="java.lang.Float"
@@ -247,6 +262,7 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="originalLatLongUnit"
         type="java.lang.Integer"
@@ -260,6 +276,7 @@
             length="10"
         </meta>    
     </property>
+    
     <property
         name="latLongType"
         type="java.lang.String"
@@ -273,6 +290,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="latitude1"
         type="java.lang.Float"
@@ -286,6 +304,7 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="longitude1"
         type="java.lang.Float"
@@ -299,6 +318,7 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="latitude2"
         type="java.lang.Float"
@@ -312,6 +332,7 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="longitude2"
         type="java.lang.Float"
@@ -325,6 +346,7 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="latLongMethod"
         type="java.lang.String"
@@ -338,6 +360,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="latLongAccuracy"
         type="java.lang.Float"
@@ -351,6 +374,7 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="datum"
         type="java.lang.String"
@@ -364,6 +388,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="groupPermittedToView"
         type="java.lang.Integer"
@@ -377,6 +402,7 @@
             length="10"
         </meta>    
     </property>
+    
     <property
         name="remarks"
         type="java.lang.String"
@@ -390,6 +416,7 @@
             length="1073741823"
         </meta>    
     </property>
+    
     <property
         name="text1"
         type="java.lang.String"
@@ -403,6 +430,7 @@
             length="300"
         </meta>    
     </property>
+    
     <property
         name="text2"
         type="java.lang.String"
@@ -416,6 +444,7 @@
             length="300"
         </meta>    
     </property>
+    
     <property
         name="number1"
         type="java.lang.Float"
@@ -429,6 +458,7 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="number2"
         type="java.lang.Float"
@@ -442,6 +472,7 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="timestampCreated"
         type="java.sql.Timestamp"
@@ -455,6 +486,7 @@
             length="23"
         </meta>    
     </property>
+    
     <property
         name="timestampModified"
         type="java.sql.Timestamp"
@@ -468,6 +500,7 @@
             length="23"
         </meta>    
     </property>
+    
     <property
         name="lastEditedBy"
         type="java.lang.String"
@@ -481,6 +514,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="elevationMethodId"
         type="java.lang.Integer"
@@ -494,6 +528,7 @@
             length="10"
         </meta>    
     </property>
+    
     <property
         name="latLongTypeId"
         type="java.lang.Integer"
@@ -507,6 +542,7 @@
             length="10"
         </meta>    
     </property>
+    
     <property
         name="latLongMethodId"
         type="java.lang.Integer"
@@ -520,6 +556,7 @@
             length="10"
         </meta>    
     </property>
+    
     <property
         name="yesNo1"
         type="java.lang.Short"
@@ -533,6 +570,7 @@
             length="5"
         </meta>    
     </property>
+    
     <property
         name="yesNo2"
         type="java.lang.Short"
@@ -546,6 +584,7 @@
             length="5"
         </meta>    
     </property>
+    
     <property
         name="lat1text"
         type="java.lang.String"
@@ -559,6 +598,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="lat2text"
         type="java.lang.String"
@@ -572,6 +612,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="long1text"
         type="java.lang.String"
@@ -585,6 +626,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="long2text"
         type="java.lang.String"
@@ -596,6 +638,78 @@
            @hibernate.property
             column="Long2Text"
             length="50"
+        </meta>    
+    </property>
+    
+    <property
+        name="nationalParkName"
+        type="java.lang.String"
+        column="NationalParkName"
+        length="64"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="NationalParkName"
+            length="64"
+        </meta>    
+    </property>
+   
+    
+    <!-- Pulled from Geography -->
+    <property
+        name="islandGroup"
+        type="java.lang.String"
+        column="IslandGroup"
+        length="64"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="IslandGroup"
+            length="64"
+        </meta>    
+    </property>
+    
+    <property
+        name="island"
+        type="java.lang.String"
+        column="Island"
+        length="64"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Island"
+            length="64"
+        </meta>    
+    </property>
+    
+    <property
+        name="waterBody"
+        type="java.lang.String"
+        column="WaterBody"
+        length="64"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="WaterBody"
+            length="64"
+        </meta>    
+    </property>
+    
+    <property
+        name="drainage"
+        type="java.lang.String"
+        column="Drainage"
+        length="64"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Drainage"
+            length="64"
         </meta>    
     </property>
 

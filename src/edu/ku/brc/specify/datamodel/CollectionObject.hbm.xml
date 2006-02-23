@@ -347,7 +347,7 @@
     <property
         name="catalogNumber"
         unique="true"
-        index="index_name"
+        index="IX_CatalogNumber"
         type="java.lang.String"
         column="CatalogNumber"
         length="32"
@@ -380,33 +380,18 @@
         <column name="CollectingEventID" />
     </many-to-one>
 	
-    <!-- bi-directional one-to-many association to Observation -->
-    <set
-        name="observations"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
+    <!-- bi-directional many-to-one association to Observation -->
+    <one-to-one 
+        name="observation"
+        class="edu.ku.brc.specify.datamodel.Observation"
+        cascade="save-update"
     >
 	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="BiologicalObjectID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.Observation"
+           @hibernate.one-to-one
+           @hibernate.column name="ObservationID"         
         </meta>
-        <key>
-            <column name="BiologicalObjectID" />
-        </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.Observation"
-        />
-    </set>
+    </one-to-one>
 	
     <!-- bi-directional one-to-many association to SoundEventStorage -->
     <set
@@ -520,20 +505,6 @@
         />
     </set>	
     
-    <!-- bi-directional one-to-one association to Sound -->
-    <one-to-one
-        name="sound"
-        class="edu.ku.brc.specify.datamodel.Sound"
-        outer-join="auto"
-		cascade="delete"
-    >
-	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.one-to-one
-            outer-join="auto"
-        </meta>
-    </one-to-one>
-	
     <!-- bi-directional one-to-many association to Determination -->
     <set
         name="determinations"

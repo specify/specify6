@@ -20,29 +20,38 @@
  */
 package edu.ku.brc.specify.conversion;
 
-import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.*;
+import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.buildSelectFieldList;
+import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.cleanAllTables;
+import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.copyTable;
+import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.createFieldNameMap;
+import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.deleteAllRecordsFromTable;
+import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.getFieldNamesFromSchema;
+import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.getStrValue;
 
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.*;
+import org.hibernate.Session;
 
-import org.hibernate.cfg.Configuration;
-import org.hibernate.criterion.Expression;
-
-import  edu.ku.brc.specify.datamodel.*;
-import  edu.ku.brc.specify.dbsupport.*;
+import edu.ku.brc.specify.datamodel.CatalogSeries;
+import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.DataType;
+import edu.ku.brc.specify.datamodel.TaxonomyTreeDef;
+import edu.ku.brc.specify.datamodel.User;
+import edu.ku.brc.specify.dbsupport.DBConnection;
+import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.Encryption;
-
-import java.text.SimpleDateFormat;
 
 /**
  * This class is used for copying over the and creating all the tables that are not specify to any one collection
@@ -356,18 +365,21 @@ public class GenericDBConversion
             
             Session session = HibernateUtil.getCurrentSession();
             HibernateUtil.beginTransaction();
+            
+            Set<Object> set = new HashSet<Object>();
+            set.add(taxaTreeDef);
 
             CollectionObjDef colObjDef = new CollectionObjDef();
             colObjDef.setName(name);
             colObjDef.setDataType(dataType);
             colObjDef.setUser(user);
-            colObjDef.setTaxonomyTreeDef(taxaTreeDef);
+            colObjDef.setTaxonomyTreeDef(set);
             colObjDef.setCatalogSeries(catalogSeriesSet);
             colObjDef.setAttrsDefs(new HashSet<Object>());
             
             session.save(colObjDef);
             
-            Set<Object> set = new HashSet<Object>();
+            set.clear();
             set.add(colObjDef);
             user.setCollectionObjDef(set);
             session.saveOrUpdate(user);
@@ -384,5 +396,13 @@ public class GenericDBConversion
             HibernateUtil.rollbackTransaction();
         }
         return null;
+    }
+    
+    /**
+     * 
+     */
+    public void loadSpecifyGeographicNames()
+    {
+ 
     }
 }

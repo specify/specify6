@@ -6,25 +6,25 @@
 <hibernate-mapping>
 
 <class 
-    name="edu.ku.brc.specify.datamodel.TaxonomyTreeDef"
-    table="taxonomytreedef"
-	lazy="true"	
+    name="edu.ku.brc.specify.datamodel.GeographyTreeDef"
+    table="geographytreedef"
+lazy="true"	
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="taxonomytreedef"
+        table="geographytreedef"
     </meta>
 
     <id
-        name="taxonomyTreeDefId"
+        name="geographyTreeDefId"
         type="java.lang.Integer"
-        column="TaxonomyTreeDefID"
+        column="GeographyTreeDefID"
     >
         <meta attribute="field-description">
            @hibernate.id
             generator-class="assigned"
             type="java.lang.Integer"
-            column="TaxonomyTreeDefID"
+            column="GeographyTreeDefID"
 
         </meta>
         <meta attribute="scope-field">protected</meta>
@@ -64,20 +64,22 @@
         type="java.lang.Integer"
         column="ParentNodeId"
         length="10"
+        index="IX_GeoTDParentNodeId"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="ParentNodeId"
             length="10"
+            index="IX_GeoTDParentNodeId"
         </meta>    
     </property>
 
     <!-- Associations -->
   
-    <!-- bi-directional one-to-many association to Taxon -->
+    <!-- bi-directional one-to-many association to Geography -->
     <set
-        name="children"
+        name="nodes"
         lazy="true"
         inverse="true"
 		cascade="none"
@@ -89,33 +91,18 @@
             cascade="none"
 
            @hibernate.collection-key
-            column="TaxonomyTypeID"
+            column="GeographyTypeID"
 
            @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.Taxon"
+            class="edu.ku.brc.specify.datamodel.Geography"
         </meta>
         <key>
-            <column name="TaxonomyTypeID" />
+            <column name="GeographyTypeID" />
         </key>
         <one-to-many 
-            class="edu.ku.brc.specify.datamodel.Taxon"
+            class="edu.ku.brc.specify.datamodel.Geography"
         />
     </set>
     
-    <!-- bi-directional many-to-one association to CollectionObjDef -->
-    <many-to-one
-        name="collectionObjDef"
-        class="edu.ku.brc.specify.datamodel.CollectionObjDef"
-        not-null="true"
-		outer-join="true"
-    >
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="CollectionObjDefID"         
-        </meta>
-        <column name="CollectionObjDefID" />
-    </many-to-one>
-
 </class>
 </hibernate-mapping>

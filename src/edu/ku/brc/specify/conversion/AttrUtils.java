@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 
 import edu.ku.brc.specify.datamodel.AttrsDef;
+import edu.ku.brc.specify.datamodel.AttrsSettableGettable;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.PrepAttrs;
 import edu.ku.brc.specify.datamodel.PrepTypes;
@@ -97,7 +98,7 @@ public class AttrUtils
      * @return xxxx
      */
     public static List<AttrsDef> loadAttrDefs(final CollectionObjDef colObjDef,
-                                              final short    tableType, 
+                                              final AttrsSettableGettable.TableType tableType, 
                                               final int      subType, 
                                               final String[] attrNames, 
                                               final short[]  dataTypes)
@@ -113,7 +114,7 @@ public class AttrUtils
                 {
                     HibernateUtil.beginTransaction();
                     AttrsDef attrsDef = new AttrsDef();
-                    attrsDef.setTableType(tableType);
+                    attrsDef.setTableType((short)tableType.getType());
                     attrsDef.setCollectionObjDefID(colObjDef);
                     attrsDef.setSubType((short)subType);
                     attrsDef.setFieldName(attrNames[i]);
@@ -149,7 +150,7 @@ public class AttrUtils
     protected static PrepAttrs createPrepsInsert(final String  name,
                                                  final String  strValue, 
                                                  final Integer intValue, 
-                                                 final Short   fieldType, 
+                                                 final AttrsSettableGettable.FieldType   fieldType, 
                                                  final Short   unit, 
                                                  final String  remarks,
                                                  final Taxon   parasiteTaxonName)
@@ -161,7 +162,7 @@ public class AttrUtils
             
             PrepAttrs prepAttr = new PrepAttrs();
             prepAttr.setName(name);
-            prepAttr.setFieldType(fieldType);
+            prepAttr.setFieldType((short)fieldType.getType());
             prepAttr.setIntValue(intValue);
             prepAttr.setPreparation(null);
             prepAttr.setRemarks(remarks);

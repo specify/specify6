@@ -128,7 +128,8 @@
       <hibernatetool destdir="${source.root}">
          <configuration propertyFile="src/${hibernate.properties}">
             <fileset dir="${source.root}">
-               <include name="**/*.hbm.xml" />
+                <include name="**/*.hbm.xml" />
+                <exclude name="**/PickList.hbm.xml" />
             </fileset>
          </configuration>
          <hbm2java />

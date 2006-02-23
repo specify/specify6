@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -58,6 +59,11 @@ public class Locality  implements java.io.Serializable {
      protected String lat2text;
      protected String long1text;
      protected String long2text;
+     protected String nationalParkName;
+     protected String islandGroup;
+     protected String island;
+     protected String waterBody;
+     protected String drainage;
      protected Geography geography;
      protected Set localityCitations;
      protected Set collectingEvents;
@@ -696,6 +702,76 @@ public class Locality  implements java.io.Serializable {
     
     public void setLong2text(String long2text) {
         this.long2text = long2text;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="NationalParkName"
+     *             length="64"
+     *         
+     */
+    public String getNationalParkName() {
+        return this.nationalParkName;
+    }
+    
+    public void setNationalParkName(String nationalParkName) {
+        this.nationalParkName = nationalParkName;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="IslandGroup"
+     *             length="64"
+     *         
+     */
+    public String getIslandGroup() {
+        return this.islandGroup;
+    }
+    
+    public void setIslandGroup(String islandGroup) {
+        this.islandGroup = islandGroup;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="Island"
+     *             length="64"
+     *         
+     */
+    public String getIsland() {
+        return this.island;
+    }
+    
+    public void setIsland(String island) {
+        this.island = island;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="WaterBody"
+     *             length="64"
+     *         
+     */
+    public String getWaterBody() {
+        return this.waterBody;
+    }
+    
+    public void setWaterBody(String waterBody) {
+        this.waterBody = waterBody;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="Drainage"
+     *             length="64"
+     *         
+     */
+    public String getDrainage() {
+        return this.drainage;
+    }
+    
+    public void setDrainage(String drainage) {
+        this.drainage = drainage;
     }
 
     /**

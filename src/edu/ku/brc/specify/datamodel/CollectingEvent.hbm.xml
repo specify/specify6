@@ -285,7 +285,7 @@
         not-null="true"
 		outer-join="true"
     >
-	<meta attribute="scope-field">protected</meta> <!-- meg added -->
+	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
@@ -293,6 +293,19 @@
         </meta>
         <column name="LocalityID" />
     </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Stratigraphy -->
+    <one-to-one 
+        name="stratigraphy"
+        class="edu.ku.brc.specify.datamodel.Stratigraphy"
+        cascade="save-update"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.one-to-one
+           @hibernate.column name="LocalityID"         
+        </meta>
+    </one-to-one>
     
     <!-- bi-directional one-to-many association to HabitatAttrs -->
     <set

@@ -150,9 +150,9 @@ public class DBSchemaTest extends TestCase
             // Create Collection Object Definition
             Geography geo = new Geography();
             geo.setGeographyId(0);
-            geo.setCountry("USA");
-            geo.setContinentOrOcean("North America");
-            geo.setState("KS");
+            //geo.setCountry("USA");
+            //geo.setContinentOrOcean("North America");
+            //geo.setState("KS");
             geo.setTimestampCreated(new Date());
             geo.setTimestampModified(new Date());
             session.save(geo);
@@ -342,7 +342,7 @@ public class DBSchemaTest extends TestCase
             Taxon taxon = new Taxon();
             taxon.setCommonName("darter");
             taxon.setTaxonId(0);
-            taxon.setTaxon("darterius");
+            taxon.setName("darterius");
             taxon.setTimestampCreated(new Date());
             taxon.setTimestampModified(new Date());
             session.save(taxon);

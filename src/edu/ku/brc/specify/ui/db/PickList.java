@@ -10,6 +10,7 @@ import java.util.*;
  *       @author Rod Spears (with help from Hibernate)
  *     
  */
+@SuppressWarnings("serial")
 public class PickList  implements java.io.Serializable {
 
     // Fields    

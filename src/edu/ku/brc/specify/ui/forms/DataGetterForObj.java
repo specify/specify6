@@ -31,7 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.datamodel.AttrsSettableGettable;
-import edu.ku.brc.specify.dbsupport.AttrsMgr;
+
 
 /**
  * This knows how to get a field's value from a POJO.<br><br>
@@ -87,11 +87,11 @@ public class DataGetterForObj implements DataObjectGettable
                             AttrsSettableGettable asg = (AttrsSettableGettable)obj;
                             if (asg.getName().equals(fieldName))
                             {
-                                if (asg.getFieldType() == AttrsMgr.VARC_TYPE)
+                                if (asg.getFieldType() == AttrsSettableGettable.FieldType.StringType.getType())
                                 {
                                    return asg.getStrValue();
                                    
-                                } else if (asg.getFieldType() == AttrsMgr.INT_TYPE)
+                                } else if (asg.getFieldType() == AttrsSettableGettable.FieldType.IntegerType.getType())
                                 {
                                     return asg.getIntValue();
                                 }

@@ -33,7 +33,7 @@
 
         </meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="assigned" />
+        <generator class="assigned"/>
     </id>
 
     <property
@@ -250,19 +250,33 @@
 			cascade="delete"
         </meta>    
     </one-to-one>
-    <!-- bi-directional many-to-one association to GeologicTimePeriod -->
-    <many-to-one
-        name="geologicTimePeriod"
-        class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
-        not-null="true"
+    
+    <!-- bi-directional one-to-many association to GeologicTimePeriod -->
+    <set
+        name="children"
+        lazy="true"
+        inverse="true"
+		cascade="none"
     >
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="GeologicTimePeriodID"         
-        </meta>
-        <column name="GeologicTimePeriodID" />
-    </many-to-one>
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
 
+           @hibernate.collection-key
+            column="GeologicTimePeriodTypeID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+        </meta>
+        <key>
+            <column name="GeologicTimePeriodTypeID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+        />
+    </set>
+    
 </class>
 </hibernate-mapping>

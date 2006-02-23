@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -37,12 +38,11 @@ public class CollectionObject  implements java.io.Serializable {
      protected Short deaccessioned;
      protected String catalogNumber;
      protected CollectingEvent collectingEvent;
-     protected Set observations;
+     protected Observation observation;
      protected Set soundEventStorages;
      protected Set collectionObjectCitations;
      protected Set bioAttrs;
      protected Set preparations;
-     protected Sound sound;
      protected Set determinations;
      protected Set projectCollectionObjects;
      protected Set deaccessionCollectionObjects;
@@ -395,22 +395,16 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="BiologicalObjectID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Observation"
+     *      *            @hibernate.one-to-one
+     *            @hibernate.column name="ObservationID"         
      *         
      */
-    public Set getObservations() {
-        return this.observations;
+    public Observation getObservation() {
+        return this.observation;
     }
     
-    public void setObservations(Set observations) {
-        this.observations = observations;
+    public void setObservation(Observation observation) {
+        this.observation = observation;
     }
 
     /**
@@ -487,19 +481,6 @@ public class CollectionObject  implements java.io.Serializable {
     
     public void setPreparations(Set preparations) {
         this.preparations = preparations;
-    }
-
-    /**
-     *      *            @hibernate.one-to-one
-     *             outer-join="auto"
-     *         
-     */
-    public Sound getSound() {
-        return this.sound;
-    }
-    
-    public void setSound(Sound sound) {
-        this.sound = sound;
     }
 
     /**

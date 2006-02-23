@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -15,9 +16,9 @@ public class Taxon  implements java.io.Serializable {
     // Fields    
 
      protected Integer taxonId;
-     protected Integer parentTaxonId;
+     protected Integer parentId;
      protected String taxonomicSerialNumber;
-     protected String Taxon;
+     protected String name;
      protected String unitInd1;
      protected String unitName1;
      protected String unitInd2;
@@ -33,7 +34,7 @@ public class Taxon  implements java.io.Serializable {
      protected Integer groupPermittedToView;
      protected String environmentalProtectionStatus;
      protected String remarks;
-     protected Integer left;
+     protected Integer nodeNumber;
      protected Integer highestChildNodeNumber;
      protected Date timestampCreated;
      protected Date timestampModified;
@@ -41,11 +42,13 @@ public class Taxon  implements java.io.Serializable {
      protected Short accepted;
      protected Integer rankId;
      protected String groupNumber;
-     private Set children;
+     private Set acceptedChildren;
      private Taxon acceptedTaxon;
      private Set taxonCitations;
-     private TaxonomyTreeDef taxonomyTreeDef;
      private Set externalFiles;
+     private TaxonomyTreeDef definition;
+     private Set children;
+     private Taxon parent;
 
 
     // Constructors
@@ -81,16 +84,17 @@ public class Taxon  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="ParentTaxonID"
+     *             column="ParentID"
      *             length="10"
+     *             index="IX_TXB_ParentID"
      *         
      */
-    public Integer getParentTaxonId() {
-        return this.parentTaxonId;
+    public Integer getParentId() {
+        return this.parentId;
     }
     
-    public void setParentTaxonId(Integer parentTaxonId) {
-        this.parentTaxonId = parentTaxonId;
+    public void setParentId(Integer parentId) {
+        this.parentId = parentId;
     }
 
     /**
@@ -109,16 +113,16 @@ public class Taxon  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="Taxon"
+     *             column="name"
      *             length="50"
      *         
      */
-    public String getTaxon() {
-        return this.Taxon;
+    public String getName() {
+        return this.name;
     }
     
-    public void setTaxon(String Taxon) {
-        this.Taxon = Taxon;
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -335,20 +339,22 @@ public class Taxon  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="NodeNumber"
      *             length="10"
+     *             index="IX_TXN_NodeNumber"
      *         
      */
-    public Integer getLeft() {
-        return this.left;
+    public Integer getNodeNumber() {
+        return this.nodeNumber;
     }
     
-    public void setLeft(Integer left) {
-        this.left = left;
+    public void setNodeNumber(Integer nodeNumber) {
+        this.nodeNumber = nodeNumber;
     }
 
     /**
      *      *            @hibernate.property
      *             column="HighestChildNodeNumber"
      *             length="10"
+     *             index="IX_TXN_HighestChildNodeNumber"
      *         
      */
     public Integer getHighestChildNodeNumber() {
@@ -454,12 +460,12 @@ public class Taxon  implements java.io.Serializable {
      *             class="edu.ku.brc.specify.datamodel.Taxon"
      *         
      */
-    public Set getChildren() {
-        return this.children;
+    public Set getAcceptedChildren() {
+        return this.acceptedChildren;
     }
     
-    public void setChildren(Set children) {
-        this.children = children;
+    public void setAcceptedChildren(Set acceptedChildren) {
+        this.acceptedChildren = acceptedChildren;
     }
 
     /**
@@ -496,20 +502,6 @@ public class Taxon  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="TaxonomyTreeDefID"         
-     *         
-     */
-    public TaxonomyTreeDef getTaxonomyTreeDef() {
-        return this.taxonomyTreeDef;
-    }
-    
-    public void setTaxonomyTreeDef(TaxonomyTreeDef taxonomyTreeDef) {
-        this.taxonomyTreeDef = taxonomyTreeDef;
-    }
-
-    /**
      * 
      */
     public Set getExternalFiles() {
@@ -518,6 +510,53 @@ public class Taxon  implements java.io.Serializable {
     
     public void setExternalFiles(Set externalFiles) {
         this.externalFiles = externalFiles;
+    }
+
+    /**
+     *      *            @hibernate.many-to-one
+     *             not-null="true"
+     *            @hibernate.column name="TaxonomyTreeDefID"         
+     *         
+     */
+    public TaxonomyTreeDef getDefinition() {
+        return this.definition;
+    }
+    
+    public void setDefinition(TaxonomyTreeDef definition) {
+        this.definition = definition;
+    }
+
+    /**
+     *      *            @hibernate.set
+     *             lazy="true"
+     *             inverse="true"
+     *             cascade="delete"
+     *            @hibernate.collection-key
+     *             column="TaxonID"
+     *            @hibernate.collection-one-to-many
+     *             class="edu.ku.brc.specify.datamodel.Taxon"
+     *         
+     */
+    public Set getChildren() {
+        return this.children;
+    }
+    
+    public void setChildren(Set children) {
+        this.children = children;
+    }
+
+    /**
+     *      *            @hibernate.many-to-one
+     *             not-null="true"
+     *            @hibernate.column name="ParentID"         
+     *         
+     */
+    public Taxon getParent() {
+        return this.parent;
+    }
+    
+    public void setParent(Taxon parent) {
+        this.parent = parent;
     }
 
 

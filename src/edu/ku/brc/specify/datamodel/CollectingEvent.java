@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -32,6 +33,7 @@ public class CollectingEvent  implements java.io.Serializable {
      protected Set collectionObjects;
      private Set collectors;
      protected Locality locality;
+     protected Stratigraphy stratigraphy;
      protected Set habitatAttrs;
 
 
@@ -312,6 +314,19 @@ public class CollectingEvent  implements java.io.Serializable {
     
     public void setLocality(Locality locality) {
         this.locality = locality;
+    }
+
+    /**
+     *      *            @hibernate.one-to-one
+     *            @hibernate.column name="LocalityID"         
+     *         
+     */
+    public Stratigraphy getStratigraphy() {
+        return this.stratigraphy;
+    }
+    
+    public void setStratigraphy(Stratigraphy stratigraphy) {
+        this.stratigraphy = stratigraphy;
     }
 
     /**

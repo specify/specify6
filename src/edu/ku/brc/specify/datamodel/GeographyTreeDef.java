@@ -7,30 +7,29 @@ import java.util.Set;
 
 /**
  *        @hibernate.class
- *         table="taxonomytreedef"
+ *         table="geographytreedef"
  *     
  */
-public class TaxonomyTreeDef  implements java.io.Serializable {
+public class GeographyTreeDef  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer taxonomyTreeDefId;
+     protected Integer geographyTreeDefId;
      protected String name;
      protected Integer treeNodeId;
      protected Integer parentNodeId;
-     private Set children;
-     private CollectionObjDef collectionObjDef;
+     private Set nodes;
 
 
     // Constructors
 
     /** default constructor */
-    public TaxonomyTreeDef() {
+    public GeographyTreeDef() {
     }
     
     /** constructor with id */
-    public TaxonomyTreeDef(Integer taxonomyTreeDefId) {
-        this.taxonomyTreeDefId = taxonomyTreeDefId;
+    public GeographyTreeDef(Integer geographyTreeDefId) {
+        this.geographyTreeDefId = geographyTreeDefId;
     }
    
     
@@ -42,15 +41,15 @@ public class TaxonomyTreeDef  implements java.io.Serializable {
      *      *            @hibernate.id
      *             generator-class="assigned"
      *             type="java.lang.Integer"
-     *             column="TaxonomyTreeDefID"
+     *             column="GeographyTreeDefID"
      *         
      */
-    public Integer getTaxonomyTreeDefId() {
-        return this.taxonomyTreeDefId;
+    public Integer getGeographyTreeDefId() {
+        return this.geographyTreeDefId;
     }
     
-    public void setTaxonomyTreeDefId(Integer taxonomyTreeDefId) {
-        this.taxonomyTreeDefId = taxonomyTreeDefId;
+    public void setGeographyTreeDefId(Integer geographyTreeDefId) {
+        this.geographyTreeDefId = geographyTreeDefId;
     }
 
     /**
@@ -85,6 +84,7 @@ public class TaxonomyTreeDef  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="ParentNodeId"
      *             length="10"
+     *             index="IX_GeoTDParentNodeId"
      *         
      */
     public Integer getParentNodeId() {
@@ -101,31 +101,17 @@ public class TaxonomyTreeDef  implements java.io.Serializable {
      *             inverse="true"
      *             cascade="none"
      *            @hibernate.collection-key
-     *             column="TaxonomyTypeID"
+     *             column="GeographyTypeID"
      *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Taxon"
+     *             class="edu.ku.brc.specify.datamodel.Geography"
      *         
      */
-    public Set getChildren() {
-        return this.children;
+    public Set getNodes() {
+        return this.nodes;
     }
     
-    public void setChildren(Set children) {
-        this.children = children;
-    }
-
-    /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="CollectionObjDefID"         
-     *         
-     */
-    public CollectionObjDef getCollectionObjDef() {
-        return this.collectionObjDef;
-    }
-    
-    public void setCollectionObjDef(CollectionObjDef collectionObjDef) {
-        this.collectionObjDef = collectionObjDef;
+    public void setNodes(Set nodes) {
+        this.nodes = nodes;
     }
 
 

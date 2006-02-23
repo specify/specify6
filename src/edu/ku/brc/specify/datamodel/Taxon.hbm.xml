@@ -38,18 +38,21 @@
     </id>
 
     <property
-        name="parentTaxonId"
+        name="parentId"
         type="java.lang.Integer"
-        column="ParentTaxonID"
+        column="ParentID"
         length="10"
+        index="IX_TXB_ParentID"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="ParentTaxonID"
+            column="ParentID"
             length="10"
+            index="IX_TXB_ParentID"
         </meta>    
     </property>
+    
     <property
         name="taxonomicSerialNumber"
         type="java.lang.String"
@@ -65,15 +68,15 @@
     </property>
     
     <property
-        name="Taxon"
+        name="name"
         type="java.lang.String"
-        column="Taxon"
+        column="name"
         length="50"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="Taxon"
+            column="name"
             length="50"
         </meta>    
     </property>
@@ -289,16 +292,18 @@
     </property>
     
     <property
-        name="left"
+        name="nodeNumber"
         type="java.lang.Integer"
         column="NodeNumber"
         length="10"
+        index="IX_TXN_NodeNumber"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="NodeNumber"
             length="10"
+            index="IX_TXN_NodeNumber"
         </meta>    
     </property>
     
@@ -307,12 +312,14 @@
         type="java.lang.Integer"
         column="HighestChildNodeNumber"
         length="10"
+        index="IX_TXN_HighestChildNodeNumber"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="HighestChildNodeNumber"
             length="10"
+            index="IX_TXN_HighestChildNodeNumber"
         </meta>    
     </property>
     
@@ -404,7 +411,7 @@
   
     <!-- bi-directional one-to-many association to Taxon -->
     <set
-        name="children"
+        name="acceptedChildren"
         lazy="true"
         inverse="true"
 		cascade="none"
@@ -471,21 +478,6 @@
         />
     </set>
     
-    <!-- bi-directional many-to-one association to TaxonomyTreeDef -->
-    <many-to-one
-        name="taxonomyTreeDef"
-        class="edu.ku.brc.specify.datamodel.TaxonomyTreeDef"
-        not-null="true"
-		outer-join="true"
-    >
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="TaxonomyTreeDefID"         
-        </meta>
-        <column name="TaxonomyTreeDefID" />
-    </many-to-one>
-    
     <!-- bi-directional many-to-many association to TaxonExternalFile -->
     <set
         name="externalFiles"
@@ -499,6 +491,61 @@
         <many-to-many class="edu.ku.brc.specify.datamodel.TaxonExternalFile" column="TaxonExternalFileID"/>
     </set>
     
+    <!-- bi-directional many-to-one association to TaxonomyTreeDef -->
+    <many-to-one
+        name="definition"
+        class="edu.ku.brc.specify.datamodel.TaxonomyTreeDef"
+        not-null="true"
+		outer-join="true"
+    >
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="TaxonomyTreeDefID"         
+        </meta>
+        <column name="TaxonomyTreeDefID" />
+    </many-to-one>
+    
+    <!-- bi-directional one-to-many association to Taxon -->
+    <set
+        name="children"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="delete"
 
+           @hibernate.collection-key
+            column="TaxonID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.Taxon"
+        </meta>
+        <key>
+            <column name="TaxonID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.Taxon"
+        />
+    </set>
+    
+    <!-- bi-directional many-to-one association to Taxon -->
+    <many-to-one
+        name="parent"
+        class="edu.ku.brc.specify.datamodel.Taxon"
+        not-null="true"
+		outer-join="true"
+    >
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="ParentID"         
+        </meta>
+        <column name="ParentID" />
+    </many-to-one>
 </class>
 </hibernate-mapping>

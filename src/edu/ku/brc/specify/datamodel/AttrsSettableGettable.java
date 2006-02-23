@@ -3,7 +3,42 @@ import java.util.Date;
 
 public interface AttrsSettableGettable
 {
+    // Field Type Enumerations
+    public enum FieldType 
+    {
+        IntegerType(0),
+        ShortType(1),
+        FloatType(2),
+        DoubleType(3),
+        DateType(4),
+        StringType(5),
+        MemoType(6),
+        TaxonType(7),
+        URLType(8);
+        
+        FieldType(final int ord)
+        { 
+            this.ord = (short)ord;
+        }
+        private short ord;
+        public short getType() { return ord; }
+    }
 
+    // Table Type Enumerations
+    public enum TableType 
+    {
+        PrepType(0),
+        HabitatType(1),
+        BioType(2),
+        ExtFileType(3);
+        
+        TableType(final int ord)
+        { 
+            this.ord = (short)ord;
+        }
+        private short ord;
+        public short getType() { return ord; }
+    }
 
     public String getName();
     

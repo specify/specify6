@@ -70,21 +70,32 @@
         <many-to-many class="edu.ku.brc.specify.datamodel.CatalogSeries" column="CatalogSeriesID"/>
     </set>
     
-    <!-- bi-directional one-to-one association to TaxonomyTreeDef -->
-    <one-to-one
+    <!-- bi-directional one-to-many association to TaxonomyTreeDef -->
+    <set
         name="taxonomyTreeDef"
-        class="edu.ku.brc.specify.datamodel.TaxonomyTreeDef"
-        outer-join="auto"
-        constrained="false"
-		cascade="delete"
+        lazy="true"
+        inverse="true"
+		cascade="none"
     >
-	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.one-to-one
-            outer-join="auto"
-			cascade="delete"
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="TaxonomyTreeDefID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.TaxonomyTreeDef"
         </meta>
-    </one-to-one>
+        <key>
+            <column name="TaxonomyTreeDefID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.TaxonomyTreeDef"
+        />
+    </set>
     
      <!-- many-to-one association to User -->
     <many-to-one

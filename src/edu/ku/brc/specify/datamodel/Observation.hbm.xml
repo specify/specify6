@@ -235,20 +235,22 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional many-to-one association to CollectionObject -->
-    <many-to-one
+    <!-- bi-directional one-to-one association to CollectionObject -->
+    <one-to-one
         name="collectionObject"
         class="edu.ku.brc.specify.datamodel.CollectionObject"
-        not-null="true"
-		outer-join="true"
+        outer-join="auto"
+        constrained="true"
+		cascade="delete"
     >
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="BiologicalObjectID"         
-        </meta>
-        <column name="BiologicalObjectID" />
-    </many-to-one>
+           @hibernate.one-to-one
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
+            outer-join="auto"
+            constrained="true"
+			cascade="delete"
+        </meta>    
+    </one-to-one>
 	
 
 </class>

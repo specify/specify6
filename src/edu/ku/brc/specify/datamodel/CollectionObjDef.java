@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Set;
 
 
 
@@ -18,7 +18,7 @@ public class CollectionObjDef  implements java.io.Serializable {
      protected String name;
      protected DataType dataType;
      private Set catalogSeries;
-     protected TaxonomyTreeDef taxonomyTreeDef;
+     private Set taxonomyTreeDef;
      protected User user;
      private Set attrsDefs;
 
@@ -90,16 +90,21 @@ public class CollectionObjDef  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.one-to-one
-     *             outer-join="auto"
-     * 			cascade="delete"
+     *      *            @hibernate.set
+     *             lazy="true"
+     *             inverse="true"
+     *             cascade="none"
+     *            @hibernate.collection-key
+     *             column="TaxonomyTreeDefID"
+     *            @hibernate.collection-one-to-many
+     *             class="edu.ku.brc.specify.datamodel.TaxonomyTreeDef"
      *         
      */
-    public TaxonomyTreeDef getTaxonomyTreeDef() {
+    public Set getTaxonomyTreeDef() {
         return this.taxonomyTreeDef;
     }
     
-    public void setTaxonomyTreeDef(TaxonomyTreeDef taxonomyTreeDef) {
+    public void setTaxonomyTreeDef(Set taxonomyTreeDef) {
         this.taxonomyTreeDef = taxonomyTreeDef;
     }
 

@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -15,17 +16,22 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     // Fields    
 
      protected Integer geologicTimePeriodId;
-     protected Integer rankCode;
-     protected String rankName;
+     protected Integer parentId;
+     protected Integer rankId;
      protected String name;
+     protected Integer nodeNumber;
+     protected Integer highestChildNodeNumber;
      protected String standard;
+     protected Float age;
+     protected Float ageUncertainty;
      protected String remarks;
      protected Date timestampModified;
      protected Date timestampCreated;
      protected Date timestampVersion;
      protected String lastEditedBy;
-     private GeologicTimeBoundary geologicTimeBoundaryByLowerBoundaryId;
-     private GeologicTimeBoundary geologicTimeBoundaryByUpperBoundaryId;
+     private GeologicTimePeriodTreeDef definition;
+     private Set children;
+     private GeologicTimePeriod parent;
 
 
     // Constructors
@@ -61,36 +67,38 @@ public class GeologicTimePeriod  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="RankCode"
+     *             column="ParentTaxonID"
      *             length="10"
+     *             index="IX_GTP_ParentID"
      *         
      */
-    public Integer getRankCode() {
-        return this.rankCode;
+    public Integer getParentId() {
+        return this.parentId;
     }
     
-    public void setRankCode(Integer rankCode) {
-        this.rankCode = rankCode;
+    public void setParentId(Integer parentId) {
+        this.parentId = parentId;
     }
 
     /**
      *      *            @hibernate.property
-     *             column="RankName"
-     *             length="50"
+     *             column="RankID"
+     *             length="10"
+     *             index="IX_GTP_RankId"
      *         
      */
-    public String getRankName() {
-        return this.rankName;
+    public Integer getRankId() {
+        return this.rankId;
     }
     
-    public void setRankName(String rankName) {
-        this.rankName = rankName;
+    public void setRankId(Integer rankId) {
+        this.rankId = rankId;
     }
 
     /**
      *      *            @hibernate.property
      *             column="Name"
-     *             length="50"
+     *             length="64"
      *         
      */
     public String getName() {
@@ -103,8 +111,38 @@ public class GeologicTimePeriod  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
+     *             column="NodeNumber"
+     *             length="10"
+     *             index="IX_GTP_NodeNumber"
+     *         
+     */
+    public Integer getNodeNumber() {
+        return this.nodeNumber;
+    }
+    
+    public void setNodeNumber(Integer nodeNumber) {
+        this.nodeNumber = nodeNumber;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="HighestChildNodeNumber"
+     *             length="10"
+     *             index="IX_GTP_NighestChildNodeNumber"
+     *         
+     */
+    public Integer getHighestChildNodeNumber() {
+        return this.highestChildNodeNumber;
+    }
+    
+    public void setHighestChildNodeNumber(Integer highestChildNodeNumber) {
+        this.highestChildNodeNumber = highestChildNodeNumber;
+    }
+
+    /**
+     *      *            @hibernate.property
      *             column="Standard"
-     *             length="50"
+     *             length="64"
      *         
      */
     public String getStandard() {
@@ -113,6 +151,34 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     
     public void setStandard(String standard) {
         this.standard = standard;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="Age"
+     *             length="24"
+     *         
+     */
+    public Float getAge() {
+        return this.age;
+    }
+    
+    public void setAge(Float age) {
+        this.age = age;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="AgeUncertainty"
+     *             length="24"
+     *         
+     */
+    public Float getAgeUncertainty() {
+        return this.ageUncertainty;
+    }
+    
+    public void setAgeUncertainty(Float ageUncertainty) {
+        this.ageUncertainty = ageUncertainty;
     }
 
     /**
@@ -174,7 +240,7 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="LastEditedBy"
-     *             length="50"
+     *             length="32"
      *         
      */
     public String getLastEditedBy() {
@@ -188,29 +254,48 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="LowerBoundaryID"         
+     *            @hibernate.column name="GeologicTimePeriodID"         
      *         
      */
-    public GeologicTimeBoundary getGeologicTimeBoundaryByLowerBoundaryId() {
-        return this.geologicTimeBoundaryByLowerBoundaryId;
+    public GeologicTimePeriodTreeDef getDefinition() {
+        return this.definition;
     }
     
-    public void setGeologicTimeBoundaryByLowerBoundaryId(GeologicTimeBoundary geologicTimeBoundaryByLowerBoundaryId) {
-        this.geologicTimeBoundaryByLowerBoundaryId = geologicTimeBoundaryByLowerBoundaryId;
+    public void setDefinition(GeologicTimePeriodTreeDef definition) {
+        this.definition = definition;
+    }
+
+    /**
+     *      *            @hibernate.set
+     *             lazy="true"
+     *             inverse="true"
+     *             cascade="delete"
+     *            @hibernate.collection-key
+     *             column="GeologicTimePeriodID"
+     *            @hibernate.collection-one-to-many
+     *             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+     *         
+     */
+    public Set getChildren() {
+        return this.children;
+    }
+    
+    public void setChildren(Set children) {
+        this.children = children;
     }
 
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="UpperBoundaryID"         
+     *            @hibernate.column name="ParentID"         
      *         
      */
-    public GeologicTimeBoundary getGeologicTimeBoundaryByUpperBoundaryId() {
-        return this.geologicTimeBoundaryByUpperBoundaryId;
+    public GeologicTimePeriod getParent() {
+        return this.parent;
     }
     
-    public void setGeologicTimeBoundaryByUpperBoundaryId(GeologicTimeBoundary geologicTimeBoundaryByUpperBoundaryId) {
-        this.geologicTimeBoundaryByUpperBoundaryId = geologicTimeBoundaryByUpperBoundaryId;
+    public void setParent(GeologicTimePeriod parent) {
+        this.parent = parent;
     }
 
 

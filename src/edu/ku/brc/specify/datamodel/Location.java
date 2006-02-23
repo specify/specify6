@@ -8,14 +8,14 @@ import java.util.Set;
 
 /**
  *        @hibernate.class
- *         table="geography"
+ *         table="location"
  *     
  */
-public class Geography  implements java.io.Serializable {
+public class Location  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer geographyId;
+     protected Integer locationId;
      protected Integer parentId;
      protected String name;
      protected Integer rankId;
@@ -31,21 +31,20 @@ public class Geography  implements java.io.Serializable {
      protected Date timestampVersion;
      protected String lastEditedBy;
      protected Short isCurrent;
-     private Set localities;
-     private GeographyTreeDef definition;
+     private LocationTreeDef definition;
      private Set children;
-     private Geography parent;
+     private Location parent;
 
 
     // Constructors
 
     /** default constructor */
-    public Geography() {
+    public Location() {
     }
     
     /** constructor with id */
-    public Geography(Integer geographyId) {
-        this.geographyId = geographyId;
+    public Location(Integer locationId) {
+        this.locationId = locationId;
     }
    
     
@@ -57,22 +56,22 @@ public class Geography  implements java.io.Serializable {
      *      *            @hibernate.id
      *             generator-class="assigned"
      *             type="java.lang.Integer"
-     *             column="GeographyID"
+     *             column="LocationID"
      *         
      */
-    public Integer getGeographyId() {
-        return this.geographyId;
+    public Integer getLocationId() {
+        return this.locationId;
     }
     
-    public void setGeographyId(Integer geographyId) {
-        this.geographyId = geographyId;
+    public void setLocationId(Integer locationId) {
+        this.locationId = locationId;
     }
 
     /**
      *      *            @hibernate.property
      *             column="ParentTaxonID"
      *             length="10"
-     *             index="IX_GeoParentId"
+     *             index="index_name"
      *         
      */
     public Integer getParentId() {
@@ -101,7 +100,6 @@ public class Geography  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="RankID"
      *             length="10"
-     *             index="IX_GeoRankId"
      *         
      */
     public Integer getRankId() {
@@ -116,7 +114,6 @@ public class Geography  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="NodeNumber"
      *             length="10"
-     *             index="IX_GeoNodeNumber"
      *         
      */
     public Integer getNodeNumber() {
@@ -131,7 +128,6 @@ public class Geography  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="HighestChildNodeNumber"
      *             length="10"
-     *             index="IX_GeoHighestChildNodeNumber"
      *         
      */
     public Integer getHighestChildNodeNumber() {
@@ -283,35 +279,16 @@ public class Geography  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="GeographyID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Locality"
-     *         
-     */
-    public Set getLocalities() {
-        return this.localities;
-    }
-    
-    public void setLocalities(Set localities) {
-        this.localities = localities;
-    }
-
-    /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="GeographyTreeDefID"         
+     *            @hibernate.column name="LocationTreeDefID"         
      *         
      */
-    public GeographyTreeDef getDefinition() {
+    public LocationTreeDef getDefinition() {
         return this.definition;
     }
     
-    public void setDefinition(GeographyTreeDef definition) {
+    public void setDefinition(LocationTreeDef definition) {
         this.definition = definition;
     }
 
@@ -321,9 +298,9 @@ public class Geography  implements java.io.Serializable {
      *             inverse="true"
      *             cascade="delete"
      *            @hibernate.collection-key
-     *             column="GeographyID"
+     *             column="LocationID"
      *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Geography"
+     *             class="edu.ku.brc.specify.datamodel.Location"
      *         
      */
     public Set getChildren() {
@@ -340,11 +317,11 @@ public class Geography  implements java.io.Serializable {
      *            @hibernate.column name="ParentID"         
      *         
      */
-    public Geography getParent() {
+    public Location getParent() {
         return this.parent;
     }
     
-    public void setParent(Geography parent) {
+    public void setParent(Location parent) {
         this.parent = parent;
     }
 

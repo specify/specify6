@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -31,7 +32,7 @@ public class Stratigraphy  implements java.io.Serializable {
      protected Short yesNo1;
      protected Short yesNo2;
      private CollectingEvent collectingEvent;
-     private GeologicTimePeriod geologicTimePeriod;
+     private Set children;
 
 
     // Constructors
@@ -292,17 +293,22 @@ public class Stratigraphy  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="GeologicTimePeriodID"         
+     *      *            @hibernate.set
+     *             lazy="true"
+     *             inverse="true"
+     *             cascade="none"
+     *            @hibernate.collection-key
+     *             column="GeologicTimePeriodTypeID"
+     *            @hibernate.collection-one-to-many
+     *             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
      *         
      */
-    public GeologicTimePeriod getGeologicTimePeriod() {
-        return this.geologicTimePeriod;
+    public Set getChildren() {
+        return this.children;
     }
     
-    public void setGeologicTimePeriod(GeologicTimePeriod geologicTimePeriod) {
-        this.geologicTimePeriod = geologicTimePeriod;
+    public void setChildren(Set children) {
+        this.children = children;
     }
 
 
