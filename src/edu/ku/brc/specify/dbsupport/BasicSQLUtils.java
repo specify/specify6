@@ -248,79 +248,109 @@ public class BasicSQLUtils
     /**
      * Copies a table from one DB to another
      */
-    public static boolean copyTable(final Connection fromConn, 
-                                    final Connection toConn, 
-                                    final String     tableName, 
-                                    final Map<String, String> map)
+    /**
+     * Copies a a table with the same name from one DB to another
+     * @param fromConn the "from" DB
+     * @param toConn the "to" DB
+     * @param tableName the table name to be copied
+     * @param colMap a map of new file names toold file names
+     * @return true if successful
+     */
+    public static boolean copyTable(final Connection fromConn,
+                                    final Connection toConn,
+                                    final String tableName,
+                                    final Map<String, String> colMap)
+    {
+        return copyTable(fromConn, toConn, tableName, tableName, colMap);
+    }
+
+    /**
+     * Copies a table to a new table of a different name (same schema) within the same DB Connection
+     * @param conn a connection to copy from one table to another in the same database
+     * @param fromTableName the table name its coming from
+     * @param toTableName the table name it is going to
+     * @param colMap a map of new file names toold file names
+     * @return true if successful
+     */
+    public static boolean copyTable(final Connection conn,
+                                    final String fromTableName,
+                                    final String toTableName,
+                                    final Map<String, String> colMap)
+    {
+        return copyTable(conn, conn, fromTableName, toTableName, colMap);
+    }
+
+    /**
+     * Copies from one connect/table to another connection/table.
+     *  
+     * @param fromConn DB Connection that the data is coming from
+     * @param toConnDB Connection that the data is going to
+     * @param fromTableName the table name its coming from
+     * @param toTableName the table name it is going to
+     * @param colMap a map of new file names toold file names
+     * @return true if successful
+     */
+    public static boolean copyTable(final Connection fromConn,
+                                    final Connection toConn,
+                                    final String fromTableName,
+                                    final String toTableName,
+                                    final Map<String, String> colMap)
     {
         String id = "";
         try
         {
             List<String> colNames = new ArrayList<String>();
-            
-            getFieldNamesFromSchema(toConn, tableName, colNames);
-            
-            Statement         stmt = fromConn.createStatement();
-            ResultSet         rs   = stmt.executeQuery("select * from "+tableName);
+            getFieldNamesFromSchema(toConn, toTableName, colNames);
+            Statement stmt = fromConn.createStatement();
+            ResultSet rs = stmt.executeQuery("select * from " + fromTableName);
             ResultSetMetaData rsmd = rs.getMetaData();
-            
             Hashtable<String, Integer> fromHash = new Hashtable<String, Integer>();
-            for (int i=1;i<=rsmd.getColumnCount();i++)
+            for (int i = 1; i <= rsmd.getColumnCount(); i++)
             {
                 fromHash.put(rsmd.getColumnName(i), i);
             }
-            //System.out.println("Num Cols: "+rsmd.getColumnCount());
-                        
-            
+            // System.out.println("Num Cols: "+rsmd.getColumnCount());
             StringBuffer str = new StringBuffer("");
             int count = 0;
-            while (rs.next()) 
-            {                    
+            while (rs.next())
+            {
                 str.setLength(0);
-                str.append("INSERT INTO "+tableName+" VALUES (");
-                
+                str.append("INSERT INTO " + toTableName + " VALUES (");
                 id = rs.getString(1);
-                
-                for (int i=0;i<colNames.size();i++)
+                for (int i = 0; i < colNames.size(); i++)
                 {
                     String colName = colNames.get(i);
-                    
                     Integer index = fromHash.get(colName);
-                    if (index == null && map != null)
+                    if (index == null && colMap != null)
                     {
-                        String mappedName = map.get(colName);
+                        String mappedName = colMap.get(colName);
                         if (mappedName != null)
                         {
                             index = fromHash.get(mappedName);
                         } else
                         {
-                            log.error("The name ["+colName+"] was not mapped.");
+                            log.error("The name [" + colName + "] was not mapped.");
                         }
                     }
-                    
                     if (index != null)
                     {
-                        if (i > 0) str.append(", ");
-    
+                        if (i > 0)
+                            str.append(", ");
                         Object dataObj = rs.getObject(index);
                         str.append(getStrValue(dataObj));
-                        
                     } else
                     {
-                        log.error("For Table["+tableName+"] Col Name["+colNames.get(i)+"] not found");
+                        log.error("For Table[" + fromTableName + "] Col Name[" + colNames.get(i)
+                                + "] not found");
                         rs.close();
-                        
                         stmt.clearBatch();
                         stmt.close();
-                        return false;  
+                        return false;
                     }
 
                 }
                 str.append(")");
-                
-                if (count % 1000 == 0) log.info(tableName + " processed: "+count);
-                
-            
+                if (count % 1000 == 0) log.info(toTableName + " processed: " + count);
                 Statement updateStatement = toConn.createStatement();
                 int retVal = exeUpdateCmd(updateStatement, str.toString());
                 updateStatement.clearBatch();
@@ -332,15 +362,12 @@ public class BasicSQLUtils
                     stmt.close();
                     return false;
                 }
-                
                 count++;
-                //if (count == 1) break;
+                // if (count == 1) break;
             }
-            System.out.println(tableName+" processed "+count+" records.");
-       
+            System.out.println(fromTableName + " processed " + count + " records.");
 
             rs.close();
-            
             stmt.clearBatch();
             stmt.close();
             
@@ -348,11 +375,10 @@ public class BasicSQLUtils
         {
             //e.printStackTrace();
             log.error(ex);
-            log.error("ID: "+id);
+            log.error("ID: " + id);
         }
         return true;
-        
-    }
+    }    
     
     /** 
      * Takes a list of names and creates a string with the names comma separated
