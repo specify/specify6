@@ -97,7 +97,6 @@ public class GenericDBConversion
                                     "borrowshipments",
                                     "catalogseries",
                                     "collectingevent",
-                                    //"collectionobject",
                                     "collectionobjectcitation",
                                     "collectors",
                                     "deaccession",
@@ -107,48 +106,42 @@ public class GenericDBConversion
                                     "determinationcitation",
                                     "exchangein",
                                     "exchangeout",
-                                    "geography",
-                                    "geologictimeboundary",
-                                    "geologictimeperiod",
                                     "grouppersons",
-                                    "image",
-                                    "imageagents",
-                                    "imagecollectionobjects",
-                                    "imagelocalities",
-                                    "inforequest",
                                     "journal",
                                     "loan",
                                     "loanagents",
                                     "loanphysicalobject",
                                     "loanreturnphysicalobject",
-                                    "locality",
+                                    //"locality",
                                     "localitycitation",
                                     "observation",
                                     "otheridentifier",
                                     "permit",
-                                    "picklist",
-                                    "picklist_items",
-                                    //"preparation",
-                                    "preptypes",
                                     "project",
                                     "projectcollectionobjects",
-                                    "recordset",
                                     "referencework",
                                     "shipment",
-                                    "sound",
-                                    "soundeventstorage",
                                     "stratigraphy",
                                     "taxoncitation",
-                                    "taxonname"
        };
        
        Map<String, Map<String, String>> tableMaps = new Hashtable<String, Map<String, String>>();
-       tableMaps.put("determination", createFieldNameMap(new String[] {"CollectionObjectID", "BiologicalObjectID"}));
-       
+       tableMaps.put("authors", createFieldNameMap(new String[] {"OrderNumber", "Order1"}));
+       tableMaps.put("borrowreturnmaterial", createFieldNameMap(new String[] {"DateField", "Date1"}));
+       tableMaps.put("collectors", createFieldNameMap(new String[] {"OrderNumber", "Order1"}));
+       tableMaps.put("determination", createFieldNameMap(new String[] {"CollectionObjectID", "BiologicalObjectID", "IsCurrent", "Current1", "DateField", "Date1", "TaxonID", "TaxonNameID"}));
+       tableMaps.put("loanreturnphysicalobject", createFieldNameMap(new String[] {"DateField", "Date1"}));
+       tableMaps.put("referencework", createFieldNameMap(new String[] {"DateField", "Date1"}));
+       tableMaps.put("stratigraphy", createFieldNameMap(new String[] {"LithoGroup", "Group1"}));
+       tableMaps.put("taxoncitation", createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
+      
+       //tableMaps.put("locality", createFieldNameMap(new String[] {"NationalParkName", "", "ParentID", "TaxonParentID"}));
+      
        for (String tableName : tablesToMoveOver)
        {
            if (!copyTable(oldDB.getConnectionToDB(), DBConnection.getConnection(), tableName, tableMaps.get(tableName)))
            {
+               log.error("Table ["+tableName+"] didn't copy correctly.");
                break;
            }
        }
@@ -190,7 +183,7 @@ public class GenericDBConversion
             
             sql.append(" From collectionobject Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID Where collectionobject.DerivedFromID Is Null");
             
-            System.out.println(sql);
+            log.info(sql);
             
             List<String> newFieldNames = new ArrayList<String>();
             getFieldNamesFromSchema(newDBConn, "collectionobject", newFieldNames);
@@ -233,8 +226,8 @@ public class GenericDBConversion
 
                 }
                 str.append(")");
-                //System.out.println("\n"+str.toString());
-                if (count % 1000 == 0) System.out.println(count);
+                //log.info("\n"+str.toString());
+                if (count % 1000 == 0) log.info(count);
                 
                 try
                 {
@@ -253,7 +246,7 @@ public class GenericDBConversion
                 count++;
                 //if (count == 1) break;
             }
-            System.out.println("Processed CollectionObject "+count+" records.");
+            log.info("Processed CollectionObject "+count+" records.");
 
             
         } catch (SQLException e)

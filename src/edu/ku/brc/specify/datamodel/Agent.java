@@ -36,7 +36,6 @@ public class Agent  implements java.io.Serializable {
      private Agent agent;
      private Set projects;
      private Set preparations;
-     private Set sounds;
      private Set groupPersonsByGroupId;
      private Set groupPersonsByMemberId;
      private Set determinations;
@@ -395,25 +394,6 @@ public class Agent  implements java.io.Serializable {
     
     public void setPreparations(Set preparations) {
         this.preparations = preparations;
-    }
-
-    /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="RecordedByID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Sound"
-     *         
-     */
-    public Set getSounds() {
-        return this.sounds;
-    }
-    
-    public void setSounds(Set sounds) {
-        this.sounds = sounds;
     }
 
     /**

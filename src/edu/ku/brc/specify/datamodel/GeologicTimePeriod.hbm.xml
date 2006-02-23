@@ -37,7 +37,7 @@
         <generator class="assigned" />
     </id>
 
-    <property
+    <!-- <property
         name="parentId"
         type="java.lang.Integer"
         column="ParentID"
@@ -51,7 +51,7 @@
             length="10"
             index="IX_GTP_ParentID"
         </meta>    
-    </property>
+    </property> -->
     
     <property
         name="rankId"
@@ -282,13 +282,13 @@
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="GeologicTimePeriodID"         
+           @hibernate.column name="GeologicTimePeriodTreeDefID"         
         </meta>
-        <column name="GeologicTimePeriodID" />        
+        <column name="GeologicTimePeriodTreeDefID" />        
     </many-to-one>
             
     <!-- bi-directional one-to-many association to GeologicTimePeriod -->
-    <set
+    <!-- <set
         name="children"
         lazy="true"
         inverse="true"
@@ -312,7 +312,7 @@
         <one-to-many 
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
         />
-    </set>
+    </set> -->
     
     <!-- bi-directional many-to-one association to GeologicTimePeriod -->
     <many-to-one

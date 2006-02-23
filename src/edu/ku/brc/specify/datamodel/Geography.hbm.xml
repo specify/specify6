@@ -37,7 +37,7 @@
         <generator class="assigned" />
     </id>
     
-    <property
+    <!-- <property
         name="parentId"
         type="java.lang.Integer"
         column="ParentID"
@@ -51,7 +51,7 @@
             length="10"
             index="IX_GeoParentId"
         </meta>    
-    </property>
+    </property> -->
 
     <property
         name="name"
@@ -132,7 +132,7 @@
     <property
         name="text1"
         type="java.lang.String"
-        column="State"
+        column="text1"
         length="32"
     >
         <meta attribute="scope-field">protected</meta>
@@ -146,7 +146,7 @@
     <property
         name="text2"
         type="java.lang.String"
-        column="State"
+        column="text2"
         length="32"
     >
         <meta attribute="scope-field">protected</meta>
@@ -300,7 +300,7 @@
     </many-to-one>    
   
     <!-- bi-directional one-to-many association to Geography -->
-    <set
+    <!-- <set
         name="children"
         lazy="true"
         inverse="true"
@@ -324,7 +324,7 @@
         <one-to-many 
             class="edu.ku.brc.specify.datamodel.Geography"
         />
-    </set>
+    </set> -->
     
     <!-- bi-directional many-to-one association to Geography -->
     <many-to-one

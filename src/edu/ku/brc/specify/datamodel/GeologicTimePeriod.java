@@ -1,7 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.Date;
-import java.util.Set;
 
 
 
@@ -16,7 +15,6 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     // Fields    
 
      protected Integer geologicTimePeriodId;
-     protected Integer parentId;
      protected Integer rankId;
      protected String name;
      protected Integer nodeNumber;
@@ -30,7 +28,6 @@ public class GeologicTimePeriod  implements java.io.Serializable {
      protected Date timestampVersion;
      protected String lastEditedBy;
      private GeologicTimePeriodTreeDef definition;
-     private Set children;
      private GeologicTimePeriod parent;
 
 
@@ -63,21 +60,6 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     
     public void setGeologicTimePeriodId(Integer geologicTimePeriodId) {
         this.geologicTimePeriodId = geologicTimePeriodId;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="ParentTaxonID"
-     *             length="10"
-     *             index="IX_GTP_ParentID"
-     *         
-     */
-    public Integer getParentId() {
-        return this.parentId;
-    }
-    
-    public void setParentId(Integer parentId) {
-        this.parentId = parentId;
     }
 
     /**
@@ -254,7 +236,7 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="GeologicTimePeriodID"         
+     *            @hibernate.column name="GeologicTimePeriodTreeDefID"         
      *         
      */
     public GeologicTimePeriodTreeDef getDefinition() {
@@ -263,25 +245,6 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     
     public void setDefinition(GeologicTimePeriodTreeDef definition) {
         this.definition = definition;
-    }
-
-    /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="GeologicTimePeriodID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
-     *         
-     */
-    public Set getChildren() {
-        return this.children;
-    }
-    
-    public void setChildren(Set children) {
-        this.children = children;
     }
 
     /**

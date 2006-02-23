@@ -54,7 +54,7 @@ public class SpecifyDBConverter
         for (int i=0;i<oldNames.length;i++)
         {
             String fieldName = oldNames[i].substring(oldNames[i].indexOf(".")+1, oldNames[i].length());
-            //System.out.println(fieldName
+            //log.info(fieldName
             if (newName.equals(fieldName))
             {
                 return i;
@@ -141,7 +141,7 @@ public class SpecifyDBConverter
 
         } else
         {
-            System.out.println("Names length: " + attrNames.length + " doesn't match Types length "
+            log.info("Names length: " + attrNames.length + " doesn't match Types length "
                     + dataTypes.length);
         }
         return null;
@@ -194,7 +194,7 @@ public class SpecifyDBConverter
             
       } else
       {
-          System.out.println("Names length: "+aAttrNames.length+" doesn't match Types length "+aTypes.length);
+          log.info("Names length: "+aAttrNames.length+" doesn't match Types length "+aTypes.length);
       }
     }*/
     
@@ -534,7 +534,7 @@ public class SpecifyDBConverter
                 
                 if (doingAndysFishDB)
                 {
-                    System.out.println("***** Doing PrepAttrs for Andy");
+                    log.info("***** Doing PrepAttrs for Andy");
                     
                     String[] fieldNames = {
                             "collectionobject.CollectionObjectID", 
@@ -595,7 +595,7 @@ public class SpecifyDBConverter
                                          "TimestampCreated", "TimestampModified", "LastEditedBy", "Deaccessioned", "CatalogNumber", "CollectingEventID", 
                                          "CatalogSeriesID", "AccessionID", "CatalogerID", "ContainerID"};
                     
-                    System.out.println("Number of Fields in CollectioObj "+newNames.length);
+                    log.info("Number of Fields in CollectioObj "+newNames.length);
                     String sqlStr = sql.toString();
                     
                     
@@ -633,15 +633,15 @@ public class SpecifyDBConverter
                             }
                         }
                         count++;
-                        if (count % 1000 == 0) System.out.println(count);
+                        if (count % 1000 == 0) log.info(count);
                         
                         updateStatement.clearBatch();
                         updateStatement.close();
                     } // while
-                    System.out.println("Processed "+count+" records.");
+                    log.info("Processed "+count+" records.");
                     stmt.close();
                     
-                    System.out.println("Added "+prepAttrsID+" PrepAttr Records");
+                    log.info("Added "+prepAttrsID+" PrepAttr Records");
                }
                 
                 
@@ -701,7 +701,7 @@ public class SpecifyDBConverter
                                          "Deaccessioned",       "CatalogNumber", "CollectionObjectTypeID", "CollectingEventID", "CatalogSeriesID",   
                                          "AccessionID",         "CatalogerID",   "ContainerID"};
 
-                    System.out.println("Number of Fields in CollectioObj "+newNames.length);
+                    log.info("Number of Fields in CollectioObj "+newNames.length);
                     String sqlStr = sql.toString();
                     
                     
@@ -736,7 +736,7 @@ public class SpecifyDBConverter
                                 }
                             } else
                             {
-                                System.out.println("Couldn't find ["+newNames[i]+"]");
+                                log.info("Couldn't find ["+newNames[i]+"]");
                                 stmt.close();
                                 connect.close();
                                 return;
@@ -744,8 +744,8 @@ public class SpecifyDBConverter
 
                         }
                         str.append(")");
-                        //System.out.println("\n"+str.toString());
-                        if (count % 1000 == 0) System.out.println(count);
+                        //log.info("\n"+str.toString());
+                        if (count % 1000 == 0) log.info(count);
                         
                         try
                         {
@@ -755,14 +755,14 @@ public class SpecifyDBConverter
                             
                         } catch (Exception e)
                         {
-                            System.out.println("Count: "+count);
+                            log.info("Count: "+count);
                             e.printStackTrace();
                         }
                         
                         count++;
                         //if (count == 1) break;
                     }
-                    System.out.println("Processed "+count+" records.");
+                    log.info("Processed "+count+" records.");
                }
                 
             } catch (Exception e)
@@ -773,7 +773,7 @@ public class SpecifyDBConverter
             
         if (doPreps) 
         {
-            System.out.println("****** Doing Preparations");
+            log.info("****** Doing Preparations");
             int inx = -1;
             try 
             {
@@ -910,7 +910,7 @@ public class SpecifyDBConverter
                                 }
                             } else
                             {
-                                System.out.println("Couldn't find ["+prepFieldNames[i]+"]["+i+"]");
+                                log.info("Couldn't find ["+prepFieldNames[i]+"]["+i+"]");
                                 stmt.close();
                                 connect.close();
                                 return;
@@ -918,7 +918,7 @@ public class SpecifyDBConverter
                         }
                     }
                     str.append(")");
-                    //System.out.println("\n"+str.toString());
+                    //log.info("\n"+str.toString());
                     
                     try
                     {
@@ -929,12 +929,12 @@ public class SpecifyDBConverter
                         
                     } catch (Exception e)
                     {
-                        System.out.println("Count: "+count);
+                        log.info("Count: "+count);
                         e.printStackTrace();
                     }
                     
                     
-                    if (count % 1000 == 0) System.out.println(count);
+                    if (count % 1000 == 0) log.info(count);
                     count++;
                     //if (count == 100) break;
                 }
@@ -944,7 +944,7 @@ public class SpecifyDBConverter
                 
             } catch (Exception e)
             {
-                System.out.println("inx: "+inx);
+                log.info("inx: "+inx);
                 e.printStackTrace();
             }
         }
@@ -955,7 +955,7 @@ public class SpecifyDBConverter
         {
             try 
             {
-                 System.out.println("***** Doing PrepAttrs for Testing");
+                 log.info("***** Doing PrepAttrs for Testing");
                  
                  Statement st = connect.createStatement();
                  ResultSet prepRS = st.executeQuery("Select PrepsObjID, SubNumber From prepsobj");
@@ -1023,22 +1023,22 @@ public class SpecifyDBConverter
                      
                      } catch (Exception e)
                      {
-                         System.out.println("Count: "+count);
+                         log.info("Count: "+count);
                          e.printStackTrace();
                      }
                      
                      prepAttrsID++;
                      count++;
-                     if (count % 1000 == 0) System.out.println(count);
+                     if (count % 1000 == 0) log.info(count);
                      
                      updateStatement.clearBatch();
                      updateStatement.close();
 
                  } // while
-                 System.out.println("Processed "+count+" records.");
+                 log.info("Processed "+count+" records.");
                  st.close();
                  
-                 System.out.println("Added "+prepAttrsID+" PrepAttr Records");
+                 log.info("Added "+prepAttrsID+" PrepAttr Records");
              
             } catch (Exception e)
             {
@@ -1109,7 +1109,7 @@ public class SpecifyDBConverter
             
             /*Criteria criteria1 = session.createCriteria(CollectionObject.class).setFetchMode(CollectionObject.class.getName(), FetchMode.EAGER);
             java.util.List data1 = criteria1.list();
-            System.out.println("Items to Delete: "+data1.size());
+            log.info("Items to Delete: "+data1.size());
             
             for (Iterator iter=data1.iterator();iter.hasNext();)
             {
@@ -1126,14 +1126,14 @@ public class SpecifyDBConverter
             
             
             java.util.List data = criteria.list();
-            System.out.println("Items Returned: "+data.size());
+            log.info("Items Returned: "+data.size());
             
             for (Iterator iter=data.iterator();iter.hasNext();)
             {
                 //CollectionObject        colObj    = (CollectionObject)iter.next();
                 /*
                 CollectionObjectCatalog colObjCat = colObj.getCollectionObjectCatalog();
-                System.out.println(colObj.getCollectionObjectId());
+                log.info(colObj.getCollectionObjectId());
                 
                 CollectionObj newColObj = new CollectionObj();
                 */
@@ -1246,14 +1246,14 @@ public class SpecifyDBConverter
             //createDataRecordsForNewSchema();
             //doLoadAttrsMgr();
             
-            //BasicSQLUtils.cleanAllTables();
+            BasicSQLUtils.cleanAllTables();
             
-            boolean doConvert = false;
+            boolean doConvert = true;
             if (doConvert)
             {
                 GenericDBConversion conversion = new GenericDBConversion();
                 
-                boolean copyTables = false;
+                boolean copyTables = true;
                 if (copyTables)
                 {               
                     conversion.copyTables();
@@ -1270,24 +1270,30 @@ public class SpecifyDBConverter
                 Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CatalogSeries.class);
                 criteria.add(Expression.eq("catalogSeriesId", new Integer(0)));
                 java.util.List catalogSeriesList = criteria.list();
-                
-                Set<Object>  colObjDefSet = conversion.createCollectionObjDef("Fish", dataType, user, null, (CatalogSeries)catalogSeriesList.get(0));
-                
-    
-    
-                Object obj = colObjDefSet.iterator().next();
-                CollectionObjDef colObjDef = (CollectionObjDef)obj;
-                FishConversion fishConversion = new FishConversion(colObjDef);
-                fishConversion.loadAttrs(true);
-                
-                
-                DBConnection oldDB     = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/demo_fish2", "rods", "rods");
-                Connection   oldDBConn = oldDB.getConnectionToDB();
-                fishConversion.loadPrepAttrs(oldDBConn, DBConnection.getConnection());
-                oldDBConn.close();
+                if (catalogSeriesList.size() > 0)
+                {
+                    
+                    Set<Object>  colObjDefSet = conversion.createCollectionObjDef("Fish", dataType, user, null, (CatalogSeries)catalogSeriesList.get(0));
+                    
+        
+        
+                    Object obj = colObjDefSet.iterator().next();
+                    CollectionObjDef colObjDef = (CollectionObjDef)obj;
+                    FishConversion fishConversion = new FishConversion(colObjDef);
+                    fishConversion.loadAttrs(true);
+                    
+                    
+                    DBConnection oldDB     = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/demo_fish2", "rods", "rods");
+                    Connection   oldDBConn = oldDB.getConnectionToDB();
+                    fishConversion.loadPrepAttrs(oldDBConn, DBConnection.getConnection());
+                    oldDBConn.close();
+                } else
+                {
+                    log.error("Error: No Catalog Series!");
+                }
             }
             
-            boolean testPaging = true;
+            boolean testPaging = false;
             if (testPaging)
             {
                 /*
@@ -1327,6 +1333,6 @@ public class SpecifyDBConverter
 
             
         }
-        System.out.println("Done.");
+        log.info("Done.");
     }
 }

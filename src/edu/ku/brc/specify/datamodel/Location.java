@@ -1,7 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.Date;
-import java.util.Set;
 
 
 
@@ -16,7 +15,6 @@ public class Location  implements java.io.Serializable {
     // Fields    
 
      protected Integer locationId;
-     protected Integer parentId;
      protected String name;
      protected Integer rankId;
      protected Integer nodeNumber;
@@ -32,7 +30,6 @@ public class Location  implements java.io.Serializable {
      protected String lastEditedBy;
      protected Short isCurrent;
      private LocationTreeDef definition;
-     private Set children;
      private Location parent;
 
 
@@ -65,21 +62,6 @@ public class Location  implements java.io.Serializable {
     
     public void setLocationId(Integer locationId) {
         this.locationId = locationId;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="ParentTaxonID"
-     *             length="10"
-     *             index="index_name"
-     *         
-     */
-    public Integer getParentId() {
-        return this.parentId;
-    }
-    
-    public void setParentId(Integer parentId) {
-        this.parentId = parentId;
     }
 
     /**
@@ -293,28 +275,8 @@ public class Location  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="LocationID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Location"
-     *         
-     */
-    public Set getChildren() {
-        return this.children;
-    }
-    
-    public void setChildren(Set children) {
-        this.children = children;
-    }
-
-    /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="ParentID"         
      *         
      */
     public Location getParent() {

@@ -60,8 +60,9 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/ExchangeIn.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/ExchangeOut.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Geography.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/GeologicTimeBoundary.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/GeographyTreeDef.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/GeologicTimePeriod.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/GeologicTimePeriodTreeDef.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/GroupPerson.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/HabitatAttrs.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Journal.hbm.xml"/>
@@ -72,6 +73,8 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/LocalityCitation.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Locality.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/LocalityExternalFile.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/Location.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/LocationTreeDef.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Observation.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/OtherIdentifier.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Permit.hbm.xml"/>
@@ -84,8 +87,6 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/Project.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/ReferenceWork.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Shipment.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/SoundEventStorage.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/Sound.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Stratigraphy.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/TaxonCitation.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Taxon.hbm.xml"/>

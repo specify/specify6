@@ -157,12 +157,12 @@ public class BasicSQLUtils
             ResultSet rs = stmt.executeQuery("show tables");
             if (rs.first())
             {
-                while (rs.next())
+                do
                 {
                     String tableName = rs.getString(1);
                     //System.out.println("Deleting Records from "+tableName);
                     deleteAllRecordsFromTable(connection, tableName);
-                }
+                } while (rs.next());
             }
             rs.close();
             
@@ -332,20 +332,23 @@ public class BasicSQLUtils
                             log.error("The name [" + colName + "] was not mapped.");
                         }
                     }
+                    
                     if (index != null)
                     {
-                        if (i > 0)
-                            str.append(", ");
+                        if (i > 0) str.append(", ");
                         Object dataObj = rs.getObject(index);
                         str.append(getStrValue(dataObj));
+                        
                     } else
                     {
-                        log.error("For Table[" + fromTableName + "] Col Name[" + colNames.get(i)
-                                + "] not found");
-                        rs.close();
-                        stmt.clearBatch();
-                        stmt.close();
-                        return false;
+                        log.error("For Table[" + fromTableName + "] Col Name[" + colNames.get(i) + "] was not mapped");
+                        if (i > 0) str.append(", ");
+                        str.append("NULL");
+                        
+                        //rs.close();
+                        //stmt.clearBatch();
+                        //stmt.close();
+                        //return false;
                     }
 
                 }
@@ -365,7 +368,7 @@ public class BasicSQLUtils
                 count++;
                 // if (count == 1) break;
             }
-            System.out.println(fromTableName + " processed " + count + " records.");
+            log.info(fromTableName + " processed " + count + " records.");
 
             rs.close();
             stmt.clearBatch();

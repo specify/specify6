@@ -39,7 +39,6 @@ public class CollectionObject  implements java.io.Serializable {
      protected String catalogNumber;
      protected CollectingEvent collectingEvent;
      protected Observation observation;
-     protected Set soundEventStorages;
      protected Set collectionObjectCitations;
      protected Set bioAttrs;
      protected Set preparations;
@@ -405,25 +404,6 @@ public class CollectionObject  implements java.io.Serializable {
     
     public void setObservation(Observation observation) {
         this.observation = observation;
-    }
-
-    /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="SoundRecordingID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.SoundEventStorage"
-     *         
-     */
-    public Set getSoundEventStorages() {
-        return this.soundEventStorages;
-    }
-    
-    public void setSoundEventStorages(Set soundEventStorages) {
-        this.soundEventStorages = soundEventStorages;
     }
 
     /**

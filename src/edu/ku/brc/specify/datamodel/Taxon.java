@@ -16,7 +16,6 @@ public class Taxon  implements java.io.Serializable {
     // Fields    
 
      protected Integer taxonId;
-     protected Integer parentId;
      protected String taxonomicSerialNumber;
      protected String name;
      protected String unitInd1;
@@ -47,7 +46,6 @@ public class Taxon  implements java.io.Serializable {
      private Set taxonCitations;
      private Set externalFiles;
      private TaxonomyTreeDef definition;
-     private Set children;
      private Taxon parent;
 
 
@@ -80,21 +78,6 @@ public class Taxon  implements java.io.Serializable {
     
     public void setTaxonId(Integer taxonId) {
         this.taxonId = taxonId;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="ParentID"
-     *             length="10"
-     *             index="IX_TXB_ParentID"
-     *         
-     */
-    public Integer getParentId() {
-        return this.parentId;
-    }
-    
-    public void setParentId(Integer parentId) {
-        this.parentId = parentId;
     }
 
     /**
@@ -524,25 +507,6 @@ public class Taxon  implements java.io.Serializable {
     
     public void setDefinition(TaxonomyTreeDef definition) {
         this.definition = definition;
-    }
-
-    /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="TaxonID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Taxon"
-     *         
-     */
-    public Set getChildren() {
-        return this.children;
-    }
-    
-    public void setChildren(Set children) {
-        this.children = children;
     }
 
     /**

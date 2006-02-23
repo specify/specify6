@@ -37,7 +37,7 @@
         <generator class="assigned" />
     </id>
 
-    <property
+    <!-- <property
         name="parentId"
         type="java.lang.Integer"
         column="ParentID"
@@ -51,7 +51,7 @@
             length="10"
             index="IX_TXB_ParentID"
         </meta>    
-    </property>
+    </property> -->
     
     <property
         name="taxonomicSerialNumber"
@@ -507,7 +507,7 @@
     </many-to-one>
     
     <!-- bi-directional one-to-many association to Taxon -->
-    <set
+    <!-- <set
         name="children"
         lazy="true"
         inverse="true"
@@ -531,7 +531,7 @@
         <one-to-many 
             class="edu.ku.brc.specify.datamodel.Taxon"
         />
-    </set>
+    </set> -->
     
     <!-- bi-directional many-to-one association to Taxon -->
     <many-to-one

@@ -404,33 +404,6 @@
         />
     </set>	
     
-    <!-- bi-directional one-to-many association to Sound -->
-    <set
-        name="sounds"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="RecordedByID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.Sound"
-        </meta>
-        <key>
-            <column name="RecordedByID" />
-        </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.Sound"
-        />
-    </set>
-
     <!-- bi-directional one-to-many association to GroupPerson -->
     <set
         name="groupPersonsByGroupId"

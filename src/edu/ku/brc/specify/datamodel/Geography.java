@@ -16,7 +16,6 @@ public class Geography  implements java.io.Serializable {
     // Fields    
 
      protected Integer geographyId;
-     protected Integer parentId;
      protected String name;
      protected Integer rankId;
      protected Integer nodeNumber;
@@ -33,7 +32,6 @@ public class Geography  implements java.io.Serializable {
      protected Short isCurrent;
      private Set localities;
      private GeographyTreeDef definition;
-     private Set children;
      private Geography parent;
 
 
@@ -66,21 +64,6 @@ public class Geography  implements java.io.Serializable {
     
     public void setGeographyId(Integer geographyId) {
         this.geographyId = geographyId;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="ParentTaxonID"
-     *             length="10"
-     *             index="IX_GeoParentId"
-     *         
-     */
-    public Integer getParentId() {
-        return this.parentId;
-    }
-    
-    public void setParentId(Integer parentId) {
-        this.parentId = parentId;
     }
 
     /**
@@ -313,25 +296,6 @@ public class Geography  implements java.io.Serializable {
     
     public void setDefinition(GeographyTreeDef definition) {
         this.definition = definition;
-    }
-
-    /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="GeographyID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Geography"
-     *         
-     */
-    public Set getChildren() {
-        return this.children;
-    }
-    
-    public void setChildren(Set children) {
-        this.children = children;
     }
 
     /**
