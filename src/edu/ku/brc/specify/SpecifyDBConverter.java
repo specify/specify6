@@ -1251,7 +1251,9 @@ public class SpecifyDBConverter
             boolean doConvert = true;
             if (doConvert)
             {
-                GenericDBConversion conversion = new GenericDBConversion();
+                GenericDBConversion conversion = new GenericDBConversion("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/demo_fish2", "rods", "rods");
+                
+                conversion.convertLocality();
                 
                 boolean copyTables = true;
                 if (copyTables)

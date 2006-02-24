@@ -44,9 +44,9 @@ import org.apache.commons.logging.LogFactory;
  */
 public class BasicSQLUtils
 {
-    protected static Log              log           = LogFactory.getLog(BasicSQLUtils.class);
-    protected static SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-
+    protected static Log              log              = LogFactory.getLog(BasicSQLUtils.class);
+    protected static SimpleDateFormat dateFormatter    = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    protected static boolean          showMappingError = true;
     
     /**
      * Singleton 
@@ -55,8 +55,24 @@ public class BasicSQLUtils
     {
     }
     
-    
-    
+    /**
+     * Sets whether mapping column errors should be displayed
+     * @param showMappingError true - shows erros, false does not
+     */
+    public static void setShowMappingError(boolean showMappingError)
+    {
+        BasicSQLUtils.showMappingError = showMappingError;
+    }
+
+    /**
+     * Returns whether it should display mapping errors
+     * @return whether it should display mapping errors
+     */
+    public static boolean isShowMappingError()
+    {
+        return showMappingError;
+    }
+
     /**
      * Executes an SQL Update command
      * @param stmt Statement object to execute the SQL
@@ -253,15 +269,15 @@ public class BasicSQLUtils
      * @param fromConn the "from" DB
      * @param toConn the "to" DB
      * @param tableName the table name to be copied
-     * @param colMap a map of new file names toold file names
+     * @param colNewToOldMap a map of new file names toold file names
      * @return true if successful
      */
     public static boolean copyTable(final Connection fromConn,
                                     final Connection toConn,
-                                    final String tableName,
-                                    final Map<String, String> colMap)
+                                    final String     tableName,
+                                    final Map<String, String> colNewToOldMap)
     {
-        return copyTable(fromConn, toConn, tableName, tableName, colMap);
+        return copyTable(fromConn, toConn, "select * from " + tableName, tableName, tableName, colNewToOldMap);
     }
 
     /**
@@ -269,15 +285,15 @@ public class BasicSQLUtils
      * @param conn a connection to copy from one table to another in the same database
      * @param fromTableName the table name its coming from
      * @param toTableName the table name it is going to
-     * @param colMap a map of new file names toold file names
+     * @param colNewToOldMap a map of new file names toold file names
      * @return true if successful
      */
     public static boolean copyTable(final Connection conn,
-                                    final String fromTableName,
-                                    final String toTableName,
-                                    final Map<String, String> colMap)
+                                    final String     fromTableName,
+                                    final String     toTableName,
+                                    final Map<String, String> colNewToOldMap)
     {
-        return copyTable(conn, conn, fromTableName, toTableName, colMap);
+        return copyTable(conn, conn, "select * from " + fromTableName, fromTableName, toTableName, colNewToOldMap);
     }
 
     /**
@@ -287,22 +303,24 @@ public class BasicSQLUtils
      * @param toConnDB Connection that the data is going to
      * @param fromTableName the table name its coming from
      * @param toTableName the table name it is going to
-     * @param colMap a map of new file names toold file names
+     * @param colNewToOldMap a map of new file names to old file names
      * @return true if successful
      */
     public static boolean copyTable(final Connection fromConn,
                                     final Connection toConn,
-                                    final String fromTableName,
-                                    final String toTableName,
-                                    final Map<String, String> colMap)
+                                    final String     sqlStr,
+                                    final String     fromTableName,
+                                    final String     toTableName,
+                                    final Map<String, String> colNewToOldMap)
     {
         String id = "";
         try
         {
             List<String> colNames = new ArrayList<String>();
             getFieldNamesFromSchema(toConn, toTableName, colNames);
+            
             Statement stmt = fromConn.createStatement();
-            ResultSet rs = stmt.executeQuery("select * from " + fromTableName);
+            ResultSet rs = stmt.executeQuery(sqlStr);
             ResultSetMetaData rsmd = rs.getMetaData();
             Hashtable<String, Integer> fromHash = new Hashtable<String, Integer>();
             for (int i = 1; i <= rsmd.getColumnCount(); i++)
@@ -321,9 +339,9 @@ public class BasicSQLUtils
                 {
                     String colName = colNames.get(i);
                     Integer index = fromHash.get(colName);
-                    if (index == null && colMap != null)
+                    if (index == null && colNewToOldMap != null)
                     {
-                        String mappedName = colMap.get(colName);
+                        String mappedName = colNewToOldMap.get(colName);
                         if (mappedName != null)
                         {
                             index = fromHash.get(mappedName);
@@ -341,7 +359,10 @@ public class BasicSQLUtils
                         
                     } else
                     {
-                        log.error("For Table[" + fromTableName + "] Col Name[" + colNames.get(i) + "] was not mapped");
+                        if (showMappingError)
+                        {
+                            log.error("For Table[" + fromTableName + "] Col Name[" + colNames.get(i) + "] was not mapped");
+                        }
                         if (i > 0) str.append(", ");
                         str.append("NULL");
                         

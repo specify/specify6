@@ -49,28 +49,56 @@ import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.TaxonomyTreeDef;
 import edu.ku.brc.specify.datamodel.User;
+import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.Encryption;
 
 /**
- * This class is used for copying over the and creating all the tables that are not specify to any one collection
+ * This class is used for copying over the and creating all the tables that are not specify to any one collection. 
+ * This assumes that the "static" data members of DBConnection have been set up with the new Database's 
+ * driver, name, user and password. This is created with the old Database's driver, name, user and password.
  */
 public class GenericDBConversion 
 {
     protected static Log log = LogFactory.getLog(GenericDBConversion.class);
 
-    protected static StringBuilder strBuf            = new StringBuilder("");
-    protected static Calendar     calendar          = Calendar.getInstance();
+    protected static StringBuilder strBuf   = new StringBuilder("");
+    protected static Calendar     calendar  = Calendar.getInstance();
     
+    protected String oldDriver   = "";
+    protected String oldDBName   = "";
+    protected String oldUserName = "";
+    protected String oldPassword = "";
+        
+
     /**
-     * Constructor
+     * Default Constructor
+     *
      */
     public GenericDBConversion()
     {
 
     }
-    
+
+    /**
+     * "Old" means the database you want to copy "from"
+     * @param oldDriver old driver
+     * @param oldDBName old database name
+     * @param oldUserName old user name
+     * @param oldPassword old password
+     */
+    public GenericDBConversion(final String oldDriver, 
+                               final String oldDBName,
+                               final String oldUserName, 
+                               final String oldPassword)
+    {
+        this.oldDriver    = oldDriver;
+        this.oldDBName    = oldDBName;
+        this.oldUserName  = oldUserName;
+        this.oldPassword  = oldPassword;
+    }
+
     /**
      * Removes all the records from every table in the new database and then copies over 
      * all the tables that have few if any changes to their schema
@@ -80,7 +108,7 @@ public class GenericDBConversion
         
         cleanAllTables(); // from DBCOnnection which is the new DB
        
-        DBConnection oldDB = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/demo_fish2", "rods", "rods");
+        DBConnection oldDB = DBConnection.createInstance(oldDriver, oldDBName, oldUserName, oldPassword);
        
         String[] tablesToMoveOver = {
                                     "accession",
@@ -158,7 +186,7 @@ public class GenericDBConversion
         Connection newDBConn = DBConnection.getConnection();
         deleteAllRecordsFromTable(newDBConn, "collectionobject");
         
-        DBConnection oldDB     = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/demo_fish2", "rods", "rods");
+        DBConnection oldDB     = DBConnection.createInstance(oldDriver, oldDBName, oldUserName, oldPassword);
         Connection   oldDBConn = oldDB.getConnectionToDB();
         try 
         {
@@ -389,6 +417,30 @@ public class GenericDBConversion
             HibernateUtil.rollbackTransaction();
         }
         return null;
+    }
+    
+    /**
+     * 
+     */
+    public void convertLocality()
+    {
+        boolean showMappingErrors = BasicSQLUtils.isShowMappingError();
+        BasicSQLUtils.setShowMappingError(false); // turn off notification becauase of errors with National Parks
+            
+        Connection newDBConn = DBConnection.getConnection();
+        deleteAllRecordsFromTable(newDBConn, "collectionobject");
+        
+        DBConnection oldDB     = DBConnection.createInstance(oldDriver, oldDBName, oldUserName, oldPassword);
+        String sql = "select locality.*, geography.* from locality,geography where locality.GeographyID = geography.GeographyID";
+        
+        if (copyTable(oldDB.getConnectionToDB(), DBConnection.getConnection(), sql, "geography", "locality", null))
+        {
+            log.info("Locality/Geography copied ok.");
+        } else
+        {
+            log.error("Copying locality/geography (fields) to new Locality");
+        }
+        BasicSQLUtils.setShowMappingError(showMappingErrors);
     }
     
     /**
