@@ -193,11 +193,9 @@ public class GenericDBConversion
             Statement    stmt = oldDBConn.createStatement();
             StringBuilder str  = new StringBuilder();
             
-            
-            
             List<String> oldFieldNames = new ArrayList<String>();
             
-            StringBuilder sql = new StringBuilder("Select ");
+            StringBuilder sql = new StringBuilder("select ");
             List<String> names = new ArrayList<String>();
             getFieldNamesFromSchema(oldDBConn, "collectionobject", names);
             sql.append(buildSelectFieldList(names, "collectionobject"));
@@ -422,14 +420,33 @@ public class GenericDBConversion
     /**
      * 
      */
+    public void convertTaxon()
+    {
+        boolean showMappingErrors = BasicSQLUtils.isShowMappingError();
+        BasicSQLUtils.setShowMappingError(false); // turn off notification because of errors with TaxonTreeDefID
+            
+        DBConnection oldDB     = DBConnection.createInstance(oldDriver, oldDBName, oldUserName, oldPassword);
+        String sql = "select * from taxonname";
+        
+        if (copyTable(oldDB.getConnectionToDB(), DBConnection.getConnection(), sql, "taxonname", "taxon", 
+                      createFieldNameMap(new String[] {"TaxonID", "TaxonNameID", "ParentID", "ParentTaxonNameID", "Name", "TaxonName", "FullName", "FullTaxonName"})))
+        {
+            log.info("TaxonName copied ok.");
+        } else
+        {
+            log.error("Copying TaxonName (fields) to new Taxon");
+        }
+       BasicSQLUtils.setShowMappingError(showMappingErrors);
+    }
+    
+    /**
+     * 
+     */
     public void convertLocality()
     {
         boolean showMappingErrors = BasicSQLUtils.isShowMappingError();
-        BasicSQLUtils.setShowMappingError(false); // turn off notification becauase of errors with National Parks
+        BasicSQLUtils.setShowMappingError(false); // turn off notification because of errors with National Parks
             
-        Connection newDBConn = DBConnection.getConnection();
-        deleteAllRecordsFromTable(newDBConn, "collectionobject");
-        
         DBConnection oldDB     = DBConnection.createInstance(oldDriver, oldDBName, oldUserName, oldPassword);
         String sql = "select locality.*, geography.* from locality,geography where locality.GeographyID = geography.GeographyID";
         

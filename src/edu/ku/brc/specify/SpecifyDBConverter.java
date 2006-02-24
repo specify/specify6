@@ -1253,13 +1253,13 @@ public class SpecifyDBConverter
             {
                 GenericDBConversion conversion = new GenericDBConversion("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/demo_fish2", "rods", "rods");
                 
-                conversion.convertLocality();
-                
                 boolean copyTables = true;
                 if (copyTables)
-                {               
+                {              
                     conversion.copyTables();
                     conversion.createCollectionRecords();
+                    conversion.convertTaxon(); 
+                    conversion.convertLocality();
                 }
                 
                 BasicSQLUtils.deleteAllRecordsFromTable("datatype");
@@ -1277,7 +1277,6 @@ public class SpecifyDBConverter
                     
                     Set<Object>  colObjDefSet = conversion.createCollectionObjDef("Fish", dataType, user, null, (CatalogSeries)catalogSeriesList.get(0));
                     
-        
         
                     Object obj = colObjDefSet.iterator().next();
                     CollectionObjDef colObjDef = (CollectionObjDef)obj;

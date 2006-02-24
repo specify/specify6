@@ -252,9 +252,17 @@ public class Scriptlet extends JRDefaultScriptlet
      * @return Formats a Lat,Lon into a single string where the values are separated by a comma
      * @throws JRScriptletException XXX
      */
-    public String locality(String desc, Float lat, Float lon) throws JRScriptletException
+    public String locality(Object desc, Float lat, Float lon) throws JRScriptletException
     {
-        StringBuffer strBuf = new StringBuffer(desc);
+        
+        StringBuffer strBuf = new StringBuffer();
+        if (desc instanceof String)
+        {
+            strBuf.append(((String)desc));
+        } else if (desc instanceof byte[])
+        {
+            strBuf.append(new String((byte[])desc));
+        }
         strBuf.append(" ");
         strBuf.append(degrees(lat, true));
         strBuf.append(", ");

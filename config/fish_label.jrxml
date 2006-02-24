@@ -30,13 +30,13 @@
 	<import value="net.sf.jasperreports.engine.data.*" />
 	<parameter name="itemnum" class="java.lang.String"/>
 
-	<queryString><![CDATA[Select collectionobject.FieldNumber as fieldNum, collectionobjectcatalog.CatalogNumber as cat_no, collectionobjectcatalog.Name as name, taxonname.TaxonName as species, agent.LastName as catalogedBy, locality.LocalityName as locality, locality.Latitude1 as latitude, locality.Longitude1 as longitude, collectionobjectcatalog.TimestampCreated as date From determination Inner Join collectionobjectcatalog ON collectionobjectcatalog.CollectionObjectCatalogID = determination.BiologicalObjectID AND (collectionobjectcatalog.CatalogNumber $P!{itemnum}) Inner Join taxonname ON determination.TaxonNameID = taxonname.TaxonNameID Inner Join agent ON determination.DeterminerID = agent.AgentID Inner Join collectionobject ON collectionobjectcatalog.CollectionObjectCatalogID = collectionobject.CollectionObjectID Inner Join collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID Inner Join locality ON collectingevent.LocalityID = locality.LocalityID;]]></queryString>
+	<queryString><![CDATA[Select collectionobject.FieldNumber as fieldNum, collectionobject.CatalogNumber as cat_no, collectionobject.TimestampCreated as date, collectionobject.Name as name, taxon.Name as species, agent.LastName as catalogedBy, locality.LocalityName as locality, locality.Latitude1 as latitude, locality.Longitude1 as longitude From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID  AND (collectionobject.CatalogNumber $P!{itemnum}) Inner Join taxon ON determination.TaxonID = taxon.TaxonID Inner Join agent ON collectionobject.CatalogerID = agent.AgentID, locality Inner Join collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID AND collectingevent.LocalityID = locality.LocalityID]]></queryString>
 	<field name="cat_no" class="java.lang.String"/>
 	<field name="catalogedBy" class="java.lang.String"/>
 	<field name="date" class="java.util.Date"/>
 	<field name="fieldNum" class="java.lang.String"/>
 	<field name="latitude" class="java.lang.Float"/>
-	<field name="locality" class="java.lang.String"/>
+	<field name="locality" class="java.lang.Object"/>
 	<field name="longitude" class="java.lang.Float"/>
 	<field name="name" class="java.lang.String"/>
 	<field name="species" class="java.lang.String"/>

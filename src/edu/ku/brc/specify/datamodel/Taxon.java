@@ -26,7 +26,7 @@ public class Taxon  implements java.io.Serializable {
      protected String unitName3;
      protected String unitInd4;
      protected String unitName4;
-     protected String fullTaxon;
+     protected String fullName;
      protected String commonName;
      protected String author;
      protected String source;
@@ -96,7 +96,7 @@ public class Taxon  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="name"
+     *             column="Name"
      *             length="50"
      *         
      */
@@ -222,16 +222,16 @@ public class Taxon  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="FullTaxon"
+     *             column="FullName"
      *             length="255"
      *         
      */
-    public String getFullTaxon() {
-        return this.fullTaxon;
+    public String getFullName() {
+        return this.fullName;
     }
     
-    public void setFullTaxon(String fullTaxon) {
-        this.fullTaxon = fullTaxon;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     /**

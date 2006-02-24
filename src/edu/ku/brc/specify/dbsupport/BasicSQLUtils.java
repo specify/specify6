@@ -345,7 +345,8 @@ public class BasicSQLUtils
                         if (mappedName != null)
                         {
                             index = fromHash.get(mappedName);
-                        } else
+                            
+                        } else if (showMappingError)
                         {
                             log.error("The name [" + colName + "] was not mapped.");
                         }
