@@ -1279,7 +1279,6 @@ public class SpecifyDBConverter
                     FishConversion fishConversion = new FishConversion(colObjDef);
                     fishConversion.loadAttrs(true);
                     
-                    
                     DBConnection oldDB     = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/demo_fish2", "rods", "rods");
                     Connection   oldDBConn = oldDB.getConnectionToDB();
                     fishConversion.loadPrepAttrs(oldDBConn, DBConnection.getConnection());
