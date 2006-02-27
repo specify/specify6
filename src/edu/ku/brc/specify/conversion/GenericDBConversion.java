@@ -448,10 +448,9 @@ public class GenericDBConversion
      *             resulting database table should not be considered usable.
      * @throws SQLException
      */
-    public static void loadSpecifyGeographicNames( final Connection dbConn,
-                                                    final String tablename,
-                                                    final String filename,
-                                                    final int geographyTreeDefId )
+    public void loadSpecifyGeographicNames( final String tablename,
+                                            final String filename,
+                                            final int geographyTreeDefId )
         throws IOException, SQLException
     {   
         BufferedReader inFile = new BufferedReader(new FileReader(filename));
@@ -460,10 +459,11 @@ public class GenericDBConversion
         // tablename + " values ");
         // Statement st = dbConn.createStatement();
         
-        Vector<GeoFileLine> oldStyleItems = new Vector<GeoFileLine>();
-        Vector<Integer> usedIds = new Vector<Integer>();
-        Vector<Sp6GeoTableItem> newTableRows = new Vector<Sp6GeoTableItem>();
+        Vector<GeoFileLine>     oldStyleItems = new Vector<GeoFileLine>();
+        Vector<Integer>         usedIds       = new Vector<Integer>();
+        Vector<Sp6GeoTableItem> newTableRows  = new Vector<Sp6GeoTableItem>();
         String line = null;
+        int cnt = 0;
         while( (line = inFile.readLine()) != null )
         {
             String fields[] = line.split("\t");
@@ -482,6 +482,12 @@ public class GenericDBConversion
             GeoFileLine row = new GeoFileLine(geoId,0,0,contOrOcean,country,state,county,islandGrp,island,waterBody,drainage,full);
             oldStyleItems.add(row);
             usedIds.add(geoId);
+            
+            if (cnt % 1000 == 0)
+            {
+                log.info("Geography: " + cnt);
+            }
+            cnt++;
         }
         
         // setup the root node (Earth) of the geo tree
@@ -812,50 +818,48 @@ public class GenericDBConversion
             }
         }
         
-        // put together a huge 'insert' statement, starting with the 'values
-        // (...)' portion
-        StringBuilder values = new StringBuilder();
-        for( Sp6GeoTableItem item: newTableRows )
-        {
-            String name = item.getName();
-            int id = item.getGeographyId();
-            int parentId = item.getParentId();
-            int nodeNum = item.getNodeNumber();
-            int highChild = item.getHighChildNodeNumber();
-            int rank = item.getRankId();
-
-            values.append("(\"");
-            values.append(name);
-            values.append("\",");
-            values.append(id);
-            values.append(",");
-            values.append(parentId);
-            values.append(",");
-            values.append(nodeNum);
-            values.append(",");
-            values.append(highChild);
-            values.append(",");
-            values.append(rank);
-            values.append(",");
-            values.append(geographyTreeDefId);
-            values.append("),");
-        }
-        // take off the last comma
-        values.deleteCharAt(values.length()-1);
-
-        StringBuilder insertStatement = new StringBuilder( "INSERT INTO geography (Name,GeographyId,ParentId,NodeNumber,HighestChildNodeNumber,RankId,GeographyTreeDefId) values ");
-        insertStatement.append(values.toString());
-        insertStatement.append(";");
-        
-        DBConnection.setUsernamePassword("rods", "rods");
-        DBConnection.setDriver("com.mysql.jdbc.Driver");
-        DBConnection.setDBName("jdbc:mysql://localhost/demo_fish3");
         Connection conn = DBConnection.getConnection();
         Statement st = conn.createStatement();
-        int rowsInserted = st.executeUpdate(insertStatement.toString());
-        System.out.println("Rows inserted: " + rowsInserted);
+        
+        // put together a huge 'insert' statement, starting with the 'values
+        // (...)' portion
+        int rowsInserted = 0;
+        StringBuilder insertStatement = new StringBuilder();
+        for( Sp6GeoTableItem item: newTableRows )
+        {
+            insertStatement.setLength(0);
+            insertStatement.append( "INSERT INTO geography (Name,GeographyId,ParentId,NodeNumber,HighestChildNodeNumber,RankId,GeographyTreeDefId) values ");
+            insertStatement.append("(\"");
+            insertStatement.append(item.getName());
+            insertStatement.append("\",");
+            insertStatement.append(item.getGeographyId());
+            insertStatement.append(",");
+            insertStatement.append(item.getParentId());
+            insertStatement.append(",");
+            insertStatement.append(item.getNodeNumber());
+            insertStatement.append(",");
+            insertStatement.append(item.getHighChildNodeNumber());
+            insertStatement.append(",");
+            insertStatement.append(item.getRankId());
+            insertStatement.append(",");
+            insertStatement.append(geographyTreeDefId);
+            insertStatement.append(")");
+            
+            int row = st.executeUpdate(insertStatement.toString());
+            if (rowsInserted % 1000 == 0)
+            {
+                log.info("Geography: " + rowsInserted);
+            }
+            rowsInserted++;
+        }
+        log.info("Rows inserted: " + rowsInserted);
     }
     
+    /**
+     * @param nodes
+     * @param id
+     * @return
+     */
     private static Sp6GeoTableItem findNodeById(final Vector<Sp6GeoTableItem> nodes, int id )
     {
         for( Sp6GeoTableItem node: nodes )

@@ -25,6 +25,7 @@ import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.dbsupport.ResultsPager;
+import edu.ku.brc.specify.helpers.XMLHelper;
 
 /**
  * Create more sample data, letting Hibernate persist it for us.
@@ -1231,22 +1232,15 @@ public class SpecifyDBConverter
         DBConnection.setDriver("com.mysql.jdbc.Driver");
         DBConnection.setDBName("jdbc:mysql://localhost/demo_fish3");
         
-        boolean doingHibernate = false;
-        if (doingHibernate) 
-        {
-           
-            //loadData();
-            
-            BasicSQLUtils.cleanAllTables();
 
-            
-        } else
+        //loadAttrs();
+        //createDataRecordsForNewSchema();
+        //doLoadAttrsMgr();
+        try
         {
-            //loadAttrs();
-            //createDataRecordsForNewSchema();
-            //doLoadAttrsMgr();
-            
+        
             BasicSQLUtils.cleanAllTables();
+            
             
             boolean doConvert = true;
             if (doConvert)
@@ -1260,6 +1254,8 @@ public class SpecifyDBConverter
                     conversion.createCollectionRecords();
                     conversion.convertTaxon(); 
                     conversion.convertLocality();
+                    conversion.loadSpecifyGeographicNames("geography", XMLHelper.getConfigDirPath("SpecifyGeographicNames.csv"), 0); 
+                     
                 }
                 
                 BasicSQLUtils.deleteAllRecordsFromTable("datatype");
@@ -1331,9 +1327,13 @@ public class SpecifyDBConverter
                 } while (pager.isNextPage());
                 
             }
-
+    
+                
             
+            log.info("Done.");
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
-        log.info("Done.");
     }
 }
