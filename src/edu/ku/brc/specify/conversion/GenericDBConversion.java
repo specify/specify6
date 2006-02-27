@@ -1,5 +1,5 @@
 /*
- * Filename:    $RCSfile: FishConversion.java,v $
+ * Filename:    $RCSfile: GenericDBConversion.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.3 $
  * Date:        $Date: 2005/10/20 12:53:02 $
@@ -28,17 +28,23 @@ import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.deleteAllRecordsFromTab
 import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.getFieldNamesFromSchema;
 import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.getStrValue;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,6 +71,12 @@ public class GenericDBConversion
 
     protected static StringBuilder strBuf   = new StringBuilder("");
     protected static Calendar     calendar  = Calendar.getInstance();
+    
+    private static final int GEO_ROOT_RANK  = 0;
+    private static final int CONTINENT_RANK = 100;
+    private static final int COUNTRY_RANK   = 200;
+    private static final int STATE_RANK     = 300;
+    private static final int COUNTY_RANK    = 400;
     
     protected String oldDriver   = "";
     protected String oldDBName   = "";
@@ -418,6 +430,464 @@ public class GenericDBConversion
     }
     
     /**
+     * @brief Parses a tab-delimited file containing geographical location data
+     *        and fills a db table with the appropriate data.
+     * 
+     * The input file must format the data in the following order: id, current
+     * id, continent or ocean, country, state, county, island group, island,
+     * water body, drainage, full geographical name. <b>IT IS ASSUMED THAT THE
+     * INPUT DATA HAS BEEN SORTED ALPHABETICALLY BY CONTINENT, THEN COUNTRY,
+     * THEN STATE, AND FINALLY COUNTY.<b>
+     * 
+     * @param filename
+     *            full pathname of a tab-delimited file containing the geography
+     *            data
+     * @throws IOException
+     *             if filename doesn't refer to a valid file path or there is an
+     *             error while reading the file. In either situation, the
+     *             resulting database table should not be considered usable.
+     * @throws SQLException
+     */
+    public static void loadSpecifyGeographicNames( final Connection dbConn,
+                                                    final String tablename,
+                                                    final String filename,
+                                                    final int geographyTreeDefId )
+        throws IOException, SQLException
+    {   
+        BufferedReader inFile = new BufferedReader(new FileReader(filename));
+        
+        // StringBuilder updateString = new StringBuilder("insert into " +
+        // tablename + " values ");
+        // Statement st = dbConn.createStatement();
+        
+        Vector<GeoFileLine> oldStyleItems = new Vector<GeoFileLine>();
+        Vector<Integer> usedIds = new Vector<Integer>();
+        Vector<Sp6GeoTableItem> newTableRows = new Vector<Sp6GeoTableItem>();
+        String line = null;
+        while( (line = inFile.readLine()) != null )
+        {
+            String fields[] = line.split("\t");
+            int geoId = Integer.parseInt(fields[0]);
+            // int curId = Integer.parseInt(fields[1]);
+            String contOrOcean = fields[2].equals("") ? null : fields[2];
+            String country = fields[3].equals("") ? null : fields[3];
+            String state = fields[4].equals("") ? null : fields[4];
+            String county = fields[5].equals("") ? null : fields[5];
+            String islandGrp = fields[6].equals("") ? null : fields[6];
+            String island = fields[7].equals("") ? null : fields[7];
+            String waterBody = fields[8].equals("") ? null : fields[8];
+            String drainage = fields[9].equals("") ? null : fields[9];
+            String full = fields[10].equals("") ? null : fields[10];
+        
+            GeoFileLine row = new GeoFileLine(geoId,0,0,contOrOcean,country,state,county,islandGrp,island,waterBody,drainage,full);
+            oldStyleItems.add(row);
+            usedIds.add(geoId);
+        }
+        
+        // setup the root node (Earth) of the geo tree
+        int geoRootId = findUnusedId(usedIds);
+        usedIds.add(geoRootId);
+        int nextNodeNumber = 1;
+        Sp6GeoTableItem geoRoot = new Sp6GeoTableItem(geoRootId,"Earth",GEO_ROOT_RANK,nextNodeNumber++,0,geoRootId);
+        newTableRows.add(geoRoot);
+
+        
+        String prevCont = null;
+        String prevCountry = null;
+        String prevState = null;
+        String prevCounty = null;
+        int prevContGeoId = 0;
+        int prevCountryGeoId = 0;
+        int prevStateGeoId = 0;
+        int prevCountyGeoId = 0;
+        
+        // process them all into the new tree structure
+        // on the first pass, we're simply going to create all of the nodes and
+        // setup the parent pointers
+        for( GeoFileLine geo: oldStyleItems )
+        {
+            boolean hasCont = !(geo.getContOrOcean() == null);
+            boolean hasCountry = !(geo.getCountry() == null);
+            boolean hasState = !(geo.getState() == null);
+            boolean hasCounty = !(geo.getCounty() == null);
+            
+            if( !hasCont && !hasCountry && !hasState && !hasCounty )
+            {
+                // this one has no geo information that we need
+                // it's probably just water bodies
+                
+                // we could probably reclaim the geographyId if we wanted to
+                continue;
+            }
+            
+            int countyGeoId;
+            int stateGeoId;
+            int countryGeoId;
+            int contGeoId;
+            String geoName;
+            
+            if( geo.getContOrOcean() != null && !geo.getContOrOcean().equals(prevCont) )
+            {
+                // the continent is new (and country, state, and county, if
+                // non-empty)
+                
+                // find geographyIds for each node
+                if( hasCounty )
+                {
+                    // the county keeps the existing id
+                    // the other levels get new ones
+                    
+                    contGeoId = findUnusedId(usedIds);
+                    usedIds.add(contGeoId);
+                    geoName = geo.getContOrOcean();
+                    Sp6GeoTableItem newCont = new Sp6GeoTableItem(contGeoId,geoName,CONTINENT_RANK,nextNodeNumber++,-1,geoRootId);
+                    prevCont = geoName;
+                    prevContGeoId = contGeoId;
+
+                    countryGeoId = findUnusedId(usedIds);
+                    usedIds.add(countryGeoId);
+                    geoName = geo.getCountry();
+                    Sp6GeoTableItem newCountry = new Sp6GeoTableItem(countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,-1,prevContGeoId);
+                    prevCountry = geoName;
+                    prevCountryGeoId = countryGeoId;
+                    
+                    stateGeoId = findUnusedId(usedIds);
+                    usedIds.add(stateGeoId);
+                    geoName = geo.getState();
+                    Sp6GeoTableItem newState = new Sp6GeoTableItem(stateGeoId,geoName,STATE_RANK,nextNodeNumber++,-1,prevCountryGeoId);
+                    prevState = geoName;
+                    prevStateGeoId = stateGeoId;
+                    
+                    // county keeps existing id
+                    countyGeoId = geo.getId();
+                    geoName = geo.getCounty();
+                    Sp6GeoTableItem newCounty = new Sp6GeoTableItem(countyGeoId,geoName,COUNTY_RANK,nextNodeNumber++,-1,prevStateGeoId);
+                    prevCounty = geoName;
+                    prevCountyGeoId = countyGeoId;
+                    
+                    newTableRows.add(newCont);
+                    newTableRows.add(newCountry);
+                    newTableRows.add(newState);
+                    newTableRows.add(newCounty);
+                }
+                else if( hasState )
+                {
+                    // state keeps the existing id
+                    // cont and country get new ones
+                    // this item has no county
+
+                    contGeoId = findUnusedId(usedIds);
+                    usedIds.add(contGeoId);
+                    geoName = geo.getContOrOcean();
+                    Sp6GeoTableItem newCont = new Sp6GeoTableItem(contGeoId,geoName,CONTINENT_RANK,nextNodeNumber++,-1,geoRootId);
+                    prevCont = geoName;
+                    prevContGeoId = contGeoId;
+
+                    countryGeoId = findUnusedId(usedIds);
+                    usedIds.add(countryGeoId);
+                    geoName = geo.getCountry();
+                    Sp6GeoTableItem newCountry = new Sp6GeoTableItem(countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,-1,prevContGeoId);
+                    prevCountry = geoName;
+                    prevCountryGeoId = countryGeoId;
+                    
+                    // state keeps existing id
+                    stateGeoId = geo.getId();
+                    geoName = geo.getState();
+                    Sp6GeoTableItem newState = new Sp6GeoTableItem(stateGeoId,geoName,STATE_RANK,nextNodeNumber++,-1,prevCountryGeoId);
+                    prevState = geoName;
+                    prevStateGeoId = stateGeoId;
+                                        
+                    newTableRows.add(newCont);
+                    newTableRows.add(newCountry);
+                    newTableRows.add(newState);
+                }
+                else if( hasCountry )
+                {
+                    // country keeps the existing id
+                    // cont gets a new one
+                    // this item has no state or county
+
+                    contGeoId = findUnusedId(usedIds);
+                    usedIds.add(contGeoId);
+                    geoName = geo.getContOrOcean();
+                    Sp6GeoTableItem newCont = new Sp6GeoTableItem(contGeoId,geoName,CONTINENT_RANK,nextNodeNumber++,-1,geoRootId);
+                    prevCont = geoName;
+                    prevContGeoId = contGeoId;
+
+                    // country keeps existing id
+                    countryGeoId = geo.getId();
+                    geoName = geo.getCountry();
+                    Sp6GeoTableItem newCountry = new Sp6GeoTableItem(countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,-1,prevContGeoId);
+                    prevCountry = geoName;
+                    prevCountryGeoId = countryGeoId;
+                    
+                    newTableRows.add(newCont);
+                    newTableRows.add(newCountry);
+                }
+                else if( hasCont )
+                {
+                    // cont keeps the existing id
+                    // this item has no country, state, or county
+
+                    contGeoId = geo.getId();
+                    geoName = geo.getContOrOcean();
+                    Sp6GeoTableItem newCont = new Sp6GeoTableItem(contGeoId,geoName,CONTINENT_RANK,nextNodeNumber++,-1,geoRootId);
+                    prevCont = geoName;
+                    prevContGeoId = contGeoId;
+
+                    newTableRows.add(newCont);
+                }
+            }
+            
+            else if( geo.getCountry() != null && !geo.getCountry().equals(prevCountry) )
+            {
+                // the country is new (and the state and county, if non-empty)
+                
+                // find geographyIds for each node
+                if( hasCounty )
+                {
+                    // the county keeps the existing id
+                    // the other levels get new ones
+                    
+                    countryGeoId = findUnusedId(usedIds);
+                    usedIds.add(countryGeoId);
+                    geoName = geo.getCountry();
+                    Sp6GeoTableItem newCountry = new Sp6GeoTableItem(countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,-1,prevContGeoId);
+                    prevCountry = geoName;
+                    prevCountryGeoId = countryGeoId;
+                    
+                    stateGeoId = findUnusedId(usedIds);
+                    usedIds.add(stateGeoId);
+                    geoName = geo.getState();
+                    Sp6GeoTableItem newState = new Sp6GeoTableItem(stateGeoId,geoName,STATE_RANK,nextNodeNumber++,-1,prevCountryGeoId);
+                    prevState = geoName;
+                    prevStateGeoId = stateGeoId;
+                    
+                    // county keeps existing id
+                    countyGeoId = geo.getId();
+                    geoName = geo.getCounty();
+                    Sp6GeoTableItem newCounty = new Sp6GeoTableItem(countyGeoId,geoName,COUNTY_RANK,nextNodeNumber++,-1,prevStateGeoId);
+                    prevCounty = geoName;
+                    prevCountyGeoId = countyGeoId;
+                    
+                    newTableRows.add(newCountry);
+                    newTableRows.add(newState);
+                    newTableRows.add(newCounty);
+                }
+                else if( hasState )
+                {
+                    // state keeps the existing id
+                    // cont and country get new ones
+                    // this item has no county
+
+                    countryGeoId = findUnusedId(usedIds);
+                    usedIds.add(countryGeoId);
+                    geoName = geo.getCountry();
+                    Sp6GeoTableItem newCountry = new Sp6GeoTableItem(countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,-1,prevContGeoId);
+                    prevCountry = geoName;
+                    prevCountryGeoId = countryGeoId;
+                    
+                    // state keeps existing id
+                    stateGeoId = geo.getId();
+                    geoName = geo.getState();
+                    Sp6GeoTableItem newState = new Sp6GeoTableItem(stateGeoId,geoName,STATE_RANK,nextNodeNumber++,-1,prevCountryGeoId);
+                    prevState = geoName;
+                    prevStateGeoId = stateGeoId;
+                                        
+                    newTableRows.add(newCountry);
+                    newTableRows.add(newState);
+                }
+                else if( hasCountry )
+                {
+                    // country keeps the existing id
+                    // cont gets a new one
+                    // this item has no state or county
+
+                    // country keeps existing id
+                    countryGeoId = geo.getId();
+                    geoName = geo.getCountry();
+                    Sp6GeoTableItem newCountry = new Sp6GeoTableItem(countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,-1,prevContGeoId);
+                    prevCountry = geoName;
+                    prevCountryGeoId = countryGeoId;
+                    
+                    newTableRows.add(newCountry);
+                }
+            }
+            
+            else if( geo.getState() != null && !geo.getState().equals(prevState) )
+            {
+                // the state is new (and the county, if non-empty)
+                
+                // find geographyIds for each node
+                if( hasCounty )
+                {
+                    // the county keeps the existing id
+                    // the other levels get new ones
+                                    
+                    stateGeoId = findUnusedId(usedIds);
+                    usedIds.add(stateGeoId);
+                    geoName = geo.getState();
+                    Sp6GeoTableItem newState = new Sp6GeoTableItem(stateGeoId,geoName,STATE_RANK,nextNodeNumber++,-1,prevCountryGeoId);
+                    prevState = geoName;
+                    prevStateGeoId = stateGeoId;
+                    
+                    // county keeps existing id
+                    countyGeoId = geo.getId();
+                    geoName = geo.getCounty();
+                    Sp6GeoTableItem newCounty = new Sp6GeoTableItem(countyGeoId,geoName,COUNTY_RANK,nextNodeNumber++,-1,prevStateGeoId);
+                    prevCounty = geoName;
+                    prevCountyGeoId = countyGeoId;
+                    
+                    newTableRows.add(newState);
+                    newTableRows.add(newCounty);
+                }
+                else if( hasState )
+                {
+                    // state keeps the existing id
+                    // cont and country get new ones
+                    // this item has no county
+                    stateGeoId = geo.getId();
+                    geoName = geo.getState();
+                    Sp6GeoTableItem newState = new Sp6GeoTableItem(stateGeoId,geoName,STATE_RANK,nextNodeNumber++,-1,prevCountryGeoId);
+                    prevState = geoName;
+                    prevStateGeoId = stateGeoId;
+                                        
+                    newTableRows.add(newState);
+                }
+            }
+
+            else if( geo.getCounty() != null && !geo.getCounty().equals(prevCounty) )
+            {
+                // only the county is new (and the county, if non-empty)
+                
+                // find geographyIds for each node
+                if( hasCounty )
+                {
+                    // the county keeps the existing id
+                    // the other levels get new ones
+                    countyGeoId = geo.getId();
+                    geoName = geo.getCounty();
+                    Sp6GeoTableItem newCounty = new Sp6GeoTableItem(countyGeoId,geoName,COUNTY_RANK,nextNodeNumber++,-1,prevStateGeoId);
+                    prevCounty = geoName;
+                    prevCountyGeoId = countyGeoId;
+                    
+                    newTableRows.add(newCounty);
+                }
+            }
+        }
+        
+        // now we have a Vector of Sp6GeoTableItems that contains all the data
+        // we simply need to fixup all the highChildNodeNumber fields
+        
+        ListIterator<Sp6GeoTableItem> revIter = newTableRows.listIterator(newTableRows.size());
+        while(revIter.hasPrevious())
+        {
+            Sp6GeoTableItem newRow = revIter.previous();
+            int nodeNum = newRow.getNodeNumber();
+            if( nodeNum > newRow.getHighChildNodeNumber() )
+            {
+                newRow.setHighChildNodeNumber(nodeNum);
+            }
+            Sp6GeoTableItem parent = newRow;
+            
+            // adjust all the parent nodes (all the way up)
+            while( true )
+            {
+                int parentId = parent.getParentId();
+                parent = findNodeById(newTableRows, parentId);
+                
+                if( parent.getHighChildNodeNumber() < nodeNum )
+                {
+                    parent.setHighChildNodeNumber(nodeNum);
+                }
+                if( parent.getGeographyId() == parent.getParentId() ) // indicates
+                                                                        // the
+                                                                        // geo
+                                                                        // root
+                                                                        // node
+                                                                        // (Earth)
+                {
+                    break;
+                }
+            }
+        }
+        
+        // put together a huge 'insert' statement, starting with the 'values
+        // (...)' portion
+        StringBuilder values = new StringBuilder();
+        for( Sp6GeoTableItem item: newTableRows )
+        {
+            String name = item.getName();
+            int id = item.getGeographyId();
+            int parentId = item.getParentId();
+            int nodeNum = item.getNodeNumber();
+            int highChild = item.getHighChildNodeNumber();
+            int rank = item.getRankId();
+
+            values.append("(\"");
+            values.append(name);
+            values.append("\",");
+            values.append(id);
+            values.append(",");
+            values.append(parentId);
+            values.append(",");
+            values.append(nodeNum);
+            values.append(",");
+            values.append(highChild);
+            values.append(",");
+            values.append(rank);
+            values.append(",");
+            values.append(geographyTreeDefId);
+            values.append("),");
+        }
+        // take off the last comma
+        values.deleteCharAt(values.length()-1);
+
+        StringBuilder insertStatement = new StringBuilder( "INSERT INTO geography (Name,GeographyId,ParentId,NodeNumber,HighestChildNodeNumber,RankId,GeographyTreeDefId) values ");
+        insertStatement.append(values.toString());
+        insertStatement.append(";");
+        
+        DBConnection.setUsernamePassword("rods", "rods");
+        DBConnection.setDriver("com.mysql.jdbc.Driver");
+        DBConnection.setDBName("jdbc:mysql://localhost/demo_fish3");
+        Connection conn = DBConnection.getConnection();
+        Statement st = conn.createStatement();
+        int rowsInserted = st.executeUpdate(insertStatement.toString());
+        System.out.println("Rows inserted: " + rowsInserted);
+    }
+    
+    private static Sp6GeoTableItem findNodeById(final Vector<Sp6GeoTableItem> nodes, int id )
+    {
+        for( Sp6GeoTableItem node: nodes )
+        {
+            if( node.getGeographyId() == id )
+            {
+                return node;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Finds the smallest <code>int</code> not in the <code>Collection</code>
+     * 
+     * @param usedIds
+     *            the <code>Collection</code> of used values
+     * @return the smallest unused value
+     */
+    public static int findUnusedId(final Collection<Integer> usedIds )
+    {
+        for(int i=1;;++i)
+        {
+            if( !usedIds.contains(i) )
+            {
+                return i;
+            }
+        }
+    }
+        
+    
+    /**
      * 
      */
     public void convertTaxon()
@@ -460,11 +930,4 @@ public class GenericDBConversion
         BasicSQLUtils.setShowMappingError(showMappingErrors);
     }
     
-    /**
-     * 
-     */
-    public void loadSpecifyGeographicNames()
-    {
- 
-    }
 }
