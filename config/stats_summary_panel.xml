@@ -19,13 +19,13 @@
         <item title="Unique Families" useprogress="true">
             <sql>
                 <statement>
-                  <![CDATA[create temporary table Families1 select taxonnameid from determination where current1 <> 0]]>
+                  <![CDATA[create temporary table Families1 select taxonid from determination where IsCurrent <> 0]]>
                 </statement>
                 <statement>
-                  <![CDATA[create temporary table Families2 select DISTINCT tax.taxonnameid,tax.nodenumber from Families1,taxonname as tax where tax.accepted <> 0 and tax.taxonnameid = Families1.taxonnameid]]>
+                  <![CDATA[create temporary table Families2 select DISTINCT tax.taxonid,tax.nodenumber from Families1,taxon as tax where tax.accepted <> 0 and tax.taxonid = Families1.taxonid]]>
                 </statement>
                <statement>
-                  <![CDATA[create temporary table Families3 select DISTINCT lev.taxonnameid from Families2, taxonname as lev where lev.rankid = 140 and Families2.nodenumber between lev.nodenumber and lev.HighestChildNodeNumber]]>
+                  <![CDATA[create temporary table Families3 select DISTINCT lev.taxonid from Families2, taxon as lev where lev.rankid = 140 and Families2.nodenumber between lev.nodenumber and lev.HighestChildNodeNumber]]>
                 </statement>
                 <statement row="1" col="1">
                   <![CDATA[select count(*) from Families3]]>
@@ -44,13 +44,13 @@
         <item title="Unique Genera" useprogress="true">
             <sql>
                 <statement>
-                  <![CDATA[create temporary table Genera1 select taxonnameid from determination where current1 <> 0]]>
+                  <![CDATA[create temporary table Genera1 select taxonid from determination where IsCurrent <> 0]]>
                 </statement>
                 <statement>
-                  <![CDATA[create temporary table Genera2 select DISTINCT tax.taxonnameid,tax.nodenumber from Genera1,taxonname as tax where tax.accepted <> 0 and tax.taxonnameid = Genera1.taxonnameid]]>
+                  <![CDATA[create temporary table Genera2 select DISTINCT tax.taxonid,tax.nodenumber from Genera1,taxon as tax where tax.accepted <> 0 and tax.taxonid = Genera1.taxonid]]>
                 </statement>
                <statement>
-                  <![CDATA[create temporary table Genera3 select DISTINCT lev.taxonnameid from Genera2, taxonname as lev where lev.rankid = 180 and Genera2.nodenumber between lev.nodenumber and lev.HighestChildNodeNumber]]>
+                  <![CDATA[create temporary table Genera3 select DISTINCT lev.taxonid from Genera2, taxon as lev where lev.rankid = 180 and Genera2.nodenumber between lev.nodenumber and lev.HighestChildNodeNumber]]>
                 </statement>
                 <statement row="1" col="1">
                   <![CDATA[select count(*) from Genera3]]>
@@ -69,13 +69,13 @@
         <item title="Unique Species" useprogress="true">
             <sql>
                 <statement>
-                  <![CDATA[create temporary table Species1 select taxonnameid from determination where current1 <> 0]]>
+                  <![CDATA[create temporary table Species1 select taxonid from determination where IsCurrent <> 0]]>
                 </statement>
                 <statement>
-                  <![CDATA[create temporary table Species2 select DISTINCT tax.taxonnameid,tax.nodenumber from Species1,taxonname as tax where tax.accepted <> 0 and tax.taxonnameid = Species1.taxonnameid]]>
+                  <![CDATA[create temporary table Species2 select DISTINCT tax.taxonid,tax.nodenumber from Species1,taxon as tax where tax.accepted <> 0 and tax.taxonid = Species1.taxonid]]>
                 </statement>
                <statement>
-                  <![CDATA[create temporary table Species3 select DISTINCT lev.taxonnameid from Species2, taxonname as lev where lev.rankid = 220 and Species2.nodenumber between lev.nodenumber and lev.HighestChildNodeNumber]]>
+                  <![CDATA[create temporary table Species3 select DISTINCT lev.taxonid from Species2, taxon as lev where lev.rankid = 220 and Species2.nodenumber between lev.nodenumber and lev.HighestChildNodeNumber]]>
                 </statement>
                 <statement row="1" col="1">
                   <![CDATA[select count(*) from Species3]]>
@@ -92,7 +92,7 @@
             </sql>
         </item>
         <item title="Taxa in Collection" useprogress="true">
-            <sql><statement><![CDATA[select count(taxonnameid) AS TaxaInCollectionCount from taxonname where taxonnameid in (select taxonnameid from determination where current1 <> 0)]]></statement></sql>
+            <sql><statement><![CDATA[select count(taxonid) AS TaxaInCollectionCount from taxon where taxonid in (select taxonid from determination where IsCurrent <> 0)]]></statement></sql>
         </item>
       </box>
       <box title="Data Entry">
@@ -142,19 +142,19 @@
   <row>
     <box title="Taxonomic Tree Information">
         <item title="Class">
-            <sql><statement><![CDATA[select count(*) from taxonname where taxonname.rankid = 60]]></statement></sql>
+            <sql><statement><![CDATA[select count(*) from taxon where taxon.rankid = 60]]></statement></sql>
         </item>
         <item title="Order">
-            <sql><statement><![CDATA[select count(*) from taxonname where taxonname.rankid = 100]]></statement></sql>
+            <sql><statement><![CDATA[select count(*) from taxon where taxon.rankid = 100]]></statement></sql>
         </item>
         <item title="Families">
-            <sql><statement><![CDATA[select count(*) from taxonname where taxonname.rankid = 140]]></statement></sql>
+            <sql><statement><![CDATA[select count(*) from taxon where taxon.rankid = 140]]></statement></sql>
         </item>
         <item title="Genera">
-            <sql><statement><![CDATA[select count(*) from taxonname where taxonname.rankid = 180]]></statement></sql>
+            <sql><statement><![CDATA[select count(*) from taxon where taxon.rankid = 180]]></statement></sql>
         </item>
         <item title="Species">
-            <sql><statement><![CDATA[select count(*) from taxonname where taxonname.rankid = 220]]></statement></sql>
+            <sql><statement><![CDATA[select count(*) from taxon where taxon.rankid = 220]]></statement></sql>
         </item>
     </box>
     <box title="Taxa Type Counts" descCol="1" valCol="2">
