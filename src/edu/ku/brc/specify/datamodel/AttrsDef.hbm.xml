@@ -39,15 +39,13 @@
 	-->
     <property
         name="tableType"
-        type="java.lang.Short"
+        type="short"
         column="TableType"
-        length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="TableType"
-            length="5"
         </meta>    
     </property>
 	
@@ -58,15 +56,13 @@
     -->
     <property
         name="subType"
-        type="java.lang.Short"
+        type="short"
         column="SubType"
-        length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="SubType"
-            length="5"
         </meta>    
     </property>
 	
@@ -86,15 +82,13 @@
 
     <property
         name="dataType"
-        type="java.lang.Short"
+        type="short"
         column="DataType"
-        length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="DataType"
-            length="5"
         </meta>    
     </property>
     

@@ -16,7 +16,7 @@ public class Collector  implements java.io.Serializable {
 
      protected Integer collectorsId;
      private Integer orderNumber;
-     private String remarks;
+     protected String remarks;
      private Date timestampModified;
      private Date timestampCreated;
      private String lastEditedBy;
@@ -73,7 +73,6 @@ public class Collector  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Remarks"
-     *             length="1073741823"
      *         
      */
     public String getRemarks() {

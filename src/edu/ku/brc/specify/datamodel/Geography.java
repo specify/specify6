@@ -254,7 +254,6 @@ public class Geography  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="IsCurrent"
-     *             length="5"
      *         
      */
     public Short getIsCurrent() {

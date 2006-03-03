@@ -260,18 +260,16 @@
             length="64"
         </meta>    
     </property>
-    
+     
     <property
         name="remarks"
-        type="java.lang.String"
+        type="text"
         column="Remarks"
-        length="1073741823"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Remarks"
-            length="1073741823"
         </meta>    
     </property>
     
@@ -351,15 +349,13 @@
     
     <property
         name="accepted"
-        type="java.lang.Short"
+        type="short"
         column="Accepted"
-        length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Accepted"
-            length="5"
         </meta>    
     </property>
     

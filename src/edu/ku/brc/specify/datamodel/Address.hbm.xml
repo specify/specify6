@@ -39,19 +39,18 @@
 
     <property
         name="address"
-        type="java.lang.String"
+        type="text"
         column="Address"
         not-null="true"
-        length="1073741823"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Address"
-            length="1073741823"
             not-null="true"
         </meta>    
     </property>
+    
     <property
         name="city"
         type="java.lang.String"
@@ -104,19 +103,19 @@
             length="32"
         </meta>    
     </property>
+    
     <property
         name="remarks"
-        type="java.lang.String"
+        type="text"
         column="Remarks"
-        length="1073741823"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Remarks"
-            length="1073741823"
         </meta>    
     </property>
+    
     <property
         name="timestampModified"
         type="java.sql.Timestamp"

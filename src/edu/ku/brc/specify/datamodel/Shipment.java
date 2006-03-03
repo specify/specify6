@@ -31,8 +31,8 @@ public class Shipment  implements java.io.Serializable {
      protected Date timestampModified;
      protected String lastEditedBy;
      protected Integer shipmentMethodId;
-     protected Short yesNo1;
-     protected Short yesNo2;
+     protected Boolean yesNo1;
+     protected Boolean yesNo2;
      private AgentAddress agentAddressByShipperId;
      private AgentAddress agentAddressByShippedToId;
      private Agent agent;
@@ -118,7 +118,6 @@ public class Shipment  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="NumberOfPackages"
-     *             length="5"
      *         
      */
     public Short getNumberOfPackages() {
@@ -160,7 +159,6 @@ public class Shipment  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Remarks"
-     *             length="1073741823"
      *         
      */
     public String getRemarks() {
@@ -286,28 +284,26 @@ public class Shipment  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="YesNo1"
-     *             length="5"
      *         
      */
-    public Short getYesNo1() {
+    public Boolean getYesNo1() {
         return this.yesNo1;
     }
     
-    public void setYesNo1(Short yesNo1) {
+    public void setYesNo1(Boolean yesNo1) {
         this.yesNo1 = yesNo1;
     }
 
     /**
      *      *            @hibernate.property
      *             column="YesNo2"
-     *             length="5"
      *         
      */
-    public Short getYesNo2() {
+    public Boolean getYesNo2() {
         return this.yesNo2;
     }
     
-    public void setYesNo2(Short yesNo2) {
+    public void setYesNo2(Boolean yesNo2) {
         this.yesNo2 = yesNo2;
     }
 

@@ -125,17 +125,16 @@
     
     <property
         name="remarks"
-        type="java.lang.String"
+        type="text"
         column="Remarks"
-        length="1073741823"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Remarks"
-            length="1073741823"
         </meta>    
     </property>
+    
     <property
         name="text1"
         type="java.lang.String"
@@ -250,31 +249,29 @@
     
     <property
         name="yesNo1"
-        type="java.lang.Short"
+        type="boolean"
         column="YesNo1"
-        length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="YesNo1"
-            length="5"
         </meta>    
     </property>
     
     <property
         name="yesNo2"
-        type="java.lang.Short"
+        type="boolean"
         column="YesNo2"
-        length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="YesNo2"
-            length="5"
         </meta>    
     </property>
+
+
 
     <!-- Associations -->
   

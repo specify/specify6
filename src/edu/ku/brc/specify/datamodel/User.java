@@ -17,7 +17,7 @@ public class User  implements java.io.Serializable {
      protected Integer userId;
      protected String name;
      protected String password;
-     protected Integer privLevel;
+     protected Short privLevel;
      private Set collectionObjDef;
 
 
@@ -79,14 +79,13 @@ public class User  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="PrivLevel"
-     *             length="5"
      *         
      */
-    public Integer getPrivLevel() {
+    public Short getPrivLevel() {
         return this.privLevel;
     }
     
-    public void setPrivLevel(Integer privLevel) {
+    public void setPrivLevel(Short privLevel) {
         this.privLevel = privLevel;
     }
 

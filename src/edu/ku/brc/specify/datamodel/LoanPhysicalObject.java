@@ -64,7 +64,6 @@ public class LoanPhysicalObject  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Quantity"
-     *             length="5"
      *         
      */
     public Short getQuantity() {
@@ -92,7 +91,6 @@ public class LoanPhysicalObject  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="OutComments"
-     *             length="1073741823"
      *         
      */
     public String getOutComments() {
@@ -106,7 +104,6 @@ public class LoanPhysicalObject  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="InComments"
-     *             length="1073741823"
      *         
      */
     public String getInComments() {
@@ -120,7 +117,6 @@ public class LoanPhysicalObject  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="QuantityResolved"
-     *             length="5"
      *         
      */
     public Short getQuantityResolved() {
@@ -134,7 +130,6 @@ public class LoanPhysicalObject  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="QuantityReturned"
-     *             length="5"
      *         
      */
     public Short getQuantityReturned() {

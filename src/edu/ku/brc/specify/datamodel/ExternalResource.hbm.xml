@@ -65,18 +65,16 @@
     
     <property
         name="remarks"
-        type="java.lang.String"
+        type="text"
         column="Remarks"
-        length="1073741823"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Remarks"
-            length="1073741823"
         </meta>    
-    </property>   
-     
+    </property>
+    
     <property
         name="externalLocation"
         type="java.lang.String"

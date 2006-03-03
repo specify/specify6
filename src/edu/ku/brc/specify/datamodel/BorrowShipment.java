@@ -57,7 +57,6 @@ public class BorrowShipment  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Remarks"
-     *             length="1073741823"
      *         
      */
     public String getRemarks() {

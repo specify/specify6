@@ -33,8 +33,8 @@ public class Determination  implements java.io.Serializable {
      protected Integer typeStatusNameId;
      protected Integer confidenceId;
      protected Integer methodId;
-     protected Short yesNo1;
-     protected Short yesNo2;
+     protected Boolean yesNo1;
+     protected Boolean yesNo2;
      protected Taxon Taxon;
      protected CollectionObject collectionObject;
      protected Preparation preparations;
@@ -76,7 +76,6 @@ public class Determination  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="IsCurrent"
-     *             length="1"
      *             not-null="true"
      *         
      */
@@ -161,7 +160,6 @@ public class Determination  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Remarks"
-     *             length="1073741823"
      *         
      */
     public String getRemarks() {
@@ -315,28 +313,26 @@ public class Determination  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="YesNo1"
-     *             length="5"
      *         
      */
-    public Short getYesNo1() {
+    public Boolean getYesNo1() {
         return this.yesNo1;
     }
     
-    public void setYesNo1(Short yesNo1) {
+    public void setYesNo1(Boolean yesNo1) {
         this.yesNo1 = yesNo1;
     }
 
     /**
      *      *            @hibernate.property
      *             column="YesNo2"
-     *             length="5"
      *         
      */
-    public Short getYesNo2() {
+    public Boolean getYesNo2() {
         return this.yesNo2;
     }
     
-    public void setYesNo2(Short yesNo2) {
+    public void setYesNo2(Boolean yesNo2) {
         this.yesNo2 = yesNo2;
     }
 

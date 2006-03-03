@@ -76,7 +76,7 @@
 
     <property
         name="fieldType"
-        type="java.lang.Short"
+        type="short"
         column="FieldType"
         length="2"
     >
@@ -90,15 +90,13 @@
 
     <property
         name="unit"
-        type="java.lang.Short"
+        type="short"
         column="Unit"
-        length="2"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Unit"
-            length="2"
         </meta>    
     </property>
     
@@ -129,21 +127,19 @@
             length="23"
         </meta>    
     </property>
-	
+    
     <property
         name="remarks"
-        type="java.lang.String"
+        type="text"
         column="Remarks"
-        length="1073741823"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Remarks"
-            length="1073741823"
-        </meta>
+        </meta>    
     </property>
-	
+    
 	
 	<!-- Associations -->
 

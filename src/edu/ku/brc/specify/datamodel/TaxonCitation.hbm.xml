@@ -36,20 +36,19 @@
         <meta attribute="scope-field">protected</meta>
         <generator class="assigned" />
     </id>
-
+    
     <property
         name="remarks"
-        type="java.lang.String"
+        type="text"
         column="Remarks"
-        length="1073741823"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Remarks"
-            length="1073741823"
         </meta>    
     </property>
+    
     <property
         name="text1"
         type="java.lang.String"
@@ -63,6 +62,7 @@
             length="300"
         </meta>    
     </property>
+    
     <property
         name="text2"
         type="java.lang.String"
@@ -76,6 +76,7 @@
             length="300"
         </meta>    
     </property>
+    
     <property
         name="number1"
         type="java.lang.Float"
@@ -89,6 +90,7 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="number2"
         type="java.lang.Float"
@@ -102,6 +104,7 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="timestampCreated"
         type="java.sql.Timestamp"
@@ -115,6 +118,7 @@
             length="23"
         </meta>    
     </property>
+    
     <property
         name="timestampModified"
         type="java.sql.Timestamp"
@@ -128,6 +132,7 @@
             length="23"
         </meta>    
     </property>
+    
     <property
         name="lastEditedBy"
         type="java.lang.String"
@@ -141,32 +146,32 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="yesNo1"
-        type="java.lang.Short"
+        type="boolean"
         column="YesNo1"
-        length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="YesNo1"
-            length="5"
         </meta>    
     </property>
+    
     <property
         name="yesNo2"
-        type="java.lang.Short"
+        type="boolean"
         column="YesNo2"
-        length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="YesNo2"
-            length="5"
         </meta>    
     </property>
+
+
 
     <!-- Associations -->
   
@@ -184,6 +189,7 @@
         </meta>
         <column name="ReferenceWorkID" />
     </many-to-one>
+    
     <!-- bi-directional many-to-one association to Taxon -->
     <many-to-one
         name="Taxon"

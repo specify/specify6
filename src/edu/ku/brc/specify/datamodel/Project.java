@@ -21,7 +21,7 @@ public class Project  implements java.io.Serializable {
      private String url;
      private Integer startDate;
      private Integer endDate;
-     private String remarks;
+     protected String remarks;
      private String text1;
      private String text2;
      private Float number1;
@@ -29,8 +29,8 @@ public class Project  implements java.io.Serializable {
      private Date timestampCreated;
      private Date timestampModified;
      private String lastEditedBy;
-     private Short yesNo1;
-     private Short yesNo2;
+     protected Boolean yesNo1;
+     protected Boolean yesNo2;
      private Agent agent;
      private Set projectCollectionObjects;
 
@@ -84,7 +84,6 @@ public class Project  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="ProjectDescription"
-     *             length="1073741823"
      *         
      */
     public String getProjectDescription() {
@@ -140,7 +139,6 @@ public class Project  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Remarks"
-     *             length="1073741823"
      *         
      */
     public String getRemarks() {
@@ -252,28 +250,26 @@ public class Project  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="YesNo1"
-     *             length="5"
      *         
      */
-    public Short getYesNo1() {
+    public Boolean getYesNo1() {
         return this.yesNo1;
     }
     
-    public void setYesNo1(Short yesNo1) {
+    public void setYesNo1(Boolean yesNo1) {
         this.yesNo1 = yesNo1;
     }
 
     /**
      *      *            @hibernate.property
      *             column="YesNo2"
-     *             length="5"
      *         
      */
-    public Short getYesNo2() {
+    public Boolean getYesNo2() {
         return this.yesNo2;
     }
     
-    public void setYesNo2(Short yesNo2) {
+    public void setYesNo2(Boolean yesNo2) {
         this.yesNo2 = yesNo2;
     }
 

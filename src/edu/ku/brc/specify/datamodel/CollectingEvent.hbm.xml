@@ -104,41 +104,35 @@
     </property>
     <property
         name="startTime"
-        type="java.lang.Short"
+        type="short"
         column="StartTime"
-        length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="StartTime"
-            length="5"
         </meta>    
     </property>
     <property
         name="endTime"
-        type="java.lang.Short"
+        type="short"
         column="EndTime"
-        length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="EndTime"
-            length="5"
         </meta>    
     </property>
     <property
         name="verbatimLocality"
-        type="java.lang.String"
+        type="text"
         column="VerbatimLocality"
-        length="1073741823"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="VerbatimLocality"
-            length="1073741823"
         </meta>    
     </property>
     <property
@@ -154,19 +148,19 @@
             length="10"
         </meta>    
     </property>
+    
     <property
         name="remarks"
-        type="java.lang.String"
+        type="text"
         column="Remarks"
-        length="1073741823"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Remarks"
-            length="1073741823"
         </meta>    
     </property>
+    
     <property
         name="timestampModified"
         type="java.sql.Timestamp"

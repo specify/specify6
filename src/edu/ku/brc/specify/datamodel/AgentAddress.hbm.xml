@@ -39,15 +39,13 @@
 
     <property
         name="typeOfAgentAddressed"
-        type="java.lang.Short"
+        type="short"
         column="TypeOfAgentAddressed"
-        length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="TypeOfAgentAddressed"
-            length="5"
         </meta>    
     </property>
     <property
@@ -141,19 +139,19 @@
             length="300"
         </meta>    
     </property>
+    
     <property
         name="remarks"
-        type="java.lang.String"
+        type="text"
         column="Remarks"
-        length="1073741823"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Remarks"
-            length="1073741823"
         </meta>    
     </property>
+    
     <property
         name="timestampModified"
         type="java.sql.Timestamp"
@@ -195,15 +193,13 @@
     </property>
     <property
         name="isCurrent"
-        type="java.lang.Short"
+        type="short"
         column="IsCurrent"
-        length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="IsCurrent"
-            length="5"
         </meta>    
     </property>
 

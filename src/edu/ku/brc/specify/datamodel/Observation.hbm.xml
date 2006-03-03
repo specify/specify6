@@ -52,56 +52,50 @@
     </property>
     <property
         name="count1"
-        type="java.lang.Short"
+        type="short"
         column="Count"
-        length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Count1"
-            length="5"
         </meta>    
     </property>
     <property
         name="description"
-        type="java.lang.String"
+        type="text"
         column="Description"
-        length="1073741823"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Description"
-            length="1073741823"
         </meta>    
     </property>
     <property
         name="activity"
-        type="java.lang.String"
+        type="text"
         column="Activity"
-        length="1073741823"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Activity"
-            length="1073741823"
         </meta>    
     </property>
+    
     <property
         name="remarks"
-        type="java.lang.String"
+        type="text"
         column="Remarks"
-        length="1073741823"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Remarks"
-            length="1073741823"
         </meta>    
     </property>
+    
     <property
         name="text1"
         type="java.lang.String"
@@ -206,32 +200,32 @@
             length="10"
         </meta>    
     </property>
+    
     <property
         name="yesNo1"
-        type="java.lang.Short"
+        type="boolean"
         column="YesNo1"
-        length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="YesNo1"
-            length="5"
         </meta>    
     </property>
+    
     <property
         name="yesNo2"
-        type="java.lang.Short"
+        type="boolean"
         column="YesNo2"
-        length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="YesNo2"
-            length="5"
         </meta>    
     </property>
+
+
 
     <!-- Associations -->
   

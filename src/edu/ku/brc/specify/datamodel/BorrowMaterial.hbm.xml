@@ -67,67 +67,60 @@
     </property>
     <property
         name="quantity"
-        type="java.lang.Short"
+        type="short"
         column="Quantity"
-        length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Quantity"
-            length="5"
         </meta>    
     </property>
+    
     <property
         name="outComments"
-        type="java.lang.String"
+        type="text"
         column="OutComments"
-        length="1073741823"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="OutComments"
-            length="1073741823"
         </meta>    
     </property>
+    
     <property
         name="inComments"
-        type="java.lang.String"
+        type="text"
         column="InComments"
-        length="1073741823"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="InComments"
-            length="1073741823"
         </meta>    
     </property>
+    
     <property
         name="quantityResolved"
-        type="java.lang.Short"
+        type="short"
         column="QuantityResolved"
-        length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="QuantityResolved"
-            length="5"
         </meta>    
     </property>
     <property
         name="quantityReturned"
-        type="java.lang.Short"
+        type="short"
         column="QuantityReturned"
-        length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="QuantityReturned"
-            length="5"
         </meta>    
     </property>
     <property

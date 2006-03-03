@@ -51,7 +51,6 @@ public class AttrsDef  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="TableType"
-     *             length="5"
      *         
      */
     public Short getTableType() {
@@ -65,7 +64,6 @@ public class AttrsDef  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="SubType"
-     *             length="5"
      *         
      */
     public Short getSubType() {
@@ -93,7 +91,6 @@ public class AttrsDef  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="DataType"
-     *             length="5"
      *         
      */
     public Short getDataType() {

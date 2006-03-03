@@ -113,7 +113,6 @@ public class PrepAttrs  implements AttrsSettableGettable,java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Unit"
-     *             length="2"
      *         
      */
     public Short getUnit() {
@@ -155,7 +154,6 @@ public class PrepAttrs  implements AttrsSettableGettable,java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Remarks"
-     *             length="1073741823"
      *         
      */
     public String getRemarks() {

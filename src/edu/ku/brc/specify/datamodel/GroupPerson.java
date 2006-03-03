@@ -58,7 +58,6 @@ public class GroupPerson  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="OrderNumber"
-     *             length="5"
      *             not-null="true"
      *         
      */
@@ -73,7 +72,6 @@ public class GroupPerson  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Remarks"
-     *             length="1073741823"
      *         
      */
     public String getRemarks() {

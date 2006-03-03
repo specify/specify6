@@ -307,7 +307,6 @@ public class Taxon  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Remarks"
-     *             length="1073741823"
      *         
      */
     public String getRemarks() {
@@ -393,7 +392,6 @@ public class Taxon  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Accepted"
-     *             length="5"
      *         
      */
     public Short getAccepted() {

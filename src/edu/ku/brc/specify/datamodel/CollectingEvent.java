@@ -142,7 +142,6 @@ public class CollectingEvent  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="StartTime"
-     *             length="5"
      *         
      */
     public Short getStartTime() {
@@ -156,7 +155,6 @@ public class CollectingEvent  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="EndTime"
-     *             length="5"
      *         
      */
     public Short getEndTime() {
@@ -170,7 +168,6 @@ public class CollectingEvent  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="VerbatimLocality"
-     *             length="1073741823"
      *         
      */
     public String getVerbatimLocality() {
@@ -198,7 +195,6 @@ public class CollectingEvent  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Remarks"
-     *             length="1073741823"
      *         
      */
     public String getRemarks() {

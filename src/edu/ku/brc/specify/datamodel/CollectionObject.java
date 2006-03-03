@@ -24,8 +24,8 @@ public class CollectionObject  implements java.io.Serializable {
      protected String text2;
      protected Float number1;
      protected Float number2;
-     protected Short yesNo1;
-     protected Short yesNo2;
+     protected Boolean yesNo1;
+     protected Boolean yesNo2;
      protected Integer count1;
      protected String remarks;
      protected Integer subNumber;
@@ -199,28 +199,26 @@ public class CollectionObject  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="YesNo1"
-     *             length="5"
      *         
      */
-    public Short getYesNo1() {
+    public Boolean getYesNo1() {
         return this.yesNo1;
     }
     
-    public void setYesNo1(Short yesNo1) {
+    public void setYesNo1(Boolean yesNo1) {
         this.yesNo1 = yesNo1;
     }
 
     /**
      *      *            @hibernate.property
      *             column="YesNo2"
-     *             length="5"
      *         
      */
-    public Short getYesNo2() {
+    public Boolean getYesNo2() {
         return this.yesNo2;
     }
     
-    public void setYesNo2(Short yesNo2) {
+    public void setYesNo2(Boolean yesNo2) {
         this.yesNo2 = yesNo2;
     }
 
@@ -241,7 +239,6 @@ public class CollectionObject  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Remarks"
-     *             length="1073741823"
      *         
      */
     public String getRemarks() {
@@ -353,7 +350,6 @@ public class CollectionObject  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Deaccessioned"
-     *             length="5"
      *         
      */
     public Short getDeaccessioned() {

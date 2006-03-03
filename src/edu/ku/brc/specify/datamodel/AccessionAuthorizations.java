@@ -15,7 +15,7 @@ public class AccessionAuthorizations  implements java.io.Serializable {
     // Fields    
 
      protected Integer accessionAuthorizationsId;
-     private String remarks;
+     protected String remarks;
      private Date timestampModified;
      private Date timestampCreated;
      private String lastEditedBy;
@@ -57,7 +57,6 @@ public class AccessionAuthorizations  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Remarks"
-     *             length="1073741823"
      *         
      */
     public String getRemarks() {

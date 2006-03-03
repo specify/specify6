@@ -219,15 +219,13 @@
     
     <property
         name="isCurrent"
-        type="java.lang.Short"
+        type="short"
         column="IsCurrent"
-        length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="IsCurrent"
-            length="5"
         </meta>    
     </property>
 

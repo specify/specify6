@@ -62,7 +62,6 @@ public class Address  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Address"
-     *             length="1073741823"
      *             not-null="true"
      *         
      */
@@ -133,7 +132,6 @@ public class Address  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Remarks"
-     *             length="1073741823"
      *         
      */
     public String getRemarks() {

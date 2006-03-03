@@ -99,7 +99,6 @@ public class HabitatAttrs  implements AttrsSettableGettable,java.io.Serializable
     /**
      *      *            @hibernate.property
      *             column="FieldType"
-     *             length="2"
      *         
      */
     public Short getFieldType() {
@@ -113,7 +112,6 @@ public class HabitatAttrs  implements AttrsSettableGettable,java.io.Serializable
     /**
      *      *            @hibernate.property
      *             column="Unit"
-     *             length="2"
      *         
      */
     public Short getUnit() {
@@ -155,7 +153,6 @@ public class HabitatAttrs  implements AttrsSettableGettable,java.io.Serializable
     /**
      *      *            @hibernate.property
      *             column="Remarks"
-     *             length="1073741823"
      *         
      */
     public String getRemarks() {

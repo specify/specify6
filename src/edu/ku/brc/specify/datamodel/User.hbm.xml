@@ -55,15 +55,13 @@ lazy="true"
     
     <property
         name="privLevel"
-        type="java.lang.Integer"
+        type="short"
         column="PrivLevel"
-        length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="PrivLevel"
-            length="5"
         </meta>    
     </property>    
     
