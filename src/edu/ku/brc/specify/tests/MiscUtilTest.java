@@ -1,17 +1,14 @@
 package edu.ku.brc.specify.tests;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.prefs.Preferences;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
 
-import org.apache.commons.lang.time.FastDateFormat;
-import java.text.SimpleDateFormat;
+import junit.framework.TestCase;
 
-import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -22,8 +19,7 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.MetadataException;
 import com.drew.metadata.Tag;
 
-import junit.framework.TestCase;
-import edu.ku.brc.specify.helpers.*;
+import edu.ku.brc.specify.helpers.UIHelper;
 
 
 public class MiscUtilTest extends TestCase

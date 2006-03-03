@@ -6,7 +6,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.config.SpecifyConfig;
-import edu.ku.brc.specify.extfilerepos.ExternalFileIFace;
 import edu.ku.brc.specify.extfilerepos.impl.ExternalFileRepository;
 
 public class ExternalFileRepositoryTest extends TestCase

@@ -1,26 +1,17 @@
 package edu.ku.brc.specify.tests;
 
-import java.awt.Color;
-import java.sql.Connection;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 
-import edu.ku.brc.specify.Specify;
-import edu.ku.brc.specify.conversion.FishConversion;
 import edu.ku.brc.specify.conversion.GenericDBConversion;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
@@ -36,10 +27,6 @@ import edu.ku.brc.specify.datamodel.User;
 import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.prefs.PrefsCache;
-import edu.ku.brc.specify.ui.ColorWrapper;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.UICacheManager;
 
 /**
  * Tests the Preferences and Preferences cache
@@ -93,7 +80,7 @@ public class DBSchemaTest extends TestCase
     {
         log.info("Create User");
         GenericDBConversion conversion = new GenericDBConversion();
-        User                user      = conversion.createNewUser("rods", "rods", 0);
+        User                user      = conversion.createNewUser("rods", "rods", (short)0);
         assertNotNull(user);
     }
 
