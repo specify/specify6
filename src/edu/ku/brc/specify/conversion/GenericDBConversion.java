@@ -305,7 +305,7 @@ public class GenericDBConversion
      * @param privLevel the privLevel
      * @return the user object
      */
-    public User createNewUser(final String username, final String password, final int privLevel)
+    public User createNewUser(final String username, final String password, final short privLevel)
     {
      
         try

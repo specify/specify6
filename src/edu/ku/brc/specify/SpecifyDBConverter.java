@@ -1263,7 +1263,7 @@ public class SpecifyDBConverter
                 BasicSQLUtils.deleteAllRecordsFromTable("collectionobjdef");
                 
                 DataType          dataType  = conversion.createDataTypes("Animal");        
-                User              user      = conversion.createNewUser("rods", "rods", 0);
+                User              user      = conversion.createNewUser("rods", "rods", (short)0);
                 
                 Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CatalogSeries.class);
                 criteria.add(Expression.eq("catalogSeriesId", new Integer(0)));
