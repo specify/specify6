@@ -68,8 +68,9 @@ public class GeographyTreeDef  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="TreeNodeId"
+     *             column="TreeNodeID"
      *             length="10"
+     *             index="IX_GeoTDTreeNodeID"
      *         
      */
     public Integer getTreeNodeId() {
@@ -82,9 +83,9 @@ public class GeographyTreeDef  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="ParentNodeId"
+     *             column="ParentNodeID"
      *             length="10"
-     *             index="IX_GeoTDParentNodeId"
+     *             index="IX_GeoTDParentNodeID"
      *         
      */
     public Integer getParentNodeId() {

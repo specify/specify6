@@ -7,14 +7,14 @@ import java.util.Date;
 
 /**
  *        @hibernate.class
- *         table="habitatattrs"
+ *         table="extResattrs"
  *     
  */
-public class HabitatAttrs  implements AttrsSettableGettable,java.io.Serializable {
+public class ExtResAttrs  implements AttrsSettableGettable,java.io.Serializable {
 
     // Fields    
 
-     protected Integer habitatAttrsId;
+     protected Integer extResAttrsId;
      protected String name;
      protected String strValue;
      protected Integer intValue;
@@ -23,19 +23,18 @@ public class HabitatAttrs  implements AttrsSettableGettable,java.io.Serializable
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String remarks;
-     protected CollectingEvent collectingEvent;
-     protected Taxon Taxon;
+     private ExternalResource externalResource;
 
 
     // Constructors
 
     /** default constructor */
-    public HabitatAttrs() {
+    public ExtResAttrs() {
     }
     
     /** constructor with id */
-    public HabitatAttrs(Integer habitatAttrsId) {
-        this.habitatAttrsId = habitatAttrsId;
+    public ExtResAttrs(Integer extResAttrsId) {
+        this.extResAttrsId = extResAttrsId;
     }
    
     
@@ -46,12 +45,12 @@ public class HabitatAttrs  implements AttrsSettableGettable,java.io.Serializable
     /**
      * 
      */
-    public Integer getHabitatAttrsId() {
-        return this.habitatAttrsId;
+    public Integer getExtResAttrsId() {
+        return this.extResAttrsId;
     }
     
-    public void setHabitatAttrsId(Integer habitatAttrsId) {
-        this.habitatAttrsId = habitatAttrsId;
+    public void setExtResAttrsId(Integer extResAttrsId) {
+        this.extResAttrsId = extResAttrsId;
     }
 
     /**
@@ -169,29 +168,15 @@ public class HabitatAttrs  implements AttrsSettableGettable,java.io.Serializable
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="CollectingEventID"         
+     *            @hibernate.column name="ExternalResourceID"         
      *         
      */
-    public CollectingEvent getCollectingEvent() {
-        return this.collectingEvent;
+    public ExternalResource getExternalResource() {
+        return this.externalResource;
     }
     
-    public void setCollectingEvent(CollectingEvent collectingEvent) {
-        this.collectingEvent = collectingEvent;
-    }
-
-    /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="HostTaxonID"         
-     *         
-     */
-    public Taxon getTaxon() {
-        return this.Taxon;
-    }
-    
-    public void setTaxon(Taxon Taxon) {
-        this.Taxon = Taxon;
+    public void setExternalResource(ExternalResource externalResource) {
+        this.externalResource = externalResource;
     }
 
 

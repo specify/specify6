@@ -6,92 +6,96 @@
 <hibernate-mapping>
 
 <class 
-    name="edu.ku.brc.specify.datamodel.LocalityExternalFile"
-    table="localityexternalfiles"
+    name="edu.ku.brc.specify.datamodel.ExtResAttrs" 
+    table="extresattrs"
 	lazy="true"
 >
+    <meta attribute="class-description" inherit="false">
+       @hibernate.class
+        table="extResattrs"
+    </meta>
+    <meta attribute="implements">AttrsSettableGettable</meta>
 
-    <meta attribute="implements">ExternalFile</meta>
     <id
-        name="localityExternalFileId"
+        name="extResAttrsId"
         type="java.lang.Integer"
-        column="LocalityExternalFileID"
+        column="ExtResAttrsID"
     >
       <meta attribute="scope-set">public</meta>
       <meta attribute="scope-field">protected</meta>
       <generator class="native"/>
     </id>
-
+	
     <property
-        name="mimeType"
+        name="name"
         type="java.lang.String"
-        column="mimeType"
-        length="32"
+        column="Name"
+        length="50"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="mimeType"
-            length="32"
+            column="Name"
+            length="50"
         </meta>    
     </property>
-    
+
     <property
-        name="fileName"
+        name="strValue"
         type="java.lang.String"
-        column="FileName"
+        column="StrValue"
         length="128"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="FileName"
+            column="StrValue"
             length="128"
         </meta>    
     </property>
-    
+
     <property
-        name="fileCreatedDate"
+        name="intValue"
         type="java.lang.Integer"
-        column="fileCreatedDate"
+        column="IntValue"
         length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="fileCreatedDate"
+            column="IntValue"
             length="10"
         </meta>    
     </property>
-    
+
     <property
-        name="remarks"
-        type="java.lang.String"
-        column="Remarks"
-        length="1073741823"
+        name="fieldType"
+        type="java.lang.Short"
+        column="FieldType"
+        length="2"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="Remarks"
-            length="1073741823"
-        </meta>    
-    </property>   
-     
-    <property
-        name="externalLocation"
-        type="java.lang.String"
-        column="ExternalLocation"
-        length="1024"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="ExternalLocation"
-            length="1024"
+            column="FieldType"
+            length="2"
         </meta>    
     </property>
-    
+
+    <property
+        name="unit"
+        type="java.lang.Short"
+        column="Unit"
+        length="2"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Unit"
+            length="2"
+        </meta>    
+    </property>
+
     <property
         name="timestampCreated"
         type="java.sql.Timestamp"
@@ -119,50 +123,38 @@
             length="23"
         </meta>    
     </property>
-    
+	
     <property
-        name="lastEditedBy"
+        name="remarks"
         type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
+        column="Remarks"
+        length="1073741823"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
+            column="Remarks"
+            length="1073741823"
+        </meta>
     </property>
-
-    <!-- Associations -->
-    
-    <!-- bi-directional many-to-one association to Agent -->
+	
+	
+	<!-- Associations -->
+	
+    <!-- bi-directional many-to-one association to ExternalResource -->
     <many-to-one
-        name="createdByAgent"
-        class="edu.ku.brc.specify.datamodel.Agent"
+        name="externalResource"
+        class="edu.ku.brc.specify.datamodel.ExternalResource"
         not-null="true"
 		outer-join="true"
     >
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="MadeByID"         
+           @hibernate.column name="ExternalResourceID"         
         </meta>
-        <column name="MadeByID" />
-    </many-to-one>
-    
-    
-    <!-- bi-directional many-to-many association to Locality -->
-    <set
-        name="externalFiles"
-        table="locality_extfiles"
-        lazy="true"
-		cascade="save-update">
-        <key>
-            <column name="LocalityExternalFileID" />
-        </key>
-        <many-to-many class="edu.ku.brc.specify.datamodel.Locality" column="LocalityID"/>
-    </set>
-    
+        <column name="ExternalResourceID" />
+    </many-to-one>	
+	
 </class>
 </hibernate-mapping>

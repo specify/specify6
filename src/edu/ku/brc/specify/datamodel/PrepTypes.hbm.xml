@@ -24,7 +24,7 @@
     <id
         name="prepTypeId"
         type="java.lang.Integer"
-        column="prepTypeID"
+        column="PrepTypeID"
     >
       <meta attribute="scope-set">public</meta>
       <meta attribute="scope-field">protected</meta>
@@ -34,13 +34,13 @@
     <property
         name="name"
         type="java.lang.String"
-        column="name"
+        column="Name"
         length="50"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="name"
+            column="Name"
             length="50"
         </meta>    
     </property>

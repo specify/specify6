@@ -668,17 +668,17 @@
         />
     </set>    
         
-    <!-- bi-directional many-to-many association to CollectionObjectExternalFile -->
+    <!-- bi-directional many-to-many association to ExternalResource -->
     <set
-        name="externalFiles"
-        table="colobj_extfiles"
+        name="externalResources"
+        table="colobj_extres"
         lazy="true"
         inverse="true"
 		cascade="save-update">
         <key>
             <column name="CollectionObjectID" />
         </key>
-        <many-to-many class="edu.ku.brc.specify.datamodel.CollectionObjectExternalFile" column="CollectionObjectExternalFileID"/>
+        <many-to-many class="edu.ku.brc.specify.datamodel.ExternalResource" column="ExternalResourceID"/>
     </set>
     
 </class>

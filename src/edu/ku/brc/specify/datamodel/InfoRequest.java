@@ -57,7 +57,7 @@ public class InfoRequest  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="firstname"
+     *             column="Firstname"
      *             length="50"
      *         
      */
@@ -71,7 +71,7 @@ public class InfoRequest  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="lastname"
+     *             column="Lastname"
      *             length="50"
      *         
      */
@@ -85,7 +85,7 @@ public class InfoRequest  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="institution"
+     *             column="Institution"
      *             length="127"
      *         
      */
@@ -99,7 +99,7 @@ public class InfoRequest  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="email"
+     *             column="Email"
      *             length="50"
      *         
      */
@@ -113,7 +113,7 @@ public class InfoRequest  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="requestdate"
+     *             column="RequestDate"
      *             update="false"
      *          
      */
@@ -127,7 +127,7 @@ public class InfoRequest  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="replydate"
+     *             column="ReplyDate"
      *          
      */
     public Date getReplyDate() {
@@ -183,7 +183,7 @@ public class InfoRequest  implements java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="id"         
+     *            @hibernate.column name="RecordSetID"         
      *         
      */
     public RecordSet getRecordSet() {
@@ -197,7 +197,7 @@ public class InfoRequest  implements java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="false"
-     *            @hibernate.column name="agentId"         
+     *            @hibernate.column name="AgentID"         
      *         
      */
     public Agent getAgent() {

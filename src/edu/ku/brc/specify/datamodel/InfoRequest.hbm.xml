@@ -17,7 +17,7 @@
 
 	<id name="infoRequestID"
 		type="long"
-		column="infoRequestID"
+		column="InfoRequestID"
 		unsaved-value="null">
 		<generator class="native"/>
 	</id>
@@ -25,13 +25,13 @@
     <property
         name="firstName"
         type="java.lang.String"
-        column="firstname"
+        column="Firstname"
         length="50"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="firstname"
+            column="Firstname"
             length="50"
         </meta>    
     </property>
@@ -39,13 +39,13 @@
     <property
         name="lastName"
         type="java.lang.String"
-        column="lastname"
+        column="Lastname"
         length="50"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="lastname"
+            column="Lastname"
             length="50"
         </meta>    
     </property>
@@ -53,13 +53,13 @@
     <property
         name="institution"
         type="java.lang.String"
-        column="institution"
+        column="Institution"
         length="127"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="institution"
+            column="Institution"
             length="127"
         </meta>    
     </property>
@@ -67,13 +67,13 @@
     <property
         name="email"
         type="java.lang.String"
-        column="email"
+        column="Email"
         length="50"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="email"
+            column="Email"
             length="50"
         </meta>    
     </property>
@@ -81,12 +81,12 @@
     <property
         name="requestDate"
         type="java.util.Date"
-        column="requestdate"
+        column="RequestDate"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="requestdate"
+            column="RequestDate"
             update="false"
          </meta>    
     </property>
@@ -94,12 +94,12 @@
     <property
         name="replyDate"
         type="java.util.Date"
-        column="replydate"
+        column="ReplyDate"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="replydate"
+            column="ReplyDate"
          </meta>    
     </property>
     
@@ -159,9 +159,9 @@
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="id"         
+           @hibernate.column name="RecordSetID"         
         </meta>
-        <column name="id" />
+        <column name="RecordSetID" />
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
@@ -176,9 +176,9 @@
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="false"
-           @hibernate.column name="agentId"         
+           @hibernate.column name="AgentID"         
         </meta>
-        <column name="agentId" />
+        <column name="AgentID" />
     </many-to-one>
 
 </class>

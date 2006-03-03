@@ -69,7 +69,7 @@ public class TaxonomyTreeDef  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="TreeNodeId"
+     *             column="TreeNodeID"
      *             length="10"
      *         
      */
@@ -83,7 +83,7 @@ public class TaxonomyTreeDef  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="ParentNodeId"
+     *             column="ParentNodeID"
      *             length="10"
      *         
      */

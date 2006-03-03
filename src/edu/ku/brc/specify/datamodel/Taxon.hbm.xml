@@ -37,22 +37,6 @@
         <generator class="assigned" />
     </id>
 
-    <!-- <property
-        name="parentId"
-        type="java.lang.Integer"
-        column="ParentID"
-        length="10"
-        index="IX_TXB_ParentID"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="ParentID"
-            length="10"
-            index="IX_TXB_ParentID"
-        </meta>    
-    </property> -->
-    
     <property
         name="taxonomicSerialNumber"
         type="java.lang.String"
@@ -70,7 +54,7 @@
     <property
         name="name"
         type="java.lang.String"
-        column="name"
+        column="Name"
         length="50"
     >
         <meta attribute="scope-field">protected</meta>
@@ -478,19 +462,6 @@
         />
     </set>
     
-    <!-- bi-directional many-to-many association to TaxonExternalFile -->
-    <set
-        name="externalFiles"
-        table="taxon_extfiles"
-        lazy="true"
-        inverse="true"
-		cascade="save-update">
-        <key>
-            <column name="TaxonID" />
-        </key>
-        <many-to-many class="edu.ku.brc.specify.datamodel.TaxonExternalFile" column="TaxonExternalFileID"/>
-    </set>
-    
     <!-- bi-directional many-to-one association to TaxonomyTreeDef -->
     <many-to-one
         name="definition"
@@ -506,33 +477,6 @@
         <column name="TaxonomyTreeDefID" />
     </many-to-one>
     
-    <!-- bi-directional one-to-many association to Taxon -->
-    <!-- <set
-        name="children"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="TaxonID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.Taxon"
-        </meta>
-        <key>
-            <column name="TaxonID" />
-        </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.Taxon"
-        />
-    </set> -->
-    
     <!-- bi-directional many-to-one association to Taxon -->
     <many-to-one
         name="parent"
@@ -547,5 +491,19 @@
         </meta>
         <column name="ParentID" />
     </many-to-one>
+    
+    <!-- bi-directional many-to-many association to ExternalResource -->
+    <set
+        name="externalResources"
+        table="taxon_extres"
+        lazy="true"
+        inverse="true"
+		cascade="save-update">
+        <key>
+            <column name="TaxonID" />
+        </key>
+        <many-to-many class="edu.ku.brc.specify.datamodel.ExternalResource" column="ExternalResourceID"/>
+    </set>
+        
 </class>
 </hibernate-mapping>

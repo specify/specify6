@@ -68,7 +68,7 @@ public class Geography  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="name"
+     *             column="Name"
      *             length="128"
      *         
      */
@@ -127,7 +127,7 @@ public class Geography  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="abbrev"
+     *             column="Abbrev"
      *             length="16"
      *         
      */
@@ -141,7 +141,7 @@ public class Geography  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="text1"
+     *             column="Text1"
      *             length="32"
      *         
      */
@@ -155,7 +155,7 @@ public class Geography  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="text2"
+     *             column="Text2"
      *             length="32"
      *         
      */

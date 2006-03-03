@@ -57,7 +57,7 @@ public class PrepAttrs  implements AttrsSettableGettable,java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Name"
-     *             length="32"
+     *             length="50"
      *         
      */
     public String getName() {
@@ -70,7 +70,7 @@ public class PrepAttrs  implements AttrsSettableGettable,java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="strValue"
+     *             column="StrValue"
      *             length="128"
      *         
      */
@@ -84,7 +84,7 @@ public class PrepAttrs  implements AttrsSettableGettable,java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="intValue"
+     *             column="IntValue"
      *             length="10"
      *         
      */
@@ -98,7 +98,7 @@ public class PrepAttrs  implements AttrsSettableGettable,java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="fieldType"
+     *             column="FieldType"
      *             length="2"
      *         
      */
@@ -112,7 +112,7 @@ public class PrepAttrs  implements AttrsSettableGettable,java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="unit"
+     *             column="Unit"
      *             length="2"
      *         
      */

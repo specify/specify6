@@ -375,7 +375,6 @@
             class="edu.ku.brc.specify.datamodel.Project"
         />
     </set>
-    <!-- bi-directional one-to-many association to Preparation -->
     
     <!-- bi-directional one-to-many association to Preparation -->
     <set
@@ -615,17 +614,17 @@
         />
     </set>
     
-    <!-- bi-directional many-to-many association to AgentExternalFile -->
+    <!-- bi-directional many-to-many association to ExternalResource -->
     <set
-        name="externalFiles"
-        table="agent_extfiles"
+        name="externalResources"
+        table="agent_extres"
         lazy="true"
         inverse="true"
 		cascade="save-update">
         <key>
-            <column name="AGentID" />
+            <column name="AgentID" />
         </key>
-        <many-to-many class="edu.ku.brc.specify.datamodel.AgentExternalFile" column="AgentExternalFileID"/>
+        <many-to-many class="edu.ku.brc.specify.datamodel.ExternalResource" column="ExternalResourceID"/>
     </set>
     
 </class>

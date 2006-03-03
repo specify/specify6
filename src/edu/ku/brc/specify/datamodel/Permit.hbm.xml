@@ -335,17 +335,17 @@
         <column name="IssuerID" />
     </many-to-one>
 
-    <!-- bi-directional many-to-many association to PermitExternalFile -->
+    <!-- bi-directional many-to-many association to ExternalResource -->
     <set
-        name="externalFiles"
-        table="permit_extfiles"
+        name="externalResources"
+        table="permit_extres"
         lazy="true"
         inverse="true"
 		cascade="save-update">
         <key>
             <column name="PermitID" />
         </key>
-        <many-to-many class="edu.ku.brc.specify.datamodel.PermitExternalFile" column="PermitExternalFile"/>
+        <many-to-many class="edu.ku.brc.specify.datamodel.ExternalResource" column="ExternalResource"/>
     </set>
 
 </class>

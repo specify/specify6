@@ -48,7 +48,7 @@ public class PrepTypes  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="name"
+     *             column="Name"
      *             length="50"
      *         
      */

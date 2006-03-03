@@ -6,16 +6,15 @@
 <hibernate-mapping>
 
 <class 
-    name="edu.ku.brc.specify.datamodel.PreparationExternalFile"
-    table="preparationexternalfiles"
+    name="edu.ku.brc.specify.datamodel.ExternalResource"
+    table="externalresource"
 	lazy="true"
 >
 
-    <meta attribute="implements">ExternalFile</meta>
-    <id
-        name="permitExternalFileId"
+   <id
+        name="externalFileId"
         type="java.lang.Integer"
-        column="PreparationExternalFileID"
+        column="ExternalResourceID"
     >
       <meta attribute="scope-set">public</meta>
       <meta attribute="scope-field">protected</meta>
@@ -25,13 +24,13 @@
     <property
         name="mimeType"
         type="java.lang.String"
-        column="mimeType"
+        column="MimeType"
         length="32"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="mimeType"
+            column="MimeType"
             length="32"
         </meta>    
     </property>
@@ -53,13 +52,13 @@
     <property
         name="fileCreatedDate"
         type="java.lang.Integer"
-        column="fileCreatedDate"
+        column="FileCreatedDate"
         length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="fileCreatedDate"
+            column="FileCreatedDate"
             length="10"
         </meta>    
     </property>
@@ -136,6 +135,36 @@
 
     <!-- Associations -->
     
+    <!-- bi-directional one-to-many association to ExtResAttrs -->
+    <set
+        name="extResAttrs"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="delete"
+
+           @hibernate.collection-key
+            column="ExtResAttrsID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.ExtResAttrs"
+        </meta>
+        <key>
+            <column name="ExtResAttrsID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.ExtResAttrs"
+        />
+    </set>	
+    
+    
+    
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one
         name="createdByAgent"
@@ -151,18 +180,101 @@
         <column name="MadeByID" />
     </many-to-one>
     
-    
-    <!-- bi-directional many-to-many association to Preparation -->
+    <!-- bi-directional many-to-many association to Agent -->
     <set
-        name="externalFiles"
-        table="prep_extfiles"
+        name="agents"
+        table="agent_extres"
         lazy="true"
 		cascade="save-update">
         <key>
-            <column name="PreparationExternalFileID" />
+            <column name="ExternalResourceID" />
+        </key>
+        <many-to-many class="edu.ku.brc.specify.datamodel.Agent" column="AgentID"/>
+    </set>
+    
+    <!-- bi-directional many-to-many association to CollectionObject -->
+    <set
+        name="collectionObjects"
+        table="colobj_extres"
+        lazy="true"
+		cascade="save-update">
+        <key>
+            <column name="ExternalResourceID" />
+        </key>
+        <many-to-many class="edu.ku.brc.specify.datamodel.CollectionObject" column="CollectionObjectID"/>
+    </set>    
+    
+    <!-- bi-directional many-to-many association to CollectingEvent -->
+    <set
+        name="collectinEvents"
+        table="coleve_extres"
+        lazy="true"
+		cascade="save-update">
+        <key>
+            <column name="ExternalResourceID" />
+        </key>
+        <many-to-many class="edu.ku.brc.specify.datamodel.CollectingEvent" column="CollectingEventID"/>
+    </set>    
+    
+    <!-- bi-directional many-to-many association to Loan -->
+    <set
+        name="loans"
+        table="loan_extres"
+        lazy="true"
+		cascade="save-update">
+        <key>
+            <column name="ExternalResourceID" />
+        </key>
+        <many-to-many class="edu.ku.brc.specify.datamodel.Loan" column="LoanID"/>
+    </set>
+    
+    <!-- bi-directional many-to-many association to Locality -->
+    <set
+        name="localities"
+        table="locality_extres"
+        lazy="true"
+		cascade="save-update">
+        <key>
+            <column name="ExternalResourceID" />
+        </key>
+        <many-to-many class="edu.ku.brc.specify.datamodel.Locality" column="LocalityID"/>
+    </set>
+    
+    <!-- bi-directional many-to-many association to Permit -->
+    <set
+        name="permits"
+        table="permit_extres"
+        lazy="true"
+		cascade="save-update">
+        <key>
+            <column name="ExternalResourceID" />
+        </key>
+        <many-to-many class="edu.ku.brc.specify.datamodel.Permit" column="PermitID"/>
+    </set>    
+    
+    <!-- bi-directional many-to-many association to Preparation -->
+    <set
+        name="preparations"
+        table="prep_extres"
+        lazy="true"
+		cascade="save-update">
+        <key>
+            <column name="ExternalResourceID" />
         </key>
         <many-to-many class="edu.ku.brc.specify.datamodel.Preparation" column="PreparationID"/>
     </set>
-	    
-</class>
+        
+    <!-- bi-directional many-to-many association to Taxon -->
+    <set
+        name="taxonomy"
+        table="taxon_extres"
+        lazy="true"
+		cascade="save-update">
+        <key>
+            <column name="ExternalResourceID" />
+        </key>
+        <many-to-many class="edu.ku.brc.specify.datamodel.Taxon" column="TaxonID"/>
+    </set>
+    
+    </class>
 </hibernate-mapping>

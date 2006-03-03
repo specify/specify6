@@ -313,20 +313,34 @@
         </meta>
         <column name="PreparedByID" />
     </many-to-one>
-
-    <!-- bi-directional many-to-many association to PreparationExternalFile -->
+    	
+    <!-- bi-directional many-to-one association to Location -->
+    <many-to-one
+        name="location"
+        class="edu.ku.brc.specify.datamodel.Location"
+        not-null="true"
+		outer-join="true"
+    >
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="LocationID"         
+        </meta>
+        <column name="LocationID" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-many association to ExternalResource -->
     <set
-        name="externalFiles"
-        table="prep_extfiles"
+        name="externalResources"
+        table="prep_extres"
         lazy="true"
         inverse="true"
 		cascade="save-update">
         <key>
             <column name="PreparationID" />
         </key>
-        <many-to-many class="edu.ku.brc.specify.datamodel.PreparationExternalFile" column="PreparationExternalFileID"/>
+        <many-to-many class="edu.ku.brc.specify.datamodel.ExternalResource" column="ExternalResourceID"/>
     </set>
-    
     
 </class>
 </hibernate-mapping>

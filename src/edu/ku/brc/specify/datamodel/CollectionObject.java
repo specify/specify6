@@ -50,7 +50,7 @@ public class CollectionObject  implements java.io.Serializable {
      protected Accession accession;
      protected Agent agent;
      private Set loanPhysicalObjects;
-     private Set externalFiles;
+     private Set externalResources;
 
 
     // Constructors
@@ -603,12 +603,12 @@ public class CollectionObject  implements java.io.Serializable {
     /**
      * 
      */
-    public Set getExternalFiles() {
-        return this.externalFiles;
+    public Set getExternalResources() {
+        return this.externalResources;
     }
     
-    public void setExternalFiles(Set externalFiles) {
-        this.externalFiles = externalFiles;
+    public void setExternalResources(Set externalResources) {
+        this.externalResources = externalResources;
     }
 
 

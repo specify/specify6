@@ -32,20 +32,21 @@
     </id>
 
     <!--
-		Indicates whether it is for Habitat or Biological
+		Indicates whether it is for 
 		0 - Habtitat
 		1 - Biological
+		2 - External Resource
 	-->
     <property
         name="tableType"
         type="java.lang.Short"
-        column="tableType"
+        column="TableType"
         length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="tableType"
+            column="TableType"
             length="5"
         </meta>    
     </property>
@@ -58,13 +59,13 @@
     <property
         name="subType"
         type="java.lang.Short"
-        column="subType"
+        column="SubType"
         length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="subType"
+            column="SubType"
             length="5"
         </meta>    
     </property>
@@ -72,13 +73,13 @@
     <property
         name="fieldName"
         type="java.lang.String"
-        column="fieldName"
+        column="FieldName"
         length="32"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="fieldName"
+            column="FieldName"
             length="32"
         </meta>    
     </property>
@@ -86,13 +87,13 @@
     <property
         name="dataType"
         type="java.lang.Short"
-        column="dataType"
+        column="DataType"
         length="5"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="dataType"
+            column="DataType"
             length="5"
         </meta>    
     </property>

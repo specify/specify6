@@ -13,28 +13,28 @@
 	   lazy="false">
 
 	<!-- Common id property. -->
-	<id name="id"
+	<id name="recordSetID"
 		type="long"
-		column="rs_id"
+		column="RecordSetID"
 		unsaved-value="null">
 		<generator class="native"/>
 	</id>
 
 	<property   name="name"
-	            column="NAME"
+	            column="Name"
 				update="true"
 				type="string">
 	</property>
 
 	<property   name="tableId"
-	            column="tableid"
+	            column="TableID"
 				update="true"
 				type="int">
 	</property>
 
 	<!-- We can't change the creation time, so map it with update="false". -->
 	<property   name="created"
-				column="CREATED"
+				column="Created"
 				type="java.util.Date"
 				update="false"
 				not-null="true"/>
@@ -44,7 +44,7 @@
     <!-- bi-directional one-to-many association to RecordSetItem -->
     <set
         name="items" table="recordset_items" lazy="false">
-    	<key column="rs_id"/>
+    	<key column="RecordSetID"/>
     	<composite-element class="RecordSetItem">
     		<property name="recordId" not-null="true" unique="false"/>
         </composite-element>

@@ -28,13 +28,13 @@
     <property
         name="name"
         type="java.lang.String"
-        column="name"
+        column="Name"
         length="50"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="name"
+            column="Name"
             length="50"
         </meta>
     </property>

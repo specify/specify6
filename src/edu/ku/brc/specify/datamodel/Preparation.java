@@ -30,7 +30,8 @@ public class Preparation  implements java.io.Serializable {
      protected Set prepAttrs;
      private CollectionObject collectionObject;
      private Agent agent;
-     private Set externalFiles;
+     private Location location;
+     private Set externalResources;
 
 
     // Constructors
@@ -272,14 +273,28 @@ public class Preparation  implements java.io.Serializable {
     }
 
     /**
-     * 
+     *      *            @hibernate.many-to-one
+     *             not-null="true"
+     *            @hibernate.column name="LocationID"         
+     *         
      */
-    public Set getExternalFiles() {
-        return this.externalFiles;
+    public Location getLocation() {
+        return this.location;
     }
     
-    public void setExternalFiles(Set externalFiles) {
-        this.externalFiles = externalFiles;
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    /**
+     * 
+     */
+    public Set getExternalResources() {
+        return this.externalResources;
+    }
+    
+    public void setExternalResources(Set externalResources) {
+        this.externalResources = externalResources;
     }
 
 

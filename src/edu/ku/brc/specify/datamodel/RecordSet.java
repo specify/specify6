@@ -13,7 +13,7 @@ public class RecordSet  implements java.io.Serializable {
 
     // Fields    
 
-     private Long id;
+     private Long recordSetID;
      private String name;
      private Integer tableId;
      private Date created;
@@ -27,8 +27,8 @@ public class RecordSet  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public RecordSet(Long id) {
-        this.id = id;
+    public RecordSet(Long recordSetID) {
+        this.recordSetID = recordSetID;
     }
    
     
@@ -39,12 +39,12 @@ public class RecordSet  implements java.io.Serializable {
     /**
      * 
      */
-    public Long getId() {
-        return this.id;
+    public Long getRecordSetID() {
+        return this.recordSetID;
     }
     
-    public void setId(Long id) {
-        this.id = id;
+    public void setRecordSetID(Long recordSetID) {
+        this.recordSetID = recordSetID;
     }
 
     /**

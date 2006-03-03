@@ -334,7 +334,19 @@
             class="edu.ku.brc.specify.datamodel.HabitatAttrs"
         />
     </set>	
+        
+    <!-- bi-directional many-to-many association to ExternalResource -->
+    <set
+        name="externalResources"
+        table="coleve_extres"
+        lazy="true"
+        inverse="true"
+		cascade="save-update">
+        <key>
+            <column name="CollectingEventID" />
+        </key>
+        <many-to-many class="edu.ku.brc.specify.datamodel.ExternalResource" column="ExternalResourceID"/>
+    </set>
     
-
 </class>
 </hibernate-mapping>

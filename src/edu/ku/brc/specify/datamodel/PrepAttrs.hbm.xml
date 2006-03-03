@@ -36,26 +36,26 @@
         name="name"
         type="java.lang.String"
         column="Name"
-        length="32"
+        length="50"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Name"
-            length="32"
+            length="50"
         </meta>    
     </property>
 
     <property
         name="strValue"
         type="java.lang.String"
-        column="strValue"
+        column="StrValue"
         length="128"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="strValue"
+            column="StrValue"
             length="128"
         </meta>    
     </property>
@@ -63,13 +63,13 @@
     <property
         name="intValue"
         type="java.lang.Integer"
-        column="intValue"
+        column="IntValue"
         length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="intValue"
+            column="IntValue"
             length="10"
         </meta>    
     </property>
@@ -77,13 +77,13 @@
     <property
         name="fieldType"
         type="java.lang.Short"
-        column="fieldType"
+        column="FieldType"
         length="2"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="fieldType"
+            column="FieldType"
             length="2"
         </meta>    
     </property>
@@ -91,17 +91,17 @@
     <property
         name="unit"
         type="java.lang.Short"
-        column="unit"
+        column="Unit"
         length="2"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="unit"
+            column="Unit"
             length="2"
         </meta>    
     </property>
-
+    
     <property
         name="timestampCreated"
         type="java.sql.Timestamp"

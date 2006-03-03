@@ -68,8 +68,9 @@ public class LocationTreeDef  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="TreeNodeId"
+     *             column="TreeNodeID"
      *             length="10"
+     *             index="IX_TreeNodeID"
      *         
      */
     public Integer getTreeNodeId() {
@@ -82,9 +83,9 @@ public class LocationTreeDef  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="ParentNodeId"
+     *             column="ParentNodeID"
      *             length="10"
-     *             index="index_name"
+     *             index="IX_ParentNodeID"
      *         
      */
     public Integer getParentNodeId() {

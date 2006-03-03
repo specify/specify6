@@ -31,32 +31,16 @@
         <generator class="assigned" />
     </id>
     
-    <!--<property
-        name="parentId"
-        type="java.lang.Integer"
-        column="ParentID"
-        length="10"
-        index="index_name"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="ParentTaxonID"
-            length="10"
-            index="index_name"
-        </meta>    
-    </property> -->
-
     <property
         name="name"
         type="java.lang.String"
-        column="name"
+        column="Name"
         length="128"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="name"
+            column="Name"
             length="128"
         </meta>    
     </property>
@@ -110,13 +94,13 @@
     <property
         name="abbrev"
         type="java.lang.String"
-        column="abbrev"
+        column="Abbrev"
         length="16"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="abbrev"
+            column="Abbrev"
             length="16"
         </meta>    
     </property>
@@ -124,13 +108,13 @@
     <property
         name="text1"
         type="java.lang.String"
-        column="text1"
+        column="Text1"
         length="32"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="text1"
+            column="Text1"
             length="32"
         </meta>    
     </property>
@@ -138,17 +122,17 @@
     <property
         name="text2"
         type="java.lang.String"
-        column="text2"
+        column="Text2"
         length="32"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="text2"
+            column="Text2"
             length="32"
         </meta>    
     </property>
-    
+        
     <property
         name="number1"
         type="java.lang.Integer"
@@ -264,32 +248,6 @@
         <column name="LocationTreeDefID" />
     </many-to-one>    
   
-    <!-- bi-directional one-to-many association to Location -->
-    <!-- <set
-        name="children"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="LocationID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.Location"
-        </meta>
-        <key>
-            <column name="LocationID" />
-        </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.Location"
-        />
-    </set> -->
     
     <!-- bi-directional many-to-one association to Location -->
     <many-to-one
@@ -304,6 +262,35 @@
         </meta>
         <column name="ParentID" />
     </many-to-one>
+    
+    <!-- bi-directional one-to-many association to Preparation -->
+    <set
+        name="preparations"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="PreparationID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.Preparation"
+        </meta>
+        <key>
+            <column name="PreparationID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.Preparation"
+        />
+    </set>	
+    
+    
     
 </class>
 </hibernate-mapping>

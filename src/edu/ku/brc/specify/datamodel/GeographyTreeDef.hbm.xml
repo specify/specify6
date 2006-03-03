@@ -48,30 +48,32 @@ lazy="true"
     <property
         name="treeNodeId"
         type="java.lang.Integer"
-        column="TreeNodeId"
+        column="TreeNodeID"
         length="10"
+        index="IX_GeoTDTreeNodeID"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="TreeNodeId"
+            column="TreeNodeID"
             length="10"
+            index="IX_GeoTDTreeNodeID"
         </meta>    
     </property>
 
     <property
         name="parentNodeId"
         type="java.lang.Integer"
-        column="ParentNodeId"
+        column="ParentNodeID"
         length="10"
-        index="IX_GeoTDParentNodeId"
+        index="IX_GeoTDParentNodeID"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="ParentNodeId"
+            column="ParentNodeID"
             length="10"
-            index="IX_GeoTDParentNodeId"
+            index="IX_GeoTDParentNodeID"
         </meta>    
     </property>
 

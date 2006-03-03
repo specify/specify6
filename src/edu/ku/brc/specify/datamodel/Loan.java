@@ -37,6 +37,7 @@ public class Loan  implements java.io.Serializable {
      private Set loanAgents;
      private Set loanPhysicalObjects;
      private Shipment shipment;
+     private Set externalResources;
 
 
     // Constructors
@@ -374,6 +375,17 @@ public class Loan  implements java.io.Serializable {
     
     public void setShipment(Shipment shipment) {
         this.shipment = shipment;
+    }
+
+    /**
+     * 
+     */
+    public Set getExternalResources() {
+        return this.externalResources;
+    }
+    
+    public void setExternalResources(Set externalResources) {
+        this.externalResources = externalResources;
     }
 
 

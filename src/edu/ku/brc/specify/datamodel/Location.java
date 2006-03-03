@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.Date;
+import java.util.Set;
 
 
 
@@ -31,6 +32,7 @@ public class Location  implements java.io.Serializable {
      protected Short isCurrent;
      private LocationTreeDef definition;
      private Location parent;
+     private Set preparations;
 
 
     // Constructors
@@ -66,7 +68,7 @@ public class Location  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="name"
+     *             column="Name"
      *             length="128"
      *         
      */
@@ -122,7 +124,7 @@ public class Location  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="abbrev"
+     *             column="Abbrev"
      *             length="16"
      *         
      */
@@ -136,7 +138,7 @@ public class Location  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="text1"
+     *             column="Text1"
      *             length="32"
      *         
      */
@@ -150,7 +152,7 @@ public class Location  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="text2"
+     *             column="Text2"
      *             length="32"
      *         
      */
@@ -285,6 +287,25 @@ public class Location  implements java.io.Serializable {
     
     public void setParent(Location parent) {
         this.parent = parent;
+    }
+
+    /**
+     *      *            @hibernate.set
+     *             lazy="true"
+     *             inverse="true"
+     *             cascade="none"
+     *            @hibernate.collection-key
+     *             column="PreparationID"
+     *            @hibernate.collection-one-to-many
+     *             class="edu.ku.brc.specify.datamodel.Preparation"
+     *         
+     */
+    public Set getPreparations() {
+        return this.preparations;
+    }
+    
+    public void setPreparations(Set preparations) {
+        this.preparations = preparations;
     }
 
 

@@ -44,9 +44,9 @@ public class Taxon  implements java.io.Serializable {
      private Set acceptedChildren;
      private Taxon acceptedTaxon;
      private Set taxonCitations;
-     private Set externalFiles;
      private TaxonomyTreeDef definition;
      private Taxon parent;
+     private Set externalResources;
 
 
     // Constructors
@@ -485,17 +485,6 @@ public class Taxon  implements java.io.Serializable {
     }
 
     /**
-     * 
-     */
-    public Set getExternalFiles() {
-        return this.externalFiles;
-    }
-    
-    public void setExternalFiles(Set externalFiles) {
-        this.externalFiles = externalFiles;
-    }
-
-    /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
      *            @hibernate.column name="TaxonomyTreeDefID"         
@@ -521,6 +510,17 @@ public class Taxon  implements java.io.Serializable {
     
     public void setParent(Taxon parent) {
         this.parent = parent;
+    }
+
+    /**
+     * 
+     */
+    public Set getExternalResources() {
+        return this.externalResources;
+    }
+    
+    public void setExternalResources(Set externalResources) {
+        this.externalResources = externalResources;
     }
 
 

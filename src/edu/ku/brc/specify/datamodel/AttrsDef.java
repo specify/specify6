@@ -50,7 +50,7 @@ public class AttrsDef  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="tableType"
+     *             column="TableType"
      *             length="5"
      *         
      */
@@ -64,7 +64,7 @@ public class AttrsDef  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="subType"
+     *             column="SubType"
      *             length="5"
      *         
      */
@@ -78,7 +78,7 @@ public class AttrsDef  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="fieldName"
+     *             column="FieldName"
      *             length="32"
      *         
      */
@@ -92,7 +92,7 @@ public class AttrsDef  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="dataType"
+     *             column="DataType"
      *             length="5"
      *         
      */

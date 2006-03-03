@@ -35,6 +35,7 @@ public class CollectingEvent  implements java.io.Serializable {
      protected Locality locality;
      protected Stratigraphy stratigraphy;
      protected Set habitatAttrs;
+     private Set externalResources;
 
 
     // Constructors
@@ -346,6 +347,17 @@ public class CollectingEvent  implements java.io.Serializable {
     
     public void setHabitatAttrs(Set habitatAttrs) {
         this.habitatAttrs = habitatAttrs;
+    }
+
+    /**
+     * 
+     */
+    public Set getExternalResources() {
+        return this.externalResources;
+    }
+    
+    public void setExternalResources(Set externalResources) {
+        this.externalResources = externalResources;
     }
 
 

@@ -28,7 +28,7 @@
 
         </meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="assigned" />
+        <generator class="native" />
     </id>
     
     <property
@@ -48,13 +48,13 @@
     <property
         name="treeNodeId"
         type="java.lang.Integer"
-        column="TreeNodeId"
+        column="TreeNodeID"
         length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="TreeNodeId"
+            column="TreeNodeID"
             length="10"
         </meta>    
     </property>
@@ -62,13 +62,13 @@
     <property
         name="parentNodeId"
         type="java.lang.Integer"
-        column="ParentNodeId"
+        column="ParentNodeID"
         length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="ParentNodeId"
+            column="ParentNodeID"
             length="10"
         </meta>    
     </property>
