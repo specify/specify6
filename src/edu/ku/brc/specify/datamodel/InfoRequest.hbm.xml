@@ -80,7 +80,7 @@
     
     <property
         name="requestDate"
-        type="java.util.Date"
+        type="calendar_date"
         column="RequestDate"
     >
         <meta attribute="scope-field">protected</meta>
@@ -93,7 +93,7 @@
     
     <property
         name="replyDate"
-        type="java.util.Date"
+        type="calendar_date"
         column="ReplyDate"
     >
         <meta attribute="scope-field">protected</meta>

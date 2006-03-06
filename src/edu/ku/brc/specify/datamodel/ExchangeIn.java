@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -15,7 +16,7 @@ public class ExchangeIn  implements java.io.Serializable {
     // Fields    
 
      protected Integer exchangeInId;
-     protected Integer exchangeDate;
+     protected Calendar exchangeDate;
      protected Short quantityExchanged;
      protected String descriptionOfMaterial;
      protected String remarks;
@@ -66,14 +67,13 @@ public class ExchangeIn  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="ExchangeDate"
-     *             length="10"
      *         
      */
-    public Integer getExchangeDate() {
+    public Calendar getExchangeDate() {
         return this.exchangeDate;
     }
     
-    public void setExchangeDate(Integer exchangeDate) {
+    public void setExchangeDate(Calendar exchangeDate) {
         this.exchangeDate = exchangeDate;
     }
 

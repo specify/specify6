@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
 
@@ -16,7 +17,7 @@ public class ExternalResource  implements java.io.Serializable {
      protected Integer externalFileId;
      protected String mimeType;
      protected String fileName;
-     protected Integer fileCreatedDate;
+     protected Calendar fileCreatedDate;
      protected String remarks;
      protected String externalLocation;
      protected Date timestampCreated;
@@ -92,14 +93,13 @@ public class ExternalResource  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="FileCreatedDate"
-     *             length="10"
      *         
      */
-    public Integer getFileCreatedDate() {
+    public Calendar getFileCreatedDate() {
         return this.fileCreatedDate;
     }
     
-    public void setFileCreatedDate(Integer fileCreatedDate) {
+    public void setFileCreatedDate(Calendar fileCreatedDate) {
         this.fileCreatedDate = fileCreatedDate;
     }
 

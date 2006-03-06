@@ -51,15 +51,13 @@
     
     <property
         name="fileCreatedDate"
-        type="java.lang.Integer"
+        type="calendar_date"
         column="FileCreatedDate"
-        length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="FileCreatedDate"
-            length="10"
         </meta>    
     </property>
     

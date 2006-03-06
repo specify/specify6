@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
 
@@ -16,7 +17,7 @@ public class Shipment  implements java.io.Serializable {
     // Fields    
 
      protected Integer shipmentId;
-     protected Integer shipmentDate;
+     protected Calendar shipmentDate;
      protected String shipmentNumber;
      protected String shipmentMethod;
      protected Short numberOfPackages;
@@ -75,14 +76,13 @@ public class Shipment  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="ShipmentDate"
-     *             length="10"
      *         
      */
-    public Integer getShipmentDate() {
+    public Calendar getShipmentDate() {
         return this.shipmentDate;
     }
     
-    public void setShipmentDate(Integer shipmentDate) {
+    public void setShipmentDate(Calendar shipmentDate) {
         this.shipmentDate = shipmentDate;
     }
 

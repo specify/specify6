@@ -546,7 +546,7 @@ public class InfoRequestTask extends BaseTask
                 infoRequest.setFirstName("Rod");
                 infoRequest.setLastName("Spears");
                 infoRequest.setInstitution("KU");
-                infoRequest.setRequestDate(Calendar.getInstance().getTime());
+                infoRequest.setRequestDate(Calendar.getInstance());
                 
                 // Get Info Request Information
                 

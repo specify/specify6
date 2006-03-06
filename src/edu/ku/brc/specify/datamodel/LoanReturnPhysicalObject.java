@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -15,7 +16,7 @@ public class LoanReturnPhysicalObject  implements java.io.Serializable {
     // Fields    
 
      protected Integer loanReturnPhysicalObjectId;
-     protected Integer dateField;
+     protected Calendar dateField;
      protected Short quantity;
      protected String remarks;
      protected Date timestampCreated;
@@ -60,14 +61,13 @@ public class LoanReturnPhysicalObject  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="DateField"
-     *             length="10"
      *         
      */
-    public Integer getDateField() {
+    public Calendar getDateField() {
         return this.dateField;
     }
     
-    public void setDateField(Integer dateField) {
+    public void setDateField(Calendar dateField) {
         this.dateField = dateField;
     }
 

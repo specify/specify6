@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -19,8 +20,8 @@ public class InfoRequest  implements java.io.Serializable {
      protected String lastName;
      protected String institution;
      protected String email;
-     protected Date requestDate;
-     protected Date replyDate;
+     protected Calendar requestDate;
+     protected Calendar replyDate;
      protected String remarks;
      protected Date timestampCreated;
      protected Date timestampModified;
@@ -117,11 +118,11 @@ public class InfoRequest  implements java.io.Serializable {
      *             update="false"
      *          
      */
-    public Date getRequestDate() {
+    public Calendar getRequestDate() {
         return this.requestDate;
     }
     
-    public void setRequestDate(Date requestDate) {
+    public void setRequestDate(Calendar requestDate) {
         this.requestDate = requestDate;
     }
 
@@ -130,11 +131,11 @@ public class InfoRequest  implements java.io.Serializable {
      *             column="ReplyDate"
      *          
      */
-    public Date getReplyDate() {
+    public Calendar getReplyDate() {
         return this.replyDate;
     }
     
-    public void setReplyDate(Date replyDate) {
+    public void setReplyDate(Calendar replyDate) {
         this.replyDate = replyDate;
     }
 

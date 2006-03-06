@@ -67,64 +67,51 @@
         </meta>    
     </property>
     
-    <property
-        name="issuedDate"
-        type="java.lang.Integer"
+    <property name="issuedDate"
+        type="calendar_date"
         column="IssuedDate"
-        length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="IssuedDate"
-            length="10"
         </meta>    
     </property>
     
-    <property
-        name="startDate"
-        type="java.lang.Integer"
+    <property name="startDate"
+        type="calendar_date"
         column="StartDate"
-        length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="StartDate"
-            length="10"
         </meta>    
     </property>
     
-    <property
-        name="endDate"
-        type="java.lang.Integer"
+    <property name="endDate"
+        type="calendar_date"
         column="EndDate"
-        length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="EndDate"
-            length="10"
         </meta>    
     </property>
     
-    <property
-        name="renewalDate"
-        type="java.lang.Integer"
+    <property name="renewalDate"
+        type="calendar_date"
         column="RenewalDate"
-        length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="RenewalDate"
-            length="10"
         </meta>    
     </property>
     
-    <property
-        name="remarks"
+    <property name="remarks"
         type="text"
         column="Remarks"
     >
@@ -135,8 +122,7 @@
         </meta>    
     </property>
     
-    <property
-        name="text1"
+    <property name="text1"
         type="java.lang.String"
         column="Text1"
         length="300"

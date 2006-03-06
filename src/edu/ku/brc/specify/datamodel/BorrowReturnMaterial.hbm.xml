@@ -39,15 +39,13 @@
 
     <property
         name="dateField"
-        type="java.lang.Integer"
+        type="calendar_date"
         column="DateField"
-        length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="DateField"
-            length="10"
         </meta>    
     </property>
     <property

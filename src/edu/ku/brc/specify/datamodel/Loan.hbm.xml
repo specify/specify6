@@ -67,11 +67,11 @@
             not-null="true"
         </meta>    
     </property>
+    
     <property
         name="loanDate"
-        type="java.lang.Integer"
+        type="calendar_date"
         column="LoanDate"
-        length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
@@ -80,9 +80,9 @@
             length="10"
         </meta>    
     </property>
-    <property
-        name="currentDueDate"
-        type="java.lang.Integer"
+    
+    <property name="currentDueDate"
+        type="calendar_date"
         column="CurrentDueDate"
         length="10"
     >
@@ -95,28 +95,24 @@
     </property>
     <property
         name="originalDueDate"
-        type="java.lang.Integer"
+        type="calendar_date"
         column="OriginalDueDate"
-        length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="OriginalDueDate"
-            length="10"
         </meta>    
     </property>
     <property
         name="dateClosed"
-        type="java.lang.Integer"
+        type="calendar_date"
         column="DateClosed"
-        length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="DateClosed"
-            length="10"
         </meta>    
     </property>
     <property

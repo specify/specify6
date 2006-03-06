@@ -35,7 +35,6 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/Address.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/AgentAddress.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Agent.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/AgentExternalFile.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/AttrsDef.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Author.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/BioAttrs.hbm.xml"/>
@@ -48,7 +47,6 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/CollectingEvent.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/CollectionObjectCitation.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/CollectionObject.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/CollectionObjectExternalFile.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/CollectionObjDef.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Collector.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/DataType.hbm.xml"/>
@@ -59,6 +57,8 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/Determination.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/ExchangeIn.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/ExchangeOut.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/ExternalResource.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/ExtResAttrs.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Geography.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/GeographyTreeDef.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/GeologicTimePeriod.hbm.xml"/>
@@ -72,15 +72,12 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/LoanReturnPhysicalObject.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/LocalityCitation.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Locality.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/LocalityExternalFile.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Location.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/LocationTreeDef.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Observation.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/OtherIdentifier.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Permit.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/PermitExternalFile.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Preparation.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/PreparationExternalFile.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/PrepAttrs.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/PrepTypes.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/ProjectCollectionObject.hbm.xml"/>
@@ -90,7 +87,6 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/Stratigraphy.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/TaxonCitation.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Taxon.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/TaxonExternalFile.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/TaxonomyTreeDef.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/User.hbm.xml"/>
 		

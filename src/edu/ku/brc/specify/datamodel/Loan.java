@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
 
@@ -18,10 +19,10 @@ public class Loan  implements java.io.Serializable {
      protected Integer loanId;
      protected Integer collectionId;
      protected String loanNumber;
-     protected Integer loanDate;
-     protected Integer currentDueDate;
-     protected Integer originalDueDate;
-     protected Integer dateClosed;
+     protected Calendar loanDate;
+     protected Calendar currentDueDate;
+     protected Calendar originalDueDate;
+     protected Calendar dateClosed;
      protected Byte category;
      protected String remarks;
      protected String text1;
@@ -107,11 +108,11 @@ public class Loan  implements java.io.Serializable {
      *             length="10"
      *         
      */
-    public Integer getLoanDate() {
+    public Calendar getLoanDate() {
         return this.loanDate;
     }
     
-    public void setLoanDate(Integer loanDate) {
+    public void setLoanDate(Calendar loanDate) {
         this.loanDate = loanDate;
     }
 
@@ -121,39 +122,37 @@ public class Loan  implements java.io.Serializable {
      *             length="10"
      *         
      */
-    public Integer getCurrentDueDate() {
+    public Calendar getCurrentDueDate() {
         return this.currentDueDate;
     }
     
-    public void setCurrentDueDate(Integer currentDueDate) {
+    public void setCurrentDueDate(Calendar currentDueDate) {
         this.currentDueDate = currentDueDate;
     }
 
     /**
      *      *            @hibernate.property
      *             column="OriginalDueDate"
-     *             length="10"
      *         
      */
-    public Integer getOriginalDueDate() {
+    public Calendar getOriginalDueDate() {
         return this.originalDueDate;
     }
     
-    public void setOriginalDueDate(Integer originalDueDate) {
+    public void setOriginalDueDate(Calendar originalDueDate) {
         this.originalDueDate = originalDueDate;
     }
 
     /**
      *      *            @hibernate.property
      *             column="DateClosed"
-     *             length="10"
      *         
      */
-    public Integer getDateClosed() {
+    public Calendar getDateClosed() {
         return this.dateClosed;
     }
     
-    public void setDateClosed(Integer dateClosed) {
+    public void setDateClosed(Calendar dateClosed) {
         this.dateClosed = dateClosed;
     }
 

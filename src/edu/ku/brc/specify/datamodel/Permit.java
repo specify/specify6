@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
 
@@ -18,10 +19,10 @@ public class Permit  implements java.io.Serializable {
      protected Integer permitId;
      protected String permitNumber;
      protected String type;
-     protected Integer issuedDate;
-     protected Integer startDate;
-     protected Integer endDate;
-     protected Integer renewalDate;
+     protected Calendar issuedDate;
+     protected Calendar startDate;
+     protected Calendar endDate;
+     protected Calendar renewalDate;
      protected String remarks;
      protected String text1;
      protected String text2;
@@ -102,56 +103,52 @@ public class Permit  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="IssuedDate"
-     *             length="10"
      *         
      */
-    public Integer getIssuedDate() {
+    public Calendar getIssuedDate() {
         return this.issuedDate;
     }
     
-    public void setIssuedDate(Integer issuedDate) {
+    public void setIssuedDate(Calendar issuedDate) {
         this.issuedDate = issuedDate;
     }
 
     /**
      *      *            @hibernate.property
      *             column="StartDate"
-     *             length="10"
      *         
      */
-    public Integer getStartDate() {
+    public Calendar getStartDate() {
         return this.startDate;
     }
     
-    public void setStartDate(Integer startDate) {
+    public void setStartDate(Calendar startDate) {
         this.startDate = startDate;
     }
 
     /**
      *      *            @hibernate.property
      *             column="EndDate"
-     *             length="10"
      *         
      */
-    public Integer getEndDate() {
+    public Calendar getEndDate() {
         return this.endDate;
     }
     
-    public void setEndDate(Integer endDate) {
+    public void setEndDate(Calendar endDate) {
         this.endDate = endDate;
     }
 
     /**
      *      *            @hibernate.property
      *             column="RenewalDate"
-     *             length="10"
      *         
      */
-    public Integer getRenewalDate() {
+    public Calendar getRenewalDate() {
         return this.renewalDate;
     }
     
-    public void setRenewalDate(Integer renewalDate) {
+    public void setRenewalDate(Calendar renewalDate) {
         this.renewalDate = renewalDate;
     }
 

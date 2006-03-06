@@ -37,6 +37,8 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import edu.ku.brc.specify.helpers.UIHelper;
+
 /**
  * 
  * @author rods
@@ -44,9 +46,12 @@ import org.apache.commons.logging.LogFactory;
  */
 public class BasicSQLUtils
 {
-    protected static Log              log              = LogFactory.getLog(BasicSQLUtils.class);
-    protected static SimpleDateFormat dateFormatter    = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-    protected static boolean          showMappingError = true;
+    protected static Log              log               = LogFactory.getLog(BasicSQLUtils.class);
+    protected static SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    protected static SimpleDateFormat dateFormatter     = new SimpleDateFormat("yyyy-MM-dd");
+    protected static boolean          showMappingError  = true;
+    
+    protected static BasicSQLUtils basicSQLUtils = new  BasicSQLUtils();
     
     /**
      * Singleton 
@@ -199,6 +204,17 @@ public class BasicSQLUtils
      */
     public static String getStrValue(Object obj)
     {
+        return getStrValue(obj, null);
+    }
+
+    
+    /**
+     * Returns a valid String value for an Object, meaning it will put quotes around Strings and ate etc.
+     * @param obj the object to convert
+     * @return the string representation
+     */
+    public static String getStrValue(final Object obj, final String newFieldType)
+    {
         if (obj == null)
         {
             return "NULL";
@@ -214,11 +230,17 @@ public class BasicSQLUtils
             
         } else if (obj instanceof Integer)
         {
-            return ((Integer)obj).toString();
+            if (newFieldType != null && newFieldType.indexOf("date") ==  0)
+            {
+                return '"'+dateFormatter.format(UIHelper.convertIntToDate((Integer)obj)) + '"';
+            } else
+            {
+                return ((Integer)obj).toString();
+            }
             
         } else if (obj instanceof Date)
         {
-            return '"'+dateFormatter.format((Date)obj) + '"';
+            return '"'+dateTimeFormatter.format((Date)obj) + '"';
             
         } else if (obj instanceof Float)
         {
@@ -237,12 +259,15 @@ public class BasicSQLUtils
         }
     }
     
-    /**
-     * Removes all the records from all the tables
+   /**
+     * Fills the list with all the names of the table
+     * @param connection the connection
+     * @param tableName the table name
+     * @param list the list to be filled
      */
     public static void getFieldNamesFromSchema(final Connection connection, 
                                                final String tableName,
-                                               final List<String> fieldList)
+                                               final List<String> list)
     {
         try
         {
@@ -250,7 +275,34 @@ public class BasicSQLUtils
             ResultSet rs   = stmt.executeQuery("describe "+tableName);
             while (rs.next()) 
             {      
-                fieldList.add(rs.getString(1));
+                list.add(rs.getString(1));
+            }
+            rs.close();
+            stmt.close();
+            
+        } catch (SQLException ex)
+        {
+            log.error(ex);
+        }
+    }
+
+    /**
+     * Fills the list with FieldMetaData objects for each field in the table
+     * @param connection the connection
+     * @param tableName the table name
+     * @param fieldList the list to be filled with field/type objects (FieldMetaData)
+     */
+    public static void getFieldMetaDataFromSchema(final Connection          connection, 
+                                                  final String              tableName,
+                                                  final List<FieldMetaData> fieldList)
+    {
+        try
+        {
+            Statement stmt = connection.createStatement();
+            ResultSet rs   = stmt.executeQuery("describe "+tableName);
+            while (rs.next()) 
+            {      
+                fieldList.add(basicSQLUtils.new FieldMetaData(rs.getString(1), rs.getString(2)));
             }
             rs.close();
             stmt.close();
@@ -316,8 +368,8 @@ public class BasicSQLUtils
         String id = "";
         try
         {
-            List<String> colNames = new ArrayList<String>();
-            getFieldNamesFromSchema(toConn, toTableName, colNames);
+            List<FieldMetaData> colMetaData = new ArrayList<FieldMetaData>();
+            getFieldMetaDataFromSchema(toConn, toTableName, colMetaData);
             
             Statement stmt = fromConn.createStatement();
             ResultSet rs = stmt.executeQuery(sqlStr);
@@ -328,16 +380,19 @@ public class BasicSQLUtils
                 fromHash.put(rsmd.getColumnName(i), i);
             }
             // System.out.println("Num Cols: "+rsmd.getColumnCount());
-            StringBuffer str = new StringBuffer("");
+            StringBuffer str = new StringBuffer();
             int count = 0;
             while (rs.next())
             {
                 str.setLength(0);
                 str.append("INSERT INTO " + toTableName + " VALUES (");
+                
                 id = rs.getString(1);
-                for (int i = 0; i < colNames.size(); i++)
+                for (int i = 0; i < colMetaData.size(); i++)
                 {
-                    String colName = colNames.get(i);
+                    FieldMetaData fieldMetaData = colMetaData.get(i);
+                    String colName = fieldMetaData.getName();
+                    
                     Integer index = fromHash.get(colName);
                     if (index == null && colNewToOldMap != null)
                     {
@@ -356,13 +411,13 @@ public class BasicSQLUtils
                     {
                         if (i > 0) str.append(", ");
                         Object dataObj = rs.getObject(index);
-                        str.append(getStrValue(dataObj));
+                        str.append(getStrValue(dataObj, fieldMetaData.getType()));
                         
                     } else
                     {
                         if (showMappingError)
                         {
-                            log.error("For Table[" + fromTableName + "] Col Name[" + colNames.get(i) + "] was not mapped");
+                            log.error("For Table[" + fromTableName + "] Col Name[" + colMetaData.get(i).getName() + "] was not mapped");
                         }
                         if (i > 0) str.append(", ");
                         str.append("NULL");
@@ -428,6 +483,29 @@ public class BasicSQLUtils
         return str.toString();
     }
     
+    /** 
+     * Takes a list of names and creates a string with the names comma separated
+     * @param list the list of names (or field names)
+     * @return the string of comma separated names
+     */
+    public static String buildSelectFieldMetaDataList(final List<FieldMetaData> list, final String tableName)
+    {
+        StringBuffer str = new StringBuffer();
+        for (int i=0;i<list.size();i++)
+        {
+            if (i > 0) str.append(", ");
+            
+            if (tableName != null)
+            {
+                str.append(tableName);
+                str.append('.');
+            }
+            
+            str.append(list.get(i).getName());
+        }
+        return str.toString();
+    }
+    
     /**
      * Creates a mapping of the new name to the old name
      * @param pairs array of pairs of names
@@ -443,6 +521,31 @@ public class BasicSQLUtils
             i++;
         }
         return map;
+    }
+    
+    //-----------------------------------------------------------------------
+    //-- Inner Classes
+    //-----------------------------------------------------------------------
+    public class FieldMetaData 
+    {
+        protected String name;
+        protected String type;
+        
+        public FieldMetaData(String name, String type)
+        {
+            this.name = name;
+            this.type = type;
+        }
+
+        public String getName()
+        {
+            return name;
+        }
+
+        public String getType()
+        {
+            return type;
+        }
     }
 
 }

@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
 
@@ -18,9 +19,9 @@ public class Borrow  implements java.io.Serializable {
      protected Integer borrowId;
      private Integer collectionId;
      private String invoiceNumber;
-     private Integer receivedDate;
-     private Integer originalDueDate;
-     private Integer dateClosed;
+     private Calendar receivedDate;
+     private Calendar originalDueDate;
+     private Calendar dateClosed;
      protected String remarks;
      private String text1;
      private String text2;
@@ -32,7 +33,7 @@ public class Borrow  implements java.io.Serializable {
      private Short closed;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     private Integer currentDueDate;
+     private Calendar currentDueDate;
      private Set borrowShipments;
      private Set borrowAgents;
      private Set borrowMaterials;
@@ -102,42 +103,39 @@ public class Borrow  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="ReceivedDate"
-     *             length="10"
      *         
      */
-    public Integer getReceivedDate() {
+    public Calendar getReceivedDate() {
         return this.receivedDate;
     }
     
-    public void setReceivedDate(Integer receivedDate) {
+    public void setReceivedDate(Calendar receivedDate) {
         this.receivedDate = receivedDate;
     }
 
     /**
      *      *            @hibernate.property
      *             column="OriginalDueDate"
-     *             length="10"
      *         
      */
-    public Integer getOriginalDueDate() {
+    public Calendar getOriginalDueDate() {
         return this.originalDueDate;
     }
     
-    public void setOriginalDueDate(Integer originalDueDate) {
+    public void setOriginalDueDate(Calendar originalDueDate) {
         this.originalDueDate = originalDueDate;
     }
 
     /**
      *      *            @hibernate.property
      *             column="DateClosed"
-     *             length="10"
      *         
      */
-    public Integer getDateClosed() {
+    public Calendar getDateClosed() {
         return this.dateClosed;
     }
     
-    public void setDateClosed(Integer dateClosed) {
+    public void setDateClosed(Calendar dateClosed) {
         this.dateClosed = dateClosed;
     }
 
@@ -294,14 +292,13 @@ public class Borrow  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="CurrentDueDate"
-     *             length="10"
      *         
      */
-    public Integer getCurrentDueDate() {
+    public Calendar getCurrentDueDate() {
         return this.currentDueDate;
     }
     
-    public void setCurrentDueDate(Integer currentDueDate) {
+    public void setCurrentDueDate(Calendar currentDueDate) {
         this.currentDueDate = currentDueDate;
     }
 

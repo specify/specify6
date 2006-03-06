@@ -25,6 +25,7 @@ import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.cleanAllTables;
 import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.copyTable;
 import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.createFieldNameMap;
 import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.deleteAllRecordsFromTable;
+import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.getFieldMetaDataFromSchema;
 import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.getFieldNamesFromSchema;
 import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.getStrValue;
 
@@ -210,6 +211,7 @@ public class GenericDBConversion
             StringBuilder sql = new StringBuilder("select ");
             List<String> names = new ArrayList<String>();
             getFieldNamesFromSchema(oldDBConn, "collectionobject", names);
+            
             sql.append(buildSelectFieldList(names, "collectionobject"));
             sql.append(", ");
             oldFieldNames.addAll(names);
@@ -223,10 +225,14 @@ public class GenericDBConversion
             
             log.info(sql);
             
-            List<String> newFieldNames = new ArrayList<String>();
-            getFieldNamesFromSchema(newDBConn, "collectionobject", newFieldNames);
+            //List<String> newFieldNames = new ArrayList<String>();
+            //getFieldNamesFromSchema(newDBConn, "collectionobject", newFieldNames);
             
-            log.info("Number of Fields in New CollectionObject "+newFieldNames.size());
+            List<BasicSQLUtils.FieldMetaData> newFieldMetaData = new ArrayList<BasicSQLUtils.FieldMetaData>();
+            getFieldMetaDataFromSchema(newDBConn, "collectionobject", newFieldMetaData);
+
+            
+            log.info("Number of Fields in New CollectionObject "+newFieldMetaData.size());
             String sqlStr = sql.toString();
             
             Map<String, Integer> oldNameIndex = new Hashtable<String, Integer>();
@@ -243,16 +249,16 @@ public class GenericDBConversion
             {                    
                 str.setLength(0);
                 str.append("INSERT INTO collectionobject VALUES (");
-                for (int i=0;i<newFieldNames.size();i++)
+                for (int i=0;i<newFieldMetaData.size();i++)
                 {
                     if (i > 0) str.append(", ");
                     
-                    String newFieldName = newFieldNames.get(i);
+                    String newFieldName = newFieldMetaData.get(i).getName();
                     
                     Integer index = oldNameIndex.get(newFieldName);
                     if (index != null)
                     {
-                        str.append(getStrValue(rs.getObject(index+1)));
+                        str.append(getStrValue(rs.getObject(index+1), newFieldMetaData.get(i).getType()));
                     } else
                     {
                         log.error("Couldn't find new field name["+newFieldName+"] in old field name Map");
@@ -450,7 +456,7 @@ public class GenericDBConversion
      */
     public void loadSpecifyGeographicNames( final String tablename,
                                             final String filename,
-                                            final int geographyTreeDefId )
+                                            final int    geographyTreeDefId )
         throws IOException, SQLException
     {   
         BufferedReader inFile = new BufferedReader(new FileReader(filename));
