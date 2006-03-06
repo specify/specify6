@@ -136,7 +136,7 @@ public class DBSchemaTest extends TestCase
 
             // Create Collection Object Definition
             Geography geo = new Geography();
-            geo.setGeographyId(0);
+            geo.setTreeId(0);
             //geo.setCountry("USA");
             //geo.setContinentOrOcean("North America");
             //geo.setState("KS");

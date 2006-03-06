@@ -20,38 +20,143 @@
        @hibernate.class
         table="geography"
     </meta>
+    <meta attribute="implements">Treeable</meta>
+    <meta attribute="implements">java.awt.datatransfer.Transferable</meta>
+    <meta attribute="extra-import">java.awt.datatransfer.DataFlavor</meta>
+    <meta attribute="extra-import">java.io.IOException</meta>
+    <meta attribute="extra-import">java.awt.datatransfer.UnsupportedFlavorException</meta>
+    <meta attribute="class-code">
+    	<![CDATA[
+    		/**
+    		 * @return the parent Geography object
+    		 */
+    		public Treeable getParentNode()
+    		{
+    			return getParent();
+    		}
+    		
+    		/**
+    		 * @param parent the new parent Geography object
+    		 *
+    		 * @throws IllegalArgumentException if treeDef is not instance of Geography
+    		 */
+    		public void setParentNode(Treeable parent)
+    		{
+    			if( !(parent instanceof Geography) )
+    			{
+    				throw new IllegalArgumentException("Argument must be an instance of Geography");
+    			}
+    			setParent((Geography)parent);
+    		}
+    		
+    		/**
+    		 * @return the parent GeographyTreeDef object
+    		 */
+    		public TreeDefinitionIface getTreeDef()
+    		{
+    			return getDefinition();
+    		}
+    		
+    		/**
+    		 * @param parent the new GeographyTreeDef object
+    		 *
+    		 * @throws IllegalArgumentException if treeDef is not instance of GeographyTreeDef
+    		 */
+    		public void setTreeDef(TreeDefinitionIface treeDef)
+    		{
+    			if( !(treeDef instanceof GeographyTreeDef) )
+    			{
+    				throw new IllegalArgumentException("Argument must be an instance of GeographyTreeDef");
+    			}
+    			
+    			setDefinition((GeographyTreeDef)treeDef);
+    		}
+    		
+    		/**
+    		 * @param other the Treeable to compare to
+    		 */
+    		public int compareTo(Treeable other)
+    		{
+    			return name.compareTo(other.getName());
+    		}
+    		
+    		public DataFlavor[] getTransferDataFlavors()
+    		{
+    		    DataFlavor[] flavors = new DataFlavor[1];
+    		    try
+    		    {
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		    }
+    		    catch( ClassNotFoundException ex )
+    		    {
+    		        //TODO: What do we want to do here?
+    		    }
+    		
+    		    return flavors;
+	        }
 
-    <id
-        name="geographyId"
+        	public boolean isDataFlavorSupported( DataFlavor flavor )
+        	{
+    		    DataFlavor[] flavors = new DataFlavor[1];
+    		    try
+    		    {
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		    }
+    		    catch( ClassNotFoundException ex )
+    		    {
+    		        //TODO: What do we want to do here?
+    		    }
+
+        		for( DataFlavor df: flavors )
+        		{
+        			if( df.equals(flavor) )
+        			{
+        				return true;
+        			}
+        		}
+        		
+        		return false;
+        	}
+
+        	public Object getTransferData( DataFlavor flavor ) throws UnsupportedFlavorException, IOException
+        	{
+    		    DataFlavor[] flavors = new DataFlavor[1];
+    		    try
+    		    {
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		    }
+    		    catch( ClassNotFoundException ex )
+    		    {
+    		        //TODO: What do we want to do here?
+    		    }
+
+        		if( flavor.equals(flavors[0]) )
+        		{
+        			return this;
+        		}
+        		else
+        		{
+        			return null;
+        		}
+        	}
+    		
+    	]]>
+    </meta>
+
+    <id name="treeId"
         type="java.lang.Integer"
-        column="GeographyID"
+        column="TreeID"
     >
         <meta attribute="field-description">
            @hibernate.id
             generator-class="assigned"
             type="java.lang.Integer"
-            column="GeographyID"
+            column="TreeID"
 
         </meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="assigned" />
     </id>
-    
-    <!-- <property
-        name="parentId"
-        type="java.lang.Integer"
-        column="ParentID"
-        length="10"
-        index="IX_ParentId"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="ParentTaxonID"
-            length="10"
-            index="IX_GeoParentId"
-        </meta>    
-    </property> -->
 
     <property
         name="name"
@@ -73,6 +178,7 @@
         column="RankID"
         length="10"
         index="IX_GeoRankId"
+        not-null="true"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
@@ -80,6 +186,7 @@
             column="RankID"
             length="10"
             index="IX_GeoRankId"
+            not-null="true"
         </meta>    
     </property>
     
@@ -292,48 +399,22 @@
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="GeographyTreeDefID"         
+           @hibernate.column name="TreeDefID"         
         </meta>
-        <column name="GeographyTreeDefID" />
-    </many-to-one>    
-  
-    <!-- bi-directional one-to-many association to Geography -->
-    <!-- <set
-        name="children"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="GeographyID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.Geography"
-        </meta>
-        <key>
-            <column name="GeographyID" />
-        </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.Geography"
-        />
-    </set> -->
+        <column name="TreeDefID" />
+    </many-to-one>
     
     <!-- bi-directional many-to-one association to Geography -->
     <many-to-one
         name="parent"
         class="edu.ku.brc.specify.datamodel.Geography"
-        not-null="true"
+        not-null="false"
 		outer-join="true"
+		lazy="false"
     >
         <meta attribute="field-description">
            @hibernate.many-to-one
-            not-null="true"
+            not-null="false"
            @hibernate.column name="ParentID"         
         </meta>
         <column name="ParentID" />

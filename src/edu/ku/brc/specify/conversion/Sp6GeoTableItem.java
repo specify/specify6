@@ -2,12 +2,12 @@ package edu.ku.brc.specify.conversion;
 
 public class Sp6GeoTableItem
 {
-	private int geographyId;
+	private Integer geographyId;
 	private String name;
-	private int rankId;
-	private int nodeNumber;
-	private int highChildNodeNumber;
-	private int parentId;
+	private Integer rankId;
+	private Integer nodeNumber;
+	private Integer highChildNodeNumber;
+	private Integer parentId;
 	
 	/**
 	 * @param geographyId

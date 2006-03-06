@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Set;
+import java.util.*;
 
 
 
@@ -10,11 +10,11 @@ import java.util.Set;
  *         table="geographytreedef"
  *     
  */
-public class GeographyTreeDef  implements java.io.Serializable {
+public class GeographyTreeDef  implements TreeDefinitionIface,java.io.Serializable {
 
     // Fields    
 
-     protected Integer geographyTreeDefId;
+     protected Integer treeDefId;
      protected String name;
      protected Integer treeNodeId;
      protected Integer parentNodeId;
@@ -28,8 +28,8 @@ public class GeographyTreeDef  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public GeographyTreeDef(Integer geographyTreeDefId) {
-        this.geographyTreeDefId = geographyTreeDefId;
+    public GeographyTreeDef(Integer treeDefId) {
+        this.treeDefId = treeDefId;
     }
    
     
@@ -41,15 +41,15 @@ public class GeographyTreeDef  implements java.io.Serializable {
      *      *            @hibernate.id
      *             generator-class="assigned"
      *             type="java.lang.Integer"
-     *             column="GeographyTreeDefID"
+     *             column="TreeDefID"
      *         
      */
-    public Integer getGeographyTreeDefId() {
-        return this.geographyTreeDefId;
+    public Integer getTreeDefId() {
+        return this.treeDefId;
     }
     
-    public void setGeographyTreeDefId(Integer geographyTreeDefId) {
-        this.geographyTreeDefId = geographyTreeDefId;
+    public void setTreeDefId(Integer treeDefId) {
+        this.treeDefId = treeDefId;
     }
 
     /**

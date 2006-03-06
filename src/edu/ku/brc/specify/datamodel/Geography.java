@@ -1,9 +1,11 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Date;
-import java.util.Set;
+import java.util.*;
 
 
+import java.awt.datatransfer.DataFlavor;
+import java.io.IOException;
+import java.awt.datatransfer.UnsupportedFlavorException;
 
 
 /**
@@ -11,11 +13,11 @@ import java.util.Set;
  *         table="geography"
  *     
  */
-public class Geography  implements java.io.Serializable {
+public class Geography  implements Treeable,java.awt.datatransfer.Transferable,java.io.Serializable {
 
     // Fields    
 
-     protected Integer geographyId;
+     protected Integer treeId;
      protected String name;
      protected Integer rankId;
      protected Integer nodeNumber;
@@ -42,8 +44,8 @@ public class Geography  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public Geography(Integer geographyId) {
-        this.geographyId = geographyId;
+    public Geography(Integer treeId) {
+        this.treeId = treeId;
     }
    
     
@@ -55,15 +57,15 @@ public class Geography  implements java.io.Serializable {
      *      *            @hibernate.id
      *             generator-class="assigned"
      *             type="java.lang.Integer"
-     *             column="GeographyID"
+     *             column="TreeID"
      *         
      */
-    public Integer getGeographyId() {
-        return this.geographyId;
+    public Integer getTreeId() {
+        return this.treeId;
     }
     
-    public void setGeographyId(Integer geographyId) {
-        this.geographyId = geographyId;
+    public void setTreeId(Integer treeId) {
+        this.treeId = treeId;
     }
 
     /**
@@ -85,6 +87,7 @@ public class Geography  implements java.io.Serializable {
      *             column="RankID"
      *             length="10"
      *             index="IX_GeoRankId"
+     *             not-null="true"
      *         
      */
     public Integer getRankId() {
@@ -286,7 +289,7 @@ public class Geography  implements java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="GeographyTreeDefID"         
+     *            @hibernate.column name="TreeDefID"         
      *         
      */
     public GeographyTreeDef getDefinition() {
@@ -299,7 +302,7 @@ public class Geography  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.many-to-one
-     *             not-null="true"
+     *             not-null="false"
      *            @hibernate.column name="ParentID"         
      *         
      */
@@ -314,4 +317,123 @@ public class Geography  implements java.io.Serializable {
 
 
 
+  // The following is extra code specified in the hbm.xml files
+
+    	
+    		/**
+    		 * @return the parent Geography object
+    		 */
+    		public Treeable getParentNode()
+    		{
+    			return getParent();
+    		}
+    		
+    		/**
+    		 * @param parent the new parent Geography object
+    		 *
+    		 * @throws IllegalArgumentException if treeDef is not instance of Geography
+    		 */
+    		public void setParentNode(Treeable parent)
+    		{
+    			if( !(parent instanceof Geography) )
+    			{
+    				throw new IllegalArgumentException("Argument must be an instance of Geography");
+    			}
+    			setParent((Geography)parent);
+    		}
+    		
+    		/**
+    		 * @return the parent GeographyTreeDef object
+    		 */
+    		public TreeDefinitionIface getTreeDef()
+    		{
+    			return getDefinition();
+    		}
+    		
+    		/**
+    		 * @param parent the new GeographyTreeDef object
+    		 *
+    		 * @throws IllegalArgumentException if treeDef is not instance of GeographyTreeDef
+    		 */
+    		public void setTreeDef(TreeDefinitionIface treeDef)
+    		{
+    			if( !(treeDef instanceof GeographyTreeDef) )
+    			{
+    				throw new IllegalArgumentException("Argument must be an instance of GeographyTreeDef");
+    			}
+    			
+    			setDefinition((GeographyTreeDef)treeDef);
+    		}
+    		
+    		/**
+    		 * @param other the Treeable to compare to
+    		 */
+    		public int compareTo(Treeable other)
+    		{
+    			return name.compareTo(other.getName());
+    		}
+    		
+    		public DataFlavor[] getTransferDataFlavors()
+    		{
+    		    DataFlavor[] flavors = new DataFlavor[1];
+    		    try
+    		    {
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		    }
+    		    catch( ClassNotFoundException ex )
+    		    {
+    		        //TODO: What do we want to do here?
+    		    }
+    		
+    		    return flavors;
+	        }
+
+        	public boolean isDataFlavorSupported( DataFlavor flavor )
+        	{
+    		    DataFlavor[] flavors = new DataFlavor[1];
+    		    try
+    		    {
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		    }
+    		    catch( ClassNotFoundException ex )
+    		    {
+    		        //TODO: What do we want to do here?
+    		    }
+
+        		for( DataFlavor df: flavors )
+        		{
+        			if( df.equals(flavor) )
+        			{
+        				return true;
+        			}
+        		}
+        		
+        		return false;
+        	}
+
+        	public Object getTransferData( DataFlavor flavor ) throws UnsupportedFlavorException, IOException
+        	{
+    		    DataFlavor[] flavors = new DataFlavor[1];
+    		    try
+    		    {
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		    }
+    		    catch( ClassNotFoundException ex )
+    		    {
+    		        //TODO: What do we want to do here?
+    		    }
+
+        		if( flavor.equals(flavors[0]) )
+        		{
+        			return this;
+        		}
+        		else
+        		{
+        			return null;
+        		}
+        	}
+    		
+    	
+    
+  // end of extra code specified in the hbm.xml files
 }
