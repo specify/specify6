@@ -72,7 +72,8 @@
     		    DataFlavor[] flavors = new DataFlavor[1];
     		    try
     		    {
-    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType +
+    		                ";class=edu.ku.brc.specify.datamodel.Treeable");
     		    }
     		    catch( ClassNotFoundException ex )
     		    {
@@ -87,7 +88,8 @@
     		    DataFlavor[] flavors = new DataFlavor[1];
     		    try
     		    {
-    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType +
+    		                ";class=edu.ku.brc.specify.datamodel.Treeable");
     		    }
     		    catch( ClassNotFoundException ex )
     		    {
@@ -110,7 +112,8 @@
     		    DataFlavor[] flavors = new DataFlavor[1];
     		    try
     		    {
-    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType +
+    		                ";class=edu.ku.brc.specify.datamodel.Treeable");
     		    }
     		    catch( ClassNotFoundException ex )
     		    {
@@ -234,7 +237,6 @@
                 @hibernate.column name="TreeDefID" </meta>
             <column name="TreeDefID"/>
         </many-to-one>
-
 
         <!-- bi-directional many-to-one association to Location -->
         <many-to-one name="parent" class="edu.ku.brc.specify.datamodel.Location" not-null="true"
