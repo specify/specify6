@@ -70,9 +70,9 @@
         <many-to-many class="edu.ku.brc.specify.datamodel.CatalogSeries" column="CatalogSeriesID"/>
     </set>
     
-    <!-- bi-directional one-to-many association to TaxonomyTreeDef -->
+    <!-- bi-directional one-to-many association to TaxonTreeDef -->
     <set
-        name="taxonomyTreeDef"
+        name="taxonTreeDef"
         lazy="true"
         inverse="true"
 		cascade="none"
@@ -84,16 +84,16 @@
             cascade="none"
 
            @hibernate.collection-key
-            column="TaxonomyTreeDefID"
+            column="TreeDefID"
 
            @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.TaxonomyTreeDef"
+            class="edu.ku.brc.specify.datamodel.TaxonTreeDef"
         </meta>
         <key>
-            <column name="TaxonomyTreeDefID" />
+            <column name="TreeDefID" />
         </key>
         <one-to-many 
-            class="edu.ku.brc.specify.datamodel.TaxonomyTreeDef"
+            class="edu.ku.brc.specify.datamodel.TaxonTreeDef"
         />
     </set>
     

@@ -2,104 +2,68 @@
 <!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-
+    
 <hibernate-mapping>
 
-<class name="edu.ku.brc.specify.datamodel.GeographyTreeDef"
-    table="geographytreedef"
-	lazy="true"	
->
-    <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="geographytreedef"
-    </meta>
-    <meta attribute="implements">TreeDefinitionIface</meta>
-
-    <id name="treeDefId"
-        type="java.lang.Integer"
-        column="TreeDefID"
-    >
-        <meta attribute="field-description">
-           @hibernate.id
-            generator-class="assigned"
-            type="java.lang.Integer"
-            column="TreeDefID"
-
+    <class name="edu.ku.brc.specify.datamodel.GeographyTreeDef" table="geographytreedef" lazy="true">
+        <meta attribute="class-description" inherit="false"> @hibernate.class
+            table="geographytreedef" </meta>
+        <meta attribute="implements">TreeDefinitionIface</meta>
+        <meta attribute="class-code">
+            <![CDATA[
+            public TreeDefinitionIface getParentDef()
+            {
+                return this.parent;
+            }
+            
+            /**
+    		 * @param parent the new parent GeographyTreeDef object
+    		 *
+    		 * @throws IllegalArgumentException if treeDef is not instance of GeographyTreeDef
+    		 */
+    		public void setParentDef( TreeDefinitionIface parent )
+            {
+                if( !(parent instanceof GeographyTreeDef) )
+                {
+                    throw new IllegalArgumentException("Argument must be an instance of GeographyTreeDef");
+                }
+                setParent((GeographyTreeDef)parent);
+            }
+            ]]>
         </meta>
-        <meta attribute="scope-field">protected</meta>
-        <generator class="assigned" />
-    </id>
+
+        <id name="treeNodeId" type="java.lang.Integer" column="TreeNodeID" length="10">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"> @hibernate.property column="TreeNodeID" length="10" </meta>
+            <generator class="native"/>
+        </id>
+
+        <property name="treeDefId" type="java.lang.Integer" column="TreeDefID">
+            <meta attribute="field-description"> @hibernate.id generator-class="assigned"
+                type="java.lang.Integer" column="TreeDefID" </meta>
+            <meta attribute="scope-field">protected</meta>
+        </property>
+
+        <property name="name" type="java.lang.String" column="Name" length="64">
+            <meta attribute="scope-field">public</meta>
+            <meta attribute="field-description"> @hibernate.property column="Name" length="64"
+            </meta>
+        </property>
+
+        <property name="rankId" type="java.lang.Integer" column="RankID">
+            <meta attribute="scope-field">public</meta>
+            <meta attribute="field-description"> @hibernate.property column="RankID" </meta>
+        </property>
+
+        <!-- Associations -->
+
+        <!-- bi-directional one-to-one association to TaxonTreeDef -->
+        <one-to-one name="parent" class="edu.ku.brc.specify.datamodel.GeographyTreeDef"
+            cascade="save-update">
+            <meta attribute="scope-field">public</meta>
+        </one-to-one>
+
+    </class>
     
-    <property name="name"
-        type="java.lang.String"
-        column="Name"
-        length="50"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Name"
-            length="50"
-        </meta>    
-    </property>
-    
-    <property name="treeNodeId"
-        type="java.lang.Integer"
-        column="TreeNodeID"
-        length="10"
-        index="IX_GeoTDTreeNodeID"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TreeNodeID"
-            length="10"
-            index="IX_GeoTDTreeNodeID"
-        </meta>    
-    </property>
-
-    <property name="parentNodeId"
-        type="java.lang.Integer"
-        column="ParentNodeID"
-        length="10"
-        index="IX_GeoTDParentNodeID"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="ParentNodeID"
-            length="10"
-            index="IX_GeoTDParentNodeID"
-        </meta>    
-    </property>
-
-    <!-- Associations -->
-  
-    <!-- bi-directional one-to-many association to Geography -->
-    <set name="nodes"
-         lazy="true"
-         inverse="true"
-		 cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="GeographyTypeID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.Geography"
-        </meta>
-        <key>
-            <column name="GeographyTypeID" />
-        </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.Geography"
-        />
-    </set>
-    
-</class>
 </hibernate-mapping>
+    

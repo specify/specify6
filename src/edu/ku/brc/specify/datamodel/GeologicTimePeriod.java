@@ -3,18 +3,20 @@ package edu.ku.brc.specify.datamodel;
 import java.util.*;
 
 
+import java.awt.datatransfer.DataFlavor;
+import java.io.IOException;
+import java.awt.datatransfer.UnsupportedFlavorException;
 
 
 /**
- *        @hibernate.class
- *         table="geologictimeperiod"
- *     
+ *  @hibernate.class
+ *             table="geologictimeperiod" 
  */
-public class GeologicTimePeriod  implements java.io.Serializable {
+public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Transferable,java.io.Serializable {
 
     // Fields    
 
-     protected Integer geologicTimePeriodId;
+     protected Integer treeId;
      protected Integer rankId;
      protected String name;
      protected Integer nodeNumber;
@@ -38,8 +40,8 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public GeologicTimePeriod(Integer geologicTimePeriodId) {
-        this.geologicTimePeriodId = geologicTimePeriodId;
+    public GeologicTimePeriod(Integer treeId) {
+        this.treeId = treeId;
     }
    
     
@@ -48,26 +50,20 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="assigned"
-     *             type="java.lang.Integer"
-     *             column="GeologicTimePeriodID"
-     *         
+     *      *  @hibernate.id generator-class="assigned"
+     *                 type="java.lang.Integer" column="TreeID" 
      */
-    public Integer getGeologicTimePeriodId() {
-        return this.geologicTimePeriodId;
+    public Integer getTreeId() {
+        return this.treeId;
     }
     
-    public void setGeologicTimePeriodId(Integer geologicTimePeriodId) {
-        this.geologicTimePeriodId = geologicTimePeriodId;
+    public void setTreeId(Integer treeId) {
+        this.treeId = treeId;
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="RankID"
-     *             length="10"
-     *             index="IX_GTP_RankId"
-     *         
+     *      *  @hibernate.property column="RankID" length="10"
+     *                 index="IX_GTP_RankID" 
      */
     public Integer getRankId() {
         return this.rankId;
@@ -78,10 +74,8 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Name"
-     *             length="64"
-     *         
+     *      *  @hibernate.property column="Name" length="64"
+     *             
      */
     public String getName() {
         return this.name;
@@ -92,11 +86,8 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="NodeNumber"
-     *             length="10"
-     *             index="IX_GTP_NodeNumber"
-     *         
+     *      *  @hibernate.property column="NodeNumber" length="10"
+     *                 index="IX_GTP_NodeNumber" 
      */
     public Integer getNodeNumber() {
         return this.nodeNumber;
@@ -107,11 +98,8 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="HighestChildNodeNumber"
-     *             length="10"
-     *             index="IX_GTP_NighestChildNodeNumber"
-     *         
+     *      *  @hibernate.property column="HighestChildNodeNumber"
+     *                 length="10" index="IX_GTP_NighestChildNodeNumber" 
      */
     public Integer getHighestChildNodeNumber() {
         return this.highestChildNodeNumber;
@@ -122,10 +110,8 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Standard"
-     *             length="64"
-     *         
+     *      *  @hibernate.property column="Standard" length="64"
+     *             
      */
     public String getStandard() {
         return this.standard;
@@ -136,10 +122,8 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Age"
-     *             length="24"
-     *         
+     *      *  @hibernate.property column="Age" length="24"
+     *             
      */
     public Float getAge() {
         return this.age;
@@ -150,10 +134,8 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="AgeUncertainty"
-     *             length="24"
-     *         
+     *      *  @hibernate.property column="AgeUncertainty"
+     *                 length="24" 
      */
     public Float getAgeUncertainty() {
         return this.ageUncertainty;
@@ -164,9 +146,7 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     *      *  @hibernate.property column="Remarks" 
      */
     public String getRemarks() {
         return this.remarks;
@@ -177,10 +157,8 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *         
+     *      *  @hibernate.property column="TimestampModified"
+     *                 length="23" 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -191,10 +169,8 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *         
+     *      *  @hibernate.property column="TimestampCreated"
+     *                 length="23" 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -205,10 +181,8 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampVersion"
-     *             length="16"
-     *         
+     *      *  @hibernate.property column="TimestampVersion"
+     *                 length="16" 
      */
     public Date getTimestampVersion() {
         return this.timestampVersion;
@@ -219,10 +193,8 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="32"
-     *         
+     *      *  @hibernate.property column="LastEditedBy"
+     *                 length="32" 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -233,10 +205,8 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="GeologicTimePeriodTreeDefID"         
-     *         
+     *      *  @hibernate.many-to-one not-null="true"
+     *                 @hibernate.column name="TreeDefID" 
      */
     public GeologicTimePeriodTreeDef getDefinition() {
         return this.definition;
@@ -247,10 +217,8 @@ public class GeologicTimePeriod  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="ParentID"         
-     *         
+     *      *  @hibernate.many-to-one not-null="true"
+     *                 @hibernate.column name="ParentID" 
      */
     public GeologicTimePeriod getParent() {
         return this.parent;
@@ -263,4 +231,122 @@ public class GeologicTimePeriod  implements java.io.Serializable {
 
 
 
+  // The following is extra code specified in the hbm.xml files
+
+            
+    		/**
+    		 * @return the parent GeologicTimePeriod object
+    		 */
+    		public Treeable getParentNode()
+    		{
+    			return getParent();
+    		}
+    		
+    		/**
+    		 * @param parent the new parent GeologicTimePeriod object
+    		 *
+    		 * @throws IllegalArgumentException if treeDef is not instance of GeologicTimePeriod
+    		 */
+    		public void setParentNode(Treeable parent)
+    		{
+    			if( !(parent instanceof GeologicTimePeriod) )
+    			{
+    				throw new IllegalArgumentException("Argument must be an instance of GeologicTimePeriod");
+    			}
+    			setParent((GeologicTimePeriod)parent);
+    		}
+    		
+    		/**
+    		 * @return the parent GeologicTimePeriodTreeDef object
+    		 */
+    		public TreeDefinitionIface getTreeDef()
+    		{
+    			return getDefinition();
+    		}
+    		
+    		/**
+    		 * @param parent the new GeologicTimePeriodTreeDef object
+    		 *
+    		 * @throws IllegalArgumentException if treeDef is not instance of GeologicTimePeriodTreeDef
+    		 */
+    		public void setTreeDef(TreeDefinitionIface treeDef)
+    		{
+    			if( !(treeDef instanceof GeologicTimePeriodTreeDef) )
+    			{
+    				throw new IllegalArgumentException("Argument must be an instance of GeologicTimePeriodTreeDef");
+    			}
+    			
+    			setDefinition((GeologicTimePeriodTreeDef)treeDef);
+    		}
+    		
+    		/**
+    		 * @param other the Treeable to compare to
+    		 */
+    		public int compareTo(Treeable other)
+    		{
+    			return name.compareTo(other.getName());
+    		}
+    		
+    		public DataFlavor[] getTransferDataFlavors()
+    		{
+    		    DataFlavor[] flavors = new DataFlavor[1];
+    		    try
+    		    {
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		    }
+    		    catch( ClassNotFoundException ex )
+    		    {
+    		        //TODO: What do we want to do here?
+    		    }
+    		
+    		    return flavors;
+	        }
+
+        	public boolean isDataFlavorSupported( DataFlavor flavor )
+        	{
+    		    DataFlavor[] flavors = new DataFlavor[1];
+    		    try
+    		    {
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		    }
+    		    catch( ClassNotFoundException ex )
+    		    {
+    		        //TODO: What do we want to do here?
+    		    }
+
+        		for( DataFlavor df: flavors )
+        		{
+        			if( df.equals(flavor) )
+        			{
+        				return true;
+        			}
+        		}
+        		
+        		return false;
+        	}
+
+        	public Object getTransferData( DataFlavor flavor ) throws UnsupportedFlavorException, IOException
+        	{
+    		    DataFlavor[] flavors = new DataFlavor[1];
+    		    try
+    		    {
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		    }
+    		    catch( ClassNotFoundException ex )
+    		    {
+    		        //TODO: What do we want to do here?
+    		    }
+
+        		if( flavor.equals(flavors[0]) )
+        		{
+        			return this;
+        		}
+        		else
+        		{
+        			return null;
+        		}
+        	}
+    	    
+        
+  // end of extra code specified in the hbm.xml files
 }

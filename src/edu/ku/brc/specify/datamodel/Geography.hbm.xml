@@ -4,29 +4,16 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
     
 <hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
 
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
-
-<class 
-    name="edu.ku.brc.specify.datamodel.Geography" 
-    table="geography"
-	lazy="true"
->
-    <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="geography"
-    </meta>
-    <meta attribute="implements">Treeable</meta>
-    <meta attribute="implements">java.awt.datatransfer.Transferable</meta>
-    <meta attribute="extra-import">java.awt.datatransfer.DataFlavor</meta>
-    <meta attribute="extra-import">java.io.IOException</meta>
-    <meta attribute="extra-import">java.awt.datatransfer.UnsupportedFlavorException</meta>
-    <meta attribute="class-code">
-    	<![CDATA[
+    <class name="edu.ku.brc.specify.datamodel.Geography" table="geography" lazy="true">
+        <meta attribute="class-description" inherit="false"> @hibernate.class table="geography" </meta>
+        <meta attribute="implements">Treeable</meta>
+        <meta attribute="implements">java.awt.datatransfer.Transferable</meta>
+        <meta attribute="extra-import">java.awt.datatransfer.DataFlavor</meta>
+        <meta attribute="extra-import">java.io.IOException</meta>
+        <meta attribute="extra-import">java.awt.datatransfer.UnsupportedFlavorException</meta>
+        <meta attribute="class-code">
+            <![CDATA[
     		/**
     		 * @return the parent Geography object
     		 */
@@ -139,286 +126,134 @@
         			return null;
         		}
         	}
-    		
-    	]]>
-    </meta>
-
-    <id name="treeId"
-        type="java.lang.Integer"
-        column="TreeID"
-    >
-        <meta attribute="field-description">
-           @hibernate.id
-            generator-class="assigned"
-            type="java.lang.Integer"
-            column="TreeID"
-
+        	]]>
         </meta>
-        <meta attribute="scope-field">protected</meta>
-        <generator class="assigned" />
-    </id>
 
-    <property
-        name="name"
-        type="java.lang.String"
-        column="Name"
-        length="128"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Name"
-            length="128"
-        </meta>    
-    </property>
-    
-    <property
-        name="rankId"
-        type="java.lang.Integer"
-        column="RankID"
-        length="10"
-        index="IX_GeoRankId"
-        not-null="true"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="RankID"
-            length="10"
-            index="IX_GeoRankId"
-            not-null="true"
-        </meta>    
-    </property>
-    
-    <property
-        name="nodeNumber"
-        type="java.lang.Integer"
-        column="NodeNumber"
-        length="10"
-        index="IX_GeoNodeNumber"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="NodeNumber"
-            length="10"
-            index="IX_GeoNodeNumber"
-        </meta>    
-    </property>
-    
-    <property
-        name="highestChildNodeNumber"
-        type="java.lang.Integer"
-        column="HighestChildNodeNumber"
-        length="10"
-        index="IX_GeoHighestChildNodeNumber"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="HighestChildNodeNumber"
-            length="10"
-            index="IX_GeoHighestChildNodeNumber"
-        </meta>    
-    </property>
-    
-    <property
-        name="abbrev"
-        type="java.lang.String"
-        column="Abbrev"
-        length="16"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Abbrev"
-            length="16"
-        </meta>    
-    </property>
-    
-    <property
-        name="text1"
-        type="java.lang.String"
-        column="Text1"
-        length="32"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Text1"
-            length="32"
-        </meta>    
-    </property>
-    
-    <property
-        name="text2"
-        type="java.lang.String"
-        column="Text2"
-        length="32"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Text2"
-            length="32"
-        </meta>    
-    </property>
-    
-    <property
-        name="number1"
-        type="java.lang.Integer"
-        column="Number1"
-        length="10"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Number1"
-            length="10"
-        </meta>    
-    </property>
-    
-    <property
-        name="number2"
-        type="java.lang.Integer"
-        column="Number2"
-        length="10"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Number2"
-            length="10"
-        </meta>    
-    </property>
-    
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-        </meta>    
-    </property>
-    
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-        </meta>    
-    </property>
-    
-    <property
-        name="timestampVersion"
-        type="java.sql.Timestamp"
-        column="TimestampVersion"
-        length="16"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampVersion"
-            length="16"
-        </meta>    
-    </property>
-    
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
-    </property>
-    
-    <property
-        name="isCurrent"
-        type="short"
-        column="IsCurrent"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="IsCurrent"
-        </meta>    
-    </property>
+        <id name="treeId" type="java.lang.Integer" column="TreeID">
+            <meta attribute="field-description"> @hibernate.id generator-class="assigned"
+                type="java.lang.Integer" column="TreeID" </meta>
+            <meta attribute="scope-field">protected</meta>
+            <generator class="assigned"/>
+        </id>
 
-    <!-- Associations -->
-    
-    <!-- bi-directional one-to-many association to Locality -->
-    <set
-        name="localities"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
+        <property name="name" type="java.lang.String" column="Name" length="128">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"> @hibernate.property column="Name" length="128"
+            </meta>
+        </property>
 
-           @hibernate.collection-key
-            column="GeographyID"
+        <property name="rankId" type="java.lang.Integer" column="RankID" length="10"
+            index="IX_GeoRankID" not-null="true">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"> @hibernate.property column="RankID" length="10"
+                index="IX_GeoRankID" not-null="true" </meta>
+        </property>
 
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.Locality"
-        </meta>
-        <key>
-            <column name="GeographyID" />
-        </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.Locality"
-        />
-    </set>
-    
-    <!-- bi-directional many-to-one association to GeographyTreeDef -->
-    <many-to-one
-        name="definition"
-        class="edu.ku.brc.specify.datamodel.GeographyTreeDef"
-        not-null="true"
-		outer-join="true"
-    >
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="TreeDefID"         
-        </meta>
-        <column name="TreeDefID" />
-    </many-to-one>
-    
-    <!-- bi-directional many-to-one association to Geography -->
-    <many-to-one
-        name="parent"
-        class="edu.ku.brc.specify.datamodel.Geography"
-        not-null="false"
-		outer-join="true"
-		lazy="false"
-    >
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="false"
-           @hibernate.column name="ParentID"         
-        </meta>
-        <column name="ParentID" />
-    </many-to-one>
+        <property name="nodeNumber" type="java.lang.Integer" column="NodeNumber" length="10"
+            index="IX_GeoNodeNumber">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"> @hibernate.property column="NodeNumber" length="10"
+                index="IX_GeoNodeNumber" </meta>
+        </property>
 
-</class>
+        <property name="highestChildNodeNumber" type="java.lang.Integer"
+            column="HighestChildNodeNumber" length="10" index="IX_GeoHighestChildNodeNumber">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"> @hibernate.property column="HighestChildNodeNumber"
+                length="10" index="IX_GeoHighestChildNodeNumber" </meta>
+        </property>
+
+        <property name="abbrev" type="java.lang.String" column="Abbrev" length="16">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"> @hibernate.property column="Abbrev" length="16"
+            </meta>
+        </property>
+
+        <property name="text1" type="java.lang.String" column="Text1" length="32">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"> @hibernate.property column="Text1" length="32"
+            </meta>
+        </property>
+
+        <property name="text2" type="java.lang.String" column="Text2" length="32">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"> @hibernate.property column="Text2" length="32"
+            </meta>
+        </property>
+
+        <property name="number1" type="java.lang.Integer" column="Number1" length="10">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"> @hibernate.property column="Number1" length="10"
+            </meta>
+        </property>
+
+        <property name="number2" type="java.lang.Integer" column="Number2" length="10">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"> @hibernate.property column="Number2" length="10"
+            </meta>
+        </property>
+
+        <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated"
+            length="23">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"> @hibernate.property column="TimestampCreated"
+                length="23" </meta>
+        </property>
+
+        <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified"
+            length="23">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"> @hibernate.property column="TimestampModified"
+                length="23" </meta>
+        </property>
+
+        <property name="timestampVersion" type="java.sql.Timestamp" column="TimestampVersion"
+            length="16">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"> @hibernate.property column="TimestampVersion"
+                length="16" </meta>
+        </property>
+
+        <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"> @hibernate.property column="LastEditedBy"
+                length="50" </meta>
+        </property>
+
+        <property name="isCurrent" type="short" column="IsCurrent">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"> @hibernate.property column="IsCurrent" </meta>
+        </property>
+
+        <!-- Associations -->
+
+        <!-- bi-directional one-to-many association to Locality -->
+        <set name="localities" lazy="true" inverse="true" cascade="none">
+            <meta attribute="field-description"> @hibernate.set lazy="true" inverse="true"
+                cascade="none" @hibernate.collection-key column="TreeID"
+                @hibernate.collection-one-to-many class="edu.ku.brc.specify.datamodel.Locality" </meta>
+            <key>
+                <column name="TreeID"/>
+            </key>
+            <one-to-many class="edu.ku.brc.specify.datamodel.Locality"/>
+        </set>
+
+        <!-- bi-directional many-to-one association to GeographyTreeDef -->
+        <many-to-one name="definition" class="edu.ku.brc.specify.datamodel.GeographyTreeDef"
+            not-null="true" outer-join="true">
+            <meta attribute="field-description"> @hibernate.many-to-one not-null="true"
+                @hibernate.column name="TreeDefID" </meta>
+            <column name="TreeDefID"/>
+        </many-to-one>
+
+        <!-- bi-directional many-to-one association to Geography -->
+        <many-to-one name="parent" class="edu.ku.brc.specify.datamodel.Geography" not-null="false"
+            outer-join="true" lazy="false">
+            <meta attribute="field-description"> @hibernate.many-to-one not-null="false"
+                @hibernate.column name="ParentID" </meta>
+            <column name="ParentID"/>
+        </many-to-one>
+
+    </class>
+    
 </hibernate-mapping>

@@ -54,7 +54,7 @@ import org.hibernate.Session;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.DataType;
-import edu.ku.brc.specify.datamodel.TaxonomyTreeDef;
+import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.User;
 import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.DBConnection;
@@ -389,7 +389,7 @@ public class GenericDBConversion
     public Set<Object> createCollectionObjDef(final String          name, 
                                               final DataType        dataType, 
                                               final User            user, 
-                                              final TaxonomyTreeDef taxaTreeDef,
+                                              final TaxonTreeDef taxaTreeDef,
                                               final CatalogSeries   catalogSeries)
     {
         try
@@ -410,7 +410,7 @@ public class GenericDBConversion
             colObjDef.setName(name);
             colObjDef.setDataType(dataType);
             colObjDef.setUser(user);
-            colObjDef.setTaxonomyTreeDef(set);
+            colObjDef.setTaxonTreeDef(set);
             colObjDef.setCatalogSeries(catalogSeriesSet);
             colObjDef.setAttrsDefs(new HashSet<Object>());
             

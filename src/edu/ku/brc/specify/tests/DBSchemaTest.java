@@ -193,7 +193,7 @@ public class DBSchemaTest extends TestCase
             colObjDef.setName("Fish");
             colObjDef.setDataType(dataType);
             colObjDef.setUser(user);
-            colObjDef.setTaxonomyTreeDef(null);
+            colObjDef.setTaxonTreeDef(null);
             colObjDef.setCatalogSeries(new HashSet<Object>());
             colObjDef.setAttrsDefs(new HashSet<Object>());
             
@@ -328,7 +328,7 @@ public class DBSchemaTest extends TestCase
             
             Taxon taxon = new Taxon();
             taxon.setCommonName("darter");
-            taxon.setTaxonId(0);
+            taxon.setTreeId(0);
             taxon.setName("darterius");
             taxon.setTimestampCreated(new Date());
             taxon.setTimestampModified(new Date());

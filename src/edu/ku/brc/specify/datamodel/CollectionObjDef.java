@@ -18,7 +18,7 @@ public class CollectionObjDef  implements java.io.Serializable {
      protected String name;
      protected DataType dataType;
      private Set catalogSeries;
-     private Set taxonomyTreeDef;
+     private Set taxonTreeDef;
      protected User user;
      private Set attrsDefs;
 
@@ -95,17 +95,17 @@ public class CollectionObjDef  implements java.io.Serializable {
      *             inverse="true"
      *             cascade="none"
      *            @hibernate.collection-key
-     *             column="TaxonomyTreeDefID"
+     *             column="TreeDefID"
      *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.TaxonomyTreeDef"
+     *             class="edu.ku.brc.specify.datamodel.TaxonTreeDef"
      *         
      */
-    public Set getTaxonomyTreeDef() {
-        return this.taxonomyTreeDef;
+    public Set getTaxonTreeDef() {
+        return this.taxonTreeDef;
     }
     
-    public void setTaxonomyTreeDef(Set taxonomyTreeDef) {
-        this.taxonomyTreeDef = taxonomyTreeDef;
+    public void setTaxonTreeDef(Set taxonTreeDef) {
+        this.taxonTreeDef = taxonTreeDef;
     }
 
     /**

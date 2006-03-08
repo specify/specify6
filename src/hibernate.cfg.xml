@@ -87,7 +87,7 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/Stratigraphy.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/TaxonCitation.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Taxon.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/TaxonomyTreeDef.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/TaxonTreeDef.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/User.hbm.xml"/>
 		
 		

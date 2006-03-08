@@ -6,19 +6,18 @@ import java.util.*;
 
 
 /**
- *        @hibernate.class
- *         table="geologictimeperiodtreedef"
- *     
+ *  @hibernate.class
+ *             table="geologictimeperiodtreedef" 
  */
-public class GeologicTimePeriodTreeDef  implements java.io.Serializable {
+public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.Serializable {
 
     // Fields    
 
-     protected Integer geologicTimePeriodTreeDefId;
-     protected String name;
      protected Integer treeNodeId;
-     protected Integer parentNodeId;
-     private Set nodes;
+     protected Integer treeDefId;
+     public String name;
+     public Integer rankId;
+     public GeologicTimePeriodTreeDef parent;
 
 
     // Constructors
@@ -28,8 +27,8 @@ public class GeologicTimePeriodTreeDef  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public GeologicTimePeriodTreeDef(Integer geologicTimePeriodTreeDefId) {
-        this.geologicTimePeriodTreeDefId = geologicTimePeriodTreeDefId;
+    public GeologicTimePeriodTreeDef(Integer treeNodeId) {
+        this.treeNodeId = treeNodeId;
     }
    
     
@@ -38,40 +37,7 @@ public class GeologicTimePeriodTreeDef  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="assigned"
-     *             type="java.lang.Integer"
-     *             column="GeologicTimePeriodTreeDefID"
-     *         
-     */
-    public Integer getGeologicTimePeriodTreeDefId() {
-        return this.geologicTimePeriodTreeDefId;
-    }
-    
-    public void setGeologicTimePeriodTreeDefId(Integer geologicTimePeriodTreeDefId) {
-        this.geologicTimePeriodTreeDefId = geologicTimePeriodTreeDefId;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="Name"
-     *             length="64"
-     *         
-     */
-    public String getName() {
-        return this.name;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="TreeNodeID"
-     *             length="10"
-     *             index="IX_TreeNodeID"
-     *         
+     *      *  @hibernate.property column="TreeNodeID" length="10" 
      */
     public Integer getTreeNodeId() {
         return this.treeNodeId;
@@ -82,40 +48,76 @@ public class GeologicTimePeriodTreeDef  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="ParentNodeID"
-     *             length="10"
-     *             index="IX_ParentNodeID"
-     *         
+     *      *  @hibernate.id generator-class="assigned"
+     *                 type="java.lang.Integer" column="TreeDefID" 
      */
-    public Integer getParentNodeId() {
-        return this.parentNodeId;
+    public Integer getTreeDefId() {
+        return this.treeDefId;
     }
     
-    public void setParentNodeId(Integer parentNodeId) {
-        this.parentNodeId = parentNodeId;
+    public void setTreeDefId(Integer treeDefId) {
+        this.treeDefId = treeDefId;
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="GeologicTimePeriodTypeID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
-     *         
+     *      *  @hibernate.property column="Name" length="64"
+     *             
      */
-    public Set getNodes() {
-        return this.nodes;
+    public String getName() {
+        return this.name;
     }
     
-    public void setNodes(Set nodes) {
-        this.nodes = nodes;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     *      *  @hibernate.property column="RankID" 
+     */
+    public Integer getRankId() {
+        return this.rankId;
+    }
+    
+    public void setRankId(Integer rankId) {
+        this.rankId = rankId;
+    }
+
+    /**
+     * 
+     */
+    public GeologicTimePeriodTreeDef getParent() {
+        return this.parent;
+    }
+    
+    public void setParent(GeologicTimePeriodTreeDef parent) {
+        this.parent = parent;
     }
 
 
 
 
+  // The following is extra code specified in the hbm.xml files
+
+            
+            public TreeDefinitionIface getParentDef()
+            {
+                return this.parent;
+            }
+            
+            /**
+        	 * @param parent the new parent GeologicTimePeriodTreeDef object
+        	 *
+        	 * @throws IllegalArgumentException if treeDef is not instance of GeologicTimePeriodTreeDef
+        	 */
+        	public void setParentDef( TreeDefinitionIface parent )
+            {
+                if( !(parent instanceof GeologicTimePeriodTreeDef) )
+                {
+                    throw new IllegalArgumentException("Argument must be an instance of GeologicTimePeriodTreeDef");
+                }
+                setParent((GeologicTimePeriodTreeDef)parent);
+            }
+            
+        
+  // end of extra code specified in the hbm.xml files
 }

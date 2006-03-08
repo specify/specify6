@@ -6,10 +6,9 @@ import java.util.*;
 
 
 /**
- *  @hibernate.class
- *             table="geographytreedef" 
+ *  @hibernate.class table="taxontreedef" 
  */
-public class GeographyTreeDef  implements TreeDefinitionIface,java.io.Serializable {
+public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
 
     // Fields    
 
@@ -17,17 +16,17 @@ public class GeographyTreeDef  implements TreeDefinitionIface,java.io.Serializab
      protected Integer treeDefId;
      public String name;
      public Integer rankId;
-     public GeographyTreeDef parent;
+     public TaxonTreeDef parent;
 
 
     // Constructors
 
     /** default constructor */
-    public GeographyTreeDef() {
+    public TaxonTreeDef() {
     }
     
     /** constructor with id */
-    public GeographyTreeDef(Integer treeNodeId) {
+    public TaxonTreeDef(Integer treeNodeId) {
         this.treeNodeId = treeNodeId;
     }
    
@@ -60,7 +59,7 @@ public class GeographyTreeDef  implements TreeDefinitionIface,java.io.Serializab
     }
 
     /**
-     *      *  @hibernate.property column="Name" length="64"
+     *      *  @hibernate.property column="Name" length="50"
      *             
      */
     public String getName() {
@@ -85,11 +84,11 @@ public class GeographyTreeDef  implements TreeDefinitionIface,java.io.Serializab
     /**
      * 
      */
-    public GeographyTreeDef getParent() {
+    public TaxonTreeDef getParent() {
         return this.parent;
     }
     
-    public void setParent(GeographyTreeDef parent) {
+    public void setParent(TaxonTreeDef parent) {
         this.parent = parent;
     }
 
@@ -105,17 +104,17 @@ public class GeographyTreeDef  implements TreeDefinitionIface,java.io.Serializab
             }
             
             /**
-    		 * @param parent the new parent GeographyTreeDef object
-    		 *
-    		 * @throws IllegalArgumentException if treeDef is not instance of GeographyTreeDef
-    		 */
-    		public void setParentDef( TreeDefinitionIface parent )
+        	 * @param parent the new parent TaxonTreeDef object
+        	 *
+        	 * @throws IllegalArgumentException if treeDef is not instance of TaxonTreeDef
+        	 */
+        	public void setParentDef( TreeDefinitionIface parent )
             {
-                if( !(parent instanceof GeographyTreeDef) )
+                if( !(parent instanceof TaxonTreeDef) )
                 {
-                    throw new IllegalArgumentException("Argument must be an instance of GeographyTreeDef");
+                    throw new IllegalArgumentException("Argument must be an instance of TaxonTreeDef");
                 }
-                setParent((GeographyTreeDef)parent);
+                setParent((TaxonTreeDef)parent);
             }
             
         
