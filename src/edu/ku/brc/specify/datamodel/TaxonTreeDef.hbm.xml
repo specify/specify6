@@ -37,11 +37,18 @@
             <generator class="native"/>
         </id>
 
-        <property name="treeDefId" type="java.lang.Integer" column="TreeDefID">
-            <meta attribute="field-description"> @hibernate.id generator-class="assigned"
-                type="java.lang.Integer" column="TreeDefID" </meta>
-            <meta attribute="scope-field">protected</meta>
-        </property>
+        <natural-id mutable="true">
+            <property name="treeDefId" type="java.lang.Integer" column="TreeDefID">
+                <meta attribute="field-description"> @hibernate.id generator-class="assigned"
+                    type="java.lang.Integer" column="TreeDefID" </meta>
+                <meta attribute="scope-field">protected</meta>
+            </property>
+    
+            <property name="rankId" type="java.lang.Integer" column="RankID">
+                <meta attribute="scope-field">public</meta>
+                <meta attribute="field-description"> @hibernate.property column="RankID" </meta>
+            </property>
+        </natural-id>
 
         <property name="name" type="java.lang.String" column="Name" length="50">
             <meta attribute="scope-field">public</meta>
@@ -49,19 +56,14 @@
             </meta>
         </property>
 
-        <property name="rankId" type="java.lang.Integer" column="RankID">
-            <meta attribute="scope-field">public</meta>
-            <meta attribute="field-description"> @hibernate.property column="RankID" </meta>
-        </property>
-
         <!-- Associations -->
 
         <!-- bi-directional one-to-one association to TaxonTreeDef -->
-        <one-to-one name="parent" class="edu.ku.brc.specify.datamodel.TaxonTreeDef"
-            cascade="save-update">
+        <many-to-one name="parent" column="ParentNodeId"
+            class="edu.ku.brc.specify.datamodel.TaxonTreeDef" cascade="save-update">
             <meta attribute="scope-field">public</meta>
-        </one-to-one>
-
+        </many-to-one>
+        
     </class>
     
 </hibernate-mapping>
