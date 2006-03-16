@@ -133,14 +133,16 @@
         </meta>
 
         <id name="treeId" type="java.lang.Integer" column="TreeID">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="use-in-tostring">true</meta>
             <meta attribute="field-description"> @hibernate.id generator-class="assigned"
                 type="java.lang.Integer" column="TreeID" </meta>
-            <meta attribute="scope-field">protected</meta>
             <generator class="assigned"/>
         </id>
 
         <property name="name" type="java.lang.String" column="Name" length="128">
             <meta attribute="scope-field">protected</meta>
+            <meta attribute="use-in-tostring">true</meta>
             <meta attribute="field-description"> @hibernate.property column="Name" length="128"
             </meta>
         </property>
@@ -155,6 +157,7 @@
         <property name="nodeNumber" type="java.lang.Integer" column="NodeNumber" length="10"
             index="IX_GeoNodeNumber">
             <meta attribute="scope-field">protected</meta>
+            <meta attribute="use-in-tostring">true</meta>
             <meta attribute="field-description"> @hibernate.property column="NodeNumber" length="10"
                 index="IX_GeoNodeNumber" </meta>
         </property>
@@ -162,6 +165,7 @@
         <property name="highestChildNodeNumber" type="java.lang.Integer"
             column="HighestChildNodeNumber" length="10" index="IX_GeoHighestChildNodeNumber">
             <meta attribute="scope-field">protected</meta>
+            <meta attribute="use-in-tostring">true</meta>
             <meta attribute="field-description"> @hibernate.property column="HighestChildNodeNumber"
                 length="10" index="IX_GeoHighestChildNodeNumber" </meta>
         </property>

@@ -9,61 +9,43 @@
         <meta attribute="class-description" inherit="false"> @hibernate.class
             table="geographytreedef" </meta>
         <meta attribute="implements">TreeDefinitionIface</meta>
-        <meta attribute="class-code">
-            <![CDATA[
-            public TreeDefinitionIface getParentDef()
-            {
-                return this.parent;
-            }
-            
-            /**
-    		 * @param parent the new parent GeographyTreeDef object
-    		 *
-    		 * @throws IllegalArgumentException if treeDef is not instance of GeographyTreeDef
-    		 */
-    		public void setParentDef( TreeDefinitionIface parent )
-            {
-                if( !(parent instanceof GeographyTreeDef) )
-                {
-                    throw new IllegalArgumentException("Argument must be an instance of GeographyTreeDef");
-                }
-                setParent((GeographyTreeDef)parent);
-            }
-            ]]>
-        </meta>
 
-        <id name="treeNodeId" type="java.lang.Integer" column="TreeNodeID" length="10">
+        <id name="treeDefId" type="java.lang.Integer" column="TreeDefID">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="TreeNodeID" length="10" </meta>
+            <meta attribute="use-in-tostring">true</meta>
+            <meta attribute="field-description"> @hibernate.id generator-class="assigned"
+                type="java.lang.Integer" column="TreeDefID" </meta>
             <generator class="native"/>
         </id>
 
-        <natural-id mutable="true">
-            <property name="treeDefId" type="java.lang.Integer" column="TreeDefID">
-                <meta attribute="field-description"> @hibernate.id generator-class="assigned"
-                    type="java.lang.Integer" column="TreeDefID" </meta>
-                <meta attribute="scope-field">protected</meta>
-            </property>
-    
-            <property name="rankId" type="java.lang.Integer" column="RankID">
-                <meta attribute="scope-field">public</meta>
-                <meta attribute="field-description"> @hibernate.property column="RankID" </meta>
-            </property>
-        </natural-id>
-
         <property name="name" type="java.lang.String" column="Name" length="64">
-            <meta attribute="scope-field">public</meta>
-            <meta attribute="field-description"> @hibernate.property column="Name" length="64"
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="use-in-tostring">true</meta>
+            <meta attribute="field-description">
+                @hibernate.property column="Name" length="64"
             </meta>
         </property>
 
+        <property name="remarks" type="java.lang.String" column="Remarks" length="255">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description">
+                @hibernate.property column="Remarks" length="255"
+            </meta>
+        </property>
+        
         <!-- Associations -->
-
-        <!-- bi-directional one-to-one association to GeographyTreeDef -->
-        <many-to-one name="parent" column="ParentNodeId"
-            class="edu.ku.brc.specify.datamodel.GeographyTreeDef" cascade="save-update">
-            <meta attribute="scope-field">public</meta>
-        </many-to-one>
+        
+        <set name="treeEntries" table="Geography" inverse="true">
+            <meta attribute="field-description">Entries referencing this defintion</meta>
+            <key column="TreeDefID"/>
+            <one-to-many class="edu.ku.brc.specify.datamodel.Geography"/>
+        </set>
+        
+        <set name="treeDefItems" table="GeographyTreeDefItem" inverse="true">
+            <meta attribute="field-description">The individual elements of this definition</meta>
+            <key column="TreeDefID"/>
+            <one-to-many class="edu.ku.brc.specify.datamodel.GeographyTreeDefItem"/>
+        </set>
 
     </class>
     

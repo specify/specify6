@@ -145,6 +145,10 @@
             <meta attribute="field-description"> @hibernate.property column="TaxonomicSerialNumber"
                 length="50" </meta>
         </property>
+        
+        <property name="guid" type="java.lang.String" column="GUID" length="255">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
         <property name="name" type="java.lang.String" column="Name" length="50">
             <meta attribute="scope-field">protected</meta>

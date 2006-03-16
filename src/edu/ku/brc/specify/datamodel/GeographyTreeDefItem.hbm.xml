@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+    <class name="edu.ku.brc.specify.datamodel.GeographyTreeDefItem" table="GeographyTreeDefItem" lazy="true">
+        <meta attribute="class-description" inherit="false"> @hibernate.class
+            table="GeographyTreeDefItem" </meta>
+        <meta attribute="implements">TreeDefinitionItemIface</meta>
+        <meta attribute="class-code">
+            <![CDATA[
+            public TreeDefinitionIface getTreeDefinition()
+            {
+                return getTreeDef();
+            }
+            
+            public void setTreeDefinition(TreeDefinitionIface treeDef)
+            {
+                if( !(treeDef instanceof GeographyTreeDef) )
+                {
+                    throw new IllegalArgumentException("Argument must be an instanceof GeographyTreeDef");
+                }
+                setTreeDef((GeographyTreeDef)treeDef);
+            }
+            
+            public TreeDefinitionItemIface getParentItem()
+            {
+                return getParent();
+            }
+            
+            public void setParentItem(TreeDefinitionItemIface parent)
+            {
+                if( !(parent instanceof GeographyTreeDefItem) )
+                {
+                    throw new IllegalArgumentException("Argument must be an instanceof GeographyTreeDefItem");
+                }
+                setParent((GeographyTreeDefItem)parent);
+            }
+
+            public TreeDefinitionItemIface getChildItem()
+            {
+                if( getChildren().isEmpty() )
+                {
+                    return null;
+                }
+                
+                return (TreeDefinitionItemIface)getChildren().iterator().next();
+            }
+            
+            public void setChildItem(TreeDefinitionItemIface child)
+            {
+                if( !(child instanceof GeographyTreeDefItem) )
+                {
+                    throw new IllegalArgumentException("Argument must be an instanceof GeographyTreeDefItem");
+                }
+                Set children = Collections.synchronizedSet(new HashSet());
+                children.add(child);
+                setChildren(children);
+            }
+            ]]>
+        </meta>
+            
+        <id name="treeDefItemId" type="java.lang.Integer" column="TreeDefItemID" length="10">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="use-in-tostring">true</meta>
+            <meta attribute="field-description"> @hibernate.property column="TreeDefItemID" length="10" </meta>
+            <generator class="native"/>
+        </id>
+
+        <property name="name" type="java.lang.String" column="Name" length="64">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="use-in-tostring">true</meta>
+            <meta attribute="field-description"> @hibernate.property column="Name" length="64"
+            </meta>
+        </property>
+        
+        <property name="rankId" type="java.lang.Integer" column="RankID">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"> @hibernate.property column="RankID" </meta>
+        </property>
+
+        <!-- Associations -->
+
+        <!-- bi-directional one-to-one association to GeographyTreeDef -->
+        <many-to-one name="treeDef" column="TreeDefID"
+            class="edu.ku.brc.specify.datamodel.GeographyTreeDef">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="use-in-tostring">true</meta>
+            <meta attribute="field-description">A reference back to the tree defintion</meta>
+        </many-to-one>
+
+        <many-to-one name="parent" column="ParentItemID"
+            class="edu.ku.brc.specify.datamodel.GeographyTreeDefItem"
+            cascade="save-update">
+            <meta attribute="scope-field">protected</meta>
+        </many-to-one>
+        
+        <set name="children" table="GeographyTreeDefItem" inverse="true">
+            <meta attribute="scope-field">protected</meta>
+            <key column="ParentItemID"/>
+            <one-to-many class="edu.ku.brc.specify.datamodel.GeographyTreeDefItem"/>
+        </set>
+            
+    </class>
+    
+</hibernate-mapping>
+    
