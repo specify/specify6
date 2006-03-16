@@ -60,6 +60,7 @@ import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.DataType;
+import edu.ku.brc.specify.datamodel.PrepType;
 
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 

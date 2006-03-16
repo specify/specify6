@@ -29,7 +29,6 @@ import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.PrepType;
-import edu.ku.brc.specify.datamodel.TaxonomyTreeDef;
 import edu.ku.brc.specify.datamodel.User;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
