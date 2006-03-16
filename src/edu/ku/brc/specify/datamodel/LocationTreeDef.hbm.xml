@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+    <class name="edu.ku.brc.specify.datamodel.LocationTreeDef" table="locationtreedef" lazy="true">
+        <meta attribute="class-description" inherit="false"> @hibernate.class
+            table="locationtreedef" </meta>
+        <meta attribute="implements">TreeDefinitionIface</meta>
+
+        <id name="treeDefId" type="java.lang.Integer" column="TreeDefID">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="use-in-tostring">true</meta>
+            <meta attribute="field-description"> @hibernate.id generator-class="assigned"
+                type="java.lang.Integer" column="TreeDefID" </meta>
+            <generator class="native"/>
+        </id>
+
+        <property name="name" type="java.lang.String" column="Name" length="64">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="use-in-tostring">true</meta>
+            <meta attribute="field-description">
+                @hibernate.property column="Name" length="64"
+            </meta>
+        </property>
+
+        <property name="remarks" type="java.lang.String" column="Remarks" length="255">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description">
+                @hibernate.property column="Remarks" length="255"
+            </meta>
+        </property>
+        
+        <!-- Associations -->
+        
+        <set name="treeEntries" table="Location" inverse="true">
+            <meta attribute="field-description">Entries referencing this defintion</meta>
+            <key column="TreeDefID"/>
+            <one-to-many class="edu.ku.brc.specify.datamodel.Location"/>
+        </set>
+        
+        <set name="treeDefItems" table="LocationTreeDefItem" inverse="true">
+            <meta attribute="field-description">The individual elements of this definition</meta>
+            <key column="TreeDefID"/>
+            <one-to-many class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"/>
+        </set>
+
+    </class>
+    
+</hibernate-mapping>
+    
