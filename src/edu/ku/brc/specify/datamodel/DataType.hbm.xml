@@ -55,13 +55,13 @@
             cascade="none"
 
            @hibernate.collection-key
-            column="CollectionObjDefID"
+            column="DataTypeID"
 
            @hibernate.collection-one-to-many
             class="edu.ku.brc.specify.datamodel.CollectionObjDef"
         </meta>
         <key>
-            <column name="CollectionObjDefID" />
+            <column name="DataTypeID" />
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.CollectionObjDef"/>
     </set>

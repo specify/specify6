@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -15,8 +16,10 @@ public class RecordSet  implements java.io.Serializable {
      private Long recordSetID;
      private String name;
      private Integer tableId;
-     private Date created;
+     private Date timestampModified;
+     private Date timestampCreated;
      private Set items;
+     protected User owner;
 
 
     // Constructors
@@ -69,14 +72,34 @@ public class RecordSet  implements java.io.Serializable {
     }
 
     /**
-     * 
+     *      *            @hibernate.property
+     *             column="TimestampModified"
+     *             length="23"
+     *             not-null="true"
+     *         
      */
-    public Date getCreated() {
-        return this.created;
+    public Date getTimestampModified() {
+        return this.timestampModified;
     }
     
-    public void setCreated(Date created) {
-        this.created = created;
+    public void setTimestampModified(Date timestampModified) {
+        this.timestampModified = timestampModified;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="TimestampCreated"
+     *             length="23"
+     *             update="false"
+     *             not-null="true"
+     *         
+     */
+    public Date getTimestampCreated() {
+        return this.timestampCreated;
+    }
+    
+    public void setTimestampCreated(Date timestampCreated) {
+        this.timestampCreated = timestampCreated;
     }
 
     /**
@@ -88,6 +111,20 @@ public class RecordSet  implements java.io.Serializable {
     
     public void setItems(Set items) {
         this.items = items;
+    }
+
+    /**
+     *      *            @hibernate.many-to-one
+     *             not-null="true"
+     *            @hibernate.column name="UserID"
+     *         
+     */
+    public User getOwner() {
+        return this.owner;
+    }
+    
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
 

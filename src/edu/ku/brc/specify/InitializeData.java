@@ -175,7 +175,7 @@ public class InitializeData
         config.addClass(PrepTypes.class);
         config.addClass(HabitatAttrs.class);
         config.addClass(BioAttrs.class);
-        config.addClass(AttrsDef.class);
+        config.addClass(AttrributeDef.class);
         config.addClass(Collector.class);
         config.addClass(Author.class);
         config.addClass(GroupPerson.class);

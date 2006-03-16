@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -24,7 +25,7 @@ public class LoanPhysicalObject  implements java.io.Serializable {
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
-     private CollectionObject collectionObject;
+     private Preparation preparation;
      private Loan loan;
      private Set loanReturnPhysicalObjects;
 
@@ -143,6 +144,8 @@ public class LoanPhysicalObject  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="TimestampCreated"
      *             length="23"
+     *             update="false"
+     *             not-null="true"
      *         
      */
     public Date getTimestampCreated() {
@@ -157,6 +160,7 @@ public class LoanPhysicalObject  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="TimestampModified"
      *             length="23"
+     *             not-null="true"
      *         
      */
     public Date getTimestampModified() {
@@ -184,15 +188,15 @@ public class LoanPhysicalObject  implements java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="PhysicalObjectID"         
+     *            @hibernate.column name="PreparationID"         
      *         
      */
-    public CollectionObject getCollectionObject() {
-        return this.collectionObject;
+    public Preparation getPreparation() {
+        return this.preparation;
     }
     
-    public void setCollectionObject(CollectionObject collectionObject) {
-        this.collectionObject = collectionObject;
+    public void setPreparation(Preparation preparation) {
+        this.preparation = preparation;
     }
 
     /**

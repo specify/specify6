@@ -24,6 +24,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import java.awt.Component;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Formatter;
@@ -395,6 +396,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
                 {
                     continue;
                 }
+                System.out.println("["+fieldInfo.getFormCell().getName()+"]["+fieldInfo.getFormCell().getType()+"]");
                 
                 if (fieldInfo.getFormCell().getType() == FormCell.CellType.field)
                 {
@@ -418,32 +420,33 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
                         
                         if (!allFieldsNull)
                         {
-                            if (format.equals("date"))
+                            if (values[0] instanceof java.util.Date)
                             {
-                                if (values.length == 1 && (values[0] instanceof Integer))
+                                data = scrDateFormat.format((java.util.Date)values[0]);
+                                
+                            } else if (values[0] instanceof java.util.Calendar)
+                            {
+                                data = scrDateFormat.format(((java.util.Calendar)values[0]).getTime());
+                                
+                            } else
+                            {
+                                if (values != null && values.length > 0)
                                 {
-                                    int iDate = (Integer)values[0];
-                                    if (iDate == 0)
+                                    //for (Object o : values) System.out.println(o != null ? o.getClass().toString() : "N/A" + "  [" + (o != null ? o.toString() : "NULL")+"]");
+                                    //System.out.println("format: "+format);
+                                    try
                                     {
-                                        data = "";
-                                    } else
+                                        Formatter formatter = new Formatter(); 
+                                        formatter.format(format, (Object[])values);
+                                        data = formatter.toString();
+                                    } catch (java.util.IllegalFormatConversionException ex)
                                     {
-                                        data = scrDateFormat.format(UIHelper.convertIntToDate((Integer)values[0]));
+                                        data = values[0] != null ? values[0].toString() : "";
                                     }
                                 } else
                                 {
                                     data = "";
                                 }
-                                
-                            } else if (values[0] instanceof java.util.Date)
-                            {
-                                data = scrDateFormat.format((java.util.Date)values[0]);
-                                
-                            } else
-                            {
-                                Formatter formatter = new Formatter();
-                                formatter.format(format, (Object[])values);
-                                data = formatter.toString();
                             }
                         }
                     } else
@@ -451,7 +454,11 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
                         data = dg != null ? dg.getFieldValue(dataObj, fieldInfo.getName()) : null;
                         if (data instanceof Date)
                         {
-                            data = scrDateFormat.format(data);
+                            data = scrDateFormat.format((Date)data);
+                            
+                        } else if (data instanceof Calendar)
+                        {
+                            data = scrDateFormat.format(((java.util.Calendar)data).getTime());
                         }
                     }
                     setDataIntoUIComp(fieldInfo.getName(), data);

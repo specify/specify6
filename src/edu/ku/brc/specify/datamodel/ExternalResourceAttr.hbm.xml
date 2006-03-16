@@ -4,28 +4,23 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
     
 <hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
 
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class 
-    name="edu.ku.brc.specify.datamodel.HabitatAttrs" 
-    table="habitatattrs"
+    name="edu.ku.brc.specify.datamodel.ExternalResourceAttr" 
+    table="externalresourceattr"
 	lazy="true"
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="habitatattrs"
+        table="externalresourceattr"
     </meta>
-    <meta attribute="implements">AttrsSettableGettable</meta>
+    <meta attribute="implements">AttributeIFace</meta>
  
     <id
-        name="habitatAttrsId"
+        name="attrId"
         type="java.lang.Integer"
-        column="HabitatAttrsID"
+        column="AttrID"
     >
       <meta attribute="scope-set">public</meta>
       <meta attribute="scope-field">protected</meta>
@@ -33,82 +28,46 @@
     </id>
 	
     <property
-        name="name"
-        type="java.lang.String"
-        column="Name"
-        length="50"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Name"
-            length="50"
-        </meta>    
-    </property>
-
-    <property
         name="strValue"
         type="java.lang.String"
         column="StrValue"
-        length="128"
+        length="64"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="StrValue"
-            length="128"
+            length="64"
         </meta>    
     </property>
 
     <property
-        name="intValue"
-        type="java.lang.Integer"
-        column="IntValue"
-        length="10"
+        name="dblValue"
+        type="double"
+        column="DoubleValue"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="IntValue"
-            length="10"
+            column="DoubleValue"
         </meta>    
     </property>
 
-    <property
-        name="fieldType"
-        type="short"
-        column="FieldType"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="FieldType"
-        </meta>    
-    </property>
-
-    <property
-        name="unit"
-        type="short"
-        column="Unit"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Unit"
-        </meta>    
-    </property>
-    
     <property
         name="timestampCreated"
         type="java.sql.Timestamp"
         column="TimestampCreated"
         length="23"
+        not-null="true"
+        update="false"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="TimestampCreated"
             length="23"
+            update="false"
+            not-null="true"
         </meta>    
     </property>
     
@@ -123,28 +82,16 @@
            @hibernate.property
             column="TimestampModified"
             length="23"
+            not-null="true"
         </meta>    
     </property>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
-    </property>
-    
-	
 	<!-- Associations -->
 	
-    <!-- bi-directional many-to-one association to CollectingEvent -->
+    <!-- bi-directional many-to-one association to ExternalResource -->
     <many-to-one
-        name="collectingEvent"
-        class="edu.ku.brc.specify.datamodel.CollectingEvent"
+        name="externalResource"
+        class="edu.ku.brc.specify.datamodel.ExternalResource"
         not-null="true"
 		outer-join="true"
     >
@@ -152,16 +99,15 @@
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="CollectingEventID"         
+           @hibernate.column name="ExternalResourceID"         
         </meta>
-        <column name="CollectingEventID" />
+        <column name="ExternalResourceID" />
     </many-to-one>
-    
    
-    <!-- bi-directional many-to-one association to Taxon -->
+    <!-- bi-directional many-to-one association to AttributeDef -->
     <many-to-one
-        name="Taxon"
-        class="edu.ku.brc.specify.datamodel.Taxon"
+        name="definition"
+        class="edu.ku.brc.specify.datamodel.AttributeDef"
         not-null="true"
 		outer-join="true"
     >
@@ -169,9 +115,9 @@
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="HostTaxonID"         
+           @hibernate.column name="AttributeDefID"         
         </meta>
-        <column name="HostTaxonID" />
+        <column name="AttributeDefID" />
     </many-to-one>	
 	
 </class>

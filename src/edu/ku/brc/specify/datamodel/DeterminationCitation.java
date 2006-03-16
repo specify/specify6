@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
 
 
 
@@ -71,6 +71,7 @@ public class DeterminationCitation  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="TimestampCreated"
      *             length="23"
+     *             not-null="true"
      *         
      */
     public Date getTimestampCreated() {
@@ -85,6 +86,8 @@ public class DeterminationCitation  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="TimestampModified"
      *             length="23"
+     *             not-null="true"
+     *             update="false"
      *         
      */
     public Date getTimestampModified() {

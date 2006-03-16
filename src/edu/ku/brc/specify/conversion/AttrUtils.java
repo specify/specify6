@@ -31,11 +31,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 
-import edu.ku.brc.specify.datamodel.AttrsDef;
-import edu.ku.brc.specify.datamodel.AttrsSettableGettable;
+import edu.ku.brc.specify.datamodel.AttributeDef;
+import edu.ku.brc.specify.datamodel.AttributeDef;
+import edu.ku.brc.specify.datamodel.AttributeIFace;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
-import edu.ku.brc.specify.datamodel.PrepAttrs;
-import edu.ku.brc.specify.datamodel.PrepTypes;
+import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.specify.datamodel.PreparationAttr;
+import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
@@ -57,27 +59,26 @@ public class AttrUtils
     {
     }
     
+
     /**
-     * @param id  xxxx
-     * @param name xxxx
-     * @return xxxx
+     * Creates a PrepType Object and stores it into the database
+     * @param name the name of the PrepType
+     * @return a PrepType Object
      */
-    public static PrepTypes loadPrepType(final int id, final String name)
+    public static PrepType loadPrepType(final String name)
     {
         try 
         {
             Session session = HibernateUtil.getCurrentSession();
             HibernateUtil.beginTransaction();
-            
-
-            PrepTypes prepType = new PrepTypes(id+1);
+ 
+            PrepType prepType = new PrepType();
             prepType.setName(name);
-            prepType.setPreparation(new HashSet());
+            //prepType.setPreparation(new HashSet());
             
             session.save(prepType);
             
             HibernateUtil.commitTransaction();
-            //HibernateUtil.closeSession();
             
             return prepType;
             
@@ -97,15 +98,15 @@ public class AttrUtils
      * @param dataTypes xxxx
      * @return xxxx
      */
-    public static List<AttrsDef> loadAttrDefs(final CollectionObjDef colObjDef,
-                                              final AttrsSettableGettable.TableType tableType, 
+    public static List<AttributeDef> loadAttrDefs(final CollectionObjDef colObjDef,
+                                              final AttributeIFace.TableType tableType, 
                                               final int      subType, 
                                               final String[] attrNames, 
                                               final short[]  dataTypes)
     {
         if (attrNames.length == dataTypes.length)
         {
-            List<AttrsDef> list = new ArrayList<AttrsDef>();
+            List<AttributeDef> list = new ArrayList<AttributeDef>();
             try
             {
                 Session session = HibernateUtil.getCurrentSession();
@@ -113,14 +114,14 @@ public class AttrUtils
                 for (int i = 0; i < attrNames.length; i++)
                 {
                     HibernateUtil.beginTransaction();
-                    AttrsDef attrsDef = new AttrsDef();
+                    AttributeDef attrsDef = new AttributeDef();
                     attrsDef.setTableType((short)tableType.getType());
-                    attrsDef.setCollectionObjDefID(colObjDef);
+                    attrsDef.setCollectionObjDef(colObjDef);
                     attrsDef.setSubType((short)subType);
                     attrsDef.setFieldName(attrNames[i]);
                     attrsDef.setDataType(dataTypes[i]);
                     
-                    colObjDef.getAttrsDefs().add(attrsDef);
+                    colObjDef.getAttributeDefs().add(attrsDef);
                     
                     session.save(attrsDef);
 
@@ -147,30 +148,24 @@ public class AttrUtils
         return null;
     } 
     
-    protected static PrepAttrs createPrepsInsert(final String  name,
-                                                 final String  strValue, 
-                                                 final Integer intValue, 
-                                                 final AttrsSettableGettable.FieldType   fieldType, 
-                                                 final Short   unit, 
-                                                 final String  remarks,
-                                                 final Taxon   parasiteTaxonName)
+    protected static PreparationAttr createPrepsInsert(final AttributeDef attrDef,
+                                                       final Preparation preparation,
+                                                       final String      strValue, 
+                                                       final Double      dblValue)
     {
         try 
         {
             Session session = HibernateUtil.getCurrentSession();
             HibernateUtil.beginTransaction();
             
-            PrepAttrs prepAttr = new PrepAttrs();
-            prepAttr.setName(name);
-            prepAttr.setFieldType((short)fieldType.getType());
-            prepAttr.setIntValue(intValue);
+            PreparationAttr prepAttr = new PreparationAttr();
+            prepAttr.setDefinition(attrDef);
+            prepAttr.setPreparation(preparation);
+            prepAttr.setDblValue(dblValue);
             prepAttr.setPreparation(null);
-            prepAttr.setRemarks(remarks);
             prepAttr.setStrValue(strValue);
-            prepAttr.setTaxon(parasiteTaxonName);
             prepAttr.setTimestampCreated(new Date());
             prepAttr.setTimestampModified(new Date());
-            prepAttr.setUnit(unit);
             
             session.save(prepAttr);
             

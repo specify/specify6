@@ -1,13 +1,13 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Set;
 
 
 
 
 /**
  *        @hibernate.class
- *         table="usysusers"
+ *         table="user"
  *     
  */
 public class User  implements java.io.Serializable {
@@ -19,6 +19,8 @@ public class User  implements java.io.Serializable {
      protected String password;
      protected Short privLevel;
      private Set collectionObjDef;
+     protected Set recordSets;
+     private UserGroup userGroup;
 
 
     // Constructors
@@ -95,7 +97,7 @@ public class User  implements java.io.Serializable {
      *             inverse="true"
      *             cascade="none"
      *            @hibernate.collection-key
-     *             column="CollectionObjDefID"
+     *             column="UserID"
      *            @hibernate.collection-one-to-many
      *             class="edu.ku.brc.specify.datamodel.CollectionObjDef"
      *         
@@ -106,6 +108,39 @@ public class User  implements java.io.Serializable {
     
     public void setCollectionObjDef(Set collectionObjDef) {
         this.collectionObjDef = collectionObjDef;
+    }
+
+    /**
+     *      *            @hibernate.set
+     *             lazy="true"
+     *             inverse="true"
+     *             cascade="delete"
+     *            @hibernate.collection-key
+     *             column="CollectionObjectID"
+     *            @hibernate.collection-one-to-many
+     *             class="edu.ku.brc.specify.datamodel.RecordSet"
+     *         
+     */
+    public Set getRecordSets() {
+        return this.recordSets;
+    }
+    
+    public void setRecordSets(Set recordSets) {
+        this.recordSets = recordSets;
+    }
+
+    /**
+     *      *            @hibernate.many-to-one
+     *             not-null="true"
+     *            @hibernate.column name="UserGroupID"         
+     *         
+     */
+    public UserGroup getUserGroup() {
+        return this.userGroup;
+    }
+    
+    public void setUserGroup(UserGroup userGroup) {
+        this.userGroup = userGroup;
     }
 
 

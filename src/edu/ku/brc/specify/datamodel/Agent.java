@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -208,6 +209,7 @@ public class Agent  implements java.io.Serializable {
      *             column="TimestampModified"
      *             length="23"
      *             not-null="true"
+     *             not-null="true"
      *         
      */
     public Date getTimestampModified() {
@@ -223,6 +225,7 @@ public class Agent  implements java.io.Serializable {
      *             column="TimestampCreated"
      *             length="23"
      *             not-null="true"
+     *             update="false"
      *         
      */
     public Date getTimestampCreated() {

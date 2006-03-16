@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -18,8 +20,12 @@ public class CollectingEvent  implements java.io.Serializable {
      protected String stationFieldNumber;
      protected String method;
      protected String verbatimDate;
-     protected Integer startDate;
-     protected Integer endDate;
+     protected Calendar startDate;
+     protected Short startDatePrecision;
+     protected String startDateVerbatim;
+     protected Calendar endDate;
+     protected Short endDatePrecision;
+     protected String endDateVerbatim;
      protected Short startTime;
      protected Short endTime;
      protected String verbatimLocality;
@@ -33,7 +39,7 @@ public class CollectingEvent  implements java.io.Serializable {
      private Set collectors;
      protected Locality locality;
      protected Stratigraphy stratigraphy;
-     protected Set habitatAttrs;
+     protected Set attrs;
      private Set externalResources;
 
 
@@ -113,29 +119,81 @@ public class CollectingEvent  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="StartDate"
-     *             length="10"
      *         
      */
-    public Integer getStartDate() {
+    public Calendar getStartDate() {
         return this.startDate;
     }
     
-    public void setStartDate(Integer startDate) {
+    public void setStartDate(Calendar startDate) {
         this.startDate = startDate;
     }
 
     /**
      *      *            @hibernate.property
-     *             column="EndDate"
-     *             length="10"
+     *             column="StartDatePrecision"
      *         
      */
-    public Integer getEndDate() {
+    public Short getStartDatePrecision() {
+        return this.startDatePrecision;
+    }
+    
+    public void setStartDatePrecision(Short startDatePrecision) {
+        this.startDatePrecision = startDatePrecision;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="StartDateVerbatim"
+     *             length="50"
+     *         
+     */
+    public String getStartDateVerbatim() {
+        return this.startDateVerbatim;
+    }
+    
+    public void setStartDateVerbatim(String startDateVerbatim) {
+        this.startDateVerbatim = startDateVerbatim;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="EndDate"
+     *         
+     */
+    public Calendar getEndDate() {
         return this.endDate;
     }
     
-    public void setEndDate(Integer endDate) {
+    public void setEndDate(Calendar endDate) {
         this.endDate = endDate;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="EndDatePrecision"
+     *         
+     */
+    public Short getEndDatePrecision() {
+        return this.endDatePrecision;
+    }
+    
+    public void setEndDatePrecision(Short endDatePrecision) {
+        this.endDatePrecision = endDatePrecision;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="EndDateVerbatim"
+     *             length="50"
+     *         
+     */
+    public String getEndDateVerbatim() {
+        return this.endDateVerbatim;
+    }
+    
+    public void setEndDateVerbatim(String endDateVerbatim) {
+        this.endDateVerbatim = endDateVerbatim;
     }
 
     /**
@@ -208,6 +266,7 @@ public class CollectingEvent  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="TimestampModified"
      *             length="23"
+     *             not-null="true"
      *         
      */
     public Date getTimestampModified() {
@@ -222,6 +281,8 @@ public class CollectingEvent  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="TimestampCreated"
      *             length="23"
+     *             update="false"
+     *             not-null="true"
      *         
      */
     public Date getTimestampCreated() {
@@ -331,17 +392,17 @@ public class CollectingEvent  implements java.io.Serializable {
      *             inverse="true"
      *             cascade="delete"
      *            @hibernate.collection-key
-     *             column="HabitatAttrsID"
+     *             column="CollectingEventAttrID"
      *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.HabitatAttrs"
+     *             class="edu.ku.brc.specify.datamodel.CollectingEventAttr"
      *         
      */
-    public Set getHabitatAttrs() {
-        return this.habitatAttrs;
+    public Set getAttrs() {
+        return this.attrs;
     }
     
-    public void setHabitatAttrs(Set habitatAttrs) {
-        this.habitatAttrs = habitatAttrs;
+    public void setAttrs(Set attrs) {
+        this.attrs = attrs;
     }
 
     /**

@@ -64,7 +64,9 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -73,6 +75,8 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
+import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.UIHelper;
@@ -103,6 +107,60 @@ public class PickListTestApp
     
     public PickListTestApp()
     {
+        try
+        {
+            Connection dbConnection = DBConnection.getConnection();
+            Statement  dbStatement  = dbConnection.createStatement();
+    
+            ResultSet rs = dbStatement.executeQuery("select LocalityName from locality where localityID = 1858960246;");
+            rs.first();
+            do
+            {
+                System.out.println(rs.getObject(1));
+                System.out.println(rs.getString(1));
+                
+            } while(rs.next());
+            
+            dbStatement.close();
+            dbConnection.close();
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        /*
+        Session session = HibernateUtil.getCurrentSession();
+        Locality l = new Locality();
+        l.setLocalityId(387349873);
+        l.setLocalityName("11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111");
+        Transaction trans = session.beginTransaction();
+        session.save(l);
+        trans.commit();
+        session.close();
+        */
+        
+        
+        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Locality.class);
+        for (Object obj :  criteria.list())
+        {
+            Locality locality = (Locality)obj;
+            if (locality.getLocalityName().charAt(0) != '[')
+            {
+                System.out.println(locality.getLocalityId() + " getLocalityName: "+locality.getLocalityName());
+            }
+        }
+        list.clear();
+        
+
+        org.hibernate.Query q = HibernateUtil.getCurrentSession().createQuery("from locality in class Locality where locality.localityId = 387349873");
+        java.util.List list2 = q.list();
+        
+        for (Object obj : list2)
+        {
+            Locality locality = (Locality)obj;
+            System.out.println("getLocalityName: "+locality.getLocalityName());
+        }
+        
     }
 
     
@@ -114,7 +172,8 @@ public class PickListTestApp
     private void initialize() 
     {
         AppPrefs.initialPrefs(); // Must be done first thing!
-        
+
+
         try 
         { 
             //System.out.println(System.getProperty("os.name"));
@@ -331,7 +390,7 @@ public class PickListTestApp
         //mi.setEnabled(aEnabled);
         return mi;
     }
-  
+
     /**
      * 
      */
@@ -482,7 +541,7 @@ public class PickListTestApp
     
             Vector<String> list = new Vector<String>();
             long start = System.currentTimeMillis();
-            ResultSet rs = dbStatement.executeQuery(" select taxonname from taxonname where taxonname like 's%'");
+            ResultSet rs = dbStatement.executeQuery(" select taxon from taxon where taxon like 's%'");
             rs.first();
             do
             {
@@ -570,13 +629,15 @@ public class PickListTestApp
         
         //buildTaxaSearch();
         
+        /*
         testLookUpDB();
         testLookUpLucene();
+        */
         
         //loadData();
 
         PickListTestApp pickListTestApp = new PickListTestApp();
-        pickListTestApp.initialize();
+        //pickListTestApp.initialize();
 
     }
 

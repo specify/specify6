@@ -19,6 +19,7 @@
  */
 package edu.ku.brc.specify.stats;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
@@ -28,6 +29,7 @@ import java.awt.Insets;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -47,8 +49,10 @@ import edu.ku.brc.specify.ui.CurvedBorder;
 public class StatGroup extends JPanel
 {
 
-    protected String name;
-    protected JPanel content = null;
+    protected String       name;
+    protected PanelBuilder builder    = new PanelBuilder(new FormLayout("p:g", "p,p"));
+    protected JPanel       content    = null;
+    protected JScrollPane  scrollPane = null;
     
     /**
      * Constructor with the localized name of the Group
@@ -73,26 +77,20 @@ public class StatGroup extends JPanel
     {
         this.name = name;
         
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setLayout(new BorderLayout());
         setOpaque(false);
         
-       if (useSeparator)
+        content = new JPanel();
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+        content.setOpaque(false);
+        
+        if (useSeparator)
         {
             setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-            PanelBuilder    builder    = new PanelBuilder(new FormLayout("p:g", "p,p"));
             CellConstraints cc         = new CellConstraints();
             
-            //PanelBuilder sepBuilder = new PanelBuilder(new FormLayout("p:g,2px,f:p:g", "c:p"));
-            //sepBuilder.add(new JLabel(name), cc.xy(1,1));
-            //sepBuilder.add(new JSeparator(), cc.xy(3,1));
-            //sepBuilder.getPanel().setOpaque(false);
-           
-            content = new JPanel();
-            content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
-            content.setOpaque(false);
-            
-            //builder.add(sepBuilder.getPanel(), cc.xy(1,1));
             builder.addSeparator(name, cc.xy(1,1));
+            
             builder.add(content, cc.xy(1,2));
             builder.getPanel().setOpaque(false);
             add(builder.getPanel());
@@ -101,6 +99,7 @@ public class StatGroup extends JPanel
         {
             setBorder(BorderFactory.createEmptyBorder(15, 2, 2, 2));
             setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
+            add(content, BorderLayout.CENTER);
          }
     } 
     
@@ -121,8 +120,20 @@ public class StatGroup extends JPanel
      */
     public void addItem(StatItem item)
     {
-        
-        (content != null ? content : this).add(item);
+        if (content.getComponentCount() > 10 && scrollPane == null)
+        {
+            Dimension size = content.getPreferredSize();
+            remove(content);
+            //content.setPreferredSize(size);
+            scrollPane = new JScrollPane(content, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            Dimension spSize = scrollPane.getPreferredSize();
+            scrollPane.setPreferredSize(new Dimension(spSize.width, size.height));
+            scrollPane.setBackground(Color.WHITE);//getParent().getBackground());
+            content.setBackground(Color.WHITE);
+            content.setOpaque(true);
+            builder.add(scrollPane, (new CellConstraints()).xy(1,2));
+        }
+        content.add(item);
     }
     
     /**

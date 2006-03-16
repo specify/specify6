@@ -34,15 +34,15 @@
   
       <box title="Data Entry">
         <item title="Cataloged in Last 7 Days">
-            <sql><statement><![CDATA[select count(*) from collectionobjectcatalog where subnumber = 0 and DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= TimestampCreated]]></statement></sql>
+            <sql><statement><![CDATA[select count(*) from collectionobject where subnumber = 0 and DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= TimestampCreated]]></statement></sql>
             <link>CatalogedLast7DaysDetail</link>
         </item>
         <item title="Cataloged in Last 30 Days">
-            <sql><statement><![CDATA[select count(*) from collectionobjectcatalog where subnumber = 0 and DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= TimestampCreated]]></statement></sql>
+            <sql><statement><![CDATA[select count(*) from collectionobject where subnumber = 0 and DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= TimestampCreated]]></statement></sql>
             <link>CatalogedLastMonth</link>
         </item>
         <item title="Cataloged in Last Year">
-            <sql><statement><![CDATA[select count(*) from collectionobjectcatalog WHERE subnumber = 0 and DATE_SUB(CURDATE(), INTERVAL 1 YEAR) <= TimestampCreated;]]></statement></sql>
+            <sql><statement><![CDATA[select count(*) from collectionobject WHERE subnumber = 0 and DATE_SUB(CURDATE(), INTERVAL 1 YEAR) <= TimestampCreated;]]></statement></sql>
             <link>CatalogedLastYear</link>
         </item>
       </box>

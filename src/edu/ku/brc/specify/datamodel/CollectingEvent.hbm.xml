@@ -76,32 +76,83 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="startDate"
-        type="java.lang.Integer"
+        type="calendar_date"
         column="StartDate"
-        length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="StartDate"
-            length="10"
         </meta>    
     </property>
+    
+    <property
+        name="startDatePrecision"
+        type="short"
+        column="StartDatePrecision"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="StartDatePrecision"
+        </meta>    
+    </property>
+    
+    <property
+        name="startDateVerbatim"
+        type="java.lang.String"
+        column="StartDateVerbatim"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="StartDateVerbatim"
+            length="50"
+        </meta>    
+    </property>
+    
     <property
         name="endDate"
-        type="java.lang.Integer"
+        type="calendar_date"
         column="EndDate"
-        length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="EndDate"
-            length="10"
         </meta>    
     </property>
+    
+    <property
+        name="endDatePrecision"
+        type="short"
+        column="EndDatePrecision"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="EndDatePrecision"
+        </meta>    
+    </property>
+    
+    <property
+        name="endDateVerbatim"
+        type="java.lang.String"
+        column="EndDateVerbatim"
+        length="50"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="EndDateVerbatim"
+            length="50"
+        </meta>    
+    </property>
+    
     <property
         name="startTime"
         type="short"
@@ -113,6 +164,7 @@
             column="StartTime"
         </meta>    
     </property>
+    
     <property
         name="endTime"
         type="short"
@@ -172,21 +224,28 @@
            @hibernate.property
             column="TimestampModified"
             length="23"
+            not-null="true"
         </meta>    
     </property>
+    
     <property
         name="timestampCreated"
         type="java.sql.Timestamp"
         column="TimestampCreated"
         length="23"
+        not-null="true"
+        update="false"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="TimestampCreated"
             length="23"
+            update="false"
+            not-null="true"
         </meta>    
     </property>
+    
     <property
         name="lastEditedBy"
         type="java.lang.String"
@@ -272,7 +331,7 @@
         />
     </set>
     
-    <!-- bi-directional many-to-one association to Locality -->
+   <!-- bi-directional many-to-one association to Locality -->
    <many-to-one 
         name="locality"
         class="edu.ku.brc.specify.datamodel.Locality"
@@ -288,7 +347,7 @@
         <column name="LocalityID" />
     </many-to-one>
     
-    <!-- bi-directional many-to-one association to Stratigraphy -->
+    <!-- bi-directional one-to-one association to Stratigraphy -->
     <one-to-one 
         name="stratigraphy"
         class="edu.ku.brc.specify.datamodel.Stratigraphy"
@@ -301,9 +360,9 @@
         </meta>
     </one-to-one>
     
-    <!-- bi-directional one-to-many association to HabitatAttrs -->
+    <!-- bi-directional one-to-many association to CollectingEventAttr -->
     <set
-        name="habitatAttrs"
+        name="attrs"
         lazy="true"
         inverse="true"
 		cascade="delete"
@@ -316,16 +375,16 @@
             cascade="delete"
 
            @hibernate.collection-key
-            column="HabitatAttrsID"
+            column="CollectingEventAttrID"
 
            @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.HabitatAttrs"
+            class="edu.ku.brc.specify.datamodel.CollectingEventAttr"
         </meta>
         <key>
-            <column name="HabitatAttrsID" />
+            <column name="CollectingEventAttrID" />
         </key>
         <one-to-many 
-            class="edu.ku.brc.specify.datamodel.HabitatAttrs"
+            class="edu.ku.brc.specify.datamodel.CollectingEventAttr"
         />
     </set>	
         

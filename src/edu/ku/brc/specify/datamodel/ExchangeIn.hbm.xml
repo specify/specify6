@@ -140,12 +140,16 @@
         type="java.sql.Timestamp"
         column="TimestampCreated"
         length="23"
+        not-null="true"
+        update="false"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="TimestampCreated"
             length="23"
+            update="false"
+            not-null="true"
         </meta>    
     </property>
     
@@ -159,6 +163,7 @@
            @hibernate.property
             column="TimestampModified"
             length="23"
+            not-null="true"
         </meta>    
     </property>
     

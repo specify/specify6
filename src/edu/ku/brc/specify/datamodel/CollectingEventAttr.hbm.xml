@@ -5,21 +5,22 @@
     
 <hibernate-mapping>
 
+
 <class 
-    name="edu.ku.brc.specify.datamodel.ExtResAttrs" 
-    table="extresattrs"
+    name="edu.ku.brc.specify.datamodel.CollectingEventAttr" 
+    table="collectingeventattr"
 	lazy="true"
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="extResattrs"
+        table="collectingeventattr"
     </meta>
-    <meta attribute="implements">AttrsSettableGettable</meta>
-
+    <meta attribute="implements">AttributeIFace</meta>
+ 
     <id
-        name="extResAttrsId"
+        name="attrId"
         type="java.lang.Integer"
-        column="ExtResAttrsID"
+        column="AttrID"
     >
       <meta attribute="scope-set">public</meta>
       <meta attribute="scope-field">protected</meta>
@@ -27,68 +28,28 @@
     </id>
 	
     <property
-        name="name"
-        type="java.lang.String"
-        column="Name"
-        length="50"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Name"
-            length="50"
-        </meta>    
-    </property>
-
-    <property
         name="strValue"
         type="java.lang.String"
         column="StrValue"
-        length="128"
+        length="255"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="StrValue"
-            length="128"
+            length="255"
         </meta>    
     </property>
 
     <property
-        name="intValue"
-        type="java.lang.Integer"
-        column="IntValue"
-        length="10"
+        name="dblValue"
+        type="double"
+        column="DoubleValue"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="IntValue"
-            length="10"
-        </meta>    
-    </property>
-
-    <property
-        name="fieldType"
-        type="short"
-        column="FieldType"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="FieldType"
-        </meta>    
-    </property>
-
-    <property
-        name="unit"
-        type="short"
-        column="Unit"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Unit"
+            column="DoubleValue"
         </meta>    
     </property>
 
@@ -97,12 +58,16 @@
         type="java.sql.Timestamp"
         column="TimestampCreated"
         length="23"
+        not-null="true"
+        update="false"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="TimestampCreated"
             length="23"
+            update="false"
+            not-null="true"
         </meta>    
     </property>
     
@@ -117,37 +82,42 @@
            @hibernate.property
             column="TimestampModified"
             length="23"
+            not-null="true"
         </meta>    
     </property>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
-    </property>
-    
-	
 	<!-- Associations -->
 	
-    <!-- bi-directional many-to-one association to ExternalResource -->
+    <!-- bi-directional many-to-one association to CollectingEvent -->
     <many-to-one
-        name="externalResource"
-        class="edu.ku.brc.specify.datamodel.ExternalResource"
+        name="collectingEvent"
+        class="edu.ku.brc.specify.datamodel.CollectingEvent"
         not-null="true"
 		outer-join="true"
     >
+	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="ExternalResourceID"         
+           @hibernate.column name="CollectingEventID"         
         </meta>
-        <column name="ExternalResourceID" />
+        <column name="CollectingEventID" />
+    </many-to-one>
+   
+    <!-- bi-directional many-to-one association to AttributeDef -->
+    <many-to-one
+        name="definition"
+        class="edu.ku.brc.specify.datamodel.AttributeDef"
+        not-null="true"
+		outer-join="true"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="AttributeDefID"         
+        </meta>
+        <column name="AttributeDefID" />
     </many-to-one>	
 	
 </class>

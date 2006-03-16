@@ -37,6 +37,7 @@
         <generator class="assigned" />
     </id>
 	
+	<!--
     <property
         name="preparationMethod"
         type="java.lang.String"
@@ -50,24 +51,35 @@
             length="50"
         </meta>    
     </property>
-			
-    <property
-        name="subNumber"
-        type="java.lang.Integer"
-        column="SubNumber"
-        length="10"
+    -->
+		
+    <property name="text1"
+        type="java.lang.String"
+        column="Text1"
+        length="300"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="SubNumber"
-            length="10"
+            column="Text1"
+            length="300"
         </meta>    
     </property>
 	
-	
-    <property
-        name="count"
+    <property name="text2"
+        type="java.lang.String"
+        column="Text2"
+        length="300"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Text2"
+            length="300"
+        </meta>    
+    </property>
+    	
+    <property name="count"
         type="java.lang.Integer"
         column="Count"
         length="10"
@@ -80,31 +92,16 @@
         </meta>    
     </property>
 	
-    <property
-        name="storagelocation"
+    <property name="storageLocation"
         type="java.lang.String"
-        column="Storagelocation"
+        column="StorageLocation"
         length="50"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="Storagelocation"
+            column="StorageLocation"
             length="50"
-        </meta>    
-    </property>
-
-    <property
-        name="url"
-        type="java.lang.String"
-        column="Url"
-        length="512"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Url"
-            length="512"
         </meta>    
     </property>
     
@@ -122,15 +119,13 @@
     	
     <property
         name="preparedDate"
-        type="java.lang.Integer"
+        type="calendar_date"
         column="PreparedDate"
-        length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="PreparedDate"
-            length="10"
         </meta>    
     </property>
 
@@ -139,12 +134,16 @@
         type="java.sql.Timestamp"
         column="TimestampCreated"
         length="23"
+        not-null="true"
+        update="false"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="TimestampCreated"
             length="23"
+            update="false"
+            not-null="true"
         </meta>    
     </property>
 	
@@ -159,6 +158,7 @@
            @hibernate.property
             column="TimestampModified"
             length="23"
+            not-null="true"
         </meta>    
     </property>
 	
@@ -201,44 +201,16 @@
             class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"
         </meta>
         <key>
-            <column name="PhysicalObjectID" />
+            <column name="PreparationID" />
         </key>
         <one-to-many 
             class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"
         />
     </set>
-	
-    <!-- bi-directional one-to-many association to PrepAttrs -->
-   <!-- <set
-        name="prepAttrs"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="PrepAttrsID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.PrepAttrs"
-        </meta>
-        <key>
-            <column name="PreparationID" />
-        </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.PrepAttrs"
-        />
-    </set>-->
   
-    <!-- bi-directional one-to-many association to PrepAttrs -->
+    <!-- bi-directional one-to-many association to PreparationAttr -->
     <set
-        name="prepAttrs"
+        name="attrs"
         lazy="true"
         inverse="true"
 		cascade="none"
@@ -254,30 +226,30 @@
             column="PreparationID"
 
            @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.PrepAttrs"
+            class="edu.ku.brc.specify.datamodel.PreparationAttr"
         </meta>
         <key>
             <column name="PreparationID" />
         </key>
         <one-to-many 
-            class="edu.ku.brc.specify.datamodel.PrepAttrs"
+            class="edu.ku.brc.specify.datamodel.PreparationAttr"
         />
-    </set>  
-     <!-- bi-directional many-to-one association to PrepTypes -->
-    <!--<many-to-one
+    </set>
+    
+    <!-- bi-directional many-to-one association to PrepType -->
+    <many-to-one
         name="prepType"
-        class="edu.ku.brc.specify.datamodel.PrepTypes"
+        class="edu.ku.brc.specify.datamodel.PrepType"
         not-null="true"
 		outer-join="true"
     >
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="PrepTypes"         
+           @hibernate.column name="PrepTypeID"         
         </meta>
-        <column name="PreparationID" />
+        <column name="PrepTypeID" />
     </many-to-one>
-	-->
   
     <!-- bi-directional many-to-one association to CollectionObject -->
     <many-to-one
@@ -291,9 +263,9 @@
            @hibernate.many-to-one
             not-null="true"
 			cascade="delete"
-           @hibernate.column name="CollectionObjID"         
+           @hibernate.column name="CollectionObjectID"         
         </meta>
-        <column name="CollectionObjID" />
+        <column name="CollectionObjectID"/>
     </many-to-one>
 	
     <!-- bi-directional many-to-one association to Agent -->

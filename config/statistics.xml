@@ -5,7 +5,7 @@
         <title>Top Five Species</title>
       </chartinfo>
       <sql type="text">
-        <![CDATA[select tn,count(tx) as namecnt from (select determination.TaxonNameId, taxonname.TaxonNameID as tx, taxonname.TaxonName as tn from taxonname,determination where determination.TaxonNameId = taxonname.taxonnameid) as newTable group by tx order by namecnt DESC;]]>
+        <![CDATA[select tn,count(tx) as namecnt from (select determination.TaxonId, taxon.TaxonID as tx, taxon.Name as tn from taxon,determination where determination.TaxonId = taxon.taxonid) as newTable group by tx order by namecnt DESC;]]>
       </sql>
       <slice>
         <desc row="1" col="1"/>
@@ -109,21 +109,21 @@
     <stat name="CatalogedLast7DaysDetail" display="Table">
       <title>Cataloged Last 7 Days</title>
       <sql type="text">
-        <![CDATA[Select collectionobjectcatalog.CatalogNumber,taxonname.TaxonName,collectionobjectcatalog.TimestampCreated From collectionobjectcatalog Inner Join determination ON collectionobjectcatalog.CollectionObjectCatalogID = determination.BiologicalObjectID Inner Join taxonname ON determination.TaxonNameID = taxonname.TaxonNameID where collectionobjectcatalog.subnumber = 0 and DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= collectionobjectcatalog.TimestampCreated;]]>
+        <![CDATA[Select collectionobject.CatalogNumber,taxon.Name,collectionobject.TimestampCreated From collectionobject Inner Join determination ON collectionobject.CollectionObjectCatalogID = determination.BiologicalObjectID Inner Join taxon ON determination.TaxonID = taxon.TaxonID where collectionobject.subnumber = 0 and DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= collectionobject.TimestampCreated;]]>
       </sql>
     </stat>
     
     <stat name="CatalogedLastMonth" display="Table">
       <title>Cataloged Last Month</title>
       <sql type="text">
-        <![CDATA[Select collectionobjectcatalog.CatalogNumber,taxonname.TaxonName,collectionobjectcatalog.TimestampCreated From collectionobjectcatalog Inner Join determination ON collectionobjectcatalog.CollectionObjectCatalogID = determination.BiologicalObjectID Inner Join taxonname ON determination.TaxonNameID = taxonname.TaxonNameID where collectionobjectcatalog.subnumber = 0 and DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= collectionobjectcatalog.TimestampCreated;]]>
+        <![CDATA[Select collectionobject.CatalogNumber,taxon.Name,collectionobject.TimestampCreated From collectionobject Inner Join determination ON collectionobject.CollectionObjectCatalogID = determination.BiologicalObjectID Inner Join taxon ON determination.TaxonID = taxon.TaxonID where collectionobject.subnumber = 0 and DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= collectionobject.TimestampCreated;]]>
       </sql>
     </stat>
     
     <stat name="CatalogedLastYear" display="Table">
       <title>Cataloged Last Year</title>
       <sql type="text">
-        <![CDATA[Select collectionobjectcatalog.CatalogNumber,taxonname.TaxonName,collectionobjectcatalog.TimestampCreated From collectionobjectcatalog Inner Join determination ON collectionobjectcatalog.CollectionObjectCatalogID = determination.BiologicalObjectID Inner Join taxonname ON determination.TaxonNameID = taxonname.TaxonNameID where collectionobjectcatalog.subnumber = 0 and DATE_SUB(CURDATE(), INTERVAL 1 YEAR) <= collectionobjectcatalog.TimestampCreated;]]>
+        <![CDATA[Select collectionobject.CatalogNumber,taxon.Name,collectionobject.TimestampCreated From collectionobject Inner Join determination ON collectionobject.CollectionObjectCatalogID = determination.BiologicalObjectID Inner Join taxon ON determination.TaxonID = taxon.TaxonID where collectionobject.subnumber = 0 and DATE_SUB(CURDATE(), INTERVAL 1 YEAR) <= collectionobject.TimestampCreated;]]>
       </sql>
     </stat>
     

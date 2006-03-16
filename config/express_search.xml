@@ -3,13 +3,12 @@
   <table id="1" usehitscache="true" name="CollObject" title="Collection Object" priority="1" color="30, 144, 255">
     <outofdate>
         <table name="collectionobject" title="Collection Object"/>
-        <table name="collectionobjectcatalog" title="Collection Object Catalog"/>
         <table name="determination" title="Determination"/>
-        <table name="taxonname" title="Taxon"/>
+        <table name="taxon" title="Taxon"/>
     </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[Select collectionobjectcatalog.CatalogNumber, taxonname.TaxonName From collectionobject Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID Inner Join determination ON determination.BiologicalObjectID = collectionobjectcatalog.CollectionObjectCatalogID Inner Join taxonname ON taxonname.TaxonNameID = determination.TaxonNameID Where collectionobjectcatalog.SubNumber = '0']]>
+	        <![CDATA[Select collectionobject.CatalogNumber, taxon.Name From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TaxonID = determination.TaxonID Where collectionobject.SubNumber = '0']]>
 	    </sql>
 	    <cols>
 	       <col>1</col>
@@ -18,11 +17,11 @@
 	</index>
     <detailView icon="ColObj">
 	    <sql>
-	        <![CDATA[Select CatalogNumber from collectionobjectcatalog where CatalogNumber in (%s) and collectionobjectcatalog.SubNumber = '0']]>
+	        <![CDATA[Select CatalogNumber from collectionobject where CatalogNumber in (%s) and collectionobject.SubNumber = '0']]>
 	    </sql>
         <captions>
             <caption col="CatalogNumber" text="Catalog Number"/>
-            <caption col="TaxonName" text="Taxon Name"/>
+            <caption col="Taxon" text="Taxon Name"/>
         </captions>
         <recordset tabletype="1" col="0"/>
 	</detailView>
@@ -55,6 +54,7 @@
 	</detailView>
   </table>
   
+  <!-- 
   <table id="3" name="geography" title="Geography" priority="1" color="30, 144, 255">
     <outofdate>
         <table name="geography" title="Geography"/>
@@ -89,14 +89,15 @@
         <recordset tabletype="3" col="3"/>
 	</detailView>
   </table>
+  -->
   
-  <table id="4" name="taxonname" title="Taxon" priority="1" color="30, 144, 255">
+  <table id="4" name="taxon" title="Taxon" priority="1" color="30, 144, 255">
     <outofdate>
-        <table name="taxonname" title="Taxon"/>
+        <table name="taxon" title="Taxon"/>
     </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[select TaxonNameID,TaxonName,CommonName from taxonname;]]>
+	        <![CDATA[select TaxonID,Name,CommonName from taxon;]]>
 	    </sql>
 	    <cols>
 	       <col>1</col>
@@ -106,12 +107,12 @@
 	</index>
     <detailView icon="Taxon">
 	    <sql>
-	        <![CDATA[select TaxonName,CommonName,TaxonNameID from taxonname where TaxonNameID in (%s)]]>
+	        <![CDATA[select Name,CommonName,TaxonID from taxon where TaxonID in (%s)]]>
 	    </sql>
         <captions>
-            <caption col="TaxonName" text="Taxon Name"/>
+            <caption col="Name" text="Taxon Name"/>
             <caption col="CommonName" text="Common Name"/>
-            <caption col="TaxonNameID" text="Taxon ID" visible="false"/>
+            <caption col="TaxonID" text="Taxon ID" visible="false"/>
         </captions>
         <recordset tabletype="4" col="2"/>
 	</detailView>
@@ -175,7 +176,6 @@
 	</detailView>
   </table>
 
-  
   <table id="7" usehitscache="true" name="CollObjToDeterminer" title="Determiner" priority="1" color="30, 144, 255">
     <outofdate>
         <table name="determination" title="Determination"/>
@@ -183,17 +183,16 @@
     <index>
 	    <sql>
 	        <![CDATA[Select 
- collectionobjectcatalog.CollectionObjectCatalogID,	        
- taxonname.TaxonName, 
- taxonname.CommonName, 
+ collectionobject.CollectionObjectID,	        
+ taxon.Name, 
+ taxon.CommonName, 
  agent.LastName, 
  agent.FirstName
   From 
  collectionobject 
- Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID 
- Inner Join determination ON determination.BiologicalObjectID = collectionobjectcatalog.CollectionObjectCatalogID 
+ Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID 
  Inner Join agent ON determination.DeterminerID = agent.AgentID 
- Inner Join taxonname ON determination.TaxonNameID = taxonname.TaxonNameID where determination.current1 <> 0]]>
+ Inner Join taxon ON determination.TaxonID = taxon.TaxonID where determination.IsCurrent <> 0]]>
 	    </sql>
 	    <cols>
 	       <col>1</col>
@@ -206,18 +205,17 @@
     <detailView icon="Agent">
 	    <sql>
 	        <![CDATA[select * from (Select 
- taxonname.TaxonName, 
- taxonname.CommonName,
+ taxon.Name, 
+ taxon.CommonName, 
  agent.LastName, 
- agent.FirstName, 
- collectionobjectcatalog.CollectionObjectCatalogID 
+ agent.FirstName,
+ collectionobject.CollectionObjectID,
  From 
  collectionobject 
- Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID 
- Inner Join determination ON determination.BiologicalObjectID = collectionobjectcatalog.CollectionObjectCatalogID 
+ Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID 
  Inner Join agent ON determination.DeterminerID = agent.AgentID 
- Inner Join taxonname ON determination.TaxonNameID = taxonname.TaxonNameID where determination.current1 <> 0) as tx 
- where tx.CollectionObjectCatalogID in (%s)]]>
+ Inner Join taxon ON determination.TaxonID = taxon.TaxonID where determination.IsCurrent <> 0) as tx 
+ where tx.CollectionObjectID in (%s)]]>
 	    </sql>
         <captions>
             <caption col="CollectionObjectCatalogID" text="ID" visible="false"/>

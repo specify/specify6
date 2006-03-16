@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -17,7 +19,7 @@ public class Determination  implements java.io.Serializable {
      protected Integer determinationId;
      protected Boolean isCurrent;
      protected String typeStatusName;
-     protected Integer dateField;
+     protected Calendar determinedDate;
      protected String confidence;
      protected String method;
      protected String featureOrBasis;
@@ -34,7 +36,7 @@ public class Determination  implements java.io.Serializable {
      protected Integer methodId;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     protected Taxon Taxon;
+     protected Taxon taxon;
      protected CollectionObject collectionObject;
      protected Preparation preparations;
      private Set determinationCitations;
@@ -102,16 +104,15 @@ public class Determination  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="DateField"
-     *             length="10"
+     *             column="DeterminedDate"
      *         
      */
-    public Integer getDateField() {
-        return this.dateField;
+    public Calendar getDeterminedDate() {
+        return this.determinedDate;
     }
     
-    public void setDateField(Integer dateField) {
-        this.dateField = dateField;
+    public void setDeterminedDate(Calendar determinedDate) {
+        this.determinedDate = determinedDate;
     }
 
     /**
@@ -229,6 +230,8 @@ public class Determination  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="TimestampCreated"
      *             length="23"
+     *             update="false"
+     *             not-null="true"
      *         
      */
     public Date getTimestampCreated() {
@@ -243,6 +246,7 @@ public class Determination  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="TimestampModified"
      *             length="23"
+     *             not-null="true"
      *         
      */
     public Date getTimestampModified() {
@@ -342,11 +346,11 @@ public class Determination  implements java.io.Serializable {
      *         
      */
     public Taxon getTaxon() {
-        return this.Taxon;
+        return this.taxon;
     }
     
-    public void setTaxon(Taxon Taxon) {
-        this.Taxon = Taxon;
+    public void setTaxon(Taxon taxon) {
+        this.taxon = taxon;
     }
 
     /**

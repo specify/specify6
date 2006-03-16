@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Set;
 
 
 
@@ -66,7 +66,7 @@ public class DataType  implements java.io.Serializable {
      *             inverse="true"
      *             cascade="none"
      *            @hibernate.collection-key
-     *             column="CollectionObjDefID"
+     *             column="DataTypeID"
      *            @hibernate.collection-one-to-many
      *             class="edu.ku.brc.specify.datamodel.CollectionObjDef"
      *         

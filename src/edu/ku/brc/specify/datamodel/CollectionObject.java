@@ -1,8 +1,13 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
 
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Expression;
 
+import edu.ku.brc.specify.dbsupport.HibernateUtil;
 
 
 /**
@@ -17,8 +22,6 @@ public class CollectionObject  implements java.io.Serializable {
      protected Integer collectionObjectId;
      protected String fieldNumber;
      protected String description;
-     protected String containerType;
-     protected Integer containerTypeId;
      protected String text1;
      protected String text2;
      protected Float number1;
@@ -27,19 +30,19 @@ public class CollectionObject  implements java.io.Serializable {
      protected Boolean yesNo2;
      protected Integer count1;
      protected String remarks;
-     protected Integer subNumber;
      protected String name;
      protected String modifier;
-     protected Integer catalogedDate;
+     protected Calendar catalogedDate;
+     protected String catalogedDateVerbatim;
+     protected String guid;
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
-     protected Short deaccessioned;
-     protected String catalogNumber;
+     protected Boolean deaccessioned;
+     protected Float catalogNumber;
      protected CollectingEvent collectingEvent;
-     protected Observation observation;
      protected Set collectionObjectCitations;
-     protected Set bioAttrs;
+     protected Set attrs;
      protected Set preparations;
      protected Set determinations;
      protected Set projectCollectionObjects;
@@ -48,7 +51,6 @@ public class CollectionObject  implements java.io.Serializable {
      protected CatalogSeries catalogSeries;
      protected Accession accession;
      protected Agent agent;
-     private Set loanPhysicalObjects;
      private Set externalResources;
 
 
@@ -113,36 +115,7 @@ public class CollectionObject  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="ContainerType"
-     *             length="50"
-     *         
-     */
-    public String getContainerType() {
-        return this.containerType;
-    }
-    
-    public void setContainerType(String containerType) {
-        this.containerType = containerType;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="ContainerTypeID"
-     *             length="10"
-     *         
-     */
-    public Integer getContainerTypeId() {
-        return this.containerTypeId;
-    }
-    
-    public void setContainerTypeId(Integer containerTypeId) {
-        this.containerTypeId = containerTypeId;
-    }
-
-    /**
-     *      *            @hibernate.property
      *             column="Text1"
-     *             length="300"
      *         
      */
     public String getText1() {
@@ -156,7 +129,6 @@ public class CollectionObject  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Text2"
-     *             length="300"
      *         
      */
     public String getText2() {
@@ -250,22 +222,8 @@ public class CollectionObject  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="SubNumber"
-     *             length="10"
-     *         
-     */
-    public Integer getSubNumber() {
-        return this.subNumber;
-    }
-    
-    public void setSubNumber(Integer subNumber) {
-        this.subNumber = subNumber;
-    }
-
-    /**
-     *      *            @hibernate.property
      *             column="Name"
-     *             length="50"
+     *             length="64"
      *         
      */
     public String getName() {
@@ -293,21 +251,50 @@ public class CollectionObject  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="CatalogedDate"
-     *             length="10"
      *         
      */
-    public Integer getCatalogedDate() {
+    public Calendar getCatalogedDate() {
         return this.catalogedDate;
     }
     
-    public void setCatalogedDate(Integer catalogedDate) {
+    public void setCatalogedDate(Calendar catalogedDate) {
         this.catalogedDate = catalogedDate;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="CatalogedDateVerbatim"
+     *         length="32"
+     *         
+     */
+    public String getCatalogedDateVerbatim() {
+        return this.catalogedDateVerbatim;
+    }
+    
+    public void setCatalogedDateVerbatim(String catalogedDateVerbatim) {
+        this.catalogedDateVerbatim = catalogedDateVerbatim;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="GUID"
+     *             length="255"
+     *         
+     */
+    public String getGuid() {
+        return this.guid;
+    }
+    
+    public void setGuid(String guid) {
+        this.guid = guid;
     }
 
     /**
      *      *            @hibernate.property
      *             column="TimestampCreated"
      *             length="23"
+     *             update="false"
+     *             not-null="true"
      *         
      */
     public Date getTimestampCreated() {
@@ -322,6 +309,7 @@ public class CollectionObject  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="TimestampModified"
      *             length="23"
+     *             not-null="true"
      *         
      */
     public Date getTimestampModified() {
@@ -351,25 +339,24 @@ public class CollectionObject  implements java.io.Serializable {
      *             column="Deaccessioned"
      *         
      */
-    public Short getDeaccessioned() {
+    public Boolean getDeaccessioned() {
         return this.deaccessioned;
     }
     
-    public void setDeaccessioned(Short deaccessioned) {
+    public void setDeaccessioned(Boolean deaccessioned) {
         this.deaccessioned = deaccessioned;
     }
 
     /**
      *      *            @hibernate.property
      *             column="CatalogNumber"
-     *             length="32"
      *         
      */
-    public String getCatalogNumber() {
+    public Float getCatalogNumber() {
         return this.catalogNumber;
     }
     
-    public void setCatalogNumber(String catalogNumber) {
+    public void setCatalogNumber(Float catalogNumber) {
         this.catalogNumber = catalogNumber;
     }
 
@@ -389,25 +376,12 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.one-to-one
-     *            @hibernate.column name="ObservationID"         
-     *         
-     */
-    public Observation getObservation() {
-        return this.observation;
-    }
-    
-    public void setObservation(Observation observation) {
-        this.observation = observation;
-    }
-
-    /**
      *      *            @hibernate.set
      *             lazy="true"
      *             inverse="true"
      *             cascade="delete"
      *            @hibernate.collection-key
-     *             column="BiologicalObjectID"
+     *             column="CollectionObjectID"
      *            @hibernate.collection-one-to-many
      *             class="edu.ku.brc.specify.datamodel.CollectionObjectCitation"
      *         
@@ -426,17 +400,17 @@ public class CollectionObject  implements java.io.Serializable {
      *             inverse="true"
      *             cascade="delete"
      *            @hibernate.collection-key
-     *             column="BioAttrsID"
+     *             column="CollectionObjectAttrID"
      *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.BioAttrs"
+     *             class="edu.ku.brc.specify.datamodel.CollectionObjectAttr"
      *         
      */
-    public Set getBioAttrs() {
-        return this.bioAttrs;
+    public Set getAttrs() {
+        return this.attrs;
     }
     
-    public void setBioAttrs(Set bioAttrs) {
-        this.bioAttrs = bioAttrs;
+    public void setAttrs(Set attrs) {
+        this.attrs = attrs;
     }
 
     /**
@@ -445,7 +419,7 @@ public class CollectionObject  implements java.io.Serializable {
      *             inverse="true"
      *             cascade="delete"
      *            @hibernate.collection-key
-     *             column="CollectionObjID"
+     *             column="CollectionObjectID"
      *            @hibernate.collection-one-to-many
      *             class="edu.ku.brc.specify.datamodel.Preparation"
      *         
@@ -464,7 +438,7 @@ public class CollectionObject  implements java.io.Serializable {
      *             inverse="true"
      *             cascade="delete"
      *            @hibernate.collection-key
-     *             column="BiologicalObjectID"
+     *             column="CollectionObjectID"
      *            @hibernate.collection-one-to-many
      *             class="edu.ku.brc.specify.datamodel.Determination"
      *         
@@ -577,25 +551,6 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="PhysicalObjectID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"
-     *         
-     */
-    public Set getLoanPhysicalObjects() {
-        return this.loanPhysicalObjects;
-    }
-    
-    public void setLoanPhysicalObjects(Set loanPhysicalObjects) {
-        this.loanPhysicalObjects = loanPhysicalObjects;
-    }
-
-    /**
      * 
      */
     public Set getExternalResources() {
@@ -609,4 +564,28 @@ public class CollectionObject  implements java.io.Serializable {
 
 
 
+  // The following is extra code specified in the hbm.xml files
+
+        
+    protected Container container = null;
+    
+    /**
+     * 
+     */
+    public Container getContainer() 
+    {
+        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Container.class);
+        criteria.add(Expression.eq("containerId", collectionObjectId));
+        java.util.List list = criteria.list();
+        this.container = list != null && list.size() > 0 ? (Container)list.get(0) : null;
+        return this.container;
+    }
+    
+    public void setContainer(Container container) 
+    {
+        this.container = container;
+    }
+    
+    
+  // end of extra code specified in the hbm.xml files
 }

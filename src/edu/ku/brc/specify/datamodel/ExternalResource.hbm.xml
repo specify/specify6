@@ -12,7 +12,7 @@
 >
 
    <id
-        name="externalFileId"
+        name="externalResourceId"
         type="java.lang.Integer"
         column="ExternalResourceID"
     >
@@ -92,12 +92,16 @@
         type="java.sql.Timestamp"
         column="TimestampCreated"
         length="23"
+        not-null="true"
+        update="false"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="TimestampCreated"
             length="23"
+            update="false"
+            not-null="true"
         </meta>    
     </property>
     
@@ -112,6 +116,7 @@
            @hibernate.property
             column="TimestampModified"
             length="23"
+            not-null="true"
         </meta>    
     </property>
     
@@ -131,9 +136,9 @@
 
     <!-- Associations -->
     
-    <!-- bi-directional one-to-many association to ExtResAttrs -->
+    <!-- bi-directional one-to-many association to ExternalResourceAttr -->
     <set
-        name="extResAttrs"
+        name="attrs"
         lazy="true"
         inverse="true"
 		cascade="delete"
@@ -146,20 +151,18 @@
             cascade="delete"
 
            @hibernate.collection-key
-            column="ExtResAttrsID"
+            column="ExternalResourceID"
 
            @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.ExtResAttrs"
+            class="edu.ku.brc.specify.datamodel.ExternalResourceAttr"
         </meta>
         <key>
-            <column name="ExtResAttrsID" />
+            <column name="ExternalResourceID" />
         </key>
         <one-to-many 
-            class="edu.ku.brc.specify.datamodel.ExtResAttrs"
+            class="edu.ku.brc.specify.datamodel.ExternalResourceAttr"
         />
     </set>	
-    
-    
     
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one

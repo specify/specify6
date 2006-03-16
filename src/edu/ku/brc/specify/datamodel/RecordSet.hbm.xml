@@ -23,7 +23,8 @@
 	<property   name="name"
 	            column="Name"
 				update="true"
-				type="string">
+				type="string"
+				length="64">
 	</property>
 
 	<property   name="tableId"
@@ -32,12 +33,37 @@
 				type="int">
 	</property>
 
-	<!-- We can't change the creation time, so map it with update="false". -->
-	<property   name="created"
-				column="Created"
-				type="java.util.Date"
-				update="false"
-				not-null="true"/>
+    <property
+        name="timestampModified"
+        type="java.sql.Timestamp"
+        column="TimestampModified"
+        length="23"
+    >
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampModified"
+            length="23"
+            not-null="true"
+        </meta>    
+    </property>
+    
+    <property
+        name="timestampCreated"
+        type="java.sql.Timestamp"
+        column="TimestampCreated"
+        length="23"
+        not-null="true"
+        update="false"
+    >
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TimestampCreated"
+            length="23"
+            update="false"
+            not-null="true"
+        </meta>    
+    </property>
+
 
     <!-- Associations -->
 
@@ -49,6 +75,22 @@
     		<property name="recordId" not-null="true" unique="false"/>
         </composite-element>
     </set>
-
+    
+    <!-- many-to-one association to User -->
+    <many-to-one
+        name="owner"
+        class="edu.ku.brc.specify.datamodel.User"
+        not-null="true"
+		outer-join="true"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="UserID"
+        </meta>
+        <column name="UserID" />
+    </many-to-one>   
+    
 </class>
 </hibernate-mapping>

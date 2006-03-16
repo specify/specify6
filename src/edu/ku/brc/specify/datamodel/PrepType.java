@@ -1,16 +1,16 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Set;
 
 
 
 
 /**
  *        @hibernate.class
- *         table="preptypes"
+ *         table="preptype"
  *     
  */
-public class PrepTypes  implements java.io.Serializable {
+public class PrepType  implements java.io.Serializable {
 
     // Fields    
 
@@ -22,11 +22,11 @@ public class PrepTypes  implements java.io.Serializable {
     // Constructors
 
     /** default constructor */
-    public PrepTypes() {
+    public PrepType() {
     }
     
     /** constructor with id */
-    public PrepTypes(Integer prepTypeId) {
+    public PrepType(Integer prepTypeId) {
         this.prepTypeId = prepTypeId;
     }
    

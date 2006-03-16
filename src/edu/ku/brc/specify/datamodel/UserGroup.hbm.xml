@@ -2,61 +2,64 @@
 <!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
 
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
+<hibernate-mapping>
 
 <class 
-    name="edu.ku.brc.specify.datamodel.PrepTypes" 
-    table="preptypes"
-	lazy="true"
+    name="edu.ku.brc.specify.datamodel.UserGroup"
+    table="usergroup"
+    lazy="true"	
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="preptypes"
+        table="usergroup"
     </meta>
 
     <id
-        name="prepTypeId"
+        name="userGroupId"
         type="java.lang.Integer"
-        column="PrepTypeID"
+        column="UserGroupID"
     >
       <meta attribute="scope-set">public</meta>
       <meta attribute="scope-field">protected</meta>
       <generator class="native"/>
     </id>
-	
+    
     <property
         name="name"
         type="java.lang.String"
         column="Name"
-        length="50"
+        length="64"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Name"
-            length="50"
+            length="64"
         </meta>    
     </property>
-
-	
-	
-	<!-- Associations -->
-	
-    <!-- bi-directional one-to-many association to Preparation -->
+    
+    <property
+        name="remarks"
+        type="text"
+        column="Remarks"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="Remarks"
+        </meta>    
+    </property>
+    
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-many association to User -->
     <set
-        name="preparation"
+        name="users"
         lazy="true"
         inverse="true"
 		cascade="none"
     >
-	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.set
             lazy="true"
@@ -64,19 +67,18 @@
             cascade="none"
 
            @hibernate.collection-key
-            column="PreparationID"
+            column="UserGroupID"
 
            @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.Preparation"
+            class="edu.ku.brc.specify.datamodel.User"
         </meta>
         <key>
-            <column name="PreparationID" />
+            <column name="UserGroupID" />
         </key>
         <one-to-many 
-            class="edu.ku.brc.specify.datamodel.Preparation"
+            class="edu.ku.brc.specify.datamodel.User"
         />
     </set>
-
-	
+    
 </class>
 </hibernate-mapping>

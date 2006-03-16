@@ -2,13 +2,13 @@
 <viewset name="Fish Views" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="form.xsd">
 
     <view id="1" type="form" 
-                 name="CollectionObj" 
-                 class="edu.ku.brc.specify.datamodel.CollectionObj" 
+                 name="CollectionObject" 
+                 class="edu.ku.brc.specify.datamodel.CollectionObject" 
                  gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
                  resourceLabels="false" 
                  validate="true"
                  >
-    	<desc><![CDATA[The Main Accession form.]]></desc>
+    	<desc><![CDATA[The Collection Object form.]]></desc>
     	
 		<columnDef>100px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
 		<rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
@@ -39,7 +39,7 @@
 			</row>
 
 			<row>
-				<cell type="subview" id="6" name="determinationsByBiologicalObjectId" class="edu.ku.brc.specify.datamodel.Determination"  colspan="12"/>
+				<cell type="subview" id="6" name="determinations" class="edu.ku.brc.specify.datamodel.Determination"  colspan="12"/>
 			</row>
 
 			<row>
@@ -57,7 +57,7 @@
 				<cell type="separator" label="Preparations" colspan="12"/>
 			</row>
 			<row>
-				<cell type="subview" id="7" name="preparations" class="edu.ku.brc.specify.datamodel.PrepsObj" colspan="12"/>
+				<cell type="subview" id="7" name="preparations" class="edu.ku.brc.specify.datamodel.Preparations" colspan="12"/>
 			</row>
 
 			<row>
@@ -74,8 +74,8 @@
 	</view>
 	
 	<view id="6" type="form" 
-                 name="Accession" 
-                 class="edu.ku.brc.specify.datamodel.TaxonName" 
+                 name="Determination" 
+                 class="edu.ku.brc.specify.datamodel.Determination" 
                  gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
                  resourceLabels="false" 
                  validate="true"
@@ -91,10 +91,10 @@
 		<rows>
 			<row>
                 <cell type="label" labelfor="fieldNumber" label="Taxon"/>
-				<cell type="field" name="taxonName.fullTaxonName" label="Taxon" colspan="5"/>	
+				<cell type="field" name="taxon.fullTaxon" label="Taxon" colspan="5"/>	
 				
-                <cell type="label" labelfor="current1" label=""/>
-				<cell type="field" name="current1" uitype="checkbox" label="Is Current"/>
+                <cell type="label" labelfor="isCurrent" label=""/>
+				<cell type="field" name="isCurrent" uitype="checkbox" label="Is Current"/>
 			</row>
 			<row>
 				
@@ -104,8 +104,8 @@
                 <cell type="label" labelfor="confidenceId" label="Confidence"/>
 				<cell type="field" name="confidenceId" label="Confidence"/>
 				
-                <cell type="label" labelfor="date1" label="Date"/>
-				<cell type="field" name="date1" format="date" isrequired="true"/>
+                <cell type="label" labelfor="determinationDate" label="Date"/>
+				<cell type="field" name="determinedDate" isrequired="true"/>
 			</row>
 			
 			<row>
@@ -116,8 +116,8 @@
 	</view>
 	
 	<view id="7" type="form" 
-                 name="Accession" 
-                 class="edu.ku.brc.specify.datamodel.PrepsObj" 
+                 name="Preparation" 
+                 class="edu.ku.brc.specify.datamodel.Preparation" 
                  gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
                  resourceLabels="false"
                  validate="true"
@@ -131,16 +131,18 @@
 		<rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu</rowDef>
 	  
 		<rows>
-			<row>
+<!--			 <row>
                 <cell type="label" labelfor="preparationMethod" label="Prep Method"/>
 				<cell type="field" uitype="combobox" name="preparationMethod" initialize="EtOH, Skeleton, Tissue, Clear Stained, X-Ray, Misc"/>
-				
+
                 <cell type="label" labelfor="subNumber" label="Sub No"/>
 				<cell type="field" name="subNumber"/>
+				
 				
                 <cell type="label" labelfor="remarks" label="Remarks"/>
 				<cell type="field" name="remarks" rowspan="8" cols="25"/>
 			</row>
+-->			
 			<row>
                 <cell type="label" labelfor="preparedDate" label="Prepared Date"/>
 				<cell type="field" name="preparedDate" format="date"/>
@@ -152,13 +154,13 @@
                 <cell type="label" labelfor="count" label="Count"/>
 				<cell type="field" name="count"/>
 				
-                <cell type="label" labelfor="storagelocation" label="Storage"/>
-				<cell type="field" name="storagelocation"/>
+                <cell type="label" labelfor="storageLocation" label="Storage"/>
+				<cell type="field" name="storageLocation"/>
 			</row>
-			<row>
+<!--			<row>
 				<cell type="label" labelfor="url" label="URL"/>
 				<cell type="field" name="url" label="URL" colspan="5" cols="50"/>	
-			</row>
+-->			</row>
             <row>
 			    <cell type="label" labelfor="prepAttrs.size" label="Size"/>
 				<cell type="field" name="prepAttrs.size"/>

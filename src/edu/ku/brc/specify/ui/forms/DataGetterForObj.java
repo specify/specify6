@@ -30,7 +30,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.ku.brc.specify.datamodel.AttrsSettableGettable;
+import edu.ku.brc.specify.datamodel.AttributeIFace;
+import edu.ku.brc.specify.datamodel.AttributeDef;
+import edu.ku.brc.specify.datamodel.Locality;
 
 
 /**
@@ -62,6 +64,13 @@ public class DataGetterForObj implements DataObjectGettable
      */
     public Object getFieldValueInternal(Object dataObj, String fieldName) 
     {
+        boolean debug = true;
+        if (dataObj instanceof Locality)
+        {
+            System.out.println("getLocalityName ["+((Locality)dataObj).getLocalityName()+"]");
+            debug = true;
+        }
+        
         //System.out.println("["+fieldName+"]["+(dataObj != null ? dataObj.getClass().toString() : "N/A")+"]");
         Object value = null;
         if (dataObj != null)
@@ -82,18 +91,34 @@ public class DataGetterForObj implements DataObjectGettable
                     while (iter.hasNext())
                     {
                         Object obj = iter.next();
-                        if (obj instanceof AttrsSettableGettable) // Not scalable (needs interface)
+                        if (obj instanceof AttributeIFace) // Not scalable (needs interface)
                         {
-                            AttrsSettableGettable asg = (AttrsSettableGettable)obj;
-                            if (asg.getName().equals(fieldName))
+                            AttributeIFace asg = (AttributeIFace)obj;
+                            if (asg.getDefinition().getFieldName().equals(fieldName))
                             {
-                                if (asg.getFieldType() == AttrsSettableGettable.FieldType.StringType.getType())
+                                if (asg.getDefinition().getDataType() == AttributeIFace.FieldType.StringType.getType())
                                 {
                                    return asg.getStrValue();
-                                   
-                                } else if (asg.getFieldType() == AttrsSettableGettable.FieldType.IntegerType.getType())
+                                    
+                                } else if (asg.getDefinition().getDataType() == AttributeIFace.FieldType.MemoType.getType())
                                 {
-                                    return asg.getIntValue();
+                                    return asg.getStrValue();
+                                    
+                                } else if (asg.getDefinition().getDataType() == AttributeIFace.FieldType.IntegerType.getType())
+                                {
+                                    return asg.getDblValue().intValue();
+                                    
+                                } else if (asg.getDefinition().getDataType() == AttributeIFace.FieldType.FloatType.getType())
+                                {
+                                    return asg.getDblValue().floatValue();
+                                    
+                                } else if (asg.getDefinition().getDataType() == AttributeIFace.FieldType.DoubleType.getType())
+                                {
+                                    return asg.getDblValue();
+                                    
+                                } else if (asg.getDefinition().getDataType() == AttributeIFace.FieldType.BooleanType.getType())
+                                {
+                                    return new Boolean(asg.getDblValue() != 0.0);
                                 }
                             }
                         } else
@@ -131,7 +156,7 @@ public class DataGetterForObj implements DataObjectGettable
      */
     public Object getFieldValue(Object dataObj, String fieldName) 
     {
-        
+       
         // XXX need to replace this code with the library that does this from the Cookbook
         String[] fieldsNames = StringUtils.split(fieldName, " ,");
         Object[] values = new Object[fieldsNames.length];

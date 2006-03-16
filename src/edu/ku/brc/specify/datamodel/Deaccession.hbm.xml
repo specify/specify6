@@ -64,15 +64,14 @@
         </meta>    
     </property>
     <property
-        name="date1"
-        type="java.lang.Integer"
-        column="Date1"
-        length="10"
+        name="deaccessionDate"
+        type="calendar_date"
+        column="DeaccessionDate"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="Date1"
+            column="DeaccessionDate"
             length="10"
         </meta>    
     </property>
@@ -152,21 +151,28 @@
            @hibernate.property
             column="TimestampModified"
             length="23"
+            not-null="true"
         </meta>    
     </property>
+    
     <property
         name="timestampCreated"
         type="java.sql.Timestamp"
         column="TimestampCreated"
         length="23"
+        not-null="true"
+        update="false"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="TimestampCreated"
             length="23"
+            update="false"
+            not-null="true"
         </meta>    
     </property>
+    
     <property
         name="lastEditedBy"
         type="java.lang.String"

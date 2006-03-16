@@ -90,14 +90,14 @@
             class="edu.ku.brc.specify.datamodel.TaxonTreeDef"
         </meta>
         <key>
-            <column name="TreeDefID" />
+            <column name="CollectionObjDefID"/>
         </key>
         <one-to-many 
             class="edu.ku.brc.specify.datamodel.TaxonTreeDef"
         />
     </set>
     
-     <!-- many-to-one association to User -->
+    <!-- many-to-one association to User -->
     <many-to-one
         name="user"
         class="edu.ku.brc.specify.datamodel.User"
@@ -108,34 +108,34 @@
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="userId"
+           @hibernate.column name="UserID"
         </meta>
-        <column name="userId" />
+        <column name="UserID" />
     </many-to-one>   
     
-    <!-- bi-directional one-to-many association to AttrsDef -->
+    <!-- bi-directional one-to-many association to AttributeDef -->
     <set
-        name="attrsDefs"
+        name="AttributeDefs"
         lazy="true"
         inverse="true"
-		cascade="none"
+		cascade="delete"
     >
         <meta attribute="field-description">
            @hibernate.set
             lazy="true"
             inverse="true"
-            cascade="none"
+            cascade="delete"
 
            @hibernate.collection-key
-            column="AttrsDefID"
+            column="CollectionObjDefID"
 
            @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.AttrsDef"
+            class="edu.ku.brc.specify.datamodel.AttributeDef"
         </meta>
         <key>
-            <column name="AttrsDefID" />
+            <column name="CollectioObjDefID" />
         </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.AttrsDef"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.AttributeDef"/>
     </set>
     
 </class>

@@ -30,12 +30,14 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.ku.brc.specify.datamodel.AttrsSettableGettable;
+import edu.ku.brc.specify.datamodel.AttributeIFace;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 
 /**
@@ -61,83 +63,72 @@ public class FishConversion
         this.collectionObjDef = collectionObjDef;
     }
     
-  
-   
     /*
      * Cleans all the Attribute tables and recreates them
      */
-    public void loadAttrs(final boolean cleanTables)
+    public void loadAttrs(final boolean cleanTables, Map<String, PrepType> prepTypesMap)
     {
         
         if (cleanTables) 
         {
             deleteAllRecordsFromTable("attrsdef");
-            deleteAllRecordsFromTable("preptypes");
-            deleteAllRecordsFromTable("prepattrs");
+            deleteAllRecordsFromTable("prepattr");
         }
 
         //------------------------------
         // Load PrepTypes and Prep Attrs
         //------------------------------
-        String[] fishPrepTypes = {"EtOH", "Skeleton", "Tissue", "Clear & Stained", "X-Ray", "Misc"};
-        String[] fishPrepStr   = {"EtOH", "Skel",     "Tissue", "C&S",             "X-Ray", "Misc"};
-        for (int i=0;i<fishPrepTypes.length;i++)
-        {
-            AttrUtils.loadPrepType(i+1, fishPrepTypes[i]);
-            prepTypeMapper.put(fishPrepStr[i], i);
-        }
+
         
         String[] fishEtOHAttrs = {
                 "size",
                 "sex",
-                "url",
                 };
         short[] fishEtOHTypes = {
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.URLType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
         };
         String[] fishSkelAttrs = {
                 "size",
                 };
         short[] fishSkelTypes = {
-                AttrsSettableGettable.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
         };
         
         String[] fishTissueAttrs = {
                 "dna",
                 };
         short[] fishTissueTypes = {
-                AttrsSettableGettable.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
         };
         
         String[] fishClearStainAttrs = {
                 "stain_color",
                 };
         short[] fishClearStainTypes = {
-                AttrsSettableGettable.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
         };
         
         String[] fishXRayAttrs = {
                 "film_no",
                 };
         short[] fishXRayTypes = {
-                AttrsSettableGettable.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
         };
         
         String[] fishMiscAttrs = {
                 "misc",
                 };
         short[] fishMiscTypes = {
-                AttrsSettableGettable.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
         };
         
-        AttrUtils.loadAttrDefs(collectionObjDef, AttrsSettableGettable.TableType.PrepType, 0, fishEtOHAttrs, fishEtOHTypes);
-        AttrUtils.loadAttrDefs(collectionObjDef, AttrsSettableGettable.TableType.PrepType, 1, fishSkelAttrs, fishSkelTypes);
-        AttrUtils.loadAttrDefs(collectionObjDef, AttrsSettableGettable.TableType.PrepType, 2, fishClearStainAttrs, fishClearStainTypes);
-        AttrUtils.loadAttrDefs(collectionObjDef, AttrsSettableGettable.TableType.PrepType, 3, fishTissueAttrs, fishTissueTypes);
-        AttrUtils.loadAttrDefs(collectionObjDef, AttrsSettableGettable.TableType.PrepType, 4, fishXRayAttrs, fishXRayTypes);
-        AttrUtils.loadAttrDefs(collectionObjDef, AttrsSettableGettable.TableType.PrepType, 5, fishMiscAttrs, fishMiscTypes);
+        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.Preparation, 0, fishEtOHAttrs, fishEtOHTypes);
+        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.Preparation, 1, fishSkelAttrs, fishSkelTypes);
+        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.Preparation, 2, fishClearStainAttrs, fishClearStainTypes);
+        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.Preparation, 3, fishTissueAttrs, fishTissueTypes);
+        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.Preparation, 4, fishXRayAttrs, fishXRayTypes);
+        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.Preparation, 5, fishMiscAttrs, fishMiscTypes);
         
         /*
         String[] birdPrepAttrs = {
@@ -160,19 +151,19 @@ public class FishConversion
         
         short[] bird_types = {
                 AttrsMgr.DATE_TYPE,
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.MemoType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.IntegerType.getType(),
-                AttrsSettableGettable.FieldType.IntegerType.getType(),
-                AttrsSettableGettable.FieldType.IntegerType.getType(),
-                AttrsSettableGettable.FieldType.IntegerType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.MemoType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.IntegerType.getType(),
+                AttributeIFace.FieldType.IntegerType.getType(),
+                AttributeIFace.FieldType.IntegerType.getType(),
+                AttributeIFace.FieldType.IntegerType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
                 AttrsMgr.SHRT_TYPE};
         
         
@@ -267,7 +258,7 @@ public class FishConversion
                 "stageId", 
         };
         short[] bioTypes = {
-                AttrsSettableGettable.FieldType.FloatType.getType(),
+                AttributeIFace.FieldType.FloatType.getType(),
         };
         */
         String[] fishBioAttrs = {
@@ -277,12 +268,12 @@ public class FishConversion
                 "remarks", 
         };
         short[] fishBioTypes = {
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.FloatType.getType(),
-                AttrsSettableGettable.FieldType.FloatType.getType(),
-                AttrsSettableGettable.FieldType.MemoType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.FloatType.getType(),
+                AttributeIFace.FieldType.FloatType.getType(),
+                AttributeIFace.FieldType.MemoType.getType(),
         };
-        AttrUtils.loadAttrDefs(collectionObjDef, AttrsSettableGettable.TableType.BioType, 0, fishBioAttrs, fishBioTypes);
+        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.CollectionObject, 0, fishBioAttrs, fishBioTypes);
 
         //------------------------------
         // Load Habtitat Attrs
@@ -314,27 +305,27 @@ public class FishConversion
                 "hostTaxonName"
             };
         short[] habitatTypes = {
-                AttrsSettableGettable.FieldType.FloatType.getType(),
-                AttrsSettableGettable.FieldType.FloatType.getType(),
-                AttrsSettableGettable.FieldType.FloatType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.FloatType.getType(),
-                AttrsSettableGettable.FieldType.FloatType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.FloatType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.MemoType,
-                AttrsSettableGettable.FieldType.FloatType.getType(),
-                AttrsSettableGettable.FieldType.FloatType.getType(),
+                AttributeIFace.FieldType.FloatType.getType(),
+                AttributeIFace.FieldType.FloatType.getType(),
+                AttributeIFace.FieldType.FloatType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.FloatType.getType(),
+                AttributeIFace.FieldType.FloatType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.FloatType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.MemoType,
+                AttributeIFace.FieldType.FloatType.getType(),
+                AttributeIFace.FieldType.FloatType.getType(),
                 AttrsMgr.TAXON_TYPE};
         */
         String[] fishHabitatAttrs = {
@@ -349,17 +340,17 @@ public class FishConversion
                 "maxDepth",
             };
         short[] fishHabitatTypes = {
-                AttrsSettableGettable.FieldType.FloatType.getType(),
-                AttrsSettableGettable.FieldType.FloatType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.StringType.getType(),
-                AttrsSettableGettable.FieldType.MemoType.getType(),
-                AttrsSettableGettable.FieldType.FloatType.getType(),
-                AttrsSettableGettable.FieldType.FloatType.getType()};
+                AttributeIFace.FieldType.FloatType.getType(),
+                AttributeIFace.FieldType.FloatType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.StringType.getType(),
+                AttributeIFace.FieldType.MemoType.getType(),
+                AttributeIFace.FieldType.FloatType.getType(),
+                AttributeIFace.FieldType.FloatType.getType()};
         
-        AttrUtils.loadAttrDefs(collectionObjDef, AttrsSettableGettable.TableType.HabitatType, 0, fishHabitatAttrs, fishHabitatTypes);
+        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.CollectingEvent, 0, fishHabitatAttrs, fishHabitatTypes);
     }
     
     /**
@@ -386,6 +377,7 @@ public class FishConversion
             {
                
                 Statement updateStatement = newDBConn.createStatement();
+                BasicSQLUtils.exeUpdateCmd(updateStatement, "SET FOREIGN_KEY_CHECKS = 0");
                 
                 String sex  = rs.getString(2); // sex
                 String size = rs.getString(3); // size
@@ -394,19 +386,19 @@ public class FishConversion
                         sex,  // String value
                         null, // Integer value
                         null, // fieldType,
-                        AttrsSettableGettable.FieldType.StringType.getType(), 
+                        AttributeIFace.FieldType.StringType.getType(), 
                         null,
                         null);*/
                 
                 if (size != null)
                 {
-                    BasicSQLUtils.exeUpdateCmd(updateStatement, AttrUtils.createPrepsInsert(prepAttrsID, "size", size, (Integer)null, AttrsSettableGettable.FieldType.StringType.getType(), null, timeStamp, modifiedDate, null, rs.getInt(1), null));
+                    BasicSQLUtils.exeUpdateCmd(updateStatement, AttrUtils.createPrepsInsert(prepAttrsID, "size", size, (Integer)null, AttributeIFace.FieldType.StringType.getType(), null, timeStamp, modifiedDate, null, rs.getInt(1), null));
                     prepAttrsID++;
                 }
                 
                 if (sex != null)
                 {
-                    BasicSQLUtils.exeUpdateCmd(updateStatement, AttrUtils.createPrepsInsert(prepAttrsID, "sex", sex, (Integer)null, AttrsSettableGettable.FieldType.StringType.getType(), null, timeStamp, modifiedDate, null, rs.getInt(1), null));                                
+                    BasicSQLUtils.exeUpdateCmd(updateStatement, AttrUtils.createPrepsInsert(prepAttrsID, "sex", sex, (Integer)null, AttributeIFace.FieldType.StringType.getType(), null, timeStamp, modifiedDate, null, rs.getInt(1), null));                                
                     prepAttrsID++;
                 }
                 

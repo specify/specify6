@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -20,7 +21,7 @@ public class ReferenceWork  implements java.io.Serializable {
      protected String title;
      protected String publisher;
      protected String placeOfPublication;
-     protected String dateField;
+     protected String workDate;
      protected String volume;
      protected String pages;
      protected String url;
@@ -148,16 +149,16 @@ public class ReferenceWork  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="DateField"
+     *             column="WorkDate"
      *             length="25"
      *         
      */
-    public String getDateField() {
-        return this.dateField;
+    public String getWorkDate() {
+        return this.workDate;
     }
     
-    public void setDateField(String dateField) {
-        this.dateField = dateField;
+    public void setWorkDate(String workDate) {
+        this.workDate = workDate;
     }
 
     /**
@@ -290,6 +291,7 @@ public class ReferenceWork  implements java.io.Serializable {
      *             column="TimestampCreated"
      *             length="23"
      *             not-null="true"
+     *             update="false"
      *         
      */
     public Date getTimestampCreated() {
@@ -304,6 +306,7 @@ public class ReferenceWork  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="TimestampModified"
      *             length="23"
+     *             not-null="true"
      *             not-null="true"
      *         
      */

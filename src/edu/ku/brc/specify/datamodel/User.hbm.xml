@@ -7,12 +7,12 @@
 
 <class 
     name="edu.ku.brc.specify.datamodel.User"
-    table="usysusers"
-lazy="true"	
+    table="user"
+    lazy="true"	
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="usysusers"
+        table="user"
     </meta>
 
     <id
@@ -81,19 +81,61 @@ lazy="true"
             cascade="none"
 
            @hibernate.collection-key
-            column="CollectionObjDefID"
+            column="UserID"
 
            @hibernate.collection-one-to-many
             class="edu.ku.brc.specify.datamodel.CollectionObjDef"
         </meta>
         <key>
-            <column name="CollectionObjDefID" />
+            <column name="UserID" />
         </key>
         <one-to-many 
             class="edu.ku.brc.specify.datamodel.CollectionObjDef"
         />
     </set>
     
+    <!-- bi-directional one-to-many association to RecordSet -->
+    <set
+        name="recordSets"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="delete"
+
+           @hibernate.collection-key
+            column="CollectionObjectID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.RecordSet"
+        </meta>
+        <key>
+            <column name="CollectionObjectID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.RecordSet"
+        />
+    </set>
+    
+    <!-- bi-directional many-to-one association to UserGroup -->
+    <many-to-one
+        name="userGroup"
+        class="edu.ku.brc.specify.datamodel.UserGroup"
+        not-null="true"
+		outer-join="true"
+    >
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="UserGroupID"         
+        </meta>
+        <column name="UserGroupID" />
+    </many-to-one>
 
 </class>
 </hibernate-mapping>

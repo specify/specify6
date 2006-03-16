@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -17,7 +19,7 @@ public class Deaccession  implements java.io.Serializable {
      protected Integer deaccessionId;
      protected String type;
      protected String deaccessionNumber;
-     protected Integer date1;
+     protected Calendar deaccessionDate;
      protected String remarks;
      protected String text1;
      protected String text2;
@@ -94,16 +96,16 @@ public class Deaccession  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="Date1"
+     *             column="DeaccessionDate"
      *             length="10"
      *         
      */
-    public Integer getDate1() {
-        return this.date1;
+    public Calendar getDeaccessionDate() {
+        return this.deaccessionDate;
     }
     
-    public void setDate1(Integer date1) {
-        this.date1 = date1;
+    public void setDeaccessionDate(Calendar deaccessionDate) {
+        this.deaccessionDate = deaccessionDate;
     }
 
     /**
@@ -179,6 +181,7 @@ public class Deaccession  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="TimestampModified"
      *             length="23"
+     *             not-null="true"
      *         
      */
     public Date getTimestampModified() {
@@ -193,6 +196,8 @@ public class Deaccession  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="TimestampCreated"
      *             length="23"
+     *             update="false"
+     *             not-null="true"
      *         
      */
     public Date getTimestampCreated() {

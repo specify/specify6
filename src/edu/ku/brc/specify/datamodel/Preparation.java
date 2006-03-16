@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -15,18 +17,18 @@ public class Preparation  implements java.io.Serializable {
     // Fields    
 
      protected Integer preparationId;
-     protected String preparationMethod;
-     protected Integer subNumber;
+     protected String text1;
+     protected String text2;
      protected Integer count;
-     protected String storagelocation;
-     protected String url;
+     protected String storageLocation;
      protected String remarks;
-     protected Integer preparedDate;
+     protected Calendar preparedDate;
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
      protected Set loanPhysicalObjects;
-     protected Set prepAttrs;
+     protected Set attrs;
+     private PrepType prepType;
      private CollectionObject collectionObject;
      private Agent agent;
      private Location location;
@@ -66,30 +68,30 @@ public class Preparation  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="PreparationMethod"
-     *             length="50"
+     *             column="Text1"
+     *             length="300"
      *         
      */
-    public String getPreparationMethod() {
-        return this.preparationMethod;
+    public String getText1() {
+        return this.text1;
     }
     
-    public void setPreparationMethod(String preparationMethod) {
-        this.preparationMethod = preparationMethod;
+    public void setText1(String text1) {
+        this.text1 = text1;
     }
 
     /**
      *      *            @hibernate.property
-     *             column="SubNumber"
-     *             length="10"
+     *             column="Text2"
+     *             length="300"
      *         
      */
-    public Integer getSubNumber() {
-        return this.subNumber;
+    public String getText2() {
+        return this.text2;
     }
     
-    public void setSubNumber(Integer subNumber) {
-        this.subNumber = subNumber;
+    public void setText2(String text2) {
+        this.text2 = text2;
     }
 
     /**
@@ -108,30 +110,16 @@ public class Preparation  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="Storagelocation"
+     *             column="StorageLocation"
      *             length="50"
      *         
      */
-    public String getStoragelocation() {
-        return this.storagelocation;
+    public String getStorageLocation() {
+        return this.storageLocation;
     }
     
-    public void setStoragelocation(String storagelocation) {
-        this.storagelocation = storagelocation;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="Url"
-     *             length="512"
-     *         
-     */
-    public String getUrl() {
-        return this.url;
-    }
-    
-    public void setUrl(String url) {
-        this.url = url;
+    public void setStorageLocation(String storageLocation) {
+        this.storageLocation = storageLocation;
     }
 
     /**
@@ -150,14 +138,13 @@ public class Preparation  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="PreparedDate"
-     *             length="10"
      *         
      */
-    public Integer getPreparedDate() {
+    public Calendar getPreparedDate() {
         return this.preparedDate;
     }
     
-    public void setPreparedDate(Integer preparedDate) {
+    public void setPreparedDate(Calendar preparedDate) {
         this.preparedDate = preparedDate;
     }
 
@@ -165,6 +152,8 @@ public class Preparation  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="TimestampCreated"
      *             length="23"
+     *             update="false"
+     *             not-null="true"
      *         
      */
     public Date getTimestampCreated() {
@@ -179,6 +168,7 @@ public class Preparation  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="TimestampModified"
      *             length="23"
+     *             not-null="true"
      *         
      */
     public Date getTimestampModified() {
@@ -230,22 +220,36 @@ public class Preparation  implements java.io.Serializable {
      *            @hibernate.collection-key
      *             column="PreparationID"
      *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.PrepAttrs"
+     *             class="edu.ku.brc.specify.datamodel.PreparationAttr"
      *         
      */
-    public Set getPrepAttrs() {
-        return this.prepAttrs;
+    public Set getAttrs() {
+        return this.attrs;
     }
     
-    public void setPrepAttrs(Set prepAttrs) {
-        this.prepAttrs = prepAttrs;
+    public void setAttrs(Set attrs) {
+        this.attrs = attrs;
+    }
+
+    /**
+     *      *            @hibernate.many-to-one
+     *             not-null="true"
+     *            @hibernate.column name="PrepTypeID"         
+     *         
+     */
+    public PrepType getPrepType() {
+        return this.prepType;
+    }
+    
+    public void setPrepType(PrepType prepType) {
+        this.prepType = prepType;
     }
 
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
      * 			cascade="delete"
-     *            @hibernate.column name="CollectionObjID"         
+     *            @hibernate.column name="CollectionObjectID"         
      *         
      */
     public CollectionObject getCollectionObject() {

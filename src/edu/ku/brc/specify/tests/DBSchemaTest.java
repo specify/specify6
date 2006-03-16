@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.tests;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,6 +25,7 @@ import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.User;
+import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
@@ -80,7 +82,10 @@ public class DBSchemaTest extends TestCase
     {
         log.info("Create User");
         GenericDBConversion conversion = new GenericDBConversion();
-        User                user      = conversion.createNewUser("rods", "rods", (short)0);
+        UserGroup userGroup = conversion.createUserGroup("Fish");
+        assertNotNull(userGroup);
+        
+        User user = conversion.createNewUser(userGroup, "rods", "rods", (short)0);
         assertNotNull(user);
     }
 
@@ -195,7 +200,7 @@ public class DBSchemaTest extends TestCase
             colObjDef.setUser(user);
             colObjDef.setTaxonTreeDef(null);
             colObjDef.setCatalogSeries(new HashSet<Object>());
-            colObjDef.setAttrsDefs(new HashSet<Object>());
+            colObjDef.setAttributeDefs(new HashSet<Object>());
             
             session.save(colObjDef);
             
@@ -294,9 +299,16 @@ public class DBSchemaTest extends TestCase
             
             CollectingEvent colEv = new CollectingEvent();
 
+            Calendar startCal = Calendar.getInstance();
+            startCal.clear();
+            startCal.set(2006, 0, 1);
             colEv.setCollectingEventId(0);
-            colEv.setStartDate(20060101);
-            colEv.setEndDate(20060102);
+            colEv.setStartDate(startCal);
+            
+            Calendar endCal = Calendar.getInstance();
+            startCal.clear();
+            startCal.set(2006, 0, 2);
+            colEv.setEndDate(startCal);
             colEv.setCollectors(collectors);
             colEv.setLocality(locality);
             colEv.setTimestampCreated(new Date());
@@ -308,8 +320,8 @@ public class DBSchemaTest extends TestCase
 
             colObj.setCollectionObjectId(0);
             colObj.setAgent(agent);
-            colObj.setCatalogedDate(20060101);
-            colObj.setCatalogNumber("KSNHM121");
+            colObj.setCatalogedDate(startCal);
+            colObj.setCatalogNumber(1101010.1f);
             colObj.setFieldNumber("Field #1");
             colObj.setDeterminations(new HashSet());
             colObj.setTimestampCreated(new Date());
@@ -338,7 +350,7 @@ public class DBSchemaTest extends TestCase
             determination.setDeterminationId(0);
             determination.setIsCurrent(true);
             determination.setCollectionObject(colObj);
-            determination.setDateField(20060101);
+            determination.setDeterminedDate(startCal);
             determination.setDeterminer(agent);
             determination.setTaxon(taxon);
             determination.setTimestampCreated(new Date());

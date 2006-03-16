@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Set;
 
 
 
@@ -20,7 +20,7 @@ public class CollectionObjDef  implements java.io.Serializable {
      private Set catalogSeries;
      private Set taxonTreeDef;
      protected User user;
-     private Set attrsDefs;
+     private Set AttributeDefs;
 
 
     // Constructors
@@ -111,7 +111,7 @@ public class CollectionObjDef  implements java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="userId"
+     *            @hibernate.column name="UserID"
      *         
      */
     public User getUser() {
@@ -126,19 +126,19 @@ public class CollectionObjDef  implements java.io.Serializable {
      *      *            @hibernate.set
      *             lazy="true"
      *             inverse="true"
-     *             cascade="none"
+     *             cascade="delete"
      *            @hibernate.collection-key
-     *             column="AttrsDefID"
+     *             column="CollectionObjDefID"
      *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.AttrsDef"
+     *             class="edu.ku.brc.specify.datamodel.AttributeDef"
      *         
      */
-    public Set getAttrsDefs() {
-        return this.attrsDefs;
+    public Set getAttributeDefs() {
+        return this.AttributeDefs;
     }
     
-    public void setAttrsDefs(Set attrsDefs) {
-        this.attrsDefs = attrsDefs;
+    public void setAttributeDefs(Set AttributeDefs) {
+        this.AttributeDefs = AttributeDefs;
     }
 
 

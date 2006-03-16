@@ -38,6 +38,18 @@
     </id>
 
     <property
+        name="isTissueSeries"
+        type="boolean"
+        column="IsTissueSeries"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="IsTissueSeries"
+        </meta>    
+    </property>
+    
+    <property
         name="seriesName"
         type="java.lang.String"
         column="SeriesName"
@@ -50,6 +62,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="catalogSeriesPrefix"
         type="java.lang.String"
@@ -87,21 +100,28 @@
            @hibernate.property
             column="TimestampModified"
             length="23"
+            not-null="true"
         </meta>    
     </property>
+    
     <property
         name="timestampCreated"
         type="java.sql.Timestamp"
         column="TimestampCreated"
         length="23"
+        not-null="true"
+        update="false"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="TimestampCreated"
             length="23"
+            update="false"
+            not-null="true"
         </meta>    
     </property>
+    
     <property
         name="lastEditedBy"
         type="java.lang.String"
@@ -129,6 +149,28 @@
         </key>
         <many-to-many class="edu.ku.brc.specify.datamodel.CollectionObjDef" column="CollectionObjDefID"/>
     </set>
-
+    
+    <!-- bi-directional many-to-one association to CatalogSeries -->
+    <many-to-one
+        name="tissue"
+        class="edu.ku.brc.specify.datamodel.CatalogSeries"
+        cascade="save-update"
+        not-null="false"
+		outer-join="true"
+    >
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="TissueID"         
+        </meta>
+        <column name="TissueID" />
+    </many-to-one>
+    <!--
+    <set name="vouchers" table="catalogseries" inverse="true">
+		<meta attribute="scope-field">protected</meta>
+		<key column="TissueID"/>
+		<one-to-many class="edu.ku.brc.specify.datamodel.CatalogSeries"/>
+    </set>
+    -->
 </class>
 </hibernate-mapping>

@@ -80,6 +80,7 @@
             length="30"
         </meta>    
     </property>
+    
     <property
         name="verbatimDate"
         type="java.lang.String"
@@ -96,31 +97,28 @@
     
     <property
         name="dateAccessioned"
-        type="java.lang.Integer"
+        type="calendar_date"
         column="DateAccessioned"
-        length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="DateAccessioned"
-            length="10"
         </meta>    
     </property>
     
     <property
         name="dateReceived"
-        type="java.lang.Integer"
+        type="calendar_date"
         column="DateReceived"
-        length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="DateReceived"
-            length="10"
         </meta>    
     </property>
+    
     <property
         name="text1"
         type="java.lang.String"
@@ -204,14 +202,19 @@
         type="java.sql.Timestamp"
         column="TimestampCreated"
         length="23"
+        not-null="true"
+        update="false"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="TimestampCreated"
             length="23"
+            not-null="true"
+            update="false"
         </meta>    
     </property>
+    
     <property
         name="timestampModified"
         type="java.sql.Timestamp"
@@ -223,6 +226,7 @@
            @hibernate.property
             column="TimestampModified"
             length="23"
+            not-null="true"
         </meta>    
     </property>
     <property

@@ -104,16 +104,17 @@
             length="50"
         </meta>    
     </property>
+    
     <property
-        name="dateField"
+        name="workDate"
         type="java.lang.String"
-        column="DateField"
+        column="WorkDate"
         length="25"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="DateField"
+            column="WorkDate"
             length="25"
         </meta>    
     </property>
@@ -234,12 +235,14 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="timestampCreated"
         type="java.sql.Timestamp"
         column="TimestampCreated"
-        not-null="true"
         length="23"
+        not-null="true"
+        update="false"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
@@ -247,8 +250,10 @@
             column="TimestampCreated"
             length="23"
             not-null="true"
+            update="false"
         </meta>    
     </property>
+    
     <property
         name="timestampModified"
         type="java.sql.Timestamp"
@@ -261,6 +266,7 @@
            @hibernate.property
             column="TimestampModified"
             length="23"
+            not-null="true"
             not-null="true"
         </meta>    
     </property>

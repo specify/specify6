@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -19,8 +21,8 @@ public class Accession  implements java.io.Serializable {
      protected String status;
      protected String type;
      protected String verbatimDate;
-     protected Integer dateAccessioned;
-     protected Integer dateReceived;
+     protected Calendar dateAccessioned;
+     protected Calendar dateReceived;
      protected String text1;
      protected String text2;
      protected String text3;
@@ -130,28 +132,26 @@ public class Accession  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="DateAccessioned"
-     *             length="10"
      *         
      */
-    public Integer getDateAccessioned() {
+    public Calendar getDateAccessioned() {
         return this.dateAccessioned;
     }
     
-    public void setDateAccessioned(Integer dateAccessioned) {
+    public void setDateAccessioned(Calendar dateAccessioned) {
         this.dateAccessioned = dateAccessioned;
     }
 
     /**
      *      *            @hibernate.property
      *             column="DateReceived"
-     *             length="10"
      *         
      */
-    public Integer getDateReceived() {
+    public Calendar getDateReceived() {
         return this.dateReceived;
     }
     
-    public void setDateReceived(Integer dateReceived) {
+    public void setDateReceived(Calendar dateReceived) {
         this.dateReceived = dateReceived;
     }
 
@@ -242,6 +242,8 @@ public class Accession  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="TimestampCreated"
      *             length="23"
+     *             not-null="true"
+     *             update="false"
      *         
      */
     public Date getTimestampCreated() {
@@ -256,6 +258,7 @@ public class Accession  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="TimestampModified"
      *             length="23"
+     *             not-null="true"
      *         
      */
     public Date getTimestampModified() {

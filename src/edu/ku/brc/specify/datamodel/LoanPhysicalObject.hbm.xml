@@ -105,19 +105,25 @@
             column="QuantityReturned"
         </meta>    
     </property>
+    
     <property
         name="timestampCreated"
         type="java.sql.Timestamp"
         column="TimestampCreated"
         length="23"
+        not-null="true"
+        update="false"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="TimestampCreated"
             length="23"
+            update="false"
+            not-null="true"
         </meta>    
     </property>
+    
     <property
         name="timestampModified"
         type="java.sql.Timestamp"
@@ -129,8 +135,10 @@
            @hibernate.property
             column="TimestampModified"
             length="23"
+            not-null="true"
         </meta>    
     </property>
+    
     <property
         name="lastEditedBy"
         type="java.lang.String"
@@ -147,19 +155,19 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional many-to-one association to CollectionObject -->
+    <!-- bi-directional many-to-one association to Preparation -->
     <many-to-one
-        name="collectionObject"
-        class="edu.ku.brc.specify.datamodel.CollectionObject"
+        name="preparation"
+        class="edu.ku.brc.specify.datamodel.Preparation"
         not-null="true"
 		outer-join="true"
     >
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="PhysicalObjectID"         
+           @hibernate.column name="PreparationID"         
         </meta>
-        <column name="PhysicalObjectID" />
+        <column name="PreparationID" />
     </many-to-one>
 	
     <!-- bi-directional many-to-one association to Loan -->

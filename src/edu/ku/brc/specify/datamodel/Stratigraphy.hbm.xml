@@ -171,12 +171,16 @@
         type="java.sql.Timestamp"
         column="TimestampCreated"
         length="23"
+        not-null="true"
+        update="false"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="TimestampCreated"
             length="23"
+            update="false"
+            not-null="true"
         </meta>    
     </property>
     <property
@@ -190,6 +194,7 @@
            @hibernate.property
             column="TimestampModified"
             length="23"
+            not-null="true"
         </meta>    
     </property>
     <property
@@ -271,7 +276,7 @@
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
         </meta>
         <key>
-            <column name="GeologicTimePeriodTypeID" />
+            <column name="StratigraphyID" />
         </key>
         <one-to-many 
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"

@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -15,6 +16,7 @@ public class CatalogSeries  implements java.io.Serializable {
     // Fields    
 
      protected Integer catalogSeriesId;
+     protected Boolean isTissueSeries;
      protected String seriesName;
      protected String catalogSeriesPrefix;
      protected String remarks;
@@ -22,6 +24,7 @@ public class CatalogSeries  implements java.io.Serializable {
      protected Date timestampCreated;
      protected String lastEditedBy;
      private Set collectionObjDefItems;
+     private CatalogSeries tissue;
 
 
     // Constructors
@@ -53,6 +56,19 @@ public class CatalogSeries  implements java.io.Serializable {
     
     public void setCatalogSeriesId(Integer catalogSeriesId) {
         this.catalogSeriesId = catalogSeriesId;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="IsTissueSeries"
+     *         
+     */
+    public Boolean getIsTissueSeries() {
+        return this.isTissueSeries;
+    }
+    
+    public void setIsTissueSeries(Boolean isTissueSeries) {
+        this.isTissueSeries = isTissueSeries;
     }
 
     /**
@@ -100,6 +116,7 @@ public class CatalogSeries  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="TimestampModified"
      *             length="23"
+     *             not-null="true"
      *         
      */
     public Date getTimestampModified() {
@@ -114,6 +131,8 @@ public class CatalogSeries  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="TimestampCreated"
      *             length="23"
+     *             update="false"
+     *             not-null="true"
      *         
      */
     public Date getTimestampCreated() {
@@ -147,6 +166,20 @@ public class CatalogSeries  implements java.io.Serializable {
     
     public void setCollectionObjDefItems(Set collectionObjDefItems) {
         this.collectionObjDefItems = collectionObjDefItems;
+    }
+
+    /**
+     *      *            @hibernate.many-to-one
+     *             not-null="true"
+     *            @hibernate.column name="TissueID"         
+     *         
+     */
+    public CatalogSeries getTissue() {
+        return this.tissue;
+    }
+    
+    public void setTissue(CatalogSeries tissue) {
+        this.tissue = tissue;
     }
 
 

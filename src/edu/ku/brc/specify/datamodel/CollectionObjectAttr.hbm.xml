@@ -4,28 +4,22 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
     
 <hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class 
-    name="edu.ku.brc.specify.datamodel.BioAttrs" 
-    table="bioattrs"
+    name="edu.ku.brc.specify.datamodel.CollectionObjectAttr" 
+    table="collectionobjectattr"
 	lazy="true"
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
-        table="bioattrs"
+        table="collectionobjectattr"
     </meta>
-    <meta attribute="implements">AttrsSettableGettable</meta>
-
+    <meta attribute="implements">AttributeIFace</meta>
+ 
     <id
-        name="bioAttrsId"
+        name="attrId"
         type="java.lang.Integer"
-        column="BioAttrsID"
+        column="AttrID"
     >
       <meta attribute="scope-set">public</meta>
       <meta attribute="scope-field">protected</meta>
@@ -33,70 +27,28 @@
     </id>
 	
     <property
-        name="name"
-        type="java.lang.String"
-        column="Name"
-        length="50"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Name"
-            length="50"
-        </meta>    
-    </property>
-
-    <property
         name="strValue"
         type="java.lang.String"
         column="StrValue"
-        length="128"
+        length="255"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="StrValue"
-            length="128"
+            length="255"
         </meta>    
     </property>
 
     <property
-        name="intValue"
-        type="java.lang.Integer"
-        column="IntValue"
-        length="10"
+        name="dblValue"
+        type="double"
+        column="DoubleValue"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="IntValue"
-            length="10"
-        </meta>    
-    </property>
-
-    <property
-        name="fieldType"
-        type="short"
-        column="FieldType"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="FieldType"
-            length="2"
-        </meta>    
-    </property>
-
-    <property
-        name="unit"
-        type="short"
-        column="Unit"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Unit"
-            length="2"
+            column="DoubleValue"
         </meta>    
     </property>
 
@@ -105,12 +57,16 @@
         type="java.sql.Timestamp"
         column="TimestampCreated"
         length="23"
+        not-null="true"
+        update="false"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="TimestampCreated"
             length="23"
+            update="false"
+            not-null="true"
         </meta>    
     </property>
     
@@ -125,37 +81,42 @@
            @hibernate.property
             column="TimestampModified"
             length="23"
+            not-null="true"
         </meta>    
     </property>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
-    </property>
-    
-	
 	<!-- Associations -->
 	
     <!-- bi-directional many-to-one association to CollectionObject -->
     <many-to-one
-        name="collectionObj"
+        name="collectionObject"
         class="edu.ku.brc.specify.datamodel.CollectionObject"
         not-null="true"
 		outer-join="true"
     >
+	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
            @hibernate.column name="CollectionObjectID"         
         </meta>
         <column name="CollectionObjectID" />
+    </many-to-one>
+   
+    <!-- bi-directional many-to-one association to AttributeDef -->
+    <many-to-one
+        name="definition"
+        class="edu.ku.brc.specify.datamodel.AttributeDef"
+        not-null="true"
+		outer-join="true"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="AttributeDefID"         
+        </meta>
+        <column name="AttributeDefID" />
     </many-to-one>	
 	
 </class>

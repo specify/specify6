@@ -65,16 +65,14 @@
     </property>
     
     <property
-        name="dateField"
-        type="java.lang.Integer"
-        column="DateField"
-        length="10"
+        name="determinedDate"
+        type="calendar_date"
+        column="DeterminedDate"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="DateField"
-            length="10"
+            column="DeterminedDate"
         </meta>    
     </property>
     
@@ -192,12 +190,16 @@
         type="java.sql.Timestamp"
         column="TimestampCreated"
         length="23"
+        not-null="true"
+        update="false"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="TimestampCreated"
             length="23"
+            update="false"
+            not-null="true"
         </meta>    
     </property>
     
@@ -212,6 +214,7 @@
            @hibernate.property
             column="TimestampModified"
             length="23"
+            not-null="true"
         </meta>    
     </property>
     
@@ -301,7 +304,7 @@
   
     <!-- bi-directional many-to-one association to Taxon -->
     <many-to-one
-        name="Taxon"
+        name="taxon"
         class="edu.ku.brc.specify.datamodel.Taxon"
         not-null="true"
 		outer-join="true"

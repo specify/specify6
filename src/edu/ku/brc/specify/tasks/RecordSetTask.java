@@ -119,7 +119,7 @@ public class RecordSetTask extends BaseTask
         
         addDraggableDataFlavors(nbi);
 
-        recordSet.setCreated(Calendar.getInstance().getTime());
+        recordSet.setTimestampCreated(Calendar.getInstance().getTime());
         
         // save to database
         HibernateUtil.getCurrentSession();

@@ -67,9 +67,9 @@ public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListen
      */
     public StatGroupFromQuery(final String name,
                               final String sql,
-                              final int descCol,
-                              final int valCol,
-                              boolean useSeparator)
+                              final int    descCol,
+                              final int    valCol,
+                              boolean      useSeparator)
     {
         super(name, useSeparator);
 
@@ -88,7 +88,7 @@ public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListen
     public void setLinkInfo(final String linkStr, final int colId)
     {
         this.linkStr = linkStr;
-        this.colId = colId;
+        this.colId   = colId;
     }
 
     //-----------------------------------------------------
@@ -112,6 +112,7 @@ public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListen
                 {
                     data.add(resultSet.getObject(descCol));
                     data.add(resultSet.getObject(valCol));
+                    data.add(resultSet.getObject(colId));
                     if (rowsDef.length() > 0)
                     {
                         rowsDef.append(",15dlu,");
@@ -122,8 +123,11 @@ public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListen
 
                 for (int i=0;i<data.size();i++)
                 {
-                    StatItem statItem = new StatItem(data.get(i++).toString(), linkStr == null ? null : (linkStr+",id="+colId), false);
-                    statItem.setValueText(data.get(i).toString());
+                    String desc  = data.get(i++).toString();
+                    String val   = data.get(i++).toString();
+                    String colId = data.get(i).toString();
+                    StatItem statItem = new StatItem(desc, linkStr == null ? null : (linkStr+",id="+colId), false);
+                    statItem.setValueText(val);
                     addItem(statItem);
                     statItem.refreshUI();
                 }

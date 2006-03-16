@@ -21,7 +21,6 @@
 package edu.ku.brc.specify.conversion;
 
 import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.buildSelectFieldList;
-import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.cleanAllTables;
 import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.copyTable;
 import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.createFieldNameMap;
 import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.deleteAllRecordsFromTable;
@@ -39,6 +38,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -49,17 +49,27 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Expression;
 
+import edu.ku.brc.specify.datamodel.AttributeDef;
+import edu.ku.brc.specify.datamodel.AttributeIFace;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.DataType;
+
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
+
 import edu.ku.brc.specify.datamodel.User;
+import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.Encryption;
+import edu.ku.brc.specify.helpers.UIHelper;
 
 /**
  * This class is used for copying over the and creating all the tables that are not specify to any one collection. 
@@ -119,7 +129,7 @@ public class GenericDBConversion
     public void copyTables()
     {
         
-        cleanAllTables(); // from DBCOnnection which is the new DB
+        //cleanAllTables(); // from DBCOnnection which is the new DB
        
         DBConnection oldDB = DBConnection.createInstance(oldDriver, oldDBName, oldUserName, oldPassword);
        
@@ -168,24 +178,853 @@ public class GenericDBConversion
        
        Map<String, Map<String, String>> tableMaps = new Hashtable<String, Map<String, String>>();
        tableMaps.put("authors", createFieldNameMap(new String[] {"OrderNumber", "Order1"}));
-       tableMaps.put("borrowreturnmaterial", createFieldNameMap(new String[] {"DateField", "Date1"}));
+       tableMaps.put("borrowreturnmaterial", createFieldNameMap(new String[] {"ReturnedDate", "Date1"}));
        tableMaps.put("collectors", createFieldNameMap(new String[] {"OrderNumber", "Order1"}));
-       tableMaps.put("determination", createFieldNameMap(new String[] {"CollectionObjectID", "BiologicalObjectID", "IsCurrent", "Current1", "DateField", "Date1", "TaxonID", "TaxonNameID"}));
+       tableMaps.put("determination", createFieldNameMap(new String[] {"CollectionObjectID", "BiologicalObjectID", "IsCurrent", "Current1", "DeterminationDate", "Date1", "TaxonID", "TaxonNameID"}));
        tableMaps.put("loanreturnphysicalobject", createFieldNameMap(new String[] {"DateField", "Date1"}));
-       tableMaps.put("referencework", createFieldNameMap(new String[] {"DateField", "Date1"}));
+       tableMaps.put("referencework", createFieldNameMap(new String[] {"WorkDate", "Date1"}));
        tableMaps.put("stratigraphy", createFieldNameMap(new String[] {"LithoGroup", "Group1"}));
        tableMaps.put("taxoncitation", createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
+       
+       Map<String, Map<String, String>> tableDateMaps = new Hashtable<String, Map<String, String>>();
+       tableDateMaps.put("collectingevent", createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
       
        //tableMaps.put("locality", createFieldNameMap(new String[] {"NationalParkName", "", "ParentID", "TaxonParentID"}));
       
+       BasicSQLUtils.setShowMappingError(false);
        for (String tableName : tablesToMoveOver)
        {
-           if (!copyTable(oldDB.getConnectionToDB(), DBConnection.getConnection(), tableName, tableMaps.get(tableName)))
+           if (!copyTable(oldDB.getConnectionToDB(), DBConnection.getConnection(), tableName, tableMaps.get(tableName), null))
            {
                log.error("Table ["+tableName+"] didn't copy correctly.");
                break;
            }
        }
+       BasicSQLUtils.setShowMappingError(true);
+    } 
+    
+    /**
+     * Creates a map from a String Preparation Type to its ID in the table
+     * @return map of name to PrepType
+     */
+    public Map<String, PrepType> createPreparationTypesFromUSys()
+    {
+        deleteAllRecordsFromTable("preptype");
+        
+        Hashtable<String, PrepType> prepTypeMapper = new Hashtable<String, PrepType>();
+        
+        DBConnection oldDB     = DBConnection.createInstance(oldDriver, oldDBName, oldUserName, oldPassword);
+        Connection   oldDBConn = oldDB.getConnectionToDB();
+        try 
+        {
+            /*
+            +-----------------------+-------------+------+-----+---------+-------+
+            | Field                 | Type        | Null | Key | Default | Extra |
+            +-----------------------+-------------+------+-----+---------+-------+
+            | USYSCollObjPrepMethID | int(11)     |      | PRI | 0       |       |
+            | InterfaceID           | int(11)     | YES  |     | NULL    |       |
+            | FieldSetSubTypeID     | int(11)     | YES  |     | NULL    |       |
+            | PreparationMethod     | varchar(50) | YES  |     | NULL    |       |
+            +-----------------------+-------------+------+-----+---------+-------+
+             */
+            Statement stmt   = oldDBConn.createStatement();
+            String    sqlStr = "select USYSCollObjPrepMethID, InterfaceID, FieldSetSubTypeID, PreparationMethod from usyscollobjprepmeth";
+            
+            log.info(sqlStr);
+            
+            boolean foundMisc = false;
+            
+            boolean doDebug   = false;
+            ResultSet rs      = stmt.executeQuery(sqlStr);
+            int       count   = 0;
+            while (rs.next()) 
+            {
+                if (rs.getObject(2) != null && rs.getObject(3) != null)
+                {
+                    String name = rs.getString(4);
+                    PrepType prepType = AttrUtils.loadPrepType(name);
+                    prepTypeMapper.put(name.toLowerCase(), prepType);
+                    if (name.equalsIgnoreCase("misc"))
+                    {
+                        foundMisc = true;
+                    }
+                }
+                count++;
+            }
+            
+            if (!foundMisc)
+            {
+                String name = "Misc";
+                PrepType prepType = AttrUtils.loadPrepType(name);
+                prepTypeMapper.put(name.toLowerCase(), prepType);
+                count++;
+            }
+            log.info("Processed PrepType "+count+" records.");
+
+            
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+            log.error(e);
+            return prepTypeMapper;
+        } 
+ 
+        return prepTypeMapper;
+   } 
+    
+    /**
+     * @param name
+     * @return
+     */
+    protected String convertColumnName(final String name)
+    {
+        StringBuilder nameStr = new StringBuilder();
+        int cnt = 0;
+        for (char c : name.toCharArray())
+        {
+            if (cnt == 0)
+            {
+                nameStr.append(name.toUpperCase().charAt(0));
+                cnt++;
+                
+            } else if (c < 'a')
+            {
+                nameStr.append(' ');
+                nameStr.append(c);
+
+            } else
+            {
+                nameStr.append(c);
+            }
+        }
+        return nameStr.toString();
+    } 
+    
+    /**
+     * Returns the proper value depending on the type
+     * @param value the data value from the database object
+     * @param type the defined type
+     * @param attr the data value from the database object
+     * @return the data object for the value
+     */
+    protected Object getData(final AttributeIFace.FieldType type, AttributeIFace attr)
+    {
+        if (type == AttributeIFace.FieldType.BooleanType)
+        { 
+            return attr.getDblValue() != 0.0;
+            
+        } else if (type == AttributeIFace.FieldType.FloatType)
+        {
+            return attr.getDblValue().floatValue();
+            
+        } else if (type == AttributeIFace.FieldType.DoubleType)
+        {
+            return attr.getDblValue();
+            
+        } else if (type == AttributeIFace.FieldType.IntegerType)
+        {
+            return attr.getDblValue().intValue();
+            
+        } else
+        {
+            return attr.getStrValue();  
+        }  
+    } 
+    
+    /**
+     * Returns a converted value from the old schema to the new schema
+     * @param rs the resultset
+     * @param index the index of the column in the resultset
+     * @param type the defined type for the new schema
+     * @param metaData the metat data describing the old schema column
+     * @return the new data object
+     */
+    protected Object getData(final ResultSet                   rs,
+                             final int                         index,
+                             final AttributeIFace.FieldType    type, 
+                             final BasicSQLUtils.FieldMetaData metaData)
+    {
+        // Note: we need to check the old schema once again because the "type" may have been mapped
+        // so now we must map the actual value
+        
+        AttributeIFace.FieldType oldType = getDataType(metaData.getName(), metaData.getType());
+        
+        try
+        {
+            Object value = rs.getObject(index);
+            
+            if (type == AttributeIFace.FieldType.BooleanType)
+            { 
+                if (value == null)
+                {
+                   return false;
+                   
+                } else if (oldType == AttributeIFace.FieldType.IntegerType)
+                {
+                    return rs.getInt(index) != 0;
+                    
+                } else if (oldType == AttributeIFace.FieldType.FloatType)
+                {
+                    return rs.getFloat(index) != 0.0f;
+                    
+                } else if (oldType == AttributeIFace.FieldType.DoubleType)
+                {
+                    return rs.getDouble(index) != 0.0;
+                    
+                } else if (oldType == AttributeIFace.FieldType.StringType)
+                {
+                    return rs.getString(index).equalsIgnoreCase("true");
+                }
+                log.error("Error maping from schema["+metaData.getType()+"] to ["+type.toString()+"]");
+                return false;
+                
+            } else if (type == AttributeIFace.FieldType.FloatType)
+            {
+                if (value == null)
+                {
+                   return 0.0f;
+                   
+                } else if (oldType == AttributeIFace.FieldType.FloatType)
+                {
+                    return rs.getFloat(index);
+                    
+                } else if (oldType == AttributeIFace.FieldType.DoubleType)
+                {
+                    return rs.getFloat(index);
+                }
+                log.error("Error maping from schema["+metaData.getType()+"] to ["+type.toString()+"]");
+                return 0.0f;
+                
+            } else if (type == AttributeIFace.FieldType.DoubleType)
+            {
+                if (value == null)
+                {
+                   return 0.0;
+                   
+                } else if (oldType == AttributeIFace.FieldType.FloatType)
+                {
+                    return rs.getDouble(index);
+                    
+                } else if (oldType == AttributeIFace.FieldType.DoubleType)
+                {
+                    return rs.getDouble(index);
+                }
+                log.error("Error maping from schema["+metaData.getType()+"] to ["+type.toString()+"]");
+                return 0.0; 
+                
+            } else if (type == AttributeIFace.FieldType.IntegerType)
+            {
+                if (value == null)
+                {
+                   return 0;
+                   
+                } else if (oldType == AttributeIFace.FieldType.IntegerType)
+                {
+                    return rs.getInt(index) != 0;
+                }
+                log.error("Error maping from schema["+metaData.getType()+"] to ["+type.toString()+"]");
+                return 0; 
+                
+            } else
+            {
+                return rs.getString(index); 
+            }
+        }
+        catch (SQLException ex)
+        {
+            log.error("Error maping from schema["+metaData.getType()+"] to ["+type.toString()+"]");
+            log.error(ex);
+        }
+        return "";
+    } 
+
+    /**
+     * Sets a converted value from the old schema to the new schema into the CollectionObjectAttr object
+     * @param rs the resultset
+     * @param index the index of the column in the resultset
+     * @param type the defined type for the new schema
+     * @param metaData the metat data describing the old schema column
+     * @param colObjAttr the object the data is set into
+     * @return the new data object
+     */
+    protected void setData(final ResultSet                   rs,
+                           final int                         index,
+                           final AttributeIFace.FieldType    type, 
+                           final BasicSQLUtils.FieldMetaData metaData,
+                           final CollectionObjectAttr        colObjAttr)
+    {
+        // Note: we need to check the old schema once again because the "type" may have been mapped
+        // so now we must map the actual value
+        
+        AttributeIFace.FieldType oldType = getDataType(metaData.getName(), metaData.getType());
+        
+        try
+        {
+            Object value = rs.getObject(index);
+            
+            if (type == AttributeIFace.FieldType.BooleanType)
+            { 
+                if (value == null)
+                {
+                    colObjAttr.setDblValue(0.0); //false
+                   
+                } else if (oldType == AttributeIFace.FieldType.IntegerType)
+                {
+                    colObjAttr.setDblValue(rs.getInt(index) != 0 ? 1.0 : 0.0);
+                    
+                } else if (oldType == AttributeIFace.FieldType.FloatType)
+                {
+                    colObjAttr.setDblValue(rs.getFloat(index) != 0.0f ? 1.0 : 0.0);
+                    
+                } else if (oldType == AttributeIFace.FieldType.DoubleType)
+                {
+                    colObjAttr.setDblValue(rs.getDouble(index) != 0.0 ? 1.0 : 0.0);
+                    
+                } else if (oldType == AttributeIFace.FieldType.StringType)
+                {
+                    colObjAttr.setDblValue(rs.getString(index).equalsIgnoreCase("true") ? 1.0 : 0.0);
+                } else
+                {
+                    log.error("Error maping from schema["+metaData.getType()+"] to ["+type.toString()+"]");
+                }
+                
+            } else if (type == AttributeIFace.FieldType.IntegerType || 
+                       type == AttributeIFace.FieldType.DoubleType ||
+                       type == AttributeIFace.FieldType.FloatType)
+            {
+                if (value == null)
+                {
+                    colObjAttr.setDblValue(0.0);
+                   
+                } else if (oldType == AttributeIFace.FieldType.IntegerType)
+                {
+                    colObjAttr.setDblValue((double)rs.getInt(index));
+                    
+                } else if (oldType == AttributeIFace.FieldType.FloatType)
+                {
+                    colObjAttr.setDblValue((double)rs.getFloat(index));
+                    
+                } else if (oldType == AttributeIFace.FieldType.DoubleType)
+                {
+                    colObjAttr.setDblValue(rs.getDouble(index));
+                    
+                } else
+                {
+                    log.error("Error maping from schema["+metaData.getType()+"] to ["+type.toString()+"]");
+                }
+                
+            } else
+            {
+                colObjAttr.setStrValue(rs.getString(index));
+            }
+        }
+        catch (SQLException ex)
+        {
+            log.error("Error maping from schema["+metaData.getType()+"] to ["+type.toString()+"]");
+            log.error(ex);
+        }
+    } 
+    
+
+    /**
+     * Figure out the data type given the database column's field's name and data type
+     * @param name the column name
+     * @param type the database schema type for the column
+     * @return the AttributeIFace.Type for the column
+     */
+    protected AttributeIFace.FieldType getDataType(final String name, final String type)
+    {
+        if (name.startsWith("YesNo"))
+        {
+            return AttributeIFace.FieldType.BooleanType;
+            
+        } else if (name.equalsIgnoreCase("remarks"))
+        {
+            return AttributeIFace.FieldType.MemoType;
+            
+        } else if (type.equalsIgnoreCase("float"))
+        {
+            return AttributeIFace.FieldType.FloatType;
+            
+        } else if (type.equalsIgnoreCase("double"))
+        {
+            return AttributeIFace.FieldType.DoubleType;
+            
+        } else if (type.startsWith("varchar") || type.startsWith("text") || type.startsWith("longtext"))
+        {
+            return AttributeIFace.FieldType.StringType;
+            
+        } else
+        {
+            return AttributeIFace.FieldType.IntegerType;
+        }
+    }
+    
+    /**
+     * Convert all the biological attributes to Collection Object Attributes. 
+     * Each old record may end up being multiple records in the new schema. This will first figure out 
+     * which columns in the old schema were used and olnly map those columns to the new database.<br><br>
+     * It also will use the old name if there is not mapping for it. The old name is converted from lower/upper case to
+     * be space separated where each part of the name starts with a capital letter.
+     * 
+     * @param colObjDef the Collection Object Definition
+     * @param colToNameMap a mape for old names to new names
+     * @param typeMap a map for changing the type of the data (meaning an old value may be a boolean stored in a float)
+     * @return true for success
+     */
+    public boolean convertBiologicalAttrs(CollectionObjDef colObjDef, final Map<String, String> colToNameMap, final Map<String, Short> typeMap)
+    {
+        AttributeIFace.FieldType[] attrTypes = {AttributeIFace.FieldType.IntegerType, AttributeIFace.FieldType.FloatType,
+                                                AttributeIFace.FieldType.DoubleType, AttributeIFace.FieldType.BooleanType,AttributeIFace.FieldType.StringType,
+                                                AttributeIFace.FieldType.MemoType};
+        
+        Session session = HibernateUtil.getCurrentSession();
+        
+        Connection newDBConn = DBConnection.getConnection();
+        deleteAllRecordsFromTable(newDBConn, "collectionobjectattr");
+        deleteAllRecordsFromTable(newDBConn, "attributedef");
+        
+        DBConnection oldDB     = DBConnection.createInstance(oldDriver, oldDBName, oldUserName, oldPassword);
+        Connection   oldDBConn = oldDB.getConnectionToDB();
+        try 
+        {
+            Statement stmt = oldDBConn.createStatement();
+            
+            // grab the field and their type from the old schema
+            List<BasicSQLUtils.FieldMetaData>        oldFieldMetaData    = new ArrayList<BasicSQLUtils.FieldMetaData>();
+            Map<String, BasicSQLUtils.FieldMetaData> oldFieldMetaDataMap = new Hashtable<String, BasicSQLUtils.FieldMetaData>();
+            getFieldMetaDataFromSchema(oldDBConn, "biologicalobjectattributes", oldFieldMetaData);
+             
+            // create maps to figure which columns where used
+            List<String>              columnsInUse = new ArrayList<String>();
+            Map<String, AttributeDef> attrDefs     = new Hashtable<String, AttributeDef>();
+            
+            List<Integer>             counts       = new ArrayList<Integer>();
+            
+            int totalCount = 0;
+            
+            for (BasicSQLUtils.FieldMetaData md : oldFieldMetaData)
+            {
+                // Skip these fields
+                if (md.getName().indexOf("ID") == -1 && md.getName().indexOf("Timestamp") == -1&& md.getName().indexOf("LastEditedBy") == -1)
+                {
+                    oldFieldMetaDataMap.put(md.getName(), md); // add to map for later
+                    
+                    //log.info(convertColumnName(md.getName())+"  "+ md.getType());
+                    String sqlStr = "select count("+md.getName()+") from biologicalobjectattributes where "+md.getName()+" is not null";
+                    ResultSet rs  = stmt.executeQuery(sqlStr);
+                    if (rs.first() && rs.getInt(1) > 0)
+                    {
+                        int rowCount = rs.getInt(1);
+                        totalCount += rowCount;
+                        counts.add(rowCount);
+                        
+                        log.info(md.getName() + " has " + rowCount + " rows of values");
+                        
+                        columnsInUse.add(md.getName());
+                        AttributeDef attrDef = new AttributeDef();
+                        
+                        String newName = convertColumnName(md.getName());
+                        attrDef.setFieldName(newName);
+                        System.out.println("mapping["+newName+"]["+md.getName()+"]");
+                        
+                        //newNameToOldNameMap.put(newName, md.getName());
+                        
+                        short dataType = -1;
+                        if (typeMap != null)
+                        {
+                            Short type = typeMap.get(md.getName());
+                            if (type == null)
+                            {
+                                dataType = type;
+                            }
+                        }
+                        
+                        if (dataType == -1)
+                        {
+                            dataType = getDataType(md.getName(), md.getType()).getType();
+                        }
+                        
+                        attrDef.setDataType(dataType);
+                        attrDef.setCollectionObjDef(colObjDef);
+                        attrDef.setTableType(AttributeIFace.TableType.CollectionObject.getType());
+                        
+                        attrDefs.put(md.getName(), attrDef);
+                        //attrDefs.setTimestampCreated(new Date());
+                        //attrDefs.setTimestampModified(new Date());
+
+                        try
+                        {
+                            HibernateUtil.beginTransaction();
+                            session.save(attrDef);
+                            HibernateUtil.commitTransaction();
+                            
+                        } catch (Exception e)
+                        {
+                            log.error("******* " + e);
+                            HibernateUtil.rollbackTransaction();  
+                        }
+
+                    }
+                    rs.close();
+                }
+            } // for
+            log.info("Total Number of Attrs: " + totalCount);
+            
+            // Now that we know which columns are being used we can start the conversion process
+            
+            log.info("biologicalobjectattributes columns in use: "+columnsInUse.size());
+            if (columnsInUse.size() > 0)
+            {
+                int inx = 0;
+                StringBuilder str = new StringBuilder("select BiologicalObjectAttributesID");
+                for (String name : columnsInUse)
+                {
+                    str.append(", ");
+                    str.append(name);
+                    inx++;
+                }
+                
+                str.append(" from biologicalobjectattributes");
+                log.info("sql: "+str.toString());
+                ResultSet rs = stmt.executeQuery(str.toString());
+                
+                int[]         countVerify = new int[counts.size()];
+                for (int i=0;i<countVerify.length;i++)
+                {
+                    countVerify[i] = 0;
+                }
+                boolean       useHibernate = false;
+                StringBuilder strBuf       = new StringBuilder();
+                int           recordCount  = 0;
+                while (rs.next()) 
+                {
+                    
+                    if (useHibernate)
+                    {
+                        Criteria criteria = session.createCriteria(CollectionObject.class);
+                        criteria.add(Expression.eq("collectionObjectId", rs.getInt(1)));
+                        List list = criteria.list();
+                        if (list.size() == 0)
+                        {
+                            log.error("**** Can't find the CollectionObject "+rs.getInt(1));
+                        } else
+                        {
+                            CollectionObject colObj = (CollectionObject)list.get(0);
+                            
+                            inx = 2; // skip the first column (the ID)
+                            for (String name : columnsInUse)
+                            {
+                                AttributeDef                attrDef = attrDefs.get(name); // the needed AttributeDef by name
+                                BasicSQLUtils.FieldMetaData md      = oldFieldMetaDataMap.get(name);
+                                
+                                // Create the new Collection Object Attribute
+                                CollectionObjectAttr colObjAttr = new CollectionObjectAttr();
+                                colObjAttr.setCollectionObject(colObj);
+                                colObjAttr.setDefinition(attrDef);
+                                colObjAttr.setTimestampCreated(new Date());
+                                colObjAttr.setTimestampModified(new Date());
+                                
+                                //String oldName = newNameToOldNameMap.get(attrDef.getFieldName());
+                                //System.out.println("["+attrDef.getFieldName()+"]["+oldName+"]");
+                                
+                                
+                                //System.out.println(inx+"  "+attrTypes[attrDef.getDataType()]+"  "+md.getName()+"  "+md.getType());
+                                setData(rs, inx, attrTypes[attrDef.getDataType()], md, colObjAttr);
+                                
+                                HibernateUtil.beginTransaction();
+                                session.save(colObjAttr);
+                                HibernateUtil.commitTransaction();
+                                
+                                inx++;
+                                if (recordCount % 1000 == 0)
+                                {
+                                    log.info("CollectionObjectAttr Records Processed: "+recordCount);
+                                }
+                                recordCount++;
+                            } // for
+                            //log.info("Done - CollectionObjectAttr Records Processed: "+recordCount);
+                        }
+                    } else
+                    {
+                        inx = 2; // skip the first column (the ID)
+                        for (String name : columnsInUse)
+                        {
+                            AttributeDef                attrDef = attrDefs.get(name); // the needed AttributeDef by name
+                            BasicSQLUtils.FieldMetaData md      = oldFieldMetaDataMap.get(name);
+
+                            
+                            if (rs.getObject(inx) != null)
+                            {
+                                Object  data  = getData(rs, inx, attrTypes[attrDef.getDataType()], md);
+                                boolean isStr = data instanceof String;
+                                
+                                countVerify[inx - 2]++;
+                                
+                                strBuf.setLength(0);
+                                Date date = new Date();
+                                strBuf.append("INSERT INTO collectionobjectattr VALUES (");
+                                strBuf.append("NULL");//Integer.toString(recordCount));
+                                strBuf.append(",");
+                                strBuf.append(getStrValue(isStr ? data : null));
+                                strBuf.append(",");
+                                strBuf.append(getStrValue(isStr ? null : data));
+                                strBuf.append(",");
+                                strBuf.append(getStrValue(date));
+                                strBuf.append(",");
+                                strBuf.append(getStrValue(date));
+                                strBuf.append(",");
+                                strBuf.append(getStrValue(rs.getInt(1)));
+                                strBuf.append(",");
+                                strBuf.append(getStrValue(attrDef.getAttributeDefId()));
+                                strBuf.append(")");
+                                
+                                try
+                                {
+                                    Statement updateStatement = newDBConn.createStatement();
+                                    updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+                                    if (false)
+                                    {
+                                        System.out.println(strBuf.toString());
+                                    }
+                                    updateStatement.executeUpdate(strBuf.toString());
+                                    updateStatement.clearBatch();
+                                    updateStatement.close();
+                                    updateStatement = null;
+                                    
+                                } catch (SQLException e)
+                                {
+                                    log.error(strBuf.toString());
+                                    log.error("Count: "+recordCount);
+                                    e.printStackTrace();
+                                    log.error(e);
+                                    return false;
+                                }
+                                
+                                if (recordCount % 1000 == 0)
+                                {
+                                    log.info("CollectionObjectAttr Records Processed: "+recordCount);
+                                }
+                                recordCount++;
+                            }
+                            inx++;
+                        } // for
+                    } // if
+                } // while
+                rs.close();
+                stmt.close();
+                
+                log.info("Count Verification:");
+                for (int i=0;i<counts.size();i++)
+                {
+                    log.info(columnsInUse.get(i)+" ["+counts.get(i)+"]["+countVerify[i]+"] "+(counts.get(i) - countVerify[i]));
+                            
+                }
+            }
+            
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+            log.error(e);
+            return false;
+        } 
+        return true;
+    } 
+    
+    /**
+     * Converts all the CollectionObject Physical records and CollectionObjectCatalog Records into the new schema Preparation table.
+     * @return true if no errors
+     */
+    public boolean createPreparationRecords(final Map<String, PrepType> prepTypeMap)
+    {
+        Connection newDBConn = DBConnection.getConnection();
+        deleteAllRecordsFromTable(newDBConn, "preparation");
+        
+        DBConnection oldDB     = DBConnection.createInstance(oldDriver, oldDBName, oldUserName, oldPassword);
+        Connection   oldDBConn = oldDB.getConnectionToDB();
+        try 
+        {
+            Statement    stmt = oldDBConn.createStatement();
+            StringBuilder str  = new StringBuilder();
+            
+            List<String> oldFieldNames = new ArrayList<String>();
+            
+            StringBuilder sql = new StringBuilder("select ");
+            List<String> names = new ArrayList<String>();
+            getFieldNamesFromSchema(oldDBConn, "collectionobject", names);
+            
+            sql.append(buildSelectFieldList(names, "collectionobject"));
+            sql.append(", ");
+            oldFieldNames.addAll(names);
+            
+            names.clear();
+            getFieldNamesFromSchema(oldDBConn, "collectionobjectcatalog", names);
+            sql.append(buildSelectFieldList(names, "collectionobjectcatalog"));
+            oldFieldNames.addAll(names);
+            
+            sql.append(" From collectionobject Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID Where not (collectionobject.DerivedFromID Is Null)");
+            
+            log.info(sql);
+            
+            List<BasicSQLUtils.FieldMetaData> newFieldMetaData = new ArrayList<BasicSQLUtils.FieldMetaData>();
+            getFieldMetaDataFromSchema(newDBConn, "preparation", newFieldMetaData);
+
+            
+            log.info("Number of Fields in Preparation "+newFieldMetaData.size());
+            String sqlStr = sql.toString();
+            
+            Map<String, Integer> oldNameIndex = new Hashtable<String, Integer>();
+            int inx = 0;
+            for (String name : oldFieldNames)
+            {
+                oldNameIndex.put(name, inx++);
+                System.out.println(name+" "+(inx-1));
+            }
+            Hashtable<String, String> newToOld = new Hashtable<String, String>();
+            newToOld.put("PreparationID", "CollectionObjectID");
+            newToOld.put("CollectionObjectID", "DerivedFromID");
+            newToOld.put("StorageLocation", "Location");
+            
+            boolean doDebug   = false;
+            ResultSet rs      = stmt.executeQuery(sqlStr);
+            Integer   idIndex = oldNameIndex.get("CollectionObjectID");
+            int       count   = 0;
+            while (rs.next()) 
+            {
+                Integer   preparedById = null;
+                Date      preparedDate = null;
+                
+                boolean   checkForPreps = false;
+                if (checkForPreps)
+                {
+                    Statement subStmt      = oldDBConn.createStatement();
+                    String    subQueryStr  = "select PreparedByID,PreparedDate from preparation where PreparationID = "+rs.getInt(idIndex+1);
+                    ResultSet subQueryRS   = subStmt.executeQuery(subQueryStr);
+                    if (subQueryRS.first())
+                    {
+                        preparedById = subQueryRS.getInt(1);
+                        preparedDate = UIHelper.convertIntToDate(subQueryRS.getInt(2));
+                    }
+                    subQueryRS.close();
+                    subStmt.close();
+                }
+                
+                int catNum =  rs.getInt(oldNameIndex.get("CatalogNumber")+1);
+                doDebug = catNum == 30972;
+                
+                if (doDebug)
+                {
+                    System.out.println("CatalogNumber      "+catNum);
+                    System.out.println("CollectionObjectID "+rs.getInt(oldNameIndex.get("CollectionObjectID")+1));
+                    System.out.println("DerivedFromID      "+rs.getInt(oldNameIndex.get("DerivedFromID")+1));
+                }
+                
+                str.setLength(0);
+                str.append("INSERT INTO preparation VALUES (");
+                for (int i=0;i<newFieldMetaData.size();i++)
+                {
+                    if (i > 0) str.append(", ");
+                    
+                    String newFieldName = newFieldMetaData.get(i).getName();
+                    String mappedName   = newToOld.get(newFieldName);
+
+                    if (mappedName != null)
+                    {
+                        newFieldName = mappedName;
+                    }
+                    
+                    if (newFieldName.equals("PreparedByID"))
+                    {
+                        str.append(getStrValue(preparedById));
+                        
+                    } else if (newFieldName.equals("PreparedDate"))
+                    {
+                        str.append(getStrValue(preparedDate));
+                        
+                    } else if (newFieldName.equals("PrepTypeID"))
+                    {
+                        String value = rs.getString(oldNameIndex.get("PreparationMethod")+1);
+                        if (value == null || value.length() == 0)
+                        {
+                            value = "n/a";
+                        }
+                        Integer prepTypeId = prepTypeMap.get(value.toLowerCase()).getPrepTypeId();
+                        if (prepTypeId != null)
+                        {
+                            str.append(getStrValue(prepTypeId));
+                            
+                        } else
+                        {
+                            str.append("NULL");
+                            log.error("***************** Couldn't find PreparationMethod["+value+"] in PrepTypeMap");
+                            /*stmt.close();
+                            oldDBConn.close();
+                            newDBConn.close();
+                            return false;*/
+                        }
+                        
+                    } else if (newFieldName.equals("LocationID"))
+                    {
+                        str.append("NULL");
+                        
+                    } else
+                    {
+                        
+                        Integer index = oldNameIndex.get(newFieldName);
+                        if (index != null)
+                        {
+                            str.append(getStrValue(rs.getObject(index+1), newFieldMetaData.get(i).getType()));
+                        } else
+                        {
+                            log.error("Couldn't find new field name["+newFieldName+"] in old field name in index Map");
+                            stmt.close();
+                            oldDBConn.close();
+                            newDBConn.close();
+                            return false;
+                        }
+                    }
+
+                }
+                str.append(")");
+                //log.info("\n"+str.toString());
+                if (count % 1000 == 0) log.info("Preparation Records: "+count);
+                
+                try
+                {
+                    Statement updateStatement = newDBConn.createStatement();
+                    updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+                    if (doDebug)
+                    {
+                        System.out.println(str.toString());
+                    }
+                    updateStatement.executeUpdate(str.toString());
+                    updateStatement.clearBatch();
+                    updateStatement.close();
+                    updateStatement = null;
+                    
+                } catch (SQLException e)
+                {
+                    log.error("Count: "+count);
+                    e.printStackTrace();
+                    log.error(e);
+                    return false;
+                }
+                
+                count++;
+                //if (count == 1) break;
+            }
+            log.info("Processed CollectionObject "+count+" records.");
+
+            
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+            log.error(e);
+            return false;
+        } 
+
+        return true;
+        
     } 
     
     /**
@@ -255,29 +1094,39 @@ public class GenericDBConversion
                     
                     String newFieldName = newFieldMetaData.get(i).getName();
                     
-                    Integer index = oldNameIndex.get(newFieldName);
-                    if (index != null)
+                    if (newFieldName.equals("CatalogedDateVerbatim") || newFieldName.equals("ContainerID") || newFieldName.equals("GUID"))
                     {
-                        str.append(getStrValue(rs.getObject(index+1), newFieldMetaData.get(i).getType()));
-                    } else
+                        str.append("NULL");
+                        
+                    } else 
                     {
-                        log.error("Couldn't find new field name["+newFieldName+"] in old field name Map");
-                        stmt.close();
-                        oldDBConn.close();
-                        newDBConn.close();
-                        return false;
+                        Integer index = oldNameIndex.get(newFieldName);
+                        if (index != null)
+                        {
+                            str.append(getStrValue(rs.getObject(index+1), newFieldMetaData.get(i).getType()));
+                        } else
+                        {
+                            log.error("Couldn't find new field name["+newFieldName+"] in old field name Map");
+                            stmt.close();
+                            oldDBConn.close();
+                            newDBConn.close();
+                            return false;
+                        }
                     }
 
                 }
                 str.append(")");
                 //log.info("\n"+str.toString());
-                if (count % 1000 == 0) log.info(count);
+                if (count % 1000 == 0) log.info("CollectionObject Records: "+count);
                 
                 try
                 {
                     Statement updateStatement = newDBConn.createStatement();
+                    updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
                     updateStatement.executeUpdate(str.toString());
                     updateStatement.clearBatch();
+                    updateStatement.close();
+                    updateStatement = null;
                     
                 } catch (SQLException e)
                 {
@@ -298,10 +1147,42 @@ public class GenericDBConversion
             e.printStackTrace();
             log.error(e);
             return false;
-        }  
+        } 
 
 
         return true;
+    }
+    
+
+    /**
+     * Creates a User Group
+     * @param groupName the name of the group
+     * @return the group
+     */
+    public UserGroup createUserGroup(final String groupName)
+    {
+        try
+        {
+            Session session = HibernateUtil.getCurrentSession();
+            HibernateUtil.beginTransaction();
+
+            UserGroup userGroup = new UserGroup();
+            userGroup.setName(groupName);
+            userGroup.setUsers(new HashSet());
+            
+            session.save(userGroup);
+            
+            HibernateUtil.commitTransaction();
+
+            return userGroup;
+            
+        } catch (Exception e)
+        {
+            log.error("******* " + e);
+            HibernateUtil.rollbackTransaction();
+        }
+
+        return null;
     }
     
     /**
@@ -311,9 +1192,9 @@ public class GenericDBConversion
      * @param privLevel the privLevel
      * @return the user object
      */
-    public User createNewUser(final String username, final String password, final short privLevel)
+    public User createNewUser(final UserGroup userGroup, final String username, final String password, final short privLevel)
     {
-     
+        
         try
         {
             Session session = HibernateUtil.getCurrentSession();
@@ -323,8 +1204,12 @@ public class GenericDBConversion
             user.setName(username);
             user.setPassword(Encryption.encrypt(password));
             user.setPrivLevel(privLevel);
+            user.setUserGroup(userGroup);
             
             session.save(user);
+            
+            userGroup.getUsers().add(user);
+            session.saveOrUpdate(userGroup);
             
             HibernateUtil.commitTransaction();
 
@@ -410,9 +1295,11 @@ public class GenericDBConversion
             colObjDef.setName(name);
             colObjDef.setDataType(dataType);
             colObjDef.setUser(user);
+
             colObjDef.setTaxonTreeDef(set);
+
             colObjDef.setCatalogSeries(catalogSeriesSet);
-            colObjDef.setAttrsDefs(new HashSet<Object>());
+            colObjDef.setAttributeDefs(new HashSet<Object>());
             
             session.save(colObjDef);
             
@@ -826,6 +1713,7 @@ public class GenericDBConversion
         
         Connection conn = DBConnection.getConnection();
         Statement st = conn.createStatement();
+        st.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
         
         // put together a huge 'insert' statement, starting with the 'values
         // (...)' portion
@@ -909,7 +1797,7 @@ public class GenericDBConversion
         String sql = "select * from taxonname";
         
         if (copyTable(oldDB.getConnectionToDB(), DBConnection.getConnection(), sql, "taxonname", "taxon", 
-                      createFieldNameMap(new String[] {"TaxonID", "TaxonNameID", "ParentID", "ParentTaxonNameID", "Name", "TaxonName", "FullName", "FullTaxonName"})))
+                      createFieldNameMap(new String[] {"TaxonID", "TaxonNameID", "ParentID", "ParentTaxonNameID", "Name", "TaxonName", "FullName", "FullTaxonName"}), null))
         {
             log.info("TaxonName copied ok.");
         } else
@@ -930,7 +1818,7 @@ public class GenericDBConversion
         DBConnection oldDB     = DBConnection.createInstance(oldDriver, oldDBName, oldUserName, oldPassword);
         String sql = "select locality.*, geography.* from locality,geography where locality.GeographyID = geography.GeographyID";
         
-        if (copyTable(oldDB.getConnectionToDB(), DBConnection.getConnection(), sql, "geography", "locality", null))
+        if (copyTable(oldDB.getConnectionToDB(), DBConnection.getConnection(), sql, "geography", "locality", null, null))
         {
             log.info("Locality/Geography copied ok.");
         } else

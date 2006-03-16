@@ -28,7 +28,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +51,7 @@ public class BasicSQLUtils
     protected static Log              log               = LogFactory.getLog(BasicSQLUtils.class);
     protected static SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     protected static SimpleDateFormat dateFormatter     = new SimpleDateFormat("yyyy-MM-dd");
+    protected static Calendar         calendar          = new GregorianCalendar();
     protected static boolean          showMappingError  = true;
     
     protected static BasicSQLUtils basicSQLUtils = new  BasicSQLUtils();
@@ -96,8 +99,10 @@ public class BasicSQLUtils
             //e.printStackTrace();
             log.error(ex);
             log.error(cmdStr+"\n");
+            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
-        return -1;
+        //return -1;
     }
     
     /**
@@ -130,6 +135,7 @@ public class BasicSQLUtils
             rs.close();
             
             Statement stmt = connection.createStatement();
+            exeUpdateCmd(stmt, "SET FOREIGN_KEY_CHECKS = 0");
             int retVal = exeUpdateCmd(stmt, "delete from "+tableName);
             stmt.clearBatch();
             stmt.close();
@@ -312,6 +318,46 @@ public class BasicSQLUtils
             log.error(ex);
         }
     }
+    
+    /**
+     * Converts an integer time in the form of YYYYMMDD to the proper Date
+     * @param iDate the int to be converted
+     * @return the date object
+     * @return the verbatimDate strin that holds old invalid verbatim dates
+     */
+    public static Date convertIntToDate(final int iDate, final StringBuilder verbatimDate)
+    {
+        calendar.clear();
+
+        int year  = iDate / 10000;
+        if (year > 1600)
+        {
+            int tmp   = (iDate - (year * 10000));
+            int month = tmp / 100;
+            int day   = (tmp - (month * 100));
+            
+            if (month == 0 || day == 0)
+            {
+                verbatimDate.setLength(0);
+                verbatimDate.append(Integer.toString(iDate));
+                if (month == 0) 
+                {
+                    month = 7;
+                }
+                if (day == 0) 
+                {
+                    day = 1;    
+                }
+            }
+
+            calendar.set(year, month-1, day);
+        } else
+        {
+            calendar.setTimeInMillis(0);
+        }
+
+        return calendar.getTime();
+    }
 
     /**
      * Copies a table from one DB to another
@@ -322,14 +368,16 @@ public class BasicSQLUtils
      * @param toConn the "to" DB
      * @param tableName the table name to be copied
      * @param colNewToOldMap a map of new file names toold file names
+     * @param verbatimDateMapper a map from the new Vertbatim Date Field to the new date column name it is associated with
      * @return true if successful
      */
     public static boolean copyTable(final Connection fromConn,
                                     final Connection toConn,
                                     final String     tableName,
-                                    final Map<String, String> colNewToOldMap)
+                                    final Map<String, String> colNewToOldMap,
+                                    final Map<String, String> verbatimDateMapper)
     {
-        return copyTable(fromConn, toConn, "select * from " + tableName, tableName, tableName, colNewToOldMap);
+        return copyTable(fromConn, toConn, "select * from " + tableName, tableName, tableName, colNewToOldMap, verbatimDateMapper);
     }
 
     /**
@@ -338,14 +386,16 @@ public class BasicSQLUtils
      * @param fromTableName the table name its coming from
      * @param toTableName the table name it is going to
      * @param colNewToOldMap a map of new file names toold file names
+     * @param verbatimDateMapper a map from the new Vertbatim Date Field to the new date column name it is associated with
      * @return true if successful
      */
     public static boolean copyTable(final Connection conn,
                                     final String     fromTableName,
                                     final String     toTableName,
-                                    final Map<String, String> colNewToOldMap)
+                                    final Map<String, String> colNewToOldMap,
+                                    final Map<String, String> verbatimDateMapper)
     {
-        return copyTable(conn, conn, "select * from " + fromTableName, fromTableName, toTableName, colNewToOldMap);
+        return copyTable(conn, conn, "select * from " + fromTableName, fromTableName, toTableName, colNewToOldMap, verbatimDateMapper);
     }
 
     /**
@@ -356,6 +406,7 @@ public class BasicSQLUtils
      * @param fromTableName the table name its coming from
      * @param toTableName the table name it is going to
      * @param colNewToOldMap a map of new file names to old file names
+     * @param verbatimDateMapper a map from the new Vertbatim Date Field to the new date column name it is associated with
      * @return true if successful
      */
     public static boolean copyTable(final Connection fromConn,
@@ -363,7 +414,8 @@ public class BasicSQLUtils
                                     final String     sqlStr,
                                     final String     fromTableName,
                                     final String     toTableName,
-                                    final Map<String, String> colNewToOldMap)
+                                    final Map<String, String> colNewToOldMap,
+                                    final Map<String, String> verbatimDateMapper)
     {
         String id = "";
         try
@@ -371,19 +423,59 @@ public class BasicSQLUtils
             List<FieldMetaData> colMetaData = new ArrayList<FieldMetaData>();
             getFieldMetaDataFromSchema(toConn, toTableName, colMetaData);
             
-            Statement stmt = fromConn.createStatement();
-            ResultSet rs = stmt.executeQuery(sqlStr);
+            Statement         stmt = fromConn.createStatement();
+            ResultSet         rs   = stmt.executeQuery(sqlStr);
             ResultSetMetaData rsmd = rs.getMetaData();
+            
             Hashtable<String, Integer> fromHash = new Hashtable<String, Integer>();
             for (int i = 1; i <= rsmd.getColumnCount(); i++)
             {
                 fromHash.put(rsmd.getColumnName(i), i);
             }
             // System.out.println("Num Cols: "+rsmd.getColumnCount());
-            StringBuffer str = new StringBuffer();
-            int count = 0;
+            
+            Hashtable<String, String>  vertbatimDateMap = new Hashtable<String, String>();
+            Hashtable<String, Date>    dateMap          = new Hashtable<String, Date>();
+            
+            StringBuilder verbatimDateStr = new StringBuilder();
+            StringBuffer  str             = new StringBuffer();
+            int           count           = 0;
             while (rs.next())
             {
+                if (verbatimDateMapper != null)
+                {
+                    // Start by going through the resultset and converting all dates from Integers 
+                    // to real dates and keep the verbatium date information if it is a partial date
+                    for (int i = 1; i <= rsmd.getColumnCount(); i++)
+                    {
+                        String  oldColName = rsmd.getColumnName(i);
+                        Integer index      = fromHash.get(oldColName);
+                        
+                        if (index == null)
+                        {
+                            log.error("Couldn't find new column for old column for date for Table[" + fromTableName + "] Col Name[" + colMetaData.get(i).getName() + "]");
+                            continue;
+                        }
+                        
+                        String newColName = colMetaData.get(index).getName();
+                        
+                        Object dataObj = rs.getObject(i);
+                        if (dataObj instanceof Integer && newColName.toLowerCase().indexOf("date") ==  0)
+                        {
+                            Date date = convertIntToDate((Integer)dataObj, verbatimDateStr);
+                            dateMap.put(newColName, date);
+                            
+                            if (verbatimDateStr.length() > 0)
+                            {
+                                vertbatimDateMap.put(newColName, verbatimDateStr.toString());
+                            } else
+                            {
+                                log.error("No Verbatim Date Mapper for Table[" + fromTableName + "] Col Name[" + colMetaData.get(i).getName() + "]");
+                            }
+                        }
+                    }
+                }
+                
                 str.setLength(0);
                 str.append("INSERT INTO " + toTableName + " VALUES (");
                 
@@ -391,15 +483,16 @@ public class BasicSQLUtils
                 for (int i = 0; i < colMetaData.size(); i++)
                 {
                     FieldMetaData fieldMetaData = colMetaData.get(i);
-                    String colName = fieldMetaData.getName();
+                    String colName          = fieldMetaData.getName();
+                    String oldMappedColName = null;
                     
                     Integer index = fromHash.get(colName);
                     if (index == null && colNewToOldMap != null)
                     {
-                        String mappedName = colNewToOldMap.get(colName);
-                        if (mappedName != null)
+                        oldMappedColName = colNewToOldMap.get(colName);
+                        if (oldMappedColName != null)
                         {
-                            index = fromHash.get(mappedName);
+                            index = fromHash.get(oldMappedColName);
                             
                         } else if (showMappingError)
                         {
@@ -411,7 +504,25 @@ public class BasicSQLUtils
                     {
                         if (i > 0) str.append(", ");
                         Object dataObj = rs.getObject(index);
-                        str.append(getStrValue(dataObj, fieldMetaData.getType()));
+                        
+                        if (dataObj instanceof Integer && colName.toLowerCase().indexOf("date") ==  0 && verbatimDateMapper != null)
+                        {
+                            // First check to see if the current column name is that of the verbatim field
+                            // it will return the new schema's date field name that this verbatim field is associated with
+                            String dateFieldName = verbatimDateMapper.get(colName); // from verbatim to associated date field
+                            if (dateFieldName != null)
+                            {
+                                str.append(getStrValue(vertbatimDateMap.get(colName)));
+
+                            } else
+                            {
+                                str.append(getStrValue(dateMap.get(colName)));
+                            }
+
+                        } else
+                        {
+                            str.append(getStrValue(dataObj, fieldMetaData.getType()));
+                        }
                         
                     } else
                     {
@@ -432,6 +543,7 @@ public class BasicSQLUtils
                 str.append(")");
                 if (count % 1000 == 0) log.info(toTableName + " processed: " + count);
                 Statement updateStatement = toConn.createStatement();
+                exeUpdateCmd(updateStatement, "SET FOREIGN_KEY_CHECKS = 0");
                 int retVal = exeUpdateCmd(updateStatement, str.toString());
                 updateStatement.clearBatch();
                 updateStatement.close();

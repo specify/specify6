@@ -1,0 +1,229 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="edu.ku.brc.specify.datamodel.AttributeDef" 
+    table="attributedef"
+	lazy="true"
+>
+    <meta attribute="class-description" inherit="false">
+       @hibernate.class
+        table="attributedef"
+    </meta>
+
+    <id
+        name="AttributeDefId"
+        type="java.lang.Integer"
+        column="AttributeDefID"
+    >
+      <meta attribute="scope-set">public</meta>
+      <meta attribute="scope-field">protected</meta>
+      <generator class="native"/>
+    </id>
+
+    <!--
+		Indicates whether it is for 
+		0 - Habtitat
+		1 - Biological
+		2 - Preparation
+		3 - External Resource
+	-->
+    <property
+        name="tableType"
+        type="short"
+        column="TableType"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="TableType"
+        </meta>    
+    </property>
+	
+	<!--
+		This is needed for Preparations because
+		there can be different PrepType that can have
+		their own set of Attrs
+    -->
+    <property
+        name="subType"
+        type="short"
+        column="SubType"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="SubType"
+        </meta>    
+    </property>
+	
+    <property
+        name="fieldName"
+        type="java.lang.String"
+        column="FieldName"
+        length="32"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="FieldName"
+            length="32"
+        </meta>    
+    </property>
+
+    <property
+        name="dataType"
+        type="short"
+        column="DataType"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="DataType"
+        </meta>    
+    </property>
+    
+    <!-- Associations -->
+    
+    <!-- many-to-one association to CollectionObjDef -->
+    <many-to-one
+        name="collectionObjDef"
+        class="edu.ku.brc.specify.datamodel.CollectionObjDef"
+        not-null="true"
+		outer-join="true"
+    >
+	    <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="CollectionObjDefID"
+        </meta>
+        <column name="CollectionObjDefID" />
+    </many-to-one>
+    
+    <!-- bi-directional one-to-many association to CollectingEventAttr -->
+    <set
+        name="collectingEventAttrs"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="delete"
+
+           @hibernate.collection-key
+            column="AttributeDefID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.CollectingEventAttr"
+        </meta>
+        <key>
+            <column name="AttributeDefID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.CollectingEventAttr"
+        />
+    </set>	
+        
+    <!-- bi-directional one-to-many association to PreparationAttr -->
+    <set
+        name="preparationAttr"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="delete"
+
+           @hibernate.collection-key
+            column="AttributeDefID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.CollectingEventAttr"
+        </meta>
+        <key>
+            <column name="AttributeDefID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.PreparationAttr"
+        />
+    </set>	
+        
+    <!-- bi-directional one-to-many association to CollectionObjectAttr -->
+    <set
+        name="collectionObjectAttrs"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="delete"
+
+           @hibernate.collection-key
+            column="AttributeDefID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.CollectionObjectAttr"
+        </meta>
+        <key>
+            <column name="AttributeDefID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.CollectionObjectAttr"
+        />
+    </set>	
+        
+    <!-- bi-directional one-to-many association to ExternalResourceAttr -->
+    <set
+        name="externalResources"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="delete"
+
+           @hibernate.collection-key
+            column="AttributeDefID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.ExternalResourceAttr"
+        </meta>
+        <key>
+            <column name="AttributeDefID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.ExternalResourceAttr"
+        />
+    </set>	
+        
+
+    
+</class>
+</hibernate-mapping>

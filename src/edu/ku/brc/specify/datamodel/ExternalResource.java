@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -12,7 +14,7 @@ public class ExternalResource  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer externalFileId;
+     protected Integer externalResourceId;
      protected String mimeType;
      protected String fileName;
      protected Calendar fileCreatedDate;
@@ -21,7 +23,7 @@ public class ExternalResource  implements java.io.Serializable {
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
-     protected Set extResAttrs;
+     protected Set attrs;
      private Agent createdByAgent;
      private Set agents;
      private Set collectionObjects;
@@ -40,8 +42,8 @@ public class ExternalResource  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public ExternalResource(Integer externalFileId) {
-        this.externalFileId = externalFileId;
+    public ExternalResource(Integer externalResourceId) {
+        this.externalResourceId = externalResourceId;
     }
    
     
@@ -52,12 +54,12 @@ public class ExternalResource  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getExternalFileId() {
-        return this.externalFileId;
+    public Integer getExternalResourceId() {
+        return this.externalResourceId;
     }
     
-    public void setExternalFileId(Integer externalFileId) {
-        this.externalFileId = externalFileId;
+    public void setExternalResourceId(Integer externalResourceId) {
+        this.externalResourceId = externalResourceId;
     }
 
     /**
@@ -132,6 +134,8 @@ public class ExternalResource  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="TimestampCreated"
      *             length="23"
+     *             update="false"
+     *             not-null="true"
      *         
      */
     public Date getTimestampCreated() {
@@ -146,6 +150,7 @@ public class ExternalResource  implements java.io.Serializable {
      *      *            @hibernate.property
      *             column="TimestampModified"
      *             length="23"
+     *             not-null="true"
      *         
      */
     public Date getTimestampModified() {
@@ -176,17 +181,17 @@ public class ExternalResource  implements java.io.Serializable {
      *             inverse="true"
      *             cascade="delete"
      *            @hibernate.collection-key
-     *             column="ExtResAttrsID"
+     *             column="ExternalResourceID"
      *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.ExtResAttrs"
+     *             class="edu.ku.brc.specify.datamodel.ExternalResourceAttr"
      *         
      */
-    public Set getExtResAttrs() {
-        return this.extResAttrs;
+    public Set getAttrs() {
+        return this.attrs;
     }
     
-    public void setExtResAttrs(Set extResAttrs) {
-        this.extResAttrs = extResAttrs;
+    public void setAttrs(Set attrs) {
+        this.attrs = attrs;
     }
 
     /**
