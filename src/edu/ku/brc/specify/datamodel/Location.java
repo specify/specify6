@@ -330,7 +330,8 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     		    DataFlavor[] flavors = new DataFlavor[1];
     		    try
     		    {
-    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType +
+    		                ";class=edu.ku.brc.specify.datamodel.Treeable");
     		    }
     		    catch( ClassNotFoundException ex )
     		    {
@@ -345,7 +346,8 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     		    DataFlavor[] flavors = new DataFlavor[1];
     		    try
     		    {
-    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType +
+    		                ";class=edu.ku.brc.specify.datamodel.Treeable");
     		    }
     		    catch( ClassNotFoundException ex )
     		    {
@@ -368,7 +370,8 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     		    DataFlavor[] flavors = new DataFlavor[1];
     		    try
     		    {
-    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType +
+    		                ";class=edu.ku.brc.specify.datamodel.Treeable");
     		    }
     		    catch( ClassNotFoundException ex )
     		    {

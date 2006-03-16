@@ -267,6 +267,22 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
         this.parent = parent;
     }
 
+  /**
+	 * toString
+	 * @return String
+	 */
+  public String toString() {
+	  StringBuffer buffer = new StringBuffer();
+
+      buffer.append(getClass().getName()).append("@").append(Integer.toHexString(hashCode())).append(" [");
+      buffer.append("treeId").append("='").append(getTreeId()).append("' ");			
+      buffer.append("name").append("='").append(getName()).append("' ");			
+      buffer.append("nodeNumber").append("='").append(getNodeNumber()).append("' ");			
+      buffer.append("highestChildNodeNumber").append("='").append(getHighestChildNodeNumber()).append("' ");			
+      buffer.append("]");
+      
+      return buffer.toString();
+	}
 
 
 
@@ -331,7 +347,8 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     		    DataFlavor[] flavors = new DataFlavor[1];
     		    try
     		    {
-    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType + 
+    		                            ";class=edu.ku.brc.specify.datamodel.Treeable");
     		    }
     		    catch( ClassNotFoundException ex )
     		    {
@@ -346,7 +363,8 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     		    DataFlavor[] flavors = new DataFlavor[1];
     		    try
     		    {
-    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType + 
+    		                            ";class=edu.ku.brc.specify.datamodel.Treeable");
     		    }
     		    catch( ClassNotFoundException ex )
     		    {
@@ -369,7 +387,8 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     		    DataFlavor[] flavors = new DataFlavor[1];
     		    try
     		    {
-    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType +
+    		                        ";class=edu.ku.brc.specify.datamodel.Treeable");
     		    }
     		    catch( ClassNotFoundException ex )
     		    {

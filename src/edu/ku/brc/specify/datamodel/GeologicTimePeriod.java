@@ -292,7 +292,8 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
     		    DataFlavor[] flavors = new DataFlavor[1];
     		    try
     		    {
-    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType +
+    		                ";class=edu.ku.brc.specify.datamodel.Treeable");
     		    }
     		    catch( ClassNotFoundException ex )
     		    {
@@ -307,7 +308,8 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
     		    DataFlavor[] flavors = new DataFlavor[1];
     		    try
     		    {
-    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType +
+    		                ";class=edu.ku.brc.specify.datamodel.Treeable");
     		    }
     		    catch( ClassNotFoundException ex )
     		    {
@@ -330,7 +332,8 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
     		    DataFlavor[] flavors = new DataFlavor[1];
     		    try
     		    {
-    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType +
+    		                ";class=edu.ku.brc.specify.datamodel.Treeable");
     		    }
     		    catch( ClassNotFoundException ex )
     		    {

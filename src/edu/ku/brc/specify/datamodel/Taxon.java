@@ -17,6 +17,7 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
 
      protected Integer treeId;
      protected String taxonomicSerialNumber;
+     protected String guid;
      protected String name;
      protected String unitInd1;
      protected String unitName1;
@@ -87,6 +88,17 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     
     public void setTaxonomicSerialNumber(String taxonomicSerialNumber) {
         this.taxonomicSerialNumber = taxonomicSerialNumber;
+    }
+
+    /**
+     * 
+     */
+    public String getGuid() {
+        return this.guid;
+    }
+    
+    public void setGuid(String guid) {
+        this.guid = guid;
     }
 
     /**
@@ -512,7 +524,8 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     		    DataFlavor[] flavors = new DataFlavor[1];
     		    try
     		    {
-    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType +
+    		                ";class=edu.ku.brc.specify.datamodel.Treeable");
     		    }
     		    catch( ClassNotFoundException ex )
     		    {
@@ -527,7 +540,8 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     		    DataFlavor[] flavors = new DataFlavor[1];
     		    try
     		    {
-    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType +
+    		                ";class=edu.ku.brc.specify.datamodel.Treeable");
     		    }
     		    catch( ClassNotFoundException ex )
     		    {
@@ -550,7 +564,8 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     		    DataFlavor[] flavors = new DataFlavor[1];
     		    try
     		    {
-    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType+";class=edu.ku.brc.specify.datamodel.Treeable");
+    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType +
+    		                ";class=edu.ku.brc.specify.datamodel.Treeable");
     		    }
     		    catch( ClassNotFoundException ex )
     		    {

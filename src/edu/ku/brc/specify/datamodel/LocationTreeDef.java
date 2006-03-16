@@ -13,11 +13,11 @@ public class LocationTreeDef  implements TreeDefinitionIface,java.io.Serializabl
 
     // Fields    
 
-     protected Integer treeNodeId;
      protected Integer treeDefId;
-     public String name;
-     public Integer rankId;
-     public LocationTreeDef parent;
+     protected String name;
+     protected String remarks;
+     private Set treeEntries;
+     private Set treeDefItems;
 
 
     // Constructors
@@ -27,25 +27,14 @@ public class LocationTreeDef  implements TreeDefinitionIface,java.io.Serializabl
     }
     
     /** constructor with id */
-    public LocationTreeDef(Integer treeNodeId) {
-        this.treeNodeId = treeNodeId;
+    public LocationTreeDef(Integer treeDefId) {
+        this.treeDefId = treeDefId;
     }
    
     
     
 
     // Property accessors
-
-    /**
-     *      *  @hibernate.property column="TreeNodeID" length="10" 
-     */
-    public Integer getTreeNodeId() {
-        return this.treeNodeId;
-    }
-    
-    public void setTreeNodeId(Integer treeNodeId) {
-        this.treeNodeId = treeNodeId;
-    }
 
     /**
      *      *  @hibernate.id generator-class="assigned"
@@ -60,7 +49,7 @@ public class LocationTreeDef  implements TreeDefinitionIface,java.io.Serializabl
     }
 
     /**
-     *      *  @hibernate.property column="Name" length="64"
+     *      *                 @hibernate.property column="Name" length="64"
      *             
      */
     public String getName() {
@@ -72,52 +61,54 @@ public class LocationTreeDef  implements TreeDefinitionIface,java.io.Serializabl
     }
 
     /**
-     *      *  @hibernate.property column="RankID" 
+     *      *                 @hibernate.property column="Remarks" length="255"
+     *             
      */
-    public Integer getRankId() {
-        return this.rankId;
+    public String getRemarks() {
+        return this.remarks;
     }
     
-    public void setRankId(Integer rankId) {
-        this.rankId = rankId;
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 
     /**
-     * 
+     *      * Entries referencing this defintion
      */
-    public LocationTreeDef getParent() {
-        return this.parent;
+    public Set getTreeEntries() {
+        return this.treeEntries;
     }
     
-    public void setParent(LocationTreeDef parent) {
-        this.parent = parent;
+    public void setTreeEntries(Set treeEntries) {
+        this.treeEntries = treeEntries;
     }
 
+    /**
+     *      * The individual elements of this definition
+     */
+    public Set getTreeDefItems() {
+        return this.treeDefItems;
+    }
+    
+    public void setTreeDefItems(Set treeDefItems) {
+        this.treeDefItems = treeDefItems;
+    }
+
+  /**
+	 * toString
+	 * @return String
+	 */
+  public String toString() {
+	  StringBuffer buffer = new StringBuffer();
+
+      buffer.append(getClass().getName()).append("@").append(Integer.toHexString(hashCode())).append(" [");
+      buffer.append("treeDefId").append("='").append(getTreeDefId()).append("' ");			
+      buffer.append("name").append("='").append(getName()).append("' ");			
+      buffer.append("]");
+      
+      return buffer.toString();
+	}
 
 
 
-  // The following is extra code specified in the hbm.xml files
-
-            
-            public TreeDefinitionIface getParentDef()
-            {
-                return this.parent;
-            }
-            
-            /**
-        	 * @param parent the new parent LocationTreeDef object
-        	 *
-        	 * @throws IllegalArgumentException if treeDef is not instance of LocationTreeDef
-        	 */
-        	public void setParentDef( TreeDefinitionIface parent )
-            {
-                if( !(parent instanceof LocationTreeDef) )
-                {
-                    throw new IllegalArgumentException("Argument must be an instance of LocationTreeDef");
-                }
-                setParent((LocationTreeDef)parent);
-            }
-            
-        
-  // end of extra code specified in the hbm.xml files
 }
