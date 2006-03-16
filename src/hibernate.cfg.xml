@@ -77,8 +77,10 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/ExternalResourceAttr.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Geography.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/GeographyTreeDef.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/GeographyTreeDefItem.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/GeologicTimePeriod.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/GeologicTimePeriodTreeDef.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/GeologicTimePeriodTreeDefItem.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/GroupPerson.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Journal.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/LoanAgent.hbm.xml"/>
@@ -89,6 +91,7 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/Locality.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Location.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/LocationTreeDef.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/LocationTreeDefItem.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Observation.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/OtherIdentifier.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Permit.hbm.xml"/>
@@ -103,6 +106,7 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/TaxonCitation.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Taxon.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/TaxonTreeDef.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/TaxonTreeDefItem.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/User.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/UserGroup.hbm.xml"/>
 		

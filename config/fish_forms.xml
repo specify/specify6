@@ -157,10 +157,12 @@
                 <cell type="label" labelfor="storageLocation" label="Storage"/>
 				<cell type="field" name="storageLocation"/>
 			</row>
-<!--			<row>
+<!--			
+			<row>
 				<cell type="label" labelfor="url" label="URL"/>
 				<cell type="field" name="url" label="URL" colspan="5" cols="50"/>	
--->			</row>
+		    </row>
+-->			
             <row>
 			    <cell type="label" labelfor="prepAttrs.size" label="Size"/>
 				<cell type="field" name="prepAttrs.size"/>
@@ -185,7 +187,8 @@
 			</row>
 			-->
 			
-			<!-- <row>
+			<!-- 
+			<row>
                 <cell type="label" labelfor="prepAttrs.size" label="Size"/>
 				<cell type="field" name="prepAttrs.size"/>
 				

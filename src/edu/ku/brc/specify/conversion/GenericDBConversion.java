@@ -1798,7 +1798,7 @@ public class GenericDBConversion
         String sql = "select * from taxonname";
         
         if (copyTable(oldDB.getConnectionToDB(), DBConnection.getConnection(), sql, "taxonname", "taxon", 
-                      createFieldNameMap(new String[] {"TaxonID", "TaxonNameID", "ParentID", "ParentTaxonNameID", "Name", "TaxonName", "FullName", "FullTaxonName"}), null))
+                      createFieldNameMap(new String[] {"TreeID", "TaxonNameID", "ParentID", "ParentTaxonNameID", "Name", "TaxonName", "FullName", "FullTaxonName"}), null))
         {
             log.info("TaxonName copied ok.");
         } else
