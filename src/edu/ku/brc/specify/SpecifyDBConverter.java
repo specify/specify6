@@ -2,18 +2,14 @@ package edu.ku.brc.specify;
 
 import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.deleteAllRecordsFromTable;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,12 +18,13 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 
 
-import edu.ku.brc.specify.conversion.FishConversion;
 import edu.ku.brc.specify.conversion.GenericDBConversion;
+import edu.ku.brc.specify.conversion.GeoFileLine;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.DataType;
+import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.User;
 import edu.ku.brc.specify.datamodel.UserGroup;
@@ -35,7 +32,6 @@ import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.dbsupport.ResultsPager;
-import edu.ku.brc.specify.helpers.XMLHelper;
 
 /**
  * Create more sample data, letting Hibernate persist it for us.
@@ -197,6 +193,12 @@ public class SpecifyDBConverter
                 {             
                     conversion.convertTaxon();
                     conversion.convertLocality();
+                    
+                    // convert 'Geography' table
+                    //Vector<GeoFileLine> oldGeoRecords = conversion.parseGeographyFile(XMLHelper.getConfigDirPath("SpecifyGeographicNames.csv"));
+                    Vector<GeoFileLine> oldGeoRecords = conversion.extractGeographyFromOldDb("Geography");
+                    GeographyTreeDef treeDef = conversion.createStandardGeographyDefinitionAndItems();
+                    conversion.loadSpecifyGeographicNames("geography", oldGeoRecords, treeDef);                     
                 }
                 
                 BasicSQLUtils.deleteAllRecordsFromTable("datatype");
