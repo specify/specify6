@@ -115,12 +115,12 @@
         name="referenceWork"
         class="edu.ku.brc.specify.datamodel.ReferenceWork"
         not-null="true"
-		cascade="delete"
+		cascade="none"
     >
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-			cascade="delete"
+			cascade="none"
            @hibernate.column name="ReferenceWorkID"         
         </meta>
         <column name="ReferenceWorkID" />

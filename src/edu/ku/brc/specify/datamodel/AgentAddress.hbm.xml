@@ -239,6 +239,7 @@
             class="edu.ku.brc.specify.datamodel.LoanAgent"
         />
     </set>
+    
     <!-- bi-directional one-to-many association to Shipment -->
     <set
         name="shipmentsByShipperId"
@@ -265,6 +266,7 @@
             class="edu.ku.brc.specify.datamodel.Shipment"
         />
     </set>
+    
     <!-- bi-directional one-to-many association to Shipment -->
     <set
         name="shipmentsByShippedToId"
@@ -291,6 +293,7 @@
             class="edu.ku.brc.specify.datamodel.Shipment"
         />
     </set>
+    
     <!-- bi-directional one-to-many association to DeaccessionAgent -->
     <set
         name="deaccessionAgents"
@@ -317,6 +320,7 @@
             class="edu.ku.brc.specify.datamodel.DeaccessionAgent"
         />
     </set>
+    
     <!-- bi-directional one-to-many association to ExchangeIn -->
     <set
         name="exchangeIns"
@@ -343,6 +347,7 @@
             class="edu.ku.brc.specify.datamodel.ExchangeIn"
         />
     </set>
+    
     <!-- bi-directional one-to-many association to Permit -->
     <set
         name="permitsByIssueeId"
@@ -369,6 +374,7 @@
             class="edu.ku.brc.specify.datamodel.Permit"
         />
     </set>
+    
     <!-- bi-directional one-to-many association to Permit -->
     <set
         name="permitsByIssuerId"
@@ -395,6 +401,7 @@
             class="edu.ku.brc.specify.datamodel.Permit"
         />
     </set>
+    
     <!-- bi-directional one-to-many association to BorrowAgent -->
     <set
         name="borrowAgents"
@@ -421,6 +428,7 @@
             class="edu.ku.brc.specify.datamodel.BorrowAgent"
         />
     </set>
+    
     <!-- bi-directional one-to-many association to AccessionAgent -->
     <set
         name="accessionAgents"
@@ -447,6 +455,7 @@
             class="edu.ku.brc.specify.datamodel.AccessionAgent"
         />
     </set>
+    
     <!-- bi-directional one-to-many association to ExchangeOut -->
     <set
         name="exchangeOuts"
@@ -473,6 +482,7 @@
             class="edu.ku.brc.specify.datamodel.ExchangeOut"
         />
     </set>
+    
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one
         name="agentByOrganizationId"
@@ -487,13 +497,14 @@
         </meta>
         <column name="OrganizationID" />
     </many-to-one>
+    
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one
         name="agentByAgentId"
         class="edu.ku.brc.specify.datamodel.Agent"
         not-null="true"
 		outer-join="true"
-		cascade="delete"
+		cascade="none"
     >
         <meta attribute="field-description">
            @hibernate.many-to-one
@@ -502,6 +513,7 @@
         </meta>
         <column name="AgentID" />
     </many-to-one>
+    
     <!-- bi-directional many-to-one association to Address -->
     <many-to-one
         name="address"

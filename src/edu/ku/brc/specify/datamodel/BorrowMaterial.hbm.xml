@@ -198,18 +198,19 @@
             class="edu.ku.brc.specify.datamodel.BorrowReturnMaterial"
         />
     </set>
+    
     <!-- bi-directional many-to-one association to Borrow -->
     <many-to-one
         name="borrow"
         class="edu.ku.brc.specify.datamodel.Borrow"
         not-null="true"
 		outer-join="true"
-		cascade="delete"
+		cascade="none"
     >
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-			cascade="delete"
+			cascade="none"
            @hibernate.column name="BorrowID"         
         </meta>
         <column name="BorrowID" />

@@ -305,6 +305,7 @@
             class="edu.ku.brc.specify.datamodel.LoanAgent"
         />
     </set>
+    
     <!-- bi-directional one-to-many association to LoanPhysicalObject -->
     <set
         name="loanPhysicalObjects"
@@ -331,6 +332,7 @@
             class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"
         />
     </set>
+    
     <!-- bi-directional many-to-one association to Shipment -->
     <many-to-one
         name="shipment"

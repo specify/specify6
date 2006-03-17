@@ -15,14 +15,22 @@ import org.hibernate.criterion.Expression;
 
 import edu.ku.brc.specify.conversion.GenericDBConversion;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.AttributeDef;
+import edu.ku.brc.specify.datamodel.AttributeIFace;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.CollectingEventAttr;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.Location;
+import edu.ku.brc.specify.datamodel.PrepType;
+import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.specify.datamodel.PreparationAttr;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.User;
 import edu.ku.brc.specify.datamodel.UserGroup;
@@ -53,6 +61,20 @@ public class DBSchemaTest extends TestCase
     {
 
     }
+    
+    /**
+     * Retuturns the first item from a table
+     * @param classObj the class of the item to get
+     * @return null if no items in table
+     */
+    public Object getDBObject(Class classObj)
+    {
+        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(classObj).setFirstResult(0).setMaxResults(1);
+        java.util.List list = criteria.list();
+        if (list.size() == 0) return null;
+        
+        return list.get(0);
+    }
 
     /**
      * Clean All the tables (Remove all their records)
@@ -82,6 +104,7 @@ public class DBSchemaTest extends TestCase
     {
         log.info("Create User");
         GenericDBConversion conversion = new GenericDBConversion();
+        
         UserGroup userGroup = conversion.createUserGroup("Fish");
         assertNotNull(userGroup);
         
@@ -131,7 +154,7 @@ public class DBSchemaTest extends TestCase
     /**
      * 
      */
-    public void testGeographyLocality()
+    public void testCreateGeographyLocality()
     {
         log.info("Create Geography and Locality");
         try
@@ -142,9 +165,15 @@ public class DBSchemaTest extends TestCase
             // Create Collection Object Definition
             Geography geo = new Geography();
             geo.setTreeId(0);
-            //geo.setCountry("USA");
-            //geo.setContinentOrOcean("North America");
-            //geo.setState("KS");
+            geo.setDefinition(null);
+            geo.setHighestChildNodeNumber(0);
+            geo.setCurrent(false);
+            geo.setLastEditedBy("");
+            geo.setLocalities(new HashSet<Object>());
+            geo.setAbbrev("KS");
+            geo.setName("Kansas");
+            geo.setNodeNumber(0);
+            geo.setRankId(0);
             geo.setTimestampCreated(new Date());
             geo.setTimestampModified(new Date());
             session.save(geo);
@@ -174,21 +203,19 @@ public class DBSchemaTest extends TestCase
     /**
      * 
      */
-    public void testCollectionObjDef()
+    public void testCreateCollectionObjDef()
     {
         log.info("Create CollectionObjDef");
         try
         {
             
             // Find User
-            Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(User.class);
-            java.util.List list = criteria.list();
-            User user = (User)list.get(0);
+            User user = (User)getDBObject(User.class);
+            assertNotNull(user);
             
             // Find Data Type
-            criteria = HibernateUtil.getCurrentSession().createCriteria(DataType.class);
-            list = criteria.list();
-            DataType dataType = (DataType)list.get(0);
+            DataType dataType = (DataType)getDBObject(DataType.class);
+            assertNotNull(dataType);
             
             Session session = HibernateUtil.getCurrentSession();
             HibernateUtil.beginTransaction();
@@ -226,16 +253,15 @@ public class DBSchemaTest extends TestCase
     /**
      * 
      */
-    public void testCatalogSeries()
+    public void testCreateCatalogSeries()
     {
         log.info("Create CatalogSeries");
         try
         {
-            Criteria         criteria         = HibernateUtil.getCurrentSession().createCriteria(CollectionObjDef.class);
-            java.util.List   list             = criteria.list();
-            CollectionObjDef collectionObjDef = (CollectionObjDef)list.get(0);
+            Session          session          = HibernateUtil.getCurrentSession();
+            CollectionObjDef collectionObjDef = (CollectionObjDef)getDBObject(CollectionObjDef.class);
+            assertNotNull(collectionObjDef);
             
-            Session session = HibernateUtil.getCurrentSession();
             HibernateUtil.beginTransaction();
 
             Set<Object> colObjDefSet = new HashSet<Object>();
@@ -278,25 +304,22 @@ public class DBSchemaTest extends TestCase
         log.info("Create CollectionObject");
         try
         {
-            Criteria       criteria      = HibernateUtil.getCurrentSession().createCriteria(CatalogSeries.class);
-            java.util.List list          = criteria.list();
-            CatalogSeries  catalogSeries = (CatalogSeries)list.get(0);
+            CatalogSeries  catalogSeries = (CatalogSeries)getDBObject(CatalogSeries.class);
+            assertNotNull(catalogSeries);
             
-            criteria = HibernateUtil.getCurrentSession().createCriteria(Agent.class);
-            list     = criteria.list();
-            Agent agent = (Agent)list.get(0);
+            Agent agent = (Agent)getDBObject(Agent.class);
+            assertNotNull(agent);
             
-            criteria = HibernateUtil.getCurrentSession().createCriteria(Locality.class);
-            list     = criteria.list();
-            Locality locality = (Locality)list.get(0);
-            
+            Locality locality = (Locality)getDBObject(Locality.class);
+            assertNotNull(locality);
             
             Session session = HibernateUtil.getCurrentSession();
             HibernateUtil.beginTransaction();
 
             Set<Object> collectors = new HashSet<Object>();
-            collectors.add(agent);
+            //collectors.add(agent);
             
+            // Create Collecting Event
             CollectingEvent colEv = new CollectingEvent();
 
             Calendar startCal = Calendar.getInstance();
@@ -307,37 +330,115 @@ public class DBSchemaTest extends TestCase
             
             Calendar endCal = Calendar.getInstance();
             startCal.clear();
-            startCal.set(2006, 0, 2);
+            startCal.set(2006, 0, 2);   
             colEv.setEndDate(startCal);
+            colEv.setAttrs(new HashSet<Object>());
             colEv.setCollectors(collectors);
             colEv.setLocality(locality);
             colEv.setTimestampCreated(new Date());
             colEv.setTimestampModified(new Date());
 
             session.save(colEv);
+            HibernateUtil.commitTransaction();
             
-            CollectionObject colObj = new CollectionObject();
+            HibernateUtil.beginTransaction();
 
-            colObj.setCollectionObjectId(0);
-            colObj.setAgent(agent);
+            
+            // Create AttributeDef for Collecting Event
+            AttributeDef cevAttrDef = new AttributeDef();
+            cevAttrDef.setDataType(AttributeIFace.FieldType.StringType.getType());
+            cevAttrDef.setFieldName("ParkName");
+            cevAttrDef.setPrepType(null);
+            
+            session.saveOrUpdate(cevAttrDef);
+            HibernateUtil.commitTransaction();
+            
+            HibernateUtil.beginTransaction();
+
+            // Create CollectingEventAttr
+            CollectingEventAttr cevAttr = new CollectingEventAttr();
+            cevAttr.setDblValue(null);
+            cevAttr.setDefinition(cevAttrDef);
+            cevAttr.setCollectingEvent(colEv);
+            cevAttr.setStrValue("Clinton Park");
+            cevAttr.setTimestampCreated(new Date());
+            cevAttr.setTimestampModified(new Date());
+            
+            colEv.getAttrs().add(cevAttr);
+            
+            session.saveOrUpdate(cevAttr);
+            session.saveOrUpdate(colEv);
+            HibernateUtil.commitTransaction();
+            
+            HibernateUtil.beginTransaction();
+
+            // Create Collection Object
+            CollectionObject colObj = new CollectionObject();
+            colObj.setAccession(null);
+            colObj.setAttrs(new HashSet());
+            colObj.setCataloger(agent);
             colObj.setCatalogedDate(startCal);
+            colObj.setCatalogedDateVerbatim("Sometime this year");
             colObj.setCatalogNumber(1101010.1f);
-            colObj.setFieldNumber("Field #1");
+            colObj.setCatalogSeries(catalogSeries);
+            colObj.setCollectionObjectCitations(new HashSet<Object>());
+            colObj.setCollectionObjectId(0);
+            colObj.setContainer(null);
+            colObj.setContainerItem(null);
+            colObj.setCountAmt(20);
+            colObj.setDeaccessionCollectionObjects(new HashSet<Object>());
+            colObj.setDeaccessioned(false);
+            colObj.setDescription("This is the description");
             colObj.setDeterminations(new HashSet());
+            colObj.setExternalResources(new HashSet());
+            colObj.setFieldNumber("Field #1");
+            colObj.setGuid("This is the GUID");
+            colObj.setLastEditedBy("rods");
+            colObj.setModifier("modifier");
+            colObj.setName("The Name!!!!!!");
+            colObj.setPreparations(new HashSet<Object>());
+            colObj.setProjectCollectionObjects(new HashSet<Object>());
+            colObj.setRemarks("These are the remarks");
+            colObj.setYesNo1(false);
+            colObj.setYesNo2(true);
+            
             colObj.setTimestampCreated(new Date());
             colObj.setTimestampModified(new Date());
 
-            session.save(colObj);
+            session.saveOrUpdate(colObj);
+            HibernateUtil.commitTransaction();
             
-            /*criteria = HibernateUtil.getCurrentSession().createCriteria(CollectionObject.class);
-            criteria.add(Expression.idEq(0));
-            list = criteria.list();
-            colObj = (CollectionObject)list.get(0);
-            Set determinations = colObj.getDeterminations();
-            determinations.size();
-            determinations = null;
-            */
+            HibernateUtil.beginTransaction();
+
+            // Create AttributeDef for Collection Object
+            AttributeDef colObjAttrDef = new AttributeDef();
+            colObjAttrDef.setDataType(AttributeIFace.FieldType.StringType.getType());
+            colObjAttrDef.setFieldName("MoonPhase");
+            colObjAttrDef.setPrepType(null);
             
+            session.saveOrUpdate(colObjAttrDef);
+            HibernateUtil.commitTransaction();
+            
+            HibernateUtil.beginTransaction();
+
+            // Create CollectionObjectAttr
+            CollectionObjectAttr colObjAttr = new CollectionObjectAttr();
+            colObjAttr.setDblValue(null);
+            colObjAttr.setDefinition(colObjAttrDef);
+            colObjAttr.setCollectionObject(colObj);
+            colObjAttr.setStrValue("Full");
+            colObjAttr.setTimestampCreated(new Date());
+            colObjAttr.setTimestampModified(new Date());
+            
+            session.saveOrUpdate(colObjAttr);
+
+            colObj.getAttrs().add(colObjAttr);
+            session.saveOrUpdate(colObj);
+            HibernateUtil.commitTransaction();
+            
+            HibernateUtil.beginTransaction();
+
+            // Create Taxon Object
             Taxon taxon = new Taxon();
             taxon.setCommonName("darter");
             taxon.setTreeId(0);
@@ -346,6 +447,7 @@ public class DBSchemaTest extends TestCase
             taxon.setTimestampModified(new Date());
             session.save(taxon);
             
+            // Create Determination
             Determination determination = new Determination();
             determination.setDeterminationId(0);
             determination.setIsCurrent(true);
@@ -361,6 +463,92 @@ public class DBSchemaTest extends TestCase
             session.saveOrUpdate(colObj);
             
             HibernateUtil.commitTransaction();
+            
+            HibernateUtil.beginTransaction();
+            
+            // Create Preparation Type
+            PrepType prepType = new PrepType();
+            prepType.setName("Skeleton");
+            prepType.setPreparations(new HashSet<Object>());
+            prepType.setAttributeDefs(new HashSet<Object>());
+            session.saveOrUpdate(prepType);
+            
+            Location location = null;//new Location();
+            /*location.setTreeId(0);
+            location.setDefinition(null);
+            location.setAbbrev("XX");
+            location.setIsCurrent((short)0);
+            location.setParent(null);
+            session.saveOrUpdate(location);*/
+            
+            HibernateUtil.commitTransaction();
+            
+            HibernateUtil.beginTransaction();
+
+            session.update(colObj);
+            session.update(agent);
+            session.update(prepType);
+            
+            // Create Preparation
+            Preparation prep = new Preparation();
+            prep.setAttrs(new HashSet<Object>());
+            prep.setCollectionObject(colObj);
+            prep.setCount(10);
+            prep.setExternalResources(new HashSet<Object>());
+            prep.setLastEditedBy("Rod");
+            prep.setLoanPhysicalObjects(new HashSet<Object>());
+            prep.setLocation(location);
+            prep.setPreparedByAgent(agent);
+            prep.setPreparedDate(Calendar.getInstance());
+            prep.setPrepType(prepType);
+            prep.setRemarks("These are the remarks");
+            prep.setStorageLocation("This is the textual storage location");
+            prep.setText1("Thi is text1");
+            prep.setText2("This is text2");
+            prep.setTimestampCreated(new Date());
+            prep.setTimestampModified(new Date());
+            
+            session.saveOrUpdate(prep);
+            HibernateUtil.commitTransaction();
+            
+            HibernateUtil.beginTransaction();
+
+            colObj.getPreparations().add(prep);
+            session.saveOrUpdate(colObj);
+            
+            session.update(prepType);
+            session.update(prep);
+            
+            // Create AttributeDef for Preparation
+            AttributeDef prepAttrDef = new AttributeDef();
+            prepAttrDef.setDataType(AttributeIFace.FieldType.IntegerType.getType());
+            prepAttrDef.setFieldName("Length");
+            prepAttrDef.setPrepType(prepType);
+            
+            session.saveOrUpdate(prepAttrDef);
+            //HibernateUtil.commitTransaction();
+            
+            //HibernateUtil.beginTransaction();
+
+            // Create PreparationAttr
+            PreparationAttr prepAttr = new PreparationAttr();
+            prepAttr.setDblValue(100.0);
+            prepAttr.setDefinition(prepAttrDef);
+            prepAttr.setPreparation(prep);
+            prepAttr.setStrValue(null);
+            prepAttr.setTimestampCreated(new Date());
+            prepAttr.setTimestampModified(new Date());
+            
+            session.saveOrUpdate(prepAttr);
+            
+            prep.getAttrs().add(prepAttr);
+            session.saveOrUpdate(prep);
+
+            HibernateUtil.commitTransaction();
+            
+            //HibernateUtil.beginTransaction();
+            //session.delete(colObj);
+            //HibernateUtil.commitTransaction();
 
             assertTrue(true);
             
@@ -414,7 +602,7 @@ public class DBSchemaTest extends TestCase
             criteria.add(Expression.idEq(0));
             java.util.List list     = criteria.list();
             
-            log.info("list.size() == 1: list.size() == "+list.size());
+            log.info("CollectionObject list.size() == 1: list.size() == "+list.size());
             assertTrue(list.size() == 1);
             
             CollectionObject colObj = (CollectionObject)list.get(0);
@@ -423,7 +611,17 @@ public class DBSchemaTest extends TestCase
             
             criteria = HibernateUtil.getCurrentSession().createCriteria(Determination.class);
             list     = criteria.list();
-            log.info("determination should be zero = "+list.size());
+            log.info("Determination should be zero = "+list.size());
+            assertTrue(list.size() == 0);
+            
+            criteria = HibernateUtil.getCurrentSession().createCriteria(Preparation.class);
+            list     = criteria.list();
+            log.info("Preparation should be zero = "+list.size());
+            assertTrue(list.size() == 0);
+            
+            criteria = HibernateUtil.getCurrentSession().createCriteria(PreparationAttr.class);
+            list     = criteria.list();
+            log.info("PreparationAttr should be zero = "+list.size());
             assertTrue(list.size() == 0);
             
             criteria = HibernateUtil.getCurrentSession().createCriteria(Locality.class);
@@ -434,6 +632,16 @@ public class DBSchemaTest extends TestCase
             criteria = HibernateUtil.getCurrentSession().createCriteria(Taxon.class);
             list     = criteria.list();
             log.info("Taxon should be one = "+list.size());
+            assertTrue(list.size() == 1);
+            
+            criteria = HibernateUtil.getCurrentSession().createCriteria(CollectingEvent.class);
+            list     = criteria.list();
+            log.info("CollectingEvent should be one = "+list.size());
+            assertTrue(list.size() == 1);
+            
+            criteria = HibernateUtil.getCurrentSession().createCriteria(CollectingEventAttr.class);
+            list     = criteria.list();
+            log.info("CollectingEventAttr should be one = "+list.size());
             assertTrue(list.size() == 1);
             
             HibernateUtil.commitTransaction();

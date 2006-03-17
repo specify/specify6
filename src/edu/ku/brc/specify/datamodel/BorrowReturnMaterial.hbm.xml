@@ -135,18 +135,19 @@
         </meta>
         <column name="ReturnedByID" />
     </many-to-one>
+    
     <!-- bi-directional many-to-one association to BorrowMaterial -->
     <many-to-one
         name="borrowMaterial"
         class="edu.ku.brc.specify.datamodel.BorrowMaterial"
         not-null="true"
 		outer-join="true"
-		cascade="delete"
+		cascade="none"
     >
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-			cascade="delete"
+			cascade="none"
            @hibernate.column name="BorrowMaterialID"         
         </meta>
         <column name="BorrowMaterialID" />

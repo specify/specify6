@@ -82,18 +82,33 @@
     </many-to-one>
 
 	
-    <!-- bi-directional many-to-one association to CollectionObject -->
-    <one-to-one 
-        name="collectionObject"
-        class="edu.ku.brc.specify.datamodel.CollectionObject"
-        cascade="save-update"
+    <!-- bi-directional one-to-many association to CollectionObject -->
+    <set
+        name="collectionObjects"
+        lazy="true"
+        inverse="true"
+		cascade="none"
     >
 	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.one-to-one
-           @hibernate.column name="CollectionObjectID"         
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="ContainerID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
         </meta>
-    </one-to-one>
+        <key>
+            <column name="ContainerID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
+        />
+    </set>
     
 </class>
 </hibernate-mapping>

@@ -1,11 +1,10 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
-
-
 import java.awt.datatransfer.DataFlavor;
-import java.io.IOException;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Set;
 
 
 /**
@@ -31,7 +30,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
      protected String lastEditedBy;
      private LocationTreeDef definition;
      private Location parent;
-     private Set preparations;
+     protected Set preparations;
 
 
     // Constructors
@@ -242,9 +241,17 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     }
 
     /**
-     *      *  @hibernate.set lazy="true" inverse="true"
-     *                 cascade="none" @hibernate.collection-key column="PreparationID"
-     *                 @hibernate.collection-one-to-many class="edu.ku.brc.specify.datamodel.Preparation" 
+     *      * 	           @hibernate.set
+     * 	            lazy="true"
+     * 	            inverse="true"
+     * 	            cascade="none"
+     * 	
+     * 	           @hibernate.collection-key
+     * 	            column="TreeID"
+     * 	
+     * 	           @hibernate.collection-one-to-many
+     * 	            class="edu.ku.brc.specify.datamodel.Preparation"
+     * 	        
      */
     public Set getPreparations() {
         return this.preparations;

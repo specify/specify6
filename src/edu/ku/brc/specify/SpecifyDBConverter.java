@@ -188,7 +188,7 @@ public class SpecifyDBConverter
                     conversion.createCollectionRecords();
                 }
                 
-                boolean doTheRest = true;
+                boolean doTheRest = false;
                 if (doTheRest || doAll)
                 {             
                     conversion.convertTaxon();
@@ -298,7 +298,7 @@ public class SpecifyDBConverter
                     Object obj = colObjDefSet.iterator().next();
                     CollectionObjDef colObjDef = (CollectionObjDef)obj;
                     
-                    //conversion.convertBiologicalAttrs(colObjDef, null, null);
+                    conversion.convertBiologicalAttrs(colObjDef, null, null);
                     
                     boolean doFish = false;
                     if (doFish)

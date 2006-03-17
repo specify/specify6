@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -221,7 +222,7 @@ public class BorrowMaterial  implements java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     * 			cascade="delete"
+     * 			cascade="none"
      *            @hibernate.column name="BorrowID"         
      *         
      */

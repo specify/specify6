@@ -29,13 +29,13 @@
         name="name"
         type="java.lang.String"
         column="Name"
-        length="50"
+        length="32"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Name"
-            length="50"
+            length="32"
         </meta>    
     </property>
 
@@ -45,7 +45,7 @@
 	
     <!-- bi-directional one-to-many association to Preparation -->
     <set
-        name="preparation"
+        name="preparations"
         lazy="true"
         inverse="true"
 		cascade="none"
@@ -68,6 +68,34 @@
         </key>
         <one-to-many 
             class="edu.ku.brc.specify.datamodel.Preparation"
+        />
+    </set>
+
+    <!-- bi-directional one-to-many association to AttributeDef -->
+    <set
+        name="attributeDefs"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+
+           @hibernate.collection-key
+            column="AttributeDefID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.AttributeDef"
+        </meta>
+        <key>
+            <column name="PrepTypeID" />
+        </key>
+        <one-to-many 
+            class="edu.ku.brc.specify.datamodel.AttributeDef"
         />
     </set>
 

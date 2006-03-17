@@ -100,7 +100,7 @@ public class AttrUtils
      */
     public static List<AttributeDef> loadAttrDefs(final CollectionObjDef colObjDef,
                                               final AttributeIFace.TableType tableType, 
-                                              final int      subType, 
+                                              final PrepType prepType, 
                                               final String[] attrNames, 
                                               final short[]  dataTypes)
     {
@@ -117,7 +117,7 @@ public class AttrUtils
                     AttributeDef attrsDef = new AttributeDef();
                     attrsDef.setTableType((short)tableType.getType());
                     attrsDef.setCollectionObjDef(colObjDef);
-                    attrsDef.setSubType((short)subType);
+                    attrsDef.setPrepType(prepType);
                     attrsDef.setFieldName(attrNames[i]);
                     attrsDef.setDataType(dataTypes[i]);
                     

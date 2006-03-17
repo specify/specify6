@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
 
 
 
@@ -130,7 +130,7 @@ public class GroupPerson  implements java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     * 			cascade="delete"
+     * 			cascade="none"
      *            @hibernate.column name="GroupID"         
      *         
      */

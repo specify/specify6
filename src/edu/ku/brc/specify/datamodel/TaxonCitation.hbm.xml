@@ -201,12 +201,12 @@
         class="edu.ku.brc.specify.datamodel.Taxon"
         not-null="true"
 		outer-join="true"
-		cascade="delete"
+		cascade="none"
     >
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-			cascade="delete"
+			cascade="none"
            @hibernate.column name="TaxonID"         
         </meta>
         <column name="TaxonID" />

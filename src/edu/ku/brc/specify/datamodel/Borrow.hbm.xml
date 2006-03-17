@@ -299,6 +299,7 @@
             class="edu.ku.brc.specify.datamodel.BorrowAgent"
         />
     </set>
+    
     <!-- bi-directional one-to-many association to BorrowMaterial -->
     <set
         name="borrowMaterials"

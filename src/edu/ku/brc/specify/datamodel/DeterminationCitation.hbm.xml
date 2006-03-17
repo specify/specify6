@@ -112,18 +112,19 @@
         </meta>
         <column name="ReferenceWorkID" />
     </many-to-one>
+    
     <!-- bi-directional many-to-one association to Determination -->
     <many-to-one
         name="determination"
         class="edu.ku.brc.specify.datamodel.Determination"
         not-null="true"
 		outer-join="true"
-		cascade="delete"
+		cascade="none"
     >
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-			cascade="delete"
+			cascade="none"
            @hibernate.column name="DeterminationID"         
         </meta>
         <column name="DeterminationID" />

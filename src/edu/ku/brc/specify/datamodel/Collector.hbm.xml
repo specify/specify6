@@ -114,12 +114,12 @@
         name="collectingEvent"
         class="edu.ku.brc.specify.datamodel.CollectingEvent"
         not-null="true"
-		cascade="delete"
+		cascade="none"
     >
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-			cascade="delete"
+			cascade="none"
            @hibernate.column name="CollectingEventID"         
         </meta>
         <column name="CollectingEventID" />

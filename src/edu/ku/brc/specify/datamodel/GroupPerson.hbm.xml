@@ -115,16 +115,17 @@
         name="agentByGroupId"
         class="edu.ku.brc.specify.datamodel.Agent"
         not-null="true"
-		cascade="delete"
+		cascade="none"
     >
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-			cascade="delete"
+			cascade="none"
            @hibernate.column name="GroupID"         
         </meta>
         <column name="GroupID" />
     </many-to-one>
+    
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one
         name="agentByMemberId"

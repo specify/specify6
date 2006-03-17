@@ -34,7 +34,7 @@
 
         </meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="assigned" />
+        <generator class="native" />
     </id>
 	
 	<!--
@@ -213,7 +213,7 @@
         name="attrs"
         lazy="true"
         inverse="true"
-		cascade="none"
+		cascade="all"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
@@ -257,12 +257,12 @@
         class="edu.ku.brc.specify.datamodel.CollectionObject"
         not-null="true"
 		outer-join="true"
-		cascade="delete"
+		cascade="none"
     >
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-			cascade="delete"
+			cascade="none"
            @hibernate.column name="CollectionObjectID"         
         </meta>
         <column name="CollectionObjectID"/>
@@ -270,7 +270,7 @@
 	
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one
-        name="agent"
+        name="preparedByAgent"
         class="edu.ku.brc.specify.datamodel.Agent"
         not-null="true"
 		outer-join="true"
@@ -287,8 +287,8 @@
     <many-to-one
         name="location"
         class="edu.ku.brc.specify.datamodel.Location"
-        not-null="true"
-		outer-join="true"
+        not-null="false"
+		outer-join="auto"
     >
         <meta attribute="field-description">
            @hibernate.many-to-one

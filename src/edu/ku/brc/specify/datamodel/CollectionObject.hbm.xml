@@ -25,7 +25,7 @@
     
     <meta attribute="class-code">
         <![CDATA[
-    protected Container container = null;
+    protected Container container = null; // When not null it means this is the Container
     
     /**
      * 
@@ -167,15 +167,15 @@
     </property>
 	
     <property
-        name="count1"
+        name="countAmt"
         type="java.lang.Integer"
-        column="Count"
+        column="CountAmt"
         length="10"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="Count1"
+            column="CountAmt"
             length="10"
         </meta>    
     </property>
@@ -335,61 +335,41 @@
 	
 
     <!-- Associations -->
-	
+    
     <!-- bi-directional many-to-one association to CollectingEvent -->
     <many-to-one
         name="collectingEvent"
         class="edu.ku.brc.specify.datamodel.CollectingEvent"
         not-null="true"
 		outer-join="true"
+		cascade="none"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+			cascade="none"
+           @hibernate.column name="CollectingEventID"         
+        </meta>
+        <column name="CollectingEventID" />
+    </many-to-one>	    
+	
+    <!-- bi-directional many-to-one association to ContainerItem -->
+    <many-to-one
+        name="containerItem"
+        class="edu.ku.brc.specify.datamodel.ContainerItem"
+        not-null="false"
+		outer-join="auto"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.many-to-one
-            not-null="true"
-			
-           @hibernate.column name="CollectingEventID"
+            not-null="auto"
+           @hibernate.column name="ContainerItemID"         
         </meta>
-        <column name="CollectingEventID" />
-    </many-to-one>
+        <column name="ContainerItemID" />
+    </many-to-one>                 
 	
-    <!-- bi-directional many-to-one association to Observation -->
-    <!--<one-to-one 
-        name="observation"
-        class="edu.ku.brc.specify.datamodel.Observation"
-        cascade="save-update"
-    >
-	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.one-to-one
-           @hibernate.column name="ObservationID"         
-        </meta>
-    </one-to-one>
-    -->
-	
-    <!-- bi-directional many-to-one association to Container -->
-    <!--<one-to-one 
-        name="container"
-        class="edu.ku.brc.specify.datamodel.Container"
-        cascade="save-update"
-        outer-join="true"
-    >
-	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.one-to-one
-           @hibernate.column name="ContainerID"         
-        </meta>
-    </one-to-one>
-    -->
-    <!--
-    <many-to-one name="container" 
-                 class="edu.ku.brc.specify.datamodel.Container" 
-                 column="CollectionObjectID" 
-                 unique="true" 
-                 insert="false" 
-                 update="false"
-                 cascade="all"/>
-	-->
     <!-- bi-directional one-to-many association to CollectionObjectCitation -->
     <set
         name="collectionObjectCitations"
@@ -451,14 +431,14 @@
         name="preparations"
         lazy="true"
         inverse="true"
-		cascade="delete"
+		cascade="all"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.set
             lazy="true"
             inverse="true"
-            cascade="delete"
+            cascade="all"
 
            @hibernate.collection-key
             column="CollectionObjectID"
@@ -479,14 +459,14 @@
         name="determinations"
         lazy="true"
         inverse="true"
-		cascade="delete"
+		cascade="all"
     >
 		<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.set
             lazy="true"
             inverse="true"
-            cascade="delete"
+            cascade="all"
 
            @hibernate.collection-key
             column="CollectionObjectID"
@@ -622,7 +602,7 @@
 	
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one
-        name="agent"
+        name="cataloger"
         class="edu.ku.brc.specify.datamodel.Agent"
         not-null="true"
 		outer-join="auto"

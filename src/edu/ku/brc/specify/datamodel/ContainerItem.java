@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -18,7 +19,7 @@ public class ContainerItem  implements java.io.Serializable {
      private Date timestampModified;
      private Date timestampCreated;
      protected Container container;
-     protected CollectionObject collectionObject;
+     protected Set collectionObjects;
 
 
     // Constructors
@@ -98,16 +99,22 @@ public class ContainerItem  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.one-to-one
-     *            @hibernate.column name="CollectionObjectID"         
+     *      *            @hibernate.set
+     *             lazy="true"
+     *             inverse="true"
+     *             cascade="none"
+     *            @hibernate.collection-key
+     *             column="ContainerID"
+     *            @hibernate.collection-one-to-many
+     *             class="edu.ku.brc.specify.datamodel.CollectionObject"
      *         
      */
-    public CollectionObject getCollectionObject() {
-        return this.collectionObject;
+    public Set getCollectionObjects() {
+        return this.collectionObjects;
     }
     
-    public void setCollectionObject(CollectionObject collectionObject) {
-        this.collectionObject = collectionObject;
+    public void setCollectionObjects(Set collectionObjects) {
+        this.collectionObjects = collectionObjects;
     }
 
 

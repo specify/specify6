@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -28,7 +30,7 @@ public class Preparation  implements java.io.Serializable {
      protected Set attrs;
      private PrepType prepType;
      private CollectionObject collectionObject;
-     private Agent agent;
+     private Agent preparedByAgent;
      private Location location;
      private Set externalResources;
 
@@ -246,7 +248,7 @@ public class Preparation  implements java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     * 			cascade="delete"
+     * 			cascade="none"
      *            @hibernate.column name="CollectionObjectID"         
      *         
      */
@@ -264,12 +266,12 @@ public class Preparation  implements java.io.Serializable {
      *            @hibernate.column name="PreparedByID"         
      *         
      */
-    public Agent getAgent() {
-        return this.agent;
+    public Agent getPreparedByAgent() {
+        return this.preparedByAgent;
     }
     
-    public void setAgent(Agent agent) {
-        this.agent = agent;
+    public void setPreparedByAgent(Agent preparedByAgent) {
+        this.preparedByAgent = preparedByAgent;
     }
 
     /**

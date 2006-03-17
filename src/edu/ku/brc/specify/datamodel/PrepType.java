@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Set;
 
 
 
@@ -16,7 +16,8 @@ public class PrepType  implements java.io.Serializable {
 
      protected Integer prepTypeId;
      protected String name;
-     protected Set preparation;
+     protected Set preparations;
+     protected Set attributeDefs;
 
 
     // Constructors
@@ -49,7 +50,7 @@ public class PrepType  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Name"
-     *             length="50"
+     *             length="32"
      *         
      */
     public String getName() {
@@ -71,12 +72,31 @@ public class PrepType  implements java.io.Serializable {
      *             class="edu.ku.brc.specify.datamodel.Preparation"
      *         
      */
-    public Set getPreparation() {
-        return this.preparation;
+    public Set getPreparations() {
+        return this.preparations;
     }
     
-    public void setPreparation(Set preparation) {
-        this.preparation = preparation;
+    public void setPreparations(Set preparations) {
+        this.preparations = preparations;
+    }
+
+    /**
+     *      *            @hibernate.set
+     *             lazy="true"
+     *             inverse="true"
+     *             cascade="none"
+     *            @hibernate.collection-key
+     *             column="AttributeDefID"
+     *            @hibernate.collection-one-to-many
+     *             class="edu.ku.brc.specify.datamodel.AttributeDef"
+     *         
+     */
+    public Set getAttributeDefs() {
+        return this.attributeDefs;
+    }
+    
+    public void setAttributeDefs(Set attributeDefs) {
+        this.attributeDefs = attributeDefs;
     }
 
 

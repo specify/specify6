@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Set;
 
 
 
@@ -16,10 +16,10 @@ public class AttributeDef  implements java.io.Serializable {
 
      protected Integer AttributeDefId;
      protected Short tableType;
-     protected Short subType;
      protected String fieldName;
      protected Short dataType;
      protected CollectionObjDef collectionObjDef;
+     protected PrepType prepType;
      protected Set collectingEventAttrs;
      protected Set preparationAttr;
      protected Set collectionObjectAttrs;
@@ -68,19 +68,6 @@ public class AttributeDef  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="SubType"
-     *         
-     */
-    public Short getSubType() {
-        return this.subType;
-    }
-    
-    public void setSubType(Short subType) {
-        this.subType = subType;
-    }
-
-    /**
-     *      *            @hibernate.property
      *             column="FieldName"
      *             length="32"
      *         
@@ -118,6 +105,20 @@ public class AttributeDef  implements java.io.Serializable {
     
     public void setCollectionObjDef(CollectionObjDef collectionObjDef) {
         this.collectionObjDef = collectionObjDef;
+    }
+
+    /**
+     *      *            @hibernate.many-to-one
+     *             not-null="false"
+     *            @hibernate.column name="PrepTypeID"
+     *         
+     */
+    public PrepType getPrepType() {
+        return this.prepType;
+    }
+    
+    public void setPrepType(PrepType prepType) {
+        this.prepType = prepType;
     }
 
     /**

@@ -123,12 +123,12 @@ public class FishConversion
                 AttributeIFace.FieldType.StringType.getType(),
         };
         
-        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.Preparation, 0, fishEtOHAttrs, fishEtOHTypes);
-        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.Preparation, 1, fishSkelAttrs, fishSkelTypes);
-        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.Preparation, 2, fishClearStainAttrs, fishClearStainTypes);
-        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.Preparation, 3, fishTissueAttrs, fishTissueTypes);
-        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.Preparation, 4, fishXRayAttrs, fishXRayTypes);
-        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.Preparation, 5, fishMiscAttrs, fishMiscTypes);
+        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.Preparation, null, fishEtOHAttrs, fishEtOHTypes);
+        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.Preparation, null, fishSkelAttrs, fishSkelTypes);
+        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.Preparation, null, fishClearStainAttrs, fishClearStainTypes);
+        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.Preparation, null, fishTissueAttrs, fishTissueTypes);
+        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.Preparation, null, fishXRayAttrs, fishXRayTypes);
+        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.Preparation, null, fishMiscAttrs, fishMiscTypes);
         
         /*
         String[] birdPrepAttrs = {
@@ -273,7 +273,7 @@ public class FishConversion
                 AttributeIFace.FieldType.FloatType.getType(),
                 AttributeIFace.FieldType.MemoType.getType(),
         };
-        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.CollectionObject, 0, fishBioAttrs, fishBioTypes);
+        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.CollectionObject, null, fishBioAttrs, fishBioTypes);
 
         //------------------------------
         // Load Habtitat Attrs
@@ -350,7 +350,7 @@ public class FishConversion
                 AttributeIFace.FieldType.FloatType.getType(),
                 AttributeIFace.FieldType.FloatType.getType()};
         
-        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.CollectingEvent, 0, fishHabitatAttrs, fishHabitatTypes);
+        AttrUtils.loadAttrDefs(collectionObjDef, AttributeIFace.TableType.CollectingEvent, null, fishHabitatAttrs, fishHabitatTypes);
     }
     
     /**

@@ -50,23 +50,6 @@
         </meta>    
     </property>
 	
-	<!--
-		This is needed for Preparations because
-		there can be different PrepType that can have
-		their own set of Attrs
-    -->
-    <property
-        name="subType"
-        type="short"
-        column="SubType"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="SubType"
-        </meta>    
-    </property>
-	
     <property
         name="fieldName"
         type="java.lang.String"
@@ -109,6 +92,22 @@
            @hibernate.column name="CollectionObjDefID"
         </meta>
         <column name="CollectionObjDefID" />
+    </many-to-one>
+    
+    <!-- many-to-one association to PrepType -->
+    <many-to-one
+        name="prepType"
+        class="edu.ku.brc.specify.datamodel.PrepType"
+        not-null="false"
+		outer-join="auto"
+    >
+	    <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="false"
+           @hibernate.column name="PrepTypeID"
+        </meta>
+        <column name="PrepTypeID" />
     </many-to-one>
     
     <!-- bi-directional one-to-many association to CollectingEventAttr -->

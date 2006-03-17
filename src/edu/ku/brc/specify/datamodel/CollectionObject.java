@@ -1,10 +1,12 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
-
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Expression;
+
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 
 
@@ -26,7 +28,7 @@ public class CollectionObject  implements java.io.Serializable {
      protected Float number2;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     protected Integer count1;
+     protected Integer countAmt;
      protected String remarks;
      protected String name;
      protected String modifier;
@@ -39,6 +41,7 @@ public class CollectionObject  implements java.io.Serializable {
      protected Boolean deaccessioned;
      protected Float catalogNumber;
      protected CollectingEvent collectingEvent;
+     protected ContainerItem containerItem;
      protected Set collectionObjectCitations;
      protected Set attrs;
      protected Set preparations;
@@ -48,7 +51,7 @@ public class CollectionObject  implements java.io.Serializable {
      protected Set otherIdentifiers;
      protected CatalogSeries catalogSeries;
      protected Accession accession;
-     protected Agent agent;
+     protected Agent cataloger;
      private Set externalResources;
 
 
@@ -193,16 +196,16 @@ public class CollectionObject  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="Count1"
+     *             column="CountAmt"
      *             length="10"
      *         
      */
-    public Integer getCount1() {
-        return this.count1;
+    public Integer getCountAmt() {
+        return this.countAmt;
     }
     
-    public void setCount1(Integer count1) {
-        this.count1 = count1;
+    public void setCountAmt(Integer countAmt) {
+        this.countAmt = countAmt;
     }
 
     /**
@@ -361,8 +364,8 @@ public class CollectionObject  implements java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     * 			
-     *            @hibernate.column name="CollectingEventID"
+     * 			cascade="none"
+     *            @hibernate.column name="CollectingEventID"         
      *         
      */
     public CollectingEvent getCollectingEvent() {
@@ -371,6 +374,20 @@ public class CollectionObject  implements java.io.Serializable {
     
     public void setCollectingEvent(CollectingEvent collectingEvent) {
         this.collectingEvent = collectingEvent;
+    }
+
+    /**
+     *      *            @hibernate.many-to-one
+     *             not-null="auto"
+     *            @hibernate.column name="ContainerItemID"         
+     *         
+     */
+    public ContainerItem getContainerItem() {
+        return this.containerItem;
+    }
+    
+    public void setContainerItem(ContainerItem containerItem) {
+        this.containerItem = containerItem;
     }
 
     /**
@@ -415,7 +432,7 @@ public class CollectionObject  implements java.io.Serializable {
      *      *            @hibernate.set
      *             lazy="true"
      *             inverse="true"
-     *             cascade="delete"
+     *             cascade="all"
      *            @hibernate.collection-key
      *             column="CollectionObjectID"
      *            @hibernate.collection-one-to-many
@@ -434,7 +451,7 @@ public class CollectionObject  implements java.io.Serializable {
      *      *            @hibernate.set
      *             lazy="true"
      *             inverse="true"
-     *             cascade="delete"
+     *             cascade="all"
      *            @hibernate.collection-key
      *             column="CollectionObjectID"
      *            @hibernate.collection-one-to-many
@@ -540,12 +557,12 @@ public class CollectionObject  implements java.io.Serializable {
      *            @hibernate.column name="CatalogerID"         
      *         
      */
-    public Agent getAgent() {
-        return this.agent;
+    public Agent getCataloger() {
+        return this.cataloger;
     }
     
-    public void setAgent(Agent agent) {
-        this.agent = agent;
+    public void setCataloger(Agent cataloger) {
+        this.cataloger = cataloger;
     }
 
     /**
@@ -565,7 +582,7 @@ public class CollectionObject  implements java.io.Serializable {
   // The following is extra code specified in the hbm.xml files
 
         
-    protected Container container = null;
+    protected Container container = null; // When not null it means this is the Container
     
     /**
      * 

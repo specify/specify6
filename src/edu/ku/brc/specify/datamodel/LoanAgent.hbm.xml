@@ -133,16 +133,17 @@
         class="edu.ku.brc.specify.datamodel.Loan"
         not-null="true"
 		outer-join="true"
-		cascade="delete"
+		cascade="none"
     >
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-			cascade="delete"
+			cascade="none"
            @hibernate.column name="LoanID"         
         </meta>
         <column name="LoanID" />
     </many-to-one>
+    
     <!-- bi-directional many-to-one association to AgentAddress -->
     <many-to-one
         name="agentAddress"

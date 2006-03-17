@@ -143,13 +143,14 @@
         </meta>
         <column name="AgentAddressID" />
     </many-to-one>
+    
     <!-- bi-directional many-to-one association to Accession -->
     <many-to-one
         name="accession"
         class="edu.ku.brc.specify.datamodel.Accession"
         not-null="true"
 		outer-join="true"
-		cascade="delete"
+		cascade="none"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">

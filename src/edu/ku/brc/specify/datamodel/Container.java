@@ -1,8 +1,12 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Expression;
 
+import edu.ku.brc.specify.dbsupport.HibernateUtil;
 
 
 /**
@@ -15,12 +19,12 @@ public class Container  implements java.io.Serializable {
     // Fields    
 
      protected Integer containerId;
+     protected Integer collectionObjectId;
      protected Short type;
      private Date timestampModified;
      private Date timestampCreated;
      private String lastEditedBy;
      protected Set items;
-     protected Location location;
 
 
     // Constructors
@@ -52,6 +56,21 @@ public class Container  implements java.io.Serializable {
     
     public void setContainerId(Integer containerId) {
         this.containerId = containerId;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             type="int"
+     *             column="CollectionObjectID"
+     *             not-null="false"
+     *         
+     */
+    public Integer getCollectionObjectId() {
+        return this.collectionObjectId;
+    }
+    
+    public void setCollectionObjectId(Integer collectionObjectId) {
+        this.collectionObjectId = collectionObjectId;
     }
 
     /**
@@ -131,20 +150,36 @@ public class Container  implements java.io.Serializable {
         this.items = items;
     }
 
+
+
+
+  // The following is extra code specified in the hbm.xml files
+
+        
+    protected CollectionObject collectionObject = null;
+    
     /**
-     *      *            @hibernate.one-to-one
-     *            @hibernate.column name="LocationID"         
-     *         
+     * 
      */
-    public Location getLocation() {
-        return this.location;
+    public CollectionObject getCollectionObject() 
+    {
+        if (collectionObjectId != null)
+        {
+	        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CollectionObject.class);
+	        criteria.add(Expression.eq("collectionObjectId", collectionObjectId));
+	        java.util.List list = criteria.list();
+	        this.collectionObject = list != null && list.size() > 0 ? (CollectionObject)list.get(0) : null;
+	        return this.collectionObject;
+	    } 
+	    return null;
     }
     
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setCollectionObject(CollectionObject collectionObject) 
+    {
+        this.collectionObject = collectionObject;
+        this.collectionObjectId = collectionObject != null ? collectionObject.getCollectionObjectId() : null;
     }
-
-
-
-
+    
+    
+  // end of extra code specified in the hbm.xml files
 }

@@ -164,16 +164,16 @@
 		    </row>
 -->			
             <row>
-			    <cell type="label" labelfor="prepAttrs.size" label="Size"/>
-				<cell type="field" name="prepAttrs.size"/>
+			    <cell type="label" labelfor="attrs.size" label="Size"/>
+				<cell type="field" name="attrs.size"/>
 				
-				<cell type="label" labelfor="prepAttrs.sex" label="Sex"/>
-				<cell type="field" uitype="combobox" name="prepAttrs.sex" initialize="Unknown, Male, Female"/>
+				<cell type="label" labelfor="attrs.sex" label="Sex"/>
+				<cell type="field" uitype="combobox" name="attrs.sex" initialize="Unknown, Male, Female"/>
 			</row>
 			
 			<!--
 			<row>
-				<cell type="attrs" name="prepAttrs" subtypeattr="subNumber" class="edu.ku.brc.specify.datamodel.AttrsDef">
+				<cell type="attrs" name="attrs" subtypeattr="subNumber" class="edu.ku.brc.specify.datamodel.AttributeDef">
 					<subview id="100" subtype="1" desc="ethonol"/>
 					<subview id="101" subtype="2" desc="Skel"/>
 					<subview id="102" subtype="3" desc="Tissue"/>
@@ -183,21 +183,21 @@
 			
 			<!--
 			<row>
-				<cell type="attrs" id="200" name="prepAttrs" subtypeattr="subNumber" class="edu.ku.brc.specify.datamodel.AttrsDef"/>
+				<cell type="attrs" id="200" name="attrs" subtypeattr="subNumber" class="edu.ku.brc.specify.datamodel.AttributeDef"/>
 			</row>
 			-->
 			
 			<!-- 
 			<row>
-                <cell type="label" labelfor="prepAttrs.size" label="Size"/>
-				<cell type="field" name="prepAttrs.size"/>
+                <cell type="label" labelfor="attrs.size" label="Size"/>
+				<cell type="field" name="attrs.size"/>
 				
-                <cell type="label" labelfor="prepAttrs.sex" label="Sex"/>
-				<cell type="field" name="prepAttrs.sex"/>
+                <cell type="label" labelfor="attrs.sex" label="Sex"/>
+				<cell type="field" name="attrs.sex"/>
 			</row>
 			<row>
-                <cell type="label" labelfor="prepAttrs.url" label="URL"/>
-				<cell type="field" name="prepAttrs.url" colspan="5"/>
+                <cell type="label" labelfor="attrs.url" label="URL"/>
+				<cell type="field" name="attrs.url" colspan="5"/>
 			</row>
 			-->
 			
