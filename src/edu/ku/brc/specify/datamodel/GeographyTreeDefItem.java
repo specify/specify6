@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *  @hibernate.class
- *             table="GeographyTreeDefItem" 
+ *             table="geographytreedefitem" 
  */
 public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Serializable {
 

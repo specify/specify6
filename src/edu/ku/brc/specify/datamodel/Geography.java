@@ -1,10 +1,11 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.*;
+
+
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Set;
+import java.awt.datatransfer.UnsupportedFlavorException;
 
 
 /**
@@ -28,7 +29,7 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
      protected Date timestampModified;
      protected Date timestampVersion;
      protected String lastEditedBy;
-     protected Short isCurrent;
+     protected Boolean current;
      private Set localities;
      private GeographyTreeDef definition;
      private Geography parent;
@@ -219,14 +220,14 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     }
 
     /**
-     *      *  @hibernate.property column="IsCurrent" 
+     *      *  @hibernate.property column="Current" 
      */
-    public Short getIsCurrent() {
-        return this.isCurrent;
+    public Boolean getCurrent() {
+        return this.current;
     }
     
-    public void setIsCurrent(Short isCurrent) {
-        this.isCurrent = isCurrent;
+    public void setCurrent(Boolean current) {
+        this.current = current;
     }
 
     /**

@@ -297,6 +297,10 @@
             <meta attribute="field-description"> @hibernate.property column="GroupNumber"
                 length="20" </meta>
         </property>
+        
+        <property name="current" type="java.lang.Boolean" column="Current">
+            <meta attribute="scope-field">protected</meta>
+        </property>
 
         <!-- Associations -->
 

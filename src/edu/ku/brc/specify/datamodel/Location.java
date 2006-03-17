@@ -1,10 +1,11 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.*;
+
+
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Set;
+import java.awt.datatransfer.UnsupportedFlavorException;
 
 
 /**
@@ -28,7 +29,6 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
      protected Date timestampModified;
      protected Date timestampVersion;
      protected String lastEditedBy;
-     protected Short isCurrent;
      private LocationTreeDef definition;
      private Location parent;
      private Set preparations;
@@ -216,17 +216,6 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     
     public void setLastEditedBy(String lastEditedBy) {
         this.lastEditedBy = lastEditedBy;
-    }
-
-    /**
-     *      *  @hibernate.property column="IsCurrent" 
-     */
-    public Short getIsCurrent() {
-        return this.isCurrent;
-    }
-    
-    public void setIsCurrent(Short isCurrent) {
-        this.isCurrent = isCurrent;
     }
 
     /**

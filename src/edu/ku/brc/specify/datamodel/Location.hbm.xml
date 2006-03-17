@@ -151,7 +151,6 @@
             </meta>
         </property>
 
-
         <property name="nodeNumber" type="java.lang.Integer" column="NodeNumber" length="10"
             index="IX_LOC_NodeNumber">
             <meta attribute="scope-field">protected</meta>
@@ -221,11 +220,6 @@
             <meta attribute="scope-field">protected</meta>
             <meta attribute="field-description"> @hibernate.property column="LastEditedBy"
                 length="50" </meta>
-        </property>
-
-        <property name="isCurrent" type="short" column="IsCurrent">
-            <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="IsCurrent" </meta>
         </property>
 
         <!-- Associations -->

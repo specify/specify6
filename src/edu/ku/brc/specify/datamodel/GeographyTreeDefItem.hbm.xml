@@ -5,9 +5,9 @@
     
 <hibernate-mapping>
 
-    <class name="edu.ku.brc.specify.datamodel.GeographyTreeDefItem" table="GeographyTreeDefItem" lazy="true">
+    <class name="edu.ku.brc.specify.datamodel.GeographyTreeDefItem" table="geographytreedefitem" lazy="true">
         <meta attribute="class-description" inherit="false"> @hibernate.class
-            table="GeographyTreeDefItem" </meta>
+            table="geographytreedefitem" </meta>
         <meta attribute="implements">TreeDefinitionItemIface</meta>
         <meta attribute="class-code">
             <![CDATA[

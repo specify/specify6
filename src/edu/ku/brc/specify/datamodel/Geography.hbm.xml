@@ -227,9 +227,9 @@
                 length="50" </meta>
         </property>
 
-        <property name="isCurrent" type="short" column="IsCurrent">
+        <property name="current" type="java.lang.Boolean" column="Current">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="IsCurrent" </meta>
+            <meta attribute="field-description"> @hibernate.property column="Current" </meta>
         </property>
 
         <!-- Associations -->

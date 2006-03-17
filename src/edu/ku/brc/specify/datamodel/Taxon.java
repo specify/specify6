@@ -1,10 +1,11 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.*;
+
+
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Set;
+import java.awt.datatransfer.UnsupportedFlavorException;
 
 
 /**
@@ -41,6 +42,7 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
      protected Short accepted;
      protected Integer rankId;
      protected String groupNumber;
+     protected Boolean current;
      private Set acceptedChildren;
      private Taxon acceptedTaxon;
      private Set taxonCitations;
@@ -384,6 +386,17 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     
     public void setGroupNumber(String groupNumber) {
         this.groupNumber = groupNumber;
+    }
+
+    /**
+     * 
+     */
+    public Boolean getCurrent() {
+        return this.current;
+    }
+    
+    public void setCurrent(Boolean current) {
+        this.current = current;
     }
 
     /**
