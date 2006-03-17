@@ -55,19 +55,18 @@ public class DbStoreTreeModel implements TreeModel
 		this.treeableClass = treeableClass;
 		this.treeDef = treeDef;
 		
-		SessionFactory sf = HibernateUtil.getSessionFactory();
+		Session session = HibernateUtil.getCurrentSession();
+		//Query query = session.createQuery("from "+treeableClass.getCanonicalName()+" as node where node.definition = :treeDef");
+		//query.setEntity("treeDef",treeDef);
 		
-		Session session = sf.openSession();
-		
-		Query query = session.createQuery("from "+treeableClass.getCanonicalName()+" as node where node.definition = :treeDef");
-		query.setEntity("treeDef",treeDef);
+		Query query = session.createQuery("from "+treeableClass.getCanonicalName());
 		
 		nodes = new Vector<Treeable>(query.list());
 
 		// find the root node
 		for( Treeable node: nodes )
 		{
-			if( node.getParentNode() == null )
+			if( node.getNodeNumber() == 1 )
 			{
 				root = node;
 				break;

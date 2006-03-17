@@ -60,6 +60,9 @@ import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.DataType;
+import edu.ku.brc.specify.datamodel.Geography;
+import edu.ku.brc.specify.datamodel.GeographyTreeDef;
+import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
 import edu.ku.brc.specify.datamodel.PrepType;
 
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
@@ -1322,6 +1325,158 @@ public class GenericDBConversion
         }
         return null;
     }
+    public GeographyTreeDef createStandardGeographyDefinitionAndItems()
+    {
+    	Session session = HibernateUtil.getCurrentSession();
+    	HibernateUtil.beginTransaction();
+    	GeographyTreeDef def = new GeographyTreeDef();
+    	session.save(def);
+    	
+    	def.setName("Default Geography Definition");
+    	def.setRemarks("A simple continent/country/state/county geography tree");
+    	
+		GeographyTreeDefItem planet = new GeographyTreeDefItem();
+		session.save(planet);
+		planet.setName("Planet");
+		planet.setRankId(0);
+		
+		GeographyTreeDefItem cont = new GeographyTreeDefItem();
+		session.save(cont);
+		cont.setName("Continent");
+		cont.setRankId(100);
+		
+		GeographyTreeDefItem country = new GeographyTreeDefItem();
+		session.save(country);
+		country.setName("Country");
+		country.setRankId(200);
+		
+		GeographyTreeDefItem state = new GeographyTreeDefItem();
+		session.save(state);
+		state.setName("State");
+		state.setRankId(300);
+		
+		GeographyTreeDefItem county = new GeographyTreeDefItem();
+		session.save(county);
+		county.setName("County");
+		county.setRankId(400);
+		
+		// setup parents
+		county.setParent(state);
+		state.setParent(country);
+		country.setParent(cont);
+		cont.setParent(planet);
+
+		// set the tree def for each tree def item
+		planet.setTreeDef(def);
+		cont.setTreeDef(def);
+		country.setTreeDef(def);
+		state.setTreeDef(def);
+		county.setTreeDef(def);
+		
+		HibernateUtil.commitTransaction();
+		HibernateUtil.closeSession();
+		
+		return def;
+}
+    
+    /**
+     * @param filename the input file
+     * @return the collection of <code>GeoFileLine</code>s representing the input file lines
+     * @throws IOException if the input file cannot be found
+     */
+    public Vector<GeoFileLine> parseGeographyFile( final String filename ) throws IOException
+    {
+        BufferedReader inFile = new BufferedReader(new FileReader(filename));
+        Vector<GeoFileLine>     geoFileLines = new Vector<GeoFileLine>();
+        String line = null;
+        int cnt = 0;
+
+        while( (line = inFile.readLine()) != null )
+        {
+        	cnt++;
+            String fields[] = line.split("\t");
+            
+            // verify that the proper number of fields are present
+            if( fields.length < 11 )
+            {
+            	log.error("Ignoring invalid line in geography file ("+filename+":"+cnt);
+            	continue;
+            }
+            
+            // watch out for non-numbers in the ID field
+            int geoId;
+            try
+            {
+            	geoId = Integer.parseInt(fields[0]);
+            }
+            catch( NumberFormatException nfe )
+            {
+            	log.error("Ignoring invalid line in geography file ("+filename+":"+cnt);
+            	continue;            	
+            }
+            // int curId = Integer.parseInt(fields[1]);
+            String contOrOcean = fields[2].equals("") ? null : fields[2];
+            String country = fields[3].equals("") ? null : fields[3];
+            String state = fields[4].equals("") ? null : fields[4];
+            String county = fields[5].equals("") ? null : fields[5];
+            String islandGrp = fields[6].equals("") ? null : fields[6];
+            String island = fields[7].equals("") ? null : fields[7];
+            String waterBody = fields[8].equals("") ? null : fields[8];
+            String drainage = fields[9].equals("") ? null : fields[9];
+            String full = fields[10].equals("") ? null : fields[10];
+        
+            GeoFileLine row = new GeoFileLine(geoId,0,0,contOrOcean,country,state,county,islandGrp,island,waterBody,drainage,full);
+           	if (cnt % 1000 == 0)
+           	{
+           		log.debug("Geography: " + cnt);
+           	}
+            geoFileLines.add(row);
+        }
+        
+        return geoFileLines;
+    }
+    
+    public Vector<GeoFileLine> extractGeographyFromOldDb( final String oldTableName ) throws SQLException
+    {
+    	Vector<GeoFileLine> oldStyleLines = new Vector<GeoFileLine>();
+    	
+    	DBConnection dbConn = DBConnection.createInstance(this.oldDriver,this.oldDBName,this.oldUserName,this.oldPassword);
+    	Connection conn = dbConn.getConnectionToDB();
+    	Statement st = conn.createStatement();
+    	
+    	ResultSet rs = st.executeQuery("SELECT DISTINCT GeographyID,ContinentOrOcean,Country,State,County,IslandGroup,Island,WaterBody,Drainage,FullGeographicName from "
+    			+ oldTableName + " ORDER BY ContinentOrOcean,Country,State,County");
+    	
+    	while( rs.next() )
+    	{
+    		int geoId = rs.getInt(1);
+    		String cont = rs.getString(2);
+    		String country = rs.getString(3);
+    		String state = rs.getString(4);
+    		String county = rs.getString(5);
+    		String islandGrp = rs.getString(6);
+    		String island = rs.getString(7);
+    		String waterBody = rs.getString(8);
+    		String drainage = rs.getString(9);
+    		String fullname = rs.getString(10);
+    		
+    		GeoFileLine gfl = new GeoFileLine(geoId,0,0,cont,country,state,county,islandGrp,island,waterBody,drainage,fullname);
+    		oldStyleLines.add(gfl);
+    	}
+    	
+    	return oldStyleLines;
+    }
+    
+    private Geography buildGeography(GeographyTreeDef def, int id, String name, int rank, int nodeNum, Geography parent )
+    {
+    	Geography geo = new Geography(id);
+    	geo.setDefinition(def);
+    	geo.setName(name);
+    	geo.setRankId(rank);
+    	geo.setNodeNumber(nodeNum);
+    	geo.setParent(parent);
+    	return geo;
+    }
     
     /**
      * @brief Parses a tab-delimited file containing geographical location data
@@ -1343,68 +1498,55 @@ public class GenericDBConversion
      * @throws SQLException
      */
     public void loadSpecifyGeographicNames( final String tablename,
-                                            final String filename,
-                                            final int    geographyTreeDefId )
-        throws IOException, SQLException
+                                            final Vector<GeoFileLine> oldGeoRecords,
+                                            final GeographyTreeDef treeDef )
+        throws Exception
     {   
-        BufferedReader inFile = new BufferedReader(new FileReader(filename));
-        
-        // StringBuilder updateString = new StringBuilder("insert into " +
-        // tablename + " values ");
-        // Statement st = dbConn.createStatement();
-        
-        Vector<GeoFileLine>     oldStyleItems = new Vector<GeoFileLine>();
         Vector<Integer>         usedIds       = new Vector<Integer>();
-        Vector<Sp6GeoTableItem> newTableRows  = new Vector<Sp6GeoTableItem>();
-        String line = null;
-        int cnt = 0;
-        while( (line = inFile.readLine()) != null )
-        {
-            String fields[] = line.split("\t");
-            int geoId = Integer.parseInt(fields[0]);
-            // int curId = Integer.parseInt(fields[1]);
-            String contOrOcean = fields[2].equals("") ? null : fields[2];
-            String country = fields[3].equals("") ? null : fields[3];
-            String state = fields[4].equals("") ? null : fields[4];
-            String county = fields[5].equals("") ? null : fields[5];
-            String islandGrp = fields[6].equals("") ? null : fields[6];
-            String island = fields[7].equals("") ? null : fields[7];
-            String waterBody = fields[8].equals("") ? null : fields[8];
-            String drainage = fields[9].equals("") ? null : fields[9];
-            String full = fields[10].equals("") ? null : fields[10];
+        //Vector<Geography> newTableRows  = new Vector<Geography>();
+        Vector<Geography> newTableRows  = new Vector<Geography>();
         
-            GeoFileLine row = new GeoFileLine(geoId,0,0,contOrOcean,country,state,county,islandGrp,island,waterBody,drainage,full);
-            oldStyleItems.add(row);
-            usedIds.add(geoId);
-            
-            if (cnt % 1000 == 0)
-            {
-                log.info("Geography: " + cnt);
-            }
-            cnt++;
+        for( GeoFileLine gfl: oldGeoRecords )
+        {
+        	usedIds.add(gfl.getId());
+        	// we also have to find all the IDs currently used in the DB
         }
+        
+        // get the GeographyTreeDef from the DB
+		Session session = HibernateUtil.getCurrentSession();
+		
+		GeographyTreeDef def = treeDef;
+		
+//		Query query = session.createQuery("from "+GeographyTreeDef.class.getCanonicalName()+" as def where def.treeDefId = :treeid");
+//		query.setParameter("treeid",geographyTreeDefId);
+//		GeographyTreeDef def = (GeographyTreeDef)query.list().get(0);
+//		if( def == null )
+//		{
+//			throw new Exception("No GeographyTreeDef found with ID="+geographyTreeDefId);
+//		}
         
         // setup the root node (Earth) of the geo tree
         int geoRootId = findUnusedId(usedIds);
         usedIds.add(geoRootId);
         int nextNodeNumber = 1;
-        Sp6GeoTableItem geoRoot = new Sp6GeoTableItem(geoRootId,"Earth",GEO_ROOT_RANK,nextNodeNumber++,0,geoRootId);
+        Geography geoRoot = buildGeography(def,geoRootId,"Earth",GEO_ROOT_RANK,nextNodeNumber++,null);
         newTableRows.add(geoRoot);
-
         
+        { // new code block for the sake of getting these vars out of scope to make debugging easier
+        	// this should not remain in final versions
         String prevCont = null;
         String prevCountry = null;
         String prevState = null;
         String prevCounty = null;
-        int prevContGeoId = 0;
-        int prevCountryGeoId = 0;
-        int prevStateGeoId = 0;
-        int prevCountyGeoId = 0;
+        Geography prevContGeo = null;
+        Geography prevCountryGeo = null;
+        Geography prevStateGeo = null;
+        Geography prevCountyGeo = null;
         
         // process them all into the new tree structure
         // on the first pass, we're simply going to create all of the nodes and
         // setup the parent pointers
-        for( GeoFileLine geo: oldStyleItems )
+        for( GeoFileLine geo: oldGeoRecords )
         {
             boolean hasCont = !(geo.getContOrOcean() == null);
             boolean hasCountry = !(geo.getCountry() == null);
@@ -1440,30 +1582,30 @@ public class GenericDBConversion
                     contGeoId = findUnusedId(usedIds);
                     usedIds.add(contGeoId);
                     geoName = geo.getContOrOcean();
-                    Sp6GeoTableItem newCont = new Sp6GeoTableItem(contGeoId,geoName,CONTINENT_RANK,nextNodeNumber++,-1,geoRootId);
+                    Geography newCont = buildGeography(def,contGeoId,geoName,CONTINENT_RANK,nextNodeNumber++,geoRoot);
                     prevCont = geoName;
-                    prevContGeoId = contGeoId;
+                    prevContGeo = newCont;
 
                     countryGeoId = findUnusedId(usedIds);
                     usedIds.add(countryGeoId);
                     geoName = geo.getCountry();
-                    Sp6GeoTableItem newCountry = new Sp6GeoTableItem(countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,-1,prevContGeoId);
+                    Geography newCountry = buildGeography(def,countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,newCont);
                     prevCountry = geoName;
-                    prevCountryGeoId = countryGeoId;
+                    prevCountryGeo = newCountry;
                     
                     stateGeoId = findUnusedId(usedIds);
                     usedIds.add(stateGeoId);
                     geoName = geo.getState();
-                    Sp6GeoTableItem newState = new Sp6GeoTableItem(stateGeoId,geoName,STATE_RANK,nextNodeNumber++,-1,prevCountryGeoId);
+                    Geography newState = buildGeography(def,stateGeoId,geoName,STATE_RANK,nextNodeNumber++,newCountry);
                     prevState = geoName;
-                    prevStateGeoId = stateGeoId;
+                    prevStateGeo = newState;
                     
                     // county keeps existing id
                     countyGeoId = geo.getId();
                     geoName = geo.getCounty();
-                    Sp6GeoTableItem newCounty = new Sp6GeoTableItem(countyGeoId,geoName,COUNTY_RANK,nextNodeNumber++,-1,prevStateGeoId);
+                    Geography newCounty = buildGeography(def,countyGeoId,geoName,COUNTY_RANK,nextNodeNumber++,newState);
                     prevCounty = geoName;
-                    prevCountyGeoId = countyGeoId;
+                    prevCountyGeo = newCounty;
                     
                     newTableRows.add(newCont);
                     newTableRows.add(newCountry);
@@ -1479,23 +1621,23 @@ public class GenericDBConversion
                     contGeoId = findUnusedId(usedIds);
                     usedIds.add(contGeoId);
                     geoName = geo.getContOrOcean();
-                    Sp6GeoTableItem newCont = new Sp6GeoTableItem(contGeoId,geoName,CONTINENT_RANK,nextNodeNumber++,-1,geoRootId);
+                    Geography newCont = buildGeography(def,contGeoId,geoName,CONTINENT_RANK,nextNodeNumber++,geoRoot);
                     prevCont = geoName;
-                    prevContGeoId = contGeoId;
+                    prevContGeo = newCont;
 
                     countryGeoId = findUnusedId(usedIds);
                     usedIds.add(countryGeoId);
                     geoName = geo.getCountry();
-                    Sp6GeoTableItem newCountry = new Sp6GeoTableItem(countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,-1,prevContGeoId);
+                    Geography newCountry = buildGeography(def,countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,newCont);
                     prevCountry = geoName;
-                    prevCountryGeoId = countryGeoId;
+                    prevCountryGeo = newCountry;
                     
                     // state keeps existing id
                     stateGeoId = geo.getId();
                     geoName = geo.getState();
-                    Sp6GeoTableItem newState = new Sp6GeoTableItem(stateGeoId,geoName,STATE_RANK,nextNodeNumber++,-1,prevCountryGeoId);
+                    Geography newState = buildGeography(def,stateGeoId,geoName,STATE_RANK,nextNodeNumber++,newCountry);
                     prevState = geoName;
-                    prevStateGeoId = stateGeoId;
+                    prevStateGeo = newState;
                                         
                     newTableRows.add(newCont);
                     newTableRows.add(newCountry);
@@ -1510,16 +1652,16 @@ public class GenericDBConversion
                     contGeoId = findUnusedId(usedIds);
                     usedIds.add(contGeoId);
                     geoName = geo.getContOrOcean();
-                    Sp6GeoTableItem newCont = new Sp6GeoTableItem(contGeoId,geoName,CONTINENT_RANK,nextNodeNumber++,-1,geoRootId);
+                    Geography newCont = buildGeography(def,contGeoId,geoName,CONTINENT_RANK,nextNodeNumber++,geoRoot);
                     prevCont = geoName;
-                    prevContGeoId = contGeoId;
+                    prevContGeo = newCont;
 
                     // country keeps existing id
                     countryGeoId = geo.getId();
                     geoName = geo.getCountry();
-                    Sp6GeoTableItem newCountry = new Sp6GeoTableItem(countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,-1,prevContGeoId);
+                    Geography newCountry = buildGeography(def,countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,newCont);
                     prevCountry = geoName;
-                    prevCountryGeoId = countryGeoId;
+                    prevCountryGeo = newCountry;
                     
                     newTableRows.add(newCont);
                     newTableRows.add(newCountry);
@@ -1531,9 +1673,9 @@ public class GenericDBConversion
 
                     contGeoId = geo.getId();
                     geoName = geo.getContOrOcean();
-                    Sp6GeoTableItem newCont = new Sp6GeoTableItem(contGeoId,geoName,CONTINENT_RANK,nextNodeNumber++,-1,geoRootId);
+                    Geography newCont = buildGeography(def,contGeoId,geoName,CONTINENT_RANK,nextNodeNumber++,geoRoot);
                     prevCont = geoName;
-                    prevContGeoId = contGeoId;
+                    prevContGeo = newCont;
 
                     newTableRows.add(newCont);
                 }
@@ -1552,23 +1694,23 @@ public class GenericDBConversion
                     countryGeoId = findUnusedId(usedIds);
                     usedIds.add(countryGeoId);
                     geoName = geo.getCountry();
-                    Sp6GeoTableItem newCountry = new Sp6GeoTableItem(countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,-1,prevContGeoId);
+                    Geography newCountry = buildGeography(def,countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,prevContGeo);
                     prevCountry = geoName;
-                    prevCountryGeoId = countryGeoId;
+                    prevCountryGeo = newCountry;
                     
                     stateGeoId = findUnusedId(usedIds);
                     usedIds.add(stateGeoId);
                     geoName = geo.getState();
-                    Sp6GeoTableItem newState = new Sp6GeoTableItem(stateGeoId,geoName,STATE_RANK,nextNodeNumber++,-1,prevCountryGeoId);
+                    Geography newState = buildGeography(def,stateGeoId,geoName,STATE_RANK,nextNodeNumber++,prevCountryGeo);
                     prevState = geoName;
-                    prevStateGeoId = stateGeoId;
+                    prevStateGeo = newState;
                     
                     // county keeps existing id
                     countyGeoId = geo.getId();
                     geoName = geo.getCounty();
-                    Sp6GeoTableItem newCounty = new Sp6GeoTableItem(countyGeoId,geoName,COUNTY_RANK,nextNodeNumber++,-1,prevStateGeoId);
+                    Geography newCounty = buildGeography(def,countyGeoId,geoName,COUNTY_RANK,nextNodeNumber++,prevStateGeo);
                     prevCounty = geoName;
-                    prevCountyGeoId = countyGeoId;
+                    prevCountyGeo = newCounty;
                     
                     newTableRows.add(newCountry);
                     newTableRows.add(newState);
@@ -1583,16 +1725,16 @@ public class GenericDBConversion
                     countryGeoId = findUnusedId(usedIds);
                     usedIds.add(countryGeoId);
                     geoName = geo.getCountry();
-                    Sp6GeoTableItem newCountry = new Sp6GeoTableItem(countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,-1,prevContGeoId);
+                    Geography newCountry = buildGeography(def,countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,prevContGeo);
                     prevCountry = geoName;
-                    prevCountryGeoId = countryGeoId;
+                    prevCountryGeo = newCountry;
                     
                     // state keeps existing id
                     stateGeoId = geo.getId();
                     geoName = geo.getState();
-                    Sp6GeoTableItem newState = new Sp6GeoTableItem(stateGeoId,geoName,STATE_RANK,nextNodeNumber++,-1,prevCountryGeoId);
+                    Geography newState = buildGeography(def,stateGeoId,geoName,STATE_RANK,nextNodeNumber++,prevCountryGeo);
                     prevState = geoName;
-                    prevStateGeoId = stateGeoId;
+                    prevStateGeo = newState;
                                         
                     newTableRows.add(newCountry);
                     newTableRows.add(newState);
@@ -1606,9 +1748,9 @@ public class GenericDBConversion
                     // country keeps existing id
                     countryGeoId = geo.getId();
                     geoName = geo.getCountry();
-                    Sp6GeoTableItem newCountry = new Sp6GeoTableItem(countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,-1,prevContGeoId);
+                    Geography newCountry = buildGeography(def,countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,prevContGeo);
                     prevCountry = geoName;
-                    prevCountryGeoId = countryGeoId;
+                    prevCountryGeo = newCountry;
                     
                     newTableRows.add(newCountry);
                 }
@@ -1627,16 +1769,16 @@ public class GenericDBConversion
                     stateGeoId = findUnusedId(usedIds);
                     usedIds.add(stateGeoId);
                     geoName = geo.getState();
-                    Sp6GeoTableItem newState = new Sp6GeoTableItem(stateGeoId,geoName,STATE_RANK,nextNodeNumber++,-1,prevCountryGeoId);
+                    Geography newState = buildGeography(def,stateGeoId,geoName,STATE_RANK,nextNodeNumber++,prevCountryGeo);
                     prevState = geoName;
-                    prevStateGeoId = stateGeoId;
+                    prevStateGeo = newState;
                     
                     // county keeps existing id
                     countyGeoId = geo.getId();
                     geoName = geo.getCounty();
-                    Sp6GeoTableItem newCounty = new Sp6GeoTableItem(countyGeoId,geoName,COUNTY_RANK,nextNodeNumber++,-1,prevStateGeoId);
+                    Geography newCounty = buildGeography(def,countyGeoId,geoName,COUNTY_RANK,nextNodeNumber++,prevStateGeo);
                     prevCounty = geoName;
-                    prevCountyGeoId = countyGeoId;
+                    prevCountyGeo = newCounty;
                     
                     newTableRows.add(newState);
                     newTableRows.add(newCounty);
@@ -1648,9 +1790,9 @@ public class GenericDBConversion
                     // this item has no county
                     stateGeoId = geo.getId();
                     geoName = geo.getState();
-                    Sp6GeoTableItem newState = new Sp6GeoTableItem(stateGeoId,geoName,STATE_RANK,nextNodeNumber++,-1,prevCountryGeoId);
+                    Geography newState = buildGeography(def,stateGeoId,geoName,STATE_RANK,nextNodeNumber++,prevCountryGeo);
                     prevState = geoName;
-                    prevStateGeoId = stateGeoId;
+                    prevStateGeo = newState;
                                         
                     newTableRows.add(newState);
                 }
@@ -1667,106 +1809,103 @@ public class GenericDBConversion
                     // the other levels get new ones
                     countyGeoId = geo.getId();
                     geoName = geo.getCounty();
-                    Sp6GeoTableItem newCounty = new Sp6GeoTableItem(countyGeoId,geoName,COUNTY_RANK,nextNodeNumber++,-1,prevStateGeoId);
+                    Geography newCounty = buildGeography(def,countyGeoId,geoName,COUNTY_RANK,nextNodeNumber++,prevStateGeo);
                     prevCounty = geoName;
-                    prevCountyGeoId = countyGeoId;
+                    prevCountyGeo = newCounty;
                     
                     newTableRows.add(newCounty);
                 }
             }
         }
+    	}
         
-        // now we have a Vector of Sp6GeoTableItems that contains all the data
+        // now we have a Vector of Geography's that contains all the data
         // we simply need to fixup all the highChildNodeNumber fields
         
-        ListIterator<Sp6GeoTableItem> revIter = newTableRows.listIterator(newTableRows.size());
+        ListIterator<Geography> revIter = newTableRows.listIterator(newTableRows.size());
         while(revIter.hasPrevious())
         {
-            Sp6GeoTableItem newRow = revIter.previous();
+            Geography newRow = revIter.previous();
             int nodeNum = newRow.getNodeNumber();
-            if( nodeNum > newRow.getHighChildNodeNumber() )
+            if( newRow.getHighestChildNodeNumber() == null || nodeNum > newRow.getHighestChildNodeNumber() )
             {
-                newRow.setHighChildNodeNumber(nodeNum);
+                newRow.setHighestChildNodeNumber(nodeNum);
             }
-            Sp6GeoTableItem parent = newRow;
+            Geography parent = newRow.getParent();
             
             // adjust all the parent nodes (all the way up)
-            while( true )
+            while( parent != null )
             {
-                int parentId = parent.getParentId();
-                parent = findNodeById(newTableRows, parentId);
-                
-                if( parent.getHighChildNodeNumber() < nodeNum )
+                if( parent.getHighestChildNodeNumber() == null || parent.getHighestChildNodeNumber() < nodeNum )
                 {
-                    parent.setHighChildNodeNumber(nodeNum);
+                    parent.setHighestChildNodeNumber(nodeNum);
                 }
-                if( parent.getGeographyId() == parent.getParentId() ) // indicates
-                                                                        // the
-                                                                        // geo
-                                                                        // root
-                                                                        // node
-                                                                        // (Earth)
-                {
-                    break;
-                }
+                parent = parent.getParent();
             }
         }
         
-        Connection conn = DBConnection.getConnection();
-        Statement st = conn.createStatement();
-        st.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+        HibernateUtil.beginTransaction();
+        for( Geography geo: newTableRows )
+        {
+        	session.save(geo);
+        }
+        HibernateUtil.commitTransaction();
+        HibernateUtil.closeSession();
         
-        // put together a huge 'insert' statement, starting with the 'values
-        // (...)' portion
-        int rowsInserted = 0;
-        StringBuilder insertStatement = new StringBuilder();
-        for( Sp6GeoTableItem item: newTableRows )
-        {
-            insertStatement.setLength(0);
-            insertStatement.append( "INSERT INTO geography (Name,GeographyId,ParentId,NodeNumber,HighestChildNodeNumber,RankId,GeographyTreeDefId) values ");
-            insertStatement.append("(\"");
-            insertStatement.append(item.getName());
-            insertStatement.append("\",");
-            insertStatement.append(item.getGeographyId());
-            insertStatement.append(",");
-            insertStatement.append(item.getParentId());
-            insertStatement.append(",");
-            insertStatement.append(item.getNodeNumber());
-            insertStatement.append(",");
-            insertStatement.append(item.getHighChildNodeNumber());
-            insertStatement.append(",");
-            insertStatement.append(item.getRankId());
-            insertStatement.append(",");
-            insertStatement.append(geographyTreeDefId);
-            insertStatement.append(")");
-            
-            int row = st.executeUpdate(insertStatement.toString());
-            if (rowsInserted % 1000 == 0)
-            {
-                log.info("Geography: " + rowsInserted);
-            }
-            rowsInserted++;
-        }
-        log.info("Rows inserted: " + rowsInserted);
+//        Connection conn = DBConnection.getConnection();
+//        Statement st = conn.createStatement();
+//        
+//        // put together a huge 'insert' statement, starting with the 'values
+//        // (...)' portion
+//        int rowsInserted = 0;
+//        StringBuilder insertStatement = new StringBuilder();
+//        for( Geography item: newTableRows )
+//        {
+//            insertStatement.setLength(0);
+//            insertStatement.append( "INSERT INTO geography (Name,GeographyId,ParentId,NodeNumber,HighestChildNodeNumber,RankId,GeographyTreeDefId) values ");
+//            insertStatement.append("(\"");
+//            insertStatement.append(item.getName());
+//            insertStatement.append("\",");
+//            insertStatement.append(item.getGeographyId());
+//            insertStatement.append(",");
+//            insertStatement.append(item.getParentId());
+//            insertStatement.append(",");
+//            insertStatement.append(item.getNodeNumber());
+//            insertStatement.append(",");
+//            insertStatement.append(item.getHighChildNodeNumber());
+//            insertStatement.append(",");
+//            insertStatement.append(item.getRankId());
+//            insertStatement.append(",");
+//            insertStatement.append(geographyTreeDefId);
+//            insertStatement.append(")");
+//            
+//            int row = st.executeUpdate(insertStatement.toString());
+//            if (rowsInserted % 1000 == 0)
+//            {
+//                log.info("Geography: " + rowsInserted);
+//            }
+//            rowsInserted++;
+//        }
+//        log.info("Rows inserted: " + rowsInserted);
     }
     
-    /**
-     * @param nodes
-     * @param id
-     * @return
-     */
-    private static Sp6GeoTableItem findNodeById(final Vector<Sp6GeoTableItem> nodes, int id )
-    {
-        for( Sp6GeoTableItem node: nodes )
-        {
-            if( node.getGeographyId() == id )
-            {
-                return node;
-            }
-        }
-        return null;
-    }
-    
+//    /**
+//     * @param nodes
+//     * @param id
+//     * @return
+//     */
+//    private static Geography findNodeById(final Vector<Geography> nodes, int id )
+//    {
+//        for( Geography node: nodes )
+//        {
+//            if( node.getGeographyId() == id )
+//            {
+//                return node;
+//            }
+//        }
+//        return null;
+//    }
+//    
     /**
      * Finds the smallest <code>int</code> not in the <code>Collection</code>
      * 
@@ -1784,7 +1923,6 @@ public class GenericDBConversion
             }
         }
     }
-        
     
     /**
      * 

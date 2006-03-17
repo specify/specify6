@@ -1,10 +1,7 @@
 package edu.ku.brc.specify.tests;
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -14,8 +11,6 @@ import javax.swing.SwingConstants;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
@@ -28,15 +23,12 @@ public class PopulateJTreeFromDbTable
 {
 	public static void main( String[] args ) throws SQLException
 	{
-		SessionFactory sf = HibernateUtil.getSessionFactory();
+		Session session = HibernateUtil.getCurrentSession();
 		
-		Session session = sf.openSession();
-		
-		Query query = session.createQuery("from edu.ku.brc.specify.datamodel.GeographyTreeDef as def where def.treeDefId = 781");
-		
+		Query query = session.createQuery("from edu.ku.brc.specify.datamodel.GeographyTreeDef");
 		GeographyTreeDef treeDef = (GeographyTreeDef)(query.list().get(0));
 		
-		final DbStoreTreeModel dbtm = new DbStoreTreeModel(Geography.class,treeDef);
+		DbStoreTreeModel dbtm = new DbStoreTreeModel(Geography.class,treeDef);
 
 		JTree jt1 = new JTree(dbtm);
 		jt1.setTransferHandler(new TreeableTransferHandler());
@@ -53,19 +45,19 @@ public class PopulateJTreeFromDbTable
 		
 		JSplitPane sp = new JSplitPane(SwingConstants.HORIZONTAL,new JScrollPane(jt1),new JScrollPane(jt2));
 		
-		JButton commitButton = new JButton("commit changes");
-		commitButton.addActionListener(new ActionListener(){
-			public void actionPerformed( ActionEvent e )
-			{
-				dbtm.commitChangesToDb();
-			}
-		});
+//		JButton commitButton = new JButton("commit changes");
+//		commitButton.addActionListener(new ActionListener(){
+//			public void actionPerformed( ActionEvent e )
+//			{
+//				dbtm.commitChangesToDb();
+//			}
+//		});
 		
 		
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
 		p.add(sp,BorderLayout.CENTER);
-		p.add(commitButton,BorderLayout.SOUTH);
+//		p.add(commitButton,BorderLayout.SOUTH);
 		
 		f.add( p );
 		
