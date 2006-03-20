@@ -1,10 +1,11 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.*;
+
+
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Set;
+import java.awt.datatransfer.UnsupportedFlavorException;
 
 
 /**
@@ -91,7 +92,8 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     }
 
     /**
-     * 
+     *      *  @hibernate.property column="GUID" length="255"
+     *             
      */
     public String getGuid() {
         return this.guid;

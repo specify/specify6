@@ -10,6 +10,7 @@ import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 
@@ -26,12 +27,21 @@ import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Geography;
+import edu.ku.brc.specify.datamodel.GeographyTreeDef;
+import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
+import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
+import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
+import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Location;
+import edu.ku.brc.specify.datamodel.LocationTreeDef;
+import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttr;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.datamodel.TaxonTreeDef;
+import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.User;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
@@ -151,33 +161,456 @@ public class DBSchemaTest extends TestCase
 
     }
 
+    public void testGeography()
+    {
+    	log.info("Create GeographyTreeDef, GeographyTreeDefItem and Geography objects");
+    	try
+    	{
+    		Session session = HibernateUtil.getCurrentSession();
+    		HibernateUtil.beginTransaction();
+    		
+    		// Create a geography tree definition
+    		GeographyTreeDef geoTreeDef = new GeographyTreeDef();
+    		session.save(geoTreeDef);
+    		geoTreeDef.setName("GeographyTreeDef for DBSchemaTest");
+    		geoTreeDef.setRemarks("A tree def for use in the DB testing");
+    		
+    		GeographyTreeDefItem planet = new GeographyTreeDefItem();
+    		session.save(planet);
+    		planet.setName("Planet");
+    		planet.setRankId(0);
+    		
+    		GeographyTreeDefItem cont = new GeographyTreeDefItem();
+    		session.save(cont);
+    		cont.setName("Continent");
+    		cont.setRankId(100);
+    		
+    		GeographyTreeDefItem country = new GeographyTreeDefItem();
+    		session.save(country);
+    		country.setName("Country");
+    		country.setRankId(200);
+    		
+    		GeographyTreeDefItem state = new GeographyTreeDefItem();
+    		session.save(state);
+    		state.setName("State");
+    		state.setRankId(300);
+    		
+    		GeographyTreeDefItem county = new GeographyTreeDefItem();
+    		session.save(county);
+    		county.setName("County");
+    		county.setRankId(400);
+    		
+    		// setup parents
+    		county.setParent(state);
+    		state.setParent(country);
+    		country.setParent(cont);
+    		cont.setParent(planet);
+    		
+    		// set the tree def for each tree def item
+    		planet.setTreeDef(geoTreeDef);
+    		cont.setTreeDef(geoTreeDef);
+    		country.setTreeDef(geoTreeDef);
+    		state.setTreeDef(geoTreeDef);
+    		county.setTreeDef(geoTreeDef);
+    		
+    		// Create the planet Earth.
+    		// That seems like a big task for 5 lines of code.
+    		Geography earth = new Geography();
+    		earth.setName("Earth");
+    		earth.setRankId(planet.getRankId());
+    		earth.setTreeDef(geoTreeDef);
+    		session.save(earth);
+    		
+    		Geography northAmerica = new Geography();
+    		northAmerica.setRankId(cont.getRankId());
+    		northAmerica.setName("North America");
+    		northAmerica.setTreeDef(geoTreeDef);
+    		session.save(northAmerica);
+    		northAmerica.setParent(earth);
+    		
+    		Geography us = new Geography();
+    		us.setRankId(country.getRankId());
+    		us.setName("United States");
+    		us.setTreeDef(geoTreeDef);
+    		session.save(us);
+    		us.setParent(northAmerica);
+    		
+    		// Create Kansas and a few counties
+    		Geography ks = new Geography();
+    		ks.setRankId(state.getRankId());
+    		ks.setName("Kansas");
+    		ks.setTreeDef(geoTreeDef);
+    		session.save(ks);
+    		ks.setParent(us);
+    		
+    		Geography douglas = new Geography();
+    		douglas.setRankId(state.getRankId());
+    		douglas.setName("Douglas");
+    		douglas.setTreeDef(geoTreeDef);
+    		session.save(douglas);
+    		douglas.setParent(ks);
+    		
+    		Geography johnson = new Geography();
+    		johnson.setRankId(state.getRankId());
+    		johnson.setName("Johnson");
+    		johnson.setTreeDef(geoTreeDef);
+    		session.save(johnson);
+    		johnson.setParent(ks);
+    		
+    		Geography sedgwick = new Geography();
+    		sedgwick.setRankId(state.getRankId());
+    		sedgwick.setName("Sedgwick");
+    		sedgwick.setTreeDef(geoTreeDef);
+    		session.save(sedgwick);
+    		sedgwick.setParent(ks);
+    		
+    		// Create Iowa 
+    		Geography iowa = new Geography();
+    		iowa.setRankId(state.getRankId());
+    		iowa.setName("Iowa");
+    		iowa.setTreeDef(geoTreeDef);
+    		session.save(iowa);
+    		iowa.setParent(us);
+    		
+    		Geography blackhawk = new Geography();
+    		blackhawk.setRankId(state.getRankId());
+    		blackhawk.setName("Blackhawk");
+    		blackhawk.setTreeDef(geoTreeDef);
+    		session.save(blackhawk);
+    		blackhawk.setParent(iowa);
+    		
+    		Geography fayette = new Geography();
+    		fayette.setRankId(state.getRankId());
+    		fayette.setName("Fayette");
+    		fayette.setTreeDef(geoTreeDef);
+    		session.save(fayette);
+    		fayette.setParent(iowa);
+    		
+    		Geography polk = new Geography();
+    		polk.setRankId(state.getRankId());
+    		polk.setName("Polk");
+    		polk.setTreeDef(geoTreeDef);
+    		session.save(polk);
+    		polk.setParent(iowa);
+    		
+    		HibernateUtil.commitTransaction();
+    		HibernateUtil.closeSession();
+    		
+    		assertTrue(true);
+    	}
+    	catch( Exception ex )
+    	{
+            log.error("******* " + ex);
+            ex.printStackTrace();
+            HibernateUtil.rollbackTransaction();
+            assertTrue(false);
+    	}
+    }
+   
+    public void testLocation()
+    {
+    	log.info("Create LocationTreeDef, LocationTreeDefItem and Location objects");
+    	try
+    	{
+    		Session session = HibernateUtil.getCurrentSession();
+    		HibernateUtil.beginTransaction();
+    		
+    		// Create a geography tree definition
+    		LocationTreeDef locTreeDef = new LocationTreeDef();
+    		session.save(locTreeDef);
+    		locTreeDef.setName("LocationTreeDef for DBSchemaTest");
+    		locTreeDef.setRemarks("A location tree def for use in the DB testing");
+    		
+    		LocationTreeDefItem building = new LocationTreeDefItem();
+    		session.save(building);
+    		building.setName("building");
+    		building.setRankId(0);
+    		
+    		LocationTreeDefItem room = new LocationTreeDefItem();
+    		session.save(room);
+    		room.setName("room");
+    		room.setRankId(100);
+    		
+    		LocationTreeDefItem freezer = new LocationTreeDefItem();
+    		session.save(freezer);
+    		freezer.setName("freezer");
+    		freezer.setRankId(200);
+    		
+    		LocationTreeDefItem shelf = new LocationTreeDefItem();
+    		session.save(shelf);
+    		shelf.setName("shelf");
+    		shelf.setRankId(300);
+    		
+    		shelf.setParent(freezer);
+    		freezer.setParent(room);
+    		room.setParent(building);
+    		
+    		building.setTreeDef(locTreeDef);
+    		room.setTreeDef(locTreeDef);
+    		freezer.setTreeDef(locTreeDef);
+    		shelf.setTreeDef(locTreeDef);
+    		
+    		// Create the building
+    		Location dyche = new Location();
+    		dyche.setName("Dyche Hall");
+    		dyche.setRankId(building.getRankId());
+    		dyche.setTreeDef(locTreeDef);
+    		session.save(dyche);
+    		
+    		Location rm606 = new Location();
+    		rm606.setRankId(room.getRankId());
+    		rm606.setName("Room 606");
+    		rm606.setTreeDef(locTreeDef);
+    		session.save(rm606);
+    		rm606.setParent(dyche);
+    		
+    		Location freezerA = new Location();
+    		freezerA.setRankId(freezer.getRankId());
+    		freezerA.setName("Freezer A");
+    		freezerA.setTreeDef(locTreeDef);
+    		session.save(freezerA);
+    		freezerA.setParent(rm606);
+    		
+    		Location shelf5 = new Location();
+    		shelf5.setRankId(shelf.getRankId());
+    		shelf5.setName("Shelf 5");
+    		shelf5.setTreeDef(locTreeDef);
+    		session.save(shelf5);
+    		shelf5.setParent(freezerA);
+    		
+    		Location shelf4 = new Location();
+    		shelf4.setRankId(shelf.getRankId());
+    		shelf4.setName("Shelf 5");
+    		shelf4.setTreeDef(locTreeDef);
+    		session.save(shelf4);
+    		shelf4.setParent(freezerA);
+    		
+    		Location shelf3 = new Location();
+    		shelf3.setRankId(shelf.getRankId());
+    		shelf3.setName("Shelf 5");
+    		shelf3.setTreeDef(locTreeDef);
+    		session.save(shelf3);
+    		shelf3.setParent(freezerA);
+
+    		Location shelf2 = new Location();
+    		shelf2.setRankId(shelf.getRankId());
+    		shelf2.setName("Shelf 5");
+    		shelf2.setTreeDef(locTreeDef);
+    		session.save(shelf2);
+    		shelf2.setParent(freezerA);
+
+    		Location shelf1 = new Location();
+    		shelf1.setRankId(shelf.getRankId());
+    		shelf1.setName("Shelf 5");
+    		shelf1.setTreeDef(locTreeDef);
+    		session.save(shelf1);
+    		shelf1.setParent(freezerA);
+
+    		HibernateUtil.commitTransaction();
+    		HibernateUtil.closeSession();
+    		
+    		assertTrue(true);
+    	}
+    	catch( Exception ex )
+    	{
+            log.error("******* " + ex);
+            ex.printStackTrace();
+            HibernateUtil.rollbackTransaction();
+            assertTrue(false);
+    	}    	
+    }
+
+    public void testTaxon()
+    {
+    	log.info("Create TaxonTreeDef, TaxonTreeDefItem and Taxon objects");
+    	try
+    	{
+    		Session session = HibernateUtil.getCurrentSession();
+    		HibernateUtil.beginTransaction();
+
+    		// Create a geography tree definition
+    		TaxonTreeDef taxonTreeDef = new TaxonTreeDef();
+    		session.save(taxonTreeDef);
+    		taxonTreeDef.setName("TaxonTreeDef for DBSchemaTest");
+    		taxonTreeDef.setRemarks("A Taxon tree def for use in the DB testing");
+    		
+    		TaxonTreeDefItem defItemLevel0 = new TaxonTreeDefItem();
+    		session.save(defItemLevel0);
+    		defItemLevel0.setName("order");
+    		defItemLevel0.setRankId(0);
+    		
+    		TaxonTreeDefItem defItemLevel1 = new TaxonTreeDefItem();
+    		session.save(defItemLevel1);
+    		defItemLevel1.setName("family");
+    		defItemLevel1.setRankId(100);
+    		
+    		TaxonTreeDefItem defItemLevel2 = new TaxonTreeDefItem();
+    		session.save(defItemLevel2);
+    		defItemLevel2.setName("genus");
+    		defItemLevel2.setRankId(200);
+    		
+    		TaxonTreeDefItem defItemLevel3 = new TaxonTreeDefItem();
+    		session.save(defItemLevel3);
+    		defItemLevel3.setName("species");
+    		defItemLevel3.setRankId(300);
+    		
+    		defItemLevel3.setParent(defItemLevel2);
+    		defItemLevel2.setParent(defItemLevel1);
+    		defItemLevel1.setParent(defItemLevel0);
+    		
+    		defItemLevel0.setTreeDef(taxonTreeDef);
+    		defItemLevel1.setTreeDef(taxonTreeDef);
+    		defItemLevel2.setTreeDef(taxonTreeDef);
+    		defItemLevel3.setTreeDef(taxonTreeDef);
+    		
+    		// Create the defItemLevel0
+    		Taxon level0 = new Taxon();
+    		level0.setName("Primata");
+    		level0.setRankId(defItemLevel0.getRankId());
+    		level0.setTreeDef(taxonTreeDef);
+    		level0.setGuid("GUID string");
+    		session.save(level0);
+    		
+    		Taxon level1 = new Taxon();
+    		level1.setRankId(defItemLevel1.getRankId());
+    		level1.setName("Hominidae");
+    		level1.setTreeDef(taxonTreeDef);
+    		level1.setGuid("GUID string");
+    		session.save(level1);
+    		level1.setParent(level0);
+    		
+    		Taxon level2 = new Taxon();
+    		level2.setRankId(defItemLevel2.getRankId());
+    		level2.setName("Homo");
+    		level2.setTreeDef(taxonTreeDef);
+    		level2.setGuid("GUID string");
+    		session.save(level2);
+    		level2.setParent(level1);
+    		
+    		Taxon level3 = new Taxon();
+    		level3.setRankId(defItemLevel3.getRankId());
+    		level3.setName("sapiens");
+    		level3.setTreeDef(taxonTreeDef);
+    		level3.setGuid("GUID string");
+    		session.save(level3);
+    		level3.setParent(level2);
+    		
+    		HibernateUtil.commitTransaction();
+    		HibernateUtil.closeSession();
+    		
+    		assertTrue(true);
+    	}
+    	catch( Exception ex )
+    	{
+            log.error("******* " + ex);
+            ex.printStackTrace();
+            HibernateUtil.rollbackTransaction();
+            assertTrue(false);
+    	}    	
+    }
+
+    public void testGeologicTimePeriod()
+    {
+    	log.info("Create GeologicTimePeriodTreeDef, GTPTreeDefItem and GTP objects");
+    	try
+    	{
+    		Session session = HibernateUtil.getCurrentSession();
+    		HibernateUtil.beginTransaction();
+
+    		// Create a geography tree definition
+    		GeologicTimePeriodTreeDef treeDef = new GeologicTimePeriodTreeDef();
+    		session.save(treeDef);
+    		treeDef.setName("GeologicTimePeriodTreeDef for DBSchemaTest");
+    		treeDef.setRemarks("A GeologicTimePeriod tree def for use in the DB testing");
+    		
+    		GeologicTimePeriodTreeDefItem defItemLevel0 = new GeologicTimePeriodTreeDefItem();
+    		session.save(defItemLevel0);
+    		defItemLevel0.setName("Level 0");
+    		defItemLevel0.setRankId(0);
+    		
+    		GeologicTimePeriodTreeDefItem defItemLevel1 = new GeologicTimePeriodTreeDefItem();
+    		session.save(defItemLevel1);
+    		defItemLevel1.setName("Level 1");
+    		defItemLevel1.setRankId(100);
+    		
+    		GeologicTimePeriodTreeDefItem defItemLevel2 = new GeologicTimePeriodTreeDefItem();
+    		session.save(defItemLevel2);
+    		defItemLevel2.setName("Level 2");
+    		defItemLevel2.setRankId(200);
+    		
+    		GeologicTimePeriodTreeDefItem defItemLevel3 = new GeologicTimePeriodTreeDefItem();
+    		session.save(defItemLevel3);
+    		defItemLevel3.setName("Level 3");
+    		defItemLevel3.setRankId(300);
+    		
+    		defItemLevel3.setParent(defItemLevel2);
+    		defItemLevel2.setParent(defItemLevel1);
+    		defItemLevel1.setParent(defItemLevel0);
+    		
+    		defItemLevel0.setTreeDef(treeDef);
+    		defItemLevel1.setTreeDef(treeDef);
+    		defItemLevel2.setTreeDef(treeDef);
+    		defItemLevel3.setTreeDef(treeDef);
+    		
+    		// Create the defItemLevel0
+    		GeologicTimePeriod level0 = new GeologicTimePeriod();
+    		level0.setName("Time As We Know It");
+    		level0.setRankId(defItemLevel0.getRankId());
+    		level0.setTreeDef(treeDef);
+    		session.save(level0);
+    		
+    		GeologicTimePeriod level1 = new GeologicTimePeriod();
+    		level1.setRankId(defItemLevel1.getRankId());
+    		level1.setName("Some Really Big Time Period");
+    		level1.setTreeDef(treeDef);
+    		session.save(level1);
+    		level1.setParent(level0);
+    		
+    		GeologicTimePeriod level2 = new GeologicTimePeriod();
+    		level2.setRankId(defItemLevel2.getRankId());
+    		level2.setName("A Slightly Smaller Time Period");
+    		level2.setTreeDef(treeDef);
+    		session.save(level2);
+    		level2.setParent(level1);
+    		
+    		GeologicTimePeriod level3 = new GeologicTimePeriod();
+    		level3.setRankId(defItemLevel3.getRankId());
+    		level3.setName("Yesterday");
+    		level3.setTreeDef(treeDef);
+    		session.save(level3);
+    		level3.setParent(level2);
+    		
+    		HibernateUtil.commitTransaction();
+    		HibernateUtil.closeSession();
+    		
+    		assertTrue(true);
+    	}
+    	catch( Exception ex )
+    	{
+            log.error("******* " + ex);
+            ex.printStackTrace();
+            HibernateUtil.rollbackTransaction();
+            assertTrue(false);
+    	}    	
+    }
+
     /**
      * 
      */
-    public void testCreateGeographyLocality()
+    public void testLocality()
     {
-        log.info("Create Geography and Locality");
+        log.info("Create Locality");
         try
         {
             Session session = HibernateUtil.getCurrentSession();
             HibernateUtil.beginTransaction();
 
-            // Create Collection Object Definition
-            Geography geo = new Geography();
-            geo.setTreeId(0);
-            geo.setDefinition(null);
-            geo.setHighestChildNodeNumber(0);
-            geo.setCurrent(false);
-            geo.setLastEditedBy("");
-            geo.setLocalities(new HashSet<Object>());
-            geo.setAbbrev("KS");
-            geo.setName("Kansas");
-            geo.setNodeNumber(0);
-            geo.setRankId(0);
-            geo.setTimestampCreated(new Date());
-            geo.setTimestampModified(new Date());
-            session.save(geo);
+            // Get a Geography to attach to
+            // We assume one was successfully created in the test above
+            Query q = session.createQuery("select edu.ku.brc.specify.datamodel.Geography");
+            Geography geo = (Geography)q.list().get(0);
             
+            // Create Collection Object Definition
             Locality locality = new Locality();
             locality.setLocalityId(0);
             locality.setLocalityName("This is the place.");

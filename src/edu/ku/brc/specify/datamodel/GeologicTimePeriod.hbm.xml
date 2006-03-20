@@ -138,7 +138,7 @@
             <meta attribute="field-description"> @hibernate.id generator-class="assigned"
                 type="java.lang.Integer" column="TreeID" </meta>
             <meta attribute="scope-field">protected</meta>
-            <generator class="assigned"/>
+            <generator class="native"/>
         </id>
 
         <property name="rankId" type="java.lang.Integer" column="RankID" length="10"
