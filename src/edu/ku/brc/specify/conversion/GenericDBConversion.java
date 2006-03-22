@@ -529,7 +529,7 @@ public class GenericDBConversion
                                     "Deaccession",
                                     "DeaccessionAgents",
                                     "DeaccessionCollectionObject",
-                                    //"Determination",
+                                    "Determination",
                                     "DeterminationCitation",
                                     "ExchangeIn",
                                     "ExchangeOut",
