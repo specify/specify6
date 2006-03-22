@@ -44,7 +44,7 @@ import edu.ku.brc.specify.conversion.IdMapperMgr;
 import edu.ku.brc.specify.helpers.UIHelper;
 
 /**
- * 
+ *
  * @author rods
  *
  */
@@ -55,19 +55,19 @@ public class BasicSQLUtils
     protected static SimpleDateFormat dateFormatter     = new SimpleDateFormat("yyyy-MM-dd");
     protected static Calendar         calendar          = new GregorianCalendar();
     protected static boolean          showMappingError  = true;
-    
+
     protected static BasicSQLUtils    basicSQLUtils = new  BasicSQLUtils();
-    
+
     protected static Hashtable<String, String> ignoreMappingFieldNames = null;
     protected static Hashtable<String, String> ignoreMappingFieldIDs   = null;
-    
+
     /**
-     * Singleton 
+     * Singleton
      */
     protected  BasicSQLUtils()
     {
     }
-    
+
     /**
      * Sets whether mapping column errors should be displayed
      * @param showMappingError true - shows erros, false does not
@@ -85,7 +85,7 @@ public class BasicSQLUtils
     {
         return showMappingError;
     }
-    
+
     /**
      * CReates or clears and fills a list
      * @param fieldNames the list of names, can be null then the list is cleared and nulled out
@@ -119,7 +119,7 @@ public class BasicSQLUtils
         }
         return ignoreMap;
     }
-    
+
     /**
      * Sets a list of field names to ignore when mapping database tables from new names to old names
      * @param fieldNames the list of names to ignore
@@ -146,12 +146,12 @@ public class BasicSQLUtils
      */
     public static int exeUpdateCmd(Statement stmt, String cmdStr)
     {
-        try 
+        try
         {
             //log.info(cmdStr);
-            return stmt.executeUpdate(cmdStr); 
-            
-        } catch (Exception ex) 
+            return stmt.executeUpdate(cmdStr);
+
+        } catch (Exception ex)
         {
             //e.printStackTrace();
             log.error(ex);
@@ -161,7 +161,7 @@ public class BasicSQLUtils
         }
         //return -1;
     }
-    
+
     /**
      * Deletes all the records from a table
      * @param tableName the name of the table
@@ -191,17 +191,17 @@ public class BasicSQLUtils
             }
             rs.close();
             cntStmt.close();
-            
+
             Statement stmt = connection.createStatement();
             exeUpdateCmd(stmt, "SET FOREIGN_KEY_CHECKS = 0");
             int retVal = exeUpdateCmd(stmt, "delete from "+tableName);
             stmt.clearBatch();
             stmt.close();
-            
+
             log.info("Deleted "+count+" records from "+tableName);
-            
+
             return retVal;
-            
+
         } catch (SQLException ex)
         {
             //e.printStackTrace();
@@ -209,7 +209,7 @@ public class BasicSQLUtils
         }
         return -1;
     }
-    
+
     /**
      * Removes all the records from all the tables from the current DBConnection
      */
@@ -218,18 +218,18 @@ public class BasicSQLUtils
         try
         {
             Connection connection = DBConnection.getConnection();
-            
+
             cleanAllTables(connection);
-            
+
             connection.close();
-            
+
         } catch (SQLException ex)
         {
             //e.printStackTrace();
             log.error(ex);
         }
     }
-    
+
     /**
      * Removes all the records from all the tables
      */
@@ -238,7 +238,7 @@ public class BasicSQLUtils
         try
         {
             Statement  stmt = connection.createStatement();
-            
+
             ResultSet rs = stmt.executeQuery("show tables");
             if (rs.first())
             {
@@ -250,17 +250,17 @@ public class BasicSQLUtils
                 } while (rs.next());
             }
             rs.close();
-            
+
             stmt.clearBatch();
             stmt.close();
-            
+
         } catch (SQLException ex)
         {
             //e.printStackTrace();
             log.error(ex);
         }
     }
-    
+
     /**
      * Returns a valid String value for an Object, meaning it will put quotes around Strings and ate etc.
      * @param obj the object to convert
@@ -271,7 +271,7 @@ public class BasicSQLUtils
         return getStrValue(obj, null);
     }
 
-    
+
     /**
      * Returns a valid String value for an Object, meaning it will put quotes around Strings and ate etc.
      * @param obj the object to convert
@@ -282,7 +282,7 @@ public class BasicSQLUtils
         if (obj == null)
         {
             return "NULL";
-            
+
         } else if (obj instanceof String)
         {
             String str = (String)obj;
@@ -291,29 +291,40 @@ public class BasicSQLUtils
                 str = StringEscapeUtils.escapeJava(str);
             }
             return '"'+str+'"';
-            
+
         } else if (obj instanceof Integer)
         {
-            if (newFieldType != null && newFieldType.indexOf("date") ==  0)
+            if (newFieldType != null)
             {
-                return '"'+dateFormatter.format(UIHelper.convertIntToDate((Integer)obj)) + '"';
+                if (newFieldType.indexOf("date") ==  0)
+                {
+                    return '"'+dateFormatter.format(UIHelper.convertIntToDate((Integer)obj)) + '"';
+
+                } else if (newFieldType.equalsIgnoreCase("bit(1)") || newFieldType.equalsIgnoreCase("tinyint(1)"))
+                {
+                    int val = ((Integer)obj).intValue();
+                    return Integer.toString(val == 0? 0 : 1);
+                }
+                {
+                    return ((Integer)obj).toString();
+                }
             } else
             {
                 return ((Integer)obj).toString();
             }
-            
+
         } else if (obj instanceof Date)
         {
             return '"'+dateTimeFormatter.format((Date)obj) + '"';
-            
+
         } else if (obj instanceof Float)
         {
             return ((Float)obj).toString();
-            
+
         } else if (obj instanceof Double)
         {
             return ((Double)obj).toString();
-            
+
         } else if (obj instanceof Character)
         {
             return '"'+((Character)obj).toString()+'"';
@@ -322,14 +333,14 @@ public class BasicSQLUtils
             return obj.toString();
         }
     }
-    
+
    /**
      * Fills the list with all the names of the table
      * @param connection the connection
      * @param tableName the table name
      * @param list the list to be filled
      */
-    public static void getFieldNamesFromSchema(final Connection connection, 
+    public static void getFieldNamesFromSchema(final Connection connection,
                                                final String tableName,
                                                final List<String> list)
     {
@@ -337,13 +348,13 @@ public class BasicSQLUtils
         {
             Statement stmt = connection.createStatement();
             ResultSet rs   = stmt.executeQuery("describe "+tableName);
-            while (rs.next()) 
-            {      
+            while (rs.next())
+            {
                 list.add(rs.getString(1));
             }
             rs.close();
             stmt.close();
-            
+
         } catch (SQLException ex)
         {
             log.error(ex);
@@ -356,7 +367,7 @@ public class BasicSQLUtils
      * @param tableName the table name
      * @param fieldList the list to be filled with field/type objects (FieldMetaData)
      */
-    public static void getFieldMetaDataFromSchema(final Connection          connection, 
+    public static void getFieldMetaDataFromSchema(final Connection          connection,
                                                   final String              tableName,
                                                   final List<FieldMetaData> fieldList)
     {
@@ -364,19 +375,19 @@ public class BasicSQLUtils
         {
             Statement stmt = connection.createStatement();
             ResultSet rs   = stmt.executeQuery("describe "+tableName);
-            while (rs.next()) 
-            {      
+            while (rs.next())
+            {
                 fieldList.add(basicSQLUtils.new FieldMetaData(rs.getString(1), rs.getString(2)));
             }
             rs.close();
             stmt.close();
-            
+
         } catch (SQLException ex)
         {
             log.error(ex);
         }
     }
-    
+
     /**
      * Converts an integer time in the form of YYYYMMDD to the proper Date
      * @param iDate the int to be converted
@@ -393,18 +404,18 @@ public class BasicSQLUtils
             int tmp   = (iDate - (year * 10000));
             int month = tmp / 100;
             int day   = (tmp - (month * 100));
-            
+
             if (month == 0 || day == 0)
             {
                 verbatimDate.setLength(0);
                 verbatimDate.append(Integer.toString(iDate));
-                if (month == 0) 
+                if (month == 0)
                 {
                     month = 7;
                 }
-                if (day == 0) 
+                if (day == 0)
                 {
-                    day = 1;    
+                    day = 1;
                 }
             }
 
@@ -457,9 +468,9 @@ public class BasicSQLUtils
     }
 
     /**
-     * Copies from one connect/table to another connection/table. Sets the order by clause to be the first field in the 
+     * Copies from one connect/table to another connection/table. Sets the order by clause to be the first field in the
      * "from" field list.
-     *  
+     *
      * @param fromConn DB Connection that the data is coming from
      * @param toConnDB Connection that the data is going to
      * @param fromTableName the table name its coming from
@@ -480,29 +491,29 @@ public class BasicSQLUtils
 
         List<String> fromFieldNameList = new ArrayList<String>();
         getFieldNamesFromSchema(fromConn, fromTableName, fromFieldNameList);
-        
+
         String sqlStr = sql + " order by " +  fromTableName + "." + fromFieldNameList.get(0);
-        
+
         String id = "";
         try
         {
             List<FieldMetaData> colMetaData = new ArrayList<FieldMetaData>();
             getFieldMetaDataFromSchema(toConn, toTableName, colMetaData);
-            
+
             Statement         stmt = fromConn.createStatement();
             ResultSet         rs   = stmt.executeQuery(sqlStr);
             ResultSetMetaData rsmd = rs.getMetaData();
-            
+
             Hashtable<String, Integer> fromHash = new Hashtable<String, Integer>();
             for (int i = 1; i <= rsmd.getColumnCount(); i++)
             {
                 fromHash.put(rsmd.getColumnName(i), i);
             }
             // System.out.println("Num Cols: "+rsmd.getColumnCount());
-            
+
             Hashtable<String, String>  vertbatimDateMap = new Hashtable<String, String>();
             Hashtable<String, Date>    dateMap          = new Hashtable<String, Date>();
-            
+
             StringBuilder verbatimDateStr = new StringBuilder();
             StringBuffer  str             = new StringBuffer();
             int           count           = 0;
@@ -510,27 +521,27 @@ public class BasicSQLUtils
             {
                 if (verbatimDateMapper != null)
                 {
-                    // Start by going through the resultset and converting all dates from Integers 
+                    // Start by going through the resultset and converting all dates from Integers
                     // to real dates and keep the verbatium date information if it is a partial date
                     for (int i = 1; i <= rsmd.getColumnCount(); i++)
                     {
                         String  oldColName = rsmd.getColumnName(i);
                         Integer index      = fromHash.get(oldColName);
-                        
+
                         if (index == null)
                         {
                             log.error("Couldn't find new column for old column for date for Table[" + fromTableName + "] Col Name[" + colMetaData.get(i).getName() + "]");
                             continue;
                         }
-                        
+
                         String newColName = colMetaData.get(index).getName();
-                        
+
                         Object dataObj = rs.getObject(i);
                         if (dataObj instanceof Integer && newColName.toLowerCase().indexOf("date") ==  0)
                         {
                             Date date = convertIntToDate((Integer)dataObj, verbatimDateStr);
                             dateMap.put(newColName, date);
-                            
+
                             if (verbatimDateStr.length() > 0)
                             {
                                 vertbatimDateMap.put(newColName, verbatimDateStr.toString());
@@ -541,17 +552,17 @@ public class BasicSQLUtils
                         }
                     }
                 }
-                
+
                 str.setLength(0);
                 str.append("INSERT INTO " + toTableName + " VALUES (");
-                
+
                 id = rs.getString(1);
                 for (int i = 0; i < colMetaData.size(); i++)
                 {
                     FieldMetaData fieldMetaData = colMetaData.get(i);
                     String colName          = fieldMetaData.getName();
                     String oldMappedColName = null;
-                    
+
                     Integer index = fromHash.get(colName);
                     if (index == null && colNewToOldMap != null)
                     {
@@ -559,8 +570,8 @@ public class BasicSQLUtils
                         if (oldMappedColName != null)
                         {
                             index = fromHash.get(oldMappedColName);
-                            
-                        } else if (showMappingError && 
+
+                        } else if (showMappingError &&
                                    (ignoreMappingFieldNames == null || ignoreMappingFieldNames.get(colName) == null))
                         {
                             log.error("No Map for table ["+fromTableName+"] from New Name[" + colName + "] to Old Name["+oldMappedColName+"]");
@@ -569,12 +580,12 @@ public class BasicSQLUtils
                     {
                         oldMappedColName = colName;
                     }
-                    
+
                     if (index != null)
                     {
                         if (i > 0) str.append(", ");
                         Object dataObj = rs.getObject(index);
-                        
+
                         if (idMapperMgr != null && oldMappedColName.endsWith("ID"))
                         {
                             IdMapper idMapper = idMapperMgr.get(fromTableName, oldMappedColName);
@@ -615,17 +626,17 @@ public class BasicSQLUtils
                         {
                             str.append(getStrValue(dataObj, fieldMetaData.getType()));
                         }
-                        
+
                     } else
                     {
-                        if (showMappingError && 
+                        if (showMappingError &&
                             (ignoreMappingFieldNames == null || ignoreMappingFieldNames.get(colName) == null))
                         {
                             log.error("For Table[" + fromTableName + "] mapping new Column Name[" + colName + "] was not mapped");
                         }
                         if (i > 0) str.append(", ");
                         str.append("NULL");
-                        
+
                         //rs.close();
                         //stmt.clearBatch();
                         //stmt.close();
@@ -655,7 +666,7 @@ public class BasicSQLUtils
             rs.close();
             stmt.clearBatch();
             stmt.close();
-            
+
         } catch (SQLException ex)
         {
             //e.printStackTrace();
@@ -664,9 +675,9 @@ public class BasicSQLUtils
             log.error("ID: " + id);
         }
         return true;
-    }    
-    
-    /** 
+    }
+
+    /**
      * Takes a list of names and creates a string with the names comma separated
      * @param list the list of names (or field names)
      * @return the string of comma separated names
@@ -677,19 +688,19 @@ public class BasicSQLUtils
         for (int i=0;i<list.size();i++)
         {
             if (i > 0) str.append(", ");
-            
+
             if (tableName != null)
             {
                 str.append(tableName);
                 str.append('.');
             }
-            
+
             str.append(list.get(i));
         }
         return str.toString();
     }
-    
-    /** 
+
+    /**
      * Takes a list of names and creates a string with the names comma separated
      * @param list the list of names (or field names)
      * @return the string of comma separated names
@@ -700,18 +711,18 @@ public class BasicSQLUtils
         for (int i=0;i<list.size();i++)
         {
             if (i > 0) str.append(", ");
-            
+
             if (tableName != null)
             {
                 str.append(tableName);
                 str.append('.');
             }
-            
+
             str.append(list.get(i).getName());
         }
         return str.toString();
     }
-    
+
     /**
      * Creates a mapping of the new name to the old name
      * @param pairs array of pairs of names
@@ -720,7 +731,7 @@ public class BasicSQLUtils
     public static Map<String, String> createFieldNameMap(String[] pairs)
     {
         Map<String, String> map = new Hashtable<String, String>();
-        
+
         for (int i=0;i<pairs.length;i++)
         {
             map.put(pairs[i], pairs[i+1]);
@@ -728,7 +739,7 @@ public class BasicSQLUtils
         }
         return map;
     }
-    
+
     /**
      * Returns the number of records in a table
      * @param connection db connection
@@ -748,26 +759,26 @@ public class BasicSQLUtils
             }
             rs.close();
             cntStmt.close();
-            
+
             return count;
-            
+
         } catch (SQLException ex)
         {
             log.error(ex);
         }
         return -1;
     }
-    
 
-    
+
+
     //-----------------------------------------------------------------------
     //-- Inner Classes
     //-----------------------------------------------------------------------
-    public class FieldMetaData 
+    public class FieldMetaData
     {
         protected String name;
         protected String type;
-        
+
         public FieldMetaData(String name, String type)
         {
             this.name = name;
