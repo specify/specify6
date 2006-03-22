@@ -2482,7 +2482,7 @@ public class GenericDBConversion
 
         String sql = "select locality.*, geography.* from locality,geography where locality.GeographyID = geography.GeographyID";
 
-        if (copyTable(oldDB.getConnectionToDB(), DBConnection.getConnection(), sql, "geography", "locality", null, null))
+        if (copyTable(oldDB.getConnectionToDB(), DBConnection.getConnection(), sql, "locality", "locality", null, null))
         {
             log.info("Locality/Geography copied ok.");
         } else
