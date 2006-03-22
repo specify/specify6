@@ -13,7 +13,7 @@
         <id name="treeDefId" type="java.lang.Integer" column="TreeDefID">
             <meta attribute="scope-field">protected</meta>
             <meta attribute="use-in-tostring">true</meta>
-            <meta attribute="field-description"> @hibernate.id generator-class="assigned"
+            <meta attribute="field-description"> @hibernate.id generator-class="native"
                 type="java.lang.Integer" column="TreeDefID" </meta>
             <generator class="native"/>
         </id>

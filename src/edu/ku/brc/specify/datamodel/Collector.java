@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
 
 
 
@@ -42,7 +42,7 @@ public class Collector  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.id
-     *             generator-class="assigned"
+     *             generator-class="native"
      *             type="java.lang.Integer"
      *             column="CollectorsID"
      *         

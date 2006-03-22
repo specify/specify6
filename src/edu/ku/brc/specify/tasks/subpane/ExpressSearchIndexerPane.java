@@ -618,16 +618,6 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
      */
     protected long indexForms(final IndexWriter writer) throws IOException
     {
-        // XXX Temporary load of form because now forma er being loaded right now
-        try
-        {
-            ViewMgr.clearAll();
-            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("form.xml"));
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-        
         // Count up how many View we are going to process
         int cnt = 0;
         for (ViewSet viewSet : ViewMgr.getViewSets())

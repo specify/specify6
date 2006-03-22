@@ -20,7 +20,6 @@
 package edu.ku.brc.specify.tests;
 
 import java.io.File;
-import java.io.FileInputStream;
 
 import junit.framework.TestCase;
 
@@ -43,7 +42,7 @@ public class TestFormFactory extends TestCase
      */
     protected boolean readFile(File aFile, boolean aDoValidate)
     {
-        try
+        /*try
         {
             ViewMgr.loadViewFile(new FileInputStream(aFile));
             if (aDoValidate)
@@ -56,7 +55,7 @@ public class TestFormFactory extends TestCase
         {
             //ex.printStackTrace();
             log.info(ex);  
-        }
+        }*/
          
         return false;
     }

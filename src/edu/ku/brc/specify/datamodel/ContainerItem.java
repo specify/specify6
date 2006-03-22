@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -14,7 +15,7 @@ public class ContainerItem  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer ContainerItemId;
+     protected Integer containerItemId;
      private Date timestampModified;
      private Date timestampCreated;
      protected Container container;
@@ -28,8 +29,8 @@ public class ContainerItem  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public ContainerItem(Integer ContainerItemId) {
-        this.ContainerItemId = ContainerItemId;
+    public ContainerItem(Integer containerItemId) {
+        this.containerItemId = containerItemId;
     }
    
     
@@ -39,17 +40,17 @@ public class ContainerItem  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.id
-     *             generator-class="assigned"
+     *             generator-class="native"
      *             type="java.lang.Integer"
      *             column="ContainerItemID"
      *         
      */
     public Integer getContainerItemId() {
-        return this.ContainerItemId;
+        return this.containerItemId;
     }
     
-    public void setContainerItemId(Integer ContainerItemId) {
-        this.ContainerItemId = ContainerItemId;
+    public void setContainerItemId(Integer containerItemId) {
+        this.containerItemId = containerItemId;
     }
 
     /**

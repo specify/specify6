@@ -236,20 +236,6 @@ public class Specify extends JPanel
             JOptionPane.showMessageDialog(this, e.toString(), "Fatal Error", JOptionPane.ERROR_MESSAGE);
         }
       
-//      XXX Temporary load of form because now form are being loaded right now
-        try
-        {
-            //ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("pref_forms.xml"));
-            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("form.xml"));
-            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("fish_forms.xml"));
-            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("system.forms.xml"));
-            
-        } catch (Exception ex)
-        {
-            log.fatal(ex);
-            ex.printStackTrace();
-        }
- 
         /*
         if(useLogonDialog){
           DatabaseLogon dbl = new DatabaseLogon();
@@ -391,18 +377,7 @@ public class Specify extends JPanel
             ex.printStackTrace();
             // XXX FIXME
         }
-        
-        // load form definitions for Preferences (Might want to move this to a preference Class
-        try
-        {
-            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("pref_forms.xml"));
-            
-        } catch (Exception ex)
-        {
-            log.fatal(ex);
-            ex.printStackTrace();
-        }
-        
+       
     }
     
     /* 

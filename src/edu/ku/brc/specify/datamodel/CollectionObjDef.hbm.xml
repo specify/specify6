@@ -32,6 +32,7 @@
         length="50"
     >
         <meta attribute="scope-field">protected</meta>
+        <meta attribute="use-in-tostring">true</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Name"

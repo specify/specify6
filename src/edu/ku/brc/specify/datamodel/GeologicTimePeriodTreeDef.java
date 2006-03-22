@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Set;
 
 
 
@@ -37,7 +37,7 @@ public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.S
     // Property accessors
 
     /**
-     *      *  @hibernate.id generator-class="assigned"
+     *      *  @hibernate.id generator-class="native"
      *                 type="java.lang.Integer" column="TreeDefID" 
      */
     public Integer getTreeDefId() {

@@ -19,13 +19,14 @@
  */
 package edu.ku.brc.specify.ui.forms;
 
+import static edu.ku.brc.specify.helpers.XMLHelper.getAttr;
+
 import java.io.FileInputStream;
-import java.net.URL;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -33,26 +34,25 @@ import org.dom4j.io.SAXReader;
 
 import edu.ku.brc.specify.exceptions.ConfigurationException;
 import edu.ku.brc.specify.helpers.XMLHelper;
-import edu.ku.brc.specify.ui.forms.persist.FormAltView;
-import edu.ku.brc.specify.ui.forms.persist.FormCell;
-import edu.ku.brc.specify.ui.forms.persist.FormCellSubView;
-import edu.ku.brc.specify.ui.forms.persist.FormFormView;
-import edu.ku.brc.specify.ui.forms.persist.FormRow;
 import edu.ku.brc.specify.ui.forms.persist.FormView;
-import edu.ku.brc.specify.ui.forms.persist.FormViewFactory;
 import edu.ku.brc.specify.ui.forms.persist.ViewSet;
 
 public class ViewMgr
 {
     // Statics
     private final static Logger  log        = Logger.getLogger(ViewMgr.class);
-    private static final ViewMgr instance   = new ViewMgr();
+    private static final ViewMgr instance;
     
-    private static SAXReader saxReader  = null;    
+    private static SAXReader saxReader  = null;
+    
+    static {
+        instance   = new ViewMgr();
+        instance.init();
+    }
     
     
     // Data Members
-    private Hashtable<String, ViewSet> viewsHash = new Hashtable<String, ViewSet>();
+    private Hashtable<String, ViewSet>  viewsHash = new Hashtable<String, ViewSet>();
     
     /**
      * protected Constructor
@@ -60,6 +60,44 @@ public class ViewMgr
      */
     protected ViewMgr()
     {
+    }
+    
+    /**
+     * 
+     */
+    protected void init()
+    {
+        try
+        {
+            org.dom4j.Document document = readFileToDOM4J(new FileInputStream(XMLHelper.getConfigDirPath("forms_registry.xml")));
+            Element            root     = document.getRootElement();
+            if (root != null)
+            {
+                for ( Iterator i = root.elementIterator( "file" ); i.hasNext(); ) 
+                {
+                    Element fileElement = (Element) i.next();
+                    String  name        = getAttr(fileElement, "name", null);
+                    if (!isViewSetNameInUse(name))
+                    {
+                        ViewSet viewSet = new ViewSet(name, getAttr(fileElement, "file", null));
+                        viewsHash.put(viewSet.getName(), viewSet);
+                        
+                    } else
+                    {
+                        log.error("ViewSet Name["+name+"] is in use.");
+                    }
+                }
+            } else
+            {
+                String msg = "The root element for the document was null!";
+                log.error(msg);
+                throw new ConfigurationException(msg);
+            } 
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            log.error(ex);
+        }
     }
     
     /**
@@ -76,6 +114,18 @@ public class ViewMgr
     }
     
     /**
+     * Clears all the ViewSets so they are reloaded, but it doesn't re-read the config file
+     *
+     */
+    public static void reset()
+    {
+        for (Enumeration e=instance.viewsHash.elements();e.hasMoreElements();)
+        {
+            ((ViewSet)e.nextElement()).cleanUp();           
+        }
+    }
+    
+    /**
      * Reads a DOM from a string and returns the root element of the DOM
      * @param fileInputStream
      * @return returns a document from a DOM file input stream
@@ -84,7 +134,7 @@ public class ViewMgr
     {
         if (saxReader == null)
         {
-            saxReader= new SAXReader();
+            saxReader = new SAXReader();
         }
         
         boolean doValidation = false;
@@ -100,26 +150,6 @@ public class ViewMgr
         return saxReader.read( fileInputStream );
     }
 
-    /**
-     * Loads a view file from a path
-     * @param path the path to the view file
-     * @throws Exception file io exceptions
-     */
-    public static void loadViewFile(final String path) throws Exception
-    {
-        loadViewFile(new FileInputStream(path));
-    }
-    
-    /**
-     * Loads a View file from an URL
-     * @param url the url location
-     * @throws Exception and errors
-     */
-    public static void loadViewFile(final URL url) throws Exception
-    {
-        loadViewFile(new FileInputStream(url.getFile()));
-    }
-    
     /**
      * Checks all the view "sets" to see if the name has already been used
      * @param viewSetName name of set of views (file of views)
@@ -152,7 +182,7 @@ public class ViewMgr
         ViewSet viewSet = instance.viewsHash.get(viewSetName);
         if (viewSet != null)
         {
-            return viewSet.getById(viewId);
+            return viewSet.getForm(viewId);
         }
         return null; 
     }
@@ -172,6 +202,7 @@ public class ViewMgr
      * Validates the views and subview
      * @throws Exception XXX
      */
+    /*
     public static void validate() throws Exception
     {
         for (Enumeration e=instance.viewsHash.keys();e.hasMoreElements();)
@@ -221,41 +252,9 @@ public class ViewMgr
                 }
             }
         }
-    }
+    }*/
    
-    /**
-     * Load an XML View File from a stream if the ViewSet is not unique than it throws and exception
-     * @param fileInputStream a file input stream to read the DOM4J from
-     * @throws Exception on various errors
-     */
-    public static void loadViewFile(FileInputStream fileInputStream) throws Exception
-    {
-        org.dom4j.Document document = readFileToDOM4J(fileInputStream);
-        Element            root     = document.getRootElement();
-        if (root != null)
-        {
-            Vector<FormView> views = new Vector<FormView>(); // will eventually be moved to where it can be reused
-            
-            // Note this will check for the uniqueness of the ViewSet's name
-            // so we can assume the ViewSet is unique (throws an exception if not unique)
-            String viewsName = FormViewFactory.getViews(root, views, true);
-            
-            ViewSet viewSet = new ViewSet(viewsName);
-            viewSet.setViews(views);
-            
-            // Register all views for the view set
-            instance.viewsHash.put(viewsName, viewSet);
-                
-        } else
-        {
-            String msg = "The root element for the document was null!";
-            log.error(msg);
-            throw new ConfigurationException(msg);
-        }
-        
-    }
-    
-    /**
+     /**
      * Returns a list of all the ViewSets
      * @return Returns a list of all the ViewSets
      */
@@ -263,6 +262,5 @@ public class ViewMgr
     {
         return Collections.list(instance.viewsHash.elements());
     }
-     
-
+    
 }

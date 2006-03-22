@@ -22,7 +22,7 @@
     </meta>
 
     <id
-        name="AttributeDefId"
+        name="attributeDefId"
         type="java.lang.Integer"
         column="AttributeDefID"
     >

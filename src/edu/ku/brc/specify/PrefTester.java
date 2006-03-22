@@ -117,19 +117,6 @@ public class PrefTester
         //initPrefs();
 
 
-        // load form definitions for Preferences (Might want to move this to a preference Class
-        try
-        {
-            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("pref_forms.xml"));
-            ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("form.xml"));
-            
-        } catch (Exception ex)
-        {
-            log.fatal(ex);
-            ex.printStackTrace();
-        }
-        
-
         PanelBuilder    builder    = new PanelBuilder(new FormLayout("c:p:g", "c:p:g"));
         CellConstraints cc         = new CellConstraints();
         

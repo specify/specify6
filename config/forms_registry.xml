@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files>
+    <file name="Fish Views"  file="fish.form.xml"/>
+    <file name="view valid"  file="form.xml"/>
+    <file name="Preferences" file="preference.form.xml"/>
+    <file name="SystemSetup" file="system.form.xml"/>
+</files>

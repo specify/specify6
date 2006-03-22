@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Set;
 
 
 
@@ -14,7 +14,7 @@ public class AttributeDef  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer AttributeDefId;
+     protected Integer attributeDefId;
      protected Short tableType;
      protected String fieldName;
      protected Short dataType;
@@ -33,8 +33,8 @@ public class AttributeDef  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public AttributeDef(Integer AttributeDefId) {
-        this.AttributeDefId = AttributeDefId;
+    public AttributeDef(Integer attributeDefId) {
+        this.attributeDefId = attributeDefId;
     }
    
     
@@ -46,11 +46,11 @@ public class AttributeDef  implements java.io.Serializable {
      * 
      */
     public Integer getAttributeDefId() {
-        return this.AttributeDefId;
+        return this.attributeDefId;
     }
     
-    public void setAttributeDefId(Integer AttributeDefId) {
-        this.AttributeDefId = AttributeDefId;
+    public void setAttributeDefId(Integer attributeDefId) {
+        this.attributeDefId = attributeDefId;
     }
 
     /**

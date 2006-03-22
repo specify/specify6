@@ -39,6 +39,8 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import edu.ku.brc.specify.conversion.IdMapper;
+import edu.ku.brc.specify.conversion.IdMapperMgr;
 import edu.ku.brc.specify.helpers.UIHelper;
 
 /**
@@ -54,7 +56,10 @@ public class BasicSQLUtils
     protected static Calendar         calendar          = new GregorianCalendar();
     protected static boolean          showMappingError  = true;
     
-    protected static BasicSQLUtils basicSQLUtils = new  BasicSQLUtils();
+    protected static BasicSQLUtils    basicSQLUtils = new  BasicSQLUtils();
+    
+    protected static Hashtable<String, String> ignoreMappingFieldNames = null;
+    protected static Hashtable<String, String> ignoreMappingFieldIDs   = null;
     
     /**
      * Singleton 
@@ -79,6 +84,58 @@ public class BasicSQLUtils
     public static boolean isShowMappingError()
     {
         return showMappingError;
+    }
+    
+    /**
+     * CReates or clears and fills a list
+     * @param fieldNames the list of names, can be null then the list is cleared and nulled out
+     * @param ignoreMap the map to be be crated or cleared and nulled
+     * @return the same map or a newly created one
+     */
+    protected static Hashtable<String, String> configureIgnoreMap(final String[] fieldNames, Hashtable<String, String> ignoreMap)
+    {
+        if (fieldNames == null)
+        {
+            if (ignoreMap != null)
+            {
+                ignoreMap.clear();
+                ignoreMap = null;
+            }
+        } else
+        {
+            if (ignoreMap == null)
+            {
+                ignoreMap  = new Hashtable<String, String>();
+            } else
+            {
+                ignoreMap.clear();
+            }
+            log.info("Ignore these Field Names when mapping:");
+            for (String name : fieldNames)
+            {
+                ignoreMap.put(name, "X");
+                log.info(name);
+            }
+        }
+        return ignoreMap;
+    }
+    
+    /**
+     * Sets a list of field names to ignore when mapping database tables from new names to old names
+     * @param fieldNames the list of names to ignore
+     */
+    public static void setFieldsToIgnoreWhenMappingNames(final String[] fieldNames)
+    {
+        ignoreMappingFieldNames = configureIgnoreMap(fieldNames, ignoreMappingFieldNames);
+    }
+
+    /**
+     * Sets a list of field names to ignore when mapping IDs
+     * @param fieldNames the list of names to ignore
+     */
+    public static void setFieldsToIgnoreWhenMappingIDs(final String[] fieldNames)
+    {
+        ignoreMappingFieldIDs = configureIgnoreMap(fieldNames, ignoreMappingFieldIDs);
     }
 
     /**
@@ -133,6 +190,7 @@ public class BasicSQLUtils
                 count = rs.getInt(1);
             }
             rs.close();
+            cntStmt.close();
             
             Statement stmt = connection.createStatement();
             exeUpdateCmd(stmt, "SET FOREIGN_KEY_CHECKS = 0");
@@ -399,7 +457,8 @@ public class BasicSQLUtils
     }
 
     /**
-     * Copies from one connect/table to another connection/table.
+     * Copies from one connect/table to another connection/table. Sets the order by clause to be the first field in the 
+     * "from" field list.
      *  
      * @param fromConn DB Connection that the data is coming from
      * @param toConnDB Connection that the data is going to
@@ -411,12 +470,19 @@ public class BasicSQLUtils
      */
     public static boolean copyTable(final Connection fromConn,
                                     final Connection toConn,
-                                    final String     sqlStr,
+                                    final String     sql,
                                     final String     fromTableName,
                                     final String     toTableName,
                                     final Map<String, String> colNewToOldMap,
                                     final Map<String, String> verbatimDateMapper)
     {
+        IdMapperMgr idMapperMgr = IdMapperMgr.getInstance();
+
+        List<String> fromFieldNameList = new ArrayList<String>();
+        getFieldNamesFromSchema(fromConn, fromTableName, fromFieldNameList);
+        
+        String sqlStr = sql + " order by " +  fromTableName + "." + fromFieldNameList.get(0);
+        
         String id = "";
         try
         {
@@ -494,10 +560,14 @@ public class BasicSQLUtils
                         {
                             index = fromHash.get(oldMappedColName);
                             
-                        } else if (showMappingError)
+                        } else if (showMappingError && 
+                                   (ignoreMappingFieldNames == null || ignoreMappingFieldNames.get(colName) == null))
                         {
-                            log.error("The name [" + colName + "] was not mapped.");
+                            log.error("No Map for table ["+fromTableName+"] from New Name[" + colName + "] to Old Name["+oldMappedColName+"]");
                         }
+                    } else
+                    {
+                        oldMappedColName = colName;
                     }
                     
                     if (index != null)
@@ -505,6 +575,28 @@ public class BasicSQLUtils
                         if (i > 0) str.append(", ");
                         Object dataObj = rs.getObject(index);
                         
+                        if (idMapperMgr != null && oldMappedColName.endsWith("ID"))
+                        {
+                            IdMapper idMapper = idMapperMgr.get(fromTableName, oldMappedColName);
+                            if (idMapper != null)
+                            {
+                                dataObj = idMapper.getNewIndexFromOld(rs.getInt(index));
+                                /*if (rs.getObject(index) != null)
+                                {
+                                    System.out.println("["+((Integer)dataObj).intValue()+"]["+rs.getInt(index)+"]");
+                                } else
+                                {
+                                    System.out.println(oldMappedColName+" was null");
+                                }*/
+                            } else
+                            {
+                                if (ignoreMappingFieldIDs != null && ignoreMappingFieldIDs.get(oldMappedColName) == null)
+                                {
+                                    log.error("No ID Map for ["+fromTableName+"] Old Column Name["+oldMappedColName+"]");
+                                }
+                            }
+                        }
+
                         if (dataObj instanceof Integer && colName.toLowerCase().indexOf("date") ==  0 && verbatimDateMapper != null)
                         {
                             // First check to see if the current column name is that of the verbatim field
@@ -526,9 +618,10 @@ public class BasicSQLUtils
                         
                     } else
                     {
-                        if (showMappingError)
+                        if (showMappingError && 
+                            (ignoreMappingFieldNames == null || ignoreMappingFieldNames.get(colName) == null))
                         {
-                            log.error("For Table[" + fromTableName + "] Col Name[" + colMetaData.get(i).getName() + "] was not mapped");
+                            log.error("For Table[" + fromTableName + "] mapping new Column Name[" + colName + "] was not mapped");
                         }
                         if (i > 0) str.append(", ");
                         str.append("NULL");
@@ -566,6 +659,7 @@ public class BasicSQLUtils
         } catch (SQLException ex)
         {
             //e.printStackTrace();
+            log.error(sqlStr);
             log.error(ex);
             log.error("ID: " + id);
         }
@@ -634,6 +728,37 @@ public class BasicSQLUtils
         }
         return map;
     }
+    
+    /**
+     * Returns the number of records in a table
+     * @param connection db connection
+     * @param tableName the name of the table
+     * @return
+     */
+    public static int getNumRecords(final Connection connection, final String tableName)
+    {
+        try
+        {
+            int count = 0;
+            Statement cntStmt = connection.createStatement();
+            ResultSet rs      = cntStmt.executeQuery("select count(*) from "+tableName);
+            if (rs.first())
+            {
+                count = rs.getInt(1);
+            }
+            rs.close();
+            cntStmt.close();
+            
+            return count;
+            
+        } catch (SQLException ex)
+        {
+            log.error(ex);
+        }
+        return -1;
+    }
+    
+
     
     //-----------------------------------------------------------------------
     //-- Inner Classes

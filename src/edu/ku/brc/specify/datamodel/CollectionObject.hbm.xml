@@ -2,14 +2,14 @@
 <!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
+
 <hibernate-mapping>
-<!-- 
+<!--
     Created by Rod Spears
 -->
 
 <class
-    name="edu.ku.brc.specify.datamodel.CollectionObject" 
+    name="edu.ku.brc.specify.datamodel.CollectionObject"
     table="collectionobject"
 	lazy="true"
 	batch-size="50"
@@ -18,19 +18,19 @@
        @hibernate.class
         table="collectionobject"
     </meta>
-    
+
     <meta attribute="extra-import">org.hibernate.Criteria</meta>
     <meta attribute="extra-import">org.hibernate.criterion.Expression</meta>
     <meta attribute="extra-import">edu.ku.brc.specify.dbsupport.HibernateUtil</meta>
-    
+
     <meta attribute="class-code">
         <![CDATA[
     protected Container container = null; // When not null it means this is the Container
-    
+
     /**
-     * 
+     *
      */
-    public Container getContainer() 
+    public Container getContainer()
     {
         Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Container.class);
         criteria.add(Expression.eq("containerId", collectionObjectId));
@@ -38,14 +38,14 @@
         this.container = list != null && list.size() > 0 ? (Container)list.get(0) : null;
         return this.container;
     }
-    
-    public void setContainer(Container container) 
+
+    public void setContainer(Container container)
     {
         this.container = container;
     }
     ]]>
     </meta>
- 
+
     <id
         name="collectionObjectId"
         type="java.lang.Integer"
@@ -53,13 +53,13 @@
     >
         <meta attribute="field-description">
            @hibernate.id
-            generator-class="assigned"
+            generator-class="native"
             type="java.lang.Integer"
             column="CollectionObjectID"
 
         </meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="assigned" />
+        <generator class="native" />
     </id>
 
     <property
@@ -73,9 +73,9 @@
            @hibernate.property
             column="FieldNumber"
             length="50"
-        </meta>    
+        </meta>
     </property>
-	
+
     <property
         name="description"
         type="java.lang.String"
@@ -87,9 +87,9 @@
            @hibernate.property
             column="Description"
             length="50"
-        </meta>    
+        </meta>
     </property>
-	
+
     <property
         name="text1"
         type="text"
@@ -99,9 +99,9 @@
         <meta attribute="field-description">
            @hibernate.property
             column="Text1"
-        </meta>    
+        </meta>
     </property>
-	
+
     <property
         name="text2"
         type="text"
@@ -111,9 +111,9 @@
         <meta attribute="field-description">
            @hibernate.property
             column="Text2"
-        </meta>    
+        </meta>
     </property>
-	
+
     <property
         name="number1"
         type="java.lang.Float"
@@ -125,9 +125,9 @@
            @hibernate.property
             column="Number1"
             length="24"
-        </meta>    
+        </meta>
     </property>
-	
+
     <property
         name="number2"
         type="java.lang.Float"
@@ -139,9 +139,9 @@
            @hibernate.property
             column="Number2"
             length="24"
-        </meta>    
+        </meta>
     </property>
-	
+
     <property
         name="yesNo1"
         type="boolean"
@@ -151,9 +151,9 @@
         <meta attribute="field-description">
            @hibernate.property
             column="YesNo1"
-        </meta>    
+        </meta>
     </property>
-    
+
     <property
         name="yesNo2"
         type="boolean"
@@ -163,9 +163,9 @@
         <meta attribute="field-description">
            @hibernate.property
             column="YesNo2"
-        </meta>    
+        </meta>
     </property>
-	
+
     <property
         name="countAmt"
         type="java.lang.Integer"
@@ -177,9 +177,9 @@
            @hibernate.property
             column="CountAmt"
             length="10"
-        </meta>    
+        </meta>
     </property>
-    
+
     <property
         name="remarks"
         type="text"
@@ -189,7 +189,7 @@
         <meta attribute="field-description">
            @hibernate.property
             column="Remarks"
-        </meta>    
+        </meta>
     </property>
 
     <property
@@ -203,9 +203,9 @@
            @hibernate.property
             column="Name"
             length="64"
-        </meta>    
+        </meta>
     </property>
-	
+
     <property
         name="modifier"
         type="java.lang.String"
@@ -217,9 +217,9 @@
            @hibernate.property
             column="Modifier"
             length="50"
-        </meta>    
+        </meta>
     </property>
-	
+
     <property
         name="catalogedDate"
         type="calendar_date"
@@ -229,9 +229,9 @@
         <meta attribute="field-description">
            @hibernate.property
             column="CatalogedDate"
-        </meta>    
+        </meta>
     </property>
-	
+
     <property
         name="catalogedDateVerbatim"
         type="java.lang.String"
@@ -243,9 +243,9 @@
            @hibernate.property
             column="CatalogedDateVerbatim"
         length="32"
-        </meta>    
+        </meta>
     </property>
-    
+
     <property
         name="guid"
         type="java.lang.String"
@@ -257,9 +257,24 @@
            @hibernate.property
             column="GUID"
             length="255"
-        </meta>    
-    </property>    
-	
+        </meta>
+    </property>
+
+    <property
+        name="altCatalogNumber"
+        type="java.lang.String"
+        column="AltCatalogNumber"
+        length="32"
+        index="INX_ALTCATALOGNUMBER"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.property
+            column="AltCatalogNumber"
+            length="32"
+        </meta>
+    </property>
+
     <property
         name="timestampCreated"
         type="java.sql.Timestamp"
@@ -275,9 +290,9 @@
             length="23"
             update="false"
             not-null="true"
-        </meta>    
+        </meta>
     </property>
-	
+
     <property
         name="timestampModified"
         type="java.sql.Timestamp"
@@ -290,9 +305,9 @@
             column="TimestampModified"
             length="23"
             not-null="true"
-        </meta>    
+        </meta>
     </property>
-	
+
     <property
         name="lastEditedBy"
         type="java.lang.String"
@@ -304,9 +319,9 @@
            @hibernate.property
             column="LastEditedBy"
             length="50"
-        </meta>    
+        </meta>
     </property>
-	
+
     <property
         name="deaccessioned"
         type="boolean"
@@ -316,9 +331,9 @@
         <meta attribute="field-description">
            @hibernate.property
             column="Deaccessioned"
-        </meta>    
+        </meta>
     </property>
-	
+
     <property
         name="catalogNumber"
         unique="true"
@@ -330,12 +345,12 @@
         <meta attribute="field-description">
            @hibernate.property
             column="CatalogNumber"
-        </meta>    
+        </meta>
     </property>
-	
+
 
     <!-- Associations -->
-    
+
     <!-- bi-directional many-to-one association to CollectingEvent -->
     <many-to-one
         name="collectingEvent"
@@ -349,11 +364,11 @@
            @hibernate.many-to-one
             not-null="true"
 			cascade="none"
-           @hibernate.column name="CollectingEventID"         
+           @hibernate.column name="CollectingEventID"
         </meta>
         <column name="CollectingEventID" />
-    </many-to-one>	    
-	
+    </many-to-one>
+
     <!-- bi-directional many-to-one association to ContainerItem -->
     <many-to-one
         name="containerItem"
@@ -365,11 +380,11 @@
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="auto"
-           @hibernate.column name="ContainerItemID"         
+           @hibernate.column name="ContainerItemID"
         </meta>
         <column name="ContainerItemID" />
-    </many-to-one>                 
-	
+    </many-to-one>
+
     <!-- bi-directional one-to-many association to CollectionObjectCitation -->
     <set
         name="collectionObjectCitations"
@@ -393,11 +408,11 @@
         <key>
             <column name="CollectionObjectID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.CollectionObjectCitation"
         />
     </set>
-	
+
     <!-- bi-directional one-to-many association to CollectionObjectAttr -->
     <set
         name="attrs"
@@ -421,11 +436,11 @@
         <key>
             <column name="CollectionObjectID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.CollectionObjectAttr"
         />
-    </set>	
-    
+    </set>
+
     <!-- bi-directional one-to-many association to Preparation -->
     <set
         name="preparations"
@@ -449,11 +464,11 @@
         <key>
             <column name="CollectionObjectID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.Preparation"
         />
-    </set>	
-    
+    </set>
+
     <!-- bi-directional one-to-many association to Determination -->
     <set
         name="determinations"
@@ -477,13 +492,13 @@
         <key>
             <column name="CollectionObjectID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.Determination"
         />
     </set>
-	
+
 	<!-- Old CollectionObjectCatalog Associations -->
-	
+
     <!-- bi-directional one-to-many association to ProjectCollectionObject -->
     <set
         name="projectCollectionObjects"
@@ -507,11 +522,11 @@
         <key>
             <column name="CollectionObjectID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.ProjectCollectionObject"
         />
     </set>
-	
+
     <!-- bi-directional one-to-many association to DeaccessionCollectionObject -->
     <set
         name="deaccessionCollectionObjects"
@@ -535,11 +550,11 @@
         <key>
             <column name="CollectionObjectID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject"
         />
     </set>
-	
+
     <!-- bi-directional one-to-many association to OtherIdentifier -->
     <set
         name="otherIdentifiers"
@@ -563,7 +578,7 @@
         <key>
             <column name="CollectionObjectID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.OtherIdentifier"
         />
     </set>
@@ -579,11 +594,11 @@
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="CatalogSeriesID"         
+           @hibernate.column name="CatalogSeriesID"
         </meta>
         <column name="CatalogSeriesID" />
     </many-to-one>
-	
+
     <!-- bi-directional many-to-one association to Accession -->
     <many-to-one
         name="accession"
@@ -595,11 +610,11 @@
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="AccessionID"         
+           @hibernate.column name="AccessionID"
         </meta>
         <column name="AccessionID" />
     </many-to-one>
-	
+
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one
         name="cataloger"
@@ -611,12 +626,12 @@
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="CatalogerID"         
+           @hibernate.column name="CatalogerID"
         </meta>
         <column name="CatalogerID" />
     </many-to-one>
 
-        
+
     <!-- bi-directional many-to-many association to ExternalResource -->
     <set
         name="externalResources"
@@ -629,7 +644,7 @@
         </key>
         <many-to-many class="edu.ku.brc.specify.datamodel.ExternalResource" column="ExternalResourceID"/>
     </set>
-    
+
 </class>
 </hibernate-mapping>
 

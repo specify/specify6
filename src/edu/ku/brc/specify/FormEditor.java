@@ -43,6 +43,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.apache.commons.jxpath.JXPathContext;
@@ -50,14 +51,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.criterion.Expression;
 
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
+import edu.ku.brc.specify.config.CatalogSeriesWizard;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.InfoRequest;
+import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.EMailHelper;
@@ -81,10 +87,6 @@ import edu.ku.brc.specify.ui.forms.persist.ViewSet;
  * @author rods
  *
  */
-/**
- * @author rods
- *
- */
 public class FormEditor
 {
     private static Log log = LogFactory.getLog(FormEditor.class);
@@ -100,10 +102,78 @@ public class FormEditor
     protected List<TestDataObj> list        = new ArrayList<TestDataObj>();
     
     protected FormViewable fvo;
+    protected DataType dataType;
 
     
     public FormEditor()
     {
+        
+        DBConnection.setUsernamePassword("rods", "rods");
+        DBConnection.setDriver("com.mysql.jdbc.Driver");
+        DBConnection.setDBName("jdbc:mysql://localhost/demo_fish3");
+
+        init();
+    }
+    
+    protected void init()
+    {
+        //dataType = createDataTypes("Animal");
+    }
+    
+    /**
+     * Creates a Standard set of DataTypes for Collections
+     * @param returnName the name of a DataType to return (ok if null)
+     * @return the DataType requested
+     */
+    public DataType createDataTypes(final String returnName)
+    {
+        DataType retDataType = null;
+        int numDataTypes = BasicSQLUtils.getNumRecords(DBConnection.getConnection(), "datatype");
+        if (numDataTypes == 0)
+        {
+            String[] dataTypeNames = {"Animal", "Plant", "Fungi", "Mineral", "Other"};
+    
+            
+            try
+            {
+                Session session = HibernateUtil.getCurrentSession();
+                HibernateUtil.beginTransaction();
+    
+                for (String name : dataTypeNames)
+                {
+                    DataType dataType = new DataType();
+                    dataType.setName(name);
+                    dataType.setCollectionObjDef(null);
+                    session.save(dataType);
+    
+                    if (returnName != null && name.equals(returnName))
+                    {
+                        retDataType = dataType;
+                    }
+                }
+    
+                HibernateUtil.commitTransaction();
+    
+            } catch (Exception e)
+            {
+                log.error("******* " + e);
+                HibernateUtil.rollbackTransaction();
+            }
+        } else
+        {
+            Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(DataType.class);
+            criteria.add(Expression.eq("name", "Animal"));
+            java.util.List list = criteria.list();
+            for (Object obj : list)
+            {
+                DataType dataType = (DataType)obj;
+                System.out.println(dataType.getName());
+                retDataType = dataType;
+                break;
+            }
+
+        }
+        return retDataType;
     }
     
     /**
@@ -120,7 +190,8 @@ public class FormEditor
         if (comp != null)
         {
             comp.invalidate();   
-            contentPane.add(comp, BorderLayout.CENTER);
+            //contentPane.add(comp, BorderLayout.CENTER);
+            contentPane.add(new CatalogSeriesWizard(null), BorderLayout.CENTER);
             
             //SwingUtilities.invokeLater(new Runnable() {
             //    public void run() 
@@ -134,8 +205,8 @@ public class FormEditor
                     
                     // XXX Why???
                     mainFrame.pack();
-                    mainFrame.setSize(new Dimension(1024, 764));
-                    //frame.pack();
+                    //mainFrame.setSize(new Dimension(1024, 764));
+                    //mainFrame.pack();
                     UIHelper.centerAndShow(mainFrame);
                     
                     boolean doSend = false;
@@ -150,10 +221,6 @@ public class FormEditor
                     {
                         //EMailHelper.findRepliesFromResearch("imap.ku.edu", "rods", "Inverness1601*");
                     }
-                    
-                    DBConnection.setUsernamePassword("rods", "rods");
-                    DBConnection.setDriver("com.mysql.jdbc.Driver");
-                    DBConnection.setDBName("jdbc:mysql://localhost/demo_fish3");
                     
                     if (currViewSetName.equals("view valid") && (currFormId == 0 || currFormId == 333))
                     {
@@ -206,7 +273,7 @@ public class FormEditor
                         }
                         
                         
-                        boolean doCatalogItems = true;
+                        boolean doCatalogItems = false;
                         if (doCatalogItems)
                         {
                             Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CollectionObject.class).setMaxResults(300);
@@ -253,34 +320,10 @@ public class FormEditor
     /**
      * 
      */
-    protected void load()
-    {
-        // XXX Temporary load of form because now forma er being loaded right now
-        try
-        {
-           ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("form.xml"));
-           ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("fish_forms.xml"));
-           ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("pref_forms.xml"));
-           ViewMgr.loadViewFile(XMLHelper.getConfigDirPath("system.forms.xml"));
-            
-        } catch (Exception ex)
-        {
-            log.fatal(ex);
-            ex.printStackTrace();
-        }
-       
-    
-    }
-    
-    /**
-     * 
-     */
     protected void reload()
     {
-        ViewMgr.clearAll();
-        
-        load();
-        
+        ViewMgr.reset();
+
         fvo = createForm(ViewMgr.getView(currViewSetName, currFormId));
     }
     
@@ -384,13 +427,8 @@ public class FormEditor
             //top.add(menuBar, BorderLayout.NORTH);
             mainFrame.setJMenuBar(menuBar);
         }
-
-        load();
         
         // temp for testing 
-        
-        currFormId      = 1;
-        currViewSetName =   "Fish Views";
         
         currFormId      = 500;
         currViewSetName =   "SystemSetup";
@@ -398,6 +436,9 @@ public class FormEditor
         currFormId      = 333;
         currViewSetName =  "view valid";
     
+        currFormId      = 1;
+        currViewSetName =   "Fish Views";
+        
         
         FormView form = ViewMgr.getView(currViewSetName, currFormId);
 
@@ -562,9 +603,13 @@ public class FormEditor
      */
     public static void main(String[] args) 
     {
-        // TODO Auto-generated method stub
-        FormEditor formEditor = new FormEditor();
-        formEditor.initialize();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() 
+            {
+                FormEditor formEditor = new FormEditor();
+                formEditor.initialize();
+            }
+        });
 
     }
 

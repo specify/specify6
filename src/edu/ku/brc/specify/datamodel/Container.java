@@ -1,10 +1,11 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
-
+import java.util.Date;
+import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Expression;
+
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 
 
@@ -20,6 +21,9 @@ public class Container  implements java.io.Serializable {
      protected Integer containerId;
      protected Integer collectionObjectId;
      protected Short type;
+     protected String name;
+     protected String description;
+     protected Integer number;
      private Date timestampModified;
      private Date timestampCreated;
      private String lastEditedBy;
@@ -44,7 +48,7 @@ public class Container  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.id
-     *             generator-class="assigned"
+     *             generator-class="native"
      *             type="java.lang.Integer"
      *             column="ContainerID"
      *         
@@ -83,6 +87,47 @@ public class Container  implements java.io.Serializable {
     
     public void setType(Short type) {
         this.type = type;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="Name"
+     *             length="64"
+     *         
+     */
+    public String getName() {
+        return this.name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="Name"
+     *             length="255"
+     *         
+     */
+    public String getDescription() {
+        return this.description;
+    }
+    
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
+     *      *            @hibernate.property
+     *             column="Number"
+     *         
+     */
+    public Integer getNumber() {
+        return this.number;
+    }
+    
+    public void setNumber(Integer number) {
+        this.number = number;
     }
 
     /**

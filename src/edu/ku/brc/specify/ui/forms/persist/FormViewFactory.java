@@ -147,12 +147,6 @@ public class FormViewFactory
     public static String getViews(final Element aDocument, final Vector<FormView> aList, final boolean aDoValidation) throws Exception
     {
         instance.viewSetName = aDocument.attributeValue(NAME);
-        if (ViewMgr.isViewSetNameInUse(instance.viewSetName))
-        {
-            String msg = "Duplicate View Set Name [" + instance.viewSetName + "]";
-            log.error(msg);
-            throw new ConfigurationException(msg);
-        }
 
         Hashtable<Integer, FormView> idHash = new Hashtable<Integer, FormView>();
 

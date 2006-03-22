@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Set;
 
 
 
@@ -141,6 +141,19 @@ public class CollectionObjDef  implements java.io.Serializable {
         this.AttributeDefs = AttributeDefs;
     }
 
+  /**
+	 * toString
+	 * @return String
+	 */
+  public String toString() {
+	  StringBuffer buffer = new StringBuffer();
+
+      buffer.append(getClass().getName()).append("@").append(Integer.toHexString(hashCode())).append(" [");
+      buffer.append("name").append("='").append(getName()).append("' ");			
+      buffer.append("]");
+      
+      return buffer.toString();
+	}
 
 
 

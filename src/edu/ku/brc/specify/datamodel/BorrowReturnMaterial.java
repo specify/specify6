@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
 
 
 
@@ -43,7 +44,7 @@ public class BorrowReturnMaterial  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.id
-     *             generator-class="assigned"
+     *             generator-class="native"
      *             type="java.lang.Integer"
      *             column="BorrowReturnMaterialID"
      *         

@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
 
 
 
@@ -43,7 +43,7 @@ public class BorrowAgent  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.id
-     *             generator-class="assigned"
+     *             generator-class="native"
      *             type="java.lang.Integer"
      *             column="BorrowAgentsID"
      *         

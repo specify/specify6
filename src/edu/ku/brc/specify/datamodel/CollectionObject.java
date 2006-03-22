@@ -1,10 +1,12 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
-
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Expression;
+
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 
 
@@ -33,6 +35,7 @@ public class CollectionObject  implements java.io.Serializable {
      protected Calendar catalogedDate;
      protected String catalogedDateVerbatim;
      protected String guid;
+     protected String altCatalogNumber;
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
@@ -71,7 +74,7 @@ public class CollectionObject  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.id
-     *             generator-class="assigned"
+     *             generator-class="native"
      *             type="java.lang.Integer"
      *             column="CollectionObjectID"
      *         
@@ -290,6 +293,20 @@ public class CollectionObject  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
+     *             column="AltCatalogNumber"
+     *             length="32"
+     *         
+     */
+    public String getAltCatalogNumber() {
+        return this.altCatalogNumber;
+    }
+    
+    public void setAltCatalogNumber(String altCatalogNumber) {
+        this.altCatalogNumber = altCatalogNumber;
+    }
+
+    /**
+     *      *            @hibernate.property
      *             column="TimestampCreated"
      *             length="23"
      *             update="false"
@@ -363,7 +380,7 @@ public class CollectionObject  implements java.io.Serializable {
      *      *            @hibernate.many-to-one
      *             not-null="true"
      * 			cascade="none"
-     *            @hibernate.column name="CollectingEventID"         
+     *            @hibernate.column name="CollectingEventID"
      *         
      */
     public CollectingEvent getCollectingEvent() {
@@ -377,7 +394,7 @@ public class CollectionObject  implements java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="auto"
-     *            @hibernate.column name="ContainerItemID"         
+     *            @hibernate.column name="ContainerItemID"
      *         
      */
     public ContainerItem getContainerItem() {
@@ -524,7 +541,7 @@ public class CollectionObject  implements java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="CatalogSeriesID"         
+     *            @hibernate.column name="CatalogSeriesID"
      *         
      */
     public CatalogSeries getCatalogSeries() {
@@ -538,7 +555,7 @@ public class CollectionObject  implements java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="AccessionID"         
+     *            @hibernate.column name="AccessionID"
      *         
      */
     public Accession getAccession() {
@@ -552,7 +569,7 @@ public class CollectionObject  implements java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="CatalogerID"         
+     *            @hibernate.column name="CatalogerID"
      *         
      */
     public Agent getCataloger() {
@@ -581,11 +598,11 @@ public class CollectionObject  implements java.io.Serializable {
 
         
     protected Container container = null; // When not null it means this is the Container
-    
+
     /**
-     * 
+     *
      */
-    public Container getContainer() 
+    public Container getContainer()
     {
         Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Container.class);
         criteria.add(Expression.eq("containerId", collectionObjectId));
@@ -593,8 +610,8 @@ public class CollectionObject  implements java.io.Serializable {
         this.container = list != null && list.size() > 0 ? (Container)list.get(0) : null;
         return this.container;
     }
-    
-    public void setContainer(Container container) 
+
+    public void setContainer(Container container)
     {
         this.container = container;
     }
