@@ -255,7 +255,6 @@ public class ExpressSearchTask extends BaseTask
                             }
                         } catch (java.lang.NumberFormatException e)
                         {
-                            // megalotis
                             useFloat = true;
                             tableInfo.getRecIds().add((int)(Float.parseFloat(doc.get("id"))));
                         }
@@ -320,7 +319,7 @@ public class ExpressSearchTask extends BaseTask
         
         searchBtn   = new JButton(getResourceString("Search"));
         
-        searchText  = new JTextField("megalotis", 10);
+        searchText  = new JTextField("beanii", 10);
         //searchText  = new JTextField(10);
         textBGColor = searchText.getBackground();
         

@@ -124,6 +124,7 @@
         </meta>
         <column name="CollectingEventID" />
     </many-to-one>
+    
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one
         name="agent"

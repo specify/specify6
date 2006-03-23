@@ -20,7 +20,7 @@ public class CollectionObjDef  implements java.io.Serializable {
      private Set catalogSeries;
      private Set taxonTreeDef;
      protected User user;
-     private Set AttributeDefs;
+     private Set attributeDefs;
 
 
     // Constructors
@@ -134,11 +134,11 @@ public class CollectionObjDef  implements java.io.Serializable {
      *         
      */
     public Set getAttributeDefs() {
-        return this.AttributeDefs;
+        return this.attributeDefs;
     }
     
-    public void setAttributeDefs(Set AttributeDefs) {
-        this.AttributeDefs = AttributeDefs;
+    public void setAttributeDefs(Set attributeDefs) {
+        this.attributeDefs = attributeDefs;
     }
 
   /**

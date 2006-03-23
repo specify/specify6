@@ -323,7 +323,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         int[]   fields       = tableInfo.getCols();
         boolean useHitsCache = tableInfo.isUseHitsCache();
         
-        StringBuffer strBuf = new StringBuffer();
+        StringBuilder strBuf = new StringBuilder();
         
         long begin = 0;
         
@@ -411,7 +411,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                             }
                                 
                             doc.add(Field.UnIndexed("data", strBuf.toString()));
-                           
+                            
                         } else
                         {
                             for (int i=1;i<fields.length;i++)

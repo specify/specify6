@@ -8,18 +8,20 @@
     </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[Select collectionobject.CatalogNumber, taxon.Name From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TaxonID = determination.TaxonID Where collectionobject.SubNumber = '0']]>
+	        <![CDATA[Select collectionobject.CollectionObjectID, collectionobject.CatalogNumber, taxon.Name From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TreeID = determination.TaxonID]]>
 	    </sql>
 	    <cols>
 	       <col>1</col>
 	       <col>2</col>
+	       <col>3</col>
 	    </cols>
 	</index>
     <detailView icon="ColObj">
 	    <sql>
-	        <![CDATA[Select CatalogNumber from collectionobject where CatalogNumber in (%s) and collectionobject.SubNumber = '0']]>
+	        <![CDATA[Select CollectionObjectID from collectionobject where CollectionObjectID in (%s)]]>
 	    </sql>
         <captions>
+            <caption col="CollectionObjectID" text="CollectionObjectID" visible="false"/>
             <caption col="CatalogNumber" text="Catalog Number"/>
             <caption col="Taxon" text="Taxon Name"/>
         </captions>
@@ -97,7 +99,7 @@
     </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[select TaxonID,Name,CommonName from taxon;]]>
+	        <![CDATA[select TreeID,Name,CommonName from taxon;]]>
 	    </sql>
 	    <cols>
 	       <col>1</col>
@@ -107,12 +109,12 @@
 	</index>
     <detailView icon="Taxon">
 	    <sql>
-	        <![CDATA[select Name,CommonName,TaxonID from taxon where TaxonID in (%s)]]>
+	        <![CDATA[select Name,CommonName,TreeID from taxon where TreeID in (%s)]]>
 	    </sql>
         <captions>
             <caption col="Name" text="Taxon Name"/>
             <caption col="CommonName" text="Common Name"/>
-            <caption col="TaxonID" text="Taxon ID" visible="false"/>
+            <caption col="TreeID" text="Taxon ID" visible="false"/>
         </captions>
         <recordset tabletype="4" col="2"/>
 	</detailView>
@@ -192,7 +194,7 @@
  collectionobject 
  Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID 
  Inner Join agent ON determination.DeterminerID = agent.AgentID 
- Inner Join taxon ON determination.TaxonID = taxon.TaxonID where determination.IsCurrent <> 0]]>
+ Inner Join taxon ON determination.TaxonID = taxon.TreeID where determination.IsCurrent <> 0]]>
 	    </sql>
 	    <cols>
 	       <col>1</col>
@@ -214,7 +216,7 @@
  collectionobject 
  Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID 
  Inner Join agent ON determination.DeterminerID = agent.AgentID 
- Inner Join taxon ON determination.TaxonID = taxon.TaxonID where determination.IsCurrent <> 0) as tx 
+ Inner Join taxon ON determination.TaxonID = taxon.TreeID where determination.IsCurrent <> 0) as tx 
  where tx.CollectionObjectID in (%s)]]>
 	    </sql>
         <captions>
@@ -256,6 +258,7 @@
 	</detailView>
   </table>  
 
+<!--
   <table id="10000" usehitscache="true" name="Forms" title="Forms" priority="2" color="95, 158, 160">
     <outofdate/>
     <index>
@@ -291,6 +294,6 @@
        <recordset tabletype="20000" col="1"/>
 	</detailView>
   </table>  
-
+-->
 </tables>
   

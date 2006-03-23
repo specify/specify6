@@ -19,13 +19,13 @@
         <item title="Unique Families" useprogress="true">
             <sql>
                 <statement>
-                  <![CDATA[create temporary table Families1 select taxonid from determination where IsCurrent <> 0]]>
+                  <![CDATA[create temporary table Families1 select TaxonID from determination where IsCurrent <> 0]]>
                 </statement>
                 <statement>
-                  <![CDATA[create temporary table Families2 select DISTINCT tax.taxonid,tax.nodenumber from Families1,taxon as tax where tax.accepted <> 0 and tax.taxonid = Families1.taxonid]]>
+                  <![CDATA[create temporary table Families2 select DISTINCT tax.TreeID,tax.nodenumber from Families1,taxon as tax where tax.accepted <> 0 and tax.TreeID = Families1.TaxonID]]>
                 </statement>
                <statement>
-                  <![CDATA[create temporary table Families3 select DISTINCT lev.taxonid from Families2, taxon as lev where lev.rankid = 140 and Families2.nodenumber between lev.nodenumber and lev.HighestChildNodeNumber]]>
+                  <![CDATA[create temporary table Families3 select DISTINCT tx.TreeID from Families2, taxon as tx where tx.rankid = 140 and Families2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>
                 </statement>
                 <statement row="1" col="1">
                   <![CDATA[select count(*) from Families3]]>
@@ -44,13 +44,13 @@
         <item title="Unique Genera" useprogress="true">
             <sql>
                 <statement>
-                  <![CDATA[create temporary table Genera1 select taxonid from determination where IsCurrent <> 0]]>
+                  <![CDATA[create temporary table Genera1 select TaxonID from determination where IsCurrent <> 0]]>
                 </statement>
                 <statement>
-                  <![CDATA[create temporary table Genera2 select DISTINCT tax.taxonid,tax.nodenumber from Genera1,taxon as tax where tax.accepted <> 0 and tax.taxonid = Genera1.taxonid]]>
+                  <![CDATA[create temporary table Genera2 select DISTINCT tax.TreeID,tax.nodenumber from Genera1,taxon as tax where tax.accepted <> 0 and tax.TreeID = Genera1.TaxonID]]>
                 </statement>
                <statement>
-                  <![CDATA[create temporary table Genera3 select DISTINCT lev.taxonid from Genera2, taxon as lev where lev.rankid = 180 and Genera2.nodenumber between lev.nodenumber and lev.HighestChildNodeNumber]]>
+                  <![CDATA[create temporary table Genera3 select DISTINCT tx.TreeID from Genera2, taxon as tx where tx.rankid = 180 and Genera2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>
                 </statement>
                 <statement row="1" col="1">
                   <![CDATA[select count(*) from Genera3]]>
@@ -69,13 +69,13 @@
         <item title="Unique Species" useprogress="true">
             <sql>
                 <statement>
-                  <![CDATA[create temporary table Species1 select taxonid from determination where IsCurrent <> 0]]>
+                  <![CDATA[create temporary table Species1 select TaxonID from determination where IsCurrent <> 0]]>
                 </statement>
                 <statement>
-                  <![CDATA[create temporary table Species2 select DISTINCT tax.taxonid,tax.nodenumber from Species1,taxon as tax where tax.accepted <> 0 and tax.taxonid = Species1.taxonid]]>
+                  <![CDATA[create temporary table Species2 select DISTINCT tax.TreeID,tax.nodenumber from Species1,taxon as tax where tax.accepted <> 0 and tax.TreeID = Species1.TaxonID]]>
                 </statement>
                <statement>
-                  <![CDATA[create temporary table Species3 select DISTINCT lev.taxonid from Species2, taxon as lev where lev.rankid = 220 and Species2.nodenumber between lev.nodenumber and lev.HighestChildNodeNumber]]>
+                  <![CDATA[create temporary table Species3 select DISTINCT tx.TreeID from Species2, taxon as tx where tx.rankid = 220 and Species2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>
                 </statement>
                 <statement row="1" col="1">
                   <![CDATA[select count(*) from Species3]]>
@@ -97,15 +97,15 @@
       </box>
       <box title="Data Entry">
         <item title="Cataloged in Last 7 Days">
-            <sql><statement><![CDATA[select count(*) from collectionobject where subnumber = 0 and DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= TimestampCreated]]></statement></sql>
+            <sql><statement><![CDATA[select count(*) from collectionobject where DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= TimestampCreated]]></statement></sql>
             <link>CatalogedLast7DaysDetail</link>
         </item>
         <item title="Cataloged in Last 30 Days">
-            <sql><statement><![CDATA[select count(*) from collectionobject where subnumber = 0 and DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= TimestampCreated]]></statement></sql>
+            <sql><statement><![CDATA[select count(*) from collectionobject where DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= TimestampCreated]]></statement></sql>
             <link>CatalogedLastMonth</link>
         </item>
         <item title="Cataloged in Last Year">
-            <sql><statement><![CDATA[select count(*) from collectionobject WHERE subnumber = 0 and DATE_SUB(CURDATE(), INTERVAL 1 YEAR) <= TimestampCreated;]]></statement></sql>
+            <sql><statement><![CDATA[select count(*) from collectionobject WHERE DATE_SUB(CURDATE(), INTERVAL 1 YEAR) <= TimestampCreated;]]></statement></sql>
             <link>CatalogedLastYear</link>
         </item>
       </box>
@@ -132,7 +132,7 @@
             <sql><statement><![CDATA[select count(*) from geography]]></statement></sql>
         </item>
         <item title="Number of Countries" useprogress="true">
-            <sql><statement><![CDATA[select count(country) AS CountryCount from (select distinct country from geography as g inner join locality as l on l.geographyid = g.geographyid inner join collectingevent as ce on ce.localityid = l.localityid inner join collectionobject as co on co.collectingeventid = ce.collectingeventid) AS UCountries;]]></statement></sql>
+            <sql><statement><![CDATA[select count(*) from (select DISTINCT g.TreeID from geography as g inner join locality as l on l.geographyid = g.TreeID inner join collectingevent as ce on ce.localityid = l.localityid inner join collectionobject as co on co.collectingeventid = ce.collectingeventid where RankId = 200) as countries]]></statement></sql>
         </item>
         <item title="Percent Geo Referenced">
             <sql><statement><![CDATA[]]>select CASE WHEN (select count(*) from locality) = 0 THEN 0 ELSE ((count(localityid) * 1.0) / ((select count(*) from locality) * 1.0)) * 100.0 END AS PercentGeoReferencedLocalities from locality where not latitude1 is null;</statement></sql>

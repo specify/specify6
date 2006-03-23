@@ -4,10 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
 
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Expression;
 
-import edu.ku.brc.specify.dbsupport.HibernateUtil;
 
 
 /**
@@ -47,6 +44,7 @@ public class CollectionObject  implements java.io.Serializable {
      protected Set attrs;
      protected Set preparations;
      protected Set determinations;
+     protected CollectionObjDef collectionObjDef;
      protected Set projectCollectionObjects;
      protected Set deaccessionCollectionObjects;
      protected Set otherIdentifiers;
@@ -54,6 +52,7 @@ public class CollectionObject  implements java.io.Serializable {
      protected Accession accession;
      protected Agent cataloger;
      private Set externalResources;
+     protected Container container;
 
 
     // Constructors
@@ -482,6 +481,20 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
+     *      *            @hibernate.many-to-one
+     *             not-null="false"
+     *            @hibernate.column name="CollectionObjDefID"
+     *         
+     */
+    public CollectionObjDef getCollectionObjDef() {
+        return this.collectionObjDef;
+    }
+    
+    public void setCollectionObjDef(CollectionObjDef collectionObjDef) {
+        this.collectionObjDef = collectionObjDef;
+    }
+
+    /**
      *      *            @hibernate.set
      *             lazy="true"
      *             inverse="true"
@@ -591,31 +604,25 @@ public class CollectionObject  implements java.io.Serializable {
         this.externalResources = externalResources;
     }
 
-
-
-
-  // The following is extra code specified in the hbm.xml files
-
-        
-    protected Container container = null; // When not null it means this is the Container
-
     /**
-     *
+     *      *            @hibernate.many-to-one
+     * 	        not-null="false"
+     * 			unique="true" 
+     * 			insert="false" 
+     * 			update="false"
+     * 			cascade="all"
+     *            @hibernate.column name="ContainerID"
+     *         
      */
-    public Container getContainer()
-    {
-        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Container.class);
-        criteria.add(Expression.eq("containerId", collectionObjectId));
-        java.util.List list = criteria.list();
-        this.container = list != null && list.size() > 0 ? (Container)list.get(0) : null;
+    public Container getContainer() {
         return this.container;
     }
-
-    public void setContainer(Container container)
-    {
+    
+    public void setContainer(Container container) {
         this.container = container;
     }
-    
-    
-  // end of extra code specified in the hbm.xml files
+
+
+
+
 }

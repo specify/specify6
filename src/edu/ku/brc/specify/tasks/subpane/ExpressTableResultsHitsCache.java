@@ -290,7 +290,8 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
                 {
                     for (int i=0;i<rows.length;i++)
                     {
-                        Document doc  = hits.doc(rows[i]);
+                        Document doc  = hits.doc(indexes[rows[i]]);
+                        log.info("["+doc.get("id")+"]["+doc.get("table")+"]["+doc.get("data")+"]");
                         String   data = doc.get("data");
                         
                         if (data != null)

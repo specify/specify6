@@ -116,7 +116,7 @@
     
     <!-- bi-directional one-to-many association to AttributeDef -->
     <set
-        name="AttributeDefs"
+        name="attributeDefs"
         lazy="true"
         inverse="true"
 		cascade="delete"
@@ -138,6 +138,34 @@
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.AttributeDef"/>
     </set>
+    
+    <!-- bi-directional one-to-many association to CollectionObject -->
+    <!-- Currently we don't to bring all the CollectionObjects when accessing the CollectionObjDef -->
+    <!--
+    <set
+        name="collectionObjects"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+        <meta attribute="field-description">
+           @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="delete"
+
+           @hibernate.collection-key
+            column="CollectionObjDefID"
+
+           @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
+        </meta>
+        <key>
+            <column name="CollectioObjDefID" />
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.CollectionObject"/>
+    </set>
+    -->
     
 </class>
 

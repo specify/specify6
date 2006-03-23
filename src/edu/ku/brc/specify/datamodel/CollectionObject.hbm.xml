@@ -19,32 +19,6 @@
         table="collectionobject"
     </meta>
 
-    <meta attribute="extra-import">org.hibernate.Criteria</meta>
-    <meta attribute="extra-import">org.hibernate.criterion.Expression</meta>
-    <meta attribute="extra-import">edu.ku.brc.specify.dbsupport.HibernateUtil</meta>
-
-    <meta attribute="class-code">
-        <![CDATA[
-    protected Container container = null; // When not null it means this is the Container
-
-    /**
-     *
-     */
-    public Container getContainer()
-    {
-        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Container.class);
-        criteria.add(Expression.eq("containerId", collectionObjectId));
-        java.util.List list = criteria.list();
-        this.container = list != null && list.size() > 0 ? (Container)list.get(0) : null;
-        return this.container;
-    }
-
-    public void setContainer(Container container)
-    {
-        this.container = container;
-    }
-    ]]>
-    </meta>
 
     <id
         name="collectionObjectId"
@@ -496,6 +470,24 @@
             class="edu.ku.brc.specify.datamodel.Determination"
         />
     </set>
+    
+    <!-- bi-directional many-to-one association to CollectionObjDef -->
+    <many-to-one
+        name="collectionObjDef"
+        class="edu.ku.brc.specify.datamodel.CollectionObjDef"
+        not-null="false"
+		outer-join="auto"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="false"
+           @hibernate.column name="CollectionObjDefID"
+        </meta>
+        <column name="CollectionObjDefID" />
+    </many-to-one>
+
+    
 
 	<!-- Old CollectionObjectCatalog Associations -->
 
@@ -644,6 +636,30 @@
         </key>
         <many-to-many class="edu.ku.brc.specify.datamodel.ExternalResource" column="ExternalResourceID"/>
     </set>
+
+    <!-- bi-directional many-to-one association to Container -->
+    <!-- NOTE: We are REALLY modeling a one-to-zero-or-one  -->
+    <many-to-one
+        name="container"
+        class="edu.ku.brc.specify.datamodel.Container"
+        not-null="false"
+		unique="true" 
+		insert="false" 
+		update="false"
+		cascade="all"
+    >
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+	        not-null="false"
+			unique="true" 
+			insert="false" 
+			update="false"
+			cascade="all"
+           @hibernate.column name="ContainerID"
+        </meta>
+        <column name="ContainerID" />
+    </many-to-one>
 
 </class>
 </hibernate-mapping>
