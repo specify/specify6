@@ -83,7 +83,7 @@
             
             <!-- Associations -->
             
-            <!-- bi-directional one-to-one association to TreeDef -->
+            <!-- bi-directional many-to-one association to TreeDef -->
             <many-to-one name="treeDef" column="TreeDefID"
                 class="edu.ku.brc.specify.datamodel.LocationTreeDef">
                 <meta attribute="scope-field">protected</meta>
