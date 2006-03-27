@@ -1,7 +1,6 @@
 package edu.ku.brc.specify.ui;
 
 import java.awt.Component;
-import java.util.Hashtable;
 import java.util.Map;
 
 import javax.swing.Icon;
@@ -9,7 +8,6 @@ import javax.swing.JLabel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreeCellRenderer;
 
 import edu.ku.brc.specify.datamodel.Treeable;
 
@@ -21,10 +19,9 @@ import edu.ku.brc.specify.datamodel.Treeable;
  * 
  * @author jstewart
  */
-public class RankBasedTreeCellRenderer extends DefaultTreeCellRenderer
+public class NameBasedTreeCellRenderer extends DefaultTreeCellRenderer
 {
-	Map<Integer,Icon> iconMap;
-	Map<Integer,TreeCellRenderer> subRenderers;
+	Map<String,Icon> iconMap;
 	
 	/**
 	 * Creates a new RandBasedTreeCellRenderer using the passed in Map to
@@ -32,16 +29,10 @@ public class RankBasedTreeCellRenderer extends DefaultTreeCellRenderer
 	 * 
 	 * @param ranksToIcons
 	 */
-	public RankBasedTreeCellRenderer( Map<Integer,Icon> ranksToIcons )
+	public NameBasedTreeCellRenderer( Map<String,Icon> namesToIcons )
 	{
 		super();
-		iconMap = ranksToIcons;
-		subRenderers = new Hashtable<Integer,TreeCellRenderer>();
-	}
-	
-	public void setSubRendererForRank( TreeCellRenderer subRenderer, int rank )
-	{
-		subRenderers.put(rank, subRenderer);
+		iconMap = namesToIcons;
 	}
 
 	/**
@@ -71,23 +62,17 @@ public class RankBasedTreeCellRenderer extends DefaultTreeCellRenderer
 	    
 	    DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
 	    Treeable t = (Treeable)node.getUserObject();
-
-	    Integer rank = t.getRankId();
-	    TreeCellRenderer sub = subRenderers.get(rank);
-	    if( sub != null )
-	    {
-	    	return sub.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-	    }
-	    
+	    	    
 	    JLabel l = (JLabel)c;
 	    l.setText(t.getName());
 	    
-	    if( t.getRankId() != null )
+	    if( t.getName() != null )
 	    {
-	    	Icon icon = iconMap.get(t.getRankId());
+	    	Icon icon = iconMap.get(t.getName());
 	    	if( icon != null )
 	    	{
 	    		l.setIcon(icon);
+	    		l.setText("sub is running");
 	    	}
 	    }
 
