@@ -47,6 +47,12 @@
             <one-to-many class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"/>
         </set>
 
+        <set name="collObjDefs" table="CollectionObjDef" inverse="true">
+            <meta attribute="field-description">Collection object defintions that refer to this tree definition</meta>
+            <key column="geologicTimePeriodTreeDefID"/>
+            <one-to-many class="edu.ku.brc.specify.datamodel.CollectionObjDef"/>
+        </set>
+        
     </class>
     
 </hibernate-mapping>

@@ -15,7 +15,9 @@
             <meta attribute="use-in-tostring">true</meta>
             <meta attribute="field-description"> @hibernate.id generator-class="native"
                 type="java.lang.Integer" column="TreeDefID" </meta>
-            <generator class="native"/>
+            <generator class="foreign">
+                <param name="property">collObjDef</param>
+            </generator>
         </id>
 
         <property name="name" type="java.lang.String" column="Name" length="64">
@@ -34,6 +36,8 @@
         </property>
         
         <!-- Associations -->
+        
+        <one-to-one name="collObjDef" class="edu.ku.brc.specify.datamodel.CollectionObjDef" constrained="true"/>
         
         <set name="treeEntries" table="Taxon" inverse="true">
             <meta attribute="field-description">Entries referencing this defintion</meta>

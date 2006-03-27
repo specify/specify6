@@ -70,34 +70,7 @@
         </key>
         <many-to-many class="edu.ku.brc.specify.datamodel.CatalogSeries" column="CatalogSeriesID"/>
     </set>
-    
-    <!-- bi-directional one-to-many association to TaxonTreeDef -->
-    <set
-        name="taxonTreeDef"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="TreeDefID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.TaxonTreeDef"
-        </meta>
-        <key>
-            <column name="CollectionObjDefID"/>
-        </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.TaxonTreeDef"
-        />
-    </set>
-    
+        
     <!-- many-to-one association to User -->
     <many-to-one
         name="user"
@@ -138,6 +111,39 @@
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.AttributeDef"/>
     </set>
+    
+    <!-- bi-directional many-to-one association to GeographyTreeDef -->
+    <many-to-one name="geographyTreeDef" class="edu.ku.brc.specify.datamodel.GeographyTreeDef"
+        not-null="true" outer-join="true">
+        <meta attribute="field-description"> @hibernate.many-to-one not-null="true"
+            @hibernate.column name="GeographyTreeDefID"</meta>
+        <column name="GeographyTreeDefID"/>
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to GeologicTimePeriodTreeDef -->
+    <many-to-one name="geologicTimePeriodTreeDef" class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"
+        not-null="true" outer-join="true">
+        <meta attribute="field-description"> @hibernate.many-to-one not-null="true"
+            @hibernate.column name="GeologicTimePeriodTreeDefID"</meta>
+        <column name="GeologicTimePeriodTreeDefID"/>
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to LocationTreeDef -->
+    <many-to-one name="locationTreeDef" class="edu.ku.brc.specify.datamodel.LocationTreeDef"
+        not-null="true" outer-join="true">
+        <meta attribute="field-description"> @hibernate.many-to-one not-null="true"
+            @hibernate.column name="LocationTreeDefID"</meta>
+        <column name="LocationTreeDefID"/>
+    </many-to-one>
+    
+    <!-- bi-directional one-to-one association to TaxonTreeDef -->
+    <one-to-one name="taxonTreeDef" class="edu.ku.brc.specify.datamodel.TaxonTreeDef"
+        cascade="save-update">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+            @hibernate.one-to-one
+        </meta>
+    </one-to-one>
     
     <!-- bi-directional one-to-many association to CollectionObject -->
     <!-- Currently we don't to bring all the CollectionObjects when accessing the CollectionObjDef -->
