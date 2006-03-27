@@ -72,7 +72,6 @@ public class NameBasedTreeCellRenderer extends DefaultTreeCellRenderer
 	    	if( icon != null )
 	    	{
 	    		l.setIcon(icon);
-	    		l.setText("sub is running");
 	    	}
 	    }
 
