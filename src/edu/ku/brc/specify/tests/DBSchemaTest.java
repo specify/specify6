@@ -242,7 +242,7 @@ public class DBSchemaTest extends TestCase
             GeographyTreeDefItem cont   = createGeographyTreeDefItem(planet, geoTreeDef, "Continent", 100);
             
             GeographyTreeDefItem country = createGeographyTreeDefItem(cont, geoTreeDef, "Country", 200);
-            GeographyTreeDefItem state   = createGeographyTreeDefItem(country, geoTreeDef, "Country", 300);
+            GeographyTreeDefItem state   = createGeographyTreeDefItem(country, geoTreeDef, "State", 300);
             GeographyTreeDefItem county  = createGeographyTreeDefItem(state, geoTreeDef, "County", 400);
             
             // Create the planet Earth.
