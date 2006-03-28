@@ -68,7 +68,8 @@ public class NameBasedTreeCellRenderer extends DefaultTreeCellRenderer
 	    
 	    if( t.getName() != null )
 	    {
-	    	Icon icon = iconMap.get(t.getName());
+	    	String lowerCaseName = t.getName().toLowerCase();
+	    	Icon icon = iconMap.get(lowerCaseName);
 	    	if( icon != null )
 	    	{
 	    		l.setIcon(icon);

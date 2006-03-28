@@ -72,24 +72,25 @@ public class RankBasedTreeCellRenderer extends DefaultTreeCellRenderer
 	    DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
 	    Treeable t = (Treeable)node.getUserObject();
 
-	    Integer rank = t.getRankId();
-	    TreeCellRenderer sub = subRenderers.get(rank);
-	    if( sub != null )
-	    {
-	    	return sub.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-	    }
-	    
 	    JLabel l = (JLabel)c;
-	    l.setText(t.getName());
 	    
-	    if( t.getRankId() != null )
+	    Integer rank = t.getRankId();
+	    if( rank != null )
 	    {
+	    	TreeCellRenderer sub = subRenderers.get(rank);
+	    	if( sub != null )
+	    	{
+	    		return sub.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+	    	}
+
 	    	Icon icon = iconMap.get(t.getRankId());
 	    	if( icon != null )
 	    	{
 	    		l.setIcon(icon);
 	    	}
 	    }
+	    
+	    l.setText(t.getName());
 
 	    return l;
     }
