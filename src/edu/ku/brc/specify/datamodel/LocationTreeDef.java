@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Set;
+import java.util.*;
 
 
 
@@ -18,6 +18,7 @@ public class LocationTreeDef  implements TreeDefinitionIface,java.io.Serializabl
      protected String remarks;
      private Set treeEntries;
      private Set treeDefItems;
+     private Set collObjDefs;
 
 
     // Constructors
@@ -92,6 +93,17 @@ public class LocationTreeDef  implements TreeDefinitionIface,java.io.Serializabl
     
     public void setTreeDefItems(Set treeDefItems) {
         this.treeDefItems = treeDefItems;
+    }
+
+    /**
+     *      * Collection object defintions that refer to this tree definition
+     */
+    public Set getCollObjDefs() {
+        return this.collObjDefs;
+    }
+    
+    public void setCollObjDefs(Set collObjDefs) {
+        this.collObjDefs = collObjDefs;
     }
 
   /**

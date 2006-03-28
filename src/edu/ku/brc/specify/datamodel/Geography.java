@@ -1,10 +1,11 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.*;
+
+
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Set;
+import java.awt.datatransfer.UnsupportedFlavorException;
 
 
 /**
@@ -16,6 +17,7 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
 
      protected Integer treeId;
      protected String name;
+     protected String commonName;
      protected Integer rankId;
      protected Integer nodeNumber;
      protected Integer highestChildNodeNumber;
@@ -28,7 +30,7 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
      protected Date timestampModified;
      protected Date timestampVersion;
      protected String lastEditedBy;
-     protected Boolean current;
+     protected Boolean isCurrent;
      private Set localities;
      private GeographyTreeDef definition;
      private Geography parent;
@@ -72,6 +74,18 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     *      *  @hibernate.property column="CommonName" length="128"
+     *             
+     */
+    public String getCommonName() {
+        return this.commonName;
+    }
+    
+    public void setCommonName(String commonName) {
+        this.commonName = commonName;
     }
 
     /**
@@ -219,14 +233,14 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     }
 
     /**
-     *      *  @hibernate.property column="Current" 
+     *      *  @hibernate.property column="IsCurrent" 
      */
-    public Boolean getCurrent() {
-        return this.current;
+    public Boolean getIsCurrent() {
+        return this.isCurrent;
     }
     
-    public void setCurrent(Boolean current) {
-        this.current = current;
+    public void setIsCurrent(Boolean isCurrent) {
+        this.isCurrent = isCurrent;
     }
 
     /**

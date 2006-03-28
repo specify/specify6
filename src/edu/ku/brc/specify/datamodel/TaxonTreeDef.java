@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Set;
+import java.util.*;
 
 
 
@@ -16,6 +16,7 @@ public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
      protected Integer treeDefId;
      protected String name;
      protected String remarks;
+     private CollectionObjDef collObjDef;
      private Set treeEntries;
      private Set treeDefItems;
 
@@ -70,6 +71,17 @@ public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
     
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+    /**
+     * 
+     */
+    public CollectionObjDef getCollObjDef() {
+        return this.collObjDef;
+    }
+    
+    public void setCollObjDef(CollectionObjDef collObjDef) {
+        this.collObjDef = collObjDef;
     }
 
     /**

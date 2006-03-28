@@ -147,6 +147,12 @@
             </meta>
         </property>
 
+        <property name="commonName" type="java.lang.String" column="CommonName" length="128">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"> @hibernate.property column="CommonName" length="128"
+            </meta>
+        </property>
+
         <property name="rankId" type="java.lang.Integer" column="RankID" length="10"
             index="IX_GeoRankID" not-null="true">
             <meta attribute="scope-field">protected</meta>

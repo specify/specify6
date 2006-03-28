@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Set;
+import java.util.*;
 
 
 
@@ -18,9 +18,12 @@ public class CollectionObjDef  implements java.io.Serializable {
      protected String name;
      protected DataType dataType;
      private Set catalogSeries;
-     private Set taxonTreeDef;
      protected User user;
      private Set attributeDefs;
+     private GeographyTreeDef geographyTreeDef;
+     private GeologicTimePeriodTreeDef geologicTimePeriodTreeDef;
+     private LocationTreeDef locationTreeDef;
+     protected TaxonTreeDef taxonTreeDef;
 
 
     // Constructors
@@ -90,25 +93,6 @@ public class CollectionObjDef  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="TreeDefID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.TaxonTreeDef"
-     *         
-     */
-    public Set getTaxonTreeDef() {
-        return this.taxonTreeDef;
-    }
-    
-    public void setTaxonTreeDef(Set taxonTreeDef) {
-        this.taxonTreeDef = taxonTreeDef;
-    }
-
-    /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
      *            @hibernate.column name="UserID"
@@ -139,6 +123,54 @@ public class CollectionObjDef  implements java.io.Serializable {
     
     public void setAttributeDefs(Set attributeDefs) {
         this.attributeDefs = attributeDefs;
+    }
+
+    /**
+     *      *  @hibernate.many-to-one not-null="true"
+     *             @hibernate.column name="GeographyTreeDefID"
+     */
+    public GeographyTreeDef getGeographyTreeDef() {
+        return this.geographyTreeDef;
+    }
+    
+    public void setGeographyTreeDef(GeographyTreeDef geographyTreeDef) {
+        this.geographyTreeDef = geographyTreeDef;
+    }
+
+    /**
+     *      *  @hibernate.many-to-one not-null="true"
+     *             @hibernate.column name="GeologicTimePeriodTreeDefID"
+     */
+    public GeologicTimePeriodTreeDef getGeologicTimePeriodTreeDef() {
+        return this.geologicTimePeriodTreeDef;
+    }
+    
+    public void setGeologicTimePeriodTreeDef(GeologicTimePeriodTreeDef geologicTimePeriodTreeDef) {
+        this.geologicTimePeriodTreeDef = geologicTimePeriodTreeDef;
+    }
+
+    /**
+     *      *  @hibernate.many-to-one not-null="true"
+     *             @hibernate.column name="LocationTreeDefID"
+     */
+    public LocationTreeDef getLocationTreeDef() {
+        return this.locationTreeDef;
+    }
+    
+    public void setLocationTreeDef(LocationTreeDef locationTreeDef) {
+        this.locationTreeDef = locationTreeDef;
+    }
+
+    /**
+     *      *             @hibernate.one-to-one
+     *         
+     */
+    public TaxonTreeDef getTaxonTreeDef() {
+        return this.taxonTreeDef;
+    }
+    
+    public void setTaxonTreeDef(TaxonTreeDef taxonTreeDef) {
+        this.taxonTreeDef = taxonTreeDef;
     }
 
   /**
