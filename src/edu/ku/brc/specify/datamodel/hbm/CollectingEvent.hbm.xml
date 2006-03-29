@@ -1,9 +1,5 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 <!-- 
     Created by the Middlegen Hibernate plugin 2.1
 
@@ -11,338 +7,156 @@
     http://www.hibernate.org/
 -->
 
-<class 
-    name="edu.ku.brc.specify.datamodel.CollectingEvent" 
-    table="collectingevent"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.CollectingEvent" table="collectingevent" lazy="true">
     <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="collectingevent"
-    </meta>
+	Collecting event information for BiologicalObjects.
+	</meta>
 
-    <id
-        name="collectingEventId"
-        type="java.lang.Integer"
-        column="CollectingEventID"
-    >
+    <id name="collectingEventId" type="java.lang.Integer" column="CollectingEventID">
         <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="CollectingEventID"
-
-        </meta>
+	   Primary key
+	</meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
 
-    <property
-        name="stationFieldNumber"
-        type="java.lang.String"
-        column="StationFieldNumber"
-        length="50"
-    >
+    <property name="stationFieldNumber" type="java.lang.String" column="StationFieldNumber" length="50" index="IX_CollectingEventStatFldNo">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="StationFieldNumber"
-            length="50"
-        </meta>    
+	   Station number or field number of the site where collecting event took place, A number or code recorded in field notes and/or written on field tags that identifies ALL material collected in a CollectingEvent.
+	</meta>    
     </property>
     
-    <property
-        name="method"
-        type="java.lang.String"
-        column="Method"
-        length="50"
-    >
+    <property name="method" type="java.lang.String" column="Method" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Method"
-            length="50"
-        </meta>    
+	   The method used to obtain the biological object
+	</meta>    
     </property>
     
-    <property
-        name="verbatimDate"
-        type="java.lang.String"
-        column="VerbatimDate"
-        length="50"
-    >
+    <property name="verbatimDate" type="java.lang.String" column="VerbatimDate" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="VerbatimDate"
-            length="50"
-        </meta>    
+	   Date which collector recorded in field book, exactly as reported by the collector.  Should indicate whether reported as range, season, month, etc.
+	</meta>    
     </property>
     
-    <property
-        name="startDate"
-        type="calendar_date"
-        column="StartDate"
-    >
+    <property name="startDate" type="calendar_date" column="StartDate">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="StartDate"
-        </meta>    
+	   The date collecting event began
+	</meta>    
     </property>
     
-    <property
-        name="startDatePrecision"
-        type="short"
-        column="StartDatePrecision"
-    >
+    <property name="startDatePrecision" type="short" column="StartDatePrecision">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="StartDatePrecision"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="startDateVerbatim"
-        type="java.lang.String"
-        column="StartDateVerbatim"
-        length="50"
-    >
+    <property name="startDateVerbatim" type="java.lang.String" column="StartDateVerbatim" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="StartDateVerbatim"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="endDate"
-        type="calendar_date"
-        column="EndDate"
-    >
+    <property name="endDate" type="calendar_date" column="EndDate">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="EndDate"
-        </meta>    
+	   The date collecting event ended
+	</meta>    
     </property>
     
-    <property
-        name="endDatePrecision"
-        type="short"
-        column="EndDatePrecision"
-    >
+    <property name="endDatePrecision" type="short" column="EndDatePrecision">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="EndDatePrecision"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="endDateVerbatim"
-        type="java.lang.String"
-        column="EndDateVerbatim"
-        length="50"
-    >
+    <property name="endDateVerbatim" type="java.lang.String" column="EndDateVerbatim" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="EndDateVerbatim"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="startTime"
-        type="short"
-        column="StartTime"
-    >
+    <property name="startTime" type="short" column="StartTime">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="StartTime"
-        </meta>    
+	   Start time in military format
+	</meta>    
     </property>
     
-    <property
-        name="endTime"
-        type="short"
-        column="EndTime"
-    >
+    <property name="endTime" type="short" column="EndTime">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="EndTime"
-        </meta>    
+	   End time in military format
+	</meta>    
     </property>
     
-    <property
-        name="verbatimLocality"
-        type="text"
-        column="VerbatimLocality"
-    >
+    <property name="verbatimLocality" type="text" column="VerbatimLocality">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="VerbatimLocality"
-        </meta>    
+	   Original statement (literal quotation) of the location of the CollectingEvent as given by the Collector.
+	</meta>    
     </property>
     
-    <property
-        name="groupPermittedToView"
-        type="java.lang.Integer"
-        column="GroupPermittedToView"
-        length="10"
-    >
+    <property name="groupPermittedToView" type="java.lang.Integer" column="GroupPermittedToView" length="10" index="IX_CollectingEventGPV">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="GroupPermittedToView"
-            length="10"
-        </meta>    
+	   The name of the group that this record is visible to.
+	</meta>    
     </property>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+	   Free text to record information that does not conform to structured fields, or to explain data recorded in those fields, particularly problematic interpretations of data given by collector(s).
+	</meta>    
     </property>
     
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23" index="IX_CollectingEvent _1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50" index="IX_CollectingEvent_2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
 
     <!-- Associations -->
 
     <!-- bi-directional one-to-many association to CollectionObject -->
-    <set
-        name="collectionObjects"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >    
+    <set name="collectionObjects" lazy="true" inverse="true" cascade="none">    
 	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="CollectingEventID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.CollectionObject"
-        </meta> 
+        <meta attribute="field-description"></meta> 
         <key>
-            <column name="CollectingEventID" />
+            <column name="CollectingEventID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.CollectionObject"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.CollectionObject"/>
     </set>
 	
     <!-- bi-directional one-to-many association to Collector -->
-    <set
-        name="collectors"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="CollectingEventID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.Collector"
-        </meta>
+    <set name="collectors" lazy="true" inverse="true" cascade="delete">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="CollectingEventID" />
+            <column name="CollectingEventID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.Collector"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.Collector"/>
     </set>
     
    <!-- bi-directional many-to-one association to Locality -->
-   <many-to-one 
-        name="locality"
-        class="edu.ku.brc.specify.datamodel.Locality"
-        not-null="true"
-		outer-join="true"
-    >
+   <many-to-one name="locality" class="edu.ku.brc.specify.datamodel.Locality" not-null="true" outer-join="true" index="IX_CollectingEventLocalityID">
 	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="LocalityID"         
-        </meta>
-        <column name="LocalityID" />
+	   Locality where collection took place
+	</meta>
+        <column name="LocalityID"/>
     </many-to-one>
     
     <!-- bi-directional one-to-one association to Stratigraphy -->
-    <one-to-one 
-        name="stratigraphy"
-        class="edu.ku.brc.specify.datamodel.Stratigraphy"
-        cascade="save-update"
-    >
+    <one-to-one name="stratigraphy" class="edu.ku.brc.specify.datamodel.Stratigraphy" cascade="save-update">
 	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.one-to-one
@@ -351,42 +165,19 @@
     </one-to-one>
     
     <!-- bi-directional one-to-many association to CollectingEventAttr -->
-    <set
-        name="attrs"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
+    <set name="attrs" lazy="true" inverse="true" cascade="delete">
 	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="CollectingEventAttrID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.CollectingEventAttr"
-        </meta>
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="CollectingEventAttrID" />
+            <column name="CollectingEventAttrID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.CollectingEventAttr"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.CollectingEventAttr"/>
     </set>	
         
     <!-- bi-directional many-to-many association to ExternalResource -->
-    <set
-        name="externalResources"
-        table="coleve_extres"
-        lazy="true"
-        inverse="true"
-		cascade="save-update">
+    <set name="externalResources" table="coleve_extres" lazy="true" inverse="true" cascade="save-update">
         <key>
-            <column name="CollectingEventID" />
+            <column name="CollectingEventID"/>
         </key>
         <many-to-many class="edu.ku.brc.specify.datamodel.ExternalResource" column="ExternalResourceID"/>
     </set>

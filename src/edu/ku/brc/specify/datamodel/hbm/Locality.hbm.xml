@@ -1,9 +1,5 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 <!-- 
     Created by the Middlegen Hibernate plugin 2.1
 
@@ -11,756 +7,353 @@
     http://www.hibernate.org/
 -->
 
-<class 
-    name="edu.ku.brc.specify.datamodel.Locality" 
-    table="locality"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.Locality" table="locality" lazy="true">
     <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="locality"
-    </meta>
+	Locality where CollectingEvent took place
+	</meta>
 
-    <id
-        name="localityId"
-        type="java.lang.Integer"
-        column="LocalityID"
-    >
+    <id name="localityId" type="java.lang.Integer" column="LocalityID">
         <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="LocalityID"
-
-        </meta>
+	   Primary key
+	</meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
 
-    <property
-        name="namedPlace"
-        type="java.lang.String"
-        column="NamedPlace"
-        length="255"
-    >
+    <property name="namedPlace" type="java.lang.String" column="NamedPlace" length="255" index="IX_LocalityNamedPlace">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="NamedPlace"
-            length="255"
-        </meta>    
+	   The named place the locality is closest to
+	</meta>    
     </property>
     
-    <property
-        name="relationToNamedPlace"
-        type="java.lang.String"
-        column="RelationToNamedPlace"
-        length="120"
-    >
+    <property name="relationToNamedPlace" type="java.lang.String" column="RelationToNamedPlace" length="120">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="RelationToNamedPlace"
-            length="120"
-        </meta>    
+	   Relation of the locality to the named place
+	</meta>    
     </property>
     
-    <property
-        name="localityName"
-        type="java.lang.String"
-        column="LocalityName"
-        not-null="true"
-        length="1073741823"
-    >
+    <property name="localityName" type="java.lang.String" column="LocalityName" not-null="true" length="1073741823" index="IX_Locality">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="LocalityName"
-            length="1073741823"
-            not-null="true"
-        </meta>    
+	   The full name of the locality.
+	</meta>    
     </property>
     
-    <property
-        name="baseMeridian"
-        type="java.lang.String"
-        column="BaseMeridian"
-        length="50"
-    >
+    <property name="baseMeridian" type="java.lang.String" column="BaseMeridian" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="BaseMeridian"
-            length="50"
-        </meta>    
+	   BaseMeridian for the Range/Township/Section data
+	</meta>    
     </property>
     
-    <property
-        name="range"
-        type="java.lang.String"
-        column="Range"
-        length="50"
-    >
+    <property name="range" type="java.lang.String" column="Range" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Range"
-            length="50"
-        </meta>    
+	   The Range of a legal description
+	</meta>    
     </property>
     
-    <property
-        name="rangeDirection"
-        type="java.lang.String"
-        column="RangeDirection"
-        length="50"
-    >
+    <property name="rangeDirection" type="java.lang.String" column="RangeDirection" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="RangeDirection"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="township"
-        type="java.lang.String"
-        column="Township"
-        length="50"
-    >
+    <property name="township" type="java.lang.String" column="Township" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Township"
-            length="50"
-        </meta>    
+	   The Township of a legal description
+	</meta>    
     </property>
     
-    <property
-        name="townshipDirection"
-        type="java.lang.String"
-        column="TownshipDirection"
-        length="50"
-    >
+    <property name="townshipDirection" type="java.lang.String" column="TownshipDirection" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TownshipDirection"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="section"
-        type="java.lang.String"
-        column="Section"
-        length="50"
-    >
+    <property name="section" type="java.lang.String" column="Section" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Section"
-            length="50"
-        </meta>    
+	   The Section of a legal description
+	</meta>    
     </property>
     
-    <property
-        name="sectionPart"
-        type="java.lang.String"
-        column="SectionPart"
-        length="50"
-    >
+    <property name="sectionPart" type="java.lang.String" column="SectionPart" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="SectionPart"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="verbatimElevation"
-        type="java.lang.String"
-        column="VerbatimElevation"
-        length="50"
-    >
+    <property name="verbatimElevation" type="java.lang.String" column="VerbatimElevation" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="VerbatimElevation"
-            length="50"
-        </meta>    
+	   The verbatim elevation including units as given in the field notes
+	</meta>    
     </property>
     
-    <property
-        name="originalElevationUnit"
-        type="java.lang.String"
-        column="OriginalElevationUnit"
-        length="50"
-    >
+    <property name="originalElevationUnit" type="java.lang.String" column="OriginalElevationUnit" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="OriginalElevationUnit"
-            length="50"
-        </meta>    
+	   i.e. Meters, Feet, ...
+	</meta>    
     </property>
     
-    <property
-        name="minElevation"
-        type="java.lang.Float"
-        column="MinElevation"
-        length="24"
-    >
+    <property name="minElevation" type="java.lang.Float" column="MinElevation" length="24" index="IX_LocalityMinElev">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="MinElevation"
-            length="24"
-        </meta>    
+	   The minimum elevation in Meters
+	</meta>    
     </property>
     
-    <property
-        name="maxElevation"
-        type="java.lang.Float"
-        column="MaxElevation"
-        length="24"
-    >
+    <property name="maxElevation" type="java.lang.Float" column="MaxElevation" length="24" index="IX_LocalityMaxElev">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="MaxElevation"
-            length="24"
-        </meta>    
+	   The maximum elevation in Meters
+	</meta>    
     </property>
     
-    <property
-        name="elevationMethod"
-        type="java.lang.String"
-        column="ElevationMethod"
-        length="50"
-    >
+    <property name="elevationMethod" type="java.lang.String" column="ElevationMethod" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="ElevationMethod"
-            length="50"
-        </meta>    
+	   The method used to determine the elevation
+	</meta>    
     </property>
     
-    <property
-        name="elevationAccuracy"
-        type="java.lang.Float"
-        column="ElevationAccuracy"
-        length="24"
-    >
+    <property name="elevationAccuracy" type="java.lang.Float" column="ElevationAccuracy" length="24">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="ElevationAccuracy"
-            length="24"
-        </meta>    
+	   plus or minus -- in meters
+	</meta>    
     </property>
     
-    <property
-        name="originalLatLongUnit"
-        type="java.lang.Integer"
-        column="OriginalLatLongUnit"
-        length="10"
-    >
+    <property name="originalLatLongUnit" type="java.lang.Integer" column="OriginalLatLongUnit" length="10">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="OriginalLatLongUnit"
-            length="10"
-        </meta>    
+	   i.e. Decimal, Deg/Min/Sec, ...
+	</meta>    
     </property>
     
-    <property
-        name="latLongType"
-        type="java.lang.String"
-        column="LatLongType"
-        length="50"
-    >
+    <property name="latLongType" type="java.lang.String" column="LatLongType" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="LatLongType"
-            length="50"
-        </meta>    
+	   The type of area described by the lat long data (Point,Line,Rectangle)
+	</meta>    
     </property>
     
-    <property
-        name="latitude1"
-        type="java.lang.Float"
-        column="Latitude1"
-        length="24"
-    >
+    <property name="latitude1" type="java.lang.Float" column="Latitude1" length="24" index="IX_LocalityLat1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Latitude1"
-            length="24"
-        </meta>    
+	   Latitude of first point
+	</meta>    
     </property>
     
-    <property
-        name="longitude1"
-        type="java.lang.Float"
-        column="Longitude1"
-        length="24"
-    >
+    <property name="longitude1" type="java.lang.Float" column="Longitude1" length="24" index="IX_LocalityLong1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Longitude1"
-            length="24"
-        </meta>    
+	   Longitude of first point
+	</meta>    
     </property>
     
-    <property
-        name="latitude2"
-        type="java.lang.Float"
-        column="Latitude2"
-        length="24"
-    >
+    <property name="latitude2" type="java.lang.Float" column="Latitude2" length="24" index="IX_LocalityLat2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Latitude2"
-            length="24"
-        </meta>    
+	   Latitude of second point
+	</meta>    
     </property>
     
-    <property
-        name="longitude2"
-        type="java.lang.Float"
-        column="Longitude2"
-        length="24"
-    >
+    <property name="longitude2" type="java.lang.Float" column="Longitude2" length="24" index="IX_LocalityLong2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Longitude2"
-            length="24"
-        </meta>    
+	   Longitude of second point
+	</meta>    
     </property>
     
-    <property
-        name="latLongMethod"
-        type="java.lang.String"
-        column="LatLongMethod"
-        length="50"
-    >
+    <property name="latLongMethod" type="java.lang.String" column="LatLongMethod" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="LatLongMethod"
-            length="50"
-        </meta>    
+	   the method used to determine the LatitudeLongitude
+	</meta>    
     </property>
     
-    <property
-        name="latLongAccuracy"
-        type="java.lang.Float"
-        column="LatLongAccuracy"
-        length="24"
-    >
+    <property name="latLongAccuracy" type="java.lang.Float" column="LatLongAccuracy" length="24">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="LatLongAccuracy"
-            length="24"
-        </meta>    
+	   radius -- in decimal degrees
+	</meta>    
     </property>
     
-    <property
-        name="datum"
-        type="java.lang.String"
-        column="Datum"
-        length="50"
-    >
+    <property name="datum" type="java.lang.String" column="Datum" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Datum"
-            length="50"
-        </meta>    
+	   GPSDatum
+	</meta>    
     </property>
     
-    <property
-        name="groupPermittedToView"
-        type="java.lang.Integer"
-        column="GroupPermittedToView"
-        length="10"
-    >
+    <property name="groupPermittedToView" type="java.lang.Integer" column="GroupPermittedToView" length="10" index="IX_LocalityGPV">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="GroupPermittedToView"
-            length="10"
-        </meta>    
+	   The name of the group that this record is visible to. (Default to public)
+	</meta>    
     </property>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="text1"
-        type="text"
-        column="Text1"
-    >
+    <property name="text1" type="text" column="Text1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Text1"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="text2"
-        type="text"
-        column="Text2"
-    >
+    <property name="text2" type="text" column="Text2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Text2"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="number1"
-        type="java.lang.Float"
-        column="Number1"
-        length="24"
-    >
+    <property name="number1" type="java.lang.Float" column="Number1" length="24">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Number1"
-            length="24"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="number2"
-        type="java.lang.Float"
-        column="Number2"
-        length="24"
-    >
+    <property name="number2" type="java.lang.Float" column="Number2" length="24">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Number2"
-            length="24"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
+	   Date the record was created
+	</meta>    
     </property>
     
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23" index="IX_Locality_1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
+	   Date the record was modified
+	</meta>    
     </property>
     
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50" index="IX_Locality_2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
+	   Name of the person last editing the record
+	</meta>    
     </property>
     
-    <property
-        name="yesNo1"
-        type="boolean"
-        column="YesNo1"
-    >
+    <property name="yesNo1" type="boolean" column="YesNo1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="YesNo1"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="yesNo2"
-        type="boolean"
-        column="YesNo2"
-    >
+    <property name="yesNo2" type="boolean" column="YesNo2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="YesNo2"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
 
-    <property
-        name="lat1text"
-        type="java.lang.String"
-        column="Lat1Text"
-        length="50"
-    >
+    <property name="lat1text" type="java.lang.String" column="Lat1Text" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Lat1Text"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="lat2text"
-        type="java.lang.String"
-        column="Lat2Text"
-        length="50"
-    >
+    <property name="lat2text" type="java.lang.String" column="Lat2Text" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Lat2Text"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="long1text"
-        type="java.lang.String"
-        column="Long1Text"
-        length="50"
-    >
+    <property name="long1text" type="java.lang.String" column="Long1Text" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Long1Text"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="long2text"
-        type="java.lang.String"
-        column="Long2Text"
-        length="50"
-    >
+    <property name="long2text" type="java.lang.String" column="Long2Text" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Long2Text"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="nationalParkName"
-        type="java.lang.String"
-        column="NationalParkName"
-        length="64"
-    >
+    <property name="nationalParkName" type="java.lang.String" column="NationalParkName" length="64">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="NationalParkName"
-            length="64"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
    
     
     <!-- Pulled from Geography -->
-    <property
-        name="islandGroup"
-        type="java.lang.String"
-        column="IslandGroup"
-        length="64"
-    >
+    <property name="islandGroup" type="java.lang.String" column="IslandGroup" length="64">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="IslandGroup"
-            length="64"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="island"
-        type="java.lang.String"
-        column="Island"
-        length="64"
-    >
+    <property name="island" type="java.lang.String" column="Island" length="64">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Island"
-            length="64"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="waterBody"
-        type="java.lang.String"
-        column="WaterBody"
-        length="64"
-    >
+    <property name="waterBody" type="java.lang.String" column="WaterBody" length="64">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="WaterBody"
-            length="64"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="drainage"
-        type="java.lang.String"
-        column="Drainage"
-        length="64"
-    >
+    <property name="drainage" type="java.lang.String" column="Drainage" length="64">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Drainage"
-            length="64"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
 
     <!-- Associations -->
     
     <!-- bi-directional many-to-many association to CollectionObjDef -->
-    <set
-        name="collectionObjDefs"
-        table="colobjdef_locality"
-        lazy="true"
-        cascade="save-update">
+    <set name="collectionObjDefs" table="colobjdef_locality" lazy="true" cascade="save-update">
         <key>
-            <column name="LocalityID" />
+            <column name="LocalityID"/>
         </key>
         <many-to-many class="edu.ku.brc.specify.datamodel.CollectionObjDef" column="CollectionObjDefID"/>
     </set>   
   
     <!-- bi-directional many-to-one association to Geography -->
-    <many-to-one
-        name="geography"
-        class="edu.ku.brc.specify.datamodel.Geography"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="geography" class="edu.ku.brc.specify.datamodel.Geography" not-null="true" outer-join="true" index="IX_LocalityGeographyID">
 	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="GeographyID"         
-        </meta>
-        <column name="GeographyID" />
+	   Link to Country, State, County, WaterBody, Island, IslandGroup ... info
+	</meta>
+        <column name="GeographyID"/>
     </many-to-one>
     
     <!-- bi-directional one-to-many association to LocalityCitation -->
-    <set
-        name="localityCitations"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
+    <set name="localityCitations" lazy="true" inverse="true" cascade="delete">
 	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="LocalityID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.LocalityCitation"
-        </meta>
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="LocalityID" />
+            <column name="LocalityID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.LocalityCitation"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.LocalityCitation"/>
     </set>
 
     <!-- bi-directional one-to-many association to CollectingEvent -->
-    <set
-        name="collectingEvents"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
+    <set name="collectingEvents" lazy="true" inverse="true" cascade="none">
 	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="LocalityID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.CollectingEvent"
-        </meta>
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="LocalityID" />
+            <column name="LocalityID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.CollectingEvent"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.CollectingEvent"/>
     </set>
     
     <!-- bi-directional many-to-many association to ExternalResource -->
-    <set
-        name="externalResources"
-        table="locality_extres"
-        lazy="true"
-        inverse="true"
-		cascade="save-update">
+    <set name="externalResources" table="locality_extres" lazy="true" inverse="true" cascade="save-update">
         <key>
-            <column name="LocalityID" />
+            <column name="LocalityID"/>
         </key>
         <many-to-many class="edu.ku.brc.specify.datamodel.ExternalResource" column="ExternalResourceID"/>
     </set>

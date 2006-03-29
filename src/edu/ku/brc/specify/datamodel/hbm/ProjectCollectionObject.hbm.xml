@@ -1,9 +1,5 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 <!-- 
     Created by the Middlegen Hibernate plugin 2.1
 
@@ -11,124 +7,50 @@
     http://www.hibernate.org/
 -->
 
-<class 
-    name="edu.ku.brc.specify.datamodel.ProjectCollectionObject" 
-    table="projectcollectionobjects"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.ProjectCollectionObject" table="projectcollectionobjects" lazy="true">
     <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="projectcollectionobjects"
-    </meta>
+	Associates Identifiers with projects.
+	</meta>
 
-    <id
-        name="projectCollectionObjectsId"
-        type="java.lang.Integer"
-        column="ProjectCollectionObjectsID"
-    >
-        <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="ProjectCollectionObjectsID"
-
-        </meta>
+    <id name="projectCollectionObjectsId" type="java.lang.Integer" column="ProjectCollectionObjectsID">
+        <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
 
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to CollectionObject -->
-    <many-to-one
-        name="collectionObject"
-        class="edu.ku.brc.specify.datamodel.CollectionObject"
-        not-null="true"
-		outer-join="true"
-    >
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="CollectionObjectID"         
-        </meta>
-        <column name="CollectionObjectID" />
+    <many-to-one name="collectionObject" class="edu.ku.brc.specify.datamodel.CollectionObject" not-null="true" outer-join="true" unique-key="IX_ProjectCollectionObjects">
+        <meta attribute="field-description"></meta>
+        <column name="CollectionObjectID"/>
     </many-to-one>
 	
 	
     <!-- bi-directional many-to-one association to Project -->
-    <many-to-one
-        name="project"
-        class="edu.ku.brc.specify.datamodel.Project"
-        not-null="true"
-		outer-join="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-			cascade="none"
-           @hibernate.column name="ProjectID"         
-        </meta>
-        <column name="ProjectID" />
+    <many-to-one name="project" class="edu.ku.brc.specify.datamodel.Project" not-null="true" outer-join="true" cascade="none" index="IX_ProjectCollectionObjectsProjectID" unique-key="IX_ProjectCollectionObjects">
+        <meta attribute="field-description"></meta>
+        <column name="ProjectID"/>
     </many-to-one>
 
 </class>

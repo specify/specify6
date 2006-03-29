@@ -1,9 +1,5 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 <!-- 
     Created by the Middlegen Hibernate plugin 2.1
 
@@ -11,237 +7,121 @@
     http://www.hibernate.org/
 -->
 
-<class 
-    name="edu.ku.brc.specify.datamodel.Permit" 
-    table="permit"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.Permit" table="permit" lazy="true">
     <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="permit"
-    </meta>
+	Information about permits from organizations or individuals.
+	</meta>
 
-    <id
-        name="permitId"
-        type="java.lang.Integer"
-        column="PermitID"
-    >
+    <id name="permitId" type="java.lang.Integer" column="PermitID">
         <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="PermitID"
-
-        </meta>
+	   Primary key
+	</meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
 
-    <property
-        name="permitNumber"
-        type="java.lang.String"
-        column="PermitNumber"
-        not-null="true"
-        length="50"
-    >
+    <property name="permitNumber" type="java.lang.String" column="PermitNumber" not-null="true" length="50" index="IX_Permit">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="PermitNumber"
-            length="50"
-            not-null="true"
-        </meta>    
+	   Identifier for the permit
+	</meta>    
     </property>
     
-    <property
-        name="type"
-        type="java.lang.String"
-        column="Type"
-        length="50"
-    >
+    <property name="type" type="java.lang.String" column="Type" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Type"
-            length="50"
-        </meta>    
+	   Permit category - 'CITES', 'Migratory Bird Treaty Act', ...
+	</meta>    
     </property>
     
-    <property name="issuedDate"
-        type="calendar_date"
-        column="IssuedDate"
-    >
+    <property name="issuedDate" type="calendar_date" column="IssuedDate" index="IX_PermitIssueDate">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="IssuedDate"
-        </meta>    
+	   Date permit was issued
+	</meta>    
     </property>
     
-    <property name="startDate"
-        type="calendar_date"
-        column="StartDate"
-    >
+    <property name="startDate" type="calendar_date" column="StartDate" index="IX_PermitStartDate">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="StartDate"
-        </meta>    
+	   Date permit becomes effective
+	</meta>    
     </property>
     
-    <property name="endDate"
-        type="calendar_date"
-        column="EndDate"
-    >
+    <property name="endDate" type="calendar_date" column="EndDate" index="IX_PermitEndDate">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="EndDate"
-        </meta>    
+	   Date permit expires
+	</meta>    
     </property>
     
-    <property name="renewalDate"
-        type="calendar_date"
-        column="RenewalDate"
-    >
+    <property name="renewalDate" type="calendar_date" column="RenewalDate">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="RenewalDate"
-        </meta>    
+	   Date of renewal
+	</meta>    
     </property>
     
-    <property name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property name="text1"
-        type="text"
-        column="Text1"
-    >
+    <property name="text1" type="text" column="Text1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Text1"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="text2"
-        type="text"
-        column="Text2"
-    >
+    <property name="text2" type="text" column="Text2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Text2"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="number1"
-        type="java.lang.Float"
-        column="Number1"
-        length="24"
-    >
+    <property name="number1" type="java.lang.Float" column="Number1" length="24">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Number1"
-            length="24"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="number2"
-        type="java.lang.Float"
-        column="Number2"
-        length="24"
-    >
+    <property name="number2" type="java.lang.Float" column="Number2" length="24">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Number2"
-            length="24"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="yesNo1"
-        type="boolean"
-        column="YesNo1"
-    >
+    <property name="yesNo1" type="boolean" column="YesNo1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="YesNo1"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="yesNo2"
-        type="boolean"
-        column="YesNo2"
-    >
+    <property name="yesNo2" type="boolean" column="YesNo2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="YesNo2"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
 
 
@@ -249,71 +129,34 @@
     <!-- Associations -->
   
     <!-- bi-directional one-to-many association to AccessionAuthorizations -->
-    <set
-        name="accessionAuthorizations"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="PermitID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
-        </meta>
+    <set name="accessionAuthorizations" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="PermitID" />
+            <column name="PermitID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"/>
     </set>
     
     <!-- bi-directional many-to-one association to AgentAddress -->
-    <many-to-one
-        name="agentAddressByIssueeId"
-        class="edu.ku.brc.specify.datamodel.AgentAddress"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="agentAddressByIssueeId" class="edu.ku.brc.specify.datamodel.AgentAddress" not-null="true" outer-join="true">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="IssueeID"         
-        </meta>
-        <column name="IssueeID" />
+	   AgentAddressID of Issuee
+	</meta>
+        <column name="IssueeID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to AgentAddress -->
-    <many-to-one
-        name="agentAddressByIssuerId"
-        class="edu.ku.brc.specify.datamodel.AgentAddress"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="agentAddressByIssuerId" class="edu.ku.brc.specify.datamodel.AgentAddress" not-null="true" outer-join="true">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="IssuerID"         
-        </meta>
-        <column name="IssuerID" />
+	   AgentAddressID of Issuer
+	</meta>
+        <column name="IssuerID"/>
     </many-to-one>
 
     <!-- bi-directional many-to-many association to ExternalResource -->
-    <set
-        name="externalResources"
-        table="permit_extres"
-        lazy="true"
-        inverse="true"
-		cascade="save-update">
+    <set name="externalResources" table="permit_extres" lazy="true" inverse="true" cascade="save-update">
         <key>
-            <column name="PermitID" />
+            <column name="PermitID"/>
         </key>
         <many-to-many class="edu.ku.brc.specify.datamodel.ExternalResource" column="ExternalResource"/>
     </set>

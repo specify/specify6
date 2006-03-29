@@ -1,9 +1,5 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 <!-- 
     Created by the Middlegen Hibernate plugin 2.1
 
@@ -11,527 +7,204 @@
     http://www.hibernate.org/
 -->
 
-<class 
-    name="edu.ku.brc.specify.datamodel.AgentAddress" 
-    table="agentaddress"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.AgentAddress" table="agentaddress" lazy="true">
     <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="agentaddress"
-    </meta>
+	Associates agents, addresses, and organizaions.
+	</meta>
 
-    <id
-        name="agentAddressId"
-        type="java.lang.Integer"
-        column="AgentAddressID"
-    >
+    <id name="agentAddressId" type="java.lang.Integer" column="AgentAddressID">
         <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="AgentAddressID"
-
-        </meta>
+	   PrimaryKey
+	</meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
 
-    <property
-        name="typeOfAgentAddressed"
-        type="short"
-        column="TypeOfAgentAddressed"
-    >
+    <property name="typeOfAgentAddressed" type="short" column="TypeOfAgentAddressed">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="TypeOfAgentAddressed"
-        </meta>    
+	   0 for organization, 1 for person
+	</meta>    
     </property>
     
-    <property
-        name="jobTitle"
-        type="java.lang.String"
-        column="JobTitle"
-        length="50"
-    >
+    <property name="jobTitle" type="java.lang.String" column="JobTitle" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="JobTitle"
-            length="50"
-        </meta>    
+	   Agent's (person) job title at specified address and organization
+	</meta>    
     </property>
     
-    <property
-        name="phone1"
-        type="java.lang.String"
-        column="Phone1"
-        length="50"
-    >
+    <property name="phone1" type="java.lang.String" column="Phone1" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Phone1"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="phone2"
-        type="java.lang.String"
-        column="Phone2"
-        length="50"
-    >
+    <property name="phone2" type="java.lang.String" column="Phone2" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Phone2"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="fax"
-        type="java.lang.String"
-        column="Fax"
-        length="50"
-    >
+    <property name="fax" type="java.lang.String" column="Fax" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Fax"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="roomOrBuilding"
-        type="java.lang.String"
-        column="RoomOrBuilding"
-        length="50"
-    >
+    <property name="roomOrBuilding" type="java.lang.String" column="RoomOrBuilding" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="RoomOrBuilding"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="email"
-        type="java.lang.String"
-        column="Email"
-        length="50"
-    >
+    <property name="email" type="java.lang.String" column="Email" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Email"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="url"
-        type="text"
-        column="URL"
-    >
+    <property name="url" type="text" column="URL">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="URL"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="isCurrent"
-        type="boolean"
-        column="IsCurrent"
-    >
+    <property name="isCurrent" type="boolean" column="IsCurrent">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="IsCurrent"
-        </meta>    
+	   Is the agent currently located at this address?
+	</meta>    
     </property>
 
     <!-- Associations -->
   
     <!-- bi-directional one-to-many association to LoanAgent -->
-    <set
-        name="loanAgents"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="AgentAddressID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.LoanAgent"
-        </meta>
+    <set name="loanAgents" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="AgentAddressID" />
+            <column name="AgentAddressID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.LoanAgent"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.LoanAgent"/>
     </set>
     
     <!-- bi-directional one-to-many association to Shipment -->
-    <set
-        name="shipmentsByShipper"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="ShipperID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.Shipment"
-        </meta>
+    <set name="shipmentsByShipper" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="ShipperID" />
+            <column name="ShipperID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.Shipment"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.Shipment"/>
     </set>
     
     <!-- bi-directional one-to-many association to Shipment -->
-    <set
-        name="shipmentsByShippedTo"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="ShippedToID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.Shipment"
-        </meta>
+    <set name="shipmentsByShippedTo" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="ShippedToID" />
+            <column name="ShippedToID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.Shipment"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.Shipment"/>
     </set>
     
     <!-- bi-directional one-to-many association to DeaccessionAgent -->
-    <set
-        name="deaccessionAgents"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="AgentAddressID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.DeaccessionAgent"
-        </meta>
+    <set name="deaccessionAgents" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="AgentAddressID" />
+            <column name="AgentAddressID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.DeaccessionAgent"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.DeaccessionAgent"/>
     </set>
     
     <!-- bi-directional one-to-many association to ExchangeIn -->
-    <set
-        name="exchangeIns"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="ReceivedFromOrganizationID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.ExchangeIn"
-        </meta>
+    <set name="exchangeIns" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="ReceivedFromOrganizationID" />
+            <column name="ReceivedFromOrganizationID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.ExchangeIn"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.ExchangeIn"/>
     </set>
     
     <!-- bi-directional one-to-many association to Permit -->
-    <set
-        name="permitsByIssuee"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="IssueeID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.Permit"
-        </meta>
+    <set name="permitsByIssuee" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="IssueeID" />
+            <column name="IssueeID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.Permit"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.Permit"/>
     </set>
     
     <!-- bi-directional one-to-many association to Permit -->
-    <set
-        name="permitsByIssuer"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="IssuerID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.Permit"
-        </meta>
+    <set name="permitsByIssuer" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="IssuerID" />
+            <column name="IssuerID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.Permit"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.Permit"/>
     </set>
     
     <!-- bi-directional one-to-many association to BorrowAgent -->
-    <set
-        name="borrowAgents"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="AgentAddressID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.BorrowAgent"
-        </meta>
+    <set name="borrowAgents" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="AgentAddressID" />
+            <column name="AgentAddressID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.BorrowAgent"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.BorrowAgent"/>
     </set>
     
     <!-- bi-directional one-to-many association to AccessionAgent -->
-    <set
-        name="accessionAgents"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="AgentAddressID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.AccessionAgent"
-        </meta>
+    <set name="accessionAgents" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="AgentAddressID" />
+            <column name="AgentAddressID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.AccessionAgent"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.AccessionAgent"/>
     </set>
     
     <!-- bi-directional one-to-many association to ExchangeOut -->
-    <set
-        name="exchangeOuts"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="SentToOrganizationID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.ExchangeOut"
-        </meta>
+    <set name="exchangeOuts" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="SentToOrganizationID" />
+            <column name="SentToOrganizationID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.ExchangeOut"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.ExchangeOut"/>
     </set>
     
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one
-        name="organization"
-        class="edu.ku.brc.specify.datamodel.Agent"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="organization" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="OrganizationID"         
-        </meta>
-        <column name="OrganizationID" />
+	   Associates Agent identified by AgentID (type Person) as a member of Agent identified by OrganizationID (type Organization)
+	</meta>
+        <column name="OrganizationID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one
-        name="agent"
-        class="edu.ku.brc.specify.datamodel.Agent"
-        not-null="true"
-		outer-join="true"
-		cascade="none"
-    >
+    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true" cascade="none" index="IX_AgentAddressAgentID">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="AgentID"         
-        </meta>
-        <column name="AgentID" />
+	   Associated record in Agent table
+	</meta>
+        <column name="AgentID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Address -->
-    <many-to-one
-        name="address"
-        class="edu.ku.brc.specify.datamodel.Address"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="address" class="edu.ku.brc.specify.datamodel.Address" not-null="true" outer-join="true" index="IX_AgentAddressAddressID">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="AddressID"         
-        </meta>
-        <column name="AddressID" />
+	   Associated record in Address table
+	</meta>
+        <column name="AddressID"/>
     </many-to-one>
 
 </class>

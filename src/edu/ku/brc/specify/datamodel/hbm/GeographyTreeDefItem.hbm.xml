@@ -1,9 +1,5 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 
     <class name="edu.ku.brc.specify.datamodel.GeographyTreeDefItem" table="geographytreedefitem" lazy="true">
         <meta attribute="class-description" inherit="false"> @hibernate.class
@@ -65,35 +61,31 @@
         <id name="treeDefItemId" type="java.lang.Integer" column="TreeDefItemID" length="10">
             <meta attribute="scope-field">protected</meta>
             <meta attribute="use-in-tostring">true</meta>
-            <meta attribute="field-description"> @hibernate.property column="TreeDefItemID" length="10" </meta>
+            <meta attribute="field-description"></meta>
             <generator class="native"/>
         </id>
 
         <property name="name" type="java.lang.String" column="Name" length="64">
             <meta attribute="scope-field">protected</meta>
             <meta attribute="use-in-tostring">true</meta>
-            <meta attribute="field-description"> @hibernate.property column="Name" length="64"
-            </meta>
+            <meta attribute="field-description"></meta>
         </property>
         
         <property name="rankId" type="java.lang.Integer" column="RankID">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="RankID" </meta>
+            <meta attribute="field-description"></meta>
         </property>
 
         <!-- Associations -->
 
         <!-- bi-directional many-to-one association to GeographyTreeDef -->
-        <many-to-one name="treeDef" column="TreeDefID"
-            class="edu.ku.brc.specify.datamodel.GeographyTreeDef">
+        <many-to-one name="treeDef" column="TreeDefID" class="edu.ku.brc.specify.datamodel.GeographyTreeDef">
             <meta attribute="scope-field">protected</meta>
             <meta attribute="use-in-tostring">true</meta>
-            <meta attribute="field-description">A reference back to the tree defintion</meta>
+            <meta attribute="field-description"></meta>
         </many-to-one>
 
-        <many-to-one name="parent" column="ParentItemID"
-            class="edu.ku.brc.specify.datamodel.GeographyTreeDefItem"
-            cascade="save-update">
+        <many-to-one name="parent" column="ParentItemID" class="edu.ku.brc.specify.datamodel.GeographyTreeDefItem" cascade="save-update">
             <meta attribute="scope-field">protected</meta>
         </many-to-one>
         
@@ -106,4 +98,3 @@
     </class>
     
 </hibernate-mapping>
-    

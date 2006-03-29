@@ -1,9 +1,5 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 <!-- 
     Created by the Middlegen Hibernate plugin 2.1
 
@@ -11,123 +7,53 @@
     http://www.hibernate.org/
 -->
 
-<class 
-    name="edu.ku.brc.specify.datamodel.DeterminationCitation" 
-    table="determinationcitation"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.DeterminationCitation" table="determinationcitation" lazy="true">
     <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="determinationcitation"
-    </meta>
+	Associates publications with Determinations.
+	</meta>
 
-    <id
-        name="determinationCitationId"
-        type="java.lang.Integer"
-        column="DeterminationCitationID"
-    >
-        <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="DeterminationCitationID"
-
-        </meta>
+    <id name="determinationCitationId" type="java.lang.Integer" column="DeterminationCitationID">
+        <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-    >
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-        update="false"
-    >
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-            update="false"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
 
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to ReferenceWork -->
-    <many-to-one
-        name="referenceWork"
-        class="edu.ku.brc.specify.datamodel.ReferenceWork"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="referenceWork" class="edu.ku.brc.specify.datamodel.ReferenceWork" not-null="true" outer-join="true" index="IX_DeterminationCitationReferenceWorkID" unique-key="IX_DeterminationCitation">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="ReferenceWorkID"         
-        </meta>
-        <column name="ReferenceWorkID" />
+	   ID of the publication citing the determination
+	</meta>
+        <column name="ReferenceWorkID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Determination -->
-    <many-to-one
-        name="determination"
-        class="edu.ku.brc.specify.datamodel.Determination"
-        not-null="true"
-		outer-join="true"
-		cascade="none"
-    >
+    <many-to-one name="determination" class="edu.ku.brc.specify.datamodel.Determination" not-null="true" outer-join="true" cascade="none" index="IX_DeterminationCitationDeterminationID" unique-key="IX_DeterminationCitation">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-			cascade="none"
-           @hibernate.column name="DeterminationID"         
-        </meta>
-        <column name="DeterminationID" />
+	   Determination being cited
+	</meta>
+        <column name="DeterminationID"/>
     </many-to-one>
 
 </class>

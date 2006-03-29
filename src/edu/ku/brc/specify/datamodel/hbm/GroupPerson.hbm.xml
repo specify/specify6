@@ -1,9 +1,5 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 <!-- 
     Created by the Middlegen Hibernate plugin 2.1
 
@@ -11,133 +7,57 @@
     http://www.hibernate.org/
 -->
 
-<class 
-    name="edu.ku.brc.specify.datamodel.GroupPerson" 
-    table="grouppersons"
->
+<class name="edu.ku.brc.specify.datamodel.GroupPerson" table="grouppersons">
     <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="grouppersons"
-    </meta>
+	Associates agents into groups.
+	</meta>
 
-    <id
-        name="groupPersonsId"
-        type="java.lang.Integer"
-        column="GroupPersonsID"
-    >
-        <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="GroupPersonsID"
-
-        </meta>
+    <id name="groupPersonsId" type="java.lang.Integer" column="GroupPersonsID">
+        <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
 
-    <property
-        name="orderNumber"
-        type="short"
-        column="OrderNumber"
-        not-null="true"
-    >
+    <property name="orderNumber" type="short" column="OrderNumber" not-null="true" unique-key="IX_GroupPersonsOrder">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="OrderNumber"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
 
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one
-        name="agentByGroup"
-        class="edu.ku.brc.specify.datamodel.Agent"
-        not-null="true"
-		cascade="none"
-    >
+    <many-to-one name="agentByGroup" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" cascade="none" unique-key="IX_GroupPersonsOrder">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-			cascade="none"
-           @hibernate.column name="GroupID"         
-        </meta>
-        <column name="GroupID" />
+	   AgentID of group
+	</meta>
+        <column name="GroupID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one
-        name="agentByMember"
-        class="edu.ku.brc.specify.datamodel.Agent"
-        not-null="true"
-    >
+    <many-to-one name="agentByMember" class="edu.ku.brc.specify.datamodel.Agent" not-null="true">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="MemberID"         
-        </meta>
-        <column name="MemberID" />
+	   AgentID of member (member must be of type Person)
+	</meta>
+        <column name="MemberID"/>
     </many-to-one>
 
 </class>

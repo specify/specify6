@@ -1,213 +1,78 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 
-<hibernate-mapping>
-
-<class 
-    name="edu.ku.brc.specify.datamodel.Container" 
-    table="container"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.Container" table="container" lazy="true">
     <meta attribute="class-description" inherit="false">
        @hibernate.class
         table="container"
     </meta>
     
-    <id
-        name="containerId"
-        type="java.lang.Integer"
-        column="ContainerID"
-    >
-        <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="ContainerID"
-
-        </meta>
+    <id name="containerId" type="java.lang.Integer" column="ContainerID">
+        <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
 
-    <property
-        name="collectionObjectId"
-        type="int"
-        column="CollectionObjectID"
-        not-null="false"
-    >
+    <property name="collectionObjectId" type="int" column="CollectionObjectID" not-null="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            type="int"
-            column="CollectionObjectID"
-            not-null="false"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="type"
-        type="short"
-        column="Type"
-    >
+    <property name="type" type="short" column="Type">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Type"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="name"
-        type="java.lang.String"
-        column="Name"
-        length="64"
-    >
+    <property name="name" type="java.lang.String" column="Name" length="64">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Name"
-            length="64"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="description"
-        type="java.lang.String"
-        column="Description"
-        length="255"
-    >
+    <property name="description" type="java.lang.String" column="Description" length="255">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Name"
-            length="255"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="number"
-        type="int"
-        column="Number"
-    >
+    <property name="number" type="int" column="Number">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Number"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
+        <meta attribute="field-description"></meta>    
     </property>
     
     <!-- Associations -->
 
     <!-- bi-directional one-to-many association to ContainerItems -->
-    <set
-        name="items"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >    
+    <set name="items" lazy="true" inverse="true" cascade="none">    
 	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="ContainerItemsID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.ContainerItem"
-        </meta> 
+        <meta attribute="field-description"></meta> 
         <key>
-            <column name="ContainerID" />
+            <column name="ContainerID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.ContainerItem"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.ContainerItem"/>
     </set>
 	
     <!-- bi-directional many-to-one association to CollectionObject -->
     <!-- NOTE: We are REALLY modeling a one-to-zero-or-one  -->
-    <many-to-one
-        name="container"
-        class="edu.ku.brc.specify.datamodel.CollectionObject"
-        not-null="false"
-		unique="true" 
-		insert="false" 
-		update="false"
-		cascade="all"
-    >
+    <many-to-one name="container" class="edu.ku.brc.specify.datamodel.CollectionObject" not-null="false" unique="true" insert="false" update="false" cascade="all">
 	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-	        not-null="false"
-			unique="true" 
-			insert="false" 
-			update="false"
-			cascade="all"
-           @hibernate.column name="CollectionObjectID"
-        </meta>
-        <column name="CollectionObjectID" />
+        <meta attribute="field-description"></meta>
+        <column name="CollectionObjectID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Location -->
-    <many-to-one
-        name="location"
-        class="edu.ku.brc.specify.datamodel.Location"
-        not-null="false"
-		outer-join="auto"
-    >
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="LocationID"         
-        </meta>
+    <many-to-one name="location" class="edu.ku.brc.specify.datamodel.Location" not-null="false" outer-join="auto">
+        <meta attribute="field-description"></meta>
         <column name="LocationID"/>
     </many-to-one>
     

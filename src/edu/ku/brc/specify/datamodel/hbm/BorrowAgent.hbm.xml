@@ -1,9 +1,5 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 <!-- 
     Created by the Middlegen Hibernate plugin 2.1
 
@@ -11,139 +7,60 @@
     http://www.hibernate.org/
 -->
 
-<class 
-    name="edu.ku.brc.specify.datamodel.BorrowAgent" 
-    table="borrowagents"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.BorrowAgent" table="borrowagents" lazy="true">
     <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="borrowagents"
-    </meta>
+	Associates agents with incoming material.
+	</meta>
 
-    <id
-        name="borrowAgentsId"
-        type="java.lang.Integer"
-        column="BorrowAgentsID"
-    >
-        <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="BorrowAgentsID"
-
-        </meta>
+    <id name="borrowAgentsId" type="java.lang.Integer" column="BorrowAgentsID">
+        <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
 
-    <property
-        name="role"
-        type="java.lang.String"
-        column="Role"
-        not-null="true"
-        length="32"
-    >
+    <property name="role" type="java.lang.String" column="Role" not-null="true" length="32" unique-key="IX_BorrowAgents">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Role"
-            length="32"
-            not-null="true"
-        </meta>    
+	   Role played by agent in borrow
+	</meta>    
     </property>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
 
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to AgentAddress -->
-    <many-to-one
-        name="agentAddress"
-        class="edu.ku.brc.specify.datamodel.AgentAddress"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="agentAddress" class="edu.ku.brc.specify.datamodel.AgentAddress" not-null="true" outer-join="true" index="IX_BorrowAgentsAgentAddressID" unique-key="IX_BorrowAgents">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="AgentAddressID"         
-        </meta>
-        <column name="AgentAddressID" />
+	   Address/Organization from which agent participated in the borrow
+	</meta>
+        <column name="AgentAddressID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Borrow -->
-    <many-to-one
-        name="borrow"
-        class="edu.ku.brc.specify.datamodel.Borrow"
-        not-null="true"
-		outer-join="true"
-		cascade="none"
-    >
+    <many-to-one name="borrow" class="edu.ku.brc.specify.datamodel.Borrow" not-null="true" outer-join="true" cascade="none" index="IX_BorrowAgentsBorrowID" unique-key="IX_BorrowAgents">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-			cascade="none"
-           @hibernate.column name="BorrowID"         
-        </meta>
-        <column name="BorrowID" />
+	   ID of borrow in which Agent played role
+	</meta>
+        <column name="BorrowID"/>
     </many-to-one>
 
 </class>

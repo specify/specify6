@@ -1,139 +1,56 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 
-<class 
-    name="edu.ku.brc.specify.datamodel.AccessionAuthorizations" 
-    table="accessionauthorizations"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.AccessionAuthorizations" table="accessionauthorizations" lazy="true">
     <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="accessionauthorizations"
-    </meta>
+	Associates permits with accessions.
+	</meta>
 
-    <id
-        name="accessionAuthorizationsId"
-        type="java.lang.Integer"
-        column="AccessionAuthorizationsID"
-    >
-        <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="AccessionAuthorizationsID"
-
-        </meta>
+    <id name="accessionAuthorizationsId" type="java.lang.Integer" column="AccessionAuthorizationsID">
+        <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
 
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            not-null="true"
-            update="false"
-        </meta>    
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
+        <meta attribute="field-description"></meta>    
     </property>
 
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to Permit -->
-    <many-to-one
-        name="permit"
-        class="edu.ku.brc.specify.datamodel.Permit"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="permit" class="edu.ku.brc.specify.datamodel.Permit" not-null="true" outer-join="true" index="IX_AccessionAuthorizationsPermitID" unique-key="IX_AccessionAuthorizations">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="PermitID"         
-        </meta>
-        <column name="PermitID" />
+	   Permit authorizing accession
+	</meta>
+        <column name="PermitID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Accession -->
-    <many-to-one
-        name="accession"
-        class="edu.ku.brc.specify.datamodel.Accession"
-        not-null="false"
-        outer-join="true"
-        cascade="none"
-        >
+    <many-to-one name="accession" class="edu.ku.brc.specify.datamodel.Accession" not-null="false" outer-join="true" cascade="none" index="IX_AccessionAuthorizationsAccessionID" unique-key="IX_AccessionAuthorizations">
         <meta attribute="field-description">
-            @hibernate.many-to-one
-            not-null="true"
-            @hibernate.column name="AccessionID"         
-        </meta>
-        <column name="AccessionID" />
+	   Accession authorized by permit
+	</meta>
+        <column name="AccessionID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to RepositoryAgreement -->
-    <many-to-one
-        name="repositoryAgreement"
-        class="edu.ku.brc.specify.datamodel.RepositoryAgreement"
-        not-null="false"
-        outer-join="true"
-        cascade="none"
-        >
-        <meta attribute="field-description">
-            @hibernate.many-to-one
-            not-null="true"
-            @hibernate.column name="AccessionID"         
-        </meta>
-        <column name="RepositoryAgreementID" />
+    <many-to-one name="repositoryAgreement" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" not-null="false" outer-join="true" cascade="none">
+        <meta attribute="field-description"></meta>
+        <column name="RepositoryAgreementID"/>
     </many-to-one>
     
 </class>

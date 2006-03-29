@@ -1,75 +1,34 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC 
-	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-
-
-<hibernate-mapping package="edu.ku.brc.specify.datamodel" >
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping package="edu.ku.brc.specify.datamodel">
 
 <import class="RecordSetItem"/>
 	
-<class name="RecordSet"
-	   table="recordset"
-	   lazy="false">
+<class name="RecordSet" table="recordset" lazy="false">
 
 	<!-- Common id property. -->
-	<id name="recordSetID"
-		type="long"
-		column="RecordSetID"
-		unsaved-value="null">
+	<id name="recordSetID" type="long" column="RecordSetID" unsaved-value="null">
 		<generator class="native"/>
 	</id>
 
-	<property   name="name"
-	            column="Name"
-				update="true"
-				type="string"
-				length="64">
+	<property name="name" column="Name" update="true" type="string" length="64">
 	</property>
 
-	<property   name="tableId"
-	            column="TableID"
-				update="true"
-				type="int">
+	<property name="tableId" column="TableID" update="true" type="int">
 	</property>
 
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
+        <meta attribute="field-description"></meta>    
     </property>
 
 
     <!-- Associations -->
 
     <!-- bi-directional one-to-many association to RecordSetItem -->
-    <set
-        name="items" table="recordset_items" lazy="false">
+    <set name="items" table="recordset_items" lazy="false">
     	<key column="RecordSetID"/>
     	<composite-element class="RecordSetItem">
     		<property name="recordId" not-null="true" unique="false"/>
@@ -77,19 +36,10 @@
     </set>
     
     <!-- many-to-one association to SpecifyUser -->
-    <many-to-one
-        name="owner"
-        class="edu.ku.brc.specify.datamodel.SpecifyUser"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="owner" class="edu.ku.brc.specify.datamodel.SpecifyUser" not-null="true" outer-join="true">
 	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="SpecifyUserID"
-        </meta>
-        <column name="SpecifyUserID" />
+        <meta attribute="field-description"></meta>
+        <column name="SpecifyUserID"/>
     </many-to-one>   
     
 </class>

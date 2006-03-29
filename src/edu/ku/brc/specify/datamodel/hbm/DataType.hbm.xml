@@ -1,68 +1,31 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 
-<hibernate-mapping>
-
-<class
-    name="edu.ku.brc.specify.datamodel.DataType"
-    table="datatype"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.DataType" table="datatype" lazy="true">
     <meta attribute="class-description" inherit="false">
        @hibernate.class
         table="datatype"
     </meta>
 
-    <id
-        name="dataTypeId"
-        type="java.lang.Integer"
-        column="DataTypeID"
-    >
+    <id name="dataTypeId" type="java.lang.Integer" column="DataTypeID">
       <meta attribute="scope-set">public</meta>
       <meta attribute="scope-field">protected</meta>
       <generator class="native"/>
     </id>
 
-    <property
-        name="name"
-        type="java.lang.String"
-        column="Name"
-        length="50"
-    >
+    <property name="name" type="java.lang.String" column="Name" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="use-in-tostring">true</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Name"
-            length="50"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
     <!-- Associations -->
 
     <!-- bi-directional one-to-many association to CollectionObjDef -->
-    <set
-        name="collectionObjDef"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="DataTypeID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.CollectionObjDef"
-        </meta>
+    <set name="collectionObjDef" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="DataTypeID" />
+            <column name="DataTypeID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.CollectionObjDef"/>
     </set>

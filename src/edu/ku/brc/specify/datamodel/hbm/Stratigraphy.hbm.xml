@@ -1,9 +1,5 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 <!-- 
     Created by the Middlegen Hibernate plugin 2.1
 
@@ -11,225 +7,104 @@
     http://www.hibernate.org/
 -->
 
-<class 
-    name="edu.ku.brc.specify.datamodel.Stratigraphy" 
-    table="stratigraphy"
->
+<class name="edu.ku.brc.specify.datamodel.Stratigraphy" table="stratigraphy">
     <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="stratigraphy"
-    </meta>
+	Paleontological data about a site
+	</meta>
 
-    <id
-        name="stratigraphyId"
-        type="java.lang.Integer"
-        column="StratigraphyID"
-    >
+    <id name="stratigraphyId" type="java.lang.Integer" column="StratigraphyID">
         <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="StratigraphyID"
-
-        </meta>
+	   CollectingEventID of related collecting event
+	</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
 
-    <property
-        name="superGroup"
-        type="java.lang.String"
-        column="SuperGroup"
-        length="50"
-    >
+    <property name="superGroup" type="java.lang.String" column="SuperGroup" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="SuperGroup"
-            length="50"
-        </meta>    
+	   Lithostratigraphic supergroup
+	</meta>    
     </property>
-    <property
-        name="lithoGroup"
-        type="java.lang.String"
-        column="LithoGroup"
-        length="50"
-    >
+    <property name="lithoGroup" type="java.lang.String" column="LithoGroup" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LithoGroup"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
-    <property
-        name="formation"
-        type="java.lang.String"
-        column="Formation"
-        length="50"
-    >
+    <property name="formation" type="java.lang.String" column="Formation" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Formation"
-            length="50"
-        </meta>    
+	   Lithostratigraphic formation
+	</meta>    
     </property>
-    <property
-        name="member"
-        type="java.lang.String"
-        column="Member"
-        length="50"
-    >
+    <property name="member" type="java.lang.String" column="Member" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Member"
-            length="50"
-        </meta>    
+	   Lithostratigraphic member
+	</meta>    
     </property>
-    <property
-        name="bed"
-        type="java.lang.String"
-        column="Bed"
-        length="50"
-    >
+    <property name="bed" type="java.lang.String" column="Bed" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Bed"
-            length="50"
-        </meta>    
+	   Lithostratigraphic bed
+	</meta>    
     </property>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property name="text1"
-        type="text"
-        column="Text1"
-        >
+    <property name="text1" type="text" column="Text1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-            @hibernate.property
-            column="Text1"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="text2"
-        type="text"
-        column="Text2"
-        >
+    <property name="text2" type="text" column="Text2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-            @hibernate.property
-            column="Text2"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="number1"
-        type="java.lang.Float"
-        column="Number1"
-        length="24"
-    >
+    <property name="number1" type="java.lang.Float" column="Number1" length="24">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Number1"
-            length="24"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
-    <property
-        name="number2"
-        type="java.lang.Float"
-        column="Number2"
-        length="24"
-    >
+    <property name="number2" type="java.lang.Float" column="Number2" length="24">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Number2"
-            length="24"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="yesNo1"
-        type="boolean"
-        column="YesNo1"
-    >
+    <property name="yesNo1" type="boolean" column="YesNo1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="YesNo1"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="yesNo2"
-        type="boolean"
-        column="YesNo2"
-    >
+    <property name="yesNo2" type="boolean" column="YesNo2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="YesNo2"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
 
 
@@ -237,13 +112,7 @@
     <!-- Associations -->
   
     <!-- bi-directional one-to-one association to CollectingEvent -->
-    <one-to-one
-        name="collectingEvent"
-        class="edu.ku.brc.specify.datamodel.CollectingEvent"
-        outer-join="auto"
-        constrained="true"
-		cascade="delete"
-    >
+    <one-to-one name="collectingEvent" class="edu.ku.brc.specify.datamodel.CollectingEvent" outer-join="auto" constrained="true" cascade="delete">
         <meta attribute="field-description">
            @hibernate.one-to-one
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
@@ -254,30 +123,12 @@
     </one-to-one>
     
     <!-- bi-directional one-to-many association to GeologicTimePeriod -->
-    <set
-        name="children"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="GeologicTimePeriodTypeID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
-        </meta>
+    <set name="children" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="StratigraphyID" />
+            <column name="StratigraphyID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
     </set>
     
 </class>

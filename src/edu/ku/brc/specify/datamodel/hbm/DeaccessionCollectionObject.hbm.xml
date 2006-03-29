@@ -1,9 +1,5 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 <!-- 
     Created by the Middlegen Hibernate plugin 2.1
 
@@ -11,160 +7,71 @@
     http://www.hibernate.org/
 -->
 
-<class 
-    name="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject" 
-    table="deaccessioncollectionobject"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject" table="deaccessioncollectionobject" lazy="true">
     <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="deaccessioncollectionobject"
-    </meta>
+	Information about deaccessioned physical objects.
+	</meta>
 
-    <id
-        name="deaccessionCollectionObjectId"
-        type="java.lang.Integer"
-        column="DeaccessionCollectionObjectID"
-    >
+    <id name="deaccessionCollectionObjectId" type="java.lang.Integer" column="DeaccessionCollectionObjectID">
         <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="DeaccessionCollectionObjectID"
-
-        </meta>
+	   Primary key
+	</meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
 
-    <property
-        name="quantity"
-        type="short"
-        column="Quantity"
-    >
+    <property name="quantity" type="short" column="Quantity">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Quantity"
-        </meta>    
+	   Number of specimens deaccessioned (necessary for lots)
+	</meta>    
     </property>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
 
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to CollectionObject -->
-    <many-to-one
-        name="collectionObjectCatalog"
-        class="edu.ku.brc.specify.datamodel.CollectionObject"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="collectionObjectCatalog" class="edu.ku.brc.specify.datamodel.CollectionObject" not-null="true" outer-join="true" unique-key="IX_DeaccessionCollectionObject">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="CollectionObjectID"         
-        </meta>
-        <column name="CollectionObjectID" />
+	   The object being deaccessioned
+	</meta>
+        <column name="CollectionObjectID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Deaccession -->
-    <many-to-one
-        name="deaccession"
-        class="edu.ku.brc.specify.datamodel.Deaccession"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="deaccession" class="edu.ku.brc.specify.datamodel.Deaccession" not-null="true" outer-join="true" index="IX_DeaccessionCollectionObjectDeaccessionID" unique-key="IX_DeaccessionCollectionObject">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="DeaccessionID"         
-        </meta>
-        <column name="DeaccessionID" />
+	   The deaccession
+	</meta>
+        <column name="DeaccessionID"/>
     </many-to-one>
     
     <!-- bi-directional one-to-many association to LoanReturnPhysicalObject -->
-    <set
-        name="loanReturnPhysicalObjects"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="DeaccessionPhysicalObjectID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject"
-        </meta>
+    <set name="loanReturnPhysicalObjects" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="DeaccessionPhysicalObjectID" />
+            <column name="DeaccessionPhysicalObjectID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject"/>
     </set>
 
 </class>

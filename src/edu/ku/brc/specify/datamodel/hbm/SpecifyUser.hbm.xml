@@ -1,140 +1,58 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 
-<hibernate-mapping>
-
-<class
-    name="edu.ku.brc.specify.datamodel.SpecifyUser"
-    table="specifyuser"
-    lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.SpecifyUser" table="specifyuser" lazy="true">
     <meta attribute="class-description" inherit="false">
        @hibernate.class
         table="user"
     </meta>
 
-    <id
-        name="specifyUserId"
-        type="java.lang.Integer"
-        column="SpecifyUserID"
-    >
+    <id name="specifyUserId" type="java.lang.Integer" column="SpecifyUserID">
       <meta attribute="scope-set">public</meta>
       <meta attribute="scope-field">protected</meta>
       <generator class="native"/>
     </id>
 
-    <property
-        name="name"
-        type="java.lang.String"
-        column="Name"
-        length="64"
-    >
+    <property name="name" type="java.lang.String" column="Name" length="64">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Name"
-            length="64"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="password"
-        type="java.lang.String"
-        column="Password"
-        length="64"
-    >
+    <property name="password" type="java.lang.String" column="Password" length="64">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Password"
-            length="64"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="privLevel"
-        type="short"
-        column="PrivLevel"
-    >
+    <property name="privLevel" type="short" column="PrivLevel">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="PrivLevel"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
     <!-- Associations -->
 
     <!-- bi-directional one-to-many association to CollectionObjDef -->
-    <set
-        name="collectionObjDef"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="SpecifyUserID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.CollectionObjDef"
-        </meta>
+    <set name="collectionObjDef" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="SpecifyUserID" />
+            <column name="SpecifyUserID"/>
         </key>
-        <one-to-many
-            class="edu.ku.brc.specify.datamodel.CollectionObjDef"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.CollectionObjDef"/>
     </set>
 
     <!-- bi-directional one-to-many association to RecordSet -->
-    <set
-        name="recordSets"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
+    <set name="recordSets" lazy="true" inverse="true" cascade="delete">
 	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="CollectionObjectID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.RecordSet"
-        </meta>
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="CollectionObjectID" />
+            <column name="CollectionObjectID"/>
         </key>
-        <one-to-many
-            class="edu.ku.brc.specify.datamodel.RecordSet"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.RecordSet"/>
     </set>
 
     <!-- bi-directional many-to-one association to UserGroup -->
-    <many-to-one
-        name="userGroup"
-        class="edu.ku.brc.specify.datamodel.UserGroup"
-        not-null="true"
-		outer-join="true"
-    >
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="UserGroupID"
-        </meta>
-        <column name="UserGroupID" />
+    <many-to-one name="userGroup" class="edu.ku.brc.specify.datamodel.UserGroup" not-null="true" outer-join="true">
+        <meta attribute="field-description"></meta>
+        <column name="UserGroupID"/>
     </many-to-one>
 
 </class>

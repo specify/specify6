@@ -1,123 +1,54 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 
 
-<class 
-    name="edu.ku.brc.specify.datamodel.ExternalResourceAttr" 
-    table="externalresourceattr"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.ExternalResourceAttr" table="externalresourceattr" lazy="true">
     <meta attribute="class-description" inherit="false">
        @hibernate.class
         table="externalresourceattr"
     </meta>
     <meta attribute="implements">AttributeIFace</meta>
  
-    <id
-        name="attrId"
-        type="java.lang.Integer"
-        column="AttrID"
-    >
+    <id name="attrId" type="java.lang.Integer" column="AttrID">
       <meta attribute="scope-set">public</meta>
       <meta attribute="scope-field">protected</meta>
       <generator class="native"/>
     </id>
 	
-    <property
-        name="strValue"
-        type="java.lang.String"
-        column="StrValue"
-        length="64"
-    >
+    <property name="strValue" type="java.lang.String" column="StrValue" length="64">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="StrValue"
-            length="64"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
 
-    <property
-        name="dblValue"
-        type="double"
-        column="DoubleValue"
-    >
+    <property name="dblValue" type="double" column="DoubleValue">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="DoubleValue"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
 
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
 	<!-- Associations -->
 	
     <!-- bi-directional many-to-one association to ExternalResource -->
-    <many-to-one
-        name="externalResource"
-        class="edu.ku.brc.specify.datamodel.ExternalResource"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="externalResource" class="edu.ku.brc.specify.datamodel.ExternalResource" not-null="true" outer-join="true">
 	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="ExternalResourceID"         
-        </meta>
-        <column name="ExternalResourceID" />
+        <meta attribute="field-description"></meta>
+        <column name="ExternalResourceID"/>
     </many-to-one>
    
     <!-- bi-directional many-to-one association to AttributeDef -->
-    <many-to-one
-        name="definition"
-        class="edu.ku.brc.specify.datamodel.AttributeDef"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="definition" class="edu.ku.brc.specify.datamodel.AttributeDef" not-null="true" outer-join="true">
 	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="AttributeDefID"         
-        </meta>
-        <column name="AttributeDefID" />
+        <meta attribute="field-description"></meta>
+        <column name="AttributeDefID"/>
     </many-to-one>	
 	
 </class>

@@ -1,9 +1,5 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 <!-- 
     Created by the Middlegen Hibernate plugin 2.1
 
@@ -11,246 +7,120 @@
     http://www.hibernate.org/
 -->
 
-<class 
-    name="edu.ku.brc.specify.datamodel.Determination" 
-    table="determination"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.Determination" table="determination" lazy="true">
     <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="determination"
-    </meta>
+	Taxonomic identifications of BiologicalObjects.
+	</meta>
 
-    <id
-        name="determinationId"
-        type="java.lang.Integer"
-        column="DeterminationID"
-    >
+    <id name="determinationId" type="java.lang.Integer" column="DeterminationID" index="IX_DeterminationCurrent">
         <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="DeterminationID"
-
-        </meta>
+	   Primary key
+	</meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
 
-    <property
-        name="isCurrent"
-        type="boolean"
-        column="IsCurrent"
-        not-null="true"
-    >
+    <property name="isCurrent" type="boolean" column="IsCurrent" not-null="true">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="IsCurrent"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
-    <property
-        name="typeStatusName"
-        type="java.lang.String"
-        column="TypeStatusName"
-        length="50"
-    >
+    <property name="typeStatusName" type="java.lang.String" column="TypeStatusName" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="TypeStatusName"
-            length="50"
-        </meta>    
+	   e.g. 'Holotype', 'Paratype'...
+	</meta>    
     </property>
     
-    <property
-        name="determinedDate"
-        type="calendar_date"
-        column="DeterminedDate"
-    >
+    <property name="determinedDate" type="calendar_date" column="DeterminedDate">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="DeterminedDate"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="confidence"
-        type="java.lang.String"
-        column="Confidence"
-        length="50"
-    >
+    <property name="confidence" type="java.lang.String" column="Confidence" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Confidence"
-            length="50"
-        </meta>    
+	   Confidence of determination
+	</meta>    
     </property>
     
-    <property
-        name="method"
-        type="java.lang.String"
-        column="Method"
-        length="50"
-    >
+    <property name="method" type="java.lang.String" column="Method" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Method"
-            length="50"
-        </meta>    
+	   Method of determination
+	</meta>    
     </property>
     
-    <property
-        name="featureOrBasis"
-        type="java.lang.String"
-        column="FeatureOrBasis"
-        length="50"
-    >
+    <property name="featureOrBasis" type="java.lang.String" column="FeatureOrBasis" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="FeatureOrBasis"
-            length="50"
-        </meta>    
+	   Body part, or characteristic used as the basis of a determination.
+	</meta>    
     </property>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="text1"
-        type="text"
-        column="Text1"
-    >
+    <property name="text1" type="text" column="Text1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Text1"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="text2"
-        type="text"
-        column="Text2"
-    >
+    <property name="text2" type="text" column="Text2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Text2"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="number1"
-        type="java.lang.Float"
-        column="Number1"
-        length="24"
-    >
+    <property name="number1" type="java.lang.Float" column="Number1" length="24">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Number1"
-            length="24"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="number2"
-        type="java.lang.Float"
-        column="Number2"
-        length="24"
-    >
+    <property name="number2" type="java.lang.Float" column="Number2" length="24">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Number2"
-            length="24"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
+	   Date/Time the record was created
+	</meta>    
     </property>
     
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
+	   Date/Time the record was modified
+	</meta>    
     </property>
     
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="yesNo1"
-        type="boolean"
-        column="YesNo1"
-    >
+    <property name="yesNo1" type="boolean" column="YesNo1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="YesNo1"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="yesNo2"
-        type="boolean"
-        column="YesNo2"
-    >
+    <property name="yesNo2" type="boolean" column="YesNo2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="YesNo2"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
 
 
@@ -258,98 +128,43 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to Taxon -->
-    <many-to-one
-        name="taxon"
-        class="edu.ku.brc.specify.datamodel.Taxon"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="taxon" class="edu.ku.brc.specify.datamodel.Taxon" not-null="true" outer-join="true">
 	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="TaxonID"         
-        </meta>
-        <column name="TaxonID" />
+        <meta attribute="field-description"></meta>
+        <column name="TaxonID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to CollectionObject -->
-    <many-to-one
-        name="collectionObject"
-        class="edu.ku.brc.specify.datamodel.CollectionObject"
-        not-null="true"
-		outer-join="true"
-		cascade="none"
-    >
+    <many-to-one name="collectionObject" class="edu.ku.brc.specify.datamodel.CollectionObject" not-null="true" outer-join="true" cascade="none">
 	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-			cascade="none"
-           @hibernate.column name="CollectionObjectID"         
-        </meta>
-        <column name="CollectionObjectID" />
+        <meta attribute="field-description"></meta>
+        <column name="CollectionObjectID"/>
     </many-to-one>	
 
     <!-- bi-directional many-to-one association to Preparation -->
-    <many-to-one
-        name="preparations"
-        class="edu.ku.brc.specify.datamodel.Preparation"
-        not-null="true"
-		outer-join="true"
-		cascade="none"
-    >
+    <many-to-one name="preparations" class="edu.ku.brc.specify.datamodel.Preparation" not-null="true" outer-join="true" cascade="none">
 	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-			cascade="none"
-           @hibernate.column name="PreparationID"         
-        </meta>
-        <column name="PreparationID" />
+	   Preparations can also be assigned determinations. Must a Preparation of BiologicalObjectID.
+	</meta>
+        <column name="PreparationID"/>
     </many-to-one>	
 
     <!-- bi-directional one-to-many association to DeterminationCitation -->
-    <set
-        name="determinationCitations"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-			cascade="delete"
-
-           @hibernate.collection-key
-            column="DeterminationID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.DeterminationCitation"
-        </meta>
+    <set name="determinationCitations" lazy="true" inverse="true" cascade="delete">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="DeterminationID" />
+            <column name="DeterminationID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.DeterminationCitation"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.DeterminationCitation"/>
     </set>
 	
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one
-        name="determiner"
-        class="edu.ku.brc.specify.datamodel.Agent"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="determiner" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="DeterminerID"         
-        </meta>
-        <column name="DeterminerID" />
+	   id of the Person making the determination
+	</meta>
+        <column name="DeterminerID"/>
     </many-to-one>
 
 </class>

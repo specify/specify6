@@ -1,9 +1,5 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 <!-- 
     Created by the Middlegen Hibernate plugin 2.1
 
@@ -11,159 +7,72 @@
     http://www.hibernate.org/
 -->
 
-<class 
-    name="edu.ku.brc.specify.datamodel.CatalogSeries" 
-    table="catalogseries"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.CatalogSeries" table="catalogseries" lazy="true">
     <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="catalogseries"
-    </meta>
+	Information about catalog series within collections.
+	</meta>
 
-    <id
-        name="catalogSeriesId"
-        type="java.lang.Integer"
-        column="CatalogSeriesID"
-    >
+    <id name="catalogSeriesId" type="java.lang.Integer" column="CatalogSeriesID">
         <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="CatalogSeriesID"
-
-        </meta>
+	   Primary key
+	</meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
 
-    <property
-        name="isTissueSeries"
-        type="boolean"
-        column="IsTissueSeries"
-    >
+    <property name="isTissueSeries" type="boolean" column="IsTissueSeries">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="IsTissueSeries"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="seriesName"
-        type="java.lang.String"
-        column="SeriesName"
-        length="50"
-    >
+    <property name="seriesName" type="java.lang.String" column="SeriesName" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="SeriesName"
-            length="50"
-        </meta>    
+	   Textual name for Catalog series. E.g. Main specimen collection
+	</meta>    
     </property>
     
-    <property
-        name="catalogSeriesPrefix"
-        type="java.lang.String"
-        column="CatalogSeriesPrefix"
-        length="50"
-    >
+    <property name="catalogSeriesPrefix" type="java.lang.String" column="CatalogSeriesPrefix" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="CatalogSeriesPrefix"
-            length="50"
-        </meta>    
+	   Text Displayed with Catalog numbers. E.g. 'KU'
+	</meta>    
     </property>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
 
     <!-- Associations -->
   
     <!-- bi-directional many-to-many association to CollectionObjDef -->
-    <set
-        name="collectionObjDefItems"
-        table="catseries_colobjdef"
-        lazy="true"
-		cascade="save-update">
+    <set name="collectionObjDefItems" table="catseries_colobjdef" lazy="true" cascade="save-update">
         <key>
-            <column name="CatalogSeriesID" />
+            <column name="CatalogSeriesID"/>
         </key>
         <many-to-many class="edu.ku.brc.specify.datamodel.CollectionObjDef" column="CollectionObjDefID"/>
     </set>
     
     <!-- bi-directional many-to-one association to CatalogSeries -->
-    <many-to-one
-        name="tissue"
-        class="edu.ku.brc.specify.datamodel.CatalogSeries"
-        cascade="save-update"
-        not-null="false"
-		outer-join="true"
-    >
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="TissueID"         
-        </meta>
-        <column name="TissueID" />
+    <many-to-one name="tissue" class="edu.ku.brc.specify.datamodel.CatalogSeries" cascade="save-update" not-null="false" outer-join="true">
+        <meta attribute="field-description"></meta>
+        <column name="TissueID"/>
     </many-to-one>
     <!--
     <set name="vouchers" table="catalogseries" inverse="true">

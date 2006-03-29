@@ -1,9 +1,5 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 <!-- 
     Created by the Middlegen Hibernate plugin 2.1
 
@@ -11,305 +7,128 @@
     http://www.hibernate.org/
 -->
 
-<class 
-    name="edu.ku.brc.specify.datamodel.Borrow" 
-    table="borrow"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.Borrow" table="borrow" lazy="true">
     <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="borrow"
-    </meta>
+	Invoice information for borrowed (incoming) material.
+	</meta>
 
-    <id
-        name="borrowId"
-        type="java.lang.Integer"
-        column="BorrowID"
-    >
+    <id name="borrowId" type="java.lang.Integer" column="BorrowID">
         <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="BorrowID"
-
-        </meta>
+	   Primary key
+	</meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
 	
-    <property
-        name="invoiceNumber"
-        type="java.lang.String"
-        column="InvoiceNumber"
-        not-null="true"
-        length="50"
-    >
+    <property name="invoiceNumber" type="java.lang.String" column="InvoiceNumber" not-null="true" length="50" index="IX_BorrowInvoice">
         <meta attribute="field-description">
-           @hibernate.property
-            column="InvoiceNumber"
-            length="50"
-            not-null="true"
-        </meta>    
+	   Lender's loan number
+	</meta>    
     </property>
-    <property
-        name="receivedDate"
-        type="calendar_date"
-        column="ReceivedDate"
-    >
+    <property name="receivedDate" type="calendar_date" column="ReceivedDate">
         <meta attribute="field-description">
-           @hibernate.property
-            column="ReceivedDate"
-        </meta>    
+	   Date material was received
+	</meta>    
     </property>
-    <property
-        name="originalDueDate"
-        type="calendar_date"
-        column="OriginalDueDate"
-    >
+    <property name="originalDueDate" type="calendar_date" column="OriginalDueDate">
         <meta attribute="field-description">
-           @hibernate.property
-            column="OriginalDueDate"
-        </meta>    
+	   Original Due date for loan
+	</meta>    
     </property>
-    <property
-        name="dateClosed"
-        type="calendar_date"
-        column="DateClosed"
-        length="10"
-    >
+    <property name="dateClosed" type="calendar_date" column="DateClosed" length="10">
         <meta attribute="field-description">
-           @hibernate.property
-            column="DateClosed"
-        </meta>    
+	   Date loan was closed
+	</meta>    
     </property>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>    
+    </property>
+    
+    <property name="text1" type="text" column="Text1">
+        <meta attribute="field-description">
+	   User definable
+	</meta>    
+    </property>
+    
+    <property name="text2" type="text" column="Text2">
+        <meta attribute="field-description">
+	   User definable
+	</meta>    
+    </property>
+    
+    <property name="number1" type="java.lang.Float" column="Number1" length="24">
+        <meta attribute="field-description">
+	   User definable
+	</meta>    
+    </property>
+    
+    <property name="number2" type="java.lang.Float" column="Number2" length="24">
+        <meta attribute="field-description">
+	   User definable
+	</meta>    
+    </property>
+    
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
+        <meta attribute="field-description"></meta>    
+    </property>
+    
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
+        <meta attribute="field-description"></meta>    
+    </property>
+    
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
+        <meta attribute="field-description"></meta>    
+    </property>
+    
+    <property name="closed" type="short" column="Closed">
+        <meta attribute="field-description">
+	   False until all material has been returned
+	</meta>    
+    </property>
+    <property name="yesNo1" type="boolean" column="YesNo1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
-    
-    <property
-        name="text1"
-        type="text"
-        column="Text1"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Text1"
-        </meta>    
-    </property>
-    
-    <property
-        name="text2"
-        type="text"
-        column="Text2"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Text2"
-        </meta>    
-    </property>
-    
-    <property
-        name="number1"
-        type="java.lang.Float"
-        column="Number1"
-        length="24"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Number1"
-            length="24"
-        </meta>    
-    </property>
-    
-    <property
-        name="number2"
-        type="java.lang.Float"
-        column="Number2"
-        length="24"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Number2"
-            length="24"
-        </meta>    
-    </property>
-    
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
-    </property>
-    
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
-    </property>
-    
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
-    </property>
-    
-    <property
-        name="closed"
-        type="short"
-        column="Closed"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Closed"
-        </meta>    
-    </property>
-    <property
-        name="yesNo1"
-        type="boolean"
-        column="YesNo1"
-    >
+    <property name="yesNo2" type="boolean" column="YesNo2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="YesNo1"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
-    <property
-        name="yesNo2"
-        type="boolean"
-        column="YesNo2"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="YesNo2"
-        </meta>    
-    </property>
-    <property
-        name="currentDueDate"
-        type="calendar_date"
-        column="CurrentDueDate"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="CurrentDueDate"
-        </meta>    
+    <property name="currentDueDate" type="calendar_date" column="CurrentDueDate">
+        <meta attribute="field-description"></meta>    
     </property>
 
     <!-- Associations -->
   
     <!-- bi-directional one-to-many association to BorrowShipment -->
-    <set
-        name="borrowShipments"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="BorrowID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.BorrowShipment"
-        </meta>
+    <set name="borrowShipments" lazy="true" inverse="true" cascade="delete">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="BorrowID" />
+            <column name="BorrowID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.BorrowShipment"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.BorrowShipment"/>
     </set>
     <!-- bi-directional one-to-many association to BorrowAgent -->
-    <set
-        name="borrowAgents"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="BorrowID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.BorrowAgent"
-        </meta>
+    <set name="borrowAgents" lazy="true" inverse="true" cascade="delete">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="BorrowID" />
+            <column name="BorrowID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.BorrowAgent"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.BorrowAgent"/>
     </set>
     
     <!-- bi-directional one-to-many association to BorrowMaterial -->
-    <set
-        name="borrowMaterials"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="BorrowID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.BorrowMaterial"
-        </meta>
+    <set name="borrowMaterials" lazy="true" inverse="true" cascade="delete">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="BorrowID" />
+            <column name="BorrowID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.BorrowMaterial"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.BorrowMaterial"/>
     </set>
 
 </class>

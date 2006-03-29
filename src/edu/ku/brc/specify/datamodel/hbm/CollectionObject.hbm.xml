@@ -1,505 +1,212 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 <!--
     Created by Rod Spears
 -->
 
-<class
-    name="edu.ku.brc.specify.datamodel.CollectionObject"
-    table="collectionobject"
-	lazy="true"
-	batch-size="50"
->
+<class name="edu.ku.brc.specify.datamodel.CollectionObject" table="collectionobject" lazy="true" batch-size="50">
     <meta attribute="class-description" inherit="false">
        @hibernate.class
         table="collectionobject"
     </meta>
 
 
-    <id
-        name="collectionObjectId"
-        type="java.lang.Integer"
-        column="CollectionObjectID"
-    >
-        <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="CollectionObjectID"
-
-        </meta>
+    <id name="collectionObjectId" type="java.lang.Integer" column="CollectionObjectID">
+        <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
 
-    <property
-        name="fieldNumber"
-        type="java.lang.String"
-        column="FieldNumber"
-        length="50"
-    >
+    <property name="fieldNumber" type="java.lang.String" column="FieldNumber" length="50" index="IX_CollectionObjectFldNum">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="FieldNumber"
-            length="50"
-        </meta>
+	   BiologicalObject (Bird, Fish, etc)
+	</meta>
     </property>
 
-    <property
-        name="description"
-        type="java.lang.String"
-        column="Description"
-        length="50"
-    >
+    <property name="description" type="java.lang.String" column="Description" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Description"
-            length="50"
-        </meta>
+	   Image, Sound, Preparation, Container(Container Label?)
+	</meta>
     </property>
 
-    <property
-        name="text1"
-        type="text"
-        column="Text1"
-    >
+    <property name="text1" type="text" column="Text1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Text1"
-        </meta>
+	   User definable
+	</meta>
     </property>
 
-    <property
-        name="text2"
-        type="text"
-        column="Text2"
-    >
+    <property name="text2" type="text" column="Text2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Text2"
-        </meta>
+	   User definable
+	</meta>
     </property>
 
-    <property
-        name="number1"
-        type="java.lang.Float"
-        column="Number1"
-        length="24"
-    >
+    <property name="number1" type="java.lang.Float" column="Number1" length="24">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Number1"
-            length="24"
-        </meta>
+	   User definable
+	</meta>
     </property>
 
-    <property
-        name="number2"
-        type="java.lang.Float"
-        column="Number2"
-        length="24"
-    >
+    <property name="number2" type="java.lang.Float" column="Number2" length="24">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Number2"
-            length="24"
-        </meta>
+	   User definable
+	</meta>
     </property>
 
-    <property
-        name="yesNo1"
-        type="boolean"
-        column="YesNo1"
-    >
+    <property name="yesNo1" type="boolean" column="YesNo1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="YesNo1"
-        </meta>
+	   User definable
+	</meta>
     </property>
 
-    <property
-        name="yesNo2"
-        type="boolean"
-        column="YesNo2"
-    >
+    <property name="yesNo2" type="boolean" column="YesNo2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="YesNo2"
-        </meta>
+	   User definable
+	</meta>
     </property>
 
-    <property
-        name="countAmt"
-        type="java.lang.Integer"
-        column="CountAmt"
-        length="10"
-    >
+    <property name="countAmt" type="java.lang.Integer" column="CountAmt" length="10">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="CountAmt"
-            length="10"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="name"
-        type="java.lang.String"
-        column="Name"
-        length="64"
-    >
+    <property name="name" type="java.lang.String" column="Name" length="64">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Name"
-            length="64"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="modifier"
-        type="java.lang.String"
-        column="Modifier"
-        length="50"
-    >
+    <property name="modifier" type="java.lang.String" column="Modifier" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Modifier"
-            length="50"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="catalogedDate"
-        type="calendar_date"
-        column="CatalogedDate"
-    >
+    <property name="catalogedDate" type="calendar_date" column="CatalogedDate">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="CatalogedDate"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="catalogedDateVerbatim"
-        type="java.lang.String"
-        column="CatalogedDateVerbatim"
-        length="32"
-    >
+    <property name="catalogedDateVerbatim" type="java.lang.String" column="CatalogedDateVerbatim" length="32">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="CatalogedDateVerbatim"
-        length="32"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="guid"
-        type="java.lang.String"
-        column="GUID"
-        length="255"
-    >
+    <property name="guid" type="java.lang.String" column="GUID" length="255">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="GUID"
-            length="255"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="altCatalogNumber"
-        type="java.lang.String"
-        column="AltCatalogNumber"
-        length="32"
-        index="INX_ALTCATALOGNUMBER"
-    >
+    <property name="altCatalogNumber" type="java.lang.String" column="AltCatalogNumber" length="32" index="INX_ALTCATALOGNUMBER">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="AltCatalogNumber"
-            length="32"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
     
-    <property
-        name="groupPermittedToView"
-        type="java.lang.Integer"
-        column="GroupPermittedToView"
-        length="10"
-        >
+    <property name="groupPermittedToView" type="java.lang.Integer" column="GroupPermittedToView" length="10">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-            @hibernate.property
-            column="GroupPermittedToView"
-            length="10"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>    
 
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23" index="IX_CollectionObject_1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50" index="IX_CollectionObject_2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="deaccessioned"
-        type="boolean"
-        column="Deaccessioned"
-    >
+    <property name="deaccessioned" type="boolean" column="Deaccessioned">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Deaccessioned"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="catalogNumber"
-        unique="true"
-        index="IX_CatalogNumber"
-        type="float"
-        column="CatalogNumber"
-    >
+    <property name="catalogNumber" unique="true" index="IX_CatalogNumber" type="float" column="CatalogNumber">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="CatalogNumber"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
 
     <!-- Associations -->
 
     <!-- bi-directional many-to-one association to CollectingEvent -->
-    <many-to-one
-        name="collectingEvent"
-        class="edu.ku.brc.specify.datamodel.CollectingEvent"
-        not-null="true"
-		outer-join="true"
-		cascade="none"
-    >
+    <many-to-one name="collectingEvent" class="edu.ku.brc.specify.datamodel.CollectingEvent" not-null="true" outer-join="true" cascade="none" index="IX_CollectionObjectCollectingEventID">
 	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-			cascade="none"
-           @hibernate.column name="CollectingEventID"
-        </meta>
-        <column name="CollectingEventID" />
+	   BiologicalObject (Bird, Fish, etc)
+	</meta>
+        <column name="CollectingEventID"/>
     </many-to-one>
 
     <!-- bi-directional many-to-one association to ContainerItem -->
-    <many-to-one
-        name="containerItem"
-        class="edu.ku.brc.specify.datamodel.ContainerItem"
-        not-null="false"
-		outer-join="auto"
-    >
+    <many-to-one name="containerItem" class="edu.ku.brc.specify.datamodel.ContainerItem" not-null="false" outer-join="auto">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="auto"
-           @hibernate.column name="ContainerItemID"
-        </meta>
-        <column name="ContainerItemID" />
+        <meta attribute="field-description"></meta>
+        <column name="ContainerItemID"/>
     </many-to-one>
 
     <!-- bi-directional one-to-many association to CollectionObjectCitation -->
-    <set
-        name="collectionObjectCitations"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
+    <set name="collectionObjectCitations" lazy="true" inverse="true" cascade="delete">
 	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="CollectionObjectID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.CollectionObjectCitation"
-        </meta>
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="CollectionObjectID" />
+            <column name="CollectionObjectID"/>
         </key>
-        <one-to-many
-            class="edu.ku.brc.specify.datamodel.CollectionObjectCitation"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.CollectionObjectCitation"/>
     </set>
 
     <!-- bi-directional one-to-many association to CollectionObjectAttr -->
-    <set
-        name="attrs"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
+    <set name="attrs" lazy="true" inverse="true" cascade="delete">
 	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="CollectionObjectAttrID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.CollectionObjectAttr"
-        </meta>
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="CollectionObjectID" />
+            <column name="CollectionObjectID"/>
         </key>
-        <one-to-many
-            class="edu.ku.brc.specify.datamodel.CollectionObjectAttr"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.CollectionObjectAttr"/>
     </set>
 
     <!-- bi-directional one-to-many association to Preparation -->
-    <set
-        name="preparations"
-        lazy="true"
-        inverse="true"
-		cascade="all"
-    >
+    <set name="preparations" lazy="true" inverse="true" cascade="all">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="all"
-
-           @hibernate.collection-key
-            column="CollectionObjectID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.Preparation"
-        </meta>
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="CollectionObjectID" />
+            <column name="CollectionObjectID"/>
         </key>
-        <one-to-many
-            class="edu.ku.brc.specify.datamodel.Preparation"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.Preparation"/>
     </set>
 
     <!-- bi-directional one-to-many association to Determination -->
-    <set
-        name="determinations"
-        lazy="true"
-        inverse="true"
-		cascade="all"
-        order-by="determinedDate desc"
-    >
+    <set name="determinations" lazy="true" inverse="true" cascade="all" order-by="determinedDate desc">
 		<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="all"
-
-           @hibernate.collection-key
-            column="CollectionObjectID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.Determination"
-        </meta>
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="CollectionObjectID" />
+            <column name="CollectionObjectID"/>
         </key>
-        <one-to-many
-            class="edu.ku.brc.specify.datamodel.Determination"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.Determination"/>
     </set>
     
     <!-- bi-directional many-to-one association to CollectionObjDef -->
-    <many-to-one
-        name="collectionObjDef"
-        class="edu.ku.brc.specify.datamodel.CollectionObjDef"
-        not-null="false"
-		outer-join="auto"
-    >
+    <many-to-one name="collectionObjDef" class="edu.ku.brc.specify.datamodel.CollectionObjDef" not-null="false" outer-join="auto">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="false"
-           @hibernate.column name="CollectionObjDefID"
-        </meta>
-        <column name="CollectionObjDefID" />
+        <meta attribute="field-description"></meta>
+        <column name="CollectionObjDefID"/>
     </many-to-one>
 
     
@@ -507,176 +214,74 @@
 	<!-- Old CollectionObjectCatalog Associations -->
 
     <!-- bi-directional one-to-many association to ProjectCollectionObject -->
-    <set
-        name="projectCollectionObjects"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
+    <set name="projectCollectionObjects" lazy="true" inverse="true" cascade="none">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="CollectionObjectID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.ProjectCollectionObject"
-        </meta>
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="CollectionObjectID" />
+            <column name="CollectionObjectID"/>
         </key>
-        <one-to-many
-            class="edu.ku.brc.specify.datamodel.ProjectCollectionObject"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.ProjectCollectionObject"/>
     </set>
 
     <!-- bi-directional one-to-many association to DeaccessionCollectionObject -->
-    <set
-        name="deaccessionCollectionObjects"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
+    <set name="deaccessionCollectionObjects" lazy="true" inverse="true" cascade="none">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="CollectionObjectID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject"
-        </meta>
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="CollectionObjectID" />
+            <column name="CollectionObjectID"/>
         </key>
-        <one-to-many
-            class="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject"/>
     </set>
 
     <!-- bi-directional one-to-many association to OtherIdentifier -->
-    <set
-        name="otherIdentifiers"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
+    <set name="otherIdentifiers" lazy="true" inverse="true" cascade="delete">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="CollectionObjectID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.OtherIdentifier"
-        </meta>
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="CollectionObjectID" />
+            <column name="CollectionObjectID"/>
         </key>
-        <one-to-many
-            class="edu.ku.brc.specify.datamodel.OtherIdentifier"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.OtherIdentifier"/>
     </set>
 
     <!-- bi-directional many-to-one association to CatalogSeries -->
-    <many-to-one
-        name="catalogSeries"
-        class="edu.ku.brc.specify.datamodel.CatalogSeries"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="catalogSeries" class="edu.ku.brc.specify.datamodel.CatalogSeries" not-null="true" outer-join="true">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="CatalogSeriesID"
-        </meta>
-        <column name="CatalogSeriesID" />
+        <meta attribute="field-description"></meta>
+        <column name="CatalogSeriesID"/>
     </many-to-one>
 
     <!-- bi-directional many-to-one association to Accession -->
-    <many-to-one
-        name="accession"
-        class="edu.ku.brc.specify.datamodel.Accession"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="accession" class="edu.ku.brc.specify.datamodel.Accession" not-null="true" outer-join="true">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="AccessionID"
-        </meta>
-        <column name="AccessionID" />
+        <meta attribute="field-description"></meta>
+        <column name="AccessionID"/>
     </many-to-one>
 
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one
-        name="cataloger"
-        class="edu.ku.brc.specify.datamodel.Agent"
-        not-null="true"
-		outer-join="auto"
-    >
+    <many-to-one name="cataloger" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="auto">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="CatalogerID"
-        </meta>
-        <column name="CatalogerID" />
+        <meta attribute="field-description"></meta>
+        <column name="CatalogerID"/>
     </many-to-one>
 
 
     <!-- bi-directional many-to-many association to ExternalResource -->
-    <set
-        name="externalResources"
-        table="colobj_extres"
-        lazy="true"
-        inverse="true"
-		cascade="save-update">
+    <set name="externalResources" table="colobj_extres" lazy="true" inverse="true" cascade="save-update">
         <key>
-            <column name="CollectionObjectID" />
+            <column name="CollectionObjectID"/>
         </key>
         <many-to-many class="edu.ku.brc.specify.datamodel.ExternalResource" column="ExternalResourceID"/>
     </set>
 
     <!-- bi-directional many-to-one association to Container -->
     <!-- NOTE: We are REALLY modeling a one-to-zero-or-one  -->
-    <many-to-one
-        name="container"
-        class="edu.ku.brc.specify.datamodel.Container"
-        not-null="false"
-		unique="true" 
-		insert="false" 
-		update="false"
-		cascade="all"
-    >
+    <many-to-one name="container" class="edu.ku.brc.specify.datamodel.Container" not-null="false" unique="true" insert="false" update="false" cascade="all" index="IX_CollectionObjectContainerID">
 	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.many-to-one
-	        not-null="false"
-			unique="true" 
-			insert="false" 
-			update="false"
-			cascade="all"
-           @hibernate.column name="ContainerID"
-        </meta>
-        <column name="ContainerID" />
+	   Preparation, Container
+	</meta>
+        <column name="ContainerID"/>
     </many-to-one>
 
 </class>
 </hibernate-mapping>
-
-

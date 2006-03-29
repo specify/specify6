@@ -1,9 +1,5 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 <!-- 
     Created by the Middlegen Hibernate plugin 2.1
 
@@ -11,217 +7,103 @@
     http://www.hibernate.org/
 -->
 
-<class 
-    name="edu.ku.brc.specify.datamodel.Project" 
-    table="project"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.Project" table="project" lazy="true">
     <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="project"
-    </meta>
+	Information about projects that use or produce material in a collection.
+	</meta>
 
-    <id
-        name="projectId"
-        type="java.lang.Integer"
-        column="ProjectID"
-    >
+    <id name="projectId" type="java.lang.Integer" column="ProjectID">
         <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="ProjectID"
-
-        </meta>
+	   Primary key
+	</meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
 
-    <property
-        name="projectName"
-        type="java.lang.String"
-        column="ProjectName"
-        not-null="true"
-        length="50"
-    >
+    <property name="projectName" type="java.lang.String" column="ProjectName" not-null="true" length="50">
         <meta attribute="field-description">
-           @hibernate.property
-            column="ProjectName"
-            length="50"
-            not-null="true"
-        </meta>    
+	   Name of the project
+	</meta>    
     </property>
-    <property
-        name="projectDescription"
-        type="text"
-        column="ProjectDescription"
-    >
+    <property name="projectDescription" type="text" column="ProjectDescription">
         <meta attribute="field-description">
-           @hibernate.property
-            column="ProjectDescription"
-        </meta>    
+	   Description of project
+	</meta>    
     </property>
     
-    <property
-        name="url"
-        type="text"
-        column="URL"
-    >
+    <property name="url" type="text" column="URL">
         <meta attribute="field-description">
-           @hibernate.property
-            column="URL"
-        </meta>    
+	   URL for project
+	</meta>    
     </property>
     
-    <property
-        name="startDate"
-        type="calendar_date"
-        column="StartDate"
-    >
+    <property name="startDate" type="calendar_date" column="StartDate">
         <meta attribute="field-description">
-           @hibernate.property
-            column="StartDate"
-        </meta>    
+	   Date project began
+	</meta>    
     </property>
     
-    <property
-        name="endDate"
-        type="calendar_date"
-        column="EndDate"
-    >
+    <property name="endDate" type="calendar_date" column="EndDate">
         <meta attribute="field-description">
-           @hibernate.property
-            column="EndDate"
-        </meta>    
+	   Date project ended
+	</meta>    
     </property>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>    
+    </property>
+    
+    <property name="text1" type="text" column="Text1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property name="text1"
-        type="text"
-        column="Text1"
-        >
+    <property name="text2" type="text" column="Text2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-            @hibernate.property
-            column="Text1"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="text2"
-        type="text"
-        column="Text2"
-        >
+    <property name="number1" type="java.lang.Float" column="Number1" length="24">
+        <meta attribute="field-description">
+	   User definable
+	</meta>    
+    </property>
+    
+    <property name="number2" type="java.lang.Float" column="Number2" length="24">
+        <meta attribute="field-description">
+	   User definable
+	</meta>    
+    </property>
+    
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
+        <meta attribute="field-description"></meta>    
+    </property>
+    
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23" index="IX_Project_1">
+        <meta attribute="field-description"></meta>    
+    </property>
+    
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50" index="IX_Project_2">
+        <meta attribute="field-description"></meta>    
+    </property>
+    
+    <property name="yesNo1" type="boolean" column="YesNo1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-            @hibernate.property
-            column="Text2"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="number1"
-        type="java.lang.Float"
-        column="Number1"
-        length="24"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Number1"
-            length="24"
-        </meta>    
-    </property>
-    
-    <property
-        name="number2"
-        type="java.lang.Float"
-        column="Number2"
-        length="24"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Number2"
-            length="24"
-        </meta>    
-    </property>
-    
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
-    </property>
-    
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
-    </property>
-    
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
-    </property>
-    
-    <property
-        name="yesNo1"
-        type="boolean"
-        column="YesNo1"
-    >
+    <property name="yesNo2" type="boolean" column="YesNo2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="YesNo1"
-        </meta>    
-    </property>
-    
-    <property
-        name="yesNo2"
-        type="boolean"
-        column="YesNo2"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="YesNo2"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
 
 
@@ -229,44 +111,19 @@
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one
-        name="agent"
-        class="edu.ku.brc.specify.datamodel.Agent"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="ProjectAgentID"         
-        </meta>
-        <column name="ProjectAgentID" />
+	   Agent record for project
+	</meta>
+        <column name="ProjectAgentID"/>
     </many-to-one>
     <!-- bi-directional one-to-many association to ProjectCollectionObject -->
-    <set
-        name="projectCollectionObjects"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="ProjectID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.ProjectCollectionObject"
-        </meta>
+    <set name="projectCollectionObjects" lazy="true" inverse="true" cascade="delete">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="ProjectID" />
+            <column name="ProjectID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.ProjectCollectionObject"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.ProjectCollectionObject"/>
     </set>
 
 </class>

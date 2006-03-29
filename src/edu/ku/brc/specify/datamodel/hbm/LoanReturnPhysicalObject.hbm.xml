@@ -1,9 +1,5 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 <!-- 
     Created by the Middlegen Hibernate plugin 2.1
 
@@ -11,160 +7,81 @@
     http://www.hibernate.org/
 -->
 
-<class 
-    name="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject" 
-    table="loanreturnphysicalobject"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject" table="loanreturnphysicalobject" lazy="true">
     <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="loanreturnphysicalobject"
-    </meta>
+	Return information for loaned preparations.
+	</meta>
 
-    <id
-        name="loanReturnPhysicalObjectId"
-        type="java.lang.Integer"
-        column="LoanReturnPhysicalObjectID"
-    >
+    <id name="loanReturnPhysicalObjectId" type="java.lang.Integer" column="LoanReturnPhysicalObjectID">
         <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="LoanReturnPhysicalObjectID"
-
-        </meta>
+	   PrimaryKey
+	</meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
 
-    <property name="returnedDate"
-        type="calendar_date"
-        column="ReturnedDate"
-    >
+    <property name="returnedDate" type="calendar_date" column="ReturnedDate">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="ReturnedDate"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property name="quantity"
-        type="short"
-        column="Quantity"
-    >
+    <property name="quantity" type="short" column="Quantity">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Quantity"
-        </meta>    
+	   Quantity of items returned (necessary for lots)
+	</meta>    
     </property>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
+	   Date the record was created
+	</meta>    
     </property>
     
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
+	   Date the record was modified
+	</meta>    
     </property>
     
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
+	   user ID  of the person last editing the record
+	</meta>    
     </property>
 
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to LoanPhysicalObject -->
-    <many-to-one
-        name="loanPhysicalObject"
-        class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"
-        not-null="true"
-		outer-join="true"
-		cascade="none"
-    >
+    <many-to-one name="loanPhysicalObject" class="edu.ku.brc.specify.datamodel.LoanPhysicalObject" not-null="true" outer-join="true" cascade="none" index="IX_LoanReturnPhysicalObjectLoanPhysicalObjectID">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-			cascade="none"
-           @hibernate.column name="LoanPhysicalObjectID"         
-        </meta>
-        <column name="LoanPhysicalObjectID" />
+	   Link to LoanPhysicalObject table
+	</meta>
+        <column name="LoanPhysicalObjectID"/>
     </many-to-one>
 	
     <!-- bi-directional many-to-one association to DeaccessionCollectionObject -->
-    <many-to-one
-        name="deaccessionCollectionObject"
-        class="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="deaccessionCollectionObject" class="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject" not-null="true" outer-join="true">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="DeaccessionPhysicalObjectID"         
-        </meta>
-        <column name="DeaccessionPhysicalObjectID" />
+	   ID of associated (if present) DeaccessionPhysicalObject record
+	</meta>
+        <column name="DeaccessionPhysicalObjectID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one
-        name="agent"
-        class="edu.ku.brc.specify.datamodel.Agent"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="ReceivedByID"         
-        </meta>
-        <column name="ReceivedByID" />
+	   Person processing the loan return
+	</meta>
+        <column name="ReceivedByID"/>
     </many-to-one>
 
 </class>

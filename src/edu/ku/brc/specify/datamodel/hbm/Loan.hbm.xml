@@ -1,9 +1,5 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 <!-- 
     Created by the Middlegen Hibernate plugin 2.1
 
@@ -11,257 +7,134 @@
     http://www.hibernate.org/
 -->
 
-<class 
-    name="edu.ku.brc.specify.datamodel.Loan" 
-    table="loan"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.Loan" table="loan" lazy="true">
     <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="loan"
-    </meta>
+	Information about outgoing loans.
+	</meta>
 
-    <id
-        name="loanId"
-        type="java.lang.Integer"
-        column="LoanID"
-    >
+    <id name="loanId" type="java.lang.Integer" column="LoanID">
         <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="LoanID"
-
-        </meta>
+	   PrimaryKey
+	</meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
 
-    <property
-        name="loanNumber"
-        type="java.lang.String"
-        column="LoanNumber"
-        not-null="true"
-        length="50"
-    >
+    <property name="loanNumber" type="java.lang.String" column="LoanNumber" not-null="true" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="LoanNumber"
-            length="50"
-            not-null="true"
-        </meta>    
+	   Invoice number
+	</meta>    
     </property>
     
-    <property
-        name="loanDate"
-        type="calendar_date"
-        column="LoanDate"
-    >
+    <property name="loanDate" type="calendar_date" column="LoanDate" index="IX_Loan_Date">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="LoanDate"
-            length="10"
-        </meta>    
+	   Date the Loan was created.
+	</meta>    
     </property>
     
-    <property name="currentDueDate"
-        type="calendar_date"
-        column="CurrentDueDate"
-        length="10"
-    >
+    <property name="currentDueDate" type="calendar_date" column="CurrentDueDate" length="10" index="IX_Loan_Due">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="CurrentDueDate"
-            length="10"
-        </meta>    
+	   Date the loan is due for return (Same as original Due date unless loan period has been extended)
+	</meta>    
     </property>
     
-    <property
-        name="originalDueDate"
-        type="calendar_date"
-        column="OriginalDueDate"
-    >
+    <property name="originalDueDate" type="calendar_date" column="OriginalDueDate">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="OriginalDueDate"
-        </meta>    
+	   Date the loan was originally due.
+	</meta>    
     </property>
     
-    <property
-        name="dateClosed"
-        type="calendar_date"
-        column="DateClosed"
-    >
+    <property name="dateClosed" type="calendar_date" column="DateClosed">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="DateClosed"
-        </meta>    
+	   Date loan was closed.
+	</meta>    
     </property>
     
-    <property
-        name="category"
-        type="java.lang.Byte"
-        column="Category"
-        length="3"
-    >
+    <property name="category" type="java.lang.Byte" column="Category" length="3">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Category"
-            length="3"
-        </meta>    
+	   Type of record: loan(0), Gift(1)
+	</meta>    
     </property>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="text1"
-        type="text"
-        column="Text1"
-    >
+    <property name="text1" type="text" column="Text1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Text1"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="text2"
-        type="text"
-        column="Text2"
-    >
+    <property name="text2" type="text" column="Text2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Text2"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="number1"
-        type="java.lang.Float"
-        column="Number1"
-        length="24"
-    >
+    <property name="number1" type="java.lang.Float" column="Number1" length="24">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Number1"
-            length="24"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="number2"
-        type="java.lang.Float"
-        column="Number2"
-        length="24"
-    >
+    <property name="number2" type="java.lang.Float" column="Number2" length="24">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Number2"
-            length="24"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
+	   The date the record was created
+	</meta>    
     </property>
     
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
+	   The date the record was modified
+	</meta>    
     </property>
     
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
+	   Login name of the user who last edited the record
+	</meta>    
     </property>
     
-    <property
-        name="closed"
-        type="short"
-        column="Closed"
-    >
+    <property name="closed" type="short" column="Closed">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Closed"
-        </meta>    
+	   'No' until all preparations in the loan have been returned/resolved.
+	</meta>    
     </property>
     
-    <property
-        name="yesNo1"
-        type="boolean"
-        column="YesNo1"
-    >
+    <property name="yesNo1" type="boolean" column="YesNo1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="YesNo1"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="yesNo2"
-        type="boolean"
-        column="YesNo2"
-    >
+    <property name="yesNo2" type="boolean" column="YesNo2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="YesNo2"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
 
 
@@ -269,83 +142,35 @@
     <!-- Associations -->
   
     <!-- bi-directional one-to-many association to LoanAgent -->
-    <set
-        name="loanAgents"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="LoanID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.LoanAgent"
-        </meta>
+    <set name="loanAgents" lazy="true" inverse="true" cascade="delete">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="LoanID" />
+            <column name="LoanID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.LoanAgent"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.LoanAgent"/>
     </set>
     
     <!-- bi-directional one-to-many association to LoanPhysicalObject -->
-    <set
-        name="loanPhysicalObjects"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="LoanID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"
-        </meta>
+    <set name="loanPhysicalObjects" lazy="true" inverse="true" cascade="delete">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="LoanID" />
+            <column name="LoanID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"/>
     </set>
     
     <!-- bi-directional many-to-one association to Shipment -->
-    <many-to-one
-        name="shipment"
-        class="edu.ku.brc.specify.datamodel.Shipment"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="shipment" class="edu.ku.brc.specify.datamodel.Shipment" not-null="true" outer-join="true" index="IX_LoanShipmentID">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="ShipmentID"         
-        </meta>
-        <column name="ShipmentID" />
+	   Link to Shipment table
+	</meta>
+        <column name="ShipmentID"/>
     </many-to-one>
 
     <!-- bi-directional many-to-many association to ExternalResource -->
-    <set
-        name="externalResources"
-        table="loan_extres"
-        lazy="true"
-        inverse="true"
-		cascade="save-update">
+    <set name="externalResources" table="loan_extres" lazy="true" inverse="true" cascade="save-update">
         <key>
-            <column name="LoanID" />
+            <column name="LoanID"/>
         </key>
         <many-to-many class="edu.ku.brc.specify.datamodel.ExternalResource" column="ExternalResourceID"/>
     </set>

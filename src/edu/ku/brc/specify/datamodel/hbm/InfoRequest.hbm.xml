@@ -1,187 +1,75 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 
-<class 
-    name="edu.ku.brc.specify.datamodel.InfoRequest" 
-    table="inforequest"
-	lazy="false"
->
+<class name="edu.ku.brc.specify.datamodel.InfoRequest" table="inforequest" lazy="false">
     <meta attribute="class-description" inherit="false">
        @hibernate.class
         table="inforequest"
     </meta>
 
-	<id name="infoRequestID"
-		type="long"
-		column="InfoRequestID"
-		unsaved-value="null">
+	<id name="infoRequestID" type="long" column="InfoRequestID" unsaved-value="null">
 		<generator class="native"/>
 	</id>
 
-    <property
-        name="firstName"
-        type="java.lang.String"
-        column="Firstname"
-        length="50"
-    >
+    <property name="firstName" type="java.lang.String" column="Firstname" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Firstname"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="lastName"
-        type="java.lang.String"
-        column="Lastname"
-        length="50"
-    >
+    <property name="lastName" type="java.lang.String" column="Lastname" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Lastname"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="institution"
-        type="java.lang.String"
-        column="Institution"
-        length="127"
-    >
+    <property name="institution" type="java.lang.String" column="Institution" length="127">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Institution"
-            length="127"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="email"
-        type="java.lang.String"
-        column="Email"
-        length="50"
-    >
+    <property name="email" type="java.lang.String" column="Email" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Email"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="requestDate"
-        type="calendar_date"
-        column="RequestDate"
-    >
+    <property name="requestDate" type="calendar_date" column="RequestDate">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="RequestDate"
-            update="false"
-         </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="replyDate"
-        type="calendar_date"
-        column="ReplyDate"
-    >
+    <property name="replyDate" type="calendar_date" column="ReplyDate">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="ReplyDate"
-         </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
 
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to RecordSet -->
-    <many-to-one
-        name="recordSet"
-        class="edu.ku.brc.specify.datamodel.RecordSet"
-        not-null="true"
-		outer-join="auto"
-		lazy="false"
-    >
+    <many-to-one name="recordSet" class="edu.ku.brc.specify.datamodel.RecordSet" not-null="true" outer-join="auto" lazy="false">
 	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="RecordSetID"         
-        </meta>
-        <column name="RecordSetID" />
+        <meta attribute="field-description"></meta>
+        <column name="RecordSetID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
 
-    <many-to-one
-        name="agent"
-        class="edu.ku.brc.specify.datamodel.Agent"
-        not-null="false"
-		outer-join="auto"
-	    lazy="false"
-    >
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="false"
-           @hibernate.column name="AgentID"         
-        </meta>
-        <column name="AgentID" />
+    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="false" outer-join="auto" lazy="false">
+        <meta attribute="field-description"></meta>
+        <column name="AgentID"/>
     </many-to-one>
 
 </class>

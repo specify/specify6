@@ -1,245 +1,96 @@
-<?xml version="1.0" ?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 
-
-
-<hibernate-mapping>
-
-<class
-    name="edu.ku.brc.specify.datamodel.RepositoryAgreement"
-    table="repositoryAgreement"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.RepositoryAgreement" table="repositoryAgreement" lazy="true">
     <meta attribute="class-description" inherit="false">
        @hibernate.class
         table="repositoryAgreement"
     </meta>
 
-    <id
-        name="repositoryAgreementId"
-        type="java.lang.Integer"
-        column="RepositoryAgreementID"
-    >
-        <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="RepositoryAgreementID"
-
-        </meta>
+    <id name="repositoryAgreementId" type="java.lang.Integer" column="RepositoryAgreementID">
+        <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
 
-    <property
-        name="number"
-        type="java.lang.String"
-        column="Number"
-        not-null="true"
-        length="60"
-    >
+    <property name="number" type="java.lang.String" column="Number" not-null="true" length="60">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Number"
-            length="60"
-            not-null="true"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="status"
-        type="java.lang.String"
-        column="Status"
-        length="32"
-    >
+    <property name="status" type="java.lang.String" column="Status" length="32">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Status"
-            length="32"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="startDate"
-        type="calendar_date"
-        column="StartDate"
-        >
+    <property name="startDate" type="calendar_date" column="StartDate">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-            @hibernate.property
-            column="StartDate"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="endDate"
-        type="calendar_date"
-        column="EndDate"
-        >
+    <property name="endDate" type="calendar_date" column="EndDate">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-            @hibernate.property
-            column="EndDate"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="dateReceived"
-        type="calendar_date"
-        column="DateReceived"
-    >
+    <property name="dateReceived" type="calendar_date" column="DateReceived">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="DateReceived"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="text1"
-        type="text"
-        column="Text1"
-    >
+    <property name="text1" type="text" column="Text1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Text1"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="text2"
-        type="text"
-        column="Text2"
-    >
+    <property name="text2" type="text" column="Text2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Text2"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="text3"
-        type="text"
-        column="Text3"
-    >
+    <property name="text3" type="text" column="Text3">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Text3"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="number1"
-        type="java.lang.Float"
-        column="Number1"
-    >
+    <property name="number1" type="java.lang.Float" column="Number1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Number1"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="number2"
-        type="java.lang.Float"
-        column="Number2"
-    >
+    <property name="number2" type="java.lang.Float" column="Number2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Number2"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            not-null="true"
-            update="false"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="yesNo1"
-        type="boolean"
-        column="YesNo1"
-    >
+    <property name="yesNo1" type="boolean" column="YesNo1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="YesNo1"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="yesNo2"
-        type="boolean"
-        column="YesNo2"
-    >
+    <property name="yesNo2" type="boolean" column="YesNo2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="YesNo2"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
 
@@ -247,104 +98,39 @@
     <!-- Associations -->
 
     <!-- bi-directional one-to-many association to CollectionObject -->
-    <set
-        name="collectionObjects"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
+    <set name="collectionObjects" lazy="true" inverse="true" cascade="none">
 	    <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="RepositoryAgreementID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.CollectionObject"
-        </meta>
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="RepositoryAgreementID" />
+            <column name="RepositoryAgreementID"/>
         </key>
-        <one-to-many
-            class="edu.ku.brc.specify.datamodel.CollectionObject"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.CollectionObject"/>
     </set>
 
     <!-- bi-directional one-to-many association to AccessionAuthorizations -->
-    <set
-        name="repositoryAgreementAuthorizations"
-        lazy="true"
-        inverse="true"
-		cascade="all"
-    >
+    <set name="repositoryAgreementAuthorizations" lazy="true" inverse="true" cascade="all">
 	    <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="all"
-
-           @hibernate.collection-key
-            column="RepositoryAgreementID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
-        </meta>
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="RepositoryAgreementID" />
+            <column name="RepositoryAgreementID"/>
         </key>
-        <one-to-many
-            class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"/>
     </set>
 
     <!-- bi-directional one-to-many association to AccessionAgent -->
-    <set
-        name="repositoryAgreementAgents"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
+    <set name="repositoryAgreementAgents" lazy="true" inverse="true" cascade="delete">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="all"
-
-           @hibernate.collection-key
-            column="RepositoryAgreementID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.AccessionAgent"
-        </meta>
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="RepositoryAgreementID" />
+            <column name="RepositoryAgreementID"/>
         </key>
-        <one-to-many
-            class="edu.ku.brc.specify.datamodel.AccessionAgent"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.AccessionAgent"/>
     </set>
 
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one
-        name="originator"
-        class="edu.ku.brc.specify.datamodel.Agent"
-        not-null="true"
-        outer-join="true"
-        cascade="none"
-        >
+    <many-to-one name="originator" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true" cascade="none">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-            @hibernate.many-to-one
-            not-null="true"
-            cascade="none"
-            @hibernate.column name="AgentID"
-        </meta>
+        <meta attribute="field-description"></meta>
         <column name="AgentID"/>
     </many-to-one>
     

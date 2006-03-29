@@ -1,8 +1,5 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 <!-- 
     Created by the Middlegen Hibernate plugin 2.1
 
@@ -10,134 +7,58 @@
     http://www.hibernate.org/
 -->
 
-<class 
-    name="edu.ku.brc.specify.datamodel.Author" 
-    table="authors"
->
+<class name="edu.ku.brc.specify.datamodel.Author" table="authors">
     <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="authors"
-    </meta>
+	Associates agents with referenceworks.
+	</meta>
 
-    <id
-        name="authorsId"
-        type="java.lang.Integer"
-        column="AuthorsID"
-    >
-        <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="AuthorsID"
-
-        </meta>
+    <id name="authorsId" type="java.lang.Integer" column="AuthorsID">
+        <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
 
-    <property
-        name="orderNumber"
-        type="short"
-        column="OrderNumber"
-        not-null="true"
-    >
+    <property name="orderNumber" type="short" column="OrderNumber" not-null="true" unique-key="IX_AuthorsRefOrder">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="OrderNumber"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
 
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to ReferenceWork -->
-    <many-to-one
-        name="referenceWork"
-        class="edu.ku.brc.specify.datamodel.ReferenceWork"
-        not-null="true"
-		cascade="none"
-    >
+    <many-to-one name="referenceWork" class="edu.ku.brc.specify.datamodel.ReferenceWork" not-null="true" cascade="none" index="IX_AuthorsReferenceWorkID" unique-key="IX_AuthorsRefOrder">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-			cascade="none"
-           @hibernate.column name="ReferenceWorkID"         
-        </meta>
-        <column name="ReferenceWorkID" />
+	   Reference record the Agent authored
+	</meta>
+        <column name="ReferenceWorkID"/>
     </many-to-one>
 
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one
-        name="agent"
-        class="edu.ku.brc.specify.datamodel.Agent"
-        not-null="true"
-    >
+    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" index="IX_AuthorsAgentID">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="AgentID"         
-        </meta>
-        <column name="AgentID" />
+	   Agent record representing the Author
+	</meta>
+        <column name="AgentID"/>
     </many-to-one>
 
 </class>

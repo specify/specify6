@@ -1,9 +1,5 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 <!--
     Created by the Middlegen Hibernate plugin 2.1
 
@@ -11,158 +7,68 @@
     http://www.hibernate.org/
 -->
 
-<class
-    name="edu.ku.brc.specify.datamodel.AccessionAgent"
-    table="accessionagents"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.AccessionAgent" table="accessionagents" lazy="true">
     <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="accessionagents"
-    </meta>
+	Associates agents with accessions.
+	</meta>
 
-    <id
-        name="accessionAgentsId"
-        type="java.lang.Integer"
-        column="AccessionAgentsID"
-    >
-        <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="AccessionAgentsID"
-
-        </meta>
+    <id name="accessionAgentsId" type="java.lang.Integer" column="AccessionAgentsID">
+        <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
 
-    <property
-        name="role"
-        type="java.lang.String"
-        column="Role"
-        not-null="true"
-        length="32"
-    >
+    <property name="role" type="java.lang.String" column="Role" not-null="true" length="32" unique-key="IX_AccessionAgents">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Role"
-            length="32"
-            not-null="true"
-        </meta>
+	   Role the agent played in the accession process
+	</meta>
     </property>
 
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            not-null="true"
-            update="false"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
     <!-- Associations -->
 
     <!-- bi-directional many-to-one association to AgentAddress -->
-    <many-to-one
-        name="agentAddress"
-        class="edu.ku.brc.specify.datamodel.AgentAddress"
-        not-null="true"
-		outer-join="true"
-		cascade="none"
-    >
+    <many-to-one name="agentAddress" class="edu.ku.brc.specify.datamodel.AgentAddress" not-null="true" outer-join="true" cascade="none" index="IX_AccessionAgentsAgentAddressID" unique-key="IX_AccessionAgents">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-			cascade="none"
-           @hibernate.column name="AgentAddressID"
-        </meta>
-        <column name="AgentAddressID" />
+	   AgentAdress of agent playing role in Accession
+	</meta>
+        <column name="AgentAddressID"/>
     </many-to-one>
 
     <!-- bi-directional many-to-one association to Accession -->
-    <many-to-one
-        name="accession"
-        class="edu.ku.brc.specify.datamodel.Accession"
-        not-null="true"
-		outer-join="true"
-		cascade="none"
-    >
+    <many-to-one name="accession" class="edu.ku.brc.specify.datamodel.Accession" not-null="true" outer-join="true" cascade="none" index="IX_AccessionAgentsAccessionID" unique-key="IX_AccessionAgents">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="AccessionID"
-        </meta>
-        <column name="AccessionID" />
+	   Accession in which the Agent played a role
+	</meta>
+        <column name="AccessionID"/>
     </many-to-one>
 
     <!-- bi-directional many-to-one association to RepositoryAgreement -->
-    <many-to-one
-        name="repositoryAgreement"
-        class="edu.ku.brc.specify.datamodel.RepositoryAgreement"
-        not-null="true"
-		outer-join="true"
-		cascade="none"
-    >
+    <many-to-one name="repositoryAgreement" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" not-null="true" outer-join="true" cascade="none">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="RepositoryAgreementID"
-        </meta>
-        <column name="RepositoryAgreementID" />
+        <meta attribute="field-description"></meta>
+        <column name="RepositoryAgreementID"/>
     </many-to-one>
 
 </class>

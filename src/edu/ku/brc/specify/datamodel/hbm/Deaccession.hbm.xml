@@ -1,9 +1,5 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 <!-- 
     Created by the Middlegen Hibernate plugin 2.1
 
@@ -11,263 +7,119 @@
     http://www.hibernate.org/
 -->
 
-<class 
-    name="edu.ku.brc.specify.datamodel.Deaccession" 
-    table="deaccession"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.Deaccession" table="deaccession" lazy="true">
     <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="deaccession"
-    </meta>
+	Information about deaccessioned material.
+	</meta>
 
-    <id
-        name="deaccessionId"
-        type="java.lang.Integer"
-        column="DeaccessionID"
-    >
+    <id name="deaccessionId" type="java.lang.Integer" column="DeaccessionID">
         <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="DeaccessionID"
-
-        </meta>
+	   Primary key
+	</meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
 
-    <property
-        name="type"
-        type="java.lang.String"
-        column="Type"
-        length="32"
-    >
+    <property name="type" type="java.lang.String" column="Type" length="32">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Type"
-            length="32"
-        </meta>    
+	   Description of the Type of deaccession; i.e. Gift, disposal, lost
+	</meta>    
     </property>
     
-    <property
-        name="deaccessionNumber"
-        type="java.lang.String"
-        column="DeaccessionNumber"
-        length="50"
-    >
+    <property name="deaccessionNumber" type="java.lang.String" column="DeaccessionNumber" length="50" index="IX_DeaccessionNumber">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="DeaccessionNumber"
-            length="50"
-        </meta>    
+	   Name institution assigns to the deacession
+	</meta>    
     </property>
     
-    <property
-        name="deaccessionDate"
-        type="calendar_date"
-        column="DeaccessionDate"
-    >
+    <property name="deaccessionDate" type="calendar_date" column="DeaccessionDate">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="DeaccessionDate"
-            length="10"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="text1"
-        type="text"
-        column="Text1"
-    >
+    <property name="text1" type="text" column="Text1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Text1"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="text2"
-        type="text"
-        column="Text2"
-    >
+    <property name="text2" type="text" column="Text2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Text2"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="number1"
-        type="java.lang.Float"
-        column="Number1"
-        length="24"
-    >
+    <property name="number1" type="java.lang.Float" column="Number1" length="24">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Number1"
-            length="24"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="number2"
-        type="java.lang.Float"
-        column="Number2"
-        length="24"
-    >
+    <property name="number2" type="java.lang.Float" column="Number2" length="24">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="Number2"
-            length="24"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="yesNo1"
-        type="boolean"
-        column="YesNo1"
-    >
+    <property name="yesNo1" type="boolean" column="YesNo1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="YesNo1"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
     
-    <property
-        name="yesNo2"
-        type="boolean"
-        column="YesNo2"
-    >
+    <property name="yesNo2" type="boolean" column="YesNo2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
-            column="YesNo2"
-        </meta>    
+	   User definable
+	</meta>    
     </property>
 
 
     <!-- Associations -->
   
     <!-- bi-directional one-to-many association to DeaccessionAgent -->
-    <set
-        name="deaccessionAgents"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="DeaccessionID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.DeaccessionAgent"
-        </meta>
+    <set name="deaccessionAgents" lazy="true" inverse="true" cascade="delete">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="DeaccessionID" />
+            <column name="DeaccessionID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.DeaccessionAgent"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.DeaccessionAgent"/>
     </set>
     
     <!-- bi-directional one-to-many association to DeaccessionCollectionObject -->
-    <set
-        name="deaccessionCollectionObjects"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="DeaccessionID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject"
-        </meta>
+    <set name="deaccessionCollectionObjects" lazy="true" inverse="true" cascade="delete">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="DeaccessionID" />
+            <column name="DeaccessionID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject"/>
     </set>
     
 

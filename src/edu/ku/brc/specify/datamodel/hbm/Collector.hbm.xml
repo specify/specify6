@@ -1,9 +1,5 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 <!-- 
     Created by the Middlegen Hibernate plugin 2.1
 
@@ -11,132 +7,54 @@
     http://www.hibernate.org/
 -->
 
-<class 
-    name="edu.ku.brc.specify.datamodel.Collector" 
-    table="collectors"
->
+<class name="edu.ku.brc.specify.datamodel.Collector" table="collectors">
     <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="collectors"
-    </meta>
+	Associates agents with collecting events.
+	</meta>
 
-    <id
-        name="collectorsId"
-        type="java.lang.Integer"
-        column="CollectorsID"
-    >
-        <meta attribute="field-description">
-           @hibernate.id
-            generator-class="native"
-            type="java.lang.Integer"
-            column="CollectorsID"
-
-        </meta>
+    <id name="collectorsId" type="java.lang.Integer" column="CollectorsID">
+        <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
-        <generator class="native" />
+        <generator class="native"/>
     </id>
 
-    <property
-        name="orderNumber"
-        type="int"
-        column="OrderNumber"
-        not-null="true"
-        length="10"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="OrderNumber"
-            length="10"
-            not-null="true"
-        </meta>    
+    <property name="orderNumber" type="int" column="OrderNumber" not-null="true" length="10" unique-key="IX_CollectorsCEOrder">
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampModified"
-        type="java.sql.Timestamp"
-        column="TimestampModified"
-        length="23"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampModified"
-            length="23"
-            not-null="true"
-        </meta>    
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="timestampCreated"
-        type="java.sql.Timestamp"
-        column="TimestampCreated"
-        length="23"
-        not-null="true"
-        update="false"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TimestampCreated"
-            length="23"
-            update="false"
-            not-null="true"
-        </meta>    
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="lastEditedBy"
-        type="java.lang.String"
-        column="LastEditedBy"
-        length="50"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="LastEditedBy"
-            length="50"
-        </meta>    
+    <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
+        <meta attribute="field-description"></meta>    
     </property>
 
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to CollectingEvent -->
-    <many-to-one
-        name="collectingEvent"
-        class="edu.ku.brc.specify.datamodel.CollectingEvent"
-        not-null="true"
-		cascade="none"
-    >
+    <many-to-one name="collectingEvent" class="edu.ku.brc.specify.datamodel.CollectingEvent" not-null="true" cascade="none" index="IX_CollectorsCollectingEventID" unique-key="IX_CollectorsCEOrder">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-			cascade="none"
-           @hibernate.column name="CollectingEventID"         
-        </meta>
-        <column name="CollectingEventID" />
+	   The CollectingEvent the agent participated in
+	</meta>
+        <column name="CollectingEventID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one
-        name="agent"
-        class="edu.ku.brc.specify.datamodel.Agent"
-        not-null="true"
-    >
+    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" index="IX_CollectorsAgentID">
         <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="AgentID"         
-        </meta>
-        <column name="AgentID" />
+	   Link to Collector's record in Agent table
+	</meta>
+        <column name="AgentID"/>
     </many-to-one>
 
 </class>

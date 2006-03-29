@@ -1,83 +1,37 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 
-<hibernate-mapping>
-
-<class 
-    name="edu.ku.brc.specify.datamodel.UserGroup"
-    table="usergroup"
-    lazy="true"	
->
+<class name="edu.ku.brc.specify.datamodel.UserGroup" table="usergroup" lazy="true">
     <meta attribute="class-description" inherit="false">
        @hibernate.class
         table="usergroup"
     </meta>
 
-    <id
-        name="userGroupId"
-        type="java.lang.Integer"
-        column="UserGroupID"
-    >
+    <id name="userGroupId" type="java.lang.Integer" column="UserGroupID">
       <meta attribute="scope-set">public</meta>
       <meta attribute="scope-field">protected</meta>
       <generator class="native"/>
     </id>
     
-    <property
-        name="name"
-        type="java.lang.String"
-        column="Name"
-        length="64"
-    >
+    <property name="name" type="java.lang.String" column="Name" length="64">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Name"
-            length="64"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
-    <property
-        name="remarks"
-        type="text"
-        column="Remarks"
-    >
+    <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Remarks"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     
     <!-- Associations -->
   
     <!-- bi-directional one-to-many association to SpecifyUser -->
-    <set
-        name="users"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="none"
-
-           @hibernate.collection-key
-            column="UserGroupID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.SpecifyUser"
-        </meta>
+    <set name="users" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="UserGroupID" />
+            <column name="UserGroupID"/>
         </key>
-        <one-to-many 
-            class="edu.ku.brc.specify.datamodel.SpecifyUser"
-        />
+        <one-to-many class="edu.ku.brc.specify.datamodel.SpecifyUser"/>
     </set>
     
 </class>

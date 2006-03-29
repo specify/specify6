@@ -1,144 +1,77 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 
-<hibernate-mapping>
-
-<class
-    name="edu.ku.brc.specify.datamodel.CollectionObjDef"
-    table="collectionobjdef"
-	lazy="true"
->
+<class name="edu.ku.brc.specify.datamodel.CollectionObjDef" table="collectionobjdef" lazy="true">
     <meta attribute="class-description" inherit="false">
        @hibernate.class
         table="collectionobjdef"
     </meta>
 
-    <id
-        name="collectionObjDefId"
-        type="java.lang.Integer"
-        column="CollectionObjDefID"
-    >
+    <id name="collectionObjDefId" type="java.lang.Integer" column="CollectionObjDefID">
       <meta attribute="scope-set">public</meta>
       <meta attribute="scope-field">protected</meta>
       <generator class="native"/>
     </id>
 
-    <property
-        name="name"
-        type="java.lang.String"
-        column="Name"
-        length="50"
-    >
+    <property name="name" type="java.lang.String" column="Name" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="use-in-tostring">true</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Name"
-            length="50"
-        </meta>
+        <meta attribute="field-description"></meta>
     </property>
 
     <!-- Associations -->
 
     <!-- many-to-one association to DataType -->
-    <many-to-one
-        name="dataType"
-        class="edu.ku.brc.specify.datamodel.DataType"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="dataType" class="edu.ku.brc.specify.datamodel.DataType" not-null="true" outer-join="true">
 	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="DataTypeID"
-        </meta>
-        <column name="DataTypeID" />
+        <meta attribute="field-description"></meta>
+        <column name="DataTypeID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-many association to CatalogSeries -->
-    <set
-        name="catalogSeries"
-        table="catseries_colobjdef"
-        lazy="true"
-        inverse="true"
-		cascade="save-update">
+    <set name="catalogSeries" table="catseries_colobjdef" lazy="true" inverse="true" cascade="save-update">
         <key>
-            <column name="CollectionObjDefID" />
+            <column name="CollectionObjDefID"/>
         </key>
         <many-to-many class="edu.ku.brc.specify.datamodel.CatalogSeries" column="CatalogSeriesID"/>
     </set>
         
     <!-- many-to-one association to SpecifyUser -->
-    <many-to-one
-        name="user"
-        class="edu.ku.brc.specify.datamodel.SpecifyUser"
-        not-null="true"
-		outer-join="true"
-    >
+    <many-to-one name="user" class="edu.ku.brc.specify.datamodel.SpecifyUser" not-null="true" outer-join="true">
 	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.many-to-one
-            not-null="true"
-           @hibernate.column name="SpecifyUserID"
-        </meta>
-        <column name="SpecifyUserID" />
+        <meta attribute="field-description"></meta>
+        <column name="SpecifyUserID"/>
     </many-to-one>   
     
     <!-- bi-directional one-to-many association to AttributeDef -->
-    <set
-        name="attributeDefs"
-        lazy="true"
-        inverse="true"
-		cascade="delete"
-    >
-        <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="CollectionObjDefID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.AttributeDef"
-        </meta>
+    <set name="attributeDefs" lazy="true" inverse="true" cascade="delete">
+        <meta attribute="field-description"></meta>
         <key>
-            <column name="CollectioObjDefID" />
+            <column name="CollectioObjDefID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.AttributeDef"/>
     </set>
     
     <!-- bi-directional many-to-one association to GeographyTreeDef -->
-    <many-to-one name="geographyTreeDef" class="edu.ku.brc.specify.datamodel.GeographyTreeDef"
-        not-null="true" outer-join="true">
-        <meta attribute="field-description"> @hibernate.many-to-one not-null="true"
-            @hibernate.column name="GeographyTreeDefID"</meta>
+    <many-to-one name="geographyTreeDef" class="edu.ku.brc.specify.datamodel.GeographyTreeDef" not-null="true" outer-join="true">
+        <meta attribute="field-description"></meta>
         <column name="GeographyTreeDefID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to GeologicTimePeriodTreeDef -->
-    <many-to-one name="geologicTimePeriodTreeDef" class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"
-        not-null="true" outer-join="true">
-        <meta attribute="field-description"> @hibernate.many-to-one not-null="true"
-            @hibernate.column name="GeologicTimePeriodTreeDefID"</meta>
+    <many-to-one name="geologicTimePeriodTreeDef" class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef" not-null="true" outer-join="true">
+        <meta attribute="field-description"></meta>
         <column name="GeologicTimePeriodTreeDefID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to LocationTreeDef -->
-    <many-to-one name="locationTreeDef" class="edu.ku.brc.specify.datamodel.LocationTreeDef"
-        not-null="true" outer-join="true">
-        <meta attribute="field-description"> @hibernate.many-to-one not-null="true"
-            @hibernate.column name="LocationTreeDefID"</meta>
+    <many-to-one name="locationTreeDef" class="edu.ku.brc.specify.datamodel.LocationTreeDef" not-null="true" outer-join="true">
+        <meta attribute="field-description"></meta>
         <column name="LocationTreeDefID"/>
     </many-to-one>
     
     <!-- bi-directional one-to-one association to TaxonTreeDef -->
-    <one-to-one name="taxonTreeDef" class="edu.ku.brc.specify.datamodel.TaxonTreeDef"
-        cascade="save-update">
+    <one-to-one name="taxonTreeDef" class="edu.ku.brc.specify.datamodel.TaxonTreeDef" cascade="save-update">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
             @hibernate.one-to-one
@@ -146,14 +79,9 @@
     </one-to-one>
     
     <!-- bi-directional many-to-many association to Locality -->
-    <set
-        name="localities"
-        table="colobjdef_locality"
-        lazy="true"
-        inverse="true"
-        cascade="save-update">
+    <set name="localities" table="colobjdef_locality" lazy="true" inverse="true" cascade="save-update">
         <key>
-            <column name="CollectionObjDefID" />
+            <column name="CollectionObjDefID"/>
         </key>
         <many-to-many class="edu.ku.brc.specify.datamodel.Locality" column="LocalityID"/>
     </set>
