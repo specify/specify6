@@ -23,8 +23,10 @@ import edu.ku.brc.specify.datamodel.Treeable;
  */
 public class RankBasedTreeCellRenderer extends DefaultTreeCellRenderer
 {
-	Map<Integer,Icon> iconMap;
-	Map<Integer,TreeCellRenderer> subRenderers;
+	protected Map<Integer,Icon> iconMap;
+	protected Map<Integer,TreeCellRenderer> subRenderers;
+	protected boolean subsEnabled;
+	protected Icon defaultIcon;
 	
 	/**
 	 * Creates a new RandBasedTreeCellRenderer using the passed in Map to
@@ -37,13 +39,24 @@ public class RankBasedTreeCellRenderer extends DefaultTreeCellRenderer
 		super();
 		iconMap = ranksToIcons;
 		subRenderers = new Hashtable<Integer,TreeCellRenderer>();
+		subsEnabled = true;
 	}
 	
 	public void setSubRendererForRank( TreeCellRenderer subRenderer, int rank )
 	{
 		subRenderers.put(rank, subRenderer);
 	}
-
+	
+	public void setSubRenderersEnabled( boolean enabled )
+	{
+		subsEnabled = enabled;
+	}
+	
+	public void setDefaultIcon(Icon icon)
+	{
+		defaultIcon = icon;
+	}
+	
 	/**
 	 * Configures the renderer based on the underlying DefaultTreeCellRenderers choices
 	 * and modifies the node icon based on the rank of <i>value</i>, which must be
@@ -73,24 +86,30 @@ public class RankBasedTreeCellRenderer extends DefaultTreeCellRenderer
 	    Treeable t = (Treeable)node.getUserObject();
 
 	    JLabel l = (JLabel)c;
+	    l.setText(t.getName());
 	    
 	    Integer rank = t.getRankId();
 	    if( rank != null )
 	    {
-	    	TreeCellRenderer sub = subRenderers.get(rank);
-	    	if( sub != null )
+	    	if( subsEnabled )
 	    	{
-	    		return sub.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+		    	TreeCellRenderer sub = subRenderers.get(rank);
+		    	if( sub != null )
+		    	{
+		    		return sub.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+		    	}	    		
 	    	}
 
-	    	Icon icon = iconMap.get(t.getRankId());
+	    	Icon icon = iconMap.get(rank);
 	    	if( icon != null )
 	    	{
 	    		l.setIcon(icon);
 	    	}
+	    	else if( defaultIcon != null )
+	    	{
+	    		l.setIcon(defaultIcon);
+	    	}
 	    }
-	    
-	    l.setText(t.getName());
 
 	    return l;
     }

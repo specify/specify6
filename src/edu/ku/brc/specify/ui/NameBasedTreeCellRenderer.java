@@ -1,9 +1,12 @@
 package edu.ku.brc.specify.ui;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -65,14 +68,24 @@ public class NameBasedTreeCellRenderer extends DefaultTreeCellRenderer
 	    	    
 	    JLabel l = (JLabel)c;
 	    l.setText(t.getName());
+	    Color color;
+	    if( sel )
+	    {
+	    	color = getBackgroundSelectionColor();
+	    }
+	    else
+	    {
+	    	color = getBackgroundNonSelectionColor();
+	    }
+	    l.setBorder(BorderFactory.createMatteBorder(1,1,1,1,color));
 	    
 	    if( t.getName() != null )
 	    {
 	    	String lowerCaseName = t.getName().toLowerCase();
-	    	Icon icon = iconMap.get(lowerCaseName);
+	    	ImageIcon icon = (ImageIcon)iconMap.get(lowerCaseName);
 	    	if( icon != null )
 	    	{
-	    		l.setIcon(icon);
+	    		l.setIcon(new BorderedIcon(icon,1,Color.BLACK));
 	    	}
 	    }
 
