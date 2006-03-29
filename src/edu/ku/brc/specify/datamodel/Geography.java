@@ -18,6 +18,7 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
      protected Integer treeId;
      protected String name;
      protected String commonName;
+     protected String geographyCode;
      protected Integer rankId;
      protected Integer nodeNumber;
      protected Integer highestChildNodeNumber;
@@ -86,6 +87,18 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     
     public void setCommonName(String commonName) {
         this.commonName = commonName;
+    }
+
+    /**
+     *      *  @hibernate.property column="CommonName" length="8"
+     *             
+     */
+    public String getGeographyCode() {
+        return this.geographyCode;
+    }
+    
+    public void setGeographyCode(String geographyCode) {
+        this.geographyCode = geographyCode;
     }
 
     /**

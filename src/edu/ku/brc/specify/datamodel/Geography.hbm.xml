@@ -153,6 +153,12 @@
             </meta>
         </property>
 
+        <property name="geographyCode" type="java.lang.String" column="GeographyCode" length="8">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"> @hibernate.property column="GeographyCode" length="8"
+            </meta>
+        </property>
+
         <property name="rankId" type="java.lang.Integer" column="RankID" length="10"
             index="IX_GeoRankID" not-null="true">
             <meta attribute="scope-field">protected</meta>
