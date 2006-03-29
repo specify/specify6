@@ -248,6 +248,20 @@
             length="32"
         </meta>
     </property>
+    
+    <property
+        name="groupPermittedToView"
+        type="java.lang.Integer"
+        column="GroupPermittedToView"
+        length="10"
+        >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+            @hibernate.property
+            column="GroupPermittedToView"
+            length="10"
+        </meta>    
+    </property>    
 
     <property
         name="timestampCreated"
@@ -449,6 +463,7 @@
         lazy="true"
         inverse="true"
 		cascade="all"
+        order-by="determinedDate desc"
     >
 		<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">

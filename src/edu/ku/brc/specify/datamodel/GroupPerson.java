@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
 
 
 
@@ -20,8 +20,8 @@ public class GroupPerson  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     private Agent agentByGroupId;
-     private Agent agentByMemberId;
+     private Agent agentByGroup;
+     private Agent agentByMember;
 
 
     // Constructors
@@ -134,12 +134,12 @@ public class GroupPerson  implements java.io.Serializable {
      *            @hibernate.column name="GroupID"         
      *         
      */
-    public Agent getAgentByGroupId() {
-        return this.agentByGroupId;
+    public Agent getAgentByGroup() {
+        return this.agentByGroup;
     }
     
-    public void setAgentByGroupId(Agent agentByGroupId) {
-        this.agentByGroupId = agentByGroupId;
+    public void setAgentByGroup(Agent agentByGroup) {
+        this.agentByGroup = agentByGroup;
     }
 
     /**
@@ -148,12 +148,12 @@ public class GroupPerson  implements java.io.Serializable {
      *            @hibernate.column name="MemberID"         
      *         
      */
-    public Agent getAgentByMemberId() {
-        return this.agentByMemberId;
+    public Agent getAgentByMember() {
+        return this.agentByMember;
     }
     
-    public void setAgentByMemberId(Agent agentByMemberId) {
-        this.agentByMemberId = agentByMemberId;
+    public void setAgentByMember(Agent agentByMember) {
+        this.agentByMember = agentByMember;
     }
 
 

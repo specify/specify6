@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -49,9 +50,6 @@ public class Locality  implements java.io.Serializable {
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
-     protected Integer elevationMethodId;
-     protected Integer latLongTypeId;
-     protected Integer latLongMethodId;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      protected String lat1text;
@@ -63,6 +61,7 @@ public class Locality  implements java.io.Serializable {
      protected String island;
      protected String waterBody;
      protected String drainage;
+     private Set collectionObjDefs;
      protected Geography geography;
      protected Set localityCitations;
      protected Set collectingEvents;
@@ -481,7 +480,6 @@ public class Locality  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Text1"
-     *             length="300"
      *         
      */
     public String getText1() {
@@ -495,7 +493,6 @@ public class Locality  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Text2"
-     *             length="300"
      *         
      */
     public String getText2() {
@@ -577,48 +574,6 @@ public class Locality  implements java.io.Serializable {
     
     public void setLastEditedBy(String lastEditedBy) {
         this.lastEditedBy = lastEditedBy;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="ElevationMethodID"
-     *             length="10"
-     *         
-     */
-    public Integer getElevationMethodId() {
-        return this.elevationMethodId;
-    }
-    
-    public void setElevationMethodId(Integer elevationMethodId) {
-        this.elevationMethodId = elevationMethodId;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="LatLongTypeID"
-     *             length="10"
-     *         
-     */
-    public Integer getLatLongTypeId() {
-        return this.latLongTypeId;
-    }
-    
-    public void setLatLongTypeId(Integer latLongTypeId) {
-        this.latLongTypeId = latLongTypeId;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="LatLongMethodID"
-     *             length="10"
-     *         
-     */
-    public Integer getLatLongMethodId() {
-        return this.latLongMethodId;
-    }
-    
-    public void setLatLongMethodId(Integer latLongMethodId) {
-        this.latLongMethodId = latLongMethodId;
     }
 
     /**
@@ -771,6 +726,17 @@ public class Locality  implements java.io.Serializable {
     
     public void setDrainage(String drainage) {
         this.drainage = drainage;
+    }
+
+    /**
+     * 
+     */
+    public Set getCollectionObjDefs() {
+        return this.collectionObjDefs;
+    }
+    
+    public void setCollectionObjDefs(Set collectionObjDefs) {
+        this.collectionObjDefs = collectionObjDefs;
     }
 
     /**

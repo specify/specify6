@@ -21,6 +21,23 @@
 package edu.ku.brc.specify;
 
 
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAttributeDef;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCatalogSeries;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectingEvent;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectingEventAttr;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectionObject;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectionObjectAttr;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollector;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDataType;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDetermination;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createLocality;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPrepType;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPreparation;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.*;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createSpecifyUser;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserGroup;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.setSession;
+import static edu.ku.brc.specify.tests.CreateTestDatabases.*;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
@@ -31,6 +48,8 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,6 +57,7 @@ import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -60,15 +80,34 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.specify.config.CatalogSeriesWizard;
 import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.AttributeDef;
+import edu.ku.brc.specify.datamodel.AttributeIFace;
+import edu.ku.brc.specify.datamodel.CatalogSeries;
+import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.CollectingEventAttr;
+import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
+import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.DataType;
+import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.InfoRequest;
+import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.Location;
+import edu.ku.brc.specify.datamodel.PrepType;
+import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.datamodel.TaxonTreeDef;
+import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.EMailHelper;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.helpers.XMLHelper;
+import edu.ku.brc.specify.prefs.PrefMainPanel;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.specify.tests.forms.TestDataSubObj;
 import edu.ku.brc.specify.ui.ChooseFromListDlg;
@@ -76,50 +115,163 @@ import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.db.PickList;
 import edu.ku.brc.specify.ui.forms.FormViewObj;
 import edu.ku.brc.specify.ui.forms.FormViewable;
+import edu.ku.brc.specify.ui.forms.MultiView;
 import edu.ku.brc.specify.ui.forms.ViewFactory;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
 import edu.ku.brc.specify.ui.forms.persist.FormView;
 import edu.ku.brc.specify.ui.forms.persist.ViewSet;
 
 /**
- * The stand alone part of the FormEditor (this is a prototype at the moment that is used for viewing forms) 
- * 
+ * The stand alone part of the FormEditor (this is a prototype at the moment that is used for viewing forms)
+ *
  * @author rods
  *
  */
 public class FormEditor
 {
     private static Log log = LogFactory.getLog(FormEditor.class);
-    
+
     protected JPanel contentPane;
     protected JFrame mainFrame;
-    
+
     protected String currViewSetName;
     protected int    currFormId;
-    
+
     protected Object            dataObj     = null;
     protected TestDataObj       testDataObj = null;
     protected List<TestDataObj> list        = new ArrayList<TestDataObj>();
-    
-    protected FormViewable fvo;
-    protected DataType dataType;
 
-    
+    protected FormViewable      fvo;
+    protected DataType          dataType;
+    protected MultiView         multiView;
+
+
     public FormEditor()
     {
-        
+
         DBConnection.setUsernamePassword("rods", "rods");
         DBConnection.setDriver("com.mysql.jdbc.Driver");
         DBConnection.setDBName("jdbc:mysql://localhost/demo_fish3");
 
         init();
     }
-    
+
     protected void init()
     {
         //dataType = createDataTypes("Animal");
     }
     
+    /**
+     * @param disciplineName fish, birds, bees etc
+     * @return true on success
+     */
+    public CollectionObject[] createSingleDiscipline(final String disciplineName)
+    {
+        UserGroup        userGroup        = createUserGroup(disciplineName);
+        SpecifyUser      user             = createSpecifyUser("John", "Doe", (short)0, userGroup);
+        DataType         dataType         = createDataType(disciplineName);
+
+        
+        TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("TreeDef");
+        CollectionObjDef collectionObjDef = createCollectionObjDef(disciplineName, dataType, user, taxonTreeDef);
+        
+        Geography[] geographies = createGeographies(collectionObjDef, "GeoTree");
+        
+        Locality[] localities = new Locality[2];
+        localities[0] = createLocality("This is the place", geographies[0]);
+        localities[1] = createLocality("My Private Forest", geographies[1]);
+
+        Location[] locations = createLocations(collectionObjDef, "GLocationTree");
+        Taxon[]    taxonomy  = createTaxonomy(taxonTreeDef);
+
+        Agent[] agents = createAgents();
+
+        CatalogSeries catalogSeries = createCatalogSeries("KUFSH", "Fish");
+       
+        
+        // Create Collecting Event
+        CollectingEvent colEv = createCollectingEvent(localities[0],
+                new Collector[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
+
+        // Create AttributeDef for Collecting Event
+        AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", null);
+
+        // Create CollectingEventAttr
+        CollectingEventAttr cevAttr = createCollectingEventAttr(colEv, cevAttrDef, "Clinton Park", null);
+
+        // Create Collection Object
+        Object[]  values = {1001010.1f, "RCS101", agents[0], 5,
+                            1101011.1f, "RCS102", agents[1], 20,
+                            1201012.1f, "RCS103", agents[2], 15,
+                            1301013.1f, "RCS104", agents[3], 25,
+                            1401014.1f, "RCS105", agents[4], 35,
+                            1501015.1f, "RCS106", agents[5], 45,
+                            1601016.1f, "RCS107", agents[0], 55,
+                            1701017.1f, "RCS108", agents[1], 65};
+        CollectionObject[] colObjs = new CollectionObject[values.length/4];
+        for (int i=0;i<values.length;i+=4)
+        {
+            colObjs[i/4] = createCollectionObject((Float)values[i], 
+                                                  (String)values[i+1], 
+                                                  null, 
+                                                  (Agent)values[i+2],  
+                                                  catalogSeries, 
+                                                  collectionObjDef, 
+                                                  (Integer)values[+3],
+                                                  colEv);
+        }
+
+        // Create AttributeDef for Collection Object
+        AttributeDef colObjAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "MoonPhase", null);
+
+        // Create CollectionObjectAttr
+        CollectionObjectAttr colObjAttr = createCollectionObjectAttr(colObjs[0], colObjAttrDef, "Full", null);
+
+        int agentInx = 0;
+        int taxonInx = 0;
+        // Create Determination
+        for (int i=0;i<colObjs.length;i++)
+        {
+            for (int j=0;j<i+2;j++)
+            {
+                Calendar cal = Calendar.getInstance();
+                cal.clear();
+                cal.set(1990-i, 11-i, 28-(i+j));
+                createDetermination(colObjs[i], agents[agentInx % agents.length], taxonomy[taxonInx % taxonomy.length], j == 0, cal);
+                agentInx++;
+                taxonInx++;
+            }
+        }
+
+        // Create Preparation Type
+        PrepType prepType = createPrepType("Skeleton");
+        PrepType prepType2 = createPrepType("C&S");
+
+        // Create Preparation for each CollectionObject
+        agentInx = 3; // arbitrary
+        Preparation[] preps = new Preparation[colObjs.length];
+        for (int i=0;i<preps.length;i++)
+        {
+            preps[i] = createPreparation(prepType,  agents[agentInx % agents.length], colObjs[i], locations[0], 10+i);
+            agentInx++;
+        }
+
+        // Create AttributeDef for Preparation
+        AttributeDef prepAttrDefSize = createAttributeDef(AttributeIFace.FieldType.IntegerType, "size", prepType);
+        AttributeDef prepAttrDefSex  = createAttributeDef(AttributeIFace.FieldType.StringType, "sex", prepType);
+
+        // Create PreparationAttr
+        for (int i=0;i<preps.length;i++)
+        {
+            createPreparationAttr(prepAttrDefSize, preps[i], null, 100.0);
+            createPreparationAttr(prepAttrDefSex,  preps[i], i % 2 == 0 ? "Male" : "Female", null);
+        }
+        
+        return colObjs;
+
+    }
+
+
     /**
      * Creates a Standard set of DataTypes for Collections
      * @param returnName the name of a DataType to return (ok if null)
@@ -132,28 +284,28 @@ public class FormEditor
         if (numDataTypes == 0)
         {
             String[] dataTypeNames = {"Animal", "Plant", "Fungi", "Mineral", "Other"};
-    
-            
+
+
             try
             {
                 Session session = HibernateUtil.getCurrentSession();
                 HibernateUtil.beginTransaction();
-    
+
                 for (String name : dataTypeNames)
                 {
                     DataType dataType = new DataType();
                     dataType.setName(name);
                     dataType.setCollectionObjDef(null);
                     session.save(dataType);
-    
+
                     if (returnName != null && name.equals(returnName))
                     {
                         retDataType = dataType;
                     }
                 }
-    
+
                 HibernateUtil.commitTransaction();
-    
+
             } catch (Exception e)
             {
                 log.error("******* " + e);
@@ -175,63 +327,63 @@ public class FormEditor
         }
         return retDataType;
     }
-    
+
     /**
      * Create a form
      * @param formView the definition of the form to create
      */
     protected FormViewable createForm(FormView formView)
-    {       
+    {
         FormViewable form = ViewFactory.createView(formView);
         fvo = form;
-        
-        contentPane.removeAll();
+
+        multiView.removeAll();
         Component comp = form.getUIComponent();
         if (comp != null)
         {
-            comp.invalidate();   
-            //contentPane.add(comp, BorderLayout.CENTER);
-            contentPane.add(new CatalogSeriesWizard(null), BorderLayout.CENTER);
-            
+            comp.invalidate();
+            multiView.addView((FormViewObj)form);
+            //contentPane.add(new CatalogSeriesWizard(null), BorderLayout.CENTER);
+
             //SwingUtilities.invokeLater(new Runnable() {
-            //    public void run() 
+            //    public void run()
             //    {
                     contentPane.doLayout();
                     UICacheManager.forceTopFrameRepaint();
-                    
+
                     mainFrame.invalidate();
                     mainFrame.doLayout();
                     mainFrame.repaint();
-                    
+
                     // XXX Why???
                     mainFrame.pack();
-                    //mainFrame.setSize(new Dimension(1024, 764));
+                    mainFrame.setSize(new Dimension(800, 550));
                     //mainFrame.pack();
                     UIHelper.centerAndShow(mainFrame);
-                    
+
                     boolean doSend = false;
                     if (doSend)
                     {
                         String msg = "<!-- NUM_ITEMS 1 --><form name=\"form\"><table><tr><td><!-- ITEM0 101 -->[  ]</td><td>Megalotis</td></tr></table><form>";
-                        EMailHelper.sendMsg("imap.ku.edu", "rods", "Inverness1601*", "rods@ku.edu",  
-                                "rods@ku.edu",  
-                                "Catalog Items You Requested", 
+                        EMailHelper.sendMsg("imap.ku.edu", "rods", "Inverness1601*", "rods@ku.edu",
+                                "rods@ku.edu",
+                                "Catalog Items You Requested",
                                  msg, "text/html", null);
                     } else
                     {
                         //EMailHelper.findRepliesFromResearch("imap.ku.edu", "rods", "Inverness1601*");
                     }
-                    
+
                     if (currViewSetName.equals("view valid") && (currFormId == 0 || currFormId == 333))
                     {
                         form.setDataObj(dataObj);
-                        
+
                         JButton btn = (JButton)form.getComp("OK");
                         if (btn != null)
                         {
                             ((FormViewObj)form).getValidator().registerOKButton(btn);
-                        }                        
-                        
+                        }
+
                         btn = (JButton)form.getComp("validateBtn");
                         if (btn != null)
                         {
@@ -242,21 +394,21 @@ public class FormEditor
                                 }
                             });
                         }
-                        
+
                     } else if (currViewSetName.equals("SystemSetup") && currFormId == 500)
                     {
                         PickList pl = new PickList();
                         pl.setItems(new HashSet());
                         form.setDataObj(pl);
-                        
+
                         FormViewObj fvo = (FormViewObj)form;
                         fvo.getValidator().registerOKButton((JButton)form.getComp("savePL"));
                         fvo.getValidator().validateForm();
-                        
+
                     } else if (currViewSetName.equals("Fish Views") && currFormId == 1)
                     {
-                    
-                    
+
+
                         //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class);
                         //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setFetchMode(Accession.class.getName(), FetchMode.DEFAULT).setMaxResults(300);
                         //java.util.List list = criteria.list();//session.find("from collev");
@@ -271,23 +423,35 @@ public class FormEditor
                                 System.out.println(accession.getAccessionId());
                             }
                         }
-                        
-                        
+
+
                         boolean doCatalogItems = false;
                         if (doCatalogItems)
                         {
                             Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CollectionObject.class).setMaxResults(300);
                             //criteria.add(Expression.isNull("derivedFromId"));
-                            
-                            
+
+
                             java.util.List data = criteria.list();
                             System.out.println("Items Returned: "+data.size());
-                            
+
                             dataObj = data;
                         }
-                        
-                        
-                        
+
+                        boolean doMemoryCollection = true;
+                        if (doMemoryCollection)
+                        {
+                            CollectionObject[] colObjs = createSingleDiscipline("Fish");
+                            
+                            Set set = new HashSet<CollectionObject>();
+                            for (int i=0;i<colObjs.length;i++)
+                            {
+                                set.add(colObjs[i]);
+                            }
+                            dataObj = set;
+                        }
+
+
                         boolean doit = false;
                         if (doit)
                         {
@@ -298,12 +462,12 @@ public class FormEditor
                             {
                                 InfoRequest infoReq = (InfoRequest)obj;
                                 JXPathContext context = JXPathContext.newContext(infoReq);
-                                
+
                                 System.out.println(context.getValue(""));
                             }
-                            
+
                         }
-                        
+
                         form.setDataObj(dataObj);
                         form.setDataIntoUI();
 
@@ -311,14 +475,14 @@ public class FormEditor
 
                 }
           //});
-            
+
         //}
 
         return form;
     }
-    
+
     /**
-     * 
+     *
      */
     protected void reload()
     {
@@ -326,14 +490,14 @@ public class FormEditor
 
         fvo = createForm(ViewMgr.getView(currViewSetName, currFormId));
     }
-    
+
     /**
-     * 
+     *
      */
     protected void selectForm()
     {
         List<FormView>    fullFormsList = new ArrayList<FormView>();
-        
+
         for (ViewSet viewSet : ViewMgr.getViewSets())
         {
 
@@ -342,31 +506,31 @@ public class FormEditor
         }
         ChooseFromListDlg dlg = new ChooseFromListDlg("Choose Form", fullFormsList); // XXX I18N
         dlg.setVisible(true);
-        
-        
+
+
         FormView form = (FormView)dlg.getSelectedObject();
         if (form != null)
         {
             currViewSetName = form.getViewSetName();
             currFormId      = form.getId();
-            
+
             fvo = createForm(form);
         }
     }
-    
+
      /**
      * Create the GUI and show it.  For thread safety,
      * this method should be invoked from the
      * event-dispatching thread.
      */
-    private void initialize() 
+    private void initialize()
     {
         AppPrefs.initialPrefs(); // Must be done first thing!
-        
+
         for (int i=0;i<10;i++)
         {
             testDataObj = new TestDataObj();
-            
+
             Set<Object> set = new HashSet<Object>();
             for (int j=0;j<4;j++)
             {
@@ -374,38 +538,38 @@ public class FormEditor
                 subObj.setTextField("Sub Obj Item #"+Integer.toString(j));
                 set.add(subObj);
             }
-            
+
             if (i == 2)
             {
                 testDataObj.setImagePathURL("");
             }
-            
+
             testDataObj.setSubObjects(set);
             testDataObj.setTextField("Item #"+Integer.toString(i));
             list.add(testDataObj);
         }
-       
+
         dataObj = list;
-        
-        try 
-        { 
+
+        try
+        {
             //System.out.println(System.getProperty("os.name"));
-            
+
             if (!System.getProperty("os.name").equals("Mac OS X"))
             {
                 UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
                 PlasticLookAndFeel.setMyCurrentTheme(new DesertBlue());
             }
-                
-            //UIManager.setLookAndFeel(new PlasticLookAndFeel()); 
+
+            //UIManager.setLookAndFeel(new PlasticLookAndFeel());
             //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
             //UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-        } 
-        catch (Exception e) 
-        { 
-            log.error("Can't change L&F: ", e); 
-        }    
-      
+        }
+        catch (Exception e)
+        {
+            log.error("Can't change L&F: ", e);
+        }
+
 
         //Make sure we have nice window decorations.
         JFrame.setDefaultLookAndFeelDecorated(true);
@@ -415,10 +579,12 @@ public class FormEditor
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         UICacheManager.register(UICacheManager.TOPFRAME, mainFrame);
-        
+
         // Create and set up the content pane.
-        contentPane = new JPanel(new BorderLayout());
-        contentPane.setOpaque(true); //content panes must be opaque
+        //contentPane = new JPanel(new BorderLayout());
+        //contentPane.setOpaque(true); //content panes must be opaque
+        multiView = new MultiView();
+        contentPane = multiView;
         mainFrame.setContentPane(contentPane);
 
         JMenuBar menuBar = createMenus();
@@ -427,19 +593,19 @@ public class FormEditor
             //top.add(menuBar, BorderLayout.NORTH);
             mainFrame.setJMenuBar(menuBar);
         }
-        
-        // temp for testing 
-        
+
+        // temp for testing
+
         currFormId      = 500;
         currViewSetName =   "SystemSetup";
-        
+
         currFormId      = 333;
         currViewSetName =  "view valid";
-    
+
         currFormId      = 1;
         currViewSetName =   "Fish Views";
-        
-        
+
+
         FormView form = ViewMgr.getView(currViewSetName, currFormId);
 
         if (form != null)
@@ -449,9 +615,9 @@ public class FormEditor
         {
             log.info("Couldn't load form with name ["+currViewSetName+"] Id ["+currFormId+"]");
         }
-         
+
     }
-    
+
     /**
      * Create menus
      */
@@ -459,7 +625,7 @@ public class FormEditor
     {
         JMenuBar mb = new JMenuBar();
         JMenuItem mi;
-        
+
         JMenu menu = createMenu(mb, "FileMenu", "FileMneu");
         mi = createMenuItem(menu, "Select Form", "s", "Select Form", false, null);
         mi.addActionListener(new ActionListener()
@@ -469,7 +635,7 @@ public class FormEditor
                         selectForm();
                     }
                 });
-        
+
         mi = createMenuItem(menu, "Reload", "r", "Reload", false, null);
         mi.addActionListener(new ActionListener()
                 {
@@ -478,7 +644,7 @@ public class FormEditor
                         reload();
                     }
                 });
-        
+
         mi = createMenuItem(menu, "Exit", "x", "Exit Appication", false, null);
         mi.addActionListener(new ActionListener()
                 {
@@ -486,25 +652,43 @@ public class FormEditor
                     {
                         doExit();
                     }
-                });   
-        
+                });
+
         menu = createMenu(mb, "EditMenu", "EditMneu");
         mi = createMenuItem(menu, "Preferences", "P", "Preferences", false, null);
         mi.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent ae)
                     {
-                        //preferences();
+                        preferences();
                     }
-                });    
+                });
 
 
          return mb;
     }
     
+    /**
+     * Create menus
+     */
+    public void preferences()
+    {
+        
+        JDialog dlg = new JDialog();
+        dlg.setModal(true);
+        PrefMainPanel pane = new PrefMainPanel(dlg);
+        dlg.setContentPane(pane);
+        dlg.pack();
+        dlg.doLayout();
+        System.out.println(dlg.getPreferredSize());
+        dlg.setPreferredSize(dlg.getPreferredSize());
+        dlg.setSize(dlg.getPreferredSize());
+        UIHelper.centerAndShow(dlg); 
+    }
+
 
     /**
-     * Create a menu 
+     * Create a menu
      * @param mennuBar the menubar
      * @param labelKey the label key to be localized
      * @param mneuKey the mneu key to be localized
@@ -524,7 +708,7 @@ public class FormEditor
         }
         return menu;
     }
-    
+
     /**
      * Checks to see if cache has changed before exiting
      *
@@ -542,9 +726,9 @@ public class FormEditor
     {
         return new ActionChangedListener(b);
     }
-    
+
     /**
-     * 
+     *
      *
      * TODO To change the template for this generated type comment go to
      * Window - Preferences - Java - Code Generation - Code and Comments
@@ -571,7 +755,7 @@ public class FormEditor
             }
         }
     }
-    
+
   /**
    * Creates a generic menu item
    */
@@ -597,14 +781,14 @@ public class FormEditor
         //mi.setEnabled(aEnabled);
         return mi;
     }
-    
+
     /**
      * @param args
      */
-    public static void main(String[] args) 
+    public static void main(String[] args)
     {
         SwingUtilities.invokeLater(new Runnable() {
-            public void run() 
+            public void run()
             {
                 FormEditor formEditor = new FormEditor();
                 formEditor.initialize();

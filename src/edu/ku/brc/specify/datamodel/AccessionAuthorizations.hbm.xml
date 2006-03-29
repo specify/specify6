@@ -4,12 +4,6 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
     
 <hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class 
     name="edu.ku.brc.specify.datamodel.AccessionAuthorizations" 
@@ -109,21 +103,38 @@
         </meta>
         <column name="PermitID" />
     </many-to-one>
+    
     <!-- bi-directional many-to-one association to Accession -->
     <many-to-one
         name="accession"
         class="edu.ku.brc.specify.datamodel.Accession"
-        not-null="true"
-		outer-join="true"
-		cascade="none"
-    >
+        not-null="false"
+        outer-join="true"
+        cascade="none"
+        >
         <meta attribute="field-description">
-           @hibernate.many-to-one
+            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="AccessionID"         
+            @hibernate.column name="AccessionID"         
         </meta>
         <column name="AccessionID" />
     </many-to-one>
-
+    
+    <!-- bi-directional many-to-one association to RepositoryAgreement -->
+    <many-to-one
+        name="repositoryAgreement"
+        class="edu.ku.brc.specify.datamodel.RepositoryAgreement"
+        not-null="false"
+        outer-join="true"
+        cascade="none"
+        >
+        <meta attribute="field-description">
+            @hibernate.many-to-one
+            not-null="true"
+            @hibernate.column name="AccessionID"         
+        </meta>
+        <column name="RepositoryAgreementID" />
+    </many-to-one>
+    
 </class>
 </hibernate-mapping>

@@ -19,8 +19,11 @@
  */
 package edu.ku.brc.specify.prefs;
 
+import java.awt.Color;
 import java.util.prefs.Preferences;
 
+import edu.ku.brc.specify.ui.ColorChooser;
+import edu.ku.brc.specify.ui.ColorWrapper;
 import edu.ku.brc.specify.ui.forms.DataObjectSettable;
 
 /**
@@ -45,6 +48,10 @@ public class PrefsSettableImpl implements DataObjectSettable
         if (dataObj instanceof Preferences)
         {
             Preferences prefNode = (Preferences)dataObj;
+            if (data instanceof Color)
+            {
+                data = ColorWrapper.toString((Color)data);
+            }
             //System.out.println("setFieldValue["+dataObj+"]  ["+fieldName+"]  ["+ data+"]");
             prefNode.put(fieldName, data == null ? "" : data.toString());
             /*try

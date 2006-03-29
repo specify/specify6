@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -29,9 +31,6 @@ public class Determination  implements java.io.Serializable {
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
-     protected Integer typeStatusNameId;
-     protected Integer confidenceId;
-     protected Integer methodId;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      protected Taxon taxon;
@@ -171,7 +170,6 @@ public class Determination  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Text1"
-     *             length="300"
      *         
      */
     public String getText1() {
@@ -185,7 +183,6 @@ public class Determination  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Text2"
-     *             length="300"
      *         
      */
     public String getText2() {
@@ -267,48 +264,6 @@ public class Determination  implements java.io.Serializable {
     
     public void setLastEditedBy(String lastEditedBy) {
         this.lastEditedBy = lastEditedBy;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="TypeStatusNameID"
-     *             length="10"
-     *         
-     */
-    public Integer getTypeStatusNameId() {
-        return this.typeStatusNameId;
-    }
-    
-    public void setTypeStatusNameId(Integer typeStatusNameId) {
-        this.typeStatusNameId = typeStatusNameId;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="ConfidenceID"
-     *             length="10"
-     *         
-     */
-    public Integer getConfidenceId() {
-        return this.confidenceId;
-    }
-    
-    public void setConfidenceId(Integer confidenceId) {
-        this.confidenceId = confidenceId;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="MethodID"
-     *             length="10"
-     *         
-     */
-    public Integer getMethodId() {
-        return this.methodId;
-    }
-    
-    public void setMethodId(Integer methodId) {
-        this.methodId = methodId;
     }
 
     /**

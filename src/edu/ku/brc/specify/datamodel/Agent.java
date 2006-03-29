@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -31,19 +32,20 @@ public class Agent  implements java.io.Serializable {
      private Set loanReturnPhysicalObjects;
      private Set borrowReturnMaterials;
      private Set exchangeIns;
-     private Set agents;
-     private Agent agent;
+     private Set members;
+     private Agent organization;
      private Set projects;
      private Set preparations;
-     private Set groupPersonsByGroupId;
-     private Set groupPersonsByMemberId;
+     private Set groupPersonsByGroup;
+     private Set groupPersonsByMember;
      private Set determinations;
-     private Set agentAddressesByOrganizationId;
-     private Set agentAddressesByAgentId;
+     private Set agentAddressesByOrganization;
+     private Set agentAddressesByAgent;
      private Set shipments;
      private Set collectors;
      private Set exchangeOuts;
      private Set externalResources;
+     private Set repositoryAgreements;
 
 
     // Constructors
@@ -336,26 +338,26 @@ public class Agent  implements java.io.Serializable {
      *             class="edu.ku.brc.specify.datamodel.Agent"
      *         
      */
-    public Set getAgents() {
-        return this.agents;
+    public Set getMembers() {
+        return this.members;
     }
     
-    public void setAgents(Set agents) {
-        this.agents = agents;
+    public void setMembers(Set members) {
+        this.members = members;
     }
 
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="ParentOrganizationID"         
+     *            @hibernate.column name="ParentOrganizationID"
      *         
      */
-    public Agent getAgent() {
-        return this.agent;
+    public Agent getOrganization() {
+        return this.organization;
     }
     
-    public void setAgent(Agent agent) {
-        this.agent = agent;
+    public void setOrganization(Agent organization) {
+        this.organization = organization;
     }
 
     /**
@@ -407,12 +409,12 @@ public class Agent  implements java.io.Serializable {
      *             class="edu.ku.brc.specify.datamodel.GroupPerson"
      *         
      */
-    public Set getGroupPersonsByGroupId() {
-        return this.groupPersonsByGroupId;
+    public Set getGroupPersonsByGroup() {
+        return this.groupPersonsByGroup;
     }
     
-    public void setGroupPersonsByGroupId(Set groupPersonsByGroupId) {
-        this.groupPersonsByGroupId = groupPersonsByGroupId;
+    public void setGroupPersonsByGroup(Set groupPersonsByGroup) {
+        this.groupPersonsByGroup = groupPersonsByGroup;
     }
 
     /**
@@ -426,12 +428,12 @@ public class Agent  implements java.io.Serializable {
      *             class="edu.ku.brc.specify.datamodel.GroupPerson"
      *         
      */
-    public Set getGroupPersonsByMemberId() {
-        return this.groupPersonsByMemberId;
+    public Set getGroupPersonsByMember() {
+        return this.groupPersonsByMember;
     }
     
-    public void setGroupPersonsByMemberId(Set groupPersonsByMemberId) {
-        this.groupPersonsByMemberId = groupPersonsByMemberId;
+    public void setGroupPersonsByMember(Set groupPersonsByMember) {
+        this.groupPersonsByMember = groupPersonsByMember;
     }
 
     /**
@@ -464,12 +466,12 @@ public class Agent  implements java.io.Serializable {
      *             class="edu.ku.brc.specify.datamodel.AgentAddress"
      *         
      */
-    public Set getAgentAddressesByOrganizationId() {
-        return this.agentAddressesByOrganizationId;
+    public Set getAgentAddressesByOrganization() {
+        return this.agentAddressesByOrganization;
     }
     
-    public void setAgentAddressesByOrganizationId(Set agentAddressesByOrganizationId) {
-        this.agentAddressesByOrganizationId = agentAddressesByOrganizationId;
+    public void setAgentAddressesByOrganization(Set agentAddressesByOrganization) {
+        this.agentAddressesByOrganization = agentAddressesByOrganization;
     }
 
     /**
@@ -483,12 +485,12 @@ public class Agent  implements java.io.Serializable {
      *             class="edu.ku.brc.specify.datamodel.AgentAddress"
      *         
      */
-    public Set getAgentAddressesByAgentId() {
-        return this.agentAddressesByAgentId;
+    public Set getAgentAddressesByAgent() {
+        return this.agentAddressesByAgent;
     }
     
-    public void setAgentAddressesByAgentId(Set agentAddressesByAgentId) {
-        this.agentAddressesByAgentId = agentAddressesByAgentId;
+    public void setAgentAddressesByAgent(Set agentAddressesByAgent) {
+        this.agentAddressesByAgent = agentAddressesByAgent;
     }
 
     /**
@@ -557,6 +559,27 @@ public class Agent  implements java.io.Serializable {
     
     public void setExternalResources(Set externalResources) {
         this.externalResources = externalResources;
+    }
+
+    /**
+     *      *             @hibernate.set
+     *             lazy="true"
+     *             inverse="true"
+     *             cascade="none"
+     *             
+     *             @hibernate.collection-key
+     *             column="AgentID"
+     *             
+     *             @hibernate.collection-one-to-many
+     *             class="edu.ku.brc.specify.datamodel.RepositoryAgreement"
+     *         
+     */
+    public Set getRepositoryAgreements() {
+        return this.repositoryAgreements;
+    }
+    
+    public void setRepositoryAgreements(Set repositoryAgreements) {
+        this.repositoryAgreements = repositoryAgreements;
     }
 
 

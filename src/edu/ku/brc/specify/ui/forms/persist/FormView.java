@@ -21,6 +21,7 @@ package edu.ku.brc.specify.ui.forms.persist;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
+import java.util.List;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -43,7 +44,7 @@ public class FormView implements Comparable<FormView>
     protected String               className;
     protected String               dataGettableName;
     protected String               dataSettableName;
-    protected Vector<FormAltView>  altViews       = new Vector<FormAltView>();
+    protected List<FormAltView>    altViews       = new Vector<FormAltView>();
     protected boolean              resourceLabels = false;
     protected boolean              validated      = false;
     
@@ -161,12 +162,12 @@ public class FormView implements Comparable<FormView>
         this.type = type;
     }
 
-    public Vector<FormAltView> getAltViews()
+    public List<FormAltView> getAltViews()
     {
         return altViews;
     }
 
-    public void setAltViews(Vector<FormAltView> altViews)
+    public void setAltViews(List<FormAltView> altViews)
     {
         this.altViews = altViews;
     }

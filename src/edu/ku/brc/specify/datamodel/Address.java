@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -16,10 +17,11 @@ public class Address  implements java.io.Serializable {
 
      protected Integer addressId;
      protected String address;
+     protected String address2;
      protected String city;
      protected String state;
      protected String country;
-     protected String postalcode;
+     protected String postalCode;
      protected String remarks;
      protected Date timestampModified;
      protected Date timestampCreated;
@@ -59,9 +61,10 @@ public class Address  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
+     *      *             @hibernate.property
      *             column="Address"
      *             not-null="true"
+     *             length="255"
      *         
      */
     public String getAddress() {
@@ -73,9 +76,24 @@ public class Address  implements java.io.Serializable {
     }
 
     /**
+     *      *             @hibernate.property
+     *             column="Address"
+     *             not-null="true"
+     *             length="255"
+     *         
+     */
+    public String getAddress2() {
+        return this.address2;
+    }
+    
+    public void setAddress2(String address2) {
+        this.address2 = address2;
+    }
+
+    /**
      *      *            @hibernate.property
      *             column="City"
-     *             length="32"
+     *             length="64"
      *         
      */
     public String getCity() {
@@ -89,7 +107,7 @@ public class Address  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="State"
-     *             length="32"
+     *             length="64"
      *         
      */
     public String getState() {
@@ -103,7 +121,7 @@ public class Address  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Country"
-     *             length="32"
+     *             length="64"
      *         
      */
     public String getCountry() {
@@ -116,16 +134,16 @@ public class Address  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="Postalcode"
+     *             column="PostalCode"
      *             length="32"
      *         
      */
-    public String getPostalcode() {
-        return this.postalcode;
+    public String getPostalCode() {
+        return this.postalCode;
     }
     
-    public void setPostalcode(String postalcode) {
-        this.postalcode = postalcode;
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
     }
 
     /**

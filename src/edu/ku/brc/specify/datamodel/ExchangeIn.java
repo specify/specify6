@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
 
 
 
@@ -119,7 +120,6 @@ public class ExchangeIn  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Text1"
-     *             length="300"
      *         
      */
     public String getText1() {
@@ -133,7 +133,6 @@ public class ExchangeIn  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Text2"
-     *             length="300"
      *         
      */
     public String getText2() {

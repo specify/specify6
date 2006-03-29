@@ -30,13 +30,14 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.PrepType;
-import edu.ku.brc.specify.datamodel.User;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.dbsupport.ResultsPager;
 import edu.ku.brc.specify.dbsupport.BasicSQLUtils.FieldMetaData;
+import edu.ku.brc.specify.tests.ObjCreatorHelper;
 
 /**
  * Create more sample data, letting Hibernate persist it for us.
@@ -55,7 +56,7 @@ public class SpecifyDBConverter
     {
 
     }
-    
+
     protected void testPaging()
     {
         boolean testPaging = false;
@@ -151,7 +152,7 @@ public class SpecifyDBConverter
             } while (pager.isNextPage());
 
         }
-  
+
     }
 
     /**
@@ -165,7 +166,7 @@ public class SpecifyDBConverter
     {
         DBConnection oldDB     = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/demo_fish2", "rods", "rods");
         IdMapperMgr idMapperMgr = new IdMapperMgr(oldDB.getConnectionToDB());
-        
+
         DBConnection.setUsernamePassword("rods", "rods");
         DBConnection.setDriver("com.mysql.jdbc.Driver");
         DBConnection.setDBName("jdbc:mysql://localhost/demo_fish3");
@@ -181,18 +182,24 @@ public class SpecifyDBConverter
             if (doConvert)
             {
                 GenericDBConversion conversion = new GenericDBConversion("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/demo_fish2", "rods", "rods");
-               
+
 
                 boolean mapTables = true;
                 if (mapTables || doAll)
                 {
                     // Ignore these field names from new table schema when mapping OR
                     // when mapping IDs
-                    BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(new String[] {"MethodID",  "RoleID",  "CollectionID",  "ConfidenceID",  
-                                                                                "TypeStatusNameID",  "ObservationMethodID",  "StatusID",  
+                    BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(new String[] {"MethodID",  "RoleID",  "CollectionID",  "ConfidenceID",
+                                                                                "TypeStatusNameID",  "ObservationMethodID",  "StatusID",
                                                                                 "TypeID",  "ShipmentMethodID", "RankID"});
                     conversion.mapIds();
                     BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(null);
+                }
+                
+                boolean copyUSYSTables = false;
+                if (copyUSYSTables || doAll)
+                {
+                    conversion.convertUSYSTables();
                 }
 
                 boolean copyTables = false;
@@ -220,13 +227,13 @@ public class SpecifyDBConverter
 
                     // convert 'Geography' table
                     //Vector<GeoFileLine> oldGeoRecords = conversion.parseGeographyFile(XMLHelper.getConfigDirPath("SpecifyGeographicNames.csv"));
-                    
+
                     Vector<GeoFileLine> oldGeoRecords = conversion.extractGeographyFromOldDb("geography");
                     GeographyTreeDef treeDef = conversion.createStandardGeographyDefinitionAndItems();
                     conversion.loadSpecifyGeographicNames("geography", oldGeoRecords, treeDef);
-                    
+
                 }
-                
+
                 boolean doFurtherTesting = false;
                 if (doFurtherTesting)
                 {
@@ -235,17 +242,17 @@ public class SpecifyDBConverter
                     BasicSQLUtils.deleteAllRecordsFromTable("user");
                     BasicSQLUtils.deleteAllRecordsFromTable("usergroup");
                     BasicSQLUtils.deleteAllRecordsFromTable("collectionobjdef");
-    
-                    DataType          dataType  = conversion.createDataTypes("Animal");
-                    UserGroup         userGroup = conversion.createUserGroup("Fish");
-                    User              user      = conversion.createNewUser(userGroup, "rods", "rods", (short)0);
-    
-    
-    
+
+                    DataType          dataType  = ObjCreatorHelper.createDataType("Animal");
+                    UserGroup         userGroup = ObjCreatorHelper.createUserGroup("Fish");
+                    SpecifyUser       user      = ObjCreatorHelper.createSpecifyUser("rods", "rods", (short)0, userGroup);
+
+
+
                     Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CatalogSeries.class);
                     criteria.add(Expression.eq("catalogSeriesId", new Integer(0)));
                     java.util.List catalogSeriesList = criteria.list();
-    
+
                     boolean doAddTissues = false;
                     if (doAddTissues)
                     {
@@ -254,7 +261,7 @@ public class SpecifyDBConverter
                         {
                             Session session = HibernateUtil.getCurrentSession();
                             HibernateUtil.beginTransaction();
-    
+
                             CatalogSeries voucherSeries = null;
                             if (catalogSeriesList.size() == 0)
                             {
@@ -266,12 +273,12 @@ public class SpecifyDBConverter
                                 voucherSeries.setCatalogSeriesPrefix("KUFISH");
                                 voucherSeries.setSeriesName("Fish Collection");
                                 session.saveOrUpdate(voucherSeries);
-    
+
                             } else
                             {
                                 voucherSeries = (CatalogSeries)catalogSeriesList.get(0);
                             }
-    
+
                             if (voucherSeries != null)
                             {
                                 CatalogSeries tissueSeries = new CatalogSeries();
@@ -282,13 +289,13 @@ public class SpecifyDBConverter
                                 tissueSeries.setCatalogSeriesPrefix("KUTIS");
                                 tissueSeries.setSeriesName("Fish Tissue");
                                 session.saveOrUpdate(tissueSeries);
-    
+
                                 voucherSeries.setTissue(tissueSeries);
                                 session.saveOrUpdate(voucherSeries);
-    
+
                                 HibernateUtil.commitTransaction();
                             }
-    
+
                         } catch (Exception e)
                         {
                             log.error("******* " + e);
@@ -297,45 +304,45 @@ public class SpecifyDBConverter
                         }
                         return;
                     }
-    
+
                     //if (catalogSeriesList.size() > 0)
                     //{
                         /*try
                         {
                             Session session = HibernateUtil.getCurrentSession();
                             HibernateUtil.beginTransaction();
-    
+
                             TaxonomyTreeDef treeDef = new TaxonomyTreeDef();
                             treeDef.setName("Test");
                             treeDef.setParentNodeId(0);
                             treeDef.setTreeNodeId(0);
-    
+
                             session.save(treeDef);
-    
+
                             HibernateUtil.commitTransaction();
-    
+
                         } catch (Exception e)
                         {
                             log.error("******* " + e);
                             e.printStackTrace();
                             HibernateUtil.rollbackTransaction();
                         }*/
-    
-    
+
+
                         Set<Object>  colObjDefSet = conversion.createCollectionObjDef("Fish", dataType, user, null, null);//(CatalogSeries)catalogSeriesList.get(0));
-    
-    
+
+
                         Object obj = colObjDefSet.iterator().next();
                         CollectionObjDef colObjDef = (CollectionObjDef)obj;
-    
+
                         conversion.convertBiologicalAttrs(colObjDef, null, null);
-    
+
                         boolean doFish = false;
                         if (doFish)
                         {/*
                             FishConversion fishConversion = new FishConversion(colObjDef);
                             fishConversion.loadAttrs(true);
-    
+
                             DBConnection oldDB     = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/demo_fish2", "rods", "rods");
                             Connection   oldDBConn = oldDB.getConnectionToDB();
                             fishConversion.loadPrepAttrs(oldDBConn, DBConnection.getConnection());
@@ -362,7 +369,7 @@ public class SpecifyDBConverter
             {
                 idMapperMgr.cleanup();
             }
-            
+
             ex.printStackTrace();
         }
     }

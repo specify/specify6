@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -15,9 +17,9 @@ public class Accession  implements java.io.Serializable {
     // Fields    
 
      protected Integer accessionId;
-     protected String number;
-     protected String status;
      protected String type;
+     protected String status;
+     protected String number;
      protected String verbatimDate;
      protected Calendar dateAccessioned;
      protected Calendar dateReceived;
@@ -30,8 +32,6 @@ public class Accession  implements java.io.Serializable {
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
-     protected Integer statusId;
-     protected Integer typeId;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      protected Set collectionObjects;
@@ -71,24 +71,24 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number"
-     *             length="60"
-     *             not-null="true"
+     *      *             @hibernate.property
+     *             column="Type"
+     *             length="32"
      *         
      */
-    public String getNumber() {
-        return this.number;
+    public String getType() {
+        return this.type;
     }
     
-    public void setNumber(String number) {
-        this.number = number;
+    public void setType(String type) {
+        this.type = type;
     }
 
     /**
-     *      *            @hibernate.property
+     *      *             @hibernate.property
      *             column="Status"
-     *             length="30"
+     *             length="32"
+     *             not-null="true"
      *         
      */
     public String getStatus() {
@@ -100,17 +100,18 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Type"
-     *             length="30"
+     *      *             @hibernate.property
+     *             column="Number"
+     *             length="60"
+     *             not-null="true"
      *         
      */
-    public String getType() {
-        return this.type;
+    public String getNumber() {
+        return this.number;
     }
     
-    public void setType(String type) {
-        this.type = type;
+    public void setNumber(String number) {
+        this.number = number;
     }
 
     /**
@@ -155,8 +156,7 @@ public class Accession  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="Text1"
-     *             length="300"
+     *             column="text"
      *         
      */
     public String getText1() {
@@ -170,7 +170,6 @@ public class Accession  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Text2"
-     *             length="300"
      *         
      */
     public String getText2() {
@@ -184,7 +183,6 @@ public class Accession  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Text3"
-     *             length="300"
      *         
      */
     public String getText3() {
@@ -198,7 +196,6 @@ public class Accession  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Number1"
-     *             length="24"
      *         
      */
     public Float getNumber1() {
@@ -212,7 +209,6 @@ public class Accession  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Number2"
-     *             length="24"
      *         
      */
     public Float getNumber2() {
@@ -283,34 +279,6 @@ public class Accession  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="StatusID"
-     *             length="10"
-     *         
-     */
-    public Integer getStatusId() {
-        return this.statusId;
-    }
-    
-    public void setStatusId(Integer statusId) {
-        this.statusId = statusId;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="TypeID"
-     *             length="10"
-     *         
-     */
-    public Integer getTypeId() {
-        return this.typeId;
-    }
-    
-    public void setTypeId(Integer typeId) {
-        this.typeId = typeId;
-    }
-
-    /**
-     *      *            @hibernate.property
      *             column="YesNo1"
      *         
      */
@@ -358,7 +326,7 @@ public class Accession  implements java.io.Serializable {
      *      *            @hibernate.set
      *             lazy="true"
      *             inverse="true"
-     *             cascade="delete"
+     *             cascade="all"
      *            @hibernate.collection-key
      *             column="AccessionID"
      *            @hibernate.collection-one-to-many

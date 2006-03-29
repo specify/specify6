@@ -38,6 +38,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -67,13 +68,15 @@ import edu.ku.brc.specify.datamodel.PrepType;
 
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 
-import edu.ku.brc.specify.datamodel.User;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.Encryption;
 import edu.ku.brc.specify.helpers.UIHelper;
+import edu.ku.brc.specify.ui.db.PickList;
+import edu.ku.brc.specify.ui.db.PickListItem;
 
 /**
  * This class is used for copying over the and creating all the tables that are not specify to any one collection.
@@ -288,104 +291,104 @@ public class GenericDBConversion
         String[] mappings = {
             "BorrowReturnMaterial", "BorrowMaterialID", "BorrowMaterial", "BorrowMaterialID",
             "BorrowReturnMaterial", "ReturnedByID", "Agent", "AgentID",
-    
+
             "TaxonName", "ParentTaxonNameID", "TaxonName", "TaxonNameID",
             //"TaxonName", "TaxonomyTypeID", "TaxonomyType", "TaxonomyTypeID",
             "TaxonName", "AcceptedID", "TaxonName", "TaxonNameID",
             "TaxonName", "TaxonomicUnitTypeID", "TaxonomicUnitType", "TaxonomicUnitTypeID",
-    
+
             //"Preparation", "PhysicalObjectTypeID", "PhysicalObjectType", "PhysicalObjectTypeID",
             "Preparation", "PreparedByID", "Agent", "AgentID",
             "Preparation", "ParasiteTaxonNameID", "TaxonName", "TaxonNameID",
             //"Preparation", "PreparationTypeID", "PreparationType", "PreparationTypeID",
             //"Preparation", "ContainerTypeID", "ContainerType", "ContainerTypeID",
-    
+
             "LoanPhysicalObject", "PhysicalObjectID", "CollectionObject", "CollectionObjectID",
             "LoanPhysicalObject", "LoanID", "Loan", "LoanID",
-    
+
             // ??? "ExchangeIn", "CollectionID", "Collection", "CollectionID",
             "ExchangeIn", "ReceivedFromOrganizationID", "Agent", "AgentID",
             "ExchangeIn", "CatalogedByID", "Agent", "AgentID",
-    
+
             // ??? "Geography", "CurrentID", "Current", "CurrentID",
-    
+
             "Collection", "OrganizationID", "Agent", "AgentID",
-    
+
             "GroupPersons", "GroupID", "Agent", "AgentID",
             "GroupPersons", "MemberID", "Agent", "AgentID",
-    
+
             // ??? "ExchangeOut", "CollectionID", "Collection", "CollectionID",
             "ExchangeOut", "SentToOrganizationID", "Agent", "AgentID",
             "ExchangeOut", "CatalogedByID", "Agent", "AgentID",
             "ExchangeOut", "ShipmentID", "Shipment", "ShipmentID",
-    
+
             //"ImageLocalities", "ImageID", "Image", "ImageID",
             //"ImageLocalities", "LocalityID", "Locality", "LocalityID",
-    
+
             //"ImageCollectionObjects", "ImageID", "Image", "ImageID",
             //"ImageCollectionObjects", "CollectionlObjectID", "CollectionObject", "CollectionObjectID",
-    
+
             "ReferenceWork", "JournalID", "Journal", "JournalID",
             "ReferenceWork", "ContainingReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
-    
+
             //"ImageAgents", "ImageID", "Image", "ImageID",
            // "ImageAgents", "AgentID", "Agent", "AgentID",
-    
+
             "BiologicalObjectRelation", "BiologicalObjectID",             "CollectionObject", "CollectionObjectID",
             "BiologicalObjectRelation", "RelatedBiologicalObjectID",      "CollectionObject", "CollectionObjectID",
             "BiologicalObjectRelation", "BiologicalObjectRelationTypeID", "BiologicalObjectRelationType", "BiologicalObjectRelationTypeID",
-    
+
             //"SoundEventStorage", "SoundEventID", "SoundEvent", "SoundEventID",
             //"SoundEventStorage", "SoundRecordingID", "SoundRecording", "SoundRecordingID",
-    
+
             "Shipment", "ShipperID", "Agent", "AgentID",
             "Shipment", "ShippedToID", "Agent", "AgentID",
             "Shipment", "ShippedByID", "Agent", "AgentID",
             //"Shipment", "ShipmentMethodID", "ShipmentMethod", "ShipmentMethodID",
-    
+
             // ??? "Habitat", "BiologicalObjectTypeCollectedID", "BiologicalObjectTypeCollected", "BiologicalObjectTypeCollectedID",
             "Habitat", "HostTaxonID", "TaxonName", "TaxonNameID",
             //"Habitat", "HabitatTypeID", "HabitatType", "HabitatTypeID",
-    
+
             "Authors", "AgentID", "Agent", "AgentID",
             "Authors", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
-    
+
             "BorrowMaterial",  "BorrowID", "Borrow", "BorrowID",
-    
+
             "BorrowShipments", "BorrowID", "Borrow", "BorrowID",
             "BorrowShipments", "ShipmentID", "Shipment", "ShipmentID",
-    
+
             "BorrowAgents",    "BorrowID", "Borrow", "BorrowID",
             "BorrowAgents",    "AgentAddressID", "AgentAddress", "AgentAddressID",
             //"BorrowAgents",    "RoleID", "Role", "RoleID",
-    
+
             "DeaccessionCollectionObject", "DeaccessionID", "Deaccession", "DeaccessionID",
             "DeaccessionCollectionObject", "CollectionObjectID", "CollectionObject", "CollectionObjectID",
-    
+
             "CollectionObjectCitation", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
             "CollectionObjectCitation", "BiologicalObjectID", "CollectionObject", "CollectionObjectID",
-    
+
             "Stratigraphy", "GeologicTimePeriodID", "GeologicTimePeriod", "GeologicTimePeriodID",
-    
+
             //"Deaccession", "CollectionID", "Collection", "CollectionID",
             //"Deaccession", "TypeID", "Type", "TypeID",
-    
+
             //"CollectingEvent", "BiologicalObjectTypeCollectedID", "BiologicalObjectTypeCollected", "BiologicalObjectTypeCollectedID",
             "CollectingEvent", "LocalityID", "Locality", "LocalityID",
             //"CollectingEvent", "MethodID", "Method", "MethodID",
-    
+
             "Collectors", "CollectingEventID", "CollectingEvent", "CollectingEventID",
             "Collectors", "AgentID", "Agent", "AgentID",
-    
+
             "Permit", "IssuerID", "Agent", "AgentID",
             "Permit", "IssueeID", "Agent", "AgentID",
             //"Permit", "TypeID", "Type", "TypeID",
-    
+
             "Sound", "RecordedByID", "Agent", "AgentID",
-    
+
             "TaxonCitation", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
             "TaxonCitation", "TaxonNameID", "TaxonName", "TaxonNameID",
-    
+
             "Determination", "DeterminerID",           "Agent", "AgentID",
             "Determination", "TaxonNameID",            "TaxonName", "TaxonNameID",
             "Determination", "BiologicalObjectID",     "CollectionObject", "CollectionObjectID",
@@ -394,98 +397,98 @@ public class GenericDBConversion
             //"Determination", "TypeStatusNameID",       "TypeStatusName", "TypeStatusNameID",
             //"Determination", "ConfidenceID",           "Confidence", "ConfidenceID",
             //"Determination", "MethodID",               "Method", "MethodID",
-    
+
             // ??? "GeologicTimePeriod", "UpperBoundaryID", "UpperBoundary", "UpperBoundaryID",
             // ??? "GeologicTimePeriod", "LowerBoundaryID", "LowerBoundary", "LowerBoundaryID",
-    
+
             //"CatalogSeriesDefinition", "CatalogSeriesID", "CatalogSeries", "CatalogSeriesID",
             //"CatalogSeriesDefinition", "ObjectTypeID", "ObjectType", "ObjectTypeID",
-    
+
             // (not needed) "CollectionObject", "DerivedFromID", "DerivedFrom", "DerivedFromID",
             //"CollectionObject", "ContainerID", "Container", "ContainerID",
             //"CollectionObject", "CollectionObjectTypeID", "CollectionObjectType", "CollectionObjectTypeID",
             "CollectionObject", "CollectingEventID", "CollectingEvent", "CollectingEventID",
             //"CollectionObject", "ContainerTypeID", "ContainerType", "ContainerTypeID",
             //"CollectionObject", "PreparationMethodID", "PreparationMethod", "PreparationMethodID",
-    
+
             //"CollectionObjectCatalog", "CollectionObjectTypeID", "CollectionObjectType", "CollectionObjectTypeID",
             "CollectionObject", "CatalogSeriesID",        "CatalogSeries", "CatalogSeriesID",
             "CollectionObject", "AccessionID",            "Accession", "AccessionID",
             "CollectionObject", "CatalogerID",            "Agent", "AgentID",
-    
+
             //"Observation", "BiologicalObjectID", "BiologicalObject", "BiologicalObjectID",
             //"Observation", "ObservationMethodID", "ObservationMethod", "ObservationMethodID",
-    
+
             //"TaxonomicUnitType", "RankID", "Rank", "RankID",
             //"TaxonomicUnitType", "DirectParentRankID", "DirectParentRank", "DirectParentRankID",
             //"TaxonomicUnitType", "RequiredParentRankID", "RequiredParentRank", "RequiredParentRankID",
             //"TaxonomicUnitType", "TaxonomyTypeID", "TaxonomyType", "TaxonomyTypeID",
-    
+
             "Loan", "ShipmentID", "Shipment", "ShipmentID",
             //"Loan", "CollectionID", "Collection", "CollectionID",
-    
+
             "AccessionAuthorizations", "AccessionID", "Accession", "AccessionID",
             "AccessionAuthorizations", "PermitID", "Permit", "PermitID",
-    
+
             "AccessionAgents", "AccessionID", "Accession", "AccessionID",
             "AccessionAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
             //"AccessionAgents", "RoleID", "Role", "RoleID",
-    
+
             "DeterminationCitation", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
             "DeterminationCitation", "DeterminationID", "Determination", "DeterminationID",
-    
+
             //"CatalogSeries", "CollectionID", "Collection", "CollectionID",
-    
+
             "OtherIdentifier", "CollectionObjectID", "CollectionObject", "CollectionObjectID",
-    
+
             "Agent", "ParentOrganizationID", "Agent", "AgentID",
-    
+
             //"CollectionTaxonomyTypes", "CollectionID", "Collection", "CollectionID",
             //"CollectionTaxonomyTypes", "BiologicalObjectTypeID", "BiologicalObjectType", "BiologicalObjectTypeID",
             //"CollectionTaxonomyTypes", "TaxonomyTypeID", "TaxonomyType", "TaxonomyTypeID",
-    
+
             "AgentAddress", "AddressID", "Address", "AddressID",
             "AgentAddress", "AgentID", "Agent", "AgentID",
             "AgentAddress", "OrganizationID", "Agent", "AgentID",
-    
+
             "LocalityCitation", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
             "LocalityCitation", "LocalityID", "Locality", "LocalityID",
-    
+
             //"BiologicalObjectAttributes", "BiologicalObjectTypeID", "BiologicalObjectType", "BiologicalObjectTypeID",
             //"BiologicalObjectAttributes", "SexID", "Sex", "SexID",
             //"BiologicalObjectAttributes", "StageID", "Stage", "StageID",
-    
+
             //"TaxonomyType", "KingdomID", "Kingdom", "KingdomID",
-    
+
             "LoanReturnPhysicalObject", "LoanPhysicalObjectID",        "LoanPhysicalObject", "LoanPhysicalObjectID",
             "LoanReturnPhysicalObject", "ReceivedByID",                "Agent",  "AgentID",
             "LoanReturnPhysicalObject", "DeaccessionPhysicalObjectID", "CollectionObject", "CollectionObjectID",
-    
+
             //"Borrow", "CollectionID", "Collection", "CollectionID",
-    
+
             "Locality", "GeographyID", "Geography", "GeographyID",
             //"Locality", "ElevationMethodID", "ElevationMethod", "ElevationMethodID",
             //"Locality", "LatLongTypeID", "LatLongType", "LatLongTypeID",
             //"Locality", "LatLongMethodID", "LatLongMethod", "LatLongMethodID",
-    
+
             "DeaccessionAgents", "DeaccessionID", "Deaccession", "DeaccessionID",
             "DeaccessionAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
             //"DeaccessionAgents", "RoleID", "Role", "RoleID",
-    
+
             "ProjectCollectionObjects", "ProjectID", "Project", "ProjectID",
             "ProjectCollectionObjects", "CollectionObjectID", "CollectionObject", "CollectionObjectID",
-    
+
             "Project", "ProjectAgentID", "Agent", "AgentID",
-    
+
             "LoanAgents", "LoanID", "Loan", "LoanID",
             "LoanAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
             //"LoanAgents", "RoleID", "Role", "RoleID",
-    
+
             //"Accession", "CollectionID", "Collection", "CollectionID",
             //"Accession", "StatusID", "Status", "StatusID",
             //"Accession", "TypeID", "Type", "TypeID",
         };
-        
+
         for (int i=0;i<mappings.length;i += 4)
         {
             idMapperMgr.mapForeignKey(mappings[i], mappings[i+1], mappings[i+2], mappings[i+3]);
@@ -584,6 +587,189 @@ public class GenericDBConversion
        }
        BasicSQLUtils.setShowMappingError(true);
     }
+
+    /**
+     * Converts an old USYS table to a PickList
+     * @param usysTableName old table name 
+     * @param pickListName new pciklist name
+     * @return true on success, false on failure
+     */
+    public boolean convertUSYSToPicklist(final String usysTableName, final String pickListName)
+    {
+        Connection   oldDBConn = oldDB.getConnectionToDB();
+        
+        List<BasicSQLUtils.FieldMetaData> fieldMetaData = new ArrayList<BasicSQLUtils.FieldMetaData>();
+        getFieldMetaDataFromSchema(oldDBConn, usysTableName, fieldMetaData);
+        
+        int ifaceInx    = -1;
+        int dataInx     = -1;
+        int fieldSetInx = -1;
+        int i= 0;
+        for (BasicSQLUtils.FieldMetaData md : fieldMetaData)
+        {
+            if (ifaceInx == -1 && md.getName().equals("InterfaceID"))
+            {
+                ifaceInx = i+1;
+                
+            } else if (fieldSetInx == -1 && md.getName().equals("FieldSetSubTypeID"))
+            {
+                fieldSetInx = i+1;
+                
+            } else if (dataInx  == -1 && md.getType().toLowerCase().indexOf("varchar") > -1)
+            {
+                dataInx = i+1;
+            }
+            i++;
+        }
+        
+        if (ifaceInx == -1 || dataInx == -1 || fieldSetInx == -1)
+        {
+            throw new RuntimeException("Couldn't decypher USYS table ifaceInx["+ifaceInx+"] dataInx["+dataInx+"] fieldSetInx["+fieldSetInx+"]");
+        }
+        
+        Session session = HibernateUtil.getCurrentSession();
+        PickList pl     = new PickList();
+        Set      items  = new HashSet<Object>();
+        
+        try
+        {
+            pl.setName(pickListName);
+            pl.setCreated(new Date());
+            pl.setItems(items);
+            pl.setReadOnly(shouldDeleteMapTables);
+            pl.setSizeLimit(-1);
+            
+            
+            HibernateUtil.beginTransaction();
+            session.saveOrUpdate(pl);
+            HibernateUtil.commitTransaction();
+            
+        } catch (Exception ex)
+        {
+            log.error("******* " + ex);
+            HibernateUtil.rollbackTransaction();
+            throw new RuntimeException("Couldn't create PickList for ["+usysTableName+"]");
+        }
+        
+        try
+        {
+            Statement stmt   = oldDBConn.createStatement();
+            String    sqlStr = "select * from "+usysTableName+" where InterfaceID is not null";
+
+            log.info(sqlStr);
+            
+            boolean   useField = false;
+            ResultSet rs       = stmt.executeQuery(sqlStr);
+            
+            // check for no records which is OK
+            if (!rs.first())
+            {
+                return true;
+            }
+            
+            do 
+            {
+                Object fieldObj = rs.getObject(fieldSetInx);
+                if (fieldObj != null)
+                {
+                    useField = true;
+                    break;
+                }
+            } while (rs.next());
+            
+            Hashtable<String, String> values = new Hashtable<String, String>();
+            
+            log.info("Using FieldSetSubTypeID "+useField);
+            rs.first();
+            int       count   = 0;
+            do 
+            {
+                if (!useField || rs.getObject(fieldSetInx) != null)
+                {
+                    String val = rs.getString(dataInx);
+                    if (values.get(val) == null)
+                    {
+                        log.info("["+val+"]");
+                        PickListItem pli = new PickListItem();
+                        pli.setTitle(val);
+                        pli.setValue(val);
+                        pli.setCreatedDate(new Date());
+                        items.add(pli);
+                        values.put(val, val);
+                        count++;
+                    } else
+                    {
+                        log.error("Discarding duplicate picklist value["+val+"]");
+                    }
+                }
+            } while (rs.next());
+            
+            log.info("Processed "+usysTableName+"  "+count+" records.");
+
+            HibernateUtil.beginTransaction();
+
+            session.saveOrUpdate(pl);
+            
+            HibernateUtil.commitTransaction();
+            
+            return true;
+
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+            log.error(e);
+        }        
+        return false;
+    }
+    
+    /**
+     * Converts all the USYS tables to PickLists
+     * @return true on success, false on failure
+     */
+    public boolean convertUSYSTables()
+    {
+        log.info("Converting USYS Tables.");
+        
+        BasicSQLUtils.deleteAllRecordsFromTable("picklist");
+        BasicSQLUtils.deleteAllRecordsFromTable("picklist_items");
+
+        String[] tables = {
+                "usysaccessiontype",   "AccessionType",
+                "usysborrowagenrole",  "BorrowAgentRole",
+                "usysaccessionarole",  "AccessionaRole",
+                "usysdeaccessiorole",  "DeaccessionaRole",
+                "usysloanagentsrole",  "LoanAgentsRole",
+                "usysbiologicalsex",   "BiologicalSex",
+                "usysbiologicalstage", "BiologicalStage",
+                "usyscollectingmethod", "CollectingMethod",
+                "usyscollobjprepmeth",  "CollObjPrepMeth",
+                "usysdeaccessiotype",   "DeaccessionType",
+                "usysdeterminatconfidence",       "DeterminationConfidence",
+                "usysdeterminatmethod",           "DeterminationMethod",
+                "usysdeterminattypestatusname",   "DeterminationTypeStatus",
+                "usyshabitathabitattype",         "HabitatTtype",
+                "usyslocalityelevationmethod",    "LocalityElevationMethod",
+                "usysobservatioobservationmetho", "ObservationMethod",
+                "usyspermittype",                 "PermitType",
+                "usyspreparatiocontainertype",    "PrepContainertype",
+                "usyspreparatiomedium",           "PreparatioMedium",
+                "usyspreparatiopreparationtype",  "PreparationType",
+                "usysshipmentshipmentmethod",     "ShipmentMethod"
+                };
+        
+        for (int i=0;i<tables.length;i++)
+        {
+            boolean status = convertUSYSToPicklist(tables[i], tables[i+1]);
+            if (!status)
+            {
+                log.error(tables[i]+" failed to convert.");
+                return false;
+            }
+            i++;
+        }
+        return true;
+    }
+    
 
     /**
      * Creates a map from a String Preparation Type to its ID in the table
@@ -1411,7 +1597,7 @@ public class GenericDBConversion
                             stmt.close();
                             oldDBConn.close();
                             newDBConn.close();
-                            return false;                            
+                            return false;
                         }
                         Object  data  = rs.getObject(index+1);
 
@@ -1526,7 +1712,7 @@ public class GenericDBConversion
             }
 
             String tableName = "collectionobject";
-            
+
             ResultSet rs = stmt.executeQuery(sqlStr);
 
             int count = 0;
@@ -1539,7 +1725,7 @@ public class GenericDBConversion
                     if (i > 0) str.append(", ");
 
                     String newFieldName = newFieldMetaData.get(i).getName();
-                    
+
                     if (i == 0)
                     {
                         Integer  recId  = count+1;
@@ -1561,7 +1747,7 @@ public class GenericDBConversion
 
                     } else
                     {
-                        
+
                         Integer index = oldNameIndex.get(newFieldName);
                         if (index == null)
                         {
@@ -1569,7 +1755,7 @@ public class GenericDBConversion
                             stmt.close();
                             oldDBConn.close();
                             newDBConn.close();
-                            return false;                            
+                            return false;
                         }
                         Object data  = rs.getObject(index+1);
 
@@ -1579,7 +1765,7 @@ public class GenericDBConversion
                             if (idMapperMgr != null && idInx > -1)
                             {
                                 //System.out.println(newFieldName+" "+(index.intValue()+1)+"  "+rs.getInt(index+1));
-                                
+
                                 IdMapper idMapper =  idMapperMgr.get(tableName, newFieldName);
                                 if (idMapper != null)
                                 {
@@ -1591,7 +1777,7 @@ public class GenericDBConversion
                             }
                         }
                         str.append(getStrValue(data, newFieldMetaData.get(i).getType()));
-                        
+
                         /*Integer index = oldNameIndex.get(newFieldName);
                         if (index != null)
                         {
@@ -1647,77 +1833,6 @@ public class GenericDBConversion
 
 
     /**
-     * Creates a User Group
-     * @param groupName the name of the group
-     * @return the group
-     */
-    public UserGroup createUserGroup(final String groupName)
-    {
-        try
-        {
-            Session session = HibernateUtil.getCurrentSession();
-            HibernateUtil.beginTransaction();
-
-            UserGroup userGroup = new UserGroup();
-            userGroup.setName(groupName);
-            userGroup.setUsers(new HashSet());
-
-            session.save(userGroup);
-
-            HibernateUtil.commitTransaction();
-
-            return userGroup;
-
-        } catch (Exception e)
-        {
-            log.error("******* " + e);
-            HibernateUtil.rollbackTransaction();
-        }
-
-        return null;
-    }
-
-    /**
-     * Creates a new User a new User
-     * @param username the user name of the user
-     * @param password the password (not emcrypted)
-     * @param privLevel the privLevel
-     * @return the user object
-     */
-    public User createNewUser(final UserGroup userGroup, final String username, final String password, final short privLevel)
-    {
-
-        try
-        {
-            Session session = HibernateUtil.getCurrentSession();
-            HibernateUtil.beginTransaction();
-
-            User user = new User();
-            user.setName(username);
-            user.setPassword(Encryption.encrypt(password));
-            user.setPrivLevel(privLevel);
-            user.setUserGroup(userGroup);
-
-            session.save(user);
-
-            userGroup.getUsers().add(user);
-            session.saveOrUpdate(userGroup);
-
-            HibernateUtil.commitTransaction();
-
-
-            return user;
-
-        } catch (Exception e)
-        {
-            log.error("******* " + e);
-            HibernateUtil.rollbackTransaction();
-        }
-
-        return null;
-    }
-
-    /**
      * Creates a Standard set of DataTypes for Collections
      * @param returnName the name of a DataType to return (ok if null)
      * @return the DataType requested
@@ -1765,7 +1880,7 @@ public class GenericDBConversion
      */
     public Set<Object> createCollectionObjDef(final String          name,
                                               final DataType        dataType,
-                                              final User            user,
+                                              final SpecifyUser     user,
                                               final TaxonTreeDef taxaTreeDef,
                                               final CatalogSeries   catalogSeries)
     {
@@ -1780,22 +1895,19 @@ public class GenericDBConversion
             Session session = HibernateUtil.getCurrentSession();
             HibernateUtil.beginTransaction();
 
-            Set<Object> set = new HashSet<Object>();
-            set.add(taxaTreeDef);
-
             CollectionObjDef colObjDef = new CollectionObjDef();
             colObjDef.setName(name);
             colObjDef.setDataType(dataType);
             colObjDef.setUser(user);
 
-            colObjDef.setTaxonTreeDef(set);
+            colObjDef.setTaxonTreeDef(taxaTreeDef);
 
             colObjDef.setCatalogSeries(catalogSeriesSet);
             colObjDef.setAttributeDefs(new HashSet<Object>());
 
             session.save(colObjDef);
 
-            set.clear();
+            HashSet<Object> set = new HashSet<Object>();
             set.add(colObjDef);
             user.setCollectionObjDef(set);
             session.saveOrUpdate(user);
@@ -1813,7 +1925,7 @@ public class GenericDBConversion
         }
         return null;
     }
-    
+
     public GeographyTreeDef createStandardGeographyDefinitionAndItems()
     {
     	Session session = HibernateUtil.getCurrentSession();
@@ -1949,7 +2061,7 @@ public class GenericDBConversion
             {
                 geoId = idMapper.getNewIndexFromOld(geoId);
             }
-           
+
     		String cont = rs.getString(2);
     		String country = rs.getString(3);
     		String state = rs.getString(4);
@@ -1968,7 +2080,7 @@ public class GenericDBConversion
     }
 
     /**
-     * Create Geography Object 
+     * Create Geography Object
      * @param def x
      * @param id x
      * @param name x
@@ -2441,21 +2553,21 @@ public class GenericDBConversion
     {
         // Ignore these field names from new table schema when mapping IDs
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(new String[] {"NationalParkName", "GUID", "Current", "TreeDefID"});
-        
+
         //boolean showMappingErrors = BasicSQLUtils.isShowMappingError();
         //BasicSQLUtils.setShowMappingError(false); // turn off notification because of errors with TaxonTreeDefID
 
         String sql = "select * from taxonname";
-        
+
         BasicSQLUtils.deleteAllRecordsFromTable("taxon");
 
         // Map these names from the old DB to the new DB
         //                                <New Name>,   <Old Name>
-        String[] mappings = new String[] {"TreeID",    "TaxonNameID", 
-                                          "ParentID",  "ParentTaxonNameID", 
-                                          "Name",      "TaxonName", 
+        String[] mappings = new String[] {"TreeID",    "TaxonNameID",
+                                          "ParentID",  "ParentTaxonNameID",
+                                          "Name",      "TaxonName",
                                           "FullTaxon", "FullTaxonName"};
-        
+
         if (copyTable(oldDB.getConnectionToDB(), DBConnection.getConnection(), sql, "taxonname", "taxon", createFieldNameMap(mappings), null))
         {
             log.info("TaxonName copied ok.");
@@ -2474,9 +2586,9 @@ public class GenericDBConversion
     {
         // Ignore these field names from new table schema when mapping IDs
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(new String[] {"NationalParkName", "GUID"});
-        
+
         BasicSQLUtils.deleteAllRecordsFromTable("locality");
-        
+
         boolean showMappingErrors = BasicSQLUtils.isShowMappingError();
         BasicSQLUtils.setShowMappingError(false); // turn off notification because of errors with National Parks
 
@@ -2492,11 +2604,11 @@ public class GenericDBConversion
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
         //BasicSQLUtils.setShowMappingError(showMappingErrors);
     }
-    
+
     //--------------------------------------------------------------------
     //-- Static Methods
     //--------------------------------------------------------------------
-    
+
     /**
      * @return wehether it should create the Map Tables, if false it assumes they have already been created
      */
@@ -2504,7 +2616,7 @@ public class GenericDBConversion
     {
         return shouldCreateMapTables;
     }
-    
+
     /**
      * @return whether the map tables should be removed
      */

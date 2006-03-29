@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -27,19 +28,19 @@ public class AgentAddress  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     protected Short isCurrent;
+     protected Boolean isCurrent;
      private Set loanAgents;
-     private Set shipmentsByShipperId;
-     private Set shipmentsByShippedToId;
+     private Set shipmentsByShipper;
+     private Set shipmentsByShippedTo;
      private Set deaccessionAgents;
      private Set exchangeIns;
-     private Set permitsByIssueeId;
-     private Set permitsByIssuerId;
+     private Set permitsByIssuee;
+     private Set permitsByIssuer;
      private Set borrowAgents;
      private Set accessionAgents;
      private Set exchangeOuts;
-     private Agent agentByOrganizationId;
-     private Agent agentByAgentId;
+     private Agent organization;
+     private Agent agent;
      private Address address;
 
 
@@ -174,7 +175,6 @@ public class AgentAddress  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="URL"
-     *             length="300"
      *         
      */
     public String getUrl() {
@@ -248,11 +248,11 @@ public class AgentAddress  implements java.io.Serializable {
      *             column="IsCurrent"
      *         
      */
-    public Short getIsCurrent() {
+    public Boolean getIsCurrent() {
         return this.isCurrent;
     }
     
-    public void setIsCurrent(Short isCurrent) {
+    public void setIsCurrent(Boolean isCurrent) {
         this.isCurrent = isCurrent;
     }
 
@@ -286,12 +286,12 @@ public class AgentAddress  implements java.io.Serializable {
      *             class="edu.ku.brc.specify.datamodel.Shipment"
      *         
      */
-    public Set getShipmentsByShipperId() {
-        return this.shipmentsByShipperId;
+    public Set getShipmentsByShipper() {
+        return this.shipmentsByShipper;
     }
     
-    public void setShipmentsByShipperId(Set shipmentsByShipperId) {
-        this.shipmentsByShipperId = shipmentsByShipperId;
+    public void setShipmentsByShipper(Set shipmentsByShipper) {
+        this.shipmentsByShipper = shipmentsByShipper;
     }
 
     /**
@@ -305,12 +305,12 @@ public class AgentAddress  implements java.io.Serializable {
      *             class="edu.ku.brc.specify.datamodel.Shipment"
      *         
      */
-    public Set getShipmentsByShippedToId() {
-        return this.shipmentsByShippedToId;
+    public Set getShipmentsByShippedTo() {
+        return this.shipmentsByShippedTo;
     }
     
-    public void setShipmentsByShippedToId(Set shipmentsByShippedToId) {
-        this.shipmentsByShippedToId = shipmentsByShippedToId;
+    public void setShipmentsByShippedTo(Set shipmentsByShippedTo) {
+        this.shipmentsByShippedTo = shipmentsByShippedTo;
     }
 
     /**
@@ -362,12 +362,12 @@ public class AgentAddress  implements java.io.Serializable {
      *             class="edu.ku.brc.specify.datamodel.Permit"
      *         
      */
-    public Set getPermitsByIssueeId() {
-        return this.permitsByIssueeId;
+    public Set getPermitsByIssuee() {
+        return this.permitsByIssuee;
     }
     
-    public void setPermitsByIssueeId(Set permitsByIssueeId) {
-        this.permitsByIssueeId = permitsByIssueeId;
+    public void setPermitsByIssuee(Set permitsByIssuee) {
+        this.permitsByIssuee = permitsByIssuee;
     }
 
     /**
@@ -381,12 +381,12 @@ public class AgentAddress  implements java.io.Serializable {
      *             class="edu.ku.brc.specify.datamodel.Permit"
      *         
      */
-    public Set getPermitsByIssuerId() {
-        return this.permitsByIssuerId;
+    public Set getPermitsByIssuer() {
+        return this.permitsByIssuer;
     }
     
-    public void setPermitsByIssuerId(Set permitsByIssuerId) {
-        this.permitsByIssuerId = permitsByIssuerId;
+    public void setPermitsByIssuer(Set permitsByIssuer) {
+        this.permitsByIssuer = permitsByIssuer;
     }
 
     /**
@@ -452,12 +452,12 @@ public class AgentAddress  implements java.io.Serializable {
      *            @hibernate.column name="OrganizationID"         
      *         
      */
-    public Agent getAgentByOrganizationId() {
-        return this.agentByOrganizationId;
+    public Agent getOrganization() {
+        return this.organization;
     }
     
-    public void setAgentByOrganizationId(Agent agentByOrganizationId) {
-        this.agentByOrganizationId = agentByOrganizationId;
+    public void setOrganization(Agent organization) {
+        this.organization = organization;
     }
 
     /**
@@ -466,12 +466,12 @@ public class AgentAddress  implements java.io.Serializable {
      *            @hibernate.column name="AgentID"         
      *         
      */
-    public Agent getAgentByAgentId() {
-        return this.agentByAgentId;
+    public Agent getAgent() {
+        return this.agent;
     }
     
-    public void setAgentByAgentId(Agent agentByAgentId) {
-        this.agentByAgentId = agentByAgentId;
+    public void setAgent(Agent agent) {
+        this.agent = agent;
     }
 
     /**

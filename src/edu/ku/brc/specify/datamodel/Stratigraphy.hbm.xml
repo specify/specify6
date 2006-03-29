@@ -114,32 +114,29 @@
         </meta>    
     </property>
     
-    <property
-        name="text1"
-        type="java.lang.String"
+    <property name="text1"
+        type="text"
         column="Text1"
-        length="300"
-    >
+        >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
+            @hibernate.property
             column="Text1"
-            length="300"
         </meta>    
     </property>
+    
     <property
         name="text2"
-        type="java.lang.String"
+        type="text"
         column="Text2"
-        length="300"
-    >
+        >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
+            @hibernate.property
             column="Text2"
-            length="300"
         </meta>    
     </property>
+    
     <property
         name="number1"
         type="java.lang.Float"

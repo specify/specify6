@@ -61,8 +61,11 @@ public class AppPrefs
         ColorWrapper valtextcolor = new ColorWrapper(Color.RED);
         PrefsCache.register(valtextcolor, "ui", "formatting", "valtextcolor");
         
-        ColorWrapper requiredFieldColor = new ColorWrapper(215,230, 253);
+        ColorWrapper requiredFieldColor = new ColorWrapper(215, 230, 253);
         PrefsCache.register(requiredFieldColor, "ui", "formatting", "requiredfieldcolor");
+       
+        ColorWrapper viewFieldColor = new ColorWrapper(250, 250, 250);
+        PrefsCache.register(viewFieldColor, "ui", "formatting", "viewfieldcolor");
        
     }
     

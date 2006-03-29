@@ -1,11 +1,9 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Expression;
-import edu.ku.brc.specify.dbsupport.HibernateUtil;
 
 
 /**
@@ -27,6 +25,8 @@ public class Container  implements java.io.Serializable {
      private Date timestampCreated;
      private String lastEditedBy;
      protected Set items;
+     protected CollectionObject container;
+     private Location location;
 
 
     // Constructors
@@ -193,36 +193,39 @@ public class Container  implements java.io.Serializable {
         this.items = items;
     }
 
-
-
-
-  // The following is extra code specified in the hbm.xml files
-
-        
-    protected CollectionObject collectionObject = null;
-    
     /**
-     * 
+     *      *            @hibernate.many-to-one
+     * 	        not-null="false"
+     * 			unique="true" 
+     * 			insert="false" 
+     * 			update="false"
+     * 			cascade="all"
+     *            @hibernate.column name="CollectionObjectID"
+     *         
      */
-    public CollectionObject getCollectionObject() 
-    {
-        if (collectionObjectId != null)
-        {
-	        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CollectionObject.class);
-	        criteria.add(Expression.eq("collectionObjectId", collectionObjectId));
-	        java.util.List list = criteria.list();
-	        this.collectionObject = list != null && list.size() > 0 ? (CollectionObject)list.get(0) : null;
-	        return this.collectionObject;
-	    } 
-	    return null;
+    public CollectionObject getContainer() {
+        return this.container;
     }
     
-    public void setCollectionObject(CollectionObject collectionObject) 
-    {
-        this.collectionObject = collectionObject;
-        this.collectionObjectId = collectionObject != null ? collectionObject.getCollectionObjectId() : null;
+    public void setContainer(CollectionObject container) {
+        this.container = container;
+    }
+
+    /**
+     *      *            @hibernate.many-to-one
+     *             not-null="true"
+     *            @hibernate.column name="LocationID"         
+     *         
+     */
+    public Location getLocation() {
+        return this.location;
     }
     
-    
-  // end of extra code specified in the hbm.xml files
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+
+
+
 }

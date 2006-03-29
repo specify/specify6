@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
 
 
 
@@ -27,7 +27,6 @@ public class Observation  implements java.io.Serializable {
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
-     protected Integer observationMethodId;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      private CollectionObject collectionObject;
@@ -133,7 +132,6 @@ public class Observation  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Text1"
-     *             length="300"
      *         
      */
     public String getText1() {
@@ -147,7 +145,6 @@ public class Observation  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Text2"
-     *             length="300"
      *         
      */
     public String getText2() {
@@ -229,20 +226,6 @@ public class Observation  implements java.io.Serializable {
     
     public void setLastEditedBy(String lastEditedBy) {
         this.lastEditedBy = lastEditedBy;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="ObservationMethodID"
-     *             length="10"
-     *         
-     */
-    public Integer getObservationMethodId() {
-        return this.observationMethodId;
-    }
-    
-    public void setObservationMethodId(Integer observationMethodId) {
-        this.observationMethodId = observationMethodId;
     }
 
     /**

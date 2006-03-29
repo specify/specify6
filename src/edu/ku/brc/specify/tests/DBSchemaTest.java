@@ -1,11 +1,28 @@
 package edu.ku.brc.specify.tests;
 
+import static edu.ku.brc.specify.tests.CreateTestDatabases.createMultipleAgents;
+import static edu.ku.brc.specify.tests.CreateTestDatabases.createMultipleLocalities;
+import static edu.ku.brc.specify.tests.CreateTestDatabases.getDBObject;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAttributeDef;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCatalogSeries;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectingEvent;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectingEventAttr;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectionObject;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectionObjectAttr;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollector;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDetermination;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createGeography;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createGeographyTreeDef;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createGeographyTreeDefItem;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPrepType;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPreparation;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPreparationAttr;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.setSession;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 
 import junit.framework.TestCase;
@@ -17,7 +34,6 @@ import org.hibernate.Session;
 
 import edu.ku.brc.specify.conversion.GenericDBConversion;
 import edu.ku.brc.specify.conversion.IdMapper;
-import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.AttributeIFace;
@@ -33,29 +49,21 @@ import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
-import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
-import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
-import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Location;
-import edu.ku.brc.specify.datamodel.LocationTreeDef;
-import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttr;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
-import edu.ku.brc.specify.datamodel.TaxonTreeDef;
-import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
-import edu.ku.brc.specify.datamodel.User;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.*;
-
 /**
- * Tests the Preferences and Preferences cache
+ * Tests for the Schema.
+ * REMEMBER: Call made to "ObjCreatorHelper" do not commit, but calls made to "CreateTestDatabases" do
  *
  * @author rods
  *
@@ -69,7 +77,7 @@ public class DBSchemaTest extends TestCase
         DBConnection.setDriver("com.mysql.jdbc.Driver");
         DBConnection.setDBName("jdbc:mysql://localhost/demo_fish3");
     }
-    
+
     protected Calendar startCal = Calendar.getInstance();
 
 
@@ -81,29 +89,6 @@ public class DBSchemaTest extends TestCase
 
     }
 
-    /**
-     * Retuturns the first item from a table
-     * @param classObj the class of the item to get
-     * @return null if no items in table
-     */
-    public Object getDBObject(Class classObj)
-    {
-        return getDBObject(classObj, 0);
-    }
-
-    /**
-     * Retuturns the first item from a table
-     * @param classObj the class of the item to get
-     * @return null if no items in table
-     */
-    public Object getDBObject(Class classObj, final int index)
-    {
-        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(classObj);
-        java.util.List list = criteria.list();
-        if (list.size() == 0) return null;
-
-        return list.get(index);
-    }
 
     /**
      * Clean All the tables (Remove all their records)
@@ -113,7 +98,7 @@ public class DBSchemaTest extends TestCase
         log.info("Testing IdMapper");
 
         DBConnection oldDB     = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/demo_fish2", "rods", "rods");
-        
+
         try
         {
             IdMapper  idMapper = new IdMapper(oldDB.getConnectionToDB(), "collectionobject", "CollectionObjectID");
@@ -126,14 +111,14 @@ public class DBSchemaTest extends TestCase
             }
             rs.close();
             stmt.close();
-            
+
             int oldInx = -2135666521;
             newInx = idMapper.getNewIndexFromOld(oldInx);
             log.info("New Index ["+newInx+"] for old ["+oldInx+"]");
             assertTrue(newInx == 100);
-            
+
             idMapper.cleanup();
-            
+
             // Now Test Memory Approach
             idMapper = new IdMapper(oldDB.getConnectionToDB(), "accession", "AccessionID");
             stmt     = oldDB.getConnectionToDB().createStatement();
@@ -145,14 +130,14 @@ public class DBSchemaTest extends TestCase
             }
             rs.close();
             stmt.close();
-            
+
             oldInx = 74;
             newInx = idMapper.getNewIndexFromOld(oldInx);
             log.info("New Index ["+newInx+"] for old ["+oldInx+"]");
             assertTrue(newInx == 8);
-            
+
             idMapper.cleanup();
-            
+
         } catch (SQLException ex)
         {
             log.error(ex);
@@ -186,37 +171,21 @@ public class DBSchemaTest extends TestCase
      */
     public void testCreateUser()
     {
-        log.info("Create User");
-        GenericDBConversion conversion = new GenericDBConversion();
-
-        UserGroup userGroup = conversion.createUserGroup("Fish");
-        assertNotNull(userGroup);
-
-        User user = conversion.createNewUser(userGroup, "rods", "rods", (short)0);
-        assertNotNull(user);
-    }
-
-
-    /**
-     *
-     */
-    public void testCreateAgent()
-    {
-        log.info("Create Agents");
+        log.info("Create SpecifyUser");
+        
         try
         {
             Session session = HibernateUtil.getCurrentSession();
             setSession(session);
-            HibernateUtil.beginTransaction();
-
-            // Create Collection Object Definition
-            createAgent("Mr.","Charles","A","Darwin","CD");
-            createAgent("Mr.","Louis","","Agassiz","AL");
-
+            
+            UserGroup userGroup = ObjCreatorHelper.createUserGroup("Fish");
+            assertNotNull(userGroup);
+    
+            SpecifyUser user = ObjCreatorHelper.createSpecifyUser("rods", "rods", (short)0, userGroup);
+            assertNotNull(user);
+            
             HibernateUtil.commitTransaction();
-
-            assertTrue(true);
-
+            
         } catch (Exception ex)
         {
             log.error("******* " + ex);
@@ -224,12 +193,50 @@ public class DBSchemaTest extends TestCase
             HibernateUtil.rollbackTransaction();
             assertTrue(false);
         }
-
     }
 
+
+
+    /**
+     * 
+     */
+    public void testCreateAgent()
+    {
+        log.info("Create Agents");
+        assertTrue(createMultipleAgents());
+    }
+
+    /**
+     * 
+     */
+    public void testCreateCollectionObjDef()
+    {
+        log.info("Create CollectionObjDef");
+
+        // Find SpecifyUser
+        SpecifyUser user = (SpecifyUser)getDBObject(SpecifyUser.class);
+        assertNotNull(user);
+
+        // Find Data Type
+        DataType dataType = (DataType)getDBObject(DataType.class);
+        assertNotNull(dataType);
+
+        // This call auto creates a TaxonTreeDef and attaches it to the ColObjDef
+        assertTrue(CreateTestDatabases.createCollectionObjDef(dataType, user, "Fish"));
+    }
+
+
+
+    /**
+     * 
+     */
     public void testGeography()
     {
         log.info("Create GeographyTreeDef, GeographyTreeDefItem and Geography objects");
+
+        CollectionObjDef collectionObjDef = (CollectionObjDef)getDBObject(CollectionObjDef.class);
+        assertTrue(CreateTestDatabases.createSimpleGeography(collectionObjDef, "GeographyTreeDef for DBSchemaTest"));
+
         try
         {
             Session session = HibernateUtil.getCurrentSession();
@@ -275,247 +282,47 @@ public class DBSchemaTest extends TestCase
             HibernateUtil.rollbackTransaction();
             assertTrue(false);
         }
+
     }
-   
+
+    /**
+     * 
+     */
     public void testLocation()
     {
-        log.info("Create LocationTreeDef, LocationTreeDefItem and Location objects");
-        try
-        {
-            Session session = HibernateUtil.getCurrentSession();
-            setSession(session);
-            HibernateUtil.beginTransaction();
-            
-            // Create a geography tree definition
-            LocationTreeDef locTreeDef = createLocationTreeDef("LocationTreeDef for DBSchemaTest");
-            LocationTreeDefItem building = createLocationTreeDefItem(null, locTreeDef, "building", 0);
-            LocationTreeDefItem room = createLocationTreeDefItem(building, locTreeDef, "building", 100);
-            LocationTreeDefItem freezer = createLocationTreeDefItem(room, locTreeDef, "freezer", 200);
-            LocationTreeDefItem shelf = createLocationTreeDefItem(freezer, locTreeDef, "shelf", 300);
-            
-            // Create the building
-            Location dyche = createLocation(locTreeDef, null, "Dyche Hall", building.getRankId());
-            Location rm606 = createLocation(locTreeDef, dyche, "Room 606", room.getRankId());
-            Location freezerA = createLocation(locTreeDef, rm606, "Freezer A", freezer.getRankId());
-            Location shelf5 = createLocation(locTreeDef, freezerA, "Shelf 5", shelf.getRankId());
-            Location shelf4 = createLocation(locTreeDef, freezerA, "Shelf 4", shelf.getRankId());
-            Location shelf3 = createLocation(locTreeDef, freezerA, "Shelf 3", shelf.getRankId());
-            Location shelf2 = createLocation(locTreeDef, freezerA, "Shelf 2", shelf.getRankId());
-            Location shelf1 = createLocation(locTreeDef, freezerA, "Shelf 1", shelf.getRankId());
-
-            HibernateUtil.commitTransaction();
-            HibernateUtil.closeSession();
-            
-            assertTrue(true);
-        }
-        catch( Exception ex )
-        {
-            log.error("******* " + ex);
-            ex.printStackTrace();
-            HibernateUtil.rollbackTransaction();
-            assertTrue(false);
-        }       
+        log.info("Create LocationTreeDef, LocationTreeDefItem and Location objects"); 
+        CollectionObjDef collectionObjDef = (CollectionObjDef)getDBObject(CollectionObjDef.class);
+        assertTrue(CreateTestDatabases.createSimpleLocation(collectionObjDef, "LocationTreeDef for DBSchemaTest"));
     }
 
+    /**
+     * 
+     */
     public void testTaxon()
     {
-        log.info("Create TaxonTreeDef, TaxonTreeDefItem and Taxon objects");
-        try
-        {
-            Session session = HibernateUtil.getCurrentSession();
-            setSession(session);
-            HibernateUtil.beginTransaction();
-
-            // Create a geography tree definition
-            TaxonTreeDef taxonTreeDef = createTaxonTreeDef("TaxonTreeDef for DBSchemaTest");
-            TaxonTreeDefItem defItemLevel0 = createTaxonTreeDefItem(null, taxonTreeDef, "order", 0);
-            TaxonTreeDefItem defItemLevel1 = createTaxonTreeDefItem(defItemLevel0, taxonTreeDef, "family", 100);
-            TaxonTreeDefItem defItemLevel2 = createTaxonTreeDefItem(defItemLevel1, taxonTreeDef, "genus", 200);
-            TaxonTreeDefItem defItemLevel3 = createTaxonTreeDefItem(defItemLevel2, taxonTreeDef, "species", 300);
-            
-            // Create the defItemLevel0
-            Taxon level0 = createTaxon(taxonTreeDef, null, "Percidae", defItemLevel0.getRankId());
-            Taxon level1 = createTaxon(taxonTreeDef, level0, "Perciformes", defItemLevel1.getRankId());
-            Taxon level2 = createTaxon(taxonTreeDef, level1, "Ammocrypta", defItemLevel2.getRankId());
-            
-            Taxon level3 = createTaxon(taxonTreeDef, level2, "beanii", defItemLevel3.getRankId());
-            level3 = createTaxon(taxonTreeDef, level2, "beanii2", defItemLevel3.getRankId());
-            level3 = createTaxon(taxonTreeDef, level2, "beanii3", defItemLevel3.getRankId());
-            level3 = createTaxon(taxonTreeDef, level2, "beanii4", defItemLevel3.getRankId());
-            level3 = createTaxon(taxonTreeDef, level2, "beaniis5", defItemLevel3.getRankId());
-            level3 = createTaxon(taxonTreeDef, level2, "beanii6", defItemLevel3.getRankId());
-            
-            HibernateUtil.commitTransaction();
-            HibernateUtil.closeSession();
-            
-            assertTrue(true);
-        }
-        catch( Exception ex )
-        {
-            log.error("******* " + ex);
-            ex.printStackTrace();
-            HibernateUtil.rollbackTransaction();
-            assertTrue(false);
-        }       
+        CollectionObjDef collectionObjDef = (CollectionObjDef)getDBObject(CollectionObjDef.class);
+        log.info("Create TaxonTreeDef, TaxonTreeDefItem and Taxon objects"); 
+        assertTrue(CreateTestDatabases.createSimpleTaxon(collectionObjDef.getTaxonTreeDef()));
     }
 
+    /**
+     * 
+     */
     public void testGeologicTimePeriod()
     {
         log.info("Create GeologicTimePeriodTreeDef, GTPTreeDefItem and GTP objects");
-        try
-        {
-            Session session = HibernateUtil.getCurrentSession();
-            setSession(session);
-            HibernateUtil.beginTransaction();
-
-            // Create a geography tree definition
-            GeologicTimePeriodTreeDef treeDef = new GeologicTimePeriodTreeDef();
-            session.save(treeDef);
-            treeDef.setName("GeologicTimePeriodTreeDef for DBSchemaTest");
-            treeDef.setRemarks("A GeologicTimePeriod tree def for use in the DB testing");
-            
-            GeologicTimePeriodTreeDefItem defItemLevel0 = new GeologicTimePeriodTreeDefItem();
-            session.save(defItemLevel0);
-            defItemLevel0.setName("Level 0");
-            defItemLevel0.setRankId(0);
-            
-            GeologicTimePeriodTreeDefItem defItemLevel1 = new GeologicTimePeriodTreeDefItem();
-            session.save(defItemLevel1);
-            defItemLevel1.setName("Level 1");
-            defItemLevel1.setRankId(100);
-            
-            GeologicTimePeriodTreeDefItem defItemLevel2 = new GeologicTimePeriodTreeDefItem();
-            session.save(defItemLevel2);
-            defItemLevel2.setName("Level 2");
-            defItemLevel2.setRankId(200);
-            
-            GeologicTimePeriodTreeDefItem defItemLevel3 = new GeologicTimePeriodTreeDefItem();
-            session.save(defItemLevel3);
-            defItemLevel3.setName("Level 3");
-            defItemLevel3.setRankId(300);
-            
-            defItemLevel3.setParent(defItemLevel2);
-            defItemLevel2.setParent(defItemLevel1);
-            defItemLevel1.setParent(defItemLevel0);
-            
-            defItemLevel0.setTreeDef(treeDef);
-            defItemLevel1.setTreeDef(treeDef);
-            defItemLevel2.setTreeDef(treeDef);
-            defItemLevel3.setTreeDef(treeDef);
-            
-            // Create the defItemLevel0
-            GeologicTimePeriod level0 = new GeologicTimePeriod();
-            level0.setName("Time As We Know It");
-            level0.setRankId(defItemLevel0.getRankId());
-            level0.setTreeDef(treeDef);
-            session.save(level0);
-            
-            GeologicTimePeriod level1 = new GeologicTimePeriod();
-            level1.setRankId(defItemLevel1.getRankId());
-            level1.setName("Some Really Big Time Period");
-            level1.setTreeDef(treeDef);
-            session.save(level1);
-            level1.setParent(level0);
-            
-            GeologicTimePeriod level2 = new GeologicTimePeriod();
-            level2.setRankId(defItemLevel2.getRankId());
-            level2.setName("A Slightly Smaller Time Period");
-            level2.setTreeDef(treeDef);
-            session.save(level2);
-            level2.setParent(level1);
-            
-            GeologicTimePeriod level3 = new GeologicTimePeriod();
-            level3.setRankId(defItemLevel3.getRankId());
-            level3.setName("Yesterday");
-            level3.setTreeDef(treeDef);
-            session.save(level3);
-            level3.setParent(level2);
-            
-            HibernateUtil.commitTransaction();
-            HibernateUtil.closeSession();
-            
-            assertTrue(true);
-        }
-        catch( Exception ex )
-        {
-            log.error("******* " + ex);
-            ex.printStackTrace();
-            HibernateUtil.rollbackTransaction();
-            assertTrue(false);
-        }       
+        CollectionObjDef collectionObjDef = (CollectionObjDef)getDBObject(CollectionObjDef.class);
+        assertTrue(CreateTestDatabases.createGeologicTimePeriod(collectionObjDef, "GeologicTimePeriodTreeDef for DBSchemaTest"));
+        
     }
-    
+
     /**
-     * 
+     *
      */
     public void testLocality()
     {
         log.info("Create Locality");
-        try
-        {
-            Session session = HibernateUtil.getCurrentSession();
-            setSession(session);
-            HibernateUtil.beginTransaction();
-
-            session.save(createLocality("This is the place", (Geography)getDBObject(Geography.class, 6)));
-            session.save(createLocality("My Private Forest", (Geography)getDBObject(Geography.class, 10)));
-            
-            HibernateUtil.commitTransaction();
-
-            assertTrue(true);
-            
-        } catch (Exception ex)
-        {
-            log.error("******* " + ex);
-            ex.printStackTrace();
-            HibernateUtil.rollbackTransaction();
-            assertTrue(false);
-        }
-
-    }
-    
-    /**
-     *
-     */
-    public void testCreateCollectionObjDef()
-    {
-        log.info("Create CollectionObjDef");
-        try
-        {
-
-            // Find User
-            User user = (User)getDBObject(User.class);
-            assertNotNull(user);
-
-            // Find Data Type
-            DataType dataType = (DataType)getDBObject(DataType.class);
-            assertNotNull(dataType);
-
-            Session session = HibernateUtil.getCurrentSession();
-            setSession(session);
-            HibernateUtil.beginTransaction();
-
-            // Create Collection Object Definition
-            CollectionObjDef colObjDef = createCollectionObjDef("Fish", dataType, user);
-            session.save(colObjDef);
-
-            // Update the User to own the ColObjDef
-            Set<Object> set = new HashSet<Object>();
-            set.add(colObjDef);
-            user.setCollectionObjDef(set);
-            session.saveOrUpdate(user);
-
-            HibernateUtil.commitTransaction();
-
-            assertTrue(true);
-
-        } catch (Exception ex)
-        {
-            log.error("******* " + ex);
-            ex.printStackTrace();
-            HibernateUtil.rollbackTransaction();
-            assertTrue(false);
-        }
+        assertTrue(createMultipleLocalities());
     }
 
     /**
@@ -528,18 +335,15 @@ public class DBSchemaTest extends TestCase
         {
             Session session = HibernateUtil.getCurrentSession();
             setSession(session);
+            HibernateUtil.beginTransaction();
             
             CollectionObjDef collectionObjDef = (CollectionObjDef)getDBObject(CollectionObjDef.class);
             assertNotNull(collectionObjDef);
 
-            HibernateUtil.beginTransaction();
-
-            Set<Object> colObjDefSet = new HashSet<Object>();
-            colObjDefSet.add(collectionObjDef);
-
             CatalogSeries catalogSeries = createCatalogSeries("KUFSH", "Fish");
-            catalogSeries.setCollectionObjDefItems(colObjDefSet);
+            
 
+            catalogSeries.getCollectionObjDefItems().add(collectionObjDef);
             HibernateUtil.commitTransaction();
 
             assertTrue(true);
@@ -552,10 +356,10 @@ public class DBSchemaTest extends TestCase
             assertTrue(false);
         }
     }
-    
+
 
     /**
-     * 
+     *
      */
     public void testCollectionObject()
     {
@@ -570,7 +374,7 @@ public class DBSchemaTest extends TestCase
 
             Agent Darwin = (Agent)getDBObject(Agent.class);
             assertNotNull(Darwin);
-            
+
             Agent Agassiz = (Agent)getDBObject(Agent.class, 1);
             assertNotNull(Agassiz);
 
@@ -582,7 +386,7 @@ public class DBSchemaTest extends TestCase
             HibernateUtil.beginTransaction();
 
             // Create Collecting Event
-            CollectingEvent colEv = createCollectingEvent(locality, 
+            CollectingEvent colEv = createCollectingEvent(locality,
                     new Collector[] {createCollector(Darwin, 0), createCollector(Agassiz, 1)});
 
             // Create AttributeDef for Collecting Event
@@ -592,9 +396,9 @@ public class DBSchemaTest extends TestCase
             CollectingEventAttr cevAttr = createCollectingEventAttr(colEv, cevAttrDef, "Clinton Park", null);
 
             // Create Collection Object
-            CollectionObject colObj1  = createCollectionObject(1601010.1f, "RCS101", null, Darwin,  catalogSeries, colObjDef, 5);
-            CollectionObject colObj2 = createCollectionObject(1701011.1f, "RCS102", null, Agassiz, catalogSeries, colObjDef, 20);
-            CollectionObject colObj3 = createCollectionObject(1801012.1f, "RCS103", null, Darwin, catalogSeries, colObjDef, 35);
+            CollectionObject colObj1 = createCollectionObject(1601010.1f, "RCS101", null, Darwin,  catalogSeries, colObjDef, 5, colEv);
+            CollectionObject colObj2 = createCollectionObject(1701011.1f, "RCS102", null, Agassiz, catalogSeries, colObjDef, 20, colEv);
+            CollectionObject colObj3 = createCollectionObject(1801012.1f, "RCS103", null, Darwin, catalogSeries, colObjDef, 35, colEv);
 
             // Create AttributeDef for Collection Object
             AttributeDef colObjAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "MoonPhase", null);
@@ -609,40 +413,38 @@ public class DBSchemaTest extends TestCase
             Taxon t6 = (Taxon)getDBObject(Taxon.class, 6);
             Taxon t7 = (Taxon)getDBObject(Taxon.class, 7);
             Taxon t8 = (Taxon)getDBObject(Taxon.class, 8);
- 
+
             // Create Determination
-            Determination determination = createDetermination(colObj1, Darwin, t3, true);
-            determination = createDetermination(colObj1, Darwin, t4, false);
+            Determination determination = createDetermination(colObj1, Darwin, t3, true, null);
+            determination = createDetermination(colObj1, Darwin, t4, false, null);
 
-            determination = createDetermination(colObj2, Darwin, t3, true);
-            determination = createDetermination(colObj2, Darwin, t7, false);
+            determination = createDetermination(colObj2, Darwin, t3, true, null);
+            determination = createDetermination(colObj2, Darwin, t7, false, null);
 
-            determination = createDetermination(colObj3, Agassiz, t7, true);
-            determination = createDetermination(colObj3, Agassiz, t8, false);
+            determination = createDetermination(colObj3, Agassiz, t7, true, null);
+            determination = createDetermination(colObj3, Agassiz, t8, false, null);
 
             // Create Preparation Type
             PrepType prepType = createPrepType("Skeleton");
 
-          
+
             Location location = (Location)getDBObject(Location.class, 6); // Shelf 2
             log.info("Location: "+location.getName());
 
             // Create Preparation
             Preparation prep = createPreparation(prepType, Darwin, colObj1, location, 10);
             prep = createPreparation(prepType, Agassiz, colObj1, location, 33);
-            
+
             prep = createPreparation(prepType, Darwin, colObj2, location, 23);
 
-            
+
             // Create AttributeDef for Preparation
             AttributeDef prepAttrDef = createAttributeDef(AttributeIFace.FieldType.IntegerType, "Length", prepType);
 
             // Create PreparationAttr
             PreparationAttr prepAttr = createPreparationAttr(prepAttrDef, prep, null, 100.0);
 
-            //HibernateUtil.beginTransaction();
-            //session.delete(colObj);
-            //HibernateUtil.commitTransaction();
+            HibernateUtil.commitTransaction();
 
             assertTrue(true);
 

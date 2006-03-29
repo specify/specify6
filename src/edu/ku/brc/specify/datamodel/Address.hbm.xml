@@ -39,15 +39,33 @@
 
     <property
         name="address"
-        type="text"
+        type="java.lang.String"
         column="Address"
         not-null="true"
-    >
+        length="255"
+        >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
+            @hibernate.property
             column="Address"
             not-null="true"
+            length="255"
+        </meta>    
+    </property>
+    
+    <property
+        name="address2"
+        type="java.lang.String"
+        column="Address2"
+        not-null="false"
+        length="255"
+        >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+            @hibernate.property
+            column="Address"
+            not-null="true"
+            length="255"
         </meta>    
     </property>
     
@@ -55,51 +73,54 @@
         name="city"
         type="java.lang.String"
         column="City"
-        length="32"
+        length="64"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="City"
-            length="32"
+            length="64"
         </meta>    
     </property>
+    
     <property
         name="state"
         type="java.lang.String"
         column="State"
-        length="32"
+        length="64"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="State"
-            length="32"
+            length="64"
         </meta>    
     </property>
+    
     <property
         name="country"
         type="java.lang.String"
         column="Country"
-        length="32"
+        length="64"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Country"
-            length="32"
+            length="64"
         </meta>    
     </property>
+    
     <property
-        name="postalcode"
+        name="postalCode"
         type="java.lang.String"
-        column="Postalcode"
+        column="PostalCode"
         length="32"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="Postalcode"
+            column="PostalCode"
             length="32"
         </meta>    
     </property>

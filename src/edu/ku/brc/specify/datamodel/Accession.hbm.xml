@@ -38,46 +38,50 @@
         <meta attribute="scope-field">protected</meta>
         <generator class="native" />
     </id>
-
+    
+    <property
+        name="type"
+        type="java.lang.String"
+        column="Type"
+        length="32"
+        >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+            @hibernate.property
+            column="Type"
+            length="32"
+        </meta>    
+    </property>
+    
+    <property
+        name="status"
+        type="java.lang.String"
+        column="Status"
+        not-null="true"
+        length="32"
+        >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+            @hibernate.property
+            column="Status"
+            length="32"
+            not-null="true"
+        </meta>    
+    </property>
+    
     <property
         name="number"
         type="java.lang.String"
         column="Number"
         not-null="true"
         length="60"
-    >
+        >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.property
+            @hibernate.property
             column="Number"
             length="60"
             not-null="true"
-        </meta>    
-    </property>
-    <property
-        name="status"
-        type="java.lang.String"
-        column="Status"
-        length="30"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Status"
-            length="30"
-        </meta>    
-    </property>
-    <property
-        name="type"
-        type="java.lang.String"
-        column="Type"
-        length="30"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="Type"
-            length="30"
         </meta>    
     </property>
     
@@ -121,67 +125,61 @@
     
     <property
         name="text1"
-        type="java.lang.String"
+        type="text"
         column="Text1"
-        length="300"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
-            column="Text1"
-            length="300"
+            column="text"
         </meta>    
     </property>
+    
     <property
         name="text2"
-        type="java.lang.String"
+        type="text"
         column="Text2"
-        length="300"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Text2"
-            length="300"
         </meta>    
     </property>
+    
     <property
         name="text3"
-        type="java.lang.String"
+        type="text"
         column="Text3"
-        length="300"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Text3"
-            length="300"
         </meta>    
     </property>
+    
     <property
         name="number1"
         type="java.lang.Float"
         column="Number1"
-        length="24"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Number1"
-            length="24"
         </meta>    
     </property>
+    
     <property
         name="number2"
         type="java.lang.Float"
         column="Number2"
-        length="24"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Number2"
-            length="24"
         </meta>    
     </property>
     
@@ -229,6 +227,7 @@
             not-null="true"
         </meta>    
     </property>
+    
     <property
         name="lastEditedBy"
         type="java.lang.String"
@@ -240,32 +239,6 @@
            @hibernate.property
             column="LastEditedBy"
             length="50"
-        </meta>    
-    </property>
-    <property
-        name="statusId"
-        type="java.lang.Integer"
-        column="StatusID"
-        length="10"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="StatusID"
-            length="10"
-        </meta>    
-    </property>
-    <property
-        name="typeId"
-        type="java.lang.Integer"
-        column="TypeID"
-        length="10"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TypeID"
-            length="10"
         </meta>    
     </property>
     
@@ -304,7 +277,7 @@
         inverse="true"
 		cascade="none"
     >
-	<meta attribute="scope-field">protected</meta> <!-- meg added -->
+	    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.set
             lazy="true"
@@ -324,20 +297,20 @@
             class="edu.ku.brc.specify.datamodel.CollectionObject"
         />
     </set>
+    
     <!-- bi-directional one-to-many association to AccessionAuthorizations -->
     <set
         name="accessionAuthorizations"
         lazy="true"
         inverse="true"
-		cascade="delete"
+		cascade="all"
     >
-	<!-- meg change cascade="none" to cascade="delete - above and below -->
-	<meta attribute="scope-field">protected</meta> <!-- meg added -->
+	    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.set
             lazy="true"
             inverse="true"
-            cascade="delete"
+            cascade="all"
 
            @hibernate.collection-key
             column="AccessionID"
@@ -352,6 +325,7 @@
             class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
         />
     </set>
+    
     <!-- bi-directional one-to-many association to AccessionAgent -->
     <set
         name="accessionAgents"
@@ -360,7 +334,7 @@
 		cascade="delete"
     >
 		<!-- meg change cascade="none" to cascade="delete - above and below -->
-        <meta attribute="scope-field">protected</meta> <!-- meg added -->
+        <meta attribute="scope-field">protected</meta> 
         <meta attribute="field-description">
            @hibernate.set
             lazy="true"
@@ -380,7 +354,6 @@
             class="edu.ku.brc.specify.datamodel.AccessionAgent"
         />
     </set>
-
-
+    
 </class>
 </hibernate-mapping>

@@ -5,10 +5,10 @@
 
 <hibernate-mapping>
 
-<class 
-    name="edu.ku.brc.specify.datamodel.User"
-    table="user"
-    lazy="true"	
+<class
+    name="edu.ku.brc.specify.datamodel.SpecifyUser"
+    table="specifyuser"
+    lazy="true"
 >
     <meta attribute="class-description" inherit="false">
        @hibernate.class
@@ -16,15 +16,15 @@
     </meta>
 
     <id
-        name="userId"
+        name="specifyUserId"
         type="java.lang.Integer"
-        column="UserID"
+        column="SpecifyUserID"
     >
       <meta attribute="scope-set">public</meta>
       <meta attribute="scope-field">protected</meta>
       <generator class="native"/>
     </id>
-    
+
     <property
         name="name"
         type="java.lang.String"
@@ -36,9 +36,9 @@
            @hibernate.property
             column="Name"
             length="64"
-        </meta>    
+        </meta>
     </property>
-    
+
     <property
         name="password"
         type="java.lang.String"
@@ -50,9 +50,9 @@
            @hibernate.property
             column="Password"
             length="64"
-        </meta>    
+        </meta>
     </property>
-    
+
     <property
         name="privLevel"
         type="short"
@@ -62,11 +62,11 @@
         <meta attribute="field-description">
            @hibernate.property
             column="PrivLevel"
-        </meta>    
-    </property>    
-    
+        </meta>
+    </property>
+
     <!-- Associations -->
-  
+
     <!-- bi-directional one-to-many association to CollectionObjDef -->
     <set
         name="collectionObjDef"
@@ -81,19 +81,19 @@
             cascade="none"
 
            @hibernate.collection-key
-            column="UserID"
+            column="SpecifyUserID"
 
            @hibernate.collection-one-to-many
             class="edu.ku.brc.specify.datamodel.CollectionObjDef"
         </meta>
         <key>
-            <column name="UserID" />
+            <column name="SpecifyUserID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.CollectionObjDef"
         />
     </set>
-    
+
     <!-- bi-directional one-to-many association to RecordSet -->
     <set
         name="recordSets"
@@ -117,11 +117,11 @@
         <key>
             <column name="CollectionObjectID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.RecordSet"
         />
     </set>
-    
+
     <!-- bi-directional many-to-one association to UserGroup -->
     <many-to-one
         name="userGroup"
@@ -132,7 +132,7 @@
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="UserGroupID"         
+           @hibernate.column name="UserGroupID"
         </meta>
         <column name="UserGroupID" />
     </many-to-one>

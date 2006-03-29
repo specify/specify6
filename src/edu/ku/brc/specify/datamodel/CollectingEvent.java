@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -32,7 +34,6 @@ public class CollectingEvent  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     protected Integer methodId;
      protected Set collectionObjects;
      private Set collectors;
      protected Locality locality;
@@ -303,20 +304,6 @@ public class CollectingEvent  implements java.io.Serializable {
     
     public void setLastEditedBy(String lastEditedBy) {
         this.lastEditedBy = lastEditedBy;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="MethodID"
-     *             length="10"
-     *         
-     */
-    public Integer getMethodId() {
-        return this.methodId;
-    }
-    
-    public void setMethodId(Integer methodId) {
-        this.methodId = methodId;
     }
 
     /**

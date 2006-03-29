@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<viewset name="Fish Views" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="form.xsd">
+<viewset name="Fish Views" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <view id="1" type="form"
-                 name="CollectionObject"
+                 name="Edit"
                  class="edu.ku.brc.specify.datamodel.CollectionObject"
                  gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
                  resourceLabels="false"
                  validate="true"
                  >
     	<desc><![CDATA[The Collection Object form.]]></desc>
-
+        <altviews>
+            <alt id="11" label="View"/>
+        </altviews>
+        
 		<columnDef>100px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
 		<rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
 
@@ -22,7 +25,7 @@
 				<cell type="field" name="catalogNumber" format="%.0f"/>
 
                 <cell type="label" labelfor="catalogSeries.seriesName" label="Catalog Series"/>
-				<cell type="field" uitype="label" name="catalogSeries.seriesName"/>
+				<cell type="field" uitype="displaylabel" name="catalogSeries.seriesName"/>
 			</row>
 			<row>
                 <cell type="label" labelfor="accession.number" label="Accession #"/>
@@ -89,8 +92,6 @@
                  validate="true"
                  >
 	    <altviews>
-			<alt id="6" label="Form"/>
-			<!-- <alt id="66" label="Table"/> -->
 		</altviews>
 
 		<columnDef>100px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
@@ -118,7 +119,7 @@
 
 			<row>
                 <cell type="label" labelfor="remarks" label="Remarks"/>
-				<cell type="field" name="remarks" colspan="9" cols="50"/>
+			    <cell type="field" name="remarks" uitype="textarea" colspan="9" cols="50"/>
 			</row>
 		</rows>
 	</view>
@@ -131,8 +132,6 @@
                  validate="true"
                  >
 		<altviews>
-			<alt id="7" label="Form"/>
-			<!-- <alt id="8" label="Table"/> -->
 		</altviews>
 
 		<columnDef>100px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
@@ -198,19 +197,11 @@
 
 			<!--
 			<row>
-<<<<<<< .mine
-                <cell type="label" labelfor="prepAttrs.size" label="Size"/>
-				<cell type="field" name="prepAttrs.size"/>
-
-                <cell type="label" labelfor="prepAttrs.sex" label="Sex"/>
-				<cell type="field" name="prepAttrs.sex"/>
-=======
                 <cell type="label" labelfor="attrs.size" label="Size"/>
 				<cell type="field" name="attrs.size"/>
 				
                 <cell type="label" labelfor="attrs.sex" label="Sex"/>
 				<cell type="field" name="attrs.sex"/>
->>>>>>> .r221
 			</row>
 			<row>
                 <cell type="label" labelfor="attrs.url" label="URL"/>
@@ -220,4 +211,247 @@
 
 		</rows>
 	</view>
+	
+    <view id="11" type="form"
+        name="View"
+        class="edu.ku.brc.specify.datamodel.CollectionObject"
+        gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+        resourceLabels="false"
+        validate="true"
+        >
+        <desc><![CDATA[The Collection Object form.]]></desc>
+        <altviews>
+            <alt id="1" label="Edit"/>
+        </altviews>
+        
+        <columnDef>100px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+        <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+        
+        <rows>
+            <row>
+                <cell type="separator" label="KU Fish" colspan="12"/>
+            </row>
+            <row>
+                <cell type="label" labelfor="catalogNumber" label="Catalog Number"/>
+                <cell type="field" uitype="displaylabel" name="catalogNumber" format="%.0f"/>
+                
+                <cell type="label" labelfor="catalogSeries.seriesName" label="Catalog Series"/>
+                <cell type="field" uitype="displaylabel" name="catalogSeries.seriesName"/>
+            </row>
+            <row>
+                <cell type="label" labelfor="accession.number" label="Accession #"/>
+                <cell type="field" uitype="displaylabel" name="accession.number"/>
+                
+                <cell type="label" labelfor="cataloger.lastName,cataloger.firstName" label="Cataloger"/>
+                <cell type="field" uitype="displaylabel" name="cataloger.lastName,cataloger.firstName" format="%s,%s"/>
+                
+                <cell type="label" labelfor="catalogedDate" label="Date"/>
+                <cell type="field" uitype="displaylabel" name="catalogedDate"/>
+            </row>
+            <row>
+                <cell type="separator" label="Determination" colspan="12"/>
+            </row>
+            
+            <row>
+                <cell type="subview" id="16" name="determinations" class="edu.ku.brc.specify.datamodel.Determination"  colspan="12"/>
+            </row>
+            
+            <row>
+                <cell type="separator" label="Locality" colspan="12"/>
+            </row>
+            <row>
+                <cell type="label" labelfor="fieldNumber" label="Field No"/>
+                <cell type="field" uitype="displaylabel" name="fieldNumber"/>
+                
+                <cell type="label" labelfor="collectingEvent.locality.localityName" label="Locality"/>
+                <cell type="field" uitype="displaylabel" name="collectingEvent.locality.localityName" cols="41" colspan="6"/>
+            </row>
+            
+            <row>
+                <cell type="separator" label="Preparations" colspan="12"/>
+            </row>
+            <row>
+                <cell type="subview" id="17" name="preparations" class="edu.ku.brc.specify.datamodel.Preparations" colspan="12"/>
+            </row>
+            
+            <row>
+                <cell type="separator" label="" colspan="12"/>
+            </row>
+            <row>
+                <cell type="label" labelfor="lastEditedBy" label="Edited By"/>
+                <cell type="field" uitype="displaylabel" name="lastEditedBy"/>
+                
+                <cell type="label" labelfor="timestampModified" label="Last Edited"/>
+                <cell type="field" uitype="displaylabel" name="timestampModified" cols="20" colspan="2"/>
+            </row>
+        </rows>
+    </view>
+    
+    <view id="16" type="form"
+        name="Determination"
+        class="edu.ku.brc.specify.datamodel.Determination"
+        gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+        resourceLabels="false"
+        validate="true"
+        >
+        <altviews>
+        </altviews>
+        
+        <columnDef>100px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+        <rowDef>p,2dlu,p,2dlu,p,2dlu,p:g,2dlu</rowDef>
+        
+        <rows>
+            <row>
+                <cell type="label" labelfor="taxon.name" label="Taxon"/>
+                <cell type="field" uitype="displaylabel" name="taxon.name" label="Taxon" colspan="5"/>
+                
+                <cell type="label" labelfor="isCurrent" label=""/>
+                <cell type="field" name="isCurrent" uitype="checkbox" label="Is Current"/>
+            </row>
+            <row>
+                
+                <cell type="label" labelfor="determiner.lastName,determiner.firstName" label="Determiner"/>
+                <cell type="field" uitype="displaylabel" name="determiner.lastName,determiner.firstName" format="%s, %s" cols="20"/>
+                
+                <cell type="label" labelfor="confidenceId" label="Confidence"/>
+                <cell type="field" uitype="displaylabel" name="confidenceId" label="Confidence"/>
+                
+                <cell type="label" labelfor="determinedDate" label="Date"/>
+                <cell type="field" uitype="displaylabel" name="determinedDate" isrequired="true"/>
+            </row>
+            
+            <row>
+                <cell type="label" labelfor="remarks" label="Remarks"/>
+                <cell type="field" name="remarks" uitype="dsptextarea" colspan="9" cols="50"/>
+            </row>
+        </rows>
+    </view>
+    
+    <view id="17" type="form"
+        name="Preparation"
+        class="edu.ku.brc.specify.datamodel.Preparation"
+        gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+        resourceLabels="false"
+        validate="true"
+        >
+        <altviews>
+        </altviews>
+        
+        <columnDef>100px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+        <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu</rowDef>
+        
+        <rows>
+            <row>
+                <cell type="label" labelfor="preparedDate" label="Prepared Date"/>
+                <cell type="field" uitype="displaylabel" name="preparedDate"/>
+                
+                <cell type="label" labelfor="preparedByAgent.lastName,preparedByAgent.firstName" label="Prepared By"/>
+                <cell type="field" uitype="displaylabel" name="preparedByAgent.lastName,preparedByAgent.firstName" format="%s, %s"/>
+            </row>
+            <row>
+                <cell type="label" labelfor="count" label="Count"/>
+                <cell type="field" uitype="displaylabel" name="count"/>
+                
+                <cell type="label" labelfor="storageLocation" label="Storage"/>
+                <cell type="field" uitype="displaylabel" name="storageLocation"/>
+            </row>
+
+            <row>
+                
+                <cell type="label" labelfor="attrs.size" label="Size"/>
+                <cell type="field" uitype="displaylabel" name="attrs.size"/>
+                
+                <cell type="label" labelfor="attrs.sex" label="Sex"/>
+                <cell type="field" uitype="displaylabel" name="attrs.sex" initialize="Unknown, Male, Female"/>
+            </row>
+
+            
+        </rows>
+    </view>
+    
+    
+    <view id="20" type="form"
+        name="Edit"
+        class="edu.ku.brc.specify.datamodel.Accession"
+        gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+        resourceLabels="false"
+        validate="true"
+        >
+        <desc><![CDATA[The Accession Object form.]]></desc>
+        <altviews>
+           
+        </altviews>
+        
+        <columnDef>100px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+        <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+        
+        <rows>
+            <row>
+                <cell type="separator" label="KU Accessions" colspan="12"/>
+            </row>
+            <row>
+                <cell type="label" labelfor="catalogNumber" label="Catalog Number"/>
+                <cell type="field" name="catalogNumber" format="%.0f"/>
+                
+                <cell type="label" labelfor="catalogSeries.seriesName" label="Catalog Series"/>
+                <cell type="field" uitype="displaylabel" name="catalogSeries.seriesName"/>
+            </row>
+            <row>
+                <cell type="label" labelfor="accession.number" label="Accession #"/>
+                <cell type="field" name="accession.number"/>
+                
+                <cell type="label" labelfor="cataloger.lastName,cataloger.firstName" label="Cataloger"/>
+                <cell type="field" name="cataloger.lastName,cataloger.firstName" format="%s,%s"/>
+                
+                <cell type="label" labelfor="catalogedDate" label="Date"/>
+                <cell type="field" name="catalogedDate"/>
+            </row>
+            <!--
+                <row>
+                <cell type="label" labelfor="attrs.Weight" label="Weight"/>
+                <cell type="field" name="attrs.Weight"/>
+                <cell type="label" labelfor="attrs.Length" label="Length"/>
+                <cell type="field" name="attrs.Length"/>
+                </row>
+            -->
+            <row>
+                <cell type="separator" label="Determination" colspan="12"/>
+            </row>
+            
+            <row>
+                <cell type="subview" id="6" name="determinations" class="edu.ku.brc.specify.datamodel.Determination"  colspan="12"/>
+            </row>
+            
+            <row>
+                <cell type="separator" label="Locality" colspan="12"/>
+            </row>
+            <row>
+                <cell type="label" labelfor="fieldNumber" label="Field No"/>
+                <cell type="field" name="fieldNumber"/>
+                
+                <cell type="label" labelfor="collectingEvent.locality.localityName" label="Locality"/>
+                <cell type="field" name="collectingEvent.locality.localityName" cols="41" colspan="6"/>
+            </row>
+            
+            <row>
+                <cell type="separator" label="Preparations" colspan="12"/>
+            </row>
+            <row>
+                <cell type="subview" id="7" name="preparations" class="edu.ku.brc.specify.datamodel.Preparations" colspan="12"/>
+            </row>
+            
+            <row>
+                <cell type="separator" label="" colspan="12"/>
+            </row>
+            <row>
+                <cell type="label" labelfor="lastEditedBy" label="Edited By"/>
+                <cell type="field" name="lastEditedBy"/>
+                
+                <cell type="label" labelfor="timestampModified" label="Last Edited"/>
+                <cell type="field" name="timestampModified" cols="20" colspan="2"/>
+            </row>
+        </rows>
+    </view>
+    
+    
 </viewset>

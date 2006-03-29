@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<viewset name="Preferences" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="form.xsd">
+<viewset name="Preferences" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <view id="1" type="form" 
                  name="EMail" 
@@ -97,10 +97,14 @@
 				<cell type="label" labelfor="valtextcolor" label="valtextcolor"/>
 				<cell type="field" uitype="colorchooser" name="valtextcolor"/>
 			</row>				
-			<row>
-				<cell type="label" labelfor="requiredfieldcolor" label="requiredfieldcolor"/>
-				<cell type="field" uitype="colorchooser" name="requiredfieldcolor"/>
-			</row>				
+		    <row>
+		        <cell type="label" labelfor="requiredfieldcolor" label="requiredfieldcolor"/>
+		        <cell type="field" uitype="colorchooser" name="requiredfieldcolor"/>
+		    </row>				
+		    <row>
+		        <cell type="label" labelfor="viewfieldcolor" label="viewfieldcolor"/>
+		        <cell type="field" uitype="colorchooser" name="viewfieldcolor"/>
+		    </row>				
 		</rows>
 	</view>
 	

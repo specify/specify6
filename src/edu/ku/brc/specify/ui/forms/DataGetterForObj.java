@@ -32,7 +32,9 @@ import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.datamodel.AttributeIFace;
 import edu.ku.brc.specify.datamodel.AttributeDef;
+import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.Preparation;
 
 
 /**
@@ -71,6 +73,27 @@ public class DataGetterForObj implements DataObjectGettable
             debug = true;
         }
         
+        if (fieldName.equals("determinations"))
+        {
+            int x = 0;
+            x++;
+            //debug = true;
+        }
+        
+        if (fieldName.equals("preparations"))
+        {
+            int x = 0;
+            x++;
+            //debug = true;
+        }
+        
+        if (dataObj instanceof CollectingEvent)
+        {
+            int x = 0;
+            x++;
+            //debug = true;
+        }
+        
         //System.out.println("["+fieldName+"]["+(dataObj != null ? dataObj.getClass().toString() : "N/A")+"]");
         Object value = null;
         if (dataObj != null)
@@ -94,6 +117,7 @@ public class DataGetterForObj implements DataObjectGettable
                         if (obj instanceof AttributeIFace) // Not scalable (needs interface)
                         {
                             AttributeIFace asg = (AttributeIFace)obj;
+                            log.info("["+asg.getDefinition().getFieldName()+"]["+fieldName+"]");
                             if (asg.getDefinition().getFieldName().equals(fieldName))
                             {
                                 if (asg.getDefinition().getDataType() == AttributeIFace.FieldType.StringType.getType())

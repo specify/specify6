@@ -27,6 +27,7 @@ import static org.apache.commons.lang.StringUtils.split;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Insets;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,6 +59,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.BrowseBtnPanel;
 import edu.ku.brc.specify.ui.ColorChooser;
+import edu.ku.brc.specify.ui.ColorWrapper;
 import edu.ku.brc.specify.ui.CommandAction;
 import edu.ku.brc.specify.ui.CommandActionWrapper;
 import edu.ku.brc.specify.ui.ImageDisplay;
@@ -91,11 +93,13 @@ public class ViewFactory
     private static Log log = LogFactory.getLog(ViewFactory.class);
     private static final ViewFactory  instance = new ViewFactory();
     
-    //private Font  boldLabelFont = null;
-    
     // Data Members 
-    protected static SimpleDateFormat scrDateFormat = null;
+    protected static SimpleDateFormat scrDateFormat  = null;
+    protected static ColorWrapper     viewFieldColor = null;
     
+    /**
+     * Constructor
+     */
     protected ViewFactory()
     {
         //JLabel label = new JLabel();
@@ -301,6 +305,19 @@ public class ViewFactory
                     {
                         compToAdd = new JLabel("", JLabel.LEFT);
                         
+                    } else if (uiType.equals("displaylabel")) 
+                    {
+                        JTextField text = new JTextField(cellField.getCols());
+                        //text.setBorder(BorderFactory.createLineBorder(new Color(170,170,170)));
+                        Insets insets = text.getBorder().getBorderInsets(text);
+                        text.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.bottom));
+                        //text.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
+                        text.setForeground(Color.BLACK);
+                        text.setEditable(false);
+                        text.setBackground(viewFieldColor.getColor());
+                        //text.setOpaque(true);
+                        compToAdd = text;
+                        
                     } else if (uiType.equals("image")) 
                     {
                         int w = 150;
@@ -394,6 +411,24 @@ public class ViewFactory
                         }
                         
                         compToAdd = txt;
+                        
+                    } else if (uiType.equals("dsptextarea")) 
+                    {
+                        JTextArea ta = new JTextArea(cellField.getRows(), cellField.getCols());
+                        //ta.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
+                        Insets insets = ta.getBorder().getBorderInsets(ta);
+                        ta.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.bottom));
+                        ta.setForeground(Color.BLACK);
+                        ta.setEditable(false);
+                        ta.setBackground(viewFieldColor.getColor());
+                       
+                        JScrollPane scrollPane = new JScrollPane(ta);
+                        insets = scrollPane.getBorder().getBorderInsets(scrollPane);
+                        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+                        scrollPane.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.bottom));
+
+                        compToAdd = scrollPane;
                         
                     } else if (uiType.equals("textarea")) 
                     {
@@ -679,7 +714,7 @@ public class ViewFactory
             
             Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
             
-            FormViewObj     formViewObj    = new FormViewObj(parentView, formView, dataObj);
+            FormViewObj     formViewObj    = new FormViewObj(parentView, formView, dataObj, null);
             ValidatedJPanel validatedPanel = null;
             FormValidator   validator      = null;
             
@@ -763,6 +798,10 @@ public class ViewFactory
         if (scrDateFormat == null)
         {
             scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+        }
+        if (viewFieldColor == null)
+        {
+            viewFieldColor = PrefsCache.getColorWrapper("ui", "formatting", "viewfieldcolor");
         }
         //try
         //{

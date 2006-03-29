@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -18,7 +19,7 @@ public class RecordSet  implements java.io.Serializable {
      private Date timestampModified;
      private Date timestampCreated;
      private Set items;
-     protected User owner;
+     protected SpecifyUser owner;
 
 
     // Constructors
@@ -115,14 +116,14 @@ public class RecordSet  implements java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="UserID"
+     *            @hibernate.column name="SpecifyUserID"
      *         
      */
-    public User getOwner() {
+    public SpecifyUser getOwner() {
         return this.owner;
     }
     
-    public void setOwner(User owner) {
+    public void setOwner(SpecifyUser owner) {
         this.owner = owner;
     }
 

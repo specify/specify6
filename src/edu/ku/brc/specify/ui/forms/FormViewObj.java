@@ -22,6 +22,8 @@ package edu.ku.brc.specify.ui.forms;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -33,9 +35,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -61,6 +65,7 @@ import edu.ku.brc.specify.ui.ColorWrapper;
 import edu.ku.brc.specify.ui.GetSetValueIFace;
 import edu.ku.brc.specify.ui.db.JAutoCompComboBox;
 import edu.ku.brc.specify.ui.db.PickListItem;
+import edu.ku.brc.specify.ui.forms.persist.FormAltView;
 import edu.ku.brc.specify.ui.forms.persist.FormCell;
 import edu.ku.brc.specify.ui.forms.persist.FormCellField;
 import edu.ku.brc.specify.ui.forms.persist.FormFormView;
@@ -77,6 +82,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
 {
     private static Log log = LogFactory.getLog(FormViewObj.class);
     
+    protected MultiView                     multiView     = null;
     protected FormViewObj                   parent;
     protected FormView                      formViewDef;
     protected Component                     formComp       = null;
@@ -88,9 +94,11 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
     protected Object                        dataObj        = null;
     
     protected JPanel                        mainComp       = null;
-    protected JPanel                        rsPanel        = null;
+    protected ControlBarPanel               rsPanel        = null;
     protected ResultSetController           rsController   = null;
     protected java.util.List                list           = null;
+    protected JComboBox                     altViewUI      = null;
+    protected boolean                       ignoreSelection = false;
     
     protected PanelBuilder                  mainBuilder;
     protected CellConstraints               cc             = new CellConstraints();
@@ -103,11 +111,15 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
      * Constructor with FormView definition
      * @param formViewDef the definition of the form
      */
-    public FormViewObj(final FormViewObj parent,  final FormView formViewDef, final Object dataObj)
+    public FormViewObj(final FormViewObj parent, 
+                       final FormView    formViewDef, 
+                       final Object      dataObj,
+                       final MultiView   multiView)
     {
         this.parent      = parent;
         this.formViewDef = formViewDef;
         this.dataObj     = dataObj;
+        this.multiView   = multiView;
         
         if (scrDateFormat == null)
         {
@@ -116,6 +128,27 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
         
         mainBuilder    = new PanelBuilder(new FormLayout("f:p:g", parent == null ? "p,2px,p": "p:g,2px,p"));
         mainComp = mainBuilder.getPanel();
+        
+        if (formViewDef.getAltViews().size() > 0)
+        {
+            Vector<String> names = new Vector<String>();
+            names.add(formViewDef.getName());
+            for (FormAltView fv : formViewDef.getAltViews())
+            {
+                names.add(fv.getLabel());
+            }
+            altViewUI = new JComboBox(names);
+        } 
+    }
+
+    public void aboutToShow()
+    {
+        if (altViewUI != null)
+        {
+            ignoreSelection = true;
+            altViewUI.setSelectedItem(this.formViewDef.getName());
+            ignoreSelection = false;
+        }
     }
     
     /**
@@ -131,6 +164,23 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
         this.dataObj     = dataObj;
     }*/
     
+    /**
+     * Returns the definition of the form
+     * @return the definition of the form
+     */
+    public FormView getFormView()
+    {
+        return formViewDef;
+    }
+    
+    /**
+     * Returns the name of the form from the FormView
+     * @return the name of the form from the FormView
+     */
+    public String getName()
+    {
+        return formViewDef.getName();
+    }
 
     /**
      * Returns the current Data Object, which means the actual object if it is not a list
@@ -141,6 +191,16 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
     public Object getCurrentDataObj()
     {
         return dataObj;
+    }
+    
+    
+    /**
+     * Return list of data objects if this is a recordset
+     * @return the list of data objects
+     */
+    public List getDataList()
+    {
+        return list;
     }
     
     /**
@@ -185,7 +245,38 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
             controls.put(formCell.getName(), new FieldInfo(formCell, control));
         }
     }
-    
+
+    /**
+     * Sets the multiview if it is owned or parented by it
+     * @param multiView the MultiView object
+     */
+    public void setMultiView(MultiView multiView)
+    {
+        this.multiView = multiView;
+        
+        
+        class MVActionListener implements ActionListener
+        {
+            protected MultiView mv;
+            public MVActionListener(final MultiView mv)
+            {
+                this.mv = mv;
+            }
+            public void actionPerformed(ActionEvent ae)
+            {
+                if (!ignoreSelection)
+                {
+                    mv.showView(((JComboBox)ae.getSource()).getSelectedItem().toString());
+                }
+            }
+        };
+        
+        if (altViewUI != null)
+        {
+            altViewUI.addActionListener(new MVActionListener(multiView)); 
+        }        
+    }
+
     /**
      * Adds a control by name so it can be looked up later
      * @param formCell the FormCell def that describe the cell
@@ -237,13 +328,17 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
     {
         if (rsPanel == null)
         {
-            PanelBuilder    builder    = new PanelBuilder(new FormLayout("c:p:g", "p"));
-            CellConstraints cc         = new CellConstraints();
-            
+            //PanelBuilder builder = new PanelBuilder(new FormLayout("c:p:g", "p"));
             rsController = new ResultSetController(list.size());
             rsController.addListener(this);
-            builder.add(rsController.getPanel(), cc.xy(1,1));
-            rsPanel = builder.getPanel();
+            //builder.add(rsController.getPanel(), cc.xy(1,1));
+            //rsPanel = builder.getPanel();
+            rsPanel = new ControlBarPanel(rsController);
+
+            if (altViewUI != null)
+            {
+                rsPanel.addComponents(new JComponent[] {altViewUI}, true);
+            }
         }
         mainBuilder.add(rsPanel, cc.xy(1,3));
     }
@@ -340,10 +435,16 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
             if (list.size() > 0)
             {
                 this.dataObj = list.get(0);
+            } else
+            {
+                this.dataObj = null;
             }
             if (rsPanel == null)
             {
                 addRecordSetController();
+            } else
+            {
+                rsController.setLength(list.size());
             }
             setDataIntoUI();
 
@@ -516,7 +617,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
             {
                 if (formComp instanceof GetSetValueIFace)
                 {
-                    return ((GetSetValueIFace)formComp).getValue().toString();
+                    return ((GetSetValueIFace)formComp).getValue();
                     
                 } else if (formComp instanceof JTextField)
                 {
@@ -589,7 +690,9 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
             
         } else if (formComp instanceof JTextField)
         {
-            ((JTextField)formComp).setText(data == null ? "" : data.toString());
+            JTextField tf = (JTextField)formComp;
+            tf.setText(data == null ? "" : data.toString());
+            tf.setCaretPosition(0);
             
         } else if (formComp instanceof JTextArea)
         {

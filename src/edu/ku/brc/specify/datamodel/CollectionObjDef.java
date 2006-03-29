@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Set;
 
 
 
@@ -18,12 +18,13 @@ public class CollectionObjDef  implements java.io.Serializable {
      protected String name;
      protected DataType dataType;
      private Set catalogSeries;
-     protected User user;
+     protected SpecifyUser user;
      private Set attributeDefs;
      private GeographyTreeDef geographyTreeDef;
      private GeologicTimePeriodTreeDef geologicTimePeriodTreeDef;
      private LocationTreeDef locationTreeDef;
      protected TaxonTreeDef taxonTreeDef;
+     private Set localities;
 
 
     // Constructors
@@ -95,14 +96,14 @@ public class CollectionObjDef  implements java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="UserID"
+     *            @hibernate.column name="SpecifyUserID"
      *         
      */
-    public User getUser() {
+    public SpecifyUser getUser() {
         return this.user;
     }
     
-    public void setUser(User user) {
+    public void setUser(SpecifyUser user) {
         this.user = user;
     }
 
@@ -171,6 +172,17 @@ public class CollectionObjDef  implements java.io.Serializable {
     
     public void setTaxonTreeDef(TaxonTreeDef taxonTreeDef) {
         this.taxonTreeDef = taxonTreeDef;
+    }
+
+    /**
+     * 
+     */
+    public Set getLocalities() {
+        return this.localities;
+    }
+    
+    public void setLocalities(Set localities) {
+        this.localities = localities;
     }
 
   /**

@@ -41,13 +41,13 @@
         name="type"
         type="java.lang.String"
         column="Type"
-        length="50"
+        length="32"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Type"
-            length="50"
+            length="32"
         </meta>    
     </property>
     
@@ -64,6 +64,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="deaccessionDate"
         type="calendar_date"
@@ -91,30 +92,28 @@
     
     <property
         name="text1"
-        type="java.lang.String"
+        type="text"
         column="Text1"
-        length="300"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Text1"
-            length="300"
         </meta>    
     </property>
+    
     <property
         name="text2"
-        type="java.lang.String"
+        type="text"
         column="Text2"
-        length="300"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Text2"
-            length="300"
         </meta>    
     </property>
+    
     <property
         name="number1"
         type="java.lang.Float"
@@ -128,6 +127,7 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="number2"
         type="java.lang.Float"
@@ -141,6 +141,7 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="timestampModified"
         type="java.sql.Timestamp"
@@ -187,19 +188,6 @@
             length="50"
         </meta>    
     </property>
-    <property
-        name="typeId"
-        type="java.lang.Integer"
-        column="TypeID"
-        length="10"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="TypeID"
-            length="10"
-        </meta>    
-    </property>  
     
     <property
         name="yesNo1"
@@ -254,6 +242,7 @@
             class="edu.ku.brc.specify.datamodel.DeaccessionAgent"
         />
     </set>
+    
     <!-- bi-directional one-to-many association to DeaccessionCollectionObject -->
     <set
         name="deaccessionCollectionObjects"
@@ -280,6 +269,7 @@
             class="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject"
         />
     </set>
+    
 
 </class>
 </hibernate-mapping>

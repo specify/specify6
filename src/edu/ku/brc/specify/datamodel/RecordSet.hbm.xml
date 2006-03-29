@@ -76,10 +76,10 @@
         </composite-element>
     </set>
     
-    <!-- many-to-one association to User -->
+    <!-- many-to-one association to SpecifyUser -->
     <many-to-one
         name="owner"
-        class="edu.ku.brc.specify.datamodel.User"
+        class="edu.ku.brc.specify.datamodel.SpecifyUser"
         not-null="true"
 		outer-join="true"
     >
@@ -87,9 +87,9 @@
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="UserID"
+           @hibernate.column name="SpecifyUserID"
         </meta>
-        <column name="UserID" />
+        <column name="SpecifyUserID" />
     </many-to-one>   
     
 </class>

@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
 
 
 
@@ -26,7 +26,7 @@ public class TaxonCitation  implements java.io.Serializable {
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      private ReferenceWork referenceWork;
-     private Taxon Taxon;
+     private Taxon taxon;
 
 
     // Constructors
@@ -74,9 +74,8 @@ public class TaxonCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
+     *      *             @hibernate.property
      *             column="Text1"
-     *             length="300"
      *         
      */
     public String getText1() {
@@ -88,9 +87,8 @@ public class TaxonCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
+     *      *             @hibernate.property
      *             column="Text2"
-     *             length="300"
      *         
      */
     public String getText2() {
@@ -222,11 +220,11 @@ public class TaxonCitation  implements java.io.Serializable {
      *         
      */
     public Taxon getTaxon() {
-        return this.Taxon;
+        return this.taxon;
     }
     
-    public void setTaxon(Taxon Taxon) {
-        this.Taxon = Taxon;
+    public void setTaxon(Taxon taxon) {
+        this.taxon = taxon;
     }
 
 

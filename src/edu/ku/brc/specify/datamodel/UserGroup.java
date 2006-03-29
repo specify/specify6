@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Set;
 
 
 
@@ -82,7 +82,7 @@ public class UserGroup  implements java.io.Serializable {
      *            @hibernate.collection-key
      *             column="UserGroupID"
      *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.User"
+     *             class="edu.ku.brc.specify.datamodel.SpecifyUser"
      *         
      */
     public Set getUsers() {

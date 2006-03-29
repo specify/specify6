@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
 
 
 
@@ -20,7 +20,6 @@ public class BorrowAgent  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     protected Integer roleId;
      private AgentAddress agentAddress;
      private Borrow borrow;
 
@@ -59,7 +58,7 @@ public class BorrowAgent  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Role"
-     *             length="50"
+     *             length="32"
      *             not-null="true"
      *         
      */
@@ -127,20 +126,6 @@ public class BorrowAgent  implements java.io.Serializable {
     
     public void setLastEditedBy(String lastEditedBy) {
         this.lastEditedBy = lastEditedBy;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="RoleID"
-     *             length="10"
-     *         
-     */
-    public Integer getRoleId() {
-        return this.roleId;
-    }
-    
-    public void setRoleId(Integer roleId) {
-        this.roleId = roleId;
     }
 
     /**

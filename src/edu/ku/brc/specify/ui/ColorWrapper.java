@@ -22,6 +22,8 @@ package edu.ku.brc.specify.ui;
 import java.awt.Color;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * A class to wrap a Color object so it can be mutable easily 
@@ -31,6 +33,8 @@ import org.apache.commons.lang.StringUtils;
  */
 public class ColorWrapper
 {
+    private static Log log = LogFactory.getLog(ColorWrapper.class);
+    
     protected Color color;
     
     /**
@@ -126,7 +130,9 @@ public class ColorWrapper
                 setRGB(r,g,b);
             } else
             {
-                throw new IllegalArgumentException("ColorWrapper - one of the values is not numeric r["+rgbVals[0]+"] g["+rgbVals[1]+"] b["+rgbVals[2]+"]");
+                setRGB(255,255,255);
+                //throw new IllegalArgumentException("ColorWrapper - one of the values is not numeric r["+rgbVals[0]+"] g["+rgbVals[1]+"] b["+rgbVals[2]+"]");
+                log.error("ColorWrapper - one of the values is not numeric ["+rgbStr+"] r["+rgbVals[0]+"] g["+rgbVals[1]+"] b["+rgbVals[2]+"]");
             }
         } else
         {

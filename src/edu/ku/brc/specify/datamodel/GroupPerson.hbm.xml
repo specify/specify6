@@ -112,7 +112,7 @@
   
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one
-        name="agentByGroupId"
+        name="agentByGroup"
         class="edu.ku.brc.specify.datamodel.Agent"
         not-null="true"
 		cascade="none"
@@ -128,7 +128,7 @@
     
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one
-        name="agentByMemberId"
+        name="agentByMember"
         class="edu.ku.brc.specify.datamodel.Agent"
         not-null="true"
     >

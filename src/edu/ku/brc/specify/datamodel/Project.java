@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -21,8 +23,8 @@ public class Project  implements java.io.Serializable {
      private Calendar startDate;
      private Calendar endDate;
      protected String remarks;
-     private String text1;
-     private String text2;
+     protected String text1;
+     protected String text2;
      private Float number1;
      private Float number2;
      private Date timestampCreated;
@@ -96,7 +98,6 @@ public class Project  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="URL"
-     *             length="300"
      *         
      */
     public String getUrl() {
@@ -147,9 +148,8 @@ public class Project  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
+     *      *             @hibernate.property
      *             column="Text1"
-     *             length="300"
      *         
      */
     public String getText1() {
@@ -161,9 +161,8 @@ public class Project  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
+     *      *             @hibernate.property
      *             column="Text2"
-     *             length="300"
      *         
      */
     public String getText2() {

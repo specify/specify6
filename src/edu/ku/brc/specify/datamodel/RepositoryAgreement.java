@@ -9,45 +9,45 @@ import java.util.Set;
 
 /**
  *        @hibernate.class
- *         table="permit"
+ *         table="repositoryAgreement"
  *     
  */
-public class Permit  implements java.io.Serializable {
+public class RepositoryAgreement  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer permitId;
-     protected String permitNumber;
-     protected String type;
-     protected Calendar issuedDate;
+     protected Integer repositoryAgreementId;
+     protected String number;
+     protected String status;
      protected Calendar startDate;
      protected Calendar endDate;
-     protected Calendar renewalDate;
-     protected String remarks;
+     protected Calendar dateReceived;
      protected String text1;
      protected String text2;
+     protected String text3;
      protected Float number1;
      protected Float number2;
+     protected String remarks;
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     private Set accessionAuthorizations;
-     private AgentAddress agentAddressByIssueeId;
-     private AgentAddress agentAddressByIssuerId;
-     private Set externalResources;
+     protected Set collectionObjects;
+     protected Set repositoryAgreementAuthorizations;
+     protected Set repositoryAgreementAgents;
+     protected Agent originator;
 
 
     // Constructors
 
     /** default constructor */
-    public Permit() {
+    public RepositoryAgreement() {
     }
     
     /** constructor with id */
-    public Permit(Integer permitId) {
-        this.permitId = permitId;
+    public RepositoryAgreement(Integer repositoryAgreementId) {
+        this.repositoryAgreementId = repositoryAgreementId;
     }
    
     
@@ -59,61 +59,48 @@ public class Permit  implements java.io.Serializable {
      *      *            @hibernate.id
      *             generator-class="native"
      *             type="java.lang.Integer"
-     *             column="PermitID"
+     *             column="RepositoryAgreementID"
      *         
      */
-    public Integer getPermitId() {
-        return this.permitId;
+    public Integer getRepositoryAgreementId() {
+        return this.repositoryAgreementId;
     }
     
-    public void setPermitId(Integer permitId) {
-        this.permitId = permitId;
+    public void setRepositoryAgreementId(Integer repositoryAgreementId) {
+        this.repositoryAgreementId = repositoryAgreementId;
     }
 
     /**
      *      *            @hibernate.property
-     *             column="PermitNumber"
-     *             length="50"
+     *             column="Number"
+     *             length="60"
      *             not-null="true"
      *         
      */
-    public String getPermitNumber() {
-        return this.permitNumber;
+    public String getNumber() {
+        return this.number;
     }
     
-    public void setPermitNumber(String permitNumber) {
-        this.permitNumber = permitNumber;
+    public void setNumber(String number) {
+        this.number = number;
     }
 
     /**
      *      *            @hibernate.property
-     *             column="Type"
-     *             length="50"
+     *             column="Status"
+     *             length="32"
      *         
      */
-    public String getType() {
-        return this.type;
+    public String getStatus() {
+        return this.status;
     }
     
-    public void setType(String type) {
-        this.type = type;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="IssuedDate"
-     *         
-     */
-    public Calendar getIssuedDate() {
-        return this.issuedDate;
-    }
-    
-    public void setIssuedDate(Calendar issuedDate) {
-        this.issuedDate = issuedDate;
-    }
-
-    /**
-     *      *            @hibernate.property
+     *      *             @hibernate.property
      *             column="StartDate"
      *         
      */
@@ -126,7 +113,7 @@ public class Permit  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
+     *      *             @hibernate.property
      *             column="EndDate"
      *         
      */
@@ -140,28 +127,15 @@ public class Permit  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="RenewalDate"
+     *             column="DateReceived"
      *         
      */
-    public Calendar getRenewalDate() {
-        return this.renewalDate;
+    public Calendar getDateReceived() {
+        return this.dateReceived;
     }
     
-    public void setRenewalDate(Calendar renewalDate) {
-        this.renewalDate = renewalDate;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
-     */
-    public String getRemarks() {
-        return this.remarks;
-    }
-    
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
+    public void setDateReceived(Calendar dateReceived) {
+        this.dateReceived = dateReceived;
     }
 
     /**
@@ -192,8 +166,20 @@ public class Permit  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
+     *             column="Text3"
+     *         
+     */
+    public String getText3() {
+        return this.text3;
+    }
+    
+    public void setText3(String text3) {
+        this.text3 = text3;
+    }
+
+    /**
+     *      *            @hibernate.property
      *             column="Number1"
-     *             length="24"
      *         
      */
     public Float getNumber1() {
@@ -207,7 +193,6 @@ public class Permit  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Number2"
-     *             length="24"
      *         
      */
     public Float getNumber2() {
@@ -220,10 +205,23 @@ public class Permit  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
+     *             column="Remarks"
+     *         
+     */
+    public String getRemarks() {
+        return this.remarks;
+    }
+    
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
+    /**
+     *      *            @hibernate.property
      *             column="TimestampCreated"
      *             length="23"
-     *             update="false"
      *             not-null="true"
+     *             update="false"
      *         
      */
     public Date getTimestampCreated() {
@@ -295,56 +293,70 @@ public class Permit  implements java.io.Serializable {
      *             inverse="true"
      *             cascade="none"
      *            @hibernate.collection-key
-     *             column="PermitID"
+     *             column="RepositoryAgreementID"
+     *            @hibernate.collection-one-to-many
+     *             class="edu.ku.brc.specify.datamodel.CollectionObject"
+     *         
+     */
+    public Set getCollectionObjects() {
+        return this.collectionObjects;
+    }
+    
+    public void setCollectionObjects(Set collectionObjects) {
+        this.collectionObjects = collectionObjects;
+    }
+
+    /**
+     *      *            @hibernate.set
+     *             lazy="true"
+     *             inverse="true"
+     *             cascade="all"
+     *            @hibernate.collection-key
+     *             column="RepositoryAgreementID"
      *            @hibernate.collection-one-to-many
      *             class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
      *         
      */
-    public Set getAccessionAuthorizations() {
-        return this.accessionAuthorizations;
+    public Set getRepositoryAgreementAuthorizations() {
+        return this.repositoryAgreementAuthorizations;
     }
     
-    public void setAccessionAuthorizations(Set accessionAuthorizations) {
-        this.accessionAuthorizations = accessionAuthorizations;
+    public void setRepositoryAgreementAuthorizations(Set repositoryAgreementAuthorizations) {
+        this.repositoryAgreementAuthorizations = repositoryAgreementAuthorizations;
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="IssueeID"         
+     *      *            @hibernate.set
+     *             lazy="true"
+     *             inverse="true"
+     *             cascade="all"
+     *            @hibernate.collection-key
+     *             column="RepositoryAgreementID"
+     *            @hibernate.collection-one-to-many
+     *             class="edu.ku.brc.specify.datamodel.AccessionAgent"
      *         
      */
-    public AgentAddress getAgentAddressByIssueeId() {
-        return this.agentAddressByIssueeId;
+    public Set getRepositoryAgreementAgents() {
+        return this.repositoryAgreementAgents;
     }
     
-    public void setAgentAddressByIssueeId(AgentAddress agentAddressByIssueeId) {
-        this.agentAddressByIssueeId = agentAddressByIssueeId;
+    public void setRepositoryAgreementAgents(Set repositoryAgreementAgents) {
+        this.repositoryAgreementAgents = repositoryAgreementAgents;
     }
 
     /**
-     *      *            @hibernate.many-to-one
+     *      *             @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="IssuerID"         
+     *             cascade="none"
+     *             @hibernate.column name="AgentID"
      *         
      */
-    public AgentAddress getAgentAddressByIssuerId() {
-        return this.agentAddressByIssuerId;
+    public Agent getOriginator() {
+        return this.originator;
     }
     
-    public void setAgentAddressByIssuerId(AgentAddress agentAddressByIssuerId) {
-        this.agentAddressByIssuerId = agentAddressByIssuerId;
-    }
-
-    /**
-     * 
-     */
-    public Set getExternalResources() {
-        return this.externalResources;
-    }
-    
-    public void setExternalResources(Set externalResources) {
-        this.externalResources = externalResources;
+    public void setOriginator(Agent originator) {
+        this.originator = originator;
     }
 
 

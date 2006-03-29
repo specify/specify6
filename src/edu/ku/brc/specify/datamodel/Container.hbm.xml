@@ -15,38 +15,6 @@
         table="container"
     </meta>
     
-    <meta attribute="extra-import">org.hibernate.Criteria</meta>
-    <meta attribute="extra-import">org.hibernate.criterion.Expression</meta>
-    <meta attribute="extra-import">edu.ku.brc.specify.dbsupport.HibernateUtil</meta>
-    
-    <meta attribute="class-code">
-        <![CDATA[
-    protected CollectionObject collectionObject = null;
-    
-    /**
-     * 
-     */
-    public CollectionObject getCollectionObject() 
-    {
-        if (collectionObjectId != null)
-        {
-	        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CollectionObject.class);
-	        criteria.add(Expression.eq("collectionObjectId", collectionObjectId));
-	        java.util.List list = criteria.list();
-	        this.collectionObject = list != null && list.size() > 0 ? (CollectionObject)list.get(0) : null;
-	        return this.collectionObject;
-	    } 
-	    return null;
-    }
-    
-    public void setCollectionObject(CollectionObject collectionObject) 
-    {
-        this.collectionObject = collectionObject;
-        this.collectionObjectId = collectionObject != null ? collectionObject.getCollectionObjectId() : null;
-    }
-    ]]>
-    </meta>    
-
     <id
         name="containerId"
         type="java.lang.Integer"
@@ -204,32 +172,44 @@
         />
     </set>
 	
-    <!-- bi-directional one-to-one association to CollectionObject -->
-    <!--<one-to-one 
-        name="owner"
+    <!-- bi-directional many-to-one association to CollectionObject -->
+    <!-- NOTE: We are REALLY modeling a one-to-zero-or-one  -->
+    <many-to-one
+        name="container"
         class="edu.ku.brc.specify.datamodel.CollectionObject"
-        constrained="true"
+        not-null="false"
+		unique="true" 
+		insert="false" 
+		update="false"
+		cascade="all"
     >
 	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.one-to-one
-           @hibernate.column name="CollectionObjectID"         
+           @hibernate.many-to-one
+	        not-null="false"
+			unique="true" 
+			insert="false" 
+			update="false"
+			cascade="all"
+           @hibernate.column name="CollectionObjectID"
         </meta>
-    </one-to-one>
-    -->
+        <column name="CollectionObjectID" />
+    </many-to-one>
     
-    <!-- bi-directional one-to-one association to Location -->
-    <!--<one-to-one 
+    <!-- bi-directional many-to-one association to Location -->
+    <many-to-one
         name="location"
         class="edu.ku.brc.specify.datamodel.Location"
-        cascade="save-update"
+        not-null="false"
+		outer-join="auto"
     >
-	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
-           @hibernate.one-to-one
+           @hibernate.many-to-one
+            not-null="true"
            @hibernate.column name="LocationID"         
         </meta>
-    </one-to-one> -->
+        <column name="LocationID"/>
+    </many-to-one>
     
 </class>
 </hibernate-mapping>

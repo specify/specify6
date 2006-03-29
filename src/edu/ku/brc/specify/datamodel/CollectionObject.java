@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -31,6 +33,7 @@ public class CollectionObject  implements java.io.Serializable {
      protected String catalogedDateVerbatim;
      protected String guid;
      protected String altCatalogNumber;
+     protected Integer groupPermittedToView;
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
@@ -300,6 +303,20 @@ public class CollectionObject  implements java.io.Serializable {
     
     public void setAltCatalogNumber(String altCatalogNumber) {
         this.altCatalogNumber = altCatalogNumber;
+    }
+
+    /**
+     *      *             @hibernate.property
+     *             column="GroupPermittedToView"
+     *             length="10"
+     *         
+     */
+    public Integer getGroupPermittedToView() {
+        return this.groupPermittedToView;
+    }
+    
+    public void setGroupPermittedToView(Integer groupPermittedToView) {
+        this.groupPermittedToView = groupPermittedToView;
     }
 
     /**

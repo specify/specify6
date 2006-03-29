@@ -48,6 +48,7 @@
             column="TypeOfAgentAddressed"
         </meta>    
     </property>
+    
     <property
         name="jobTitle"
         type="java.lang.String"
@@ -61,6 +62,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="phone1"
         type="java.lang.String"
@@ -74,6 +76,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="phone2"
         type="java.lang.String"
@@ -87,6 +90,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="fax"
         type="java.lang.String"
@@ -100,6 +104,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="roomOrBuilding"
         type="java.lang.String"
@@ -113,6 +118,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="email"
         type="java.lang.String"
@@ -126,17 +132,16 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="url"
-        type="java.lang.String"
+        type="text"
         column="URL"
-        length="300"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="URL"
-            length="300"
         </meta>    
     </property>
     
@@ -201,7 +206,7 @@
     
     <property
         name="isCurrent"
-        type="short"
+        type="boolean"
         column="IsCurrent"
     >
         <meta attribute="scope-field">protected</meta>
@@ -242,7 +247,7 @@
     
     <!-- bi-directional one-to-many association to Shipment -->
     <set
-        name="shipmentsByShipperId"
+        name="shipmentsByShipper"
         lazy="true"
         inverse="true"
 		cascade="none"
@@ -269,7 +274,7 @@
     
     <!-- bi-directional one-to-many association to Shipment -->
     <set
-        name="shipmentsByShippedToId"
+        name="shipmentsByShippedTo"
         lazy="true"
         inverse="true"
 		cascade="none"
@@ -350,7 +355,7 @@
     
     <!-- bi-directional one-to-many association to Permit -->
     <set
-        name="permitsByIssueeId"
+        name="permitsByIssuee"
         lazy="true"
         inverse="true"
 		cascade="none"
@@ -377,7 +382,7 @@
     
     <!-- bi-directional one-to-many association to Permit -->
     <set
-        name="permitsByIssuerId"
+        name="permitsByIssuer"
         lazy="true"
         inverse="true"
 		cascade="none"
@@ -485,7 +490,7 @@
     
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one
-        name="agentByOrganizationId"
+        name="organization"
         class="edu.ku.brc.specify.datamodel.Agent"
         not-null="true"
 		outer-join="true"
@@ -500,7 +505,7 @@
     
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one
-        name="agentByAgentId"
+        name="agent"
         class="edu.ku.brc.specify.datamodel.Agent"
         not-null="true"
 		outer-join="true"

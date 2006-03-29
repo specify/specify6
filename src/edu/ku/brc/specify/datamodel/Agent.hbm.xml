@@ -2,17 +2,17 @@
 <!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
+
 <hibernate-mapping>
-<!-- 
+<!--
     Created by the Middlegen Hibernate plugin 2.1
 
     http://boss.bekk.no/boss/middlegen/
     http://www.hibernate.org/
 -->
 
-<class 
-    name="edu.ku.brc.specify.datamodel.Agent" 
+<class
+    name="edu.ku.brc.specify.datamodel.Agent"
     table="agent"
 	lazy="true"
 >
@@ -50,8 +50,9 @@
             column="AgentType"
             length="3"
             not-null="true"
-        </meta>    
+        </meta>
     </property>
+    
     <property
         name="firstName"
         type="java.lang.String"
@@ -63,7 +64,7 @@
            @hibernate.property
             column="FirstName"
             length="50"
-        </meta>    
+        </meta>
     </property>
     <property
         name="lastName"
@@ -76,7 +77,7 @@
            @hibernate.property
             column="LastName"
             length="50"
-        </meta>    
+        </meta>
     </property>
     <property
         name="middleInitial"
@@ -89,7 +90,7 @@
            @hibernate.property
             column="MiddleInitial"
             length="50"
-        </meta>    
+        </meta>
     </property>
     <property
         name="title"
@@ -102,7 +103,7 @@
            @hibernate.property
             column="Title"
             length="50"
-        </meta>    
+        </meta>
     </property>
     <property
         name="interests"
@@ -115,7 +116,7 @@
            @hibernate.property
             column="Interests"
             length="255"
-        </meta>    
+        </meta>
     </property>
     <property
         name="abbreviation"
@@ -128,7 +129,7 @@
            @hibernate.property
             column="Abbreviation"
             length="50"
-        </meta>    
+        </meta>
     </property>
     <property
         name="name"
@@ -141,9 +142,9 @@
            @hibernate.property
             column="Name"
             length="120"
-        </meta>    
+        </meta>
     </property>
-    
+
     <property
         name="remarks"
         type="text"
@@ -153,9 +154,9 @@
         <meta attribute="field-description">
            @hibernate.property
             column="Remarks"
-        </meta>    
+        </meta>
     </property>
-    
+
     <property
         name="timestampModified"
         type="java.sql.Timestamp"
@@ -170,9 +171,9 @@
             length="23"
             not-null="true"
             not-null="true"
-        </meta>    
+        </meta>
     </property>
-    
+
     <property
         name="timestampCreated"
         type="java.sql.Timestamp"
@@ -188,9 +189,9 @@
             length="23"
             not-null="true"
             update="false"
-        </meta>    
+        </meta>
     </property>
-    
+
     <property
         name="lastEditedBy"
         type="java.lang.String"
@@ -202,7 +203,7 @@
            @hibernate.property
             column="LastEditedBy"
             length="50"
-        </meta>    
+        </meta>
     </property>
 
     <!-- Associations -->
@@ -229,11 +230,11 @@
         <key>
             <column name="AgentID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.Author"
         />
     </set>
-	  
+
     <!-- bi-directional one-to-many association to LoanReturnPhysicalObject -->
     <set
         name="loanReturnPhysicalObjects"
@@ -256,10 +257,11 @@
         <key>
             <column name="ReceivedByID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject"
         />
     </set>
+    
     <!-- bi-directional one-to-many association to BorrowReturnMaterial -->
     <set
         name="borrowReturnMaterials"
@@ -282,11 +284,11 @@
         <key>
             <column name="ReturnedByID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.BorrowReturnMaterial"
         />
     </set>
-    
+
     <!-- bi-directional one-to-many association to ExchangeIn -->
     <set
         name="exchangeIns"
@@ -309,13 +311,14 @@
         <key>
             <column name="CatalogedByID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.ExchangeIn"
         />
     </set>
+
     <!-- bi-directional one-to-many association to Agent -->
     <set
-        name="agents"
+        name="members"
         lazy="true"
         inverse="true"
 		cascade="none"
@@ -335,14 +338,14 @@
         <key>
             <column name="ParentOrganizationID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.Agent"
         />
     </set>
-	
+
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one
-        name="agent"
+        name="organization"
         class="edu.ku.brc.specify.datamodel.Agent"
         not-null="true"
 		outer-join="true"
@@ -350,10 +353,11 @@
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="ParentOrganizationID"         
+           @hibernate.column name="ParentOrganizationID"
         </meta>
         <column name="ParentOrganizationID" />
     </many-to-one>
+
     <!-- bi-directional one-to-many association to Project -->
     <set
         name="projects"
@@ -376,11 +380,11 @@
         <key>
             <column name="ProjectAgentID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.Project"
         />
     </set>
-    
+
     <!-- bi-directional one-to-many association to Preparation -->
     <set
         name="preparations"
@@ -403,14 +407,14 @@
         <key>
             <column name="PreparedByID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.Preparation"
         />
-    </set>	
-    
+    </set>
+
     <!-- bi-directional one-to-many association to GroupPerson -->
     <set
-        name="groupPersonsByGroupId"
+        name="groupPersonsByGroup"
         lazy="true"
         inverse="true"
 		cascade="delete"
@@ -430,13 +434,14 @@
         <key>
             <column name="GroupID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.GroupPerson"
         />
     </set>
+    
     <!-- bi-directional one-to-many association to GroupPerson -->
     <set
-        name="groupPersonsByMemberId"
+        name="groupPersonsByMember"
         lazy="true"
         inverse="true"
 		cascade="none"
@@ -456,10 +461,11 @@
         <key>
             <column name="MemberID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.GroupPerson"
         />
     </set>
+    
     <!-- bi-directional one-to-many association to Determination -->
     <set
         name="determinations"
@@ -482,13 +488,14 @@
         <key>
             <column name="DeterminerID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.Determination"
         />
     </set>
+    
     <!-- bi-directional one-to-many association to AgentAddress -->
     <set
-        name="agentAddressesByOrganizationId"
+        name="agentAddressesByOrganization"
         lazy="true"
         inverse="true"
 		cascade="none"
@@ -508,13 +515,14 @@
         <key>
             <column name="OrganizationID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.AgentAddress"
         />
     </set>
+    
     <!-- bi-directional one-to-many association to AgentAddress -->
     <set
-        name="agentAddressesByAgentId"
+        name="agentAddressesByAgent"
         lazy="true"
         inverse="true"
 		cascade="delete"
@@ -534,10 +542,11 @@
         <key>
             <column name="AgentID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.AgentAddress"
         />
     </set>
+    
     <!-- bi-directional one-to-many association to Shipment -->
     <set
         name="shipments"
@@ -560,11 +569,11 @@
         <key>
             <column name="ShippedByID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.Shipment"
         />
     </set>
-    
+
     <!-- bi-directional one-to-many association to Collector -->
     <set
         name="collectors"
@@ -587,11 +596,11 @@
         <key>
             <column name="AgentID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.Collector"
         />
     </set>
-	
+
     <!-- bi-directional one-to-many association to ExchangeOut -->
     <set
         name="exchangeOuts"
@@ -614,11 +623,11 @@
         <key>
             <column name="CatalogedByID" />
         </key>
-        <one-to-many 
+        <one-to-many
             class="edu.ku.brc.specify.datamodel.ExchangeOut"
         />
     </set>
-    
+
     <!-- bi-directional many-to-many association to ExternalResource -->
     <set
         name="externalResources"
@@ -631,6 +640,32 @@
         </key>
         <many-to-many class="edu.ku.brc.specify.datamodel.ExternalResource" column="ExternalResourceID"/>
     </set>
+    
+    <!-- bi-directional one-to-many association to RepositoryAgreement -->
+    <set
+        name="repositoryAgreements"
+        lazy="true"
+        inverse="true"
+        cascade="none"
+        >
+        <meta attribute="field-description">
+            @hibernate.set
+            lazy="true"
+            inverse="true"
+            cascade="none"
+            
+            @hibernate.collection-key
+            column="AgentID"
+            
+            @hibernate.collection-one-to-many
+            class="edu.ku.brc.specify.datamodel.RepositoryAgreement"
+        </meta>
+        <key>
+            <column name="AgentID" />
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.RepositoryAgreement"/>
+    </set>
+    
     
 </class>
 </hibernate-mapping>

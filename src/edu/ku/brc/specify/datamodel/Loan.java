@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -15,7 +17,6 @@ public class Loan  implements java.io.Serializable {
     // Fields    
 
      protected Integer loanId;
-     protected Integer collectionId;
      protected String loanNumber;
      protected Calendar loanDate;
      protected Calendar currentDueDate;
@@ -68,21 +69,6 @@ public class Loan  implements java.io.Serializable {
     
     public void setLoanId(Integer loanId) {
         this.loanId = loanId;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="CollectionID"
-     *             length="10"
-     *             not-null="true"
-     *         
-     */
-    public Integer getCollectionId() {
-        return this.collectionId;
-    }
-    
-    public void setCollectionId(Integer collectionId) {
-        this.collectionId = collectionId;
     }
 
     /**
@@ -184,7 +170,6 @@ public class Loan  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Text1"
-     *             length="300"
      *         
      */
     public String getText1() {
@@ -198,7 +183,6 @@ public class Loan  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Text2"
-     *             length="300"
      *         
      */
     public String getText2() {

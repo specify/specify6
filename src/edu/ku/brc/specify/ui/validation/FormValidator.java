@@ -156,12 +156,16 @@ public class FormValidator implements ValidationListener, DataChangeListener
     {
         boolean formIsOK = true;
 
-        log.info("****** processFormRules  ");
-        Map map = jc.getVars();
-        Object[] keys = map.keySet().toArray();
-        for (Object key : keys)
+        boolean debug = false;
+        if (debug)
         {
-            log.info("### ["+key+"]["+map.get(key).getClass().toString()+"]");
+            log.info("****** processFormRules  ");
+            Map map = jc.getVars();
+            Object[] keys = map.keySet().toArray();
+            for (Object key : keys)
+            {
+                log.info("### ["+key+"]["+map.get(key).getClass().toString()+"]");
+            }
         }
 
         for (FormValidationRuleIFace rule : formRules)

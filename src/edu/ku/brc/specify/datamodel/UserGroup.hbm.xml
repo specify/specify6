@@ -53,7 +53,7 @@
     
     <!-- Associations -->
   
-    <!-- bi-directional one-to-many association to User -->
+    <!-- bi-directional one-to-many association to SpecifyUser -->
     <set
         name="users"
         lazy="true"
@@ -70,13 +70,13 @@
             column="UserGroupID"
 
            @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.User"
+            class="edu.ku.brc.specify.datamodel.SpecifyUser"
         </meta>
         <key>
             <column name="UserGroupID" />
         </key>
         <one-to-many 
-            class="edu.ku.brc.specify.datamodel.User"
+            class="edu.ku.brc.specify.datamodel.SpecifyUser"
         />
     </set>
     

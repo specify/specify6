@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -29,11 +31,10 @@ public class Shipment  implements java.io.Serializable {
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
-     protected Integer shipmentMethodId;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     private AgentAddress agentAddressByShipperId;
-     private AgentAddress agentAddressByShippedToId;
+     private AgentAddress agentAddressByShipper;
+     private AgentAddress agentAddressByShippedTo;
      private Agent agent;
      private Set borrowShipments;
      private Set loans;
@@ -168,9 +169,8 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
+     *      *             @hibernate.property
      *             column="Text1"
-     *             length="300"
      *         
      */
     public String getText1() {
@@ -182,9 +182,8 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
+     *      *             @hibernate.property
      *             column="Text2"
-     *             length="300"
      *         
      */
     public String getText2() {
@@ -270,20 +269,6 @@ public class Shipment  implements java.io.Serializable {
 
     /**
      *      *            @hibernate.property
-     *             column="ShipmentMethodID"
-     *             length="10"
-     *         
-     */
-    public Integer getShipmentMethodId() {
-        return this.shipmentMethodId;
-    }
-    
-    public void setShipmentMethodId(Integer shipmentMethodId) {
-        this.shipmentMethodId = shipmentMethodId;
-    }
-
-    /**
-     *      *            @hibernate.property
      *             column="YesNo1"
      *         
      */
@@ -314,12 +299,12 @@ public class Shipment  implements java.io.Serializable {
      *            @hibernate.column name="ShipperID"         
      *         
      */
-    public AgentAddress getAgentAddressByShipperId() {
-        return this.agentAddressByShipperId;
+    public AgentAddress getAgentAddressByShipper() {
+        return this.agentAddressByShipper;
     }
     
-    public void setAgentAddressByShipperId(AgentAddress agentAddressByShipperId) {
-        this.agentAddressByShipperId = agentAddressByShipperId;
+    public void setAgentAddressByShipper(AgentAddress agentAddressByShipper) {
+        this.agentAddressByShipper = agentAddressByShipper;
     }
 
     /**
@@ -328,12 +313,12 @@ public class Shipment  implements java.io.Serializable {
      *            @hibernate.column name="ShippedToID"         
      *         
      */
-    public AgentAddress getAgentAddressByShippedToId() {
-        return this.agentAddressByShippedToId;
+    public AgentAddress getAgentAddressByShippedTo() {
+        return this.agentAddressByShippedTo;
     }
     
-    public void setAgentAddressByShippedToId(AgentAddress agentAddressByShippedToId) {
-        this.agentAddressByShippedToId = agentAddressByShippedToId;
+    public void setAgentAddressByShippedTo(AgentAddress agentAddressByShippedTo) {
+        this.agentAddressByShippedTo = agentAddressByShippedTo;
     }
 
     /**

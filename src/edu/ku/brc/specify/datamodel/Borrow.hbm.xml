@@ -36,21 +36,6 @@
         <meta attribute="scope-field">protected</meta>
         <generator class="native" />
     </id>
-
-    <property
-        name="collectionId"
-        type="int"
-        column="CollectionID"
-        not-null="true"
-        length="10"
-    >
-        <meta attribute="field-description">
-           @hibernate.property
-            column="CollectionID"
-            length="10"
-            not-null="true"
-        </meta>    
-    </property>
 	
     <property
         name="invoiceNumber"
@@ -112,28 +97,26 @@
     
     <property
         name="text1"
-        type="java.lang.String"
+        type="text"
         column="Text1"
-        length="300"
     >
         <meta attribute="field-description">
            @hibernate.property
             column="Text1"
-            length="300"
         </meta>    
     </property>
+    
     <property
         name="text2"
-        type="java.lang.String"
+        type="text"
         column="Text2"
-        length="300"
     >
         <meta attribute="field-description">
            @hibernate.property
             column="Text2"
-            length="300"
         </meta>    
     </property>
+    
     <property
         name="number1"
         type="java.lang.Float"
@@ -146,6 +129,7 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="number2"
         type="java.lang.Float"
@@ -158,6 +142,7 @@
             length="24"
         </meta>    
     </property>
+    
     <property
         name="timestampModified"
         type="java.sql.Timestamp"

@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
 
 
 
@@ -21,6 +21,7 @@ public class AccessionAuthorizations  implements java.io.Serializable {
      private String lastEditedBy;
      private Permit permit;
      private Accession accession;
+     private RepositoryAgreement repositoryAgreement;
 
 
     // Constructors
@@ -127,9 +128,9 @@ public class AccessionAuthorizations  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
+     *      *             @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="AccessionID"         
+     *             @hibernate.column name="AccessionID"         
      *         
      */
     public Accession getAccession() {
@@ -138,6 +139,20 @@ public class AccessionAuthorizations  implements java.io.Serializable {
     
     public void setAccession(Accession accession) {
         this.accession = accession;
+    }
+
+    /**
+     *      *             @hibernate.many-to-one
+     *             not-null="true"
+     *             @hibernate.column name="AccessionID"         
+     *         
+     */
+    public RepositoryAgreement getRepositoryAgreement() {
+        return this.repositoryAgreement;
+    }
+    
+    public void setRepositoryAgreement(RepositoryAgreement repositoryAgreement) {
+        this.repositoryAgreement = repositoryAgreement;
     }
 
 

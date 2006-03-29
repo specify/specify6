@@ -1,11 +1,10 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
-
-
 import java.awt.datatransfer.DataFlavor;
-import java.io.IOException;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Set;
 
 
 /**
@@ -32,6 +31,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
      private LocationTreeDef definition;
      private Location parent;
      protected Set preparations;
+     protected Set containers;
 
 
     // Constructors
@@ -242,17 +242,17 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     }
 
     /**
-     *      * 	           @hibernate.set
-     * 	            lazy="true"
-     * 	            inverse="true"
-     * 	            cascade="none"
-     * 	
-     * 	           @hibernate.collection-key
-     * 	            column="TreeID"
-     * 	
-     * 	           @hibernate.collection-one-to-many
-     * 	            class="edu.ku.brc.specify.datamodel.Preparation"
-     * 	        
+     *      *                 @hibernate.set
+     *                 lazy="true"
+     *                 inverse="true"
+     *                 cascade="none"
+     *                 
+     *                 @hibernate.collection-key
+     *                 column="LocationID"
+     *                 
+     *                 @hibernate.collection-one-to-many
+     *                 class="edu.ku.brc.specify.datamodel.Preparation"
+     *             
      */
     public Set getPreparations() {
         return this.preparations;
@@ -260,6 +260,27 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     
     public void setPreparations(Set preparations) {
         this.preparations = preparations;
+    }
+
+    /**
+     *      *                 @hibernate.set
+     *                 lazy="true"
+     *                 inverse="true"
+     *                 cascade="none"
+     *                 
+     *                 @hibernate.collection-key
+     *                 column="LocationID"
+     *                 
+     *                 @hibernate.collection-one-to-many
+     *                 class="edu.ku.brc.specify.datamodel.Container"
+     *             
+     */
+    public Set getContainers() {
+        return this.containers;
+    }
+    
+    public void setContainers(Set containers) {
+        this.containers = containers;
     }
 
 

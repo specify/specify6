@@ -42,10 +42,10 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/RecordSet.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/InfoRequest.hbm.xml"/>
 		
-		<mapping resource="edu/ku/brc/specify/datamodel/AccessionAgent.hbm.xml"/>
+	    <mapping resource="edu/ku/brc/specify/datamodel/Accession.hbm.xml"/>
+	    <mapping resource="edu/ku/brc/specify/datamodel/AccessionAgent.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/AccessionAuthorizations.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/Accession.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/Address.hbm.xml"/>
+	    <mapping resource="edu/ku/brc/specify/datamodel/Address.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/AgentAddress.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Agent.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/AttributeDef.hbm.xml"/>
@@ -66,10 +66,10 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/Container.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/ContainerItem.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/DataType.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/DeaccessionAgent.hbm.xml"/>
+	    <mapping resource="edu/ku/brc/specify/datamodel/Deaccession.hbm.xml"/>
+	    <mapping resource="edu/ku/brc/specify/datamodel/DeaccessionAgent.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/DeaccessionCollectionObject.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/Deaccession.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/DeterminationCitation.hbm.xml"/>
+	    <mapping resource="edu/ku/brc/specify/datamodel/DeterminationCitation.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Determination.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/ExchangeIn.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/ExchangeOut.hbm.xml"/>
@@ -100,14 +100,15 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/PrepType.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/ProjectCollectionObject.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Project.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/ReferenceWork.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/Shipment.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/Stratigraphy.hbm.xml"/>
+	    <mapping resource="edu/ku/brc/specify/datamodel/ReferenceWork.hbm.xml"/>
+	    <mapping resource="edu/ku/brc/specify/datamodel/RepositoryAgreement.hbm.xml"/>
+	    <mapping resource="edu/ku/brc/specify/datamodel/Shipment.hbm.xml"/>
+	    <mapping resource="edu/ku/brc/specify/datamodel/SpecifyUser.hbm.xml"/>
+	    <mapping resource="edu/ku/brc/specify/datamodel/Stratigraphy.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/TaxonCitation.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/Taxon.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/TaxonTreeDef.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/TaxonTreeDefItem.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/User.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/UserGroup.hbm.xml"/>
 		
 		

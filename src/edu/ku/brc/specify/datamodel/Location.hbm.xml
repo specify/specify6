@@ -239,34 +239,61 @@
             <column name="ParentID"/>
         </many-to-one>
 
-	    <!-- bi-directional one-to-many association to Preparation -->
-	    <set
-	        name="preparations"
-	        lazy="true"
-	        inverse="true"
-			cascade="all,delete-orphan"
-	    >
-	        <meta attribute="scope-field">protected</meta>
-	        <meta attribute="field-description">
-	           @hibernate.set
-	            lazy="true"
-	            inverse="true"
-	            cascade="none"
-	
-	           @hibernate.collection-key
-	            column="TreeID"
-	
-	           @hibernate.collection-one-to-many
-	            class="edu.ku.brc.specify.datamodel.Preparation"
-	        </meta>
-	        <key>
-	            <column name="LocationID"/>
-	        </key>
-	        <one-to-many 
-	            class="edu.ku.brc.specify.datamodel.Preparation"
-	        />
-	    </set>
+        <!-- bi-directional one-to-many association to Preparation -->
+        <set
+            name="preparations"
+            lazy="true"
+            inverse="true"
+            cascade="all"
+            >
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description">
+                @hibernate.set
+                lazy="true"
+                inverse="true"
+                cascade="none"
+                
+                @hibernate.collection-key
+                column="LocationID"
+                
+                @hibernate.collection-one-to-many
+                class="edu.ku.brc.specify.datamodel.Preparation"
+            </meta>
+            <key>
+                <column name="LocationID" />
+            </key>
+            <one-to-many 
+                class="edu.ku.brc.specify.datamodel.Preparation"
+            />
+        </set>
 
+        <!-- bi-directional one-to-many association to Container -->
+        <set
+            name="containers"
+            lazy="true"
+            inverse="true"
+            cascade="all"
+            >
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description">
+                @hibernate.set
+                lazy="true"
+                inverse="true"
+                cascade="none"
+                
+                @hibernate.collection-key
+                column="LocationID"
+                
+                @hibernate.collection-one-to-many
+                class="edu.ku.brc.specify.datamodel.Container"
+            </meta>
+            <key>
+                <column name="LocationID" />
+            </key>
+            <one-to-many 
+                class="edu.ku.brc.specify.datamodel.Container"
+            />
+        </set>
 
     </class>
     

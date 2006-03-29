@@ -2,17 +2,17 @@
 <!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
+
 <hibernate-mapping>
-<!-- 
+<!--
     Created by the Middlegen Hibernate plugin 2.1
 
     http://boss.bekk.no/boss/middlegen/
     http://www.hibernate.org/
 -->
 
-<class 
-    name="edu.ku.brc.specify.datamodel.AccessionAgent" 
+<class
+    name="edu.ku.brc.specify.datamodel.AccessionAgent"
     table="accessionagents"
 	lazy="true"
 >
@@ -42,17 +42,17 @@
         type="java.lang.String"
         column="Role"
         not-null="true"
-        length="50"
+        length="32"
     >
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">
            @hibernate.property
             column="Role"
-            length="50"
+            length="32"
             not-null="true"
-        </meta>    
+        </meta>
     </property>
-    
+
     <property
         name="remarks"
         type="text"
@@ -62,9 +62,9 @@
         <meta attribute="field-description">
            @hibernate.property
             column="Remarks"
-        </meta>    
+        </meta>
     </property>
-    
+
     <property
         name="timestampModified"
         type="java.sql.Timestamp"
@@ -77,9 +77,9 @@
             column="TimestampModified"
             length="23"
             not-null="true"
-        </meta>    
+        </meta>
     </property>
-    
+
     <property
         name="timestampCreated"
         type="java.sql.Timestamp"
@@ -95,9 +95,9 @@
             length="23"
             not-null="true"
             update="false"
-        </meta>    
+        </meta>
     </property>
-    
+
     <property
         name="lastEditedBy"
         type="java.lang.String"
@@ -109,24 +109,11 @@
            @hibernate.property
             column="LastEditedBy"
             length="50"
-        </meta>    
-    </property>
-    <property
-        name="roleId"
-        type="java.lang.Integer"
-        column="RoleID"
-        length="10"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="RoleID"
-            length="10"
-        </meta>    
+        </meta>
     </property>
 
     <!-- Associations -->
-  
+
     <!-- bi-directional many-to-one association to AgentAddress -->
     <many-to-one
         name="agentAddress"
@@ -139,11 +126,11 @@
            @hibernate.many-to-one
             not-null="true"
 			cascade="none"
-           @hibernate.column name="AgentAddressID"         
+           @hibernate.column name="AgentAddressID"
         </meta>
         <column name="AgentAddressID" />
     </many-to-one>
-    
+
     <!-- bi-directional many-to-one association to Accession -->
     <many-to-one
         name="accession"
@@ -156,9 +143,26 @@
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="AccessionID"         
+           @hibernate.column name="AccessionID"
         </meta>
         <column name="AccessionID" />
+    </many-to-one>
+
+    <!-- bi-directional many-to-one association to RepositoryAgreement -->
+    <many-to-one
+        name="repositoryAgreement"
+        class="edu.ku.brc.specify.datamodel.RepositoryAgreement"
+        not-null="true"
+		outer-join="true"
+		cascade="none"
+    >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">
+           @hibernate.many-to-one
+            not-null="true"
+           @hibernate.column name="RepositoryAgreementID"
+        </meta>
+        <column name="RepositoryAgreementID" />
     </many-to-one>
 
 </class>

@@ -10,11 +10,11 @@ import java.util.Set;
  *         table="user"
  *     
  */
-public class User  implements java.io.Serializable {
+public class SpecifyUser  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer userId;
+     protected Integer specifyUserId;
      protected String name;
      protected String password;
      protected Short privLevel;
@@ -26,12 +26,12 @@ public class User  implements java.io.Serializable {
     // Constructors
 
     /** default constructor */
-    public User() {
+    public SpecifyUser() {
     }
     
     /** constructor with id */
-    public User(Integer userId) {
-        this.userId = userId;
+    public SpecifyUser(Integer specifyUserId) {
+        this.specifyUserId = specifyUserId;
     }
    
     
@@ -42,12 +42,12 @@ public class User  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getUserId() {
-        return this.userId;
+    public Integer getSpecifyUserId() {
+        return this.specifyUserId;
     }
     
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setSpecifyUserId(Integer specifyUserId) {
+        this.specifyUserId = specifyUserId;
     }
 
     /**
@@ -97,7 +97,7 @@ public class User  implements java.io.Serializable {
      *             inverse="true"
      *             cascade="none"
      *            @hibernate.collection-key
-     *             column="UserID"
+     *             column="SpecifyUserID"
      *            @hibernate.collection-one-to-many
      *             class="edu.ku.brc.specify.datamodel.CollectionObjDef"
      *         
@@ -132,7 +132,7 @@ public class User  implements java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="UserGroupID"         
+     *            @hibernate.column name="UserGroupID"
      *         
      */
     public UserGroup getUserGroup() {

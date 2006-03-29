@@ -132,8 +132,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     protected JLabel                    explainLabel;
     protected boolean                   noIndexFile = false;
     
-    protected boolean                   doIndexForms  = true; // XXX Pref 
-    protected boolean                   doIndexLabels = true; // XXX Pref 
+    protected boolean                   doIndexForms  = false; // XXX Pref 
+    protected boolean                   doIndexLabels = false; // XXX Pref 
     
     /**
      * Default Constructor

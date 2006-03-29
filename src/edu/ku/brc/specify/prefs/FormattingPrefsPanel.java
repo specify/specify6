@@ -80,7 +80,10 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
      */
     public void savePrefs()
     {
-        form.getDataFromUI();
+        if (form.getValidator() == null || form.getValidator().hasChanged())
+        {
+            form.getDataFromUI();
+        }
     }
     
 

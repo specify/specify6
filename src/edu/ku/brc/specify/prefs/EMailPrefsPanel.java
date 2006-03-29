@@ -358,7 +358,10 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
      */
     public void savePrefs()
     {
-        form.getDataFromUI();
+        if (form.getValidator() == null || form.getValidator().hasChanged())
+        {
+            form.getDataFromUI();
+        }
     }
     
     /**

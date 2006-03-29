@@ -1,11 +1,10 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
-
-
 import java.awt.datatransfer.DataFlavor;
-import java.io.IOException;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Set;
 
 
 /**
@@ -90,7 +89,7 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     }
 
     /**
-     *      *  @hibernate.property column="CommonName" length="8"
+     *      *  @hibernate.property column="GeographyCode" length="8"
      *             
      */
     public String getGeographyCode() {

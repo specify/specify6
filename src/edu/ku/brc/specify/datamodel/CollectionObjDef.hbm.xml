@@ -71,10 +71,10 @@
         <many-to-many class="edu.ku.brc.specify.datamodel.CatalogSeries" column="CatalogSeriesID"/>
     </set>
         
-    <!-- many-to-one association to User -->
+    <!-- many-to-one association to SpecifyUser -->
     <many-to-one
         name="user"
-        class="edu.ku.brc.specify.datamodel.User"
+        class="edu.ku.brc.specify.datamodel.SpecifyUser"
         not-null="true"
 		outer-join="true"
     >
@@ -82,9 +82,9 @@
         <meta attribute="field-description">
            @hibernate.many-to-one
             not-null="true"
-           @hibernate.column name="UserID"
+           @hibernate.column name="SpecifyUserID"
         </meta>
-        <column name="UserID" />
+        <column name="SpecifyUserID" />
     </many-to-one>   
     
     <!-- bi-directional one-to-many association to AttributeDef -->
@@ -145,32 +145,45 @@
         </meta>
     </one-to-one>
     
+    <!-- bi-directional many-to-many association to Locality -->
+    <set
+        name="localities"
+        table="colobjdef_locality"
+        lazy="true"
+        inverse="true"
+        cascade="save-update">
+        <key>
+            <column name="CollectionObjDefID" />
+        </key>
+        <many-to-many class="edu.ku.brc.specify.datamodel.Locality" column="LocalityID"/>
+    </set>
+    
     <!-- bi-directional one-to-many association to CollectionObject -->
     <!-- Currently we don't to bring all the CollectionObjects when accessing the CollectionObjDef -->
     <!--
-    <set
+        <set
         name="collectionObjects"
         lazy="true"
         inverse="true"
-		cascade="delete"
-    >
+        cascade="delete"
+        >
         <meta attribute="field-description">
-           @hibernate.set
-            lazy="true"
-            inverse="true"
-            cascade="delete"
-
-           @hibernate.collection-key
-            column="CollectionObjDefID"
-
-           @hibernate.collection-one-to-many
-            class="edu.ku.brc.specify.datamodel.CollectionObject"
+        @hibernate.set
+        lazy="true"
+        inverse="true"
+        cascade="delete"
+        
+        @hibernate.collection-key
+        column="CollectionObjDefID"
+        
+        @hibernate.collection-one-to-many
+        class="edu.ku.brc.specify.datamodel.CollectionObject"
         </meta>
         <key>
-            <column name="CollectioObjDefID" />
+        <column name="CollectioObjDefID" />
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.CollectionObject"/>
-    </set>
+        </set>
     -->
     
 </class>

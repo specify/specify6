@@ -50,6 +50,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="method"
         type="java.lang.String"
@@ -63,6 +64,7 @@
             length="50"
         </meta>    
     </property>
+    
     <property
         name="verbatimDate"
         type="java.lang.String"
@@ -176,6 +178,7 @@
             column="EndTime"
         </meta>    
     </property>
+    
     <property
         name="verbatimLocality"
         type="text"
@@ -187,6 +190,7 @@
             column="VerbatimLocality"
         </meta>    
     </property>
+    
     <property
         name="groupPermittedToView"
         type="java.lang.Integer"
@@ -257,20 +261,6 @@
            @hibernate.property
             column="LastEditedBy"
             length="50"
-        </meta>    
-    </property>
-    
-    <property
-        name="methodId"
-        type="java.lang.Integer"
-        column="MethodID"
-        length="10"
-    >
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="MethodID"
-            length="10"
         </meta>    
     </property>
 

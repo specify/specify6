@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
 
 
 
@@ -26,7 +28,6 @@ public class Deaccession  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     protected Integer typeId;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      private Set deaccessionAgents;
@@ -67,7 +68,7 @@ public class Deaccession  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Type"
-     *             length="50"
+     *             length="32"
      *         
      */
     public String getType() {
@@ -122,7 +123,6 @@ public class Deaccession  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Text1"
-     *             length="300"
      *         
      */
     public String getText1() {
@@ -136,7 +136,6 @@ public class Deaccession  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Text2"
-     *             length="300"
      *         
      */
     public String getText2() {
@@ -218,20 +217,6 @@ public class Deaccession  implements java.io.Serializable {
     
     public void setLastEditedBy(String lastEditedBy) {
         this.lastEditedBy = lastEditedBy;
-    }
-
-    /**
-     *      *            @hibernate.property
-     *             column="TypeID"
-     *             length="10"
-     *         
-     */
-    public Integer getTypeId() {
-        return this.typeId;
-    }
-    
-    public void setTypeId(Integer typeId) {
-        this.typeId = typeId;
     }
 
     /**

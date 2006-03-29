@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.Date;
 
 
 
@@ -20,9 +20,9 @@ public class AccessionAgent  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     protected Integer roleId;
      private AgentAddress agentAddress;
      protected Accession accession;
+     protected RepositoryAgreement repositoryAgreement;
 
 
     // Constructors
@@ -59,7 +59,7 @@ public class AccessionAgent  implements java.io.Serializable {
     /**
      *      *            @hibernate.property
      *             column="Role"
-     *             length="50"
+     *             length="32"
      *             not-null="true"
      *         
      */
@@ -130,24 +130,10 @@ public class AccessionAgent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="RoleID"
-     *             length="10"
-     *         
-     */
-    public Integer getRoleId() {
-        return this.roleId;
-    }
-    
-    public void setRoleId(Integer roleId) {
-        this.roleId = roleId;
-    }
-
-    /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
      * 			cascade="none"
-     *            @hibernate.column name="AgentAddressID"         
+     *            @hibernate.column name="AgentAddressID"
      *         
      */
     public AgentAddress getAgentAddress() {
@@ -161,7 +147,7 @@ public class AccessionAgent  implements java.io.Serializable {
     /**
      *      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="AccessionID"         
+     *            @hibernate.column name="AccessionID"
      *         
      */
     public Accession getAccession() {
@@ -170,6 +156,20 @@ public class AccessionAgent  implements java.io.Serializable {
     
     public void setAccession(Accession accession) {
         this.accession = accession;
+    }
+
+    /**
+     *      *            @hibernate.many-to-one
+     *             not-null="true"
+     *            @hibernate.column name="RepositoryAgreementID"
+     *         
+     */
+    public RepositoryAgreement getRepositoryAgreement() {
+        return this.repositoryAgreement;
+    }
+    
+    public void setRepositoryAgreement(RepositoryAgreement repositoryAgreement) {
+        this.repositoryAgreement = repositoryAgreement;
     }
 
 
