@@ -21,10 +21,15 @@
 package edu.ku.brc.specify;
 
 
+import static edu.ku.brc.specify.tests.CreateTestDatabases.createAgents;
+import static edu.ku.brc.specify.tests.CreateTestDatabases.createGeographies;
+import static edu.ku.brc.specify.tests.CreateTestDatabases.createLocations;
+import static edu.ku.brc.specify.tests.CreateTestDatabases.createTaxonomy;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAttributeDef;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCatalogSeries;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectingEvent;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectingEventAttr;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectionObjDef;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectionObject;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectionObjectAttr;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollector;
@@ -33,14 +38,12 @@ import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDetermination;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createLocality;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPrepType;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPreparation;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.*;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPreparationAttr;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createSpecifyUser;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createTaxonTreeDef;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserGroup;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.setSession;
-import static edu.ku.brc.specify.tests.CreateTestDatabases.*;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -49,7 +52,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -78,7 +80,6 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
-import edu.ku.brc.specify.config.CatalogSeriesWizard;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AttributeDef;
@@ -106,7 +107,6 @@ import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.EMailHelper;
 import edu.ku.brc.specify.helpers.UIHelper;
-import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.prefs.PrefMainPanel;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.specify.tests.forms.TestDataSubObj;
@@ -160,7 +160,7 @@ public class FormEditor
     {
         //dataType = createDataTypes("Animal");
     }
-    
+
     /**
      * @param disciplineName fish, birds, bees etc
      * @return true on success
@@ -171,12 +171,12 @@ public class FormEditor
         SpecifyUser      user             = createSpecifyUser("John", "Doe", (short)0, userGroup);
         DataType         dataType         = createDataType(disciplineName);
 
-        
+
         TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("TreeDef");
         CollectionObjDef collectionObjDef = createCollectionObjDef(disciplineName, dataType, user, taxonTreeDef);
-        
+
         Geography[] geographies = createGeographies(collectionObjDef, "GeoTree");
-        
+
         Locality[] localities = new Locality[2];
         localities[0] = createLocality("This is the place", geographies[0]);
         localities[1] = createLocality("My Private Forest", geographies[1]);
@@ -187,8 +187,8 @@ public class FormEditor
         Agent[] agents = createAgents();
 
         CatalogSeries catalogSeries = createCatalogSeries("KUFSH", "Fish");
-       
-        
+
+
         // Create Collecting Event
         CollectingEvent colEv = createCollectingEvent(localities[0],
                 new Collector[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
@@ -211,12 +211,12 @@ public class FormEditor
         CollectionObject[] colObjs = new CollectionObject[values.length/4];
         for (int i=0;i<values.length;i+=4)
         {
-            colObjs[i/4] = createCollectionObject((Float)values[i], 
-                                                  (String)values[i+1], 
-                                                  null, 
-                                                  (Agent)values[i+2],  
-                                                  catalogSeries, 
-                                                  collectionObjDef, 
+            colObjs[i/4] = createCollectionObject((Float)values[i],
+                                                  (String)values[i+1],
+                                                  null,
+                                                  (Agent)values[i+2],
+                                                  catalogSeries,
+                                                  collectionObjDef,
                                                   (Integer)values[+3],
                                                   colEv);
         }
@@ -266,7 +266,7 @@ public class FormEditor
             createPreparationAttr(prepAttrDefSize, preps[i], null, 100.0);
             createPreparationAttr(prepAttrDefSex,  preps[i], i % 2 == 0 ? "Male" : "Female", null);
         }
-        
+
         return colObjs;
 
     }
@@ -442,7 +442,7 @@ public class FormEditor
                         if (doMemoryCollection)
                         {
                             CollectionObject[] colObjs = createSingleDiscipline("Fish");
-                            
+
                             Set set = new HashSet<CollectionObject>();
                             for (int i=0;i<colObjs.length;i++)
                             {
@@ -667,13 +667,13 @@ public class FormEditor
 
          return mb;
     }
-    
+
     /**
      * Create menus
      */
     public void preferences()
     {
-        
+
         JDialog dlg = new JDialog();
         dlg.setModal(true);
         PrefMainPanel pane = new PrefMainPanel(dlg);
@@ -683,7 +683,7 @@ public class FormEditor
         System.out.println(dlg.getPreferredSize());
         dlg.setPreferredSize(dlg.getPreferredSize());
         dlg.setSize(dlg.getPreferredSize());
-        UIHelper.centerAndShow(dlg); 
+        UIHelper.centerAndShow(dlg);
     }
 
 
