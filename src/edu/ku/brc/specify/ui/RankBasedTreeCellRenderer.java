@@ -89,6 +89,11 @@ public class RankBasedTreeCellRenderer extends DefaultTreeCellRenderer
 	    l.setText(t.getName());
 	    
 	    Integer rank = t.getRankId();
+	    Icon icon = l.getIcon();
+	    if( defaultIcon != null )
+	    {
+	    	icon = defaultIcon;
+	    }
 	    if( rank != null )
 	    {
 	    	if( subsEnabled )
@@ -100,17 +105,15 @@ public class RankBasedTreeCellRenderer extends DefaultTreeCellRenderer
 		    	}	    		
 	    	}
 
-	    	Icon icon = iconMap.get(rank);
-	    	if( icon != null )
+	    	Icon i = iconMap.get(rank);
+	    	if( i != null )
 	    	{
-	    		l.setIcon(icon);
-	    	}
-	    	else if( defaultIcon != null )
-	    	{
-	    		l.setIcon(defaultIcon);
+	    		icon = i;
 	    	}
 	    }
 
+	    l.setIcon(icon);
+	    
 	    return l;
     }
 }
