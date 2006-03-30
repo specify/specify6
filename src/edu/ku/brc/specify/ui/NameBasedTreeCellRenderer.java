@@ -24,7 +24,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
  */
 public class NameBasedTreeCellRenderer extends DefaultTreeCellRenderer
 {
-	Map<String,Icon> iconMap;
+	protected Map<String,Icon> iconMap;
 	
 	/**
 	 * Creates a new RandBasedTreeCellRenderer using the passed in Map to
