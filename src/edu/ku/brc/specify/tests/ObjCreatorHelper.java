@@ -478,7 +478,7 @@ public class ObjCreatorHelper
         gtd.getTreeDefItems().add(gtdi);
         if (session != null)
         {
-            session.saveOrUpdate(gtd);
+            session.saveOrUpdate(gtdi);
         }
         return gtdi;
     }
