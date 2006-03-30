@@ -6,9 +6,7 @@ import java.util.Date;
 
 
 /**
- *        @hibernate.class
- *         table="accessionauthorizations"
- *     
+
  */
 public class AccessionAuthorizations  implements java.io.Serializable {
 
@@ -41,11 +39,7 @@ public class AccessionAuthorizations  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="AccessionAuthorizationsID"
-     *         
+     * 
      */
     public Integer getAccessionAuthorizationsId() {
         return this.accessionAuthorizationsId;
@@ -56,9 +50,7 @@ public class AccessionAuthorizations  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -69,11 +61,7 @@ public class AccessionAuthorizations  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -84,12 +72,7 @@ public class AccessionAuthorizations  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             not-null="true"
-     *             update="false"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -100,10 +83,7 @@ public class AccessionAuthorizations  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -114,10 +94,7 @@ public class AccessionAuthorizations  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="PermitID"         
-     *         
+     *      * Permit authorizing accession
      */
     public Permit getPermit() {
         return this.permit;
@@ -128,10 +105,7 @@ public class AccessionAuthorizations  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.many-to-one
-     *             not-null="true"
-     *             @hibernate.column name="AccessionID"         
-     *         
+     *      * Accession authorized by permit
      */
     public Accession getAccession() {
         return this.accession;
@@ -142,10 +116,7 @@ public class AccessionAuthorizations  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.many-to-one
-     *             not-null="true"
-     *             @hibernate.column name="AccessionID"         
-     *         
+     * 
      */
     public RepositoryAgreement getRepositoryAgreement() {
         return this.repositoryAgreement;

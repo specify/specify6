@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.Collector" table="collectors">
-    <meta attribute="class-description" inherit="false">
-	Associates agents with collecting events.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="collectorsId" type="java.lang.Integer" column="CollectorsID">
         <meta attribute="field-description"></meta>
@@ -43,17 +35,13 @@
   
     <!-- bi-directional many-to-one association to CollectingEvent -->
     <many-to-one name="collectingEvent" class="edu.ku.brc.specify.datamodel.CollectingEvent" not-null="true" cascade="none" index="IX_CollectorsCollectingEventID" unique-key="IX_CollectorsCEOrder">
-        <meta attribute="field-description">
-	   The CollectingEvent the agent participated in
-	</meta>
+        <meta attribute="field-description">The CollectingEvent the agent participated in</meta>
         <column name="CollectingEventID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" index="IX_CollectorsAgentID">
-        <meta attribute="field-description">
-	   Link to Collector's record in Agent table
-	</meta>
+        <meta attribute="field-description">Link to Collector's record in Agent table</meta>
         <column name="AgentID"/>
     </many-to-one>
 

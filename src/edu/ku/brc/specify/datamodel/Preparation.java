@@ -8,9 +8,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="preparation"
- *     
+
  */
 public class Preparation  implements java.io.Serializable {
 
@@ -52,11 +50,7 @@ public class Preparation  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="PreparationID"
-     *         
+     * 
      */
     public Integer getPreparationId() {
         return this.preparationId;
@@ -67,9 +61,7 @@ public class Preparation  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.property
-     *             column="Text1"
-     *         
+     *      * User definable
      */
     public String getText1() {
         return this.text1;
@@ -80,9 +72,7 @@ public class Preparation  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.property
-     *             column="Text2"
-     *         
+     *      * User definable
      */
     public String getText2() {
         return this.text2;
@@ -93,10 +83,7 @@ public class Preparation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Count"
-     *             length="10"
-     *         
+     *      * The number of objects (specimens, slides, pieces) prepared
      */
     public Integer getCount() {
         return this.count;
@@ -107,10 +94,7 @@ public class Preparation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="StorageLocation"
-     *             length="50"
-     *         
+     * 
      */
     public String getStorageLocation() {
         return this.storageLocation;
@@ -121,9 +105,7 @@ public class Preparation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -134,9 +116,7 @@ public class Preparation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="PreparedDate"
-     *         
+     * 
      */
     public Calendar getPreparedDate() {
         return this.preparedDate;
@@ -147,12 +127,7 @@ public class Preparation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -163,11 +138,7 @@ public class Preparation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -178,10 +149,7 @@ public class Preparation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -192,15 +160,7 @@ public class Preparation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="PhysicalObjectID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"
-     *         
+     * 
      */
     public Set getLoanPhysicalObjects() {
         return this.loanPhysicalObjects;
@@ -211,15 +171,7 @@ public class Preparation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="PreparationID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.PreparationAttr"
-     *         
+     * 
      */
     public Set getAttrs() {
         return this.attrs;
@@ -230,10 +182,7 @@ public class Preparation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="PrepTypeID"         
-     *         
+     * 
      */
     public PrepType getPrepType() {
         return this.prepType;
@@ -244,11 +193,7 @@ public class Preparation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     * 			cascade="none"
-     *            @hibernate.column name="CollectionObjectID"         
-     *         
+     * 
      */
     public CollectionObject getCollectionObject() {
         return this.collectionObject;
@@ -259,10 +204,7 @@ public class Preparation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="PreparedByID"         
-     *         
+     * 
      */
     public Agent getPreparedByAgent() {
         return this.preparedByAgent;
@@ -273,10 +215,7 @@ public class Preparation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="LocationID"         
-     *         
+     * 
      */
     public Location getLocation() {
         return this.location;

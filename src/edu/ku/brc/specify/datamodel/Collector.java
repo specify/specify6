@@ -6,9 +6,7 @@ import java.util.Date;
 
 
 /**
- *        @hibernate.class
- *         table="collectors"
- *     
+
  */
 public class Collector  implements java.io.Serializable {
 
@@ -41,11 +39,7 @@ public class Collector  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="CollectorsID"
-     *         
+     * 
      */
     public Integer getCollectorsId() {
         return this.collectorsId;
@@ -56,11 +50,7 @@ public class Collector  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="OrderNumber"
-     *             length="10"
-     *             not-null="true"
-     *         
+     * 
      */
     public Integer getOrderNumber() {
         return this.orderNumber;
@@ -71,9 +61,7 @@ public class Collector  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -84,11 +72,7 @@ public class Collector  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -99,12 +83,7 @@ public class Collector  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -115,10 +94,7 @@ public class Collector  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -129,11 +105,7 @@ public class Collector  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     * 			cascade="none"
-     *            @hibernate.column name="CollectingEventID"         
-     *         
+     *      * The CollectingEvent the agent participated in
      */
     public CollectingEvent getCollectingEvent() {
         return this.collectingEvent;
@@ -144,10 +116,7 @@ public class Collector  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="AgentID"         
-     *         
+     *      * Link to Collector's record in Agent table
      */
     public Agent getAgent() {
         return this.agent;

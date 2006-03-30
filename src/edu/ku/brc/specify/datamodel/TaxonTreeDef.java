@@ -6,8 +6,7 @@ import java.util.Set;
 
 
 /**
- *  @hibernate.class
- *             table="taxontreedef" 
+
  */
 public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
 
@@ -38,8 +37,7 @@ public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
     // Property accessors
 
     /**
-     *      *  @hibernate.id generator-class="native"
-     *                 type="java.lang.Integer" column="TreeDefID" 
+     * 
      */
     public Integer getTreeDefId() {
         return this.treeDefId;
@@ -50,8 +48,7 @@ public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
     }
 
     /**
-     *      *                 @hibernate.property column="Name" length="64"
-     *             
+     * 
      */
     public String getName() {
         return this.name;
@@ -62,8 +59,7 @@ public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
     }
 
     /**
-     *      *                 @hibernate.property column="Remarks" length="255"
-     *             
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -85,7 +81,7 @@ public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
     }
 
     /**
-     *      * Entries referencing this defintion
+     * 
      */
     public Set getTreeEntries() {
         return this.treeEntries;
@@ -96,7 +92,7 @@ public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
     }
 
     /**
-     *      * The individual elements of this definition
+     * 
      */
     public Set getTreeDefItems() {
         return this.treeDefItems;

@@ -8,7 +8,7 @@ import java.util.Set;
 
 
 /**
- *  @hibernate.class table="geography" 
+
  */
 public class Geography  implements Treeable,java.awt.datatransfer.Transferable,java.io.Serializable {
 
@@ -53,8 +53,7 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     // Property accessors
 
     /**
-     *      *  @hibernate.id generator-class="assigned"
-     *                 type="java.lang.Integer" column="TreeID" 
+     *      *  @hibernate.id generator-class="assigned"type="java.lang.Integer" column="TreeID" 
      */
     public Integer getTreeId() {
         return this.treeId;
@@ -66,7 +65,6 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
 
     /**
      *      *  @hibernate.property column="Name" length="128"
-     *             
      */
     public String getName() {
         return this.name;
@@ -78,7 +76,6 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
 
     /**
      *      *  @hibernate.property column="CommonName" length="128"
-     *             
      */
     public String getCommonName() {
         return this.commonName;
@@ -90,7 +87,6 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
 
     /**
      *      *  @hibernate.property column="GeographyCode" length="8"
-     *             
      */
     public String getGeographyCode() {
         return this.geographyCode;
@@ -101,8 +97,7 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     }
 
     /**
-     *      *  @hibernate.property column="RankID" length="10"
-     *                 index="IX_GeoRankID" not-null="true" 
+     *      *  @hibernate.property column="RankID" length="10"index="IX_GeoRankID" not-null="true" 
      */
     public Integer getRankId() {
         return this.rankId;
@@ -113,8 +108,7 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     }
 
     /**
-     *      *  @hibernate.property column="NodeNumber" length="10"
-     *                 index="IX_GeoNodeNumber" 
+     *      *  @hibernate.property column="NodeNumber" length="10"index="IX_GeoNodeNumber" 
      */
     public Integer getNodeNumber() {
         return this.nodeNumber;
@@ -125,8 +119,7 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     }
 
     /**
-     *      *  @hibernate.property column="HighestChildNodeNumber"
-     *                 length="10" index="IX_GeoHighestChildNodeNumber" 
+     *      *  @hibernate.property column="HighestChildNodeNumber"length="10" index="IX_GeoHighestChildNodeNumber" 
      */
     public Integer getHighestChildNodeNumber() {
         return this.highestChildNodeNumber;
@@ -138,7 +131,6 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
 
     /**
      *      *  @hibernate.property column="Abbrev" length="16"
-     *             
      */
     public String getAbbrev() {
         return this.abbrev;
@@ -150,7 +142,6 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
 
     /**
      *      *  @hibernate.property column="Text1" length="32"
-     *             
      */
     public String getText1() {
         return this.text1;
@@ -162,7 +153,6 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
 
     /**
      *      *  @hibernate.property column="Text2" length="32"
-     *             
      */
     public String getText2() {
         return this.text2;
@@ -174,7 +164,6 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
 
     /**
      *      *  @hibernate.property column="Number1" length="10"
-     *             
      */
     public Integer getNumber1() {
         return this.number1;
@@ -186,7 +175,6 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
 
     /**
      *      *  @hibernate.property column="Number2" length="10"
-     *             
      */
     public Integer getNumber2() {
         return this.number2;
@@ -197,8 +185,7 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     }
 
     /**
-     *      *  @hibernate.property column="TimestampCreated"
-     *                 length="23" 
+     *      *  @hibernate.property column="TimestampCreated"length="23" 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -209,8 +196,7 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     }
 
     /**
-     *      *  @hibernate.property column="TimestampModified"
-     *                 length="23" 
+     *      *  @hibernate.property column="TimestampModified"length="23" 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -221,8 +207,7 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     }
 
     /**
-     *      *  @hibernate.property column="TimestampVersion"
-     *                 length="16" 
+     *      *  @hibernate.property column="TimestampVersion"length="16" 
      */
     public Date getTimestampVersion() {
         return this.timestampVersion;
@@ -233,8 +218,7 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     }
 
     /**
-     *      *  @hibernate.property column="LastEditedBy"
-     *                 length="50" 
+     *      *  @hibernate.property column="LastEditedBy"length="50" 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -256,9 +240,7 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     }
 
     /**
-     *      *  @hibernate.set lazy="true" inverse="true"
-     *                 cascade="none" @hibernate.collection-key column="TreeID"
-     *                 @hibernate.collection-one-to-many class="edu.ku.brc.specify.datamodel.Locality" 
+     *      *  @hibernate.set lazy="true" inverse="true"cascade="none" @hibernate.collection-key column="TreeID"@hibernate.collection-one-to-many class="edu.ku.brc.specify.datamodel.Locality" 
      */
     public Set getLocalities() {
         return this.localities;
@@ -269,8 +251,7 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     }
 
     /**
-     *      *  @hibernate.many-to-one not-null="true"
-     *                 @hibernate.column name="TreeDefID" 
+     *      *  @hibernate.many-to-one not-null="true"@hibernate.column name="TreeDefID" 
      */
     public GeographyTreeDef getDefinition() {
         return this.definition;
@@ -281,8 +262,7 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     }
 
     /**
-     *      *  @hibernate.many-to-one not-null="false"
-     *                 @hibernate.column name="ParentID" 
+     *      *  @hibernate.many-to-one not-null="false"@hibernate.column name="ParentID" 
      */
     public Geography getParent() {
         return this.parent;

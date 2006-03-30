@@ -8,9 +8,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="accession"
- *     
+
  */
 public class Accession  implements java.io.Serializable {
 
@@ -56,11 +54,7 @@ public class Accession  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="AccessionID"
-     *         
+     *      * Primary key
      */
     public Integer getAccessionId() {
         return this.accessionId;
@@ -71,10 +65,7 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.property
-     *             column="Type"
-     *             length="32"
-     *         
+     *      * Source of Accession, e.g. 'Collecting', 'Gift',  'Bequest' ...
      */
     public String getType() {
         return this.type;
@@ -85,11 +76,7 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.property
-     *             column="Status"
-     *             length="32"
-     *             not-null="true"
-     *         
+     *      * Status of Accession, e.g. 'In process', 'Complete' ...
      */
     public String getStatus() {
         return this.status;
@@ -100,11 +87,7 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.property
-     *             column="Number"
-     *             length="60"
-     *             not-null="true"
-     *         
+     *      * A user-visible identifier of the Accession. Typically an integer, but may include alphanumeric characters as prefix, suffix, and separators
      */
     public String getNumber() {
         return this.number;
@@ -115,10 +98,7 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="VerbatimDate"
-     *             length="50"
-     *         
+     *      * accomodates historical accessions.
      */
     public String getVerbatimDate() {
         return this.verbatimDate;
@@ -129,9 +109,7 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="DateAccessioned"
-     *         
+     *      * Date of Accession
      */
     public Calendar getDateAccessioned() {
         return this.dateAccessioned;
@@ -142,9 +120,7 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="DateReceived"
-     *         
+     *      * Date material was received
      */
     public Calendar getDateReceived() {
         return this.dateReceived;
@@ -155,9 +131,7 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="text"
-     *         
+     *      * User definable
      */
     public String getText1() {
         return this.text1;
@@ -168,9 +142,7 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text2"
-     *         
+     *      * User definable
      */
     public String getText2() {
         return this.text2;
@@ -181,9 +153,7 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text3"
-     *         
+     *      * User definable
      */
     public String getText3() {
         return this.text3;
@@ -194,9 +164,7 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number1"
-     *         
+     *      * User definable
      */
     public Float getNumber1() {
         return this.number1;
@@ -207,9 +175,7 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number2"
-     *         
+     *      * User definable
      */
     public Float getNumber2() {
         return this.number2;
@@ -220,9 +186,7 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     *      * Comments
      */
     public String getRemarks() {
         return this.remarks;
@@ -233,12 +197,7 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             not-null="true"
-     *             update="false"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -249,11 +208,7 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -264,10 +219,7 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     *      * Login name of user who last edited the record
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -278,9 +230,7 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo1"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo1() {
         return this.yesNo1;
@@ -291,9 +241,7 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo2"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo2() {
         return this.yesNo2;
@@ -304,15 +252,7 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="AccessionID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.CollectionObject"
-     *         
+     * 
      */
     public Set getCollectionObjects() {
         return this.collectionObjects;
@@ -323,15 +263,7 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="all"
-     *            @hibernate.collection-key
-     *             column="AccessionID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
-     *         
+     * 
      */
     public Set getAccessionAuthorizations() {
         return this.accessionAuthorizations;
@@ -342,15 +274,7 @@ public class Accession  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="AccessionID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.AccessionAgent"
-     *         
+     * 
      */
     public Set getAccessionAgents() {
         return this.accessionAgents;

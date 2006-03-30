@@ -1,30 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.Address" table="address" lazy="true">
-    <meta attribute="class-description" inherit="false">
-	Addresses of persons and organizations.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="addressId" type="java.lang.Integer" column="AddressID">
-        <meta attribute="field-description">
-	   PrimaryKey
-	</meta>
+        <meta attribute="field-description">PrimaryKey</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
 
     <property name="address" type="java.lang.String" column="Address" not-null="true" length="255">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Address as it should appear on mailing labels
-	</meta>    
+        <meta attribute="field-description">Address as it should appear on mailing labels</meta>
     </property>
     
     <property name="address2" type="java.lang.String" column="Address2" not-null="false" length="255">

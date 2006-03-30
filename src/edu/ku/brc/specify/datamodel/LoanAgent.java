@@ -6,9 +6,7 @@ import java.util.Date;
 
 
 /**
- *        @hibernate.class
- *         table="loanagents"
- *     
+
  */
 public class LoanAgent  implements java.io.Serializable {
 
@@ -41,11 +39,7 @@ public class LoanAgent  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="LoanAgentsID"
-     *         
+     * 
      */
     public Integer getLoanAgentsId() {
         return this.loanAgentsId;
@@ -56,11 +50,7 @@ public class LoanAgent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Role"
-     *             length="32"
-     *             not-null="true"
-     *         
+     *      * Role the agent played in the loan
      */
     public String getRole() {
         return this.role;
@@ -71,9 +61,7 @@ public class LoanAgent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -84,12 +72,7 @@ public class LoanAgent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -100,11 +83,7 @@ public class LoanAgent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -115,10 +94,7 @@ public class LoanAgent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -129,11 +105,7 @@ public class LoanAgent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     * 			cascade="none"
-     *            @hibernate.column name="LoanID"         
-     *         
+     *      * ID of loan agent at AgentAddressID played a role in
      */
     public Loan getLoan() {
         return this.loan;
@@ -144,10 +116,7 @@ public class LoanAgent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="AgentAddressID"         
-     *         
+     *      * Address of agent
      */
     public AgentAddress getAgentAddress() {
         return this.agentAddress;

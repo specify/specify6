@@ -8,8 +8,7 @@ import java.util.Set;
 
 
 /**
- *  @hibernate.class
- *                 table="locationtreedefitem" 
+
  */
 public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Serializable {
 
@@ -40,7 +39,7 @@ public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Ser
     // Property accessors
 
     /**
-     *      *  @hibernate.property column="TreeDefItemID" length="10" 
+     * 
      */
     public Integer getTreeDefItemId() {
         return this.treeDefItemId;
@@ -51,8 +50,7 @@ public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Ser
     }
 
     /**
-     *      *  @hibernate.property column="Name" length="64"
-     *                 
+     * 
      */
     public String getName() {
         return this.name;
@@ -63,7 +61,7 @@ public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Ser
     }
 
     /**
-     *      *  @hibernate.property column="RankID" 
+     * 
      */
     public Integer getRankId() {
         return this.rankId;
@@ -74,7 +72,7 @@ public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Ser
     }
 
     /**
-     *      * A reference back to the tree defintion
+     * 
      */
     public LocationTreeDef getTreeDef() {
         return this.treeDef;

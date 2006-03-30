@@ -1,36 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.ExchangeOut" table="exchangeout" lazy="true">
-    <meta attribute="class-description" inherit="false">
-	Information on outgoing exchanges of botanical material.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="exchangeOutId" type="java.lang.Integer" column="ExchangeOutID">
-        <meta attribute="field-description">
-	   Primary key
-	</meta>
+        <meta attribute="field-description">Primary key</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
 
     <property name="exchangeDate" type="calendar_date" column="ExchangeDate">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Date exchange was sent
-	</meta>    
+        <meta attribute="field-description">Date exchange was sent</meta>
     </property>
     <property name="quantityExchanged" type="short" column="QuantityExchanged" not-null="true">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Number of items sent
-	</meta>    
+        <meta attribute="field-description">Number of items sent</meta>
     </property>
     
     <property name="descriptionOfMaterial" type="java.lang.String" column="DescriptionOfMaterial" length="120">
@@ -45,30 +31,22 @@
     
     <property name="text1" type="text" column="Text1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="text2" type="text" column="Text2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="number1" type="java.lang.Float" column="Number1" length="24">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="number2" type="java.lang.Float" column="Number2" length="24">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
@@ -88,16 +66,12 @@
     
     <property name="yesNo1" type="boolean" column="YesNo1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="yesNo2" type="boolean" column="YesNo2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
 
 
@@ -105,25 +79,19 @@
   
     <!-- bi-directional many-to-one association to AgentAddress -->
     <many-to-one name="agentAddress" class="edu.ku.brc.specify.datamodel.AgentAddress" not-null="true" outer-join="true">
-        <meta attribute="field-description">
-	   AgentAddress ID of organization material was sent to
-	</meta>
+        <meta attribute="field-description">AgentAddress ID of organization material was sent to</meta>
         <column name="SentToOrganizationID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
-        <meta attribute="field-description">
-	   Agent ID of person who recorded  the exchange
-	</meta>
+        <meta attribute="field-description">Agent ID of person who recorded  the exchange</meta>
         <column name="CatalogedByID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Shipment -->
     <many-to-one name="shipment" class="edu.ku.brc.specify.datamodel.Shipment" not-null="true" outer-join="true" index="IX_ExchangeOutShipmentID">
-        <meta attribute="field-description">
-	   Shipment information for the exchange
-	</meta>
+        <meta attribute="field-description">Shipment information for the exchange</meta>
         <column name="ShipmentID"/>
     </many-to-one>
 

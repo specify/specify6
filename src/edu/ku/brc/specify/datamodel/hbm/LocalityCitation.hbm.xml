@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.LocalityCitation" table="localitycitation" lazy="true">
-    <meta attribute="class-description" inherit="false">
-	Associates publications with localities.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="localityCitationId" type="java.lang.Integer" column="LocalityCitationID">
         <meta attribute="field-description"></meta>
@@ -42,17 +34,13 @@
   
     <!-- bi-directional many-to-one association to ReferenceWork -->
     <many-to-one name="referenceWork" class="edu.ku.brc.specify.datamodel.ReferenceWork" not-null="true" outer-join="true" index="IX_LocalityCitationReferenceWorkID" unique-key="IX_LocalityCitation">
-        <meta attribute="field-description">
-	   ID of work citing locality
-	</meta>
+        <meta attribute="field-description">ID of work citing locality</meta>
         <column name="ReferenceWorkID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Locality -->
     <many-to-one name="locality" class="edu.ku.brc.specify.datamodel.Locality" not-null="true" outer-join="true" cascade="none" index="IX_LocalityCitationLocalityID" unique-key="IX_LocalityCitation">
-        <meta attribute="field-description">
-	   ID of locality cited
-	</meta>
+        <meta attribute="field-description">ID of locality cited</meta>
         <column name="LocalityID"/>
     </many-to-one>
 

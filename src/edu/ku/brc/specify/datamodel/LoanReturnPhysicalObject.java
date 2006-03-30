@@ -7,9 +7,7 @@ import java.util.Date;
 
 
 /**
- *        @hibernate.class
- *         table="loanreturnphysicalobject"
- *     
+
  */
 public class LoanReturnPhysicalObject  implements java.io.Serializable {
 
@@ -44,11 +42,7 @@ public class LoanReturnPhysicalObject  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="LoanReturnPhysicalObjectID"
-     *         
+     *      * PrimaryKey
      */
     public Integer getLoanReturnPhysicalObjectId() {
         return this.loanReturnPhysicalObjectId;
@@ -59,9 +53,7 @@ public class LoanReturnPhysicalObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="ReturnedDate"
-     *         
+     * 
      */
     public Calendar getReturnedDate() {
         return this.returnedDate;
@@ -72,9 +64,7 @@ public class LoanReturnPhysicalObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Quantity"
-     *         
+     *      * Quantity of items returned (necessary for lots)
      */
     public Short getQuantity() {
         return this.quantity;
@@ -85,9 +75,7 @@ public class LoanReturnPhysicalObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -98,12 +86,7 @@ public class LoanReturnPhysicalObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     *      * Date the record was created
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -114,11 +97,7 @@ public class LoanReturnPhysicalObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     *      * Date the record was modified
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -129,10 +108,7 @@ public class LoanReturnPhysicalObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     *      * user ID  of the person last editing the record
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -143,11 +119,7 @@ public class LoanReturnPhysicalObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     * 			cascade="none"
-     *            @hibernate.column name="LoanPhysicalObjectID"         
-     *         
+     *      * Link to LoanPhysicalObject table
      */
     public LoanPhysicalObject getLoanPhysicalObject() {
         return this.loanPhysicalObject;
@@ -158,10 +130,7 @@ public class LoanReturnPhysicalObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="DeaccessionPhysicalObjectID"         
-     *         
+     *      * ID of associated (if present) DeaccessionPhysicalObject record
      */
     public DeaccessionCollectionObject getDeaccessionCollectionObject() {
         return this.deaccessionCollectionObject;
@@ -172,10 +141,7 @@ public class LoanReturnPhysicalObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="ReceivedByID"         
-     *         
+     *      * Person processing the loan return
      */
     public Agent getAgent() {
         return this.agent;

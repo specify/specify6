@@ -1,44 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.Borrow" table="borrow" lazy="true">
-    <meta attribute="class-description" inherit="false">
-	Invoice information for borrowed (incoming) material.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="borrowId" type="java.lang.Integer" column="BorrowID">
-        <meta attribute="field-description">
-	   Primary key
-	</meta>
+        <meta attribute="field-description">Primary key</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
 	
     <property name="invoiceNumber" type="java.lang.String" column="InvoiceNumber" not-null="true" length="50" index="IX_BorrowInvoice">
-        <meta attribute="field-description">
-	   Lender's loan number
-	</meta>    
+        <meta attribute="field-description">Lender's loan number</meta>
     </property>
     <property name="receivedDate" type="calendar_date" column="ReceivedDate">
-        <meta attribute="field-description">
-	   Date material was received
-	</meta>    
+        <meta attribute="field-description">Date material was received</meta>
     </property>
     <property name="originalDueDate" type="calendar_date" column="OriginalDueDate">
-        <meta attribute="field-description">
-	   Original Due date for loan
-	</meta>    
+        <meta attribute="field-description">Original Due date for loan</meta>
     </property>
     <property name="dateClosed" type="calendar_date" column="DateClosed" length="10">
-        <meta attribute="field-description">
-	   Date loan was closed
-	</meta>    
+        <meta attribute="field-description">Date loan was closed</meta>
     </property>
     
     <property name="remarks" type="text" column="Remarks">
@@ -47,27 +29,19 @@
     </property>
     
     <property name="text1" type="text" column="Text1">
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="text2" type="text" column="Text2">
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="number1" type="java.lang.Float" column="Number1" length="24">
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="number2" type="java.lang.Float" column="Number2" length="24">
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
@@ -83,21 +57,15 @@
     </property>
     
     <property name="closed" type="short" column="Closed">
-        <meta attribute="field-description">
-	   False until all material has been returned
-	</meta>    
+        <meta attribute="field-description">False until all material has been returned</meta>
     </property>
     <property name="yesNo1" type="boolean" column="YesNo1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     <property name="yesNo2" type="boolean" column="YesNo2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     <property name="currentDueDate" type="calendar_date" column="CurrentDueDate">
         <meta attribute="field-description"></meta>    

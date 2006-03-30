@@ -6,9 +6,7 @@ import java.util.Date;
 
 
 /**
- *        @hibernate.class
- *         table="grouppersons"
- *     
+
  */
 public class GroupPerson  implements java.io.Serializable {
 
@@ -41,11 +39,7 @@ public class GroupPerson  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="GroupPersonsID"
-     *         
+     * 
      */
     public Integer getGroupPersonsId() {
         return this.groupPersonsId;
@@ -56,10 +50,7 @@ public class GroupPerson  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="OrderNumber"
-     *             not-null="true"
-     *         
+     * 
      */
     public Short getOrderNumber() {
         return this.orderNumber;
@@ -70,9 +61,7 @@ public class GroupPerson  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -83,11 +72,7 @@ public class GroupPerson  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -98,12 +83,7 @@ public class GroupPerson  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -114,10 +94,7 @@ public class GroupPerson  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -128,11 +105,7 @@ public class GroupPerson  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     * 			cascade="none"
-     *            @hibernate.column name="GroupID"         
-     *         
+     *      * AgentID of group
      */
     public Agent getAgentByGroup() {
         return this.agentByGroup;
@@ -143,10 +116,7 @@ public class GroupPerson  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="MemberID"         
-     *         
+     *      * AgentID of member (member must be of type Person)
      */
     public Agent getAgentByMember() {
         return this.agentByMember;

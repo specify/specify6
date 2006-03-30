@@ -1,69 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.BorrowMaterial" table="borrowmaterial" lazy="true">
-    <meta attribute="class-description" inherit="false">
-	Information about borrowed material.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="borrowMaterialId" type="java.lang.Integer" column="BorrowMaterialID">
-        <meta attribute="field-description">
-	   Primary key
-	</meta>
+        <meta attribute="field-description">Primary key</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
 
     <property name="materialNumber" type="java.lang.String" column="MaterialNumber" not-null="true" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   e.g. 'FMNH 223456'
-	</meta>    
+        <meta attribute="field-description">e.g. 'FMNH 223456'</meta>
     </property>
     <property name="description" type="java.lang.String" column="Description" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Description of the material. 'e.g. Bufo bufo skull'
-	</meta>    
+        <meta attribute="field-description">Description of the material. 'e.g. Bufo bufo skull'</meta>
     </property>
     <property name="quantity" type="short" column="Quantity">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Number of specimens (for lots)
-	</meta>    
+        <meta attribute="field-description">Number of specimens (for lots)</meta>
     </property>
     
     <property name="outComments" type="text" column="OutComments">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Notes concerning the return of the material
-	</meta>    
+        <meta attribute="field-description">Notes concerning the return of the material</meta>
     </property>
     
     <property name="inComments" type="text" column="InComments">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Notes concerning the receipt of the material
-	</meta>    
+        <meta attribute="field-description">Notes concerning the receipt of the material</meta>
     </property>
     
     <property name="quantityResolved" type="short" column="QuantityResolved">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Quantity resolved (Returned, Accessioned, Lost, Discarded, Destroyed ...)
-	</meta>    
+        <meta attribute="field-description">Quantity resolved (Returned, Accessioned, Lost, Discarded, Destroyed ...)</meta>
     </property>
     <property name="quantityReturned" type="short" column="QuantityReturned">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Quantity returned
-	</meta>    
+        <meta attribute="field-description">Quantity returned</meta>
     </property>
     <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
@@ -93,9 +69,7 @@
     
     <!-- bi-directional many-to-one association to Borrow -->
     <many-to-one name="borrow" class="edu.ku.brc.specify.datamodel.Borrow" not-null="true" outer-join="true" cascade="none" index="IX_BorrowMaterialBorrowID">
-        <meta attribute="field-description">
-	   ID of the Borrow containing the Prep
-	</meta>
+        <meta attribute="field-description">ID of the Borrow containing the Prep</meta>
         <column name="BorrowID"/>
     </many-to-one>
 

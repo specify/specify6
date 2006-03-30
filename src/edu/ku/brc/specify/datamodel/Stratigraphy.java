@@ -7,9 +7,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="stratigraphy"
- *     
+
  */
 public class Stratigraphy  implements java.io.Serializable {
 
@@ -52,11 +50,7 @@ public class Stratigraphy  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="StratigraphyID"
-     *         
+     *      * CollectingEventID of related collecting event
      */
     public Integer getStratigraphyId() {
         return this.stratigraphyId;
@@ -67,10 +61,7 @@ public class Stratigraphy  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="SuperGroup"
-     *             length="50"
-     *         
+     *      * Lithostratigraphic supergroup
      */
     public String getSuperGroup() {
         return this.superGroup;
@@ -81,10 +72,7 @@ public class Stratigraphy  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LithoGroup"
-     *             length="50"
-     *         
+     * 
      */
     public String getLithoGroup() {
         return this.lithoGroup;
@@ -95,10 +83,7 @@ public class Stratigraphy  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Formation"
-     *             length="50"
-     *         
+     *      * Lithostratigraphic formation
      */
     public String getFormation() {
         return this.formation;
@@ -109,10 +94,7 @@ public class Stratigraphy  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Member"
-     *             length="50"
-     *         
+     *      * Lithostratigraphic member
      */
     public String getMember() {
         return this.member;
@@ -123,10 +105,7 @@ public class Stratigraphy  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Bed"
-     *             length="50"
-     *         
+     *      * Lithostratigraphic bed
      */
     public String getBed() {
         return this.bed;
@@ -137,9 +116,7 @@ public class Stratigraphy  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -150,9 +127,7 @@ public class Stratigraphy  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.property
-     *             column="Text1"
-     *         
+     *      * User definable
      */
     public String getText1() {
         return this.text1;
@@ -163,9 +138,7 @@ public class Stratigraphy  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.property
-     *             column="Text2"
-     *         
+     *      * User definable
      */
     public String getText2() {
         return this.text2;
@@ -176,10 +149,7 @@ public class Stratigraphy  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number1"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber1() {
         return this.number1;
@@ -190,10 +160,7 @@ public class Stratigraphy  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number2"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber2() {
         return this.number2;
@@ -204,12 +171,7 @@ public class Stratigraphy  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -220,11 +182,7 @@ public class Stratigraphy  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -235,10 +193,7 @@ public class Stratigraphy  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -249,9 +204,7 @@ public class Stratigraphy  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo1"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo1() {
         return this.yesNo1;
@@ -262,9 +215,7 @@ public class Stratigraphy  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo2"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo2() {
         return this.yesNo2;
@@ -275,12 +226,7 @@ public class Stratigraphy  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.one-to-one
-     *             class="edu.ku.brc.specify.datamodel.CollectingEvent"
-     *             outer-join="auto"
-     *             constrained="true"
-     * 			cascade="delete"
-     *         
+     * 
      */
     public CollectingEvent getCollectingEvent() {
         return this.collectingEvent;
@@ -291,15 +237,7 @@ public class Stratigraphy  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="GeologicTimePeriodTypeID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
-     *         
+     * 
      */
     public Set getChildren() {
         return this.children;

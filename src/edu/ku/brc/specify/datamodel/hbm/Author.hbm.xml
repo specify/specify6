@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.Author" table="authors">
-    <meta attribute="class-description" inherit="false">
-	Associates agents with referenceworks.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="authorsId" type="java.lang.Integer" column="AuthorsID">
         <meta attribute="field-description"></meta>
@@ -47,17 +39,13 @@
   
     <!-- bi-directional many-to-one association to ReferenceWork -->
     <many-to-one name="referenceWork" class="edu.ku.brc.specify.datamodel.ReferenceWork" not-null="true" cascade="none" index="IX_AuthorsReferenceWorkID" unique-key="IX_AuthorsRefOrder">
-        <meta attribute="field-description">
-	   Reference record the Agent authored
-	</meta>
+        <meta attribute="field-description">Reference record the Agent authored</meta>
         <column name="ReferenceWorkID"/>
     </many-to-one>
 
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" index="IX_AuthorsAgentID">
-        <meta attribute="field-description">
-	   Agent record representing the Author
-	</meta>
+        <meta attribute="field-description">Agent record representing the Author</meta>
         <column name="AgentID"/>
     </many-to-one>
 

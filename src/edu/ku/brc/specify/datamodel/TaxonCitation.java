@@ -6,9 +6,7 @@ import java.util.Date;
 
 
 /**
- *        @hibernate.class
- *         table="taxoncitation"
- *     
+
  */
 public class TaxonCitation  implements java.io.Serializable {
 
@@ -46,11 +44,7 @@ public class TaxonCitation  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="TaxonCitationID"
-     *         
+     * 
      */
     public Integer getTaxonCitationId() {
         return this.taxonCitationId;
@@ -61,9 +55,7 @@ public class TaxonCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -74,9 +66,7 @@ public class TaxonCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.property
-     *             column="Text1"
-     *         
+     *      * User definable
      */
     public String getText1() {
         return this.text1;
@@ -87,9 +77,7 @@ public class TaxonCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.property
-     *             column="Text2"
-     *         
+     *      * User definable
      */
     public String getText2() {
         return this.text2;
@@ -100,10 +88,7 @@ public class TaxonCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number1"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber1() {
         return this.number1;
@@ -114,10 +99,7 @@ public class TaxonCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number2"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber2() {
         return this.number2;
@@ -128,12 +110,7 @@ public class TaxonCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -144,11 +121,7 @@ public class TaxonCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -159,10 +132,7 @@ public class TaxonCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -173,9 +143,7 @@ public class TaxonCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo1"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo1() {
         return this.yesNo1;
@@ -186,9 +154,7 @@ public class TaxonCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo2"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo2() {
         return this.yesNo2;
@@ -199,10 +165,7 @@ public class TaxonCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="ReferenceWorkID"         
-     *         
+     *      * The ID of reference work that cites the taxon name
      */
     public ReferenceWork getReferenceWork() {
         return this.referenceWork;
@@ -213,11 +176,7 @@ public class TaxonCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     * 			cascade="none"
-     *            @hibernate.column name="TaxonID"         
-     *         
+     * 
      */
     public Taxon getTaxon() {
         return this.taxon;

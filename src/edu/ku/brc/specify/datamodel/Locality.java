@@ -7,9 +7,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="locality"
- *     
+
  */
 public class Locality  implements java.io.Serializable {
 
@@ -28,25 +26,25 @@ public class Locality  implements java.io.Serializable {
      protected String sectionPart;
      protected String verbatimElevation;
      protected String originalElevationUnit;
-     protected Float minElevation;
-     protected Float maxElevation;
+     protected Double minElevation;
+     protected Double maxElevation;
      protected String elevationMethod;
-     protected Float elevationAccuracy;
+     protected Double elevationAccuracy;
      protected Integer originalLatLongUnit;
      protected String latLongType;
-     protected Float latitude1;
-     protected Float longitude1;
-     protected Float latitude2;
-     protected Float longitude2;
+     protected Double latitude1;
+     protected Double longitude1;
+     protected Double latitude2;
+     protected Double longitude2;
      protected String latLongMethod;
-     protected Float latLongAccuracy;
+     protected Double latLongAccuracy;
      protected String datum;
      protected Integer groupPermittedToView;
      protected String remarks;
      protected String text1;
      protected String text2;
-     protected Float number1;
-     protected Float number2;
+     protected Double number1;
+     protected Double number2;
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
@@ -85,11 +83,7 @@ public class Locality  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="LocalityID"
-     *         
+     *      * Primary key
      */
     public Integer getLocalityId() {
         return this.localityId;
@@ -100,10 +94,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="NamedPlace"
-     *             length="255"
-     *         
+     *      * The named place the locality is closest to
      */
     public String getNamedPlace() {
         return this.namedPlace;
@@ -114,10 +105,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="RelationToNamedPlace"
-     *             length="120"
-     *         
+     *      * Relation of the locality to the named place
      */
     public String getRelationToNamedPlace() {
         return this.relationToNamedPlace;
@@ -128,11 +116,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LocalityName"
-     *             length="1073741823"
-     *             not-null="true"
-     *         
+     *      * The full name of the locality.
      */
     public String getLocalityName() {
         return this.localityName;
@@ -143,10 +127,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="BaseMeridian"
-     *             length="50"
-     *         
+     *      * BaseMeridian for the Range/Township/Section data
      */
     public String getBaseMeridian() {
         return this.baseMeridian;
@@ -157,10 +138,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Range"
-     *             length="50"
-     *         
+     *      * The Range of a legal description
      */
     public String getRange() {
         return this.range;
@@ -171,10 +149,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="RangeDirection"
-     *             length="50"
-     *         
+     * 
      */
     public String getRangeDirection() {
         return this.rangeDirection;
@@ -185,10 +160,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Township"
-     *             length="50"
-     *         
+     *      * The Township of a legal description
      */
     public String getTownship() {
         return this.township;
@@ -199,10 +171,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TownshipDirection"
-     *             length="50"
-     *         
+     * 
      */
     public String getTownshipDirection() {
         return this.townshipDirection;
@@ -213,10 +182,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Section"
-     *             length="50"
-     *         
+     *      * The Section of a legal description
      */
     public String getSection() {
         return this.section;
@@ -227,10 +193,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="SectionPart"
-     *             length="50"
-     *         
+     * 
      */
     public String getSectionPart() {
         return this.sectionPart;
@@ -241,10 +204,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="VerbatimElevation"
-     *             length="50"
-     *         
+     *      * The verbatim elevation including units as given in the field notes
      */
     public String getVerbatimElevation() {
         return this.verbatimElevation;
@@ -255,10 +215,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="OriginalElevationUnit"
-     *             length="50"
-     *         
+     *      * i.e. Meters, Feet, ...
      */
     public String getOriginalElevationUnit() {
         return this.originalElevationUnit;
@@ -269,38 +226,29 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="MinElevation"
-     *             length="24"
-     *         
+     *      * The minimum elevation in Meters
      */
-    public Float getMinElevation() {
+    public Double getMinElevation() {
         return this.minElevation;
     }
     
-    public void setMinElevation(Float minElevation) {
+    public void setMinElevation(Double minElevation) {
         this.minElevation = minElevation;
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="MaxElevation"
-     *             length="24"
-     *         
+     *      * The maximum elevation in Meters
      */
-    public Float getMaxElevation() {
+    public Double getMaxElevation() {
         return this.maxElevation;
     }
     
-    public void setMaxElevation(Float maxElevation) {
+    public void setMaxElevation(Double maxElevation) {
         this.maxElevation = maxElevation;
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="ElevationMethod"
-     *             length="50"
-     *         
+     *      * The method used to determine the elevation
      */
     public String getElevationMethod() {
         return this.elevationMethod;
@@ -311,24 +259,18 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="ElevationAccuracy"
-     *             length="24"
-     *         
+     *      * plus or minus -- in meters
      */
-    public Float getElevationAccuracy() {
+    public Double getElevationAccuracy() {
         return this.elevationAccuracy;
     }
     
-    public void setElevationAccuracy(Float elevationAccuracy) {
+    public void setElevationAccuracy(Double elevationAccuracy) {
         this.elevationAccuracy = elevationAccuracy;
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="OriginalLatLongUnit"
-     *             length="10"
-     *         
+     *      * i.e. Decimal, Deg/Min/Sec, ...
      */
     public Integer getOriginalLatLongUnit() {
         return this.originalLatLongUnit;
@@ -339,10 +281,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LatLongType"
-     *             length="50"
-     *         
+     *      * The type of area described by the lat long data (Point,Line,Rectangle)
      */
     public String getLatLongType() {
         return this.latLongType;
@@ -353,66 +292,51 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Latitude1"
-     *             length="24"
-     *         
+     *      * Latitude of first point
      */
-    public Float getLatitude1() {
+    public Double getLatitude1() {
         return this.latitude1;
     }
     
-    public void setLatitude1(Float latitude1) {
+    public void setLatitude1(Double latitude1) {
         this.latitude1 = latitude1;
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Longitude1"
-     *             length="24"
-     *         
+     *      * Longitude of first point
      */
-    public Float getLongitude1() {
+    public Double getLongitude1() {
         return this.longitude1;
     }
     
-    public void setLongitude1(Float longitude1) {
+    public void setLongitude1(Double longitude1) {
         this.longitude1 = longitude1;
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Latitude2"
-     *             length="24"
-     *         
+     *      * Latitude of second point
      */
-    public Float getLatitude2() {
+    public Double getLatitude2() {
         return this.latitude2;
     }
     
-    public void setLatitude2(Float latitude2) {
+    public void setLatitude2(Double latitude2) {
         this.latitude2 = latitude2;
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Longitude2"
-     *             length="24"
-     *         
+     *      * Longitude of second point
      */
-    public Float getLongitude2() {
+    public Double getLongitude2() {
         return this.longitude2;
     }
     
-    public void setLongitude2(Float longitude2) {
+    public void setLongitude2(Double longitude2) {
         this.longitude2 = longitude2;
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LatLongMethod"
-     *             length="50"
-     *         
+     *      * the method used to determine the LatitudeLongitude
      */
     public String getLatLongMethod() {
         return this.latLongMethod;
@@ -423,24 +347,18 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LatLongAccuracy"
-     *             length="24"
-     *         
+     *      * radius -- in decimal degrees
      */
-    public Float getLatLongAccuracy() {
+    public Double getLatLongAccuracy() {
         return this.latLongAccuracy;
     }
     
-    public void setLatLongAccuracy(Float latLongAccuracy) {
+    public void setLatLongAccuracy(Double latLongAccuracy) {
         this.latLongAccuracy = latLongAccuracy;
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Datum"
-     *             length="50"
-     *         
+     *      * GPSDatum
      */
     public String getDatum() {
         return this.datum;
@@ -451,10 +369,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="GroupPermittedToView"
-     *             length="10"
-     *         
+     *      * The name of the group that this record is visible to. (Default to public)
      */
     public Integer getGroupPermittedToView() {
         return this.groupPermittedToView;
@@ -465,9 +380,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -478,9 +391,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text1"
-     *         
+     *      * User definable
      */
     public String getText1() {
         return this.text1;
@@ -491,9 +402,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text2"
-     *         
+     *      * User definable
      */
     public String getText2() {
         return this.text2;
@@ -504,40 +413,29 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number1"
-     *             length="24"
-     *         
+     *      * User definable
      */
-    public Float getNumber1() {
+    public Double getNumber1() {
         return this.number1;
     }
     
-    public void setNumber1(Float number1) {
+    public void setNumber1(Double number1) {
         this.number1 = number1;
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number2"
-     *             length="24"
-     *         
+     *      * User definable
      */
-    public Float getNumber2() {
+    public Double getNumber2() {
         return this.number2;
     }
     
-    public void setNumber2(Float number2) {
+    public void setNumber2(Double number2) {
         this.number2 = number2;
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     *      * Date the record was created
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -548,11 +446,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     *      * Date the record was modified
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -563,10 +457,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     *      * Name of the person last editing the record
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -577,9 +468,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo1"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo1() {
         return this.yesNo1;
@@ -590,9 +479,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo2"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo2() {
         return this.yesNo2;
@@ -603,10 +490,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Lat1Text"
-     *             length="50"
-     *         
+     * 
      */
     public String getLat1text() {
         return this.lat1text;
@@ -617,10 +501,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Lat2Text"
-     *             length="50"
-     *         
+     * 
      */
     public String getLat2text() {
         return this.lat2text;
@@ -631,10 +512,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Long1Text"
-     *             length="50"
-     *         
+     * 
      */
     public String getLong1text() {
         return this.long1text;
@@ -645,10 +523,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Long2Text"
-     *             length="50"
-     *         
+     * 
      */
     public String getLong2text() {
         return this.long2text;
@@ -659,10 +534,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="NationalParkName"
-     *             length="64"
-     *         
+     * 
      */
     public String getNationalParkName() {
         return this.nationalParkName;
@@ -673,10 +545,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="IslandGroup"
-     *             length="64"
-     *         
+     * 
      */
     public String getIslandGroup() {
         return this.islandGroup;
@@ -687,10 +556,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Island"
-     *             length="64"
-     *         
+     * 
      */
     public String getIsland() {
         return this.island;
@@ -701,10 +567,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="WaterBody"
-     *             length="64"
-     *         
+     * 
      */
     public String getWaterBody() {
         return this.waterBody;
@@ -715,10 +578,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Drainage"
-     *             length="64"
-     *         
+     * 
      */
     public String getDrainage() {
         return this.drainage;
@@ -740,10 +600,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="GeographyID"         
-     *         
+     *      * Link to Country, State, County, WaterBody, Island, IslandGroup ... info
      */
     public Geography getGeography() {
         return this.geography;
@@ -754,15 +611,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="LocalityID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.LocalityCitation"
-     *         
+     * 
      */
     public Set getLocalityCitations() {
         return this.localityCitations;
@@ -773,15 +622,7 @@ public class Locality  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="LocalityID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.CollectingEvent"
-     *         
+     * 
      */
     public Set getCollectingEvents() {
         return this.collectingEvents;

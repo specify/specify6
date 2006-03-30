@@ -7,9 +7,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="address"
- *     
+
  */
 public class Address  implements java.io.Serializable {
 
@@ -46,11 +44,7 @@ public class Address  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="AddressID"
-     *         
+     *      * PrimaryKey
      */
     public Integer getAddressId() {
         return this.addressId;
@@ -61,11 +55,7 @@ public class Address  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.property
-     *             column="Address"
-     *             not-null="true"
-     *             length="255"
-     *         
+     *      * Address as it should appear on mailing labels
      */
     public String getAddress() {
         return this.address;
@@ -76,11 +66,7 @@ public class Address  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.property
-     *             column="Address"
-     *             not-null="true"
-     *             length="255"
-     *         
+     * 
      */
     public String getAddress2() {
         return this.address2;
@@ -91,10 +77,7 @@ public class Address  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="City"
-     *             length="64"
-     *         
+     * 
      */
     public String getCity() {
         return this.city;
@@ -105,10 +88,7 @@ public class Address  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="State"
-     *             length="64"
-     *         
+     * 
      */
     public String getState() {
         return this.state;
@@ -119,10 +99,7 @@ public class Address  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Country"
-     *             length="64"
-     *         
+     * 
      */
     public String getCountry() {
         return this.country;
@@ -133,10 +110,7 @@ public class Address  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="PostalCode"
-     *             length="32"
-     *         
+     * 
      */
     public String getPostalCode() {
         return this.postalCode;
@@ -147,9 +121,7 @@ public class Address  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -160,11 +132,7 @@ public class Address  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -175,12 +143,7 @@ public class Address  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -191,10 +154,7 @@ public class Address  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -205,15 +165,7 @@ public class Address  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="AddressID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.AgentAddress"
-     *         
+     * 
      */
     public Set getAgentAddresses() {
         return this.agentAddresses;

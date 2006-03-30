@@ -6,9 +6,7 @@ import java.util.Date;
 
 
 /**
- *        @hibernate.class
- *         table="accessionagents"
- *     
+
  */
 public class AccessionAgent  implements java.io.Serializable {
 
@@ -42,11 +40,7 @@ public class AccessionAgent  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="AccessionAgentsID"
-     *         
+     * 
      */
     public Integer getAccessionAgentsId() {
         return this.accessionAgentsId;
@@ -57,11 +51,7 @@ public class AccessionAgent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Role"
-     *             length="32"
-     *             not-null="true"
-     *         
+     *      * Role the agent played in the accession process
      */
     public String getRole() {
         return this.role;
@@ -72,9 +62,7 @@ public class AccessionAgent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -85,11 +73,7 @@ public class AccessionAgent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -100,12 +84,7 @@ public class AccessionAgent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             not-null="true"
-     *             update="false"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -116,10 +95,7 @@ public class AccessionAgent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -130,11 +106,7 @@ public class AccessionAgent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     * 			cascade="none"
-     *            @hibernate.column name="AgentAddressID"
-     *         
+     *      * AgentAdress of agent playing role in Accession
      */
     public AgentAddress getAgentAddress() {
         return this.agentAddress;
@@ -145,10 +117,7 @@ public class AccessionAgent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="AccessionID"
-     *         
+     *      * Accession in which the Agent played a role
      */
     public Accession getAccession() {
         return this.accession;
@@ -159,10 +128,7 @@ public class AccessionAgent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="RepositoryAgreementID"
-     *         
+     * 
      */
     public RepositoryAgreement getRepositoryAgreement() {
         return this.repositoryAgreement;

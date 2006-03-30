@@ -8,7 +8,7 @@ import java.util.Set;
 
 
 /**
- *  @hibernate.class table="location" 
+
  */
 public class Location  implements Treeable,java.awt.datatransfer.Transferable,java.io.Serializable {
 
@@ -51,8 +51,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     // Property accessors
 
     /**
-     *      *  @hibernate.id generator-class="assigned"
-     *                 type="java.lang.Integer" column="TreeID" 
+     * 
      */
     public Integer getTreeId() {
         return this.treeId;
@@ -63,8 +62,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     }
 
     /**
-     *      *  @hibernate.property column="Name" length="128"
-     *             
+     * 
      */
     public String getName() {
         return this.name;
@@ -75,8 +73,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     }
 
     /**
-     *      *  @hibernate.property column="RankID" length="10"
-     *             
+     * 
      */
     public Integer getRankId() {
         return this.rankId;
@@ -87,8 +84,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     }
 
     /**
-     *      *  @hibernate.property column="NodeNumber" length="10"
-     *                 index="IX_LOC_NodeNumber" 
+     * 
      */
     public Integer getNodeNumber() {
         return this.nodeNumber;
@@ -99,8 +95,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     }
 
     /**
-     *      *  @hibernate.property column="HighestChildNodeNumber"
-     *                 length="10" index="IX_LOC_HighestChildNodeNumber" 
+     * 
      */
     public Integer getHighestChildNodeNumber() {
         return this.highestChildNodeNumber;
@@ -111,8 +106,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     }
 
     /**
-     *      *  @hibernate.property column="Abbrev" length="16"
-     *             
+     * 
      */
     public String getAbbrev() {
         return this.abbrev;
@@ -123,8 +117,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     }
 
     /**
-     *      *  @hibernate.property column="Text1" length="32"
-     *             
+     * 
      */
     public String getText1() {
         return this.text1;
@@ -135,8 +128,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     }
 
     /**
-     *      *  @hibernate.property column="Text2" length="32"
-     *             
+     * 
      */
     public String getText2() {
         return this.text2;
@@ -147,8 +139,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     }
 
     /**
-     *      *  @hibernate.property column="Number1" length="10"
-     *             
+     * 
      */
     public Integer getNumber1() {
         return this.number1;
@@ -159,8 +150,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     }
 
     /**
-     *      *  @hibernate.property column="Number2" length="10"
-     *             
+     * 
      */
     public Integer getNumber2() {
         return this.number2;
@@ -171,8 +161,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     }
 
     /**
-     *      *  @hibernate.property column="TimestampCreated"
-     *                 length="23" 
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -183,8 +172,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     }
 
     /**
-     *      *  @hibernate.property column="TimestampModified"
-     *                 length="23" 
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -195,8 +183,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     }
 
     /**
-     *      *  @hibernate.property column="TimestampVersion"
-     *                 length="16" 
+     * 
      */
     public Date getTimestampVersion() {
         return this.timestampVersion;
@@ -207,8 +194,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     }
 
     /**
-     *      *  @hibernate.property column="LastEditedBy"
-     *                 length="50" 
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -219,8 +205,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     }
 
     /**
-     *      *  @hibernate.many-to-one not-null="true"
-     *                 @hibernate.column name="TreeDefID" 
+     * 
      */
     public LocationTreeDef getDefinition() {
         return this.definition;
@@ -231,7 +216,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     }
 
     /**
-     *      *  @hibernate.many-to-one not-null="true" 
+     * 
      */
     public Location getParent() {
         return this.parent;
@@ -242,17 +227,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     }
 
     /**
-     *      *                 @hibernate.set
-     *                 lazy="true"
-     *                 inverse="true"
-     *                 cascade="none"
-     *                 
-     *                 @hibernate.collection-key
-     *                 column="LocationID"
-     *                 
-     *                 @hibernate.collection-one-to-many
-     *                 class="edu.ku.brc.specify.datamodel.Preparation"
-     *             
+     * 
      */
     public Set getPreparations() {
         return this.preparations;
@@ -263,17 +238,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     }
 
     /**
-     *      *                 @hibernate.set
-     *                 lazy="true"
-     *                 inverse="true"
-     *                 cascade="none"
-     *                 
-     *                 @hibernate.collection-key
-     *                 column="LocationID"
-     *                 
-     *                 @hibernate.collection-one-to-many
-     *                 class="edu.ku.brc.specify.datamodel.Container"
-     *             
+     * 
      */
     public Set getContainers() {
         return this.containers;

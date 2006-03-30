@@ -6,9 +6,7 @@ import java.util.Date;
 
 
 /**
- *        @hibernate.class
- *         table="determinationcitation"
- *     
+
  */
 public class DeterminationCitation  implements java.io.Serializable {
 
@@ -40,11 +38,7 @@ public class DeterminationCitation  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="DeterminationCitationID"
-     *         
+     * 
      */
     public Integer getDeterminationCitationId() {
         return this.determinationCitationId;
@@ -55,9 +49,7 @@ public class DeterminationCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -68,11 +60,7 @@ public class DeterminationCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -83,12 +71,7 @@ public class DeterminationCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *             update="false"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -99,10 +82,7 @@ public class DeterminationCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -113,10 +93,7 @@ public class DeterminationCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="ReferenceWorkID"         
-     *         
+     *      * ID of the publication citing the determination
      */
     public ReferenceWork getReferenceWork() {
         return this.referenceWork;
@@ -127,11 +104,7 @@ public class DeterminationCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     * 			cascade="none"
-     *            @hibernate.column name="DeterminationID"         
-     *         
+     *      * Determination being cited
      */
     public Determination getDetermination() {
         return this.determination;

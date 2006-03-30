@@ -8,9 +8,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="collectionobject"
- *     
+
  */
 public class CollectionObject  implements java.io.Serializable {
 
@@ -73,11 +71,7 @@ public class CollectionObject  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="CollectionObjectID"
-     *         
+     * 
      */
     public Integer getCollectionObjectId() {
         return this.collectionObjectId;
@@ -88,10 +82,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="FieldNumber"
-     *             length="50"
-     *         
+     *      * BiologicalObject (Bird, Fish, etc)
      */
     public String getFieldNumber() {
         return this.fieldNumber;
@@ -102,10 +93,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Description"
-     *             length="50"
-     *         
+     *      * Image, Sound, Preparation, Container(Container Label?)
      */
     public String getDescription() {
         return this.description;
@@ -116,9 +104,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text1"
-     *         
+     *      * User definable
      */
     public String getText1() {
         return this.text1;
@@ -129,9 +115,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text2"
-     *         
+     *      * User definable
      */
     public String getText2() {
         return this.text2;
@@ -142,10 +126,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number1"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber1() {
         return this.number1;
@@ -156,10 +137,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number2"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber2() {
         return this.number2;
@@ -170,9 +148,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo1"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo1() {
         return this.yesNo1;
@@ -183,9 +159,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo2"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo2() {
         return this.yesNo2;
@@ -196,10 +170,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="CountAmt"
-     *             length="10"
-     *         
+     * 
      */
     public Integer getCountAmt() {
         return this.countAmt;
@@ -210,9 +181,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -223,10 +192,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Name"
-     *             length="64"
-     *         
+     * 
      */
     public String getName() {
         return this.name;
@@ -237,10 +203,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Modifier"
-     *             length="50"
-     *         
+     * 
      */
     public String getModifier() {
         return this.modifier;
@@ -251,9 +214,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="CatalogedDate"
-     *         
+     * 
      */
     public Calendar getCatalogedDate() {
         return this.catalogedDate;
@@ -264,10 +225,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="CatalogedDateVerbatim"
-     *         length="32"
-     *         
+     * 
      */
     public String getCatalogedDateVerbatim() {
         return this.catalogedDateVerbatim;
@@ -278,10 +236,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="GUID"
-     *             length="255"
-     *         
+     * 
      */
     public String getGuid() {
         return this.guid;
@@ -292,10 +247,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="AltCatalogNumber"
-     *             length="32"
-     *         
+     * 
      */
     public String getAltCatalogNumber() {
         return this.altCatalogNumber;
@@ -306,10 +258,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.property
-     *             column="GroupPermittedToView"
-     *             length="10"
-     *         
+     * 
      */
     public Integer getGroupPermittedToView() {
         return this.groupPermittedToView;
@@ -320,12 +269,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -336,11 +280,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -351,10 +291,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -365,9 +302,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Deaccessioned"
-     *         
+     * 
      */
     public Boolean getDeaccessioned() {
         return this.deaccessioned;
@@ -378,9 +313,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="CatalogNumber"
-     *         
+     * 
      */
     public Float getCatalogNumber() {
         return this.catalogNumber;
@@ -391,11 +324,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     * 			cascade="none"
-     *            @hibernate.column name="CollectingEventID"
-     *         
+     *      * BiologicalObject (Bird, Fish, etc)
      */
     public CollectingEvent getCollectingEvent() {
         return this.collectingEvent;
@@ -406,10 +335,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="auto"
-     *            @hibernate.column name="ContainerItemID"
-     *         
+     * 
      */
     public ContainerItem getContainerItem() {
         return this.containerItem;
@@ -420,15 +346,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="CollectionObjectID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.CollectionObjectCitation"
-     *         
+     * 
      */
     public Set getCollectionObjectCitations() {
         return this.collectionObjectCitations;
@@ -439,15 +357,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="CollectionObjectAttrID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.CollectionObjectAttr"
-     *         
+     * 
      */
     public Set getAttrs() {
         return this.attrs;
@@ -458,15 +368,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="all"
-     *            @hibernate.collection-key
-     *             column="CollectionObjectID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Preparation"
-     *         
+     * 
      */
     public Set getPreparations() {
         return this.preparations;
@@ -477,15 +379,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="all"
-     *            @hibernate.collection-key
-     *             column="CollectionObjectID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Determination"
-     *         
+     * 
      */
     public Set getDeterminations() {
         return this.determinations;
@@ -496,10 +390,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="false"
-     *            @hibernate.column name="CollectionObjDefID"
-     *         
+     * 
      */
     public CollectionObjDef getCollectionObjDef() {
         return this.collectionObjDef;
@@ -510,15 +401,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="CollectionObjectID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.ProjectCollectionObject"
-     *         
+     * 
      */
     public Set getProjectCollectionObjects() {
         return this.projectCollectionObjects;
@@ -529,15 +412,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="CollectionObjectID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject"
-     *         
+     * 
      */
     public Set getDeaccessionCollectionObjects() {
         return this.deaccessionCollectionObjects;
@@ -548,15 +423,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="CollectionObjectID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.OtherIdentifier"
-     *         
+     * 
      */
     public Set getOtherIdentifiers() {
         return this.otherIdentifiers;
@@ -567,10 +434,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="CatalogSeriesID"
-     *         
+     * 
      */
     public CatalogSeries getCatalogSeries() {
         return this.catalogSeries;
@@ -581,10 +445,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="AccessionID"
-     *         
+     * 
      */
     public Accession getAccession() {
         return this.accession;
@@ -595,10 +456,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="CatalogerID"
-     *         
+     * 
      */
     public Agent getCataloger() {
         return this.cataloger;
@@ -620,14 +478,7 @@ public class CollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     * 	        not-null="false"
-     * 			unique="true" 
-     * 			insert="false" 
-     * 			update="false"
-     * 			cascade="all"
-     *            @hibernate.column name="ContainerID"
-     *         
+     *      * Preparation, Container
      */
     public Container getContainer() {
         return this.container;

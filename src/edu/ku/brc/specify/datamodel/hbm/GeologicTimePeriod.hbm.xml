@@ -7,8 +7,7 @@
     
     <class name="edu.ku.brc.specify.datamodel.GeologicTimePeriod" table="geologictimeperiod"
         lazy="true">
-        <meta attribute="class-description" inherit="false"> @hibernate.class
-            table="geologictimeperiod" </meta>
+    <meta attribute="class-description" inherit="false"/>
         <meta attribute="implements">Treeable</meta>
         <meta attribute="implements">java.awt.datatransfer.Transferable</meta>
         <meta attribute="extra-import">java.awt.datatransfer.DataFlavor</meta>
@@ -135,8 +134,7 @@
         </meta>
 
         <id name="treeId" type="java.lang.Integer" column="TreeID">
-            <meta attribute="field-description"> @hibernate.id generator-class="assigned"
-                type="java.lang.Integer" column="TreeID" </meta>
+            <meta attribute="field-description"> @hibernate.id generator-class="assigned"type="java.lang.Integer" column="TreeID" </meta>
             <meta attribute="scope-field">protected</meta>
             <generator class="native"/>
         </id>
@@ -144,46 +142,39 @@
         <property name="rankId" type="java.lang.Integer" column="RankID" length="10"
             index="IX_GTP_RankId">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="RankID" length="10"
-                index="IX_GTP_RankID" </meta>
+            <meta attribute="field-description"> @hibernate.property column="RankID" length="10"index="IX_GTP_RankID" </meta>
         </property>
 
         <property name="name" type="java.lang.String" column="Name" length="64">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="Name" length="64"
-            </meta>
+            <meta attribute="field-description"> @hibernate.property column="Name" length="64"</meta>
         </property>
 
         <property name="nodeNumber" type="java.lang.Integer" column="NodeNumber" length="10"
             index="IX_GTP_NodeNumber">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="NodeNumber" length="10"
-                index="IX_GTP_NodeNumber" </meta>
+            <meta attribute="field-description"> @hibernate.property column="NodeNumber" length="10"index="IX_GTP_NodeNumber" </meta>
         </property>
 
         <property name="highestChildNodeNumber" type="java.lang.Integer"
             column="HighestChildNodeNumber" length="10" index="IX_GTP_NighestChildNodeNumber">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="HighestChildNodeNumber"
-                length="10" index="IX_GTP_NighestChildNodeNumber" </meta>
+            <meta attribute="field-description"> @hibernate.property column="HighestChildNodeNumber"length="10" index="IX_GTP_NighestChildNodeNumber" </meta>
         </property>
 
         <property name="standard" type="java.lang.String" column="Standard" length="64">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="Standard" length="64"
-            </meta>
+            <meta attribute="field-description"> @hibernate.property column="Standard" length="64"</meta>
         </property>
 
         <property name="age" type="java.lang.Float" column="Age" length="24">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="Age" length="24"
-            </meta>
+            <meta attribute="field-description"> @hibernate.property column="Age" length="24"</meta>
         </property>
 
         <property name="ageUncertainty" type="java.lang.Float" column="AgeUncertainty" length="24">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="AgeUncertainty"
-                length="24" </meta>
+            <meta attribute="field-description"> @hibernate.property column="AgeUncertainty"length="24" </meta>
         </property>
 
         <property name="remarks" type="text" column="Remarks">
@@ -194,28 +185,24 @@
         <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified"
             length="23">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="TimestampModified"
-                length="23" </meta>
+            <meta attribute="field-description"> @hibernate.property column="TimestampModified"length="23" </meta>
         </property>
 
         <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated"
             length="23">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="TimestampCreated"
-                length="23" </meta>
+            <meta attribute="field-description"> @hibernate.property column="TimestampCreated"length="23" </meta>
         </property>
 
         <property name="timestampVersion" type="java.sql.Timestamp" column="TimestampVersion"
             length="16">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="TimestampVersion"
-                length="16" </meta>
+            <meta attribute="field-description"> @hibernate.property column="TimestampVersion"length="16" </meta>
         </property>
 
         <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="32">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="LastEditedBy"
-                length="32" </meta>
+            <meta attribute="field-description"> @hibernate.property column="LastEditedBy"length="32" </meta>
         </property>
 
         <!-- Associations -->
@@ -224,16 +211,14 @@
         <many-to-one name="definition"
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef" not-null="true"
             outer-join="true">
-            <meta attribute="field-description"> @hibernate.many-to-one not-null="true"
-                @hibernate.column name="TreeDefID" </meta>
+            <meta attribute="field-description"> @hibernate.many-to-one not-null="true"@hibernate.column name="TreeDefID" </meta>
             <column name="TreeDefID"/>
         </many-to-one>
 
         <!-- bi-directional many-to-one association to GeologicTimePeriod -->
         <many-to-one name="parent" class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
             not-null="true" outer-join="true">
-            <meta attribute="field-description"> @hibernate.many-to-one not-null="true"
-                @hibernate.column name="ParentID" </meta>
+            <meta attribute="field-description"> @hibernate.many-to-one not-null="true"@hibernate.column name="ParentID" </meta>
             <column name="ParentID"/>
         </many-to-one>
 

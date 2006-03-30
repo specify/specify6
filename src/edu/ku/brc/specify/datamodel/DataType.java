@@ -6,9 +6,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="datatype"
- *     
+
  */
 public class DataType  implements java.io.Serializable {
 
@@ -47,10 +45,7 @@ public class DataType  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Name"
-     *             length="50"
-     *         
+     * 
      */
     public String getName() {
         return this.name;
@@ -61,15 +56,7 @@ public class DataType  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="DataTypeID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.CollectionObjDef"
-     *         
+     * 
      */
     public Set getCollectionObjDef() {
         return this.collectionObjDef;

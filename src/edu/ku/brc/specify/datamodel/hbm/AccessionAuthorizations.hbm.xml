@@ -2,9 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 
 <class name="edu.ku.brc.specify.datamodel.AccessionAuthorizations" table="accessionauthorizations" lazy="true">
-    <meta attribute="class-description" inherit="false">
-	Associates permits with accessions.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="accessionAuthorizationsId" type="java.lang.Integer" column="AccessionAuthorizationsID">
         <meta attribute="field-description"></meta>
@@ -33,17 +31,13 @@
   
     <!-- bi-directional many-to-one association to Permit -->
     <many-to-one name="permit" class="edu.ku.brc.specify.datamodel.Permit" not-null="true" outer-join="true" index="IX_AccessionAuthorizationsPermitID" unique-key="IX_AccessionAuthorizations">
-        <meta attribute="field-description">
-	   Permit authorizing accession
-	</meta>
+        <meta attribute="field-description">Permit authorizing accession</meta>
         <column name="PermitID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Accession -->
     <many-to-one name="accession" class="edu.ku.brc.specify.datamodel.Accession" not-null="false" outer-join="true" cascade="none" index="IX_AccessionAuthorizationsAccessionID" unique-key="IX_AccessionAuthorizations">
-        <meta attribute="field-description">
-	   Accession authorized by permit
-	</meta>
+        <meta attribute="field-description">Accession authorized by permit</meta>
         <column name="AccessionID"/>
     </many-to-one>
     

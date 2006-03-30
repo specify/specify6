@@ -1,52 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.Project" table="project" lazy="true">
-    <meta attribute="class-description" inherit="false">
-	Information about projects that use or produce material in a collection.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="projectId" type="java.lang.Integer" column="ProjectID">
-        <meta attribute="field-description">
-	   Primary key
-	</meta>
+        <meta attribute="field-description">Primary key</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
 
     <property name="projectName" type="java.lang.String" column="ProjectName" not-null="true" length="50">
-        <meta attribute="field-description">
-	   Name of the project
-	</meta>    
+        <meta attribute="field-description">Name of the project</meta>
     </property>
     <property name="projectDescription" type="text" column="ProjectDescription">
-        <meta attribute="field-description">
-	   Description of project
-	</meta>    
+        <meta attribute="field-description">Description of project</meta>
     </property>
     
     <property name="url" type="text" column="URL">
-        <meta attribute="field-description">
-	   URL for project
-	</meta>    
+        <meta attribute="field-description">URL for project</meta>
     </property>
     
     <property name="startDate" type="calendar_date" column="StartDate">
-        <meta attribute="field-description">
-	   Date project began
-	</meta>    
+        <meta attribute="field-description">Date project began</meta>
     </property>
     
     <property name="endDate" type="calendar_date" column="EndDate">
-        <meta attribute="field-description">
-	   Date project ended
-	</meta>    
+        <meta attribute="field-description">Date project ended</meta>
     </property>
     
     <property name="remarks" type="text" column="Remarks">
@@ -56,28 +36,20 @@
     
     <property name="text1" type="text" column="Text1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="text2" type="text" column="Text2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="number1" type="java.lang.Float" column="Number1" length="24">
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="number2" type="java.lang.Float" column="Number2" length="24">
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
@@ -94,16 +66,12 @@
     
     <property name="yesNo1" type="boolean" column="YesNo1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="yesNo2" type="boolean" column="YesNo2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
 
 
@@ -112,9 +80,7 @@
   
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
-        <meta attribute="field-description">
-	   Agent record for project
-	</meta>
+        <meta attribute="field-description">Agent record for project</meta>
         <column name="ProjectAgentID"/>
     </many-to-one>
     <!-- bi-directional one-to-many association to ProjectCollectionObject -->

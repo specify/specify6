@@ -1,30 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.Journal" table="journal" lazy="true">
-    <meta attribute="class-description" inherit="false">
-	Information about journals involved in citations.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="journalId" type="java.lang.Integer" column="JournalID">
-        <meta attribute="field-description">
-	   Primary key
-	</meta>
+        <meta attribute="field-description">Primary key</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
 
     <property name="journalName" type="java.lang.String" column="JournalName" length="255">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Full name of the journal
-	</meta>    
+        <meta attribute="field-description">Full name of the journal</meta>
     </property>
     <property name="journalAbbreviation" type="java.lang.String" column="JournalAbbreviation" length="50" index="IX_JournalAbbreviation">
         <meta attribute="scope-field">protected</meta>

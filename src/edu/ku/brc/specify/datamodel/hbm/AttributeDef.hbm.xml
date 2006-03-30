@@ -1,17 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.AttributeDef" table="attributedef" lazy="true">
-    <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="attributedef"
-    </meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="attributeDefId" type="java.lang.Integer" column="AttributeDefID">
       <meta attribute="scope-set">public</meta>

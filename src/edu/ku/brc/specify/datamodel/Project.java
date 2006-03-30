@@ -8,9 +8,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="project"
- *     
+
  */
 public class Project  implements java.io.Serializable {
 
@@ -53,11 +51,7 @@ public class Project  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="ProjectID"
-     *         
+     *      * Primary key
      */
     public Integer getProjectId() {
         return this.projectId;
@@ -68,11 +62,7 @@ public class Project  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="ProjectName"
-     *             length="50"
-     *             not-null="true"
-     *         
+     *      * Name of the project
      */
     public String getProjectName() {
         return this.projectName;
@@ -83,9 +73,7 @@ public class Project  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="ProjectDescription"
-     *         
+     *      * Description of project
      */
     public String getProjectDescription() {
         return this.projectDescription;
@@ -96,9 +84,7 @@ public class Project  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="URL"
-     *         
+     *      * URL for project
      */
     public String getUrl() {
         return this.url;
@@ -109,9 +95,7 @@ public class Project  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="StartDate"
-     *         
+     *      * Date project began
      */
     public Calendar getStartDate() {
         return this.startDate;
@@ -122,9 +106,7 @@ public class Project  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="EndDate"
-     *         
+     *      * Date project ended
      */
     public Calendar getEndDate() {
         return this.endDate;
@@ -135,9 +117,7 @@ public class Project  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -148,9 +128,7 @@ public class Project  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.property
-     *             column="Text1"
-     *         
+     *      * User definable
      */
     public String getText1() {
         return this.text1;
@@ -161,9 +139,7 @@ public class Project  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.property
-     *             column="Text2"
-     *         
+     *      * User definable
      */
     public String getText2() {
         return this.text2;
@@ -174,10 +150,7 @@ public class Project  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number1"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber1() {
         return this.number1;
@@ -188,10 +161,7 @@ public class Project  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number2"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber2() {
         return this.number2;
@@ -202,12 +172,7 @@ public class Project  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -218,11 +183,7 @@ public class Project  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -233,10 +194,7 @@ public class Project  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -247,9 +205,7 @@ public class Project  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo1"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo1() {
         return this.yesNo1;
@@ -260,9 +216,7 @@ public class Project  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo2"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo2() {
         return this.yesNo2;
@@ -273,10 +227,7 @@ public class Project  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="ProjectAgentID"         
-     *         
+     *      * Agent record for project
      */
     public Agent getAgent() {
         return this.agent;
@@ -287,15 +238,7 @@ public class Project  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="ProjectID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.ProjectCollectionObject"
-     *         
+     * 
      */
     public Set getProjectCollectionObjects() {
         return this.projectCollectionObjects;

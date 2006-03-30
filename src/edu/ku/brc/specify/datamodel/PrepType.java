@@ -6,9 +6,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="preptype"
- *     
+
  */
 public class PrepType  implements java.io.Serializable {
 
@@ -48,10 +46,7 @@ public class PrepType  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Name"
-     *             length="32"
-     *         
+     * 
      */
     public String getName() {
         return this.name;
@@ -62,15 +57,7 @@ public class PrepType  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="PreparationID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Preparation"
-     *         
+     * 
      */
     public Set getPreparations() {
         return this.preparations;
@@ -81,15 +68,7 @@ public class PrepType  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="AttributeDefID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.AttributeDef"
-     *         
+     * 
      */
     public Set getAttributeDefs() {
         return this.attributeDefs;

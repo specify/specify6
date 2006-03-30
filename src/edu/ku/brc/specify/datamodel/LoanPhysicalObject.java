@@ -7,9 +7,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="loanphysicalobject"
- *     
+
  */
 public class LoanPhysicalObject  implements java.io.Serializable {
 
@@ -47,11 +45,7 @@ public class LoanPhysicalObject  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="LoanPhysicalObjectID"
-     *         
+     *      * PrimaryKey
      */
     public Integer getLoanPhysicalObjectId() {
         return this.loanPhysicalObjectId;
@@ -62,9 +56,7 @@ public class LoanPhysicalObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Quantity"
-     *         
+     *      * The total number of specimens  loaned (necessary for lots)
      */
     public Short getQuantity() {
         return this.quantity;
@@ -75,10 +67,7 @@ public class LoanPhysicalObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="DescriptionOfMaterial"
-     *             length="255"
-     *         
+     *      * Description of loaned material (intended to be used for non-cataloged items, i.e. when PreparationID is null)
      */
     public String getDescriptionOfMaterial() {
         return this.descriptionOfMaterial;
@@ -89,9 +78,7 @@ public class LoanPhysicalObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="OutComments"
-     *         
+     *      * Comments on item when loaned
      */
     public String getOutComments() {
         return this.outComments;
@@ -102,9 +89,7 @@ public class LoanPhysicalObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="InComments"
-     *         
+     *      * Comments on item when returned
      */
     public String getInComments() {
         return this.inComments;
@@ -115,9 +100,7 @@ public class LoanPhysicalObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="QuantityResolved"
-     *         
+     *      * Number of specimens returned, deaccessioned or otherwise accounted for. (necessary for Lots)
      */
     public Short getQuantityResolved() {
         return this.quantityResolved;
@@ -128,9 +111,7 @@ public class LoanPhysicalObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="QuantityReturned"
-     *         
+     *      * Number of specimens returned. (necessary for Lots)
      */
     public Short getQuantityReturned() {
         return this.quantityReturned;
@@ -141,12 +122,7 @@ public class LoanPhysicalObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     *      * Date the record was created
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -157,11 +133,7 @@ public class LoanPhysicalObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     *      * Date the record was modified
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -172,10 +144,7 @@ public class LoanPhysicalObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     *      * Login name of the user last editing the record
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -186,10 +155,7 @@ public class LoanPhysicalObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="PreparationID"         
-     *         
+     * 
      */
     public Preparation getPreparation() {
         return this.preparation;
@@ -200,11 +166,7 @@ public class LoanPhysicalObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     * 			cascade="none"
-     *            @hibernate.column name="LoanID"         
-     *         
+     *      * Loan containing the PhysicalObject
      */
     public Loan getLoan() {
         return this.loan;
@@ -215,15 +177,7 @@ public class LoanPhysicalObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="LoanPhysicalObjectID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject"
-     *         
+     * 
      */
     public Set getLoanReturnPhysicalObjects() {
         return this.loanReturnPhysicalObjects;

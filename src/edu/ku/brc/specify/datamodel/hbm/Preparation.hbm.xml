@@ -1,17 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.Preparation" table="preparation" lazy="true">
-    <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="preparation"
-    </meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="preparationId" type="java.lang.Integer" column="PreparationID">
         <meta attribute="field-description"></meta>
@@ -27,33 +18,23 @@
         length="50"
     >
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="PreparationMethod"
-            length="50"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </property>
     -->
 		
     <property name="text1" type="text" column="Text1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="text2" type="text" column="Text2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     	
     <property name="count" type="java.lang.Integer" column="Count" length="10">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   The number of objects (specimens, slides, pieces) prepared
-	</meta>    
+        <meta attribute="field-description">The number of objects (specimens, slides, pieces) prepared</meta>
     </property>
 	
     <property name="storageLocation" type="java.lang.String" column="StorageLocation" length="50">

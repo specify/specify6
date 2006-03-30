@@ -7,9 +7,7 @@ import java.util.Date;
 
 
 /**
- *        @hibernate.class
- *         table="exchangeout"
- *     
+
  */
 public class ExchangeOut  implements java.io.Serializable {
 
@@ -51,11 +49,7 @@ public class ExchangeOut  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="ExchangeOutID"
-     *         
+     *      * Primary key
      */
     public Integer getExchangeOutId() {
         return this.exchangeOutId;
@@ -66,9 +60,7 @@ public class ExchangeOut  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="ExchangeDate"
-     *         
+     *      * Date exchange was sent
      */
     public Calendar getExchangeDate() {
         return this.exchangeDate;
@@ -79,10 +71,7 @@ public class ExchangeOut  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="QuantityExchanged"
-     *             not-null="true"
-     *         
+     *      * Number of items sent
      */
     public Short getQuantityExchanged() {
         return this.quantityExchanged;
@@ -93,10 +82,7 @@ public class ExchangeOut  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="DescriptionOfMaterial"
-     *             length="120"
-     *         
+     * 
      */
     public String getDescriptionOfMaterial() {
         return this.descriptionOfMaterial;
@@ -107,9 +93,7 @@ public class ExchangeOut  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -120,9 +104,7 @@ public class ExchangeOut  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text1"
-     *         
+     *      * User definable
      */
     public String getText1() {
         return this.text1;
@@ -133,9 +115,7 @@ public class ExchangeOut  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text2"
-     *         
+     *      * User definable
      */
     public String getText2() {
         return this.text2;
@@ -146,10 +126,7 @@ public class ExchangeOut  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number1"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber1() {
         return this.number1;
@@ -160,10 +137,7 @@ public class ExchangeOut  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number2"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber2() {
         return this.number2;
@@ -174,11 +148,7 @@ public class ExchangeOut  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -189,12 +159,7 @@ public class ExchangeOut  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -205,10 +170,7 @@ public class ExchangeOut  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -219,9 +181,7 @@ public class ExchangeOut  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo1"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo1() {
         return this.yesNo1;
@@ -232,9 +192,7 @@ public class ExchangeOut  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo2"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo2() {
         return this.yesNo2;
@@ -245,10 +203,7 @@ public class ExchangeOut  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="SentToOrganizationID"         
-     *         
+     *      * AgentAddress ID of organization material was sent to
      */
     public AgentAddress getAgentAddress() {
         return this.agentAddress;
@@ -259,10 +214,7 @@ public class ExchangeOut  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="CatalogedByID"         
-     *         
+     *      * Agent ID of person who recorded  the exchange
      */
     public Agent getAgent() {
         return this.agent;
@@ -273,10 +225,7 @@ public class ExchangeOut  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="ShipmentID"         
-     *         
+     *      * Shipment information for the exchange
      */
     public Shipment getShipment() {
         return this.shipment;

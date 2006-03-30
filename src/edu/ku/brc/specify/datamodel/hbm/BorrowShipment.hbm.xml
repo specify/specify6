@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.BorrowShipment" table="borrowshipments" lazy="true">
-    <meta attribute="class-description" inherit="false">
-	Shipments of borrowed material to lenders.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="borrowShipmentsId" type="java.lang.Integer" column="BorrowShipmentsID">
         <meta attribute="field-description"></meta>
@@ -42,17 +34,13 @@
 		<!-- this was missing but existing in original mapping file - now replaced -->
     <!-- bi-directional many-to-one association to Shipment -->
     <many-to-one name="shipment" class="edu.ku.brc.specify.datamodel.Shipment" not-null="true" index="IX_BorrowShipmentsShipmentID" unique-key="IX_BorrowShipments">
-        <meta attribute="field-description">
-	   The shipment
-	</meta>
+        <meta attribute="field-description">The shipment</meta>
         <column name="ShipmentID"/>
     </many-to-one>
 	
     <!-- bi-directional many-to-one association to Borrow -->
     <many-to-one name="borrow" class="edu.ku.brc.specify.datamodel.Borrow" not-null="true" outer-join="true" cascade="none" index="IX_BorrowShipmentsBorrowID" unique-key="IX_BorrowShipments">
-        <meta attribute="field-description">
-	   The borrow being shipped (returned)
-	</meta>
+        <meta attribute="field-description">The borrow being shipped (returned)</meta>
         <column name="BorrowID"/>
     </many-to-one>
 

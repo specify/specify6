@@ -1,30 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.Stratigraphy" table="stratigraphy">
-    <meta attribute="class-description" inherit="false">
-	Paleontological data about a site
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="stratigraphyId" type="java.lang.Integer" column="StratigraphyID">
-        <meta attribute="field-description">
-	   CollectingEventID of related collecting event
-	</meta>
+        <meta attribute="field-description">CollectingEventID of related collecting event</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
 
     <property name="superGroup" type="java.lang.String" column="SuperGroup" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Lithostratigraphic supergroup
-	</meta>    
+        <meta attribute="field-description">Lithostratigraphic supergroup</meta>
     </property>
     <property name="lithoGroup" type="java.lang.String" column="LithoGroup" length="50">
         <meta attribute="scope-field">protected</meta>
@@ -32,21 +20,15 @@
     </property>
     <property name="formation" type="java.lang.String" column="Formation" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Lithostratigraphic formation
-	</meta>    
+        <meta attribute="field-description">Lithostratigraphic formation</meta>
     </property>
     <property name="member" type="java.lang.String" column="Member" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Lithostratigraphic member
-	</meta>    
+        <meta attribute="field-description">Lithostratigraphic member</meta>
     </property>
     <property name="bed" type="java.lang.String" column="Bed" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Lithostratigraphic bed
-	</meta>    
+        <meta attribute="field-description">Lithostratigraphic bed</meta>
     </property>
     
     <property name="remarks" type="text" column="Remarks">
@@ -56,29 +38,21 @@
     
     <property name="text1" type="text" column="Text1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="text2" type="text" column="Text2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="number1" type="java.lang.Float" column="Number1" length="24">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     <property name="number2" type="java.lang.Float" column="Number2" length="24">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
@@ -95,16 +69,12 @@
     
     <property name="yesNo1" type="boolean" column="YesNo1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="yesNo2" type="boolean" column="YesNo2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
 
 
@@ -113,13 +83,7 @@
   
     <!-- bi-directional one-to-one association to CollectingEvent -->
     <one-to-one name="collectingEvent" class="edu.ku.brc.specify.datamodel.CollectingEvent" outer-join="auto" constrained="true" cascade="delete">
-        <meta attribute="field-description">
-           @hibernate.one-to-one
-            class="edu.ku.brc.specify.datamodel.CollectingEvent"
-            outer-join="auto"
-            constrained="true"
-			cascade="delete"
-        </meta>    
+        <meta attribute="field-description"></meta>    
     </one-to-one>
     
     <!-- bi-directional one-to-many association to GeologicTimePeriod -->

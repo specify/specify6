@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!--
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.AccessionAgent" table="accessionagents" lazy="true">
-    <meta attribute="class-description" inherit="false">
-	Associates agents with accessions.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="accessionAgentsId" type="java.lang.Integer" column="AccessionAgentsID">
         <meta attribute="field-description"></meta>
@@ -20,9 +12,7 @@
 
     <property name="role" type="java.lang.String" column="Role" not-null="true" length="32" unique-key="IX_AccessionAgents">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Role the agent played in the accession process
-	</meta>
+        <meta attribute="field-description">Role the agent played in the accession process</meta>
     </property>
 
     <property name="remarks" type="text" column="Remarks">
@@ -49,18 +39,14 @@
 
     <!-- bi-directional many-to-one association to AgentAddress -->
     <many-to-one name="agentAddress" class="edu.ku.brc.specify.datamodel.AgentAddress" not-null="true" outer-join="true" cascade="none" index="IX_AccessionAgentsAgentAddressID" unique-key="IX_AccessionAgents">
-        <meta attribute="field-description">
-	   AgentAdress of agent playing role in Accession
-	</meta>
+        <meta attribute="field-description">AgentAdress of agent playing role in Accession</meta>
         <column name="AgentAddressID"/>
     </many-to-one>
 
     <!-- bi-directional many-to-one association to Accession -->
     <many-to-one name="accession" class="edu.ku.brc.specify.datamodel.Accession" not-null="true" outer-join="true" cascade="none" index="IX_AccessionAgentsAccessionID" unique-key="IX_AccessionAgents">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Accession in which the Agent played a role
-	</meta>
+        <meta attribute="field-description">Accession in which the Agent played a role</meta>
         <column name="AccessionID"/>
     </many-to-one>
 

@@ -6,9 +6,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="collectionobjdef"
- *     
+
  */
 public class CollectionObjDef  implements java.io.Serializable {
 
@@ -55,10 +53,7 @@ public class CollectionObjDef  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Name"
-     *             length="50"
-     *         
+     * 
      */
     public String getName() {
         return this.name;
@@ -69,10 +64,7 @@ public class CollectionObjDef  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="DataTypeID"
-     *         
+     * 
      */
     public DataType getDataType() {
         return this.dataType;
@@ -94,10 +86,7 @@ public class CollectionObjDef  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="SpecifyUserID"
-     *         
+     * 
      */
     public SpecifyUser getUser() {
         return this.user;
@@ -108,15 +97,7 @@ public class CollectionObjDef  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="CollectionObjDefID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.AttributeDef"
-     *         
+     * 
      */
     public Set getAttributeDefs() {
         return this.attributeDefs;
@@ -127,8 +108,7 @@ public class CollectionObjDef  implements java.io.Serializable {
     }
 
     /**
-     *      *  @hibernate.many-to-one not-null="true"
-     *             @hibernate.column name="GeographyTreeDefID"
+     * 
      */
     public GeographyTreeDef getGeographyTreeDef() {
         return this.geographyTreeDef;
@@ -139,8 +119,7 @@ public class CollectionObjDef  implements java.io.Serializable {
     }
 
     /**
-     *      *  @hibernate.many-to-one not-null="true"
-     *             @hibernate.column name="GeologicTimePeriodTreeDefID"
+     * 
      */
     public GeologicTimePeriodTreeDef getGeologicTimePeriodTreeDef() {
         return this.geologicTimePeriodTreeDef;
@@ -151,8 +130,7 @@ public class CollectionObjDef  implements java.io.Serializable {
     }
 
     /**
-     *      *  @hibernate.many-to-one not-null="true"
-     *             @hibernate.column name="LocationTreeDefID"
+     * 
      */
     public LocationTreeDef getLocationTreeDef() {
         return this.locationTreeDef;
@@ -163,8 +141,7 @@ public class CollectionObjDef  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.one-to-one
-     *         
+     *      * @hibernate.one-to-one
      */
     public TaxonTreeDef getTaxonTreeDef() {
         return this.taxonTreeDef;

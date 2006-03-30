@@ -6,9 +6,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="usergroup"
- *     
+
  */
 public class UserGroup  implements java.io.Serializable {
 
@@ -48,10 +46,7 @@ public class UserGroup  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Name"
-     *             length="64"
-     *         
+     * 
      */
     public String getName() {
         return this.name;
@@ -62,9 +57,7 @@ public class UserGroup  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -75,15 +68,7 @@ public class UserGroup  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="UserGroupID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.SpecifyUser"
-     *         
+     * 
      */
     public Set getUsers() {
         return this.users;

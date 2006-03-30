@@ -8,9 +8,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="repositoryAgreement"
- *     
+
  */
 public class RepositoryAgreement  implements java.io.Serializable {
 
@@ -56,11 +54,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="RepositoryAgreementID"
-     *         
+     * 
      */
     public Integer getRepositoryAgreementId() {
         return this.repositoryAgreementId;
@@ -71,11 +65,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number"
-     *             length="60"
-     *             not-null="true"
-     *         
+     * 
      */
     public String getNumber() {
         return this.number;
@@ -86,10 +76,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Status"
-     *             length="32"
-     *         
+     * 
      */
     public String getStatus() {
         return this.status;
@@ -100,9 +87,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.property
-     *             column="StartDate"
-     *         
+     * 
      */
     public Calendar getStartDate() {
         return this.startDate;
@@ -113,9 +98,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.property
-     *             column="EndDate"
-     *         
+     * 
      */
     public Calendar getEndDate() {
         return this.endDate;
@@ -126,9 +109,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="DateReceived"
-     *         
+     * 
      */
     public Calendar getDateReceived() {
         return this.dateReceived;
@@ -139,9 +120,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text1"
-     *         
+     * 
      */
     public String getText1() {
         return this.text1;
@@ -152,9 +131,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text2"
-     *         
+     * 
      */
     public String getText2() {
         return this.text2;
@@ -165,9 +142,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text3"
-     *         
+     * 
      */
     public String getText3() {
         return this.text3;
@@ -178,9 +153,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number1"
-     *         
+     * 
      */
     public Float getNumber1() {
         return this.number1;
@@ -191,9 +164,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number2"
-     *         
+     * 
      */
     public Float getNumber2() {
         return this.number2;
@@ -204,9 +175,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -217,12 +186,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             not-null="true"
-     *             update="false"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -233,11 +197,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -248,10 +208,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -262,9 +219,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo1"
-     *         
+     * 
      */
     public Boolean getYesNo1() {
         return this.yesNo1;
@@ -275,9 +230,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo2"
-     *         
+     * 
      */
     public Boolean getYesNo2() {
         return this.yesNo2;
@@ -288,15 +241,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="RepositoryAgreementID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.CollectionObject"
-     *         
+     * 
      */
     public Set getCollectionObjects() {
         return this.collectionObjects;
@@ -307,15 +252,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="all"
-     *            @hibernate.collection-key
-     *             column="RepositoryAgreementID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
-     *         
+     * 
      */
     public Set getRepositoryAgreementAuthorizations() {
         return this.repositoryAgreementAuthorizations;
@@ -326,15 +263,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="all"
-     *            @hibernate.collection-key
-     *             column="RepositoryAgreementID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.AccessionAgent"
-     *         
+     * 
      */
     public Set getRepositoryAgreementAgents() {
         return this.repositoryAgreementAgents;
@@ -345,11 +274,7 @@ public class RepositoryAgreement  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.many-to-one
-     *             not-null="true"
-     *             cascade="none"
-     *             @hibernate.column name="AgentID"
-     *         
+     * 
      */
     public Agent getOriginator() {
         return this.originator;

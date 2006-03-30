@@ -7,8 +7,7 @@ import java.util.Date;
 
 
 /**
- *  @hibernate.class
- *             table="geologictimeperiod" 
+
  */
 public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Transferable,java.io.Serializable {
 
@@ -48,8 +47,7 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
     // Property accessors
 
     /**
-     *      *  @hibernate.id generator-class="assigned"
-     *                 type="java.lang.Integer" column="TreeID" 
+     *      *  @hibernate.id generator-class="assigned"type="java.lang.Integer" column="TreeID" 
      */
     public Integer getTreeId() {
         return this.treeId;
@@ -60,8 +58,7 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
     }
 
     /**
-     *      *  @hibernate.property column="RankID" length="10"
-     *                 index="IX_GTP_RankID" 
+     *      *  @hibernate.property column="RankID" length="10"index="IX_GTP_RankID" 
      */
     public Integer getRankId() {
         return this.rankId;
@@ -73,7 +70,6 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
 
     /**
      *      *  @hibernate.property column="Name" length="64"
-     *             
      */
     public String getName() {
         return this.name;
@@ -84,8 +80,7 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
     }
 
     /**
-     *      *  @hibernate.property column="NodeNumber" length="10"
-     *                 index="IX_GTP_NodeNumber" 
+     *      *  @hibernate.property column="NodeNumber" length="10"index="IX_GTP_NodeNumber" 
      */
     public Integer getNodeNumber() {
         return this.nodeNumber;
@@ -96,8 +91,7 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
     }
 
     /**
-     *      *  @hibernate.property column="HighestChildNodeNumber"
-     *                 length="10" index="IX_GTP_NighestChildNodeNumber" 
+     *      *  @hibernate.property column="HighestChildNodeNumber"length="10" index="IX_GTP_NighestChildNodeNumber" 
      */
     public Integer getHighestChildNodeNumber() {
         return this.highestChildNodeNumber;
@@ -109,7 +103,6 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
 
     /**
      *      *  @hibernate.property column="Standard" length="64"
-     *             
      */
     public String getStandard() {
         return this.standard;
@@ -121,7 +114,6 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
 
     /**
      *      *  @hibernate.property column="Age" length="24"
-     *             
      */
     public Float getAge() {
         return this.age;
@@ -132,8 +124,7 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
     }
 
     /**
-     *      *  @hibernate.property column="AgeUncertainty"
-     *                 length="24" 
+     *      *  @hibernate.property column="AgeUncertainty"length="24" 
      */
     public Float getAgeUncertainty() {
         return this.ageUncertainty;
@@ -155,8 +146,7 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
     }
 
     /**
-     *      *  @hibernate.property column="TimestampModified"
-     *                 length="23" 
+     *      *  @hibernate.property column="TimestampModified"length="23" 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -167,8 +157,7 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
     }
 
     /**
-     *      *  @hibernate.property column="TimestampCreated"
-     *                 length="23" 
+     *      *  @hibernate.property column="TimestampCreated"length="23" 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -179,8 +168,7 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
     }
 
     /**
-     *      *  @hibernate.property column="TimestampVersion"
-     *                 length="16" 
+     *      *  @hibernate.property column="TimestampVersion"length="16" 
      */
     public Date getTimestampVersion() {
         return this.timestampVersion;
@@ -191,8 +179,7 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
     }
 
     /**
-     *      *  @hibernate.property column="LastEditedBy"
-     *                 length="32" 
+     *      *  @hibernate.property column="LastEditedBy"length="32" 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -203,8 +190,7 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
     }
 
     /**
-     *      *  @hibernate.many-to-one not-null="true"
-     *                 @hibernate.column name="TreeDefID" 
+     *      *  @hibernate.many-to-one not-null="true"@hibernate.column name="TreeDefID" 
      */
     public GeologicTimePeriodTreeDef getDefinition() {
         return this.definition;
@@ -215,8 +201,7 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
     }
 
     /**
-     *      *  @hibernate.many-to-one not-null="true"
-     *                 @hibernate.column name="ParentID" 
+     *      *  @hibernate.many-to-one not-null="true"@hibernate.column name="ParentID" 
      */
     public GeologicTimePeriod getParent() {
         return this.parent;

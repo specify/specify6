@@ -7,9 +7,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="borrowmaterial"
- *     
+
  */
 public class BorrowMaterial  implements java.io.Serializable {
 
@@ -47,11 +45,7 @@ public class BorrowMaterial  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="BorrowMaterialID"
-     *         
+     *      * Primary key
      */
     public Integer getBorrowMaterialId() {
         return this.borrowMaterialId;
@@ -62,11 +56,7 @@ public class BorrowMaterial  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="MaterialNumber"
-     *             length="50"
-     *             not-null="true"
-     *         
+     *      * e.g. 'FMNH 223456'
      */
     public String getMaterialNumber() {
         return this.materialNumber;
@@ -77,10 +67,7 @@ public class BorrowMaterial  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Description"
-     *             length="50"
-     *         
+     *      * Description of the material. 'e.g. Bufo bufo skull'
      */
     public String getDescription() {
         return this.description;
@@ -91,9 +78,7 @@ public class BorrowMaterial  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Quantity"
-     *         
+     *      * Number of specimens (for lots)
      */
     public Short getQuantity() {
         return this.quantity;
@@ -104,9 +89,7 @@ public class BorrowMaterial  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="OutComments"
-     *         
+     *      * Notes concerning the return of the material
      */
     public String getOutComments() {
         return this.outComments;
@@ -117,9 +100,7 @@ public class BorrowMaterial  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="InComments"
-     *         
+     *      * Notes concerning the receipt of the material
      */
     public String getInComments() {
         return this.inComments;
@@ -130,9 +111,7 @@ public class BorrowMaterial  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="QuantityResolved"
-     *         
+     *      * Quantity resolved (Returned, Accessioned, Lost, Discarded, Destroyed ...)
      */
     public Short getQuantityResolved() {
         return this.quantityResolved;
@@ -143,9 +122,7 @@ public class BorrowMaterial  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="QuantityReturned"
-     *         
+     *      * Quantity returned
      */
     public Short getQuantityReturned() {
         return this.quantityReturned;
@@ -156,11 +133,7 @@ public class BorrowMaterial  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -171,12 +144,7 @@ public class BorrowMaterial  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -187,10 +155,7 @@ public class BorrowMaterial  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -201,15 +166,7 @@ public class BorrowMaterial  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="BorrowMaterialID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.BorrowReturnMaterial"
-     *         
+     * 
      */
     public Set getBorrowReturnMaterials() {
         return this.borrowReturnMaterials;
@@ -220,11 +177,7 @@ public class BorrowMaterial  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     * 			cascade="none"
-     *            @hibernate.column name="BorrowID"         
-     *         
+     *      * ID of the Borrow containing the Prep
      */
     public Borrow getBorrow() {
         return this.borrow;

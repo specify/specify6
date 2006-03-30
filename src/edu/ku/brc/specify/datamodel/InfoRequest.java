@@ -7,9 +7,7 @@ import java.util.Date;
 
 
 /**
- *        @hibernate.class
- *         table="inforequest"
- *     
+
  */
 public class InfoRequest  implements java.io.Serializable {
 
@@ -57,10 +55,7 @@ public class InfoRequest  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Firstname"
-     *             length="50"
-     *         
+     * 
      */
     public String getFirstName() {
         return this.firstName;
@@ -71,10 +66,7 @@ public class InfoRequest  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Lastname"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastName() {
         return this.lastName;
@@ -85,10 +77,7 @@ public class InfoRequest  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Institution"
-     *             length="127"
-     *         
+     * 
      */
     public String getInstitution() {
         return this.institution;
@@ -99,10 +88,7 @@ public class InfoRequest  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Email"
-     *             length="50"
-     *         
+     * 
      */
     public String getEmail() {
         return this.email;
@@ -113,10 +99,7 @@ public class InfoRequest  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="RequestDate"
-     *             update="false"
-     *          
+     * 
      */
     public Calendar getRequestDate() {
         return this.requestDate;
@@ -127,9 +110,7 @@ public class InfoRequest  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="ReplyDate"
-     *          
+     * 
      */
     public Calendar getReplyDate() {
         return this.replyDate;
@@ -140,9 +121,7 @@ public class InfoRequest  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -153,12 +132,7 @@ public class InfoRequest  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -169,11 +143,7 @@ public class InfoRequest  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -184,10 +154,7 @@ public class InfoRequest  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="RecordSetID"         
-     *         
+     * 
      */
     public RecordSet getRecordSet() {
         return this.recordSet;
@@ -198,10 +165,7 @@ public class InfoRequest  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="false"
-     *            @hibernate.column name="AgentID"         
-     *         
+     * 
      */
     public Agent getAgent() {
         return this.agent;

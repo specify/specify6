@@ -1,65 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.Permit" table="permit" lazy="true">
-    <meta attribute="class-description" inherit="false">
-	Information about permits from organizations or individuals.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="permitId" type="java.lang.Integer" column="PermitID">
-        <meta attribute="field-description">
-	   Primary key
-	</meta>
+        <meta attribute="field-description">Primary key</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
 
     <property name="permitNumber" type="java.lang.String" column="PermitNumber" not-null="true" length="50" index="IX_Permit">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Identifier for the permit
-	</meta>    
+        <meta attribute="field-description">Identifier for the permit</meta>
     </property>
     
     <property name="type" type="java.lang.String" column="Type" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Permit category - 'CITES', 'Migratory Bird Treaty Act', ...
-	</meta>    
+        <meta attribute="field-description">Permit category - 'CITES', 'Migratory Bird Treaty Act', ...</meta>
     </property>
     
     <property name="issuedDate" type="calendar_date" column="IssuedDate" index="IX_PermitIssueDate">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Date permit was issued
-	</meta>    
+        <meta attribute="field-description">Date permit was issued</meta>
     </property>
     
     <property name="startDate" type="calendar_date" column="StartDate" index="IX_PermitStartDate">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Date permit becomes effective
-	</meta>    
+        <meta attribute="field-description">Date permit becomes effective</meta>
     </property>
     
     <property name="endDate" type="calendar_date" column="EndDate" index="IX_PermitEndDate">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Date permit expires
-	</meta>    
+        <meta attribute="field-description">Date permit expires</meta>
     </property>
     
     <property name="renewalDate" type="calendar_date" column="RenewalDate">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Date of renewal
-	</meta>    
+        <meta attribute="field-description">Date of renewal</meta>
     </property>
     
     <property name="remarks" type="text" column="Remarks">
@@ -69,30 +47,22 @@
     
     <property name="text1" type="text" column="Text1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="text2" type="text" column="Text2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="number1" type="java.lang.Float" column="Number1" length="24">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="number2" type="java.lang.Float" column="Number2" length="24">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
@@ -112,16 +82,12 @@
     
     <property name="yesNo1" type="boolean" column="YesNo1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="yesNo2" type="boolean" column="YesNo2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
 
 
@@ -139,17 +105,13 @@
     
     <!-- bi-directional many-to-one association to AgentAddress -->
     <many-to-one name="agentAddressByIssueeId" class="edu.ku.brc.specify.datamodel.AgentAddress" not-null="true" outer-join="true">
-        <meta attribute="field-description">
-	   AgentAddressID of Issuee
-	</meta>
+        <meta attribute="field-description">AgentAddressID of Issuee</meta>
         <column name="IssueeID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to AgentAddress -->
     <many-to-one name="agentAddressByIssuerId" class="edu.ku.brc.specify.datamodel.AgentAddress" not-null="true" outer-join="true">
-        <meta attribute="field-description">
-	   AgentAddressID of Issuer
-	</meta>
+        <meta attribute="field-description">AgentAddressID of Issuer</meta>
         <column name="IssuerID"/>
     </many-to-one>
 

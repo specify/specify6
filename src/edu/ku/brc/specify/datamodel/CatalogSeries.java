@@ -7,9 +7,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="catalogseries"
- *     
+
  */
 public class CatalogSeries  implements java.io.Serializable {
 
@@ -44,11 +42,7 @@ public class CatalogSeries  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="CatalogSeriesID"
-     *         
+     *      * Primary key
      */
     public Integer getCatalogSeriesId() {
         return this.catalogSeriesId;
@@ -59,9 +53,7 @@ public class CatalogSeries  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="IsTissueSeries"
-     *         
+     * 
      */
     public Boolean getIsTissueSeries() {
         return this.isTissueSeries;
@@ -72,10 +64,7 @@ public class CatalogSeries  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="SeriesName"
-     *             length="50"
-     *         
+     *      * Textual name for Catalog series. E.g. Main specimen collection
      */
     public String getSeriesName() {
         return this.seriesName;
@@ -86,10 +75,7 @@ public class CatalogSeries  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="CatalogSeriesPrefix"
-     *             length="50"
-     *         
+     *      * Text Displayed with Catalog numbers. E.g. 'KU'
      */
     public String getCatalogSeriesPrefix() {
         return this.catalogSeriesPrefix;
@@ -100,9 +86,7 @@ public class CatalogSeries  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -113,11 +97,7 @@ public class CatalogSeries  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -128,12 +108,7 @@ public class CatalogSeries  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -144,10 +119,7 @@ public class CatalogSeries  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -169,10 +141,7 @@ public class CatalogSeries  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="TissueID"         
-     *         
+     * 
      */
     public CatalogSeries getTissue() {
         return this.tissue;

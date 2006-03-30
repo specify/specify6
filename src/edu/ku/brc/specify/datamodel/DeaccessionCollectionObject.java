@@ -7,9 +7,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="deaccessioncollectionobject"
- *     
+
  */
 public class DeaccessionCollectionObject  implements java.io.Serializable {
 
@@ -43,11 +41,7 @@ public class DeaccessionCollectionObject  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="DeaccessionCollectionObjectID"
-     *         
+     *      * Primary key
      */
     public Integer getDeaccessionCollectionObjectId() {
         return this.deaccessionCollectionObjectId;
@@ -58,9 +52,7 @@ public class DeaccessionCollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Quantity"
-     *         
+     *      * Number of specimens deaccessioned (necessary for lots)
      */
     public Short getQuantity() {
         return this.quantity;
@@ -71,9 +63,7 @@ public class DeaccessionCollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -84,11 +74,7 @@ public class DeaccessionCollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -99,12 +85,7 @@ public class DeaccessionCollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -115,10 +96,7 @@ public class DeaccessionCollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -129,10 +107,7 @@ public class DeaccessionCollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="CollectionObjectID"         
-     *         
+     *      * The object being deaccessioned
      */
     public CollectionObject getCollectionObjectCatalog() {
         return this.collectionObjectCatalog;
@@ -143,10 +118,7 @@ public class DeaccessionCollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="DeaccessionID"         
-     *         
+     *      * The deaccession
      */
     public Deaccession getDeaccession() {
         return this.deaccession;
@@ -157,15 +129,7 @@ public class DeaccessionCollectionObject  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="DeaccessionPhysicalObjectID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject"
-     *         
+     * 
      */
     public Set getLoanReturnPhysicalObjects() {
         return this.loanReturnPhysicalObjects;

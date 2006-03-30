@@ -8,9 +8,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="collectingevent"
- *     
+
  */
 public class CollectingEvent  implements java.io.Serializable {
 
@@ -59,11 +57,7 @@ public class CollectingEvent  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="CollectingEventID"
-     *         
+     *      * Primary key
      */
     public Integer getCollectingEventId() {
         return this.collectingEventId;
@@ -74,10 +68,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="StationFieldNumber"
-     *             length="50"
-     *         
+     *      * Station number or field number of the site where collecting event took place, A number or code recorded in field notes and/or written on field tags that identifies ALL material collected in a CollectingEvent.
      */
     public String getStationFieldNumber() {
         return this.stationFieldNumber;
@@ -88,10 +79,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Method"
-     *             length="50"
-     *         
+     *      * The method used to obtain the biological object
      */
     public String getMethod() {
         return this.method;
@@ -102,10 +90,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="VerbatimDate"
-     *             length="50"
-     *         
+     *      * Date which collector recorded in field book, exactly as reported by the collector.  Should indicate whether reported as range, season, month, etc.
      */
     public String getVerbatimDate() {
         return this.verbatimDate;
@@ -116,9 +101,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="StartDate"
-     *         
+     *      * The date collecting event began
      */
     public Calendar getStartDate() {
         return this.startDate;
@@ -129,9 +112,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="StartDatePrecision"
-     *         
+     * 
      */
     public Short getStartDatePrecision() {
         return this.startDatePrecision;
@@ -142,10 +123,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="StartDateVerbatim"
-     *             length="50"
-     *         
+     * 
      */
     public String getStartDateVerbatim() {
         return this.startDateVerbatim;
@@ -156,9 +134,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="EndDate"
-     *         
+     *      * The date collecting event ended
      */
     public Calendar getEndDate() {
         return this.endDate;
@@ -169,9 +145,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="EndDatePrecision"
-     *         
+     * 
      */
     public Short getEndDatePrecision() {
         return this.endDatePrecision;
@@ -182,10 +156,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="EndDateVerbatim"
-     *             length="50"
-     *         
+     * 
      */
     public String getEndDateVerbatim() {
         return this.endDateVerbatim;
@@ -196,9 +167,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="StartTime"
-     *         
+     *      * Start time in military format
      */
     public Short getStartTime() {
         return this.startTime;
@@ -209,9 +178,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="EndTime"
-     *         
+     *      * End time in military format
      */
     public Short getEndTime() {
         return this.endTime;
@@ -222,9 +189,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="VerbatimLocality"
-     *         
+     *      * Original statement (literal quotation) of the location of the CollectingEvent as given by the Collector.
      */
     public String getVerbatimLocality() {
         return this.verbatimLocality;
@@ -235,10 +200,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="GroupPermittedToView"
-     *             length="10"
-     *         
+     *      * The name of the group that this record is visible to.
      */
     public Integer getGroupPermittedToView() {
         return this.groupPermittedToView;
@@ -249,9 +211,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     *      * Free text to record information that does not conform to structured fields, or to explain data recorded in those fields, particularly problematic interpretations of data given by collector(s).
      */
     public String getRemarks() {
         return this.remarks;
@@ -262,11 +222,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -277,12 +233,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -293,10 +244,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -307,15 +255,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="CollectingEventID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.CollectionObject"
-     *         
+     * 
      */
     public Set getCollectionObjects() {
         return this.collectionObjects;
@@ -326,15 +266,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="CollectingEventID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Collector"
-     *         
+     * 
      */
     public Set getCollectors() {
         return this.collectors;
@@ -345,10 +277,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="LocalityID"         
-     *         
+     *      * Locality where collection took place
      */
     public Locality getLocality() {
         return this.locality;
@@ -359,9 +288,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.one-to-one
-     *            @hibernate.column name="LocalityID"         
-     *         
+     * 
      */
     public Stratigraphy getStratigraphy() {
         return this.stratigraphy;
@@ -372,15 +299,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="CollectingEventAttrID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.CollectingEventAttr"
-     *         
+     * 
      */
     public Set getAttrs() {
         return this.attrs;

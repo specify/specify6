@@ -7,9 +7,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="containeritem"
- *     
+
  */
 public class ContainerItem  implements java.io.Serializable {
 
@@ -39,11 +37,7 @@ public class ContainerItem  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="ContainerItemID"
-     *         
+     * 
      */
     public Integer getContainerItemId() {
         return this.containerItemId;
@@ -54,11 +48,7 @@ public class ContainerItem  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -69,12 +59,7 @@ public class ContainerItem  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -85,10 +70,7 @@ public class ContainerItem  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="ContainerID"         
-     *         
+     * 
      */
     public Container getContainer() {
         return this.container;
@@ -99,15 +81,7 @@ public class ContainerItem  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="ContainerID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.CollectionObject"
-     *         
+     * 
      */
     public Set getCollectionObjects() {
         return this.collectionObjects;

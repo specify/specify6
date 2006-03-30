@@ -10,7 +10,7 @@
 		<generator class="native"/>
 	</id>
 
-	<property name="name" column="Name" update="true" type="string" length="64">
+	<property name="name" column="Name" update="true" type="java.lang.String" length="64">
 	</property>
 
 	<property name="tableId" column="TableID" update="true" type="int">

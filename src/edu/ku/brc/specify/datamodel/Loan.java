@@ -8,9 +8,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="loan"
- *     
+
  */
 public class Loan  implements java.io.Serializable {
 
@@ -57,11 +55,7 @@ public class Loan  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="LoanID"
-     *         
+     *      * PrimaryKey
      */
     public Integer getLoanId() {
         return this.loanId;
@@ -72,11 +66,7 @@ public class Loan  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LoanNumber"
-     *             length="50"
-     *             not-null="true"
-     *         
+     *      * Invoice number
      */
     public String getLoanNumber() {
         return this.loanNumber;
@@ -87,10 +77,7 @@ public class Loan  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LoanDate"
-     *             length="10"
-     *         
+     *      * Date the Loan was created.
      */
     public Calendar getLoanDate() {
         return this.loanDate;
@@ -101,10 +88,7 @@ public class Loan  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="CurrentDueDate"
-     *             length="10"
-     *         
+     *      * Date the loan is due for return (Same as original Due date unless loan period has been extended)
      */
     public Calendar getCurrentDueDate() {
         return this.currentDueDate;
@@ -115,9 +99,7 @@ public class Loan  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="OriginalDueDate"
-     *         
+     *      * Date the loan was originally due.
      */
     public Calendar getOriginalDueDate() {
         return this.originalDueDate;
@@ -128,9 +110,7 @@ public class Loan  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="DateClosed"
-     *         
+     *      * Date loan was closed.
      */
     public Calendar getDateClosed() {
         return this.dateClosed;
@@ -141,10 +121,7 @@ public class Loan  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Category"
-     *             length="3"
-     *         
+     *      * Type of record: loan(0), Gift(1)
      */
     public Byte getCategory() {
         return this.category;
@@ -155,9 +132,7 @@ public class Loan  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -168,9 +143,7 @@ public class Loan  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text1"
-     *         
+     *      * User definable
      */
     public String getText1() {
         return this.text1;
@@ -181,9 +154,7 @@ public class Loan  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text2"
-     *         
+     *      * User definable
      */
     public String getText2() {
         return this.text2;
@@ -194,10 +165,7 @@ public class Loan  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number1"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber1() {
         return this.number1;
@@ -208,10 +176,7 @@ public class Loan  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number2"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber2() {
         return this.number2;
@@ -222,12 +187,7 @@ public class Loan  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     *      * The date the record was created
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -238,11 +198,7 @@ public class Loan  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     *      * The date the record was modified
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -253,10 +209,7 @@ public class Loan  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     *      * Login name of the user who last edited the record
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -267,9 +220,7 @@ public class Loan  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Closed"
-     *         
+     *      * 'No' until all preparations in the loan have been returned/resolved.
      */
     public Short getClosed() {
         return this.closed;
@@ -280,9 +231,7 @@ public class Loan  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo1"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo1() {
         return this.yesNo1;
@@ -293,9 +242,7 @@ public class Loan  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo2"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo2() {
         return this.yesNo2;
@@ -306,15 +253,7 @@ public class Loan  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="LoanID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.LoanAgent"
-     *         
+     * 
      */
     public Set getLoanAgents() {
         return this.loanAgents;
@@ -325,15 +264,7 @@ public class Loan  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="LoanID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"
-     *         
+     * 
      */
     public Set getLoanPhysicalObjects() {
         return this.loanPhysicalObjects;
@@ -344,10 +275,7 @@ public class Loan  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="ShipmentID"         
-     *         
+     *      * Link to Shipment table
      */
     public Shipment getShipment() {
         return this.shipment;

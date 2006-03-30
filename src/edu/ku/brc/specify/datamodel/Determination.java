@@ -8,9 +8,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="determination"
- *     
+
  */
 public class Determination  implements java.io.Serializable {
 
@@ -57,11 +55,7 @@ public class Determination  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="DeterminationID"
-     *         
+     *      * Primary key
      */
     public Integer getDeterminationId() {
         return this.determinationId;
@@ -72,10 +66,7 @@ public class Determination  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="IsCurrent"
-     *             not-null="true"
-     *         
+     * 
      */
     public Boolean getIsCurrent() {
         return this.isCurrent;
@@ -86,10 +77,7 @@ public class Determination  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TypeStatusName"
-     *             length="50"
-     *         
+     *      * e.g. 'Holotype', 'Paratype'...
      */
     public String getTypeStatusName() {
         return this.typeStatusName;
@@ -100,9 +88,7 @@ public class Determination  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="DeterminedDate"
-     *         
+     * 
      */
     public Calendar getDeterminedDate() {
         return this.determinedDate;
@@ -113,10 +99,7 @@ public class Determination  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Confidence"
-     *             length="50"
-     *         
+     *      * Confidence of determination (value from PickList)
      */
     public String getConfidence() {
         return this.confidence;
@@ -127,10 +110,7 @@ public class Determination  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Method"
-     *             length="50"
-     *         
+     *      * Method of determination (value from PickList)
      */
     public String getMethod() {
         return this.method;
@@ -141,10 +121,7 @@ public class Determination  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="FeatureOrBasis"
-     *             length="50"
-     *         
+     *      * Body part, or characteristic used as the basis of a determination.
      */
     public String getFeatureOrBasis() {
         return this.featureOrBasis;
@@ -155,9 +132,7 @@ public class Determination  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -168,9 +143,7 @@ public class Determination  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text1"
-     *         
+     *      * User definable
      */
     public String getText1() {
         return this.text1;
@@ -181,9 +154,7 @@ public class Determination  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text2"
-     *         
+     *      * User definable
      */
     public String getText2() {
         return this.text2;
@@ -194,10 +165,7 @@ public class Determination  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number1"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber1() {
         return this.number1;
@@ -208,10 +176,7 @@ public class Determination  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number2"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber2() {
         return this.number2;
@@ -222,12 +187,7 @@ public class Determination  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     *      * Date/Time the record was created
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -238,11 +198,7 @@ public class Determination  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     *      * Date/Time the record was modified
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -253,10 +209,7 @@ public class Determination  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -267,9 +220,7 @@ public class Determination  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo1"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo1() {
         return this.yesNo1;
@@ -280,9 +231,7 @@ public class Determination  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo2"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo2() {
         return this.yesNo2;
@@ -293,10 +242,7 @@ public class Determination  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="TaxonID"         
-     *         
+     * 
      */
     public Taxon getTaxon() {
         return this.taxon;
@@ -307,11 +253,7 @@ public class Determination  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     * 			cascade="none"
-     *            @hibernate.column name="CollectionObjectID"         
-     *         
+     * 
      */
     public CollectionObject getCollectionObject() {
         return this.collectionObject;
@@ -322,11 +264,7 @@ public class Determination  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     * 			cascade="none"
-     *            @hibernate.column name="PreparationID"         
-     *         
+     *      * Preparations can also be assigned determinations. Must a Preparation of BiologicalObjectID.
      */
     public Preparation getPreparations() {
         return this.preparations;
@@ -337,16 +275,7 @@ public class Determination  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     * 			cascade="delete"
-     *            @hibernate.collection-key
-     *             column="DeterminationID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.DeterminationCitation"
-     *         
+     * 
      */
     public Set getDeterminationCitations() {
         return this.determinationCitations;
@@ -357,10 +286,7 @@ public class Determination  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="DeterminerID"         
-     *         
+     *      * id of the Person making the determination
      */
     public Agent getDeterminer() {
         return this.determiner;

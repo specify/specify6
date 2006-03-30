@@ -8,9 +8,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="borrow"
- *     
+
  */
 public class Borrow  implements java.io.Serializable {
 
@@ -55,11 +53,7 @@ public class Borrow  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="BorrowID"
-     *         
+     *      * Primary key
      */
     public Integer getBorrowId() {
         return this.borrowId;
@@ -70,11 +64,7 @@ public class Borrow  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="InvoiceNumber"
-     *             length="50"
-     *             not-null="true"
-     *         
+     *      * Lender's loan number
      */
     public String getInvoiceNumber() {
         return this.invoiceNumber;
@@ -85,9 +75,7 @@ public class Borrow  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="ReceivedDate"
-     *         
+     *      * Date material was received
      */
     public Calendar getReceivedDate() {
         return this.receivedDate;
@@ -98,9 +86,7 @@ public class Borrow  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="OriginalDueDate"
-     *         
+     *      * Original Due date for loan
      */
     public Calendar getOriginalDueDate() {
         return this.originalDueDate;
@@ -111,9 +97,7 @@ public class Borrow  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="DateClosed"
-     *         
+     *      * Date loan was closed
      */
     public Calendar getDateClosed() {
         return this.dateClosed;
@@ -124,9 +108,7 @@ public class Borrow  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -137,9 +119,7 @@ public class Borrow  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text1"
-     *         
+     *      * User definable
      */
     public String getText1() {
         return this.text1;
@@ -150,9 +130,7 @@ public class Borrow  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text2"
-     *         
+     *      * User definable
      */
     public String getText2() {
         return this.text2;
@@ -163,10 +141,7 @@ public class Borrow  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number1"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber1() {
         return this.number1;
@@ -177,10 +152,7 @@ public class Borrow  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number2"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber2() {
         return this.number2;
@@ -191,11 +163,7 @@ public class Borrow  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -206,12 +174,7 @@ public class Borrow  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -222,10 +185,7 @@ public class Borrow  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -236,9 +196,7 @@ public class Borrow  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Closed"
-     *         
+     *      * False until all material has been returned
      */
     public Short getClosed() {
         return this.closed;
@@ -249,9 +207,7 @@ public class Borrow  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo1"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo1() {
         return this.yesNo1;
@@ -262,9 +218,7 @@ public class Borrow  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo2"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo2() {
         return this.yesNo2;
@@ -275,9 +229,7 @@ public class Borrow  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="CurrentDueDate"
-     *         
+     * 
      */
     public Calendar getCurrentDueDate() {
         return this.currentDueDate;
@@ -288,15 +240,7 @@ public class Borrow  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="BorrowID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.BorrowShipment"
-     *         
+     * 
      */
     public Set getBorrowShipments() {
         return this.borrowShipments;
@@ -307,15 +251,7 @@ public class Borrow  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="BorrowID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.BorrowAgent"
-     *         
+     * 
      */
     public Set getBorrowAgents() {
         return this.borrowAgents;
@@ -326,15 +262,7 @@ public class Borrow  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="BorrowID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.BorrowMaterial"
-     *         
+     * 
      */
     public Set getBorrowMaterials() {
         return this.borrowMaterials;

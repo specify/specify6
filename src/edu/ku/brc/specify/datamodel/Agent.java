@@ -7,9 +7,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="agent"
- *     
+
  */
 public class Agent  implements java.io.Serializable {
 
@@ -65,11 +63,7 @@ public class Agent  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="AgentID"
-     *         
+     *      * Primary key
      */
     public Integer getAgentId() {
         return this.agentId;
@@ -80,11 +74,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="AgentType"
-     *             length="3"
-     *             not-null="true"
-     *         
+     * 
      */
     public Byte getAgentType() {
         return this.agentType;
@@ -95,10 +85,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="FirstName"
-     *             length="50"
-     *         
+     *      * of Person
      */
     public String getFirstName() {
         return this.firstName;
@@ -109,10 +96,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastName"
-     *             length="50"
-     *         
+     *      * of Person
      */
     public String getLastName() {
         return this.lastName;
@@ -123,10 +107,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="MiddleInitial"
-     *             length="50"
-     *         
+     *      * of Person
      */
     public String getMiddleInitial() {
         return this.middleInitial;
@@ -137,10 +118,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Title"
-     *             length="50"
-     *         
+     *      * of Person
      */
     public String getTitle() {
         return this.title;
@@ -151,10 +129,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Interests"
-     *             length="255"
-     *         
+     *      * of Person or Organization
      */
     public String getInterests() {
         return this.interests;
@@ -165,10 +140,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Abbreviation"
-     *             length="50"
-     *         
+     *      * of organization
      */
     public String getAbbreviation() {
         return this.abbreviation;
@@ -179,10 +151,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Name"
-     *             length="120"
-     *         
+     *      * of organization/group/Folks (and maybe persons)
      */
     public String getName() {
         return this.name;
@@ -193,9 +162,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -206,12 +173,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -222,12 +184,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             not-null="true"
-     *             update="false"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -238,10 +195,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -252,15 +206,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="AgentID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Author"
-     *         
+     * 
      */
     public Set getAuthors() {
         return this.authors;
@@ -271,15 +217,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="ReceivedByID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject"
-     *         
+     * 
      */
     public Set getLoanReturnPhysicalObjects() {
         return this.loanReturnPhysicalObjects;
@@ -290,15 +228,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="ReturnedByID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.BorrowReturnMaterial"
-     *         
+     * 
      */
     public Set getBorrowReturnMaterials() {
         return this.borrowReturnMaterials;
@@ -309,15 +239,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="CatalogedByID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.ExchangeIn"
-     *         
+     * 
      */
     public Set getExchangeIns() {
         return this.exchangeIns;
@@ -328,15 +250,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="ParentOrganizationID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Agent"
-     *         
+     * 
      */
     public Set getMembers() {
         return this.members;
@@ -347,10 +261,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="ParentOrganizationID"
-     *         
+     *      * of organization
      */
     public Agent getOrganization() {
         return this.organization;
@@ -361,15 +272,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="ProjectAgentID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Project"
-     *         
+     * 
      */
     public Set getProjects() {
         return this.projects;
@@ -380,15 +283,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="PreparedByID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Preparation"
-     *         
+     * 
      */
     public Set getPreparations() {
         return this.preparations;
@@ -399,15 +294,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="GroupID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.GroupPerson"
-     *         
+     * 
      */
     public Set getGroupPersonsByGroup() {
         return this.groupPersonsByGroup;
@@ -418,15 +305,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="MemberID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.GroupPerson"
-     *         
+     * 
      */
     public Set getGroupPersonsByMember() {
         return this.groupPersonsByMember;
@@ -437,15 +316,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="DeterminerID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Determination"
-     *         
+     * 
      */
     public Set getDeterminations() {
         return this.determinations;
@@ -456,15 +327,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="OrganizationID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.AgentAddress"
-     *         
+     * 
      */
     public Set getAgentAddressesByOrganization() {
         return this.agentAddressesByOrganization;
@@ -475,15 +338,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="AgentID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.AgentAddress"
-     *         
+     * 
      */
     public Set getAgentAddressesByAgent() {
         return this.agentAddressesByAgent;
@@ -494,15 +349,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="ShippedByID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Shipment"
-     *         
+     * 
      */
     public Set getShipments() {
         return this.shipments;
@@ -513,15 +360,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="AgentID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Collector"
-     *         
+     * 
      */
     public Set getCollectors() {
         return this.collectors;
@@ -532,15 +371,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="CatalogedByID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.ExchangeOut"
-     *         
+     * 
      */
     public Set getExchangeOuts() {
         return this.exchangeOuts;
@@ -562,17 +393,7 @@ public class Agent  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *             
-     *             @hibernate.collection-key
-     *             column="AgentID"
-     *             
-     *             @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.RepositoryAgreement"
-     *         
+     * 
      */
     public Set getRepositoryAgreements() {
         return this.repositoryAgreements;

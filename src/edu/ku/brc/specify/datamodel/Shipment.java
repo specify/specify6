@@ -8,9 +8,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="shipment"
- *     
+
  */
 public class Shipment  implements java.io.Serializable {
 
@@ -58,11 +56,7 @@ public class Shipment  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="ShipmentID"
-     *         
+     *      * Primary key
      */
     public Integer getShipmentId() {
         return this.shipmentId;
@@ -73,9 +67,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="ShipmentDate"
-     *         
+     *      * Date of shipment
      */
     public Calendar getShipmentDate() {
         return this.shipmentDate;
@@ -86,11 +78,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="ShipmentNumber"
-     *             length="50"
-     *             not-null="true"
-     *         
+     *      * Shipper's tracking number
      */
     public String getShipmentNumber() {
         return this.shipmentNumber;
@@ -101,10 +89,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="ShipmentMethod"
-     *             length="50"
-     *         
+     *      * Description of shipment. E.g. 'Hand-carried', 'Overnight', 'Air', 'Land', 'Sea', ...
      */
     public String getShipmentMethod() {
         return this.shipmentMethod;
@@ -115,9 +100,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="NumberOfPackages"
-     *         
+     *      * Number of packages shipped
      */
     public Short getNumberOfPackages() {
         return this.numberOfPackages;
@@ -128,10 +111,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Weight"
-     *             length="50"
-     *         
+     *      * The weight of the shipment
      */
     public String getWeight() {
         return this.weight;
@@ -142,10 +122,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="InsuredForAmount"
-     *             length="50"
-     *         
+     * 
      */
     public String getInsuredForAmount() {
         return this.insuredForAmount;
@@ -156,9 +133,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -169,9 +144,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.property
-     *             column="Text1"
-     *         
+     *      * User definable
      */
     public String getText1() {
         return this.text1;
@@ -182,9 +155,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *             @hibernate.property
-     *             column="Text2"
-     *         
+     *      * User definable
      */
     public String getText2() {
         return this.text2;
@@ -195,10 +166,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number1"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber1() {
         return this.number1;
@@ -209,10 +177,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number2"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber2() {
         return this.number2;
@@ -223,12 +188,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -239,11 +199,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -254,10 +210,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -268,9 +221,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo1"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo1() {
         return this.yesNo1;
@@ -281,9 +232,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo2"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo2() {
         return this.yesNo2;
@@ -294,10 +243,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="ShipperID"         
-     *         
+     *      * AgentAddressID of agent transporting the material
      */
     public AgentAddress getAgentAddressByShipper() {
         return this.agentAddressByShipper;
@@ -308,10 +254,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="ShippedToID"         
-     *         
+     *      * AgentAddressID of agent material is shipped to
      */
     public AgentAddress getAgentAddressByShippedTo() {
         return this.agentAddressByShippedTo;
@@ -322,10 +265,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="ShippedByID"         
-     *         
+     *      * AgentID of person approving/initiating the shipment
      */
     public Agent getAgent() {
         return this.agent;
@@ -336,15 +276,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="ShipmentID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.BorrowShipment"
-     *         
+     * 
      */
     public Set getBorrowShipments() {
         return this.borrowShipments;
@@ -355,15 +287,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="ShipmentID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Loan"
-     *         
+     * 
      */
     public Set getLoans() {
         return this.loans;
@@ -374,15 +298,7 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="ShipmentID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.ExchangeOut"
-     *         
+     * 
      */
     public Set getExchangeOuts() {
         return this.exchangeOuts;

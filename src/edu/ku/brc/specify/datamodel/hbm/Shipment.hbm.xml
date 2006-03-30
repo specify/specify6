@@ -1,58 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.Shipment" table="shipment" lazy="true">
-    <meta attribute="class-description" inherit="false">
-	Information on outgoing shipments.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="shipmentId" type="java.lang.Integer" column="ShipmentID">
-        <meta attribute="field-description">
-	   Primary key
-	</meta>
+        <meta attribute="field-description">Primary key</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
 
     <property name="shipmentDate" type="calendar_date" column="ShipmentDate">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Date of shipment
-	</meta>    
+        <meta attribute="field-description">Date of shipment</meta>
     </property>
     
     <property name="shipmentNumber" type="java.lang.String" column="ShipmentNumber" not-null="true" length="50" index="IX_Shipment">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Shipper's tracking number
-	</meta>    
+        <meta attribute="field-description">Shipper's tracking number</meta>
     </property>
     
     <property name="shipmentMethod" type="java.lang.String" column="ShipmentMethod" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Description of shipment. E.g. 'Hand-carried', 'Overnight', 'Air', 'Land', 'Sea', ...
-	</meta>    
+        <meta attribute="field-description">Description of shipment. E.g. 'Hand-carried', 'Overnight', 'Air', 'Land', 'Sea', ...</meta>
     </property>
     
     <property name="numberOfPackages" type="short" column="NumberOfPackages">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Number of packages shipped
-	</meta>    
+        <meta attribute="field-description">Number of packages shipped</meta>
     </property>
     
     <property name="weight" type="java.lang.String" column="Weight" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   The weight of the shipment
-	</meta>    
+        <meta attribute="field-description">The weight of the shipment</meta>
     </property>
     
     <property name="insuredForAmount" type="java.lang.String" column="InsuredForAmount" length="50">
@@ -67,30 +47,22 @@
     
     <property name="text1" type="text" column="Text1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="text2" type="text" column="Text2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="number1" type="java.lang.Float" column="Number1" length="24">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="number2" type="java.lang.Float" column="Number2" length="24">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
@@ -110,16 +82,12 @@
 
     <property name="yesNo1" type="boolean" column="YesNo1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="yesNo2" type="boolean" column="YesNo2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
 
 
@@ -128,25 +96,19 @@
   
     <!-- bi-directional many-to-one association to AgentAddress -->
     <many-to-one name="agentAddressByShipper" class="edu.ku.brc.specify.datamodel.AgentAddress" not-null="true" outer-join="true">
-        <meta attribute="field-description">
-	   AgentAddressID of agent transporting the material
-	</meta>
+        <meta attribute="field-description">AgentAddressID of agent transporting the material</meta>
         <column name="ShipperID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to AgentAddress -->
     <many-to-one name="agentAddressByShippedTo" class="edu.ku.brc.specify.datamodel.AgentAddress" not-null="true" outer-join="true">
-        <meta attribute="field-description">
-	   AgentAddressID of agent material is shipped to
-	</meta>
+        <meta attribute="field-description">AgentAddressID of agent material is shipped to</meta>
         <column name="ShippedToID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
-        <meta attribute="field-description">
-	   AgentID of person approving/initiating the shipment
-	</meta>
+        <meta attribute="field-description">AgentID of person approving/initiating the shipment</meta>
         <column name="ShippedByID"/>
     </many-to-one>
 	

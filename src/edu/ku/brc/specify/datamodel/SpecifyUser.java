@@ -6,9 +6,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="user"
- *     
+
  */
 public class SpecifyUser  implements java.io.Serializable {
 
@@ -51,10 +49,7 @@ public class SpecifyUser  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Name"
-     *             length="64"
-     *         
+     * 
      */
     public String getName() {
         return this.name;
@@ -65,10 +60,7 @@ public class SpecifyUser  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Password"
-     *             length="64"
-     *         
+     * 
      */
     public String getPassword() {
         return this.password;
@@ -79,9 +71,7 @@ public class SpecifyUser  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="PrivLevel"
-     *         
+     * 
      */
     public Short getPrivLevel() {
         return this.privLevel;
@@ -92,15 +82,7 @@ public class SpecifyUser  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="SpecifyUserID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.CollectionObjDef"
-     *         
+     * 
      */
     public Set getCollectionObjDef() {
         return this.collectionObjDef;
@@ -111,15 +93,7 @@ public class SpecifyUser  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="CollectionObjectID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.RecordSet"
-     *         
+     * 
      */
     public Set getRecordSets() {
         return this.recordSets;
@@ -130,10 +104,7 @@ public class SpecifyUser  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="UserGroupID"
-     *         
+     * 
      */
     public UserGroup getUserGroup() {
         return this.userGroup;

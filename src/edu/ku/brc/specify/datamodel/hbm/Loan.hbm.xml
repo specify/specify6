@@ -1,65 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.Loan" table="loan" lazy="true">
-    <meta attribute="class-description" inherit="false">
-	Information about outgoing loans.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="loanId" type="java.lang.Integer" column="LoanID">
-        <meta attribute="field-description">
-	   PrimaryKey
-	</meta>
+        <meta attribute="field-description">PrimaryKey</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
 
     <property name="loanNumber" type="java.lang.String" column="LoanNumber" not-null="true" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Invoice number
-	</meta>    
+        <meta attribute="field-description">Invoice number</meta>
     </property>
     
     <property name="loanDate" type="calendar_date" column="LoanDate" index="IX_Loan_Date">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Date the Loan was created.
-	</meta>    
+        <meta attribute="field-description">Date the Loan was created.</meta>
     </property>
     
     <property name="currentDueDate" type="calendar_date" column="CurrentDueDate" length="10" index="IX_Loan_Due">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Date the loan is due for return (Same as original Due date unless loan period has been extended)
-	</meta>    
+        <meta attribute="field-description">Date the loan is due for return (Same as original Due date unless loan period has been extended)</meta>
     </property>
     
     <property name="originalDueDate" type="calendar_date" column="OriginalDueDate">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Date the loan was originally due.
-	</meta>    
+        <meta attribute="field-description">Date the loan was originally due.</meta>
     </property>
     
     <property name="dateClosed" type="calendar_date" column="DateClosed">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Date loan was closed.
-	</meta>    
+        <meta attribute="field-description">Date loan was closed.</meta>
     </property>
     
     <property name="category" type="java.lang.Byte" column="Category" length="3">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Type of record: loan(0), Gift(1)
-	</meta>    
+        <meta attribute="field-description">Type of record: loan(0), Gift(1)</meta>
     </property>
     
     <property name="remarks" type="text" column="Remarks">
@@ -69,72 +47,52 @@
     
     <property name="text1" type="text" column="Text1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="text2" type="text" column="Text2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="number1" type="java.lang.Float" column="Number1" length="24">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="number2" type="java.lang.Float" column="Number2" length="24">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   The date the record was created
-	</meta>    
+        <meta attribute="field-description">The date the record was created</meta>
     </property>
     
     <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   The date the record was modified
-	</meta>    
+        <meta attribute="field-description">The date the record was modified</meta>
     </property>
     
     <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Login name of the user who last edited the record
-	</meta>    
+        <meta attribute="field-description">Login name of the user who last edited the record</meta>
     </property>
     
     <property name="closed" type="short" column="Closed">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   'No' until all preparations in the loan have been returned/resolved.
-	</meta>    
+        <meta attribute="field-description">'No' until all preparations in the loan have been returned/resolved.</meta>
     </property>
     
     <property name="yesNo1" type="boolean" column="YesNo1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="yesNo2" type="boolean" column="YesNo2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
 
 
@@ -161,9 +119,7 @@
     
     <!-- bi-directional many-to-one association to Shipment -->
     <many-to-one name="shipment" class="edu.ku.brc.specify.datamodel.Shipment" not-null="true" outer-join="true" index="IX_LoanShipmentID">
-        <meta attribute="field-description">
-	   Link to Shipment table
-	</meta>
+        <meta attribute="field-description">Link to Shipment table</meta>
         <column name="ShipmentID"/>
     </many-to-one>
 

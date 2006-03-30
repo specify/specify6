@@ -1,37 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.AgentAddress" table="agentaddress" lazy="true">
-    <meta attribute="class-description" inherit="false">
-	Associates agents, addresses, and organizaions.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="agentAddressId" type="java.lang.Integer" column="AgentAddressID">
-        <meta attribute="field-description">
-	   PrimaryKey
-	</meta>
+        <meta attribute="field-description">PrimaryKey</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
 
     <property name="typeOfAgentAddressed" type="short" column="TypeOfAgentAddressed">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   0 for organization, 1 for person
-	</meta>    
+        <meta attribute="field-description">0 for organization, 1 for person</meta>
     </property>
     
     <property name="jobTitle" type="java.lang.String" column="JobTitle" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Agent's (person) job title at specified address and organization
-	</meta>    
+        <meta attribute="field-description">Agent's (person) job title at specified address and organization</meta>
     </property>
     
     <property name="phone1" type="java.lang.String" column="Phone1" length="50">
@@ -86,9 +72,7 @@
     
     <property name="isCurrent" type="boolean" column="IsCurrent">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Is the agent currently located at this address?
-	</meta>    
+        <meta attribute="field-description">Is the agent currently located at this address?</meta>
     </property>
 
     <!-- Associations -->
@@ -185,25 +169,19 @@
     
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one name="organization" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
-        <meta attribute="field-description">
-	   Associates Agent identified by AgentID (type Person) as a member of Agent identified by OrganizationID (type Organization)
-	</meta>
+        <meta attribute="field-description">Associates Agent identified by AgentID (type Person) as a member of Agent identified by OrganizationID (type Organization)</meta>
         <column name="OrganizationID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true" cascade="none" index="IX_AgentAddressAgentID">
-        <meta attribute="field-description">
-	   Associated record in Agent table
-	</meta>
+        <meta attribute="field-description">Associated record in Agent table</meta>
         <column name="AgentID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Address -->
     <many-to-one name="address" class="edu.ku.brc.specify.datamodel.Address" not-null="true" outer-join="true" index="IX_AgentAddressAddressID">
-        <meta attribute="field-description">
-	   Associated record in Address table
-	</meta>
+        <meta attribute="field-description">Associated record in Address table</meta>
         <column name="AddressID"/>
     </many-to-one>
 

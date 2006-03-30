@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.CollectionObjectCitation" table="collectionobjectcitation" lazy="true">
-    <meta attribute="class-description" inherit="false">
-	Associates publications with BiologicalObjects.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="collectionObjectCitationId" type="java.lang.Integer" column="CollectionObjectCitationID">
         <meta attribute="field-description"></meta>
@@ -42,17 +34,13 @@
   
     <!-- bi-directional many-to-one association to ReferenceWork -->
     <many-to-one name="referenceWork" class="edu.ku.brc.specify.datamodel.ReferenceWork" not-null="true" outer-join="true" index="IX_CollectionObjectCitationReferenceWorkID" unique-key="IX_CollectionObjectCitation">
-        <meta attribute="field-description">
-	   The associated reference
-	</meta>
+        <meta attribute="field-description">The associated reference</meta>
         <column name="ReferenceWorkID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to CollectionObject -->
     <many-to-one name="collectionObject" class="edu.ku.brc.specify.datamodel.CollectionObject" not-null="true" outer-join="true" cascade="none" unique-key="IX_CollectionObjectCitation">
-        <meta attribute="field-description">
-	   Biological Object cited
-	</meta>
+        <meta attribute="field-description">Biological Object cited</meta>
         <column name="BiologicalObjectID"/>
     </many-to-one>
 

@@ -1,21 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.CatalogSeries" table="catalogseries" lazy="true">
-    <meta attribute="class-description" inherit="false">
-	Information about catalog series within collections.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="catalogSeriesId" type="java.lang.Integer" column="CatalogSeriesID">
-        <meta attribute="field-description">
-	   Primary key
-	</meta>
+        <meta attribute="field-description">Primary key</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
@@ -27,16 +17,12 @@
     
     <property name="seriesName" type="java.lang.String" column="SeriesName" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Textual name for Catalog series. E.g. Main specimen collection
-	</meta>    
+        <meta attribute="field-description">Textual name for Catalog series. E.g. Main specimen collection</meta>
     </property>
     
     <property name="catalogSeriesPrefix" type="java.lang.String" column="CatalogSeriesPrefix" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Text Displayed with Catalog numbers. E.g. 'KU'
-	</meta>    
+        <meta attribute="field-description">Text Displayed with Catalog numbers. E.g. 'KU'</meta>
     </property>
     
     <property name="remarks" type="text" column="Remarks">

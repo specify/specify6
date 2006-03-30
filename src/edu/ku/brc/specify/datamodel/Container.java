@@ -7,9 +7,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="container"
- *     
+
  */
 public class Container  implements java.io.Serializable {
 
@@ -46,11 +44,7 @@ public class Container  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="ContainerID"
-     *         
+     * 
      */
     public Integer getContainerId() {
         return this.containerId;
@@ -61,11 +55,7 @@ public class Container  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             type="int"
-     *             column="CollectionObjectID"
-     *             not-null="false"
-     *         
+     * 
      */
     public Integer getCollectionObjectId() {
         return this.collectionObjectId;
@@ -76,9 +66,7 @@ public class Container  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Type"
-     *         
+     * 
      */
     public Short getType() {
         return this.type;
@@ -89,10 +77,7 @@ public class Container  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Name"
-     *             length="64"
-     *         
+     * 
      */
     public String getName() {
         return this.name;
@@ -103,10 +88,7 @@ public class Container  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Name"
-     *             length="255"
-     *         
+     * 
      */
     public String getDescription() {
         return this.description;
@@ -117,9 +99,7 @@ public class Container  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number"
-     *         
+     * 
      */
     public Integer getNumber() {
         return this.number;
@@ -130,11 +110,7 @@ public class Container  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -145,12 +121,7 @@ public class Container  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -161,10 +132,7 @@ public class Container  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -175,15 +143,7 @@ public class Container  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="ContainerItemsID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.ContainerItem"
-     *         
+     * 
      */
     public Set getItems() {
         return this.items;
@@ -194,14 +154,7 @@ public class Container  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     * 	        not-null="false"
-     * 			unique="true" 
-     * 			insert="false" 
-     * 			update="false"
-     * 			cascade="all"
-     *            @hibernate.column name="CollectionObjectID"
-     *         
+     * 
      */
     public CollectionObject getContainer() {
         return this.container;
@@ -212,10 +165,7 @@ public class Container  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="LocationID"         
-     *         
+     * 
      */
     public Location getLocation() {
         return this.location;

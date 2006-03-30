@@ -8,7 +8,7 @@ import java.util.Set;
 
 
 /**
- *  @hibernate.class table="taxon" 
+
  */
 public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.io.Serializable {
 
@@ -67,8 +67,7 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     // Property accessors
 
     /**
-     *      *  @hibernate.id generator-class="assigned"
-     *                 type="java.lang.Integer" column="TreeID" 
+     *      *  @hibernate.id generator-class="assigned"type="java.lang.Integer" column="TreeID" 
      */
     public Integer getTreeId() {
         return this.treeId;
@@ -79,8 +78,7 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     }
 
     /**
-     *      *  @hibernate.property column="TaxonomicSerialNumber"
-     *                 length="50" 
+     *      *  @hibernate.property column="TaxonomicSerialNumber"length="50" 
      */
     public String getTaxonomicSerialNumber() {
         return this.taxonomicSerialNumber;
@@ -92,7 +90,6 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
 
     /**
      *      *  @hibernate.property column="GUID" length="255"
-     *             
      */
     public String getGuid() {
         return this.guid;
@@ -104,7 +101,6 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
 
     /**
      *      *  @hibernate.property column="Name" length="50"
-     *             
      */
     public String getName() {
         return this.name;
@@ -116,7 +112,6 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
 
     /**
      *      *  @hibernate.property column="UnitInd1" length="50"
-     *             
      */
     public String getUnitInd1() {
         return this.unitInd1;
@@ -128,7 +123,6 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
 
     /**
      *      *  @hibernate.property column="UnitName1" length="50"
-     *             
      */
     public String getUnitName1() {
         return this.unitName1;
@@ -140,7 +134,6 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
 
     /**
      *      *  @hibernate.property column="UnitInd2" length="50"
-     *             
      */
     public String getUnitInd2() {
         return this.unitInd2;
@@ -152,7 +145,6 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
 
     /**
      *      *  @hibernate.property column="UnitName2" length="50"
-     *             
      */
     public String getUnitName2() {
         return this.unitName2;
@@ -164,7 +156,6 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
 
     /**
      *      *  @hibernate.property column="UnitInd3" length="50"
-     *             
      */
     public String getUnitInd3() {
         return this.unitInd3;
@@ -176,7 +167,6 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
 
     /**
      *      *  @hibernate.property column="UnitName3" length="50"
-     *             
      */
     public String getUnitName3() {
         return this.unitName3;
@@ -188,7 +178,6 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
 
     /**
      *      *  @hibernate.property column="UnitInd4" length="50"
-     *             
      */
     public String getUnitInd4() {
         return this.unitInd4;
@@ -200,7 +189,6 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
 
     /**
      *      *  @hibernate.property column="UnitName4" length="50"
-     *             
      */
     public String getUnitName4() {
         return this.unitName4;
@@ -212,7 +200,6 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
 
     /**
      *      *  @hibernate.property column="FullName" length="255"
-     *             
      */
     public String getFullName() {
         return this.fullName;
@@ -223,8 +210,7 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     }
 
     /**
-     *      *  @hibernate.property column="CommonName"
-     *                 length="128" 
+     *      *  @hibernate.property column="CommonName"length="128" 
      */
     public String getCommonName() {
         return this.commonName;
@@ -236,7 +222,6 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
 
     /**
      *      *  @hibernate.property column="Author" length="128"
-     *             
      */
     public String getAuthor() {
         return this.author;
@@ -248,7 +233,6 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
 
     /**
      *      *  @hibernate.property column="Source" length="64"
-     *             
      */
     public String getSource() {
         return this.source;
@@ -259,8 +243,7 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     }
 
     /**
-     *      *  @hibernate.property column="GroupPermittedToView"
-     *                 length="10" 
+     *      *  @hibernate.property column="GroupPermittedToView"length="10" 
      */
     public Integer getGroupPermittedToView() {
         return this.groupPermittedToView;
@@ -271,8 +254,7 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     }
 
     /**
-     *      *  @hibernate.property
-     *                 column="EnvironmentalProtectionStatus" length="64" 
+     *      *  @hibernate.propertycolumn="EnvironmentalProtectionStatus" length="64" 
      */
     public String getEnvironmentalProtectionStatus() {
         return this.environmentalProtectionStatus;
@@ -294,8 +276,7 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     }
 
     /**
-     *      *  @hibernate.property column="NodeNumber" length="10"
-     *                 index="IX_TXN_NodeNumber" 
+     *      *  @hibernate.property column="NodeNumber" length="10"index="IX_TXN_NodeNumber" 
      */
     public Integer getNodeNumber() {
         return this.nodeNumber;
@@ -306,8 +287,7 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     }
 
     /**
-     *      *  @hibernate.property column="HighestChildNodeNumber"
-     *                 length="10" index="IX_TXN_HighestChildNodeNumber" 
+     *      *  @hibernate.property column="HighestChildNodeNumber"length="10" index="IX_TXN_HighestChildNodeNumber" 
      */
     public Integer getHighestChildNodeNumber() {
         return this.highestChildNodeNumber;
@@ -318,8 +298,7 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     }
 
     /**
-     *      *  @hibernate.property column="TimestampCreated"
-     *                 length="23" 
+     *      *  @hibernate.property column="TimestampCreated"length="23" 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -330,8 +309,7 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     }
 
     /**
-     *      *  @hibernate.property column="TimestampModified"
-     *                 length="23" 
+     *      *  @hibernate.property column="TimestampModified"length="23" 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -342,8 +320,7 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     }
 
     /**
-     *      *  @hibernate.property column="LastEditedBy"
-     *                 length="50" 
+     *      *  @hibernate.property column="LastEditedBy"length="50" 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -366,7 +343,6 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
 
     /**
      *      *  @hibernate.property column="RankID" length="10"
-     *             
      */
     public Integer getRankId() {
         return this.rankId;
@@ -377,8 +353,7 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     }
 
     /**
-     *      *  @hibernate.property column="GroupNumber"
-     *                 length="20" 
+     *      *  @hibernate.property column="GroupNumber"length="20" 
      */
     public String getGroupNumber() {
         return this.groupNumber;
@@ -400,9 +375,7 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     }
 
     /**
-     *      *  @hibernate.set lazy="true" inverse="true"
-     *                 cascade="none" @hibernate.collection-key column="AcceptedID"
-     *                 @hibernate.collection-one-to-many class="edu.ku.brc.specify.datamodel.Taxon" 
+     *      *  @hibernate.set lazy="true" inverse="true"cascade="none" @hibernate.collection-key column="AcceptedID"@hibernate.collection-one-to-many class="edu.ku.brc.specify.datamodel.Taxon" 
      */
     public Set getAcceptedChildren() {
         return this.acceptedChildren;
@@ -413,8 +386,7 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     }
 
     /**
-     *      *  @hibernate.many-to-one not-null="true"
-     *                 @hibernate.column name="AcceptedID" 
+     *      *  @hibernate.many-to-one not-null="true"@hibernate.column name="AcceptedID" 
      */
     public Taxon getAcceptedTaxon() {
         return this.acceptedTaxon;
@@ -425,9 +397,7 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     }
 
     /**
-     *      *  @hibernate.set lazy="true" inverse="true"
-     *                 cascade="none" @hibernate.collection-key column="TaxonID"
-     *                 @hibernate.collection-one-to-many class="edu.ku.brc.specify.datamodel.TaxonCitation" 
+     *      *  @hibernate.set lazy="true" inverse="true"cascade="none" @hibernate.collection-key column="TaxonID"@hibernate.collection-one-to-many class="edu.ku.brc.specify.datamodel.TaxonCitation" 
      */
     public Set getTaxonCitations() {
         return this.taxonCitations;
@@ -438,8 +408,7 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     }
 
     /**
-     *      *  @hibernate.many-to-one not-null="true"
-     *                 @hibernate.column name="TreeDefID" 
+     *      *  @hibernate.many-to-one not-null="true"@hibernate.column name="TreeDefID" 
      */
     public TaxonTreeDef getDefinition() {
         return this.definition;
@@ -450,8 +419,7 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     }
 
     /**
-     *      *  @hibernate.many-to-one not-null="true"
-     *                 @hibernate.column name="ParentID" 
+     *      *  @hibernate.many-to-one not-null="true"@hibernate.column name="ParentID" 
      */
     public Taxon getParent() {
         return this.parent;

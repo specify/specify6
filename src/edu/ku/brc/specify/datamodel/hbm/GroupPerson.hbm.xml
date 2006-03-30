@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.GroupPerson" table="grouppersons">
-    <meta attribute="class-description" inherit="false">
-	Associates agents into groups.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="groupPersonsId" type="java.lang.Integer" column="GroupPersonsID">
         <meta attribute="field-description"></meta>
@@ -46,17 +38,13 @@
   
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one name="agentByGroup" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" cascade="none" unique-key="IX_GroupPersonsOrder">
-        <meta attribute="field-description">
-	   AgentID of group
-	</meta>
+        <meta attribute="field-description">AgentID of group</meta>
         <column name="GroupID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one name="agentByMember" class="edu.ku.brc.specify.datamodel.Agent" not-null="true">
-        <meta attribute="field-description">
-	   AgentID of member (member must be of type Person)
-	</meta>
+        <meta attribute="field-description">AgentID of member (member must be of type Person)</meta>
         <column name="MemberID"/>
     </many-to-one>
 

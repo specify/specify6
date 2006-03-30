@@ -6,7 +6,7 @@
 <hibernate-mapping>
 
     <class name="edu.ku.brc.specify.datamodel.Taxon" table="taxon" lazy="true">
-        <meta attribute="class-description" inherit="false"> @hibernate.class table="taxon" </meta>
+    <meta attribute="class-description" inherit="false"/>
         <meta attribute="implements">Treeable</meta>
         <meta attribute="implements">java.awt.datatransfer.Transferable</meta>
         <meta attribute="extra-import">java.awt.datatransfer.DataFlavor</meta>
@@ -133,8 +133,7 @@
         </meta>
 
         <id name="treeId" type="java.lang.Integer" column="TreeID">
-            <meta attribute="field-description"> @hibernate.id generator-class="assigned"
-                type="java.lang.Integer" column="TreeID" </meta>
+            <meta attribute="field-description"> @hibernate.id generator-class="assigned"type="java.lang.Integer" column="TreeID" </meta>
             <meta attribute="scope-field">protected</meta>
             <generator class="native"/>
         </id>
@@ -142,106 +141,89 @@
         <property name="taxonomicSerialNumber" type="java.lang.String"
             column="TaxonomicSerialNumber" length="50">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="TaxonomicSerialNumber"
-                length="50" </meta>
+            <meta attribute="field-description"> @hibernate.property column="TaxonomicSerialNumber"length="50" </meta>
         </property>
         
         <property name="guid" type="java.lang.String" column="GUID" length="255">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="GUID" length="255"
-            </meta>
+            <meta attribute="field-description"> @hibernate.property column="GUID" length="255"</meta>
         </property>
 
         <property name="name" type="java.lang.String" column="Name" length="50">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="Name" length="50"
-            </meta>
+            <meta attribute="field-description"> @hibernate.property column="Name" length="50"</meta>
         </property>
 
         <property name="unitInd1" type="java.lang.String" column="UnitInd1" length="50">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="UnitInd1" length="50"
-            </meta>
+            <meta attribute="field-description"> @hibernate.property column="UnitInd1" length="50"</meta>
         </property>
 
         <property name="unitName1" type="java.lang.String" column="UnitName1" length="50">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="UnitName1" length="50"
-            </meta>
+            <meta attribute="field-description"> @hibernate.property column="UnitName1" length="50"</meta>
         </property>
 
         <property name="unitInd2" type="java.lang.String" column="UnitInd2" length="50">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="UnitInd2" length="50"
-            </meta>
+            <meta attribute="field-description"> @hibernate.property column="UnitInd2" length="50"</meta>
         </property>
 
         <property name="unitName2" type="java.lang.String" column="UnitName2" length="50">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="UnitName2" length="50"
-            </meta>
+            <meta attribute="field-description"> @hibernate.property column="UnitName2" length="50"</meta>
         </property>
 
         <property name="unitInd3" type="java.lang.String" column="UnitInd3" length="50">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="UnitInd3" length="50"
-            </meta>
+            <meta attribute="field-description"> @hibernate.property column="UnitInd3" length="50"</meta>
         </property>
 
         <property name="unitName3" type="java.lang.String" column="UnitName3" length="50">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="UnitName3" length="50"
-            </meta>
+            <meta attribute="field-description"> @hibernate.property column="UnitName3" length="50"</meta>
         </property>
 
         <property name="unitInd4" type="java.lang.String" column="UnitInd4" length="50">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="UnitInd4" length="50"
-            </meta>
+            <meta attribute="field-description"> @hibernate.property column="UnitInd4" length="50"</meta>
         </property>
 
         <property name="unitName4" type="java.lang.String" column="UnitName4" length="50">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="UnitName4" length="50"
-            </meta>
+            <meta attribute="field-description"> @hibernate.property column="UnitName4" length="50"</meta>
         </property>
 
         <property name="fullName" type="java.lang.String" column="FullTaxon" length="255">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="FullName" length="255"
-            </meta>
+            <meta attribute="field-description"> @hibernate.property column="FullName" length="255"</meta>
         </property>
 
         <property name="commonName" type="java.lang.String" column="CommonName" length="128">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="CommonName"
-                length="128" </meta>
+            <meta attribute="field-description"> @hibernate.property column="CommonName"length="128" </meta>
         </property>
 
         <property name="author" type="java.lang.String" column="Author" length="128">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="Author" length="128"
-            </meta>
+            <meta attribute="field-description"> @hibernate.property column="Author" length="128"</meta>
         </property>
 
         <property name="source" type="java.lang.String" column="Source" length="64">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="Source" length="64"
-            </meta>
+            <meta attribute="field-description"> @hibernate.property column="Source" length="64"</meta>
         </property>
 
         <property name="groupPermittedToView" type="java.lang.Integer" column="GroupPermittedToView"
             length="10">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="GroupPermittedToView"
-                length="10" </meta>
+            <meta attribute="field-description"> @hibernate.property column="GroupPermittedToView"length="10" </meta>
         </property>
 
         <property name="environmentalProtectionStatus" type="java.lang.String"
             column="EnvironmentalProtectionStatus" length="64">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property
-                column="EnvironmentalProtectionStatus" length="64" </meta>
+            <meta attribute="field-description"> @hibernate.propertycolumn="EnvironmentalProtectionStatus" length="64" </meta>
         </property>
 
         <property name="remarks" type="text" column="Remarks">
@@ -252,35 +234,30 @@
         <property name="nodeNumber" type="java.lang.Integer" column="NodeNumber" length="10"
             index="IX_TXN_NodeNumber">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="NodeNumber" length="10"
-                index="IX_TXN_NodeNumber" </meta>
+            <meta attribute="field-description"> @hibernate.property column="NodeNumber" length="10"index="IX_TXN_NodeNumber" </meta>
         </property>
 
         <property name="highestChildNodeNumber" type="java.lang.Integer"
             column="HighestChildNodeNumber" length="10" index="IX_TXN_HighestChildNodeNumber">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="HighestChildNodeNumber"
-                length="10" index="IX_TXN_HighestChildNodeNumber" </meta>
+            <meta attribute="field-description"> @hibernate.property column="HighestChildNodeNumber"length="10" index="IX_TXN_HighestChildNodeNumber" </meta>
         </property>
 
         <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated"
             length="23">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="TimestampCreated"
-                length="23" </meta>
+            <meta attribute="field-description"> @hibernate.property column="TimestampCreated"length="23" </meta>
         </property>
 
         <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified"
             length="23">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="TimestampModified"
-                length="23" </meta>
+            <meta attribute="field-description"> @hibernate.property column="TimestampModified"length="23" </meta>
         </property>
 
         <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="LastEditedBy"
-                length="50" </meta>
+            <meta attribute="field-description"> @hibernate.property column="LastEditedBy"length="50" </meta>
         </property>
 
         <property name="accepted" type="short" column="Accepted">
@@ -290,14 +267,12 @@
 
         <property name="rankId" type="java.lang.Integer" column="RankID" length="10">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="RankID" length="10"
-            </meta>
+            <meta attribute="field-description"> @hibernate.property column="RankID" length="10"</meta>
         </property>
 
         <property name="groupNumber" type="java.lang.String" column="GroupNumber" length="20">
             <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"> @hibernate.property column="GroupNumber"
-                length="20" </meta>
+            <meta attribute="field-description"> @hibernate.property column="GroupNumber"length="20" </meta>
         </property>
         
         <property name="isCurrent" type="java.lang.Boolean" column="IsCurrent">
@@ -308,9 +283,7 @@
 
         <!-- bi-directional one-to-many association to Taxon -->
         <set name="acceptedChildren" lazy="true" inverse="true" cascade="none">
-            <meta attribute="field-description"> @hibernate.set lazy="true" inverse="true"
-                cascade="none" @hibernate.collection-key column="AcceptedID"
-                @hibernate.collection-one-to-many class="edu.ku.brc.specify.datamodel.Taxon" </meta>
+            <meta attribute="field-description"> @hibernate.set lazy="true" inverse="true"cascade="none" @hibernate.collection-key column="AcceptedID"@hibernate.collection-one-to-many class="edu.ku.brc.specify.datamodel.Taxon" </meta>
             <key>
                 <column name="AcceptedID"/>
             </key>
@@ -320,16 +293,13 @@
         <!-- bi-directional many-to-one association to Taxon -->
         <many-to-one name="acceptedTaxon" class="edu.ku.brc.specify.datamodel.Taxon" not-null="true"
             outer-join="true">
-            <meta attribute="field-description"> @hibernate.many-to-one not-null="true"
-                @hibernate.column name="AcceptedID" </meta>
+            <meta attribute="field-description"> @hibernate.many-to-one not-null="true"@hibernate.column name="AcceptedID" </meta>
             <column name="AcceptedID"/>
         </many-to-one>
 
         <!-- bi-directional one-to-many association to TaxonCitation -->
         <set name="taxonCitations" lazy="true" inverse="true" cascade="none">
-            <meta attribute="field-description"> @hibernate.set lazy="true" inverse="true"
-                cascade="none" @hibernate.collection-key column="TaxonID"
-                @hibernate.collection-one-to-many class="edu.ku.brc.specify.datamodel.TaxonCitation" </meta>
+            <meta attribute="field-description"> @hibernate.set lazy="true" inverse="true"cascade="none" @hibernate.collection-key column="TaxonID"@hibernate.collection-one-to-many class="edu.ku.brc.specify.datamodel.TaxonCitation" </meta>
             <key>
                 <column name="TaxonID"/>
             </key>
@@ -339,16 +309,14 @@
         <!-- bi-directional many-to-one association to TaxonTreeDef -->
         <many-to-one name="definition" class="edu.ku.brc.specify.datamodel.TaxonTreeDef"
             not-null="true" outer-join="true">
-            <meta attribute="field-description"> @hibernate.many-to-one not-null="true"
-                @hibernate.column name="TreeDefID" </meta>
+            <meta attribute="field-description"> @hibernate.many-to-one not-null="true"@hibernate.column name="TreeDefID" </meta>
             <column name="TreeDefID"/>
         </many-to-one>
 
         <!-- bi-directional many-to-one association to Taxon -->
         <many-to-one name="parent" class="edu.ku.brc.specify.datamodel.Taxon" not-null="true"
             outer-join="true">
-            <meta attribute="field-description"> @hibernate.many-to-one not-null="true"
-                @hibernate.column name="ParentID" </meta>
+            <meta attribute="field-description"> @hibernate.many-to-one not-null="true"@hibernate.column name="ParentID" </meta>
             <column name="ParentID"/>
         </many-to-one>
 

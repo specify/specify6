@@ -1,58 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.Locality" table="locality" lazy="true">
-    <meta attribute="class-description" inherit="false">
-	Locality where CollectingEvent took place
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="localityId" type="java.lang.Integer" column="LocalityID">
-        <meta attribute="field-description">
-	   Primary key
-	</meta>
+        <meta attribute="field-description">Primary key</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
 
     <property name="namedPlace" type="java.lang.String" column="NamedPlace" length="255" index="IX_LocalityNamedPlace">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   The named place the locality is closest to
-	</meta>    
+        <meta attribute="field-description">The named place the locality is closest to</meta>
     </property>
     
     <property name="relationToNamedPlace" type="java.lang.String" column="RelationToNamedPlace" length="120">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Relation of the locality to the named place
-	</meta>    
+        <meta attribute="field-description">Relation of the locality to the named place</meta>
     </property>
     
     <property name="localityName" type="java.lang.String" column="LocalityName" not-null="true" length="1073741823" index="IX_Locality">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   The full name of the locality.
-	</meta>    
+        <meta attribute="field-description">The full name of the locality.</meta>
     </property>
     
     <property name="baseMeridian" type="java.lang.String" column="BaseMeridian" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   BaseMeridian for the Range/Township/Section data
-	</meta>    
+        <meta attribute="field-description">BaseMeridian for the Range/Township/Section data</meta>
     </property>
     
     <property name="range" type="java.lang.String" column="Range" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   The Range of a legal description
-	</meta>    
+        <meta attribute="field-description">The Range of a legal description</meta>
     </property>
     
     <property name="rangeDirection" type="java.lang.String" column="RangeDirection" length="50">
@@ -62,9 +42,7 @@
     
     <property name="township" type="java.lang.String" column="Township" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   The Township of a legal description
-	</meta>    
+        <meta attribute="field-description">The Township of a legal description</meta>
     </property>
     
     <property name="townshipDirection" type="java.lang.String" column="TownshipDirection" length="50">
@@ -74,9 +52,7 @@
     
     <property name="section" type="java.lang.String" column="Section" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   The Section of a legal description
-	</meta>    
+        <meta attribute="field-description">The Section of a legal description</meta>
     </property>
     
     <property name="sectionPart" type="java.lang.String" column="SectionPart" length="50">
@@ -86,114 +62,82 @@
     
     <property name="verbatimElevation" type="java.lang.String" column="VerbatimElevation" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   The verbatim elevation including units as given in the field notes
-	</meta>    
+        <meta attribute="field-description">The verbatim elevation including units as given in the field notes</meta>
     </property>
     
     <property name="originalElevationUnit" type="java.lang.String" column="OriginalElevationUnit" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   i.e. Meters, Feet, ...
-	</meta>    
+        <meta attribute="field-description">i.e. Meters, Feet, ...</meta>
     </property>
     
-    <property name="minElevation" type="java.lang.Float" column="MinElevation" length="24" index="IX_LocalityMinElev">
+    <property name="minElevation" type="java.lang.Double" column="MinElevation" index="IX_LocalityMinElev">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   The minimum elevation in Meters
-	</meta>    
+        <meta attribute="field-description">The minimum elevation in Meters</meta>
     </property>
     
-    <property name="maxElevation" type="java.lang.Float" column="MaxElevation" length="24" index="IX_LocalityMaxElev">
+    <property name="maxElevation" type="java.lang.Double" column="MaxElevation" index="IX_LocalityMaxElev">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   The maximum elevation in Meters
-	</meta>    
+        <meta attribute="field-description">The maximum elevation in Meters</meta>
     </property>
     
     <property name="elevationMethod" type="java.lang.String" column="ElevationMethod" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   The method used to determine the elevation
-	</meta>    
+        <meta attribute="field-description">The method used to determine the elevation</meta>
     </property>
     
-    <property name="elevationAccuracy" type="java.lang.Float" column="ElevationAccuracy" length="24">
+    <property name="elevationAccuracy" type="java.lang.Double" column="ElevationAccuracy">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   plus or minus -- in meters
-	</meta>    
+        <meta attribute="field-description">plus or minus -- in meters</meta>
     </property>
     
     <property name="originalLatLongUnit" type="java.lang.Integer" column="OriginalLatLongUnit" length="10">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   i.e. Decimal, Deg/Min/Sec, ...
-	</meta>    
+        <meta attribute="field-description">i.e. Decimal, Deg/Min/Sec, ...</meta>
     </property>
     
     <property name="latLongType" type="java.lang.String" column="LatLongType" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   The type of area described by the lat long data (Point,Line,Rectangle)
-	</meta>    
+        <meta attribute="field-description">The type of area described by the lat long data (Point,Line,Rectangle)</meta>
     </property>
     
-    <property name="latitude1" type="java.lang.Float" column="Latitude1" length="24" index="IX_LocalityLat1">
+    <property name="latitude1" type="java.lang.Double" column="Latitude1" index="IX_LocalityLat1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Latitude of first point
-	</meta>    
+        <meta attribute="field-description">Latitude of first point</meta>
     </property>
     
-    <property name="longitude1" type="java.lang.Float" column="Longitude1" length="24" index="IX_LocalityLong1">
+    <property name="longitude1" type="java.lang.Double" column="Longitude1" index="IX_LocalityLong1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Longitude of first point
-	</meta>    
+        <meta attribute="field-description">Longitude of first point</meta>
     </property>
     
-    <property name="latitude2" type="java.lang.Float" column="Latitude2" length="24" index="IX_LocalityLat2">
+    <property name="latitude2" type="java.lang.Double" column="Latitude2" index="IX_LocalityLat2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Latitude of second point
-	</meta>    
+        <meta attribute="field-description">Latitude of second point</meta>
     </property>
     
-    <property name="longitude2" type="java.lang.Float" column="Longitude2" length="24" index="IX_LocalityLong2">
+    <property name="longitude2" type="java.lang.Double" column="Longitude2" index="IX_LocalityLong2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Longitude of second point
-	</meta>    
+        <meta attribute="field-description">Longitude of second point</meta>
     </property>
     
     <property name="latLongMethod" type="java.lang.String" column="LatLongMethod" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   the method used to determine the LatitudeLongitude
-	</meta>    
+        <meta attribute="field-description">the method used to determine the LatitudeLongitude</meta>
     </property>
     
-    <property name="latLongAccuracy" type="java.lang.Float" column="LatLongAccuracy" length="24">
+    <property name="latLongAccuracy" type="java.lang.Double" column="LatLongAccuracy">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   radius -- in decimal degrees
-	</meta>    
+        <meta attribute="field-description">radius -- in decimal degrees</meta>
     </property>
     
     <property name="datum" type="java.lang.String" column="Datum" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   GPSDatum
-	</meta>    
+        <meta attribute="field-description">GPSDatum</meta>
     </property>
     
     <property name="groupPermittedToView" type="java.lang.Integer" column="GroupPermittedToView" length="10" index="IX_LocalityGPV">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   The name of the group that this record is visible to. (Default to public)
-	</meta>    
+        <meta attribute="field-description">The name of the group that this record is visible to. (Default to public)</meta>
     </property>
     
     <property name="remarks" type="text" column="Remarks">
@@ -203,65 +147,47 @@
     
     <property name="text1" type="text" column="Text1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="text2" type="text" column="Text2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
-    <property name="number1" type="java.lang.Float" column="Number1" length="24">
+    <property name="number1" type="java.lang.Double" column="Number1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
-    <property name="number2" type="java.lang.Float" column="Number2" length="24">
+    <property name="number2" type="java.lang.Double" column="Number2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Date the record was created
-	</meta>    
+        <meta attribute="field-description">Date the record was created</meta>
     </property>
     
     <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23" index="IX_Locality_1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Date the record was modified
-	</meta>    
+        <meta attribute="field-description">Date the record was modified</meta>
     </property>
     
     <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50" index="IX_Locality_2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Name of the person last editing the record
-	</meta>    
+        <meta attribute="field-description">Name of the person last editing the record</meta>
     </property>
     
     <property name="yesNo1" type="boolean" column="YesNo1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="yesNo2" type="boolean" column="YesNo2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
 
     <property name="lat1text" type="java.lang.String" column="Lat1Text" length="50">
@@ -324,9 +250,7 @@
     <!-- bi-directional many-to-one association to Geography -->
     <many-to-one name="geography" class="edu.ku.brc.specify.datamodel.Geography" not-null="true" outer-join="true" index="IX_LocalityGeographyID">
 	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Link to Country, State, County, WaterBody, Island, IslandGroup ... info
-	</meta>
+        <meta attribute="field-description">Link to Country, State, County, WaterBody, Island, IslandGroup ... info</meta>
         <column name="GeographyID"/>
     </many-to-one>
     

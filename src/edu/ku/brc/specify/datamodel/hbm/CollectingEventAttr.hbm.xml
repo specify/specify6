@@ -3,10 +3,7 @@
 
 
 <class name="edu.ku.brc.specify.datamodel.CollectingEventAttr" table="collectingeventattr" lazy="true">
-    <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="collectingeventattr"
-    </meta>
+    <meta attribute="class-description" inherit="false"/>
     <meta attribute="implements">AttributeIFace</meta>
  
     <id name="attrId" type="java.lang.Integer" column="AttrID">
@@ -20,7 +17,7 @@
         <meta attribute="field-description"></meta>    
     </property>
 
-    <property name="dblValue" type="double" column="DoubleValue">
+    <property name="dblValue" type="java.lang.Double" column="DoubleValue">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>

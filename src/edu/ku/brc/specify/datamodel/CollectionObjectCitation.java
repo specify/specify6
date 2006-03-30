@@ -6,9 +6,7 @@ import java.util.Date;
 
 
 /**
- *        @hibernate.class
- *         table="collectionobjectcitation"
- *     
+
  */
 public class CollectionObjectCitation  implements java.io.Serializable {
 
@@ -40,11 +38,7 @@ public class CollectionObjectCitation  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="CollectionObjectCitationID"
-     *         
+     * 
      */
     public Integer getCollectionObjectCitationId() {
         return this.collectionObjectCitationId;
@@ -55,9 +49,7 @@ public class CollectionObjectCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -68,11 +60,7 @@ public class CollectionObjectCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -83,12 +71,7 @@ public class CollectionObjectCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -99,10 +82,7 @@ public class CollectionObjectCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -113,10 +93,7 @@ public class CollectionObjectCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="ReferenceWorkID"         
-     *         
+     *      * The associated reference
      */
     public ReferenceWork getReferenceWork() {
         return this.referenceWork;
@@ -127,10 +104,7 @@ public class CollectionObjectCitation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="BiologicalObjectID"         
-     *         
+     *      * Biological Object cited
      */
     public CollectionObject getCollectionObject() {
         return this.collectionObject;

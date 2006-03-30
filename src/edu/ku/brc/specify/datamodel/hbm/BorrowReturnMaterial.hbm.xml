@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.BorrowReturnMaterial" table="borrowreturnmaterial" lazy="true">
-    <meta attribute="class-description" inherit="false">
-	Return information for borrowed material.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="borrowReturnMaterialId" type="java.lang.Integer" column="BorrowReturnMaterialID">
         <meta attribute="field-description"></meta>
@@ -24,9 +16,7 @@
     </property>
     <property name="quantity" type="short" column="Quantity">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Quantity of preparations returned
-	</meta>    
+        <meta attribute="field-description">Quantity of preparations returned</meta>
     </property>
     
     <property name="remarks" type="text" column="Remarks">
@@ -53,17 +43,13 @@
   
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
-        <meta attribute="field-description">
-	   person processing the  return
-	</meta>
+        <meta attribute="field-description">person processing the  return</meta>
         <column name="ReturnedByID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to BorrowMaterial -->
     <many-to-one name="borrowMaterial" class="edu.ku.brc.specify.datamodel.BorrowMaterial" not-null="true" outer-join="true" cascade="none" index="IX_BorrowReturnMaterialBorrowMaterialID">
-        <meta attribute="field-description">
-	   Borrowed preparation returned
-	</meta>
+        <meta attribute="field-description">Borrowed preparation returned</meta>
         <column name="BorrowMaterialID"/>
     </many-to-one>
 

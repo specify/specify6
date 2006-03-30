@@ -1,30 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject" table="deaccessioncollectionobject" lazy="true">
-    <meta attribute="class-description" inherit="false">
-	Information about deaccessioned physical objects.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="deaccessionCollectionObjectId" type="java.lang.Integer" column="DeaccessionCollectionObjectID">
-        <meta attribute="field-description">
-	   Primary key
-	</meta>
+        <meta attribute="field-description">Primary key</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
 
     <property name="quantity" type="short" column="Quantity">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Number of specimens deaccessioned (necessary for lots)
-	</meta>    
+        <meta attribute="field-description">Number of specimens deaccessioned (necessary for lots)</meta>
     </property>
     
     <property name="remarks" type="text" column="Remarks">
@@ -51,17 +39,13 @@
   
     <!-- bi-directional many-to-one association to CollectionObject -->
     <many-to-one name="collectionObjectCatalog" class="edu.ku.brc.specify.datamodel.CollectionObject" not-null="true" outer-join="true" unique-key="IX_DeaccessionCollectionObject">
-        <meta attribute="field-description">
-	   The object being deaccessioned
-	</meta>
+        <meta attribute="field-description">The object being deaccessioned</meta>
         <column name="CollectionObjectID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Deaccession -->
     <many-to-one name="deaccession" class="edu.ku.brc.specify.datamodel.Deaccession" not-null="true" outer-join="true" index="IX_DeaccessionCollectionObjectDeaccessionID" unique-key="IX_DeaccessionCollectionObject">
-        <meta attribute="field-description">
-	   The deaccession
-	</meta>
+        <meta attribute="field-description">The deaccession</meta>
         <column name="DeaccessionID"/>
     </many-to-one>
     

@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.BorrowAgent" table="borrowagents" lazy="true">
-    <meta attribute="class-description" inherit="false">
-	Associates agents with incoming material.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="borrowAgentsId" type="java.lang.Integer" column="BorrowAgentsID">
         <meta attribute="field-description"></meta>
@@ -20,9 +12,7 @@
 
     <property name="role" type="java.lang.String" column="Role" not-null="true" length="32" unique-key="IX_BorrowAgents">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Role played by agent in borrow
-	</meta>    
+        <meta attribute="field-description">Role played by agent in borrow</meta>
     </property>
     
     <property name="remarks" type="text" column="Remarks">
@@ -49,17 +39,13 @@
   
     <!-- bi-directional many-to-one association to AgentAddress -->
     <many-to-one name="agentAddress" class="edu.ku.brc.specify.datamodel.AgentAddress" not-null="true" outer-join="true" index="IX_BorrowAgentsAgentAddressID" unique-key="IX_BorrowAgents">
-        <meta attribute="field-description">
-	   Address/Organization from which agent participated in the borrow
-	</meta>
+        <meta attribute="field-description">Address/Organization from which agent participated in the borrow</meta>
         <column name="AgentAddressID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Borrow -->
     <many-to-one name="borrow" class="edu.ku.brc.specify.datamodel.Borrow" not-null="true" outer-join="true" cascade="none" index="IX_BorrowAgentsBorrowID" unique-key="IX_BorrowAgents">
-        <meta attribute="field-description">
-	   ID of borrow in which Agent played role
-	</meta>
+        <meta attribute="field-description">ID of borrow in which Agent played role</meta>
         <column name="BorrowID"/>
     </many-to-one>
 

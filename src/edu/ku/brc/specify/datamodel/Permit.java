@@ -8,9 +8,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="permit"
- *     
+
  */
 public class Permit  implements java.io.Serializable {
 
@@ -56,11 +54,7 @@ public class Permit  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="PermitID"
-     *         
+     *      * Primary key
      */
     public Integer getPermitId() {
         return this.permitId;
@@ -71,11 +65,7 @@ public class Permit  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="PermitNumber"
-     *             length="50"
-     *             not-null="true"
-     *         
+     *      * Identifier for the permit
      */
     public String getPermitNumber() {
         return this.permitNumber;
@@ -86,10 +76,7 @@ public class Permit  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Type"
-     *             length="50"
-     *         
+     *      * Permit category - 'CITES', 'Migratory Bird Treaty Act', ...
      */
     public String getType() {
         return this.type;
@@ -100,9 +87,7 @@ public class Permit  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="IssuedDate"
-     *         
+     *      * Date permit was issued
      */
     public Calendar getIssuedDate() {
         return this.issuedDate;
@@ -113,9 +98,7 @@ public class Permit  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="StartDate"
-     *         
+     *      * Date permit becomes effective
      */
     public Calendar getStartDate() {
         return this.startDate;
@@ -126,9 +109,7 @@ public class Permit  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="EndDate"
-     *         
+     *      * Date permit expires
      */
     public Calendar getEndDate() {
         return this.endDate;
@@ -139,9 +120,7 @@ public class Permit  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="RenewalDate"
-     *         
+     *      * Date of renewal
      */
     public Calendar getRenewalDate() {
         return this.renewalDate;
@@ -152,9 +131,7 @@ public class Permit  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -165,9 +142,7 @@ public class Permit  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text1"
-     *         
+     *      * User definable
      */
     public String getText1() {
         return this.text1;
@@ -178,9 +153,7 @@ public class Permit  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text2"
-     *         
+     *      * User definable
      */
     public String getText2() {
         return this.text2;
@@ -191,10 +164,7 @@ public class Permit  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number1"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber1() {
         return this.number1;
@@ -205,10 +175,7 @@ public class Permit  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number2"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber2() {
         return this.number2;
@@ -219,12 +186,7 @@ public class Permit  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -235,11 +197,7 @@ public class Permit  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -250,10 +208,7 @@ public class Permit  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -264,9 +219,7 @@ public class Permit  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo1"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo1() {
         return this.yesNo1;
@@ -277,9 +230,7 @@ public class Permit  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo2"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo2() {
         return this.yesNo2;
@@ -290,15 +241,7 @@ public class Permit  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="PermitID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
-     *         
+     * 
      */
     public Set getAccessionAuthorizations() {
         return this.accessionAuthorizations;
@@ -309,10 +252,7 @@ public class Permit  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="IssueeID"         
-     *         
+     *      * AgentAddressID of Issuee
      */
     public AgentAddress getAgentAddressByIssueeId() {
         return this.agentAddressByIssueeId;
@@ -323,10 +263,7 @@ public class Permit  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="IssuerID"         
-     *         
+     *      * AgentAddressID of Issuer
      */
     public AgentAddress getAgentAddressByIssuerId() {
         return this.agentAddressByIssuerId;

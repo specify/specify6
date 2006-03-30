@@ -6,9 +6,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="attributedef"
- *     
+
  */
 public class AttributeDef  implements java.io.Serializable {
 
@@ -54,9 +52,7 @@ public class AttributeDef  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TableType"
-     *         
+     * 
      */
     public Short getTableType() {
         return this.tableType;
@@ -67,10 +63,7 @@ public class AttributeDef  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="FieldName"
-     *             length="32"
-     *         
+     * 
      */
     public String getFieldName() {
         return this.fieldName;
@@ -81,9 +74,7 @@ public class AttributeDef  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="DataType"
-     *         
+     * 
      */
     public Short getDataType() {
         return this.dataType;
@@ -94,10 +85,7 @@ public class AttributeDef  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="CollectionObjDefID"
-     *         
+     * 
      */
     public CollectionObjDef getCollectionObjDef() {
         return this.collectionObjDef;
@@ -108,10 +96,7 @@ public class AttributeDef  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="false"
-     *            @hibernate.column name="PrepTypeID"
-     *         
+     * 
      */
     public PrepType getPrepType() {
         return this.prepType;
@@ -122,15 +107,7 @@ public class AttributeDef  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="AttributeDefID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.CollectingEventAttr"
-     *         
+     * 
      */
     public Set getCollectingEventAttrs() {
         return this.collectingEventAttrs;
@@ -141,15 +118,7 @@ public class AttributeDef  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="AttributeDefID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.CollectingEventAttr"
-     *         
+     * 
      */
     public Set getPreparationAttr() {
         return this.preparationAttr;
@@ -160,15 +129,7 @@ public class AttributeDef  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="AttributeDefID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.CollectionObjectAttr"
-     *         
+     * 
      */
     public Set getCollectionObjectAttrs() {
         return this.collectionObjectAttrs;
@@ -179,15 +140,7 @@ public class AttributeDef  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="AttributeDefID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.ExternalResourceAttr"
-     *         
+     * 
      */
     public Set getExternalResources() {
         return this.externalResources;

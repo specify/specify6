@@ -7,9 +7,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="agentaddress"
- *     
+
  */
 public class AgentAddress  implements java.io.Serializable {
 
@@ -61,11 +59,7 @@ public class AgentAddress  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="AgentAddressID"
-     *         
+     *      * PrimaryKey
      */
     public Integer getAgentAddressId() {
         return this.agentAddressId;
@@ -76,9 +70,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TypeOfAgentAddressed"
-     *         
+     *      * 0 for organization, 1 for person
      */
     public Short getTypeOfAgentAddressed() {
         return this.typeOfAgentAddressed;
@@ -89,10 +81,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="JobTitle"
-     *             length="50"
-     *         
+     *      * Agent's (person) job title at specified address and organization
      */
     public String getJobTitle() {
         return this.jobTitle;
@@ -103,10 +92,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Phone1"
-     *             length="50"
-     *         
+     * 
      */
     public String getPhone1() {
         return this.phone1;
@@ -117,10 +103,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Phone2"
-     *             length="50"
-     *         
+     * 
      */
     public String getPhone2() {
         return this.phone2;
@@ -131,10 +114,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Fax"
-     *             length="50"
-     *         
+     * 
      */
     public String getFax() {
         return this.fax;
@@ -145,10 +125,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="RoomOrBuilding"
-     *             length="50"
-     *         
+     * 
      */
     public String getRoomOrBuilding() {
         return this.roomOrBuilding;
@@ -159,10 +136,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Email"
-     *             length="50"
-     *         
+     * 
      */
     public String getEmail() {
         return this.email;
@@ -173,9 +147,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="URL"
-     *         
+     * 
      */
     public String getUrl() {
         return this.url;
@@ -186,9 +158,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -199,11 +169,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -214,12 +180,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -230,10 +191,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -244,9 +202,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="IsCurrent"
-     *         
+     *      * Is the agent currently located at this address?
      */
     public Boolean getIsCurrent() {
         return this.isCurrent;
@@ -257,15 +213,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="AgentAddressID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.LoanAgent"
-     *         
+     * 
      */
     public Set getLoanAgents() {
         return this.loanAgents;
@@ -276,15 +224,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="ShipperID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Shipment"
-     *         
+     * 
      */
     public Set getShipmentsByShipper() {
         return this.shipmentsByShipper;
@@ -295,15 +235,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="ShippedToID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Shipment"
-     *         
+     * 
      */
     public Set getShipmentsByShippedTo() {
         return this.shipmentsByShippedTo;
@@ -314,15 +246,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="AgentAddressID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.DeaccessionAgent"
-     *         
+     * 
      */
     public Set getDeaccessionAgents() {
         return this.deaccessionAgents;
@@ -333,15 +257,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="ReceivedFromOrganizationID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.ExchangeIn"
-     *         
+     * 
      */
     public Set getExchangeIns() {
         return this.exchangeIns;
@@ -352,15 +268,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="IssueeID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Permit"
-     *         
+     * 
      */
     public Set getPermitsByIssuee() {
         return this.permitsByIssuee;
@@ -371,15 +279,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="IssuerID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Permit"
-     *         
+     * 
      */
     public Set getPermitsByIssuer() {
         return this.permitsByIssuer;
@@ -390,15 +290,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="AgentAddressID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.BorrowAgent"
-     *         
+     * 
      */
     public Set getBorrowAgents() {
         return this.borrowAgents;
@@ -409,15 +301,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="AgentAddressID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.AccessionAgent"
-     *         
+     * 
      */
     public Set getAccessionAgents() {
         return this.accessionAgents;
@@ -428,15 +312,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="SentToOrganizationID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.ExchangeOut"
-     *         
+     * 
      */
     public Set getExchangeOuts() {
         return this.exchangeOuts;
@@ -447,10 +323,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="OrganizationID"         
-     *         
+     *      * Associates Agent identified by AgentID (type Person) as a member of Agent identified by OrganizationID (type Organization)
      */
     public Agent getOrganization() {
         return this.organization;
@@ -461,10 +334,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="AgentID"         
-     *         
+     *      * Associated record in Agent table
      */
     public Agent getAgent() {
         return this.agent;
@@ -475,10 +345,7 @@ public class AgentAddress  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="AddressID"         
-     *         
+     *      * Associated record in Address table
      */
     public Address getAddress() {
         return this.address;

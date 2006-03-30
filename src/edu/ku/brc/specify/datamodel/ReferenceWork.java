@@ -7,9 +7,7 @@ import java.util.Set;
 
 
 /**
- *        @hibernate.class
- *         table="referencework"
- *     
+
  */
 public class ReferenceWork  implements java.io.Serializable {
 
@@ -62,11 +60,7 @@ public class ReferenceWork  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="ReferenceWorkID"
-     *         
+     *      * PrimaryKey
      */
     public Integer getReferenceWorkId() {
         return this.referenceWorkId;
@@ -77,10 +71,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="ContainingReferenceWorkID"
-     *             length="10"
-     *         
+     *      * Link to Reference containing (if Section)
      */
     public Integer getContainingReferenceWorkId() {
         return this.containingReferenceWorkId;
@@ -91,11 +82,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="ReferenceWorkType"
-     *             length="3"
-     *             not-null="true"
-     *         
+     * 
      */
     public Byte getReferenceWorkType() {
         return this.referenceWorkType;
@@ -106,10 +93,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Title"
-     *             length="255"
-     *         
+     *      * Title of reference
      */
     public String getTitle() {
         return this.title;
@@ -120,10 +104,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Publisher"
-     *             length="50"
-     *         
+     * 
      */
     public String getPublisher() {
         return this.publisher;
@@ -134,10 +115,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="PlaceOfPublication"
-     *             length="50"
-     *         
+     * 
      */
     public String getPlaceOfPublication() {
         return this.placeOfPublication;
@@ -148,10 +126,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="WorkDate"
-     *             length="25"
-     *         
+     * 
      */
     public String getWorkDate() {
         return this.workDate;
@@ -162,10 +137,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Volume"
-     *             length="25"
-     *         
+     *      * Volume/Issue for Journal articles
      */
     public String getVolume() {
         return this.volume;
@@ -176,10 +148,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Pages"
-     *             length="50"
-     *         
+     *      * Number of pages or Page range for Journal articles
      */
     public String getPages() {
         return this.pages;
@@ -190,9 +159,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="URL"
-     *         
+     * 
      */
     public String getUrl() {
         return this.url;
@@ -203,10 +170,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LibraryNumber"
-     *             length="50"
-     *         
+     * 
      */
     public String getLibraryNumber() {
         return this.libraryNumber;
@@ -217,9 +181,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -230,9 +192,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text1"
-     *         
+     *      * User definable
      */
     public String getText1() {
         return this.text1;
@@ -243,9 +203,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text2"
-     *         
+     *      * User definable
      */
     public String getText2() {
         return this.text2;
@@ -256,10 +214,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number1"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber1() {
         return this.number1;
@@ -270,10 +225,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number2"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber2() {
         return this.number2;
@@ -284,12 +236,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             not-null="true"
-     *             update="false"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -300,12 +247,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -316,11 +258,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *             not-null="true"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -331,9 +269,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Published"
-     *         
+     * 
      */
     public Short getPublished() {
         return this.published;
@@ -344,9 +280,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo1"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo1() {
         return this.yesNo1;
@@ -357,9 +291,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo2"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo2() {
         return this.yesNo2;
@@ -370,15 +302,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="ReferenceWorkID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.LocalityCitation"
-     *         
+     * 
      */
     public Set getLocalityCitations() {
         return this.localityCitations;
@@ -389,15 +313,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="ReferenceWorkID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.CollectionObjectCitation"
-     *         
+     * 
      */
     public Set getCollectionObjectCitations() {
         return this.collectionObjectCitations;
@@ -408,15 +324,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="ReferenceWorkID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.TaxonCitation"
-     *         
+     * 
      */
     public Set getTaxonCitations() {
         return this.taxonCitations;
@@ -427,15 +335,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.collection-key
-     *             column="ReferenceWorkID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.DeterminationCitation"
-     *         
+     * 
      */
     public Set getDeterminationCitations() {
         return this.determinationCitations;
@@ -446,10 +346,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="JournalID"         
-     *         
+     *      * Link to Journal containing the reference (if applicable)
      */
     public Journal getJournal() {
         return this.journal;
@@ -460,15 +357,7 @@ public class ReferenceWork  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="delete"
-     *            @hibernate.collection-key
-     *             column="ReferenceWorkID"
-     *            @hibernate.collection-one-to-many
-     *             class="edu.ku.brc.specify.datamodel.Author"
-     *         
+     * 
      */
     public Set getAuthors() {
         return this.authors;

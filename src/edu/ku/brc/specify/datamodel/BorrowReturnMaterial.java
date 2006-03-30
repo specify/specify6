@@ -7,9 +7,7 @@ import java.util.Date;
 
 
 /**
- *        @hibernate.class
- *         table="borrowreturnmaterial"
- *     
+
  */
 public class BorrowReturnMaterial  implements java.io.Serializable {
 
@@ -43,11 +41,7 @@ public class BorrowReturnMaterial  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="BorrowReturnMaterialID"
-     *         
+     * 
      */
     public Integer getBorrowReturnMaterialId() {
         return this.borrowReturnMaterialId;
@@ -58,9 +52,7 @@ public class BorrowReturnMaterial  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="ReturnedDate"
-     *         
+     * 
      */
     public Calendar getReturnedDate() {
         return this.returnedDate;
@@ -71,9 +63,7 @@ public class BorrowReturnMaterial  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Quantity"
-     *         
+     *      * Quantity of preparations returned
      */
     public Short getQuantity() {
         return this.quantity;
@@ -84,9 +74,7 @@ public class BorrowReturnMaterial  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -97,11 +85,7 @@ public class BorrowReturnMaterial  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -112,12 +96,7 @@ public class BorrowReturnMaterial  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -128,10 +107,7 @@ public class BorrowReturnMaterial  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -142,10 +118,7 @@ public class BorrowReturnMaterial  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="ReturnedByID"         
-     *         
+     *      * person processing the  return
      */
     public Agent getAgent() {
         return this.agent;
@@ -156,11 +129,7 @@ public class BorrowReturnMaterial  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     * 			cascade="none"
-     *            @hibernate.column name="BorrowMaterialID"         
-     *         
+     *      * Borrowed preparation returned
      */
     public BorrowMaterial getBorrowMaterial() {
         return this.borrowMaterial;

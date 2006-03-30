@@ -6,8 +6,7 @@ import java.util.Set;
 
 
 /**
- *  @hibernate.class
- *             table="geologictimeperiodtreedef" 
+
  */
 public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.Serializable {
 
@@ -38,8 +37,7 @@ public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.S
     // Property accessors
 
     /**
-     *      *  @hibernate.id generator-class="native"
-     *                 type="java.lang.Integer" column="TreeDefID" 
+     * 
      */
     public Integer getTreeDefId() {
         return this.treeDefId;
@@ -50,8 +48,7 @@ public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.S
     }
 
     /**
-     *      *                 @hibernate.property column="Name" length="64"
-     *             
+     * 
      */
     public String getName() {
         return this.name;
@@ -62,8 +59,7 @@ public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.S
     }
 
     /**
-     *      *                 @hibernate.property column="Remarks" length="255"
-     *             
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -74,7 +70,7 @@ public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.S
     }
 
     /**
-     *      * Entries referencing this defintion
+     * 
      */
     public Set getTreeEntries() {
         return this.treeEntries;
@@ -85,7 +81,7 @@ public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.S
     }
 
     /**
-     *      * The individual elements of this definition
+     * 
      */
     public Set getTreeDefItems() {
         return this.treeDefItems;
@@ -96,7 +92,7 @@ public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.S
     }
 
     /**
-     *      * Collection object defintions that refer to this tree definition
+     * 
      */
     public Set getCollObjDefs() {
         return this.collObjDefs;

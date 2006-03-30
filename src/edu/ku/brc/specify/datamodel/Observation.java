@@ -6,9 +6,7 @@ import java.util.Date;
 
 
 /**
- *        @hibernate.class
- *         table="observation"
- *     
+
  */
 public class Observation  implements java.io.Serializable {
 
@@ -49,11 +47,7 @@ public class Observation  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="ObservationID"
-     *         
+     *      * Primary key
      */
     public Integer getObservationId() {
         return this.observationId;
@@ -64,10 +58,7 @@ public class Observation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="ObservationMethod"
-     *             length="24"
-     *         
+     *      * How the observation was made
      */
     public String getObservationMethod() {
         return this.observationMethod;
@@ -78,9 +69,7 @@ public class Observation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Count1"
-     *         
+     * 
      */
     public Short getCount1() {
         return this.count1;
@@ -91,9 +80,7 @@ public class Observation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Description"
-     *         
+     *      * Description of the observed animal
      */
     public String getDescription() {
         return this.description;
@@ -104,9 +91,7 @@ public class Observation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Activity"
-     *         
+     *      * What it was doing
      */
     public String getActivity() {
         return this.activity;
@@ -117,9 +102,7 @@ public class Observation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -130,9 +113,7 @@ public class Observation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text1"
-     *         
+     *      * User definable
      */
     public String getText1() {
         return this.text1;
@@ -143,9 +124,7 @@ public class Observation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Text2"
-     *         
+     *      * User definable
      */
     public String getText2() {
         return this.text2;
@@ -156,10 +135,7 @@ public class Observation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number1"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber1() {
         return this.number1;
@@ -170,10 +146,7 @@ public class Observation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Number2"
-     *             length="24"
-     *         
+     *      * User definable
      */
     public Float getNumber2() {
         return this.number2;
@@ -184,12 +157,7 @@ public class Observation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -200,11 +168,7 @@ public class Observation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -215,10 +179,7 @@ public class Observation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -229,9 +190,7 @@ public class Observation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo1"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo1() {
         return this.yesNo1;
@@ -242,9 +201,7 @@ public class Observation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="YesNo2"
-     *         
+     *      * User definable
      */
     public Boolean getYesNo2() {
         return this.yesNo2;
@@ -255,12 +212,7 @@ public class Observation  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.one-to-one
-     *             class="edu.ku.brc.specify.datamodel.CollectionObject"
-     *             outer-join="auto"
-     *             constrained="true"
-     * 			cascade="delete"
-     *         
+     * 
      */
     public CollectionObject getCollectionObject() {
         return this.collectionObject;

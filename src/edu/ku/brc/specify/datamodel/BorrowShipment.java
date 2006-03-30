@@ -6,9 +6,7 @@ import java.util.Date;
 
 
 /**
- *        @hibernate.class
- *         table="borrowshipments"
- *     
+
  */
 public class BorrowShipment  implements java.io.Serializable {
 
@@ -40,11 +38,7 @@ public class BorrowShipment  implements java.io.Serializable {
     // Property accessors
 
     /**
-     *      *            @hibernate.id
-     *             generator-class="native"
-     *             type="java.lang.Integer"
-     *             column="BorrowShipmentsID"
-     *         
+     * 
      */
     public Integer getBorrowShipmentsId() {
         return this.borrowShipmentsId;
@@ -55,9 +49,7 @@ public class BorrowShipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="Remarks"
-     *         
+     * 
      */
     public String getRemarks() {
         return this.remarks;
@@ -68,11 +60,7 @@ public class BorrowShipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampModified"
-     *             length="23"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampModified() {
         return this.timestampModified;
@@ -83,12 +71,7 @@ public class BorrowShipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="TimestampCreated"
-     *             length="23"
-     *             update="false"
-     *             not-null="true"
-     *         
+     * 
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
@@ -99,10 +82,7 @@ public class BorrowShipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.property
-     *             column="LastEditedBy"
-     *             length="50"
-     *         
+     * 
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
@@ -113,10 +93,7 @@ public class BorrowShipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="ShipmentID"         
-     *         
+     *      * The shipment
      */
     public Shipment getShipment() {
         return this.shipment;
@@ -127,11 +104,7 @@ public class BorrowShipment  implements java.io.Serializable {
     }
 
     /**
-     *      *            @hibernate.many-to-one
-     *             not-null="true"
-     * 			cascade="none"
-     *            @hibernate.column name="BorrowID"         
-     *         
+     *      * The borrow being shipped (returned)
      */
     public Borrow getBorrow() {
         return this.borrow;

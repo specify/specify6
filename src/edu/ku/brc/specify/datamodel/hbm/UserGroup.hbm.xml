@@ -2,10 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 
 <class name="edu.ku.brc.specify.datamodel.UserGroup" table="usergroup" lazy="true">
-    <meta attribute="class-description" inherit="false">
-       @hibernate.class
-        table="usergroup"
-    </meta>
+    <meta attribute="class-description" inherit="false"/>
 
     <id name="userGroupId" type="java.lang.Integer" column="UserGroupID">
       <meta attribute="scope-set">public</meta>

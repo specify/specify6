@@ -1,21 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class name="edu.ku.brc.specify.datamodel.Determination" table="determination" lazy="true">
-    <meta attribute="class-description" inherit="false">
-	Taxonomic identifications of BiologicalObjects.
-	</meta>
+    <meta attribute="class-description" inherit="false"/>
 
-    <id name="determinationId" type="java.lang.Integer" column="DeterminationID" index="IX_DeterminationCurrent">
-        <meta attribute="field-description">
-	   Primary key
-	</meta>
+    <id name="determinationId" type="java.lang.Integer" column="DeterminationID">
+        <meta attribute="field-description">Primary key</meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
@@ -26,9 +16,7 @@
     </property>
     <property name="typeStatusName" type="java.lang.String" column="TypeStatusName" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   e.g. 'Holotype', 'Paratype'...
-	</meta>    
+        <meta attribute="field-description">e.g. 'Holotype', 'Paratype'...</meta>
     </property>
     
     <property name="determinedDate" type="calendar_date" column="DeterminedDate">
@@ -38,23 +26,17 @@
     
     <property name="confidence" type="java.lang.String" column="Confidence" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Confidence of determination
-	</meta>    
+        <meta attribute="field-description">Confidence of determination (value from PickList)</meta>
     </property>
     
     <property name="method" type="java.lang.String" column="Method" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Method of determination
-	</meta>    
+        <meta attribute="field-description">Method of determination (value from PickList)</meta>
     </property>
     
     <property name="featureOrBasis" type="java.lang.String" column="FeatureOrBasis" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Body part, or characteristic used as the basis of a determination.
-	</meta>    
+        <meta attribute="field-description">Body part, or characteristic used as the basis of a determination.</meta>
     </property>
     
     <property name="remarks" type="text" column="Remarks">
@@ -64,44 +46,32 @@
     
     <property name="text1" type="text" column="Text1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="text2" type="text" column="Text2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="number1" type="java.lang.Float" column="Number1" length="24">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="number2" type="java.lang.Float" column="Number2" length="24">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Date/Time the record was created
-	</meta>    
+        <meta attribute="field-description">Date/Time the record was created</meta>
     </property>
     
     <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Date/Time the record was modified
-	</meta>    
+        <meta attribute="field-description">Date/Time the record was modified</meta>
     </property>
     
     <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
@@ -111,16 +81,12 @@
     
     <property name="yesNo1" type="boolean" column="YesNo1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
     
     <property name="yesNo2" type="boolean" column="YesNo2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   User definable
-	</meta>    
+        <meta attribute="field-description">User definable</meta>
     </property>
 
 
@@ -144,9 +110,7 @@
     <!-- bi-directional many-to-one association to Preparation -->
     <many-to-one name="preparations" class="edu.ku.brc.specify.datamodel.Preparation" not-null="true" outer-join="true" cascade="none">
 	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-	   Preparations can also be assigned determinations. Must a Preparation of BiologicalObjectID.
-	</meta>
+        <meta attribute="field-description">Preparations can also be assigned determinations. Must a Preparation of BiologicalObjectID.</meta>
         <column name="PreparationID"/>
     </many-to-one>	
 
@@ -161,9 +125,7 @@
 	
     <!-- bi-directional many-to-one association to Agent -->
     <many-to-one name="determiner" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
-        <meta attribute="field-description">
-	   id of the Person making the determination
-	</meta>
+        <meta attribute="field-description">id of the Person making the determination</meta>
         <column name="DeterminerID"/>
     </many-to-one>
 
