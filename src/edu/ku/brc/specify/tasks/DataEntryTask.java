@@ -31,7 +31,11 @@ import org.hibernate.Query;
 import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.core.NavBoxIFace;
+import edu.ku.brc.specify.datamodel.Geography;
+import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
+import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
@@ -43,7 +47,9 @@ import edu.ku.brc.specify.ui.CommandDispatcher;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
+import edu.ku.brc.specify.ui.TreeTableViewer;
 import edu.ku.brc.specify.ui.UICacheManager;
+
 /**
  * This task controls the data entry forms
  * 
@@ -87,12 +93,13 @@ public class DataEntryTask extends BaseTask
             //navBox.add(NavBox.createBtn(title, name, IconManager.IconSize.Std16));
             navBox.add(NavBox.createBtn("Specimen", "ColObj", IconManager.IconSize.Std16));
             navBox.add(NavBox.createBtn("Locality", "Locality", IconManager.IconSize.Std16));
-            navBox.add(NavBox.createBtn("Taxon", "Taxon", IconManager.IconSize.Std16));
-            navBox.add(NavBox.createBtn("Geography", "Geography", IconManager.IconSize.Std16));
+            navBox.add(NavBox.createBtn("Taxon", "Taxon", IconManager.IconSize.Std16,new ShowTreeTableEditorAction(Taxon.class,"Taxonomy Editor")));
+            navBox.add(NavBox.createBtn("Geography", "Geography", IconManager.IconSize.Std16,new ShowTreeTableEditorAction(Geography.class,"Geography Editor")));
+            navBox.add(NavBox.createBtn("Location", "Location", IconManager.IconSize.Std16,new ShowTreeTableEditorAction(Location.class,"Location Editor")));
+            navBox.add(NavBox.createBtn("Geologic Time Period", "Geologic Time Period", IconManager.IconSize.Std16,new ShowTreeTableEditorAction(GeologicTimePeriod.class,"Geologic Time Period Editor")));
             navBox.add(NavBox.createBtn("Agent", "Agent", IconManager.IconSize.Std16));
             navBox.add(NavBox.createBtn("Address", "Address", IconManager.IconSize.Std16));
             navBoxes.addElement(navBox);
-            
         }
     }
    
@@ -105,6 +112,12 @@ public class DataEntryTask extends BaseTask
         DataEntryPane formPane = new DataEntryPane(name, this);
         UICacheManager.getSubPaneMgr().addPane(formPane);
 
+    }
+    
+    public void openTreeEditor(final Class treeableClass, final String name)
+    {
+    	TreeTableViewer ttv = new TreeTableViewer(treeableClass,name,this);
+    	UICacheManager.getSubPaneMgr().addPane(ttv);
     }
     
     /**
@@ -250,6 +263,25 @@ public class DataEntryTask extends BaseTask
         {
             openForm(formName);
         }
+    }
+    
+    /**
+     * @author jds
+     */
+    class ShowTreeTableEditorAction implements ActionListener
+    {
+    	protected Class treeableClass;
+    	protected String name;
+    	
+    	public ShowTreeTableEditorAction(final Class treeableClass, final String name)
+    	{
+    		this.treeableClass = treeableClass;
+    		this.name = name;
+    	}
+    	public void actionPerformed(ActionEvent e)
+    	{
+    		openTreeEditor(treeableClass,name);
+    	}
     }
 
 
