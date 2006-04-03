@@ -373,7 +373,7 @@ public final class UIHelper
      * @param app
      * @param isPlatformSpecific
      * @param includeCutCopyPaste
-     * @return
+     * @return the menubar
      */
     public static JMenuBar getBasicMenuBar(final Object app, final boolean isPlatformSpecific, final boolean includeCutCopyPaste)
     {

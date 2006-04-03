@@ -22,6 +22,9 @@ package edu.ku.brc.specify.ui.validation;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
+import java.util.prefs.Preferences;
 
 import javax.swing.JPasswordField;
 import javax.swing.event.DocumentEvent;
@@ -31,6 +34,7 @@ import javax.swing.text.Document;
 import edu.ku.brc.specify.helpers.Encryption;
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.ColorWrapper;
+import edu.ku.brc.specify.ui.UICacheManager;
 
 /**
  * A JTextControl that implements UIValidatable for participating in validation
@@ -39,7 +43,7 @@ import edu.ku.brc.specify.ui.ColorWrapper;
  *
  */
 @SuppressWarnings("serial")
-public class ValPasswordField extends JPasswordField implements UIValidatable, DocumentListener
+public class ValPasswordField extends JPasswordField implements UIValidatable, DocumentListener, PreferenceChangeListener
 {
     protected boolean isInError   = false;
     protected boolean isRequired  = false;
@@ -87,6 +91,8 @@ public class ValPasswordField extends JPasswordField implements UIValidatable, D
             valtextcolor = PrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
             requiredfieldcolor = PrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
+        UICacheManager.getAppPrefs().node("ui/formatting").addPreferenceChangeListener(this);
+
     }
     
     /**
@@ -222,5 +228,17 @@ public class ValPasswordField extends JPasswordField implements UIValidatable, D
     public void removeUpdate(DocumentEvent e) 
     {
         isChanged = true;
+    }
+    
+    //-------------------------------------------------
+    // PreferenceChangeListener
+    //-------------------------------------------------
+
+    public void preferenceChange(PreferenceChangeEvent evt)
+    {
+        if (evt.getKey().equals("requiredfieldcolor"))
+        {
+            setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+        }
     }
 }

@@ -37,9 +37,9 @@ import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.specify.ui.UICacheManager;
 
 /**
- * This is a single set of of results and is derived from a query where all the record numbers where 
+ * This is a single set of of results and is derived from a query where all the record numbers where
  * supplied as an "in" clause.
- * 
+ *
  * @author rods
  *
  */
@@ -48,35 +48,37 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
 {
     // Static Data Members
     private static Log log = LogFactory.getLog(ExpressTableResultsHitsCache.class);
-    
+
     // Data Members
     protected Hits hits;
-    
+
     protected String[] rowCache      = null;
     protected int      rowCacheIndex = -1;
     protected int      numCols       = 0;
     protected int[]    indexes       = null;
-    
+
     /**
      * Constructor of a results "table" which is really a panel
-     * @param esrPane the parent 
+     * @param esrPane the parent
      * @param tableInfo the info describing the results
+     * @param installServices indicates whether services should be installed
      * @param hits the hits results
     */
-    public ExpressTableResultsHitsCache(final ExpressSearchResultsPane esrPane, 
+    public ExpressTableResultsHitsCache(final ExpressSearchResultsPaneIFace esrPane,
                                         final ExpressResultsTableInfo tableInfo,
+                                        final boolean installServices,
                                         final Hits hits)
     {
-        super(esrPane, tableInfo);
-        
+        super(esrPane, tableInfo, installServices);
+
         this.hits = hits;
         indexes = tableInfo.getIndexes();
         fillTable();
     }
-    
+
     /**
      * Display the 'n' number of rows up to topNumEntries
-     * 
+     *
      * @param numRows the desired number of rows
      */
     protected void setDisplayRows(final int numRows, final int maxNum)
@@ -84,72 +86,73 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
         int rows = Math.min(numRows, maxNum);
         HitsTableModel hitsModel = (HitsTableModel)table.getModel();
         hitsModel.initializeDisplayIndexes();
-        hitsModel.addDisplayIndexes(createIndexesArray(rows));      
+        hitsModel.addDisplayIndexes(createIndexesArray(rows));
     }
-    
+
     /**
-     * 
+     *
      */
     public void fillTable()
     {
         HitsTableModel hitsModel = new HitsTableModel();
-        
+
         // Must be done before setting it into the table
         int[] visCols = tableInfo.getDisplayColIndexes();
         if (visCols != null)
         {
              hitsModel.setDisplayColIndexes(visCols);
         }
-        
-        colNames = tableInfo.getColNames();
+
+        colLabels = tableInfo.getColLabels();
 
         table.setModel(hitsModel);
-        
+
         configColumnNames();
-        
+
         numCols  = table.getModel().getColumnCount();
-        
+
         rowCount = indexes.length;
         if (rowCount > topNumEntries)
         {
             buildMorePanel();
         }
         setDisplayRows(rowCount, topNumEntries);
-        
+
 
         invalidate();
         doLayout();
-        UICacheManager.forceTopFrameRepaint();    
-        
+        UICacheManager.forceTopFrameRepaint();
+
     }
-    
+
     /**
      * Returns a RecordSet object from the table
      * @param rows The array of indexes into the rows
      * @param column the column to get the indexes from
+     * @param returnAll indicates whether all the records should be returned if nothing was selected
      * @return  a RecordSet object from the table
      */
-    public RecordSet getRecordSet(final int[] rows, final int column)
+    public RecordSet getRecordSet(final int[] rows, final int column, final boolean returnAll)
     {
         HitsTableModel hitsModel = (HitsTableModel)table.getModel();
-        return hitsModel.getRecordSet(table.getSelectedRows(), column);
+        return hitsModel.getRecordSet(table.getSelectedRows(), column, returnAll);
     }
 
-    
+
     //---------------------------------------------------
     //-- Table Model for Hit Results
     //---------------------------------------------------
-    @SuppressWarnings("serial") 
+    @SuppressWarnings("serial")
     class HitsTableModel extends AbstractTableModel
     {
         private int[] displayIndexes = null;
         private int[] cols           = null;
-        
+
         public HitsTableModel()
         {
-            
+
         }
-        
+
         /**
          * Returns the Class object for a column
          * @param column the column in question
@@ -164,29 +167,29 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
          * Get the column name
          * @param column the column of the cell to be gotten
          */
-        public String getColumnName(int column)
+        public String getColumnLabel(int column)
         {
-            return colNames[column];
+            return colLabels[column];
         }
-        
-        public int getColumnCount() 
-        { 
-            return cols != null ? cols.length : colNames.length; 
+
+        public int getColumnCount()
+        {
+            return cols != null ? cols.length : colLabels.length;
         }
-        
+
         public int getRowCount()
-        { 
+        {
             return displayIndexes != null ? displayIndexes.length : indexes.length;
         }
-        
-        public Object getValueAt(int row, int col) 
-        { 
+
+        public Object getValueAt(int row, int col)
+        {
             String str = "";
             try
             {
                 int inx = displayIndexes != null ? displayIndexes[row] : row;
                 int mappedInx = indexes[inx];
-                
+
                 Document doc = hits.doc(mappedInx);
                 String data = doc.get("data");
                 if (col == 0 || row != rowCacheIndex)
@@ -204,7 +207,7 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
                     rowCacheIndex = row;
                 }
                 return cols != null ? rowCache[cols[col]] : rowCache[col];
-                
+
             } catch (Exception ex)
             {
                 // XXX ???
@@ -212,7 +215,7 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
             }
             return str;
         }
-        
+
         /**
          * Initializes the display index data structure
          *
@@ -221,7 +224,7 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
         {
             displayIndexes = null;
         }
- 
+
         /**
          * Sets the display indexes to display only a portion of the recordset
          * @param indexes the array of indexes
@@ -231,7 +234,7 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
             displayIndexes  = indexes;
             this.fireTableDataChanged();
         }
-        
+
         /**
          * Sets the display columns
          * @param cols xxx
@@ -241,24 +244,30 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
             this.cols = cols;
             numCols = Math.min(numCols, cols.length);
         }
-        
+
         /**
          * Returns a RecordSet object from the table
          * @param rows the selected rows
          * @param column the col that contains the ID
+         * @param returnAll indicates whether all the records should be returned if nothing was selected
          * @return Returns a RecordSet object from the table
          */
-        public RecordSet getRecordSet(final int[] rows, final int column)
+        public RecordSet getRecordSet(final int[] rows, final int column, final boolean returnAll)
         {
             RecordSet rs = new RecordSet();
-            
+
             Set<RecordSetItem> items = new HashSet<RecordSetItem>();
             rs.setItems(items);
-            
+
             try
             {
                 if (rows == null || rows.length == 0)
                 {
+                    if (!returnAll)
+                    {
+                        return rs;
+                    }
+
                     for (int i=0;i<hits.length();i++)
                     {
                         Document doc  = hits.doc(i);
@@ -293,12 +302,12 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
                         Document doc  = hits.doc(indexes[rows[i]]);
                         log.info("["+doc.get("id")+"]["+doc.get("table")+"]["+doc.get("data")+"]");
                         String   data = doc.get("data");
-                        
+
                         if (data != null)
                         {
                             String str = data.replace('\t', '|');
-                            System.out.println(str);
-                            
+                            //System.out.println(str);
+
                             StringTokenizer st = new StringTokenizer(data, "\t");
                             RecordSetItem rsi = new RecordSetItem();
                             for (int col=0;col<st.countTokens();col++)
@@ -309,7 +318,7 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
                                     if (val != null)
                                     {
                                         rsi.setRecordId(val);
-                                    } 
+                                    }
                                     break;
                                 }
                                 st.nextToken();
@@ -328,6 +337,6 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
             }
             return rs;
         }
-        
+
     }
 }

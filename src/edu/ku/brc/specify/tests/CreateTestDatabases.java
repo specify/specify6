@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.tests;
 
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAddress;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAgent;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAgentAddress;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAttributeDef;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCatalogSeries;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectingEvent;
@@ -41,7 +43,9 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 
+import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.AgentAddress;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.AttributeIFace;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
@@ -174,7 +178,7 @@ public class CreateTestDatabases
         }
         return false;
     }
-    
+
     /**
      * Returns an array of State Geographies
      * @param colObjDef colObjDef
@@ -184,9 +188,9 @@ public class CreateTestDatabases
     public static Geography[] createGeographies(final CollectionObjDef colObjDef, final String treeDefName)
     {
         log.info("createGeographies " + treeDefName);
-        
+
         setSession(null);
-        
+
         // Create a geography tree definition
         GeographyTreeDef geoTreeDef = createGeographyTreeDef(treeDefName);
         geoTreeDef.getCollObjDefs().add(colObjDef);
@@ -212,7 +216,7 @@ public class CreateTestDatabases
         addGeographyKids(geoTreeDef, states[2], new String[] {"Dakota", "Logan", "Valley", "Wheeler"}, county.getRankId());
 
         colObjDef.setGeographyTreeDef(geoTreeDef);
-        
+
         return states;
 
     }
@@ -317,7 +321,7 @@ public class CreateTestDatabases
 
         return false;
     }
-    
+
     public static Location[] createLocations(final CollectionObjDef colObjDef, final String treeDefName)
     {
         log.info("createSimpleLocation "+treeDefName);
@@ -337,7 +341,7 @@ public class CreateTestDatabases
         Location dyche = createLocation(locTreeDef, null, "Dyche Hall", building.getRankId());
         Location rm606 = createLocation(locTreeDef, dyche, "Room 606", room.getRankId());
         Location freezerA = createLocation(locTreeDef, rm606, "Freezer A", freezer.getRankId());
-        
+
         Location[] locations = new Location[5];
         for (int i=0;i<locations.length;i++)
         {
@@ -430,12 +434,12 @@ public class CreateTestDatabases
         String[] speciesNames = {"asprella", "beanii", "bifascia", "clara", "meridiana", "pellucida", "vivax"};
         Taxon[] species = addTaxonKids(taxonTreeDef, genus, speciesNames, defItemLevel3.getRankId());
         Collections.addAll(list, species);
-        
+
         genus  = createTaxon(taxonTreeDef, order, "Caranx", defItemLevel2.getRankId());
         String[] speciesNames2 = {"bartholomaei", "caballus", "caninus", "crysos", "dentex", "hippos", "latus"};
         Taxon[] species2 = addTaxonKids(taxonTreeDef, genus, speciesNames2, defItemLevel3.getRankId());
         Collections.addAll(list, species2);
-        
+
         Taxon[] t = new Taxon[list.size()];
         for (int i=0;i<list.size();i++)
         {
@@ -487,18 +491,43 @@ public class CreateTestDatabases
             HibernateUtil.beginTransaction();
 
             // Create Collection Object Definition
-            String[] values = {"Mr.","Charles","A", "Darwin","CD",
-                               "Mr.","Louis","", "Agassiz","AL",
-                               "Mr.", "Andrew", "", "Bentley", "AB",
-                               "Mr.", "Josh", "", "Stewart", "JS",
+            String[] values = {"Mr.",  "Charles","A", "Darwin","CD",
+                               "Mr.",  "Louis","", "Agassiz","AL",
+                               "Mr.",  "Andrew", "", "Bentley", "AB",
+                               "Mr.",  "Josh", "", "Stewart", "JS",
                                "Mrs.", "Meg", "", "Kumin", "MK",
-                               "Mrs.", "Jim", "", "Beach", "JB",
+                               "Mr.",  "Jim", "", "Beach", "JB",
+                               "Mr.",  "Rod", "", "Spears", "RS",
+                               "Mr.",  "Stewart", "", "Johnson", "SJ",
             };
+            Agent[] agents = new Agent[values.length/5];
             for (int i=0;i<values.length;i+=5)
             {
-                createAgent(values[i], values[i+1], values[i+2], values[i+3], values[i+4]);
+                agents[i/5] = createAgent(values[i], values[i+1], values[i+2], values[i+3], values[i+4]);
             }
 
+            String[] addresses = {"101 High Street.",  "St. Charles",  "Kent", "Great Britain", "AE00939",
+                                  "Harvard Square",     "Cambridge",   "MA",   "USA",           "009391",
+                                  "99 East Street.",    "Lawrence",    "KS",   "USA",         "66045",
+                                  "123 Johnson Street", "Olathe",      "KS",   "USA",         "66045",
+                                  "RR1",                "Olathe",      "KS",   "USA",         "66045",
+                                  "12 Mississippi",     "Lawrence",    "KS",   "USA",         "66045",
+                                  "156 Inverness",      "Lawrence",    "KS",   "USA",         "66045",
+                                  "100 Main Street",    "Topeka",      "KS",   "USA",         "66099",
+            };
+
+            Address[] addrs = new Address[addresses.length/5];
+            for (int i=0;i<addresses.length;i+=5)
+            {
+                AgentAddress agentAddress = createAgentAddress((short)1, "", "", "", "", "", "", "", true, null, agents[i/5], null);
+                Address addr = createAddress(agentAddress, addresses[i], "", addresses[i+1], addresses[i+2], addresses[i+3], addresses[i+4]);
+                addrs[i/5] = addr;
+
+            }
+            // Add an extra address for one of them
+            AgentAddress agentAddress = createAgentAddress((short)2, "", "", "", "", "", "", "", true, null, agents[6], null);
+            Address addr = createAddress(agentAddress, "34 Vintage Drive", "", "San Diego", "CA",   "USA", "92129");
+            
             HibernateUtil.commitTransaction();
 
             return true;
@@ -520,12 +549,14 @@ public class CreateTestDatabases
         setSession(null);
 
         // Create Collection Object Definition
-        String[] values = {"Mr.","Charles","A", "Darwin","CD",
-                           "Mr.","Louis","", "Agassiz","AL",
-                           "Mr.", "Andrew", "", "Bentley", "AB",
-                           "Mr.", "Josh", "", "Stewart", "JS",
+        String[] values = {"Mr.",  "Charles","A", "Darwin","CD",
+                           "Mr.",  "Louis","", "Agassiz","AL",
+                           "Mr.",  "Andrew", "", "Bentley", "AB",
+                           "Mr.",  "Josh", "", "Stewart", "JS",
                            "Mrs.", "Meg", "", "Kumin", "MK",
-                           "Mrs.", "Jim", "", "Beach", "JB",
+                           "Mr.",  "Jim", "", "Beach", "JB",
+                           "Mr.",  "Rod", "", "Spears", "RS",
+                           "Mr.",  "Stewart", "", "Johnson", "SJ",
         };
         Agent[] agents = new Agent[values.length/5];
         for (int i=0;i<values.length;i+=5)
@@ -595,7 +626,7 @@ public class CreateTestDatabases
             DataType         dataType         = createDataType(disciplineName);
 
             createMultipleLocalities();
-            
+
             HibernateUtil.commitTransaction();
 
             createCollectionObjDef(dataType, user, disciplineName); // creates TaxonTreeDef
@@ -618,8 +649,8 @@ public class CreateTestDatabases
             for (int i = 0; i < agents.length; i++)
             {
                 agents[i] = getAgentByLastName(agentNames[i]);
-            }            
-            
+            }
+
             // Create Collecting Event
             CollectingEvent colEv = createCollectingEvent(locality,
                     new Collector[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
@@ -642,12 +673,12 @@ public class CreateTestDatabases
             CollectionObject[] colObjs = new CollectionObject[values.length/4];
             for (int i=0;i<values.length;i+=4)
             {
-                colObjs[i/4] = createCollectionObject((Float)values[i], 
-                                                      (String)values[i+1], 
-                                                      null, 
-                                                      (Agent)values[i+2],  
-                                                      catalogSeries, 
-                                                      colObjDef, 
+                colObjs[i/4] = createCollectionObject((Float)values[i],
+                                                      (String)values[i+1],
+                                                      null,
+                                                      (Agent)values[i+2],
+                                                      catalogSeries,
+                                                      colObjDef,
                                                       (Integer)values[+3],
                                                       colEv);
             }
@@ -709,7 +740,7 @@ public class CreateTestDatabases
             }
 
             HibernateUtil.commitTransaction();
-            
+
             log.info("Done createSingleDiscipline " + disciplineName);
 
         } catch (Exception ex)
@@ -732,7 +763,7 @@ public class CreateTestDatabases
         Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Taxon.class);
         criteria.add(Expression.eq("name", name));
         java.util.List list = criteria.list();
-        if (list.size() == 0) 
+        if (list.size() == 0)
         {
             log.error("Couldn't find taxon name ["+name+"]");
             return null;
@@ -743,7 +774,7 @@ public class CreateTestDatabases
 
     /**
      * Return agent by lastname
-     * @param Agent  Agent
+     * @param lastName  lastName
      * @return Agent on success
      */
     public static Agent getAgentByLastName(final String lastName)
@@ -751,7 +782,7 @@ public class CreateTestDatabases
         Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Agent.class);
         criteria.add(Expression.eq("lastName", lastName));
         java.util.List list = criteria.list();
-        if (list.size() == 0) 
+        if (list.size() == 0)
         {
             log.error("Couldn't find Agent name ["+lastName+"]");
             return null;
@@ -775,7 +806,7 @@ public class CreateTestDatabases
             DataType         dataType         = createDataType("Animal");
 
             createMultipleLocalities();
-            
+
             HibernateUtil.commitTransaction();
 
             createCollectionObjDef(dataType, user, "Birds"); // creates TaxonTreeDef
@@ -804,7 +835,7 @@ public class CreateTestDatabases
             {
                 agents[i] = getAgentByLastName(agentNames[i]);
             }
-            
+
             // Create Collecting Event
             CollectingEvent colEv = createCollectingEvent(locality,
                     new Collector[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
@@ -814,7 +845,7 @@ public class CreateTestDatabases
 
             // Create CollectingEventAttr
             CollectingEventAttr cevAttr = createCollectingEventAttr(colEv, cevAttrDef, "Clinton Park", null);
-            
+
             // Create Collection Object
             Object[]  values = {1601010.1f, "RCS101", agents[0], 5,
                                 1701011.1f, "RCS102", agents[1], 20,
@@ -839,7 +870,7 @@ public class CreateTestDatabases
                 t[i] = getTaxonByName(speciesNames[i]);
             }
 
-            
+
             // Create Determination
             Determination determination = createDetermination(colObjs[0], agents[3], t[0], true, null);
             determination = createDetermination(colObjs[0], agents[0], t[1], false, null);
@@ -876,7 +907,7 @@ public class CreateTestDatabases
             createPreparationAttr(prepAttrDefSex,  preps[2], "Uknown", null);
 
             HibernateUtil.commitTransaction();
-            
+
             log.info("Done createTwoColObjDefOneCatSeries");
 
         } catch (Exception ex)
@@ -888,7 +919,7 @@ public class CreateTestDatabases
 
         return true;
     }
-    
+
     /**
      * @param disciplineName fish, birds, bees etc
      * @return true on success
@@ -908,9 +939,9 @@ public class CreateTestDatabases
             DataType         dataType         = createDataType(disciplineName);
 
             createMultipleLocalities();
-            
+
             HibernateUtil.commitTransaction();
-            
+
             // These do there own Transaction
             createCollectionObjDef(dataType, user, disciplineName); // creates TaxonTreeDef
             CollectionObjDef collectionObjDef = (CollectionObjDef)getDBObject(CollectionObjDef.class);
@@ -921,7 +952,7 @@ public class CreateTestDatabases
 
             createMultipleAgents();
             // DONE
-            
+
             session = HibernateUtil.getCurrentSession();
             setSession(session);
             HibernateUtil.beginTransaction();
@@ -935,8 +966,8 @@ public class CreateTestDatabases
             for (int i = 0; i < agents.length; i++)
             {
                 agents[i] = getAgentByLastName(agentNames[i]);
-            }            
-            
+            }
+
             // Create Collecting Event
             CollectingEvent colEv = createCollectingEvent(locality,
                     new Collector[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
@@ -959,22 +990,22 @@ public class CreateTestDatabases
             CollectionObject[] colObjs = new CollectionObject[values.length/4];
             for (int i=0;i<values.length;i+=4)
             {
-                colObjs[i/4] = createCollectionObject((Float)values[i], 
-                                                      (String)values[i+1], 
-                                                      null, 
-                                                      (Agent)values[i+2],  
-                                                      catalogSeries, 
-                                                      colObjDef, 
+                colObjs[i/4] = createCollectionObject((Float)values[i],
+                                                      (String)values[i+1],
+                                                      null,
+                                                      (Agent)values[i+2],
+                                                      catalogSeries,
+                                                      colObjDef,
                                                       (Integer)values[+3],
                                                       colEv);
             }
-            
+
             Location location = (Location)getDBObject(Location.class, 6); // Shelf 2
-            
+
             // Create a Container that is CollectionObject[0]
-            // than add two children 
+            // than add two children
             Container container = createContainer((short)0, "Folder", "Folder Desc", null, colObjs[0], location);
-            
+
             ContainerItem containerItem = createContainerItem(container);
             container.getItems().add(containerItem);
             containerItem.getCollectionObjects().add(colObjs[1]);
@@ -982,7 +1013,7 @@ public class CreateTestDatabases
             session.saveOrUpdate(containerItem);
             session.saveOrUpdate(container);
             session.saveOrUpdate(colObjs[1]);
-            
+
             containerItem = createContainerItem(container);
             container.getItems().add(containerItem);
             containerItem.getCollectionObjects().add(colObjs[2]);
@@ -990,7 +1021,7 @@ public class CreateTestDatabases
             session.saveOrUpdate(containerItem);
             session.saveOrUpdate(container);
             session.saveOrUpdate(colObjs[2]);
-            
+
             // Create AttributeDef for Collection Object
             AttributeDef colObjAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "MoonPhase", null);
 
@@ -1025,7 +1056,7 @@ public class CreateTestDatabases
             PrepType prepType = createPrepType("Skeleton");
             PrepType prepType2 = createPrepType("C&S");
 
-            
+
 
             // Create Preparation for each CollectionObject
             agentInx = 3; // arbitrary
@@ -1048,7 +1079,7 @@ public class CreateTestDatabases
             }
 
             HibernateUtil.commitTransaction();
-            
+
             log.info("Done createSingleDiscipline " + disciplineName);
 
         } catch (Exception ex)

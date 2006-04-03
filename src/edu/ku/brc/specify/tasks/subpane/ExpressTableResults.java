@@ -31,41 +31,43 @@ import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
 
 /**
- * This is a single set of of results and is derived from a query where all the record numbers where 
+ * This is a single set of of results and is derived from a query where all the record numbers where
  * supplied as an "in" clause.
- * 
+ *
  * @author rods
  *
  */
-@SuppressWarnings("serial") class ExpressTableResults extends ExpressTableResultsBase implements SQLExecutionListener
+@SuppressWarnings("serial")
+public class ExpressTableResults extends ExpressTableResultsBase implements SQLExecutionListener
 {
     // Static Data Members
     private static Log log  = LogFactory.getLog(ExpressTableResults.class);
-    
+
     // Data Members
     protected SQLExecutionProcessor sqlExecutor;
     protected java.sql.ResultSet resultSet;
-    
+
     /**
      * Constructor of a results "table" which is really a panel
-     * @param esrPane the parent 
+     * @param esrPane the parent
      * @param tableInfo the info describing the results
-     * @param bannerColor the color of the banner (or bar)
+     * @param installServices indicates whether services should be installed
      */
-    public ExpressTableResults(final ExpressSearchResultsPane esrPane, 
-                               final ExpressResultsTableInfo tableInfo)
+    public ExpressTableResults(final ExpressSearchResultsPaneIFace esrPane,
+                               final ExpressResultsTableInfo tableInfo,
+                               final boolean installServices)
     {
-        super(esrPane, tableInfo);
-        
+        super(esrPane, tableInfo, installServices);
+
         sqlExecutor = new SQLExecutionProcessor(this, tableInfo.getViewSql());
         sqlExecutor.setAutoCloseConnection(false);
         sqlExecutor.start();
-        
+
     }
-    
+
     /**
      * Display the 'n' number of rows up to topNumEntries
-     * 
+     *
      * @param numRows the desired number of rows
      */
     protected void setDisplayRows(final int numRows, final int maxNum)
@@ -74,20 +76,20 @@ import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
         ResultSetTableModelDM rsm = (ResultSetTableModelDM)table.getModel();
         rsm.initializeDisplayIndexes();
         rsm.addDisplayIndexes(createIndexesArray(rows));
-       
+
     }
-    
+
     //-----------------------------------------------------
     //-- SQLExecutionListener
     //-----------------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.SQLExecutionListener#exectionDone(edu.ku.brc.specify.dbsupport.SQLExecutionProcessor, java.sql.ResultSet)
      */
     public void exectionDone(final SQLExecutionProcessor process, final java.sql.ResultSet resultSet)
     {
         this.resultSet = resultSet;
-        
+
         ResultSetTableModelDM rsm = new ResultSetTableModelDM(resultSet);
         table.setRowSelectionAllowed(true);
         int[] visCols = tableInfo.getDisplayColIndexes();
@@ -95,27 +97,27 @@ import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
         {
              rsm.addDisplayColIndexes(visCols);
         }
-        
+
         table.setModel(rsm);
         //colNames = tableInfo.getColNames();
 
         configColumnNames();
-        
+
         rowCount = rsm.getRowCount();
         if (rowCount > topNumEntries)
         {
             buildMorePanel();
         }
-        
+
         setDisplayRows(rowCount, topNumEntries);
 
         sqlExecutor = null;
         invalidate();
         doLayout();
-        UICacheManager.forceTopFrameRepaint();    
-        
+        UICacheManager.forceTopFrameRepaint();
+
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.SQLExecutionListener#executionError(edu.ku.brc.specify.dbsupport.SQLExecutionProcessor, java.lang.Exception)
      */
@@ -124,16 +126,14 @@ import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
         sqlExecutor = null;
     }
 
-    /**
-     * Returns a RecordSet object from the table
-     * @param true - allRecords all the records regardless of selection, false - only the selected records
-     * @return Returns a RecordSet object from the table
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase#getRecordSet(int[], int, boolean)
      */
-    public RecordSet getRecordSet(final int[] rows, final int column)
+    public RecordSet getRecordSet(final int[] rows, final int column, final boolean returnAll)
     {
         ResultSetTableModelDM rsm = (ResultSetTableModelDM)table.getModel();
         log.info("Row Selection Count["+table.getSelectedRowCount()+"]");
-        return rsm.getRecordSet(table.getSelectedRows(), column);
+        return rsm.getRecordSet(table.getSelectedRows(), column, returnAll);
     }
 
 

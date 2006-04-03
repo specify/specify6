@@ -225,9 +225,6 @@ public class UIFileFilter extends FileFilter
      * Only relevent if a description was provided in the constructor or using setDescription();
      * @param b indicates whether to use the description
      * 
-     * @see getDescription
-     * @see setDescription
-     * @see isExtensionListInDescription
      */
     public void setExtensionListInDescription(final boolean b)
     {

@@ -109,7 +109,7 @@ public class InfoRequestTask extends BaseTask
      */
     protected String getTitle(final InfoRequest infoRequest)
     {
-        System.out.println(scrDateFormat.toPattern());
+        //System.out.println(scrDateFormat.toPattern());
         return infoRequest.getFirstName() + " " + infoRequest.getLastName() + " - " + scrDateFormat.format(infoRequest.getRequestDate());
     }
 
@@ -477,7 +477,7 @@ public class InfoRequestTask extends BaseTask
     /**
      * @param recordSet
      * @param toEMail
-     * @return
+     * @return true or false
      */
     public boolean sendRecordSetToResearcher(final RecordSet recordSet, final String toEMail)
     {
@@ -510,8 +510,8 @@ public class InfoRequestTask extends BaseTask
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
         
-        ToolBarDropDownBtn btn = createToolbarButton(INFOREQUEST,   "information.gif",    "inforequest_hint");      
-        list.add(new ToolBarItemDesc(btn.getCompleteComp()));
+        //ToolBarDropDownBtn btn = createToolbarButton(INFOREQUEST,   "information.gif",    "inforequest_hint");      
+        //list.add(new ToolBarItemDesc(btn.getCompleteComp()));
         
         return list;
     }

@@ -177,7 +177,7 @@ public class ObjCreatorHelper
         agent.setRepositoryAgreements(new HashSet<Object>());
         agent.setName(null);
         agent.setTitle(title);
-        
+
         if (session != null)
         {
             session.saveOrUpdate(agent);
@@ -405,7 +405,7 @@ public class ObjCreatorHelper
 
         colObj.setTimestampCreated(new Date());
         colObj.setTimestampModified(new Date());
-        
+
         if (collectingEvent != null)
         {
             collectingEvent.getCollectionObjects().add(colObj);
@@ -797,7 +797,8 @@ public class ObjCreatorHelper
         return accessionauthorizations;
     }
 
-    public static Address createAddress(final String address1,
+    public static Address createAddress(final AgentAddress agentAddr,
+                                        final String address1,
                                         final String address2,
                                         final String city,
                                         final String state,
@@ -813,10 +814,13 @@ public class ObjCreatorHelper
         address.setCountry(country);
         address.setPostalCode(postalCode);
         address.setAgentAddresses(new HashSet<Object>());
+        address.getAgentAddresses().add(agentAddr);
+        agentAddr.setAddress(address);
         address.setState(state);
         if (session != null)
         {
-          session.saveOrUpdate(address);
+            session.saveOrUpdate(agentAddr);
+            session.saveOrUpdate(address);
         }
         return address;
     }
@@ -900,6 +904,14 @@ public class ObjCreatorHelper
         agentaddress.setOrganization(organization);
         agentaddress.setAgent(agent);
         agentaddress.setAddress(address);
+        if (agent != null)
+        {
+            agent.getAgentAddressesByAgent().add(agentaddress);
+            if (session != null)
+            {
+              session.saveOrUpdate(agent);
+            }
+        }
         if (session != null)
         {
           session.saveOrUpdate(agentaddress);

@@ -325,7 +325,7 @@ public class StatsTask extends BaseTask
                 {
                     sqlStr = String.format(sqlStr, new Object[] {idStr});
                 }
-                System.out.println(sqlStr);
+                //System.out.println(sqlStr);
                 queryPane.setSQLStr(sqlStr);
                 queryPane.doQuery();
                 UICacheManager.addSubPane(queryPane);

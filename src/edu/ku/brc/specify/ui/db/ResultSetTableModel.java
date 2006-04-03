@@ -46,9 +46,9 @@ public class ResultSetTableModel extends AbstractTableModel
     protected ResultSet         resultSet  = null;
     protected ResultSetMetaData metaData   = null;
     protected Vector<Class>     classNames = new Vector<Class>();
-    protected int               currentRow = 0;   
+    protected int               currentRow = 0;
     protected int               numRows    = 0;
-    
+
     /**
      * Construct with a ResultSet
      * @param resultSet the recordset
@@ -65,7 +65,7 @@ public class ResultSetTableModel extends AbstractTableModel
                 log.error(ex);
             }
         }
-        
+
         this.resultSet = resultSet;
         try
         {
@@ -76,7 +76,19 @@ public class ResultSetTableModel extends AbstractTableModel
                 {
                      classNames.addElement(Class.forName(metaData.getColumnClassName(i)));
                 }
-                
+
+                if (this.resultSet.first())
+                {
+                    /*do
+                    {
+                        System.out.println(this.resultSet.getString(1));
+                    } while(this.resultSet.next());
+                    */
+                } else
+                {
+                    return;
+                }
+
                 if (this.resultSet.last())
                 {
                     numRows = this.resultSet.getRow();
@@ -93,8 +105,8 @@ public class ResultSetTableModel extends AbstractTableModel
             log.error("In constructor of ResultSetTableModel", ex);
         }
     }
-    
-    
+
+
     /**
      * Returns the ResultSet
      * @return Returns the ResultSet
@@ -103,7 +115,7 @@ public class ResultSetTableModel extends AbstractTableModel
     {
         return resultSet;
     }
-    
+
     /**
      * Returns the number of columns
      * @return Number of columns
@@ -140,11 +152,11 @@ public class ResultSetTableModel extends AbstractTableModel
         {
             return "N/A";
         }
-        
+
         try
         {
             return metaData.getColumnName(column+1);
-            
+
         } catch (SQLException ex)
         {
             return "N/A";
@@ -159,13 +171,13 @@ public class ResultSetTableModel extends AbstractTableModel
     public Object getValueAt(int row, int column)
     {
         column++;
-        
+
         if (resultSet == null) return null;
-        
+
         try
         {
             row++;
-        
+
             if (row == 1)
             {
                 if (!resultSet.first())
@@ -195,12 +207,12 @@ public class ResultSetTableModel extends AbstractTableModel
                 }
             }
             return resultSet.getObject(column);
-            
+
         } catch (SQLException ex)
         {
             log.error("getValueAt", ex);
         }
-        
+
         return null;
     }
 
@@ -223,7 +235,7 @@ public class ResultSetTableModel extends AbstractTableModel
     {
       return numRows;
     }
-    
+
     /**
      * Clears all the data from the model
      *
@@ -241,45 +253,53 @@ public class ResultSetTableModel extends AbstractTableModel
             }
             resultSet  = null;
         }
-        
+
         metaData   = null;
         classNames.clear();
-        
-        currentRow = 0;   
+
+        currentRow = 0;
         numRows    = 0;
     }
-    
+
     /**
      * Returns a RecordSet object from the table
      * @param rows the selected rows
      * @param column the col that contains the ID
+     * @param returnAll indicates whether all the records should be returned if nothing was selected
      * @return Returns a RecordSet object from the table
      */
-    public RecordSet getRecordSet(final int[] rows, final int column)
+    public RecordSet getRecordSet(final int[] rows, final int column, final boolean returnAll)
     {
+        RecordSet rs = new RecordSet();
+
+        Set<RecordSetItem> items = new HashSet<RecordSetItem>();
+        rs.setItems(items);
+
+        // return if now rows are selected
+        if (!returnAll && (rows == null || rows.length == 0))
+        {
+            return rs;
+        }
+
         try
         {
-            RecordSet rs = new RecordSet();
-            
             if (!resultSet.first())
             {
                 log.error("Error doing resultSet.first");
                 return null;
             }
-            
-            Set<RecordSetItem> items = new HashSet<RecordSetItem>();
-            rs.setItems(items);
+
             if (rows == null)
             {
                 do
-                {                   
+                {
                     RecordSetItem rsi = new RecordSetItem();
                     rsi.setRecordId(resultSet.getObject(column+1).toString());
                     items.add(rsi);
                 } while (resultSet.next());
-                
+
                 return rs;
-        
+
             } else
             {
                 for (int i=0;i<rows.length;i++)
@@ -291,7 +311,7 @@ public class ResultSetTableModel extends AbstractTableModel
                         items.add(rsi);
                     }
                 }
-                
+
             }
         } catch (Exception ex)
         {
@@ -299,5 +319,5 @@ public class ResultSetTableModel extends AbstractTableModel
         }
         return null;
     }
-    
+
 }

@@ -23,6 +23,9 @@ package edu.ku.brc.specify.ui.validation;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
+import java.util.prefs.Preferences;
 
 import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
@@ -32,6 +35,7 @@ import javax.swing.text.Document;
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.ColorWrapper;
 import edu.ku.brc.specify.ui.GetSetValueIFace;
+import edu.ku.brc.specify.ui.UICacheManager;
 
 /**
  * A JTextArea that implements UIValidatable for participating in validation
@@ -40,7 +44,10 @@ import edu.ku.brc.specify.ui.GetSetValueIFace;
  *
  */
 @SuppressWarnings("serial")
-public class ValTextArea extends JTextArea implements UIValidatable, DocumentListener, GetSetValueIFace
+public class ValTextArea extends JTextArea implements UIValidatable, 
+                                                      GetSetValueIFace, 
+                                                      DocumentListener,
+                                                      PreferenceChangeListener
 {
     protected boolean isInError  = false;
     protected boolean isRequired = false;
@@ -105,6 +112,8 @@ public class ValTextArea extends JTextArea implements UIValidatable, DocumentLis
             valtextcolor = PrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
             requiredfieldcolor = PrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
+        UICacheManager.getAppPrefs().node("ui/formatting").addPreferenceChangeListener(this);
+
     }
     
     /**
@@ -234,5 +243,17 @@ public class ValTextArea extends JTextArea implements UIValidatable, DocumentLis
     public Object getValue()
     {
         return getText();
-    }    
+    }
+    
+    //-------------------------------------------------
+    // PreferenceChangeListener
+    //-------------------------------------------------
+
+    public void preferenceChange(PreferenceChangeEvent evt)
+    {
+        if (evt.getKey().equals("requiredfieldcolor"))
+        {
+            setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+        }
+    }
 }

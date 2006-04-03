@@ -32,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Constructs a an object to execute an SQL staement and then notify the listener and it is done. Any exception in the
  * SQL processing are passed back to the listener instead of being thrown. This class is running in its own thread.
- * 
+ *
  * @author rods
  */
 public class SQLExecutionProcessor implements Runnable
@@ -42,10 +42,10 @@ public class SQLExecutionProcessor implements Runnable
     protected Thread               thread;
     protected SQLExecutionListener listener;
     protected String               sqlStr;
-    
-    protected Connection           dbConnection          = null;    
+
+    protected Connection           dbConnection          = null;
     protected Statement            dbStatement           = null;
-    protected boolean              isAutoCloseConnection = true;  
+    protected boolean              isAutoCloseConnection = true;
 
     /**
      * Constructs a an object to execute an SQL staement and then notify the listener
@@ -57,7 +57,7 @@ public class SQLExecutionProcessor implements Runnable
         this.listener = listener;
         this.sqlStr   = trimStr(sqlStr);
     }
-    
+
     /**
      * Constructs a an object to execute an SQL staement and then notify the listener
      * @param listener the listener
@@ -69,7 +69,7 @@ public class SQLExecutionProcessor implements Runnable
         this.listener     = listener;
         this.sqlStr       = trimStr(sqlStr);
     }
-    
+
     /**
      * Returns whether the connection and statement should be automatically close.
      * @return Returns whether the connection and statement should be automatically close.
@@ -87,7 +87,7 @@ public class SQLExecutionProcessor implements Runnable
     {
         this.isAutoCloseConnection = isAutoCloseConnection;
     }
-    
+
     /**
      * trim the string of all whitespace and tabs
      * @param str the string to be trimmed
@@ -97,7 +97,7 @@ public class SQLExecutionProcessor implements Runnable
     {
         return str.replace("\n", "").replace("\t", "").replace("\r", "").trim();
     }
-    
+
     /**
      * Sets a new SQL string
      * @param sqlStr the SQL string
@@ -111,8 +111,8 @@ public class SQLExecutionProcessor implements Runnable
      * Close the DB Connection for this SQL statement
      *
      */
-    public void close() 
-    {            
+    public void close()
+    {
         try
         {
             if (dbStatement != null)
@@ -120,11 +120,11 @@ public class SQLExecutionProcessor implements Runnable
                 dbStatement.close();
                 dbStatement = null;
             }
-            
+
             if (dbConnection != null)
             {
                 dbConnection.close();
-                dbConnection = null;   
+                dbConnection = null;
             }
         } catch (SQLException ex)
         {
@@ -137,15 +137,15 @@ public class SQLExecutionProcessor implements Runnable
      * Close the DB Connection for this SQL statement
      *
      */
-    public void closeStatement() 
-    {            
+    public void closeStatement()
+    {
         try
         {
             if (dbStatement != null)
             {
                 dbStatement.close();
                 dbStatement = null;
-            }            
+            }
         } catch (SQLException ex)
         {
             log.error(ex);
@@ -162,7 +162,7 @@ public class SQLExecutionProcessor implements Runnable
         thread = new Thread(this);
         thread.start();
     }
-    
+
     /**
      * Stops the thread making the call
      *
@@ -176,7 +176,7 @@ public class SQLExecutionProcessor implements Runnable
         thread = null;
         notifyAll();
     }
-    
+
     /**
      * Creates a connection, makes the call and returns the results
      */
@@ -188,7 +188,7 @@ public class SQLExecutionProcessor implements Runnable
             {
                 dbConnection = DBConnection.getConnection();
             }
-            
+
             if (dbConnection != null)
             {
                 if (dbStatement != null)
@@ -196,7 +196,7 @@ public class SQLExecutionProcessor implements Runnable
                     dbStatement.close();
                 }
                 dbStatement = dbConnection.createStatement();
-                
+
                 log.debug("SQL ["+sqlStr+"]");
                 if (sqlStr.toLowerCase().indexOf("select") == 0)
                 {
@@ -209,7 +209,7 @@ public class SQLExecutionProcessor implements Runnable
                     log.debug("SQL*["+sqlStr+"]");
                     listener.exectionDone(this, null);
                 }
-                
+
                 if (isAutoCloseConnection)
                 {
                     close();
@@ -221,25 +221,25 @@ public class SQLExecutionProcessor implements Runnable
             //ex.printStackTrace();
             log.error("Error in run["+sqlStr+"]", ex);
             listener.executionError(this, ex);
-                  
+
         } catch (Exception ex)
         {
             //ex.printStackTrace();
             log.error("Error in run["+sqlStr+"]", ex);
             listener.executionError(this, ex);
-            
+
         }
     }
 
     /**
-     * 
+     *
      * @return the java.sqlConnection object
      */
     public Connection getDbConnection()
     {
         return dbConnection;
     }
-    
-    
-    
+
+
+
 }

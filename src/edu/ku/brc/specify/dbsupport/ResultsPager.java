@@ -55,7 +55,7 @@ public class ResultsPager
     }
     
     /**
-     * @param query The hibernate Criteria object defining what will come back
+     * @param criteria The hibernate Criteria object defining what will come back
      * @param page the intial starting page
      * @param pageSize the number of records per page
      */

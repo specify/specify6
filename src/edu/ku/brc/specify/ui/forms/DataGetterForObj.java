@@ -21,6 +21,8 @@ package edu.ku.brc.specify.ui.forms;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.Formatter;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -35,6 +37,7 @@ import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.specify.prefs.PrefsCache;
 
 
 /**
@@ -49,13 +52,17 @@ public class DataGetterForObj implements DataObjectGettable
 {
     // Static Data Members
     private static Log log = LogFactory.getLog(DataGetterForObj.class);
+    protected static SimpleDateFormat scrDateFormat = null;
     
     /**
      * Default constructor (needed for factory) 
      */
     public DataGetterForObj()
     {
-        
+        if (scrDateFormat == null)
+        {
+            scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+        }  
     }
     
     /**
@@ -67,32 +74,12 @@ public class DataGetterForObj implements DataObjectGettable
     public Object getFieldValueInternal(Object dataObj, String fieldName) 
     {
         boolean debug = true;
-        if (dataObj instanceof Locality)
+        /*if (dataObj instanceof Locality)
         {
             System.out.println("getLocalityName ["+((Locality)dataObj).getLocalityName()+"]");
             debug = true;
-        }
-        
-        if (fieldName.equals("determinations"))
-        {
-            int x = 0;
-            x++;
-            //debug = true;
-        }
-        
-        if (fieldName.equals("preparations"))
-        {
-            int x = 0;
-            x++;
-            //debug = true;
-        }
-        
-        if (dataObj instanceof CollectingEvent)
-        {
-            int x = 0;
-            x++;
-            //debug = true;
-        }
+        }*/
+
         
         //System.out.println("["+fieldName+"]["+(dataObj != null ? dataObj.getClass().toString() : "N/A")+"]");
         Object value = null;
@@ -117,7 +104,7 @@ public class DataGetterForObj implements DataObjectGettable
                         if (obj instanceof AttributeIFace) // Not scalable (needs interface)
                         {
                             AttributeIFace asg = (AttributeIFace)obj;
-                            log.info("["+asg.getDefinition().getFieldName()+"]["+fieldName+"]");
+                            //log.info("["+asg.getDefinition().getFieldName()+"]["+fieldName+"]");
                             if (asg.getDefinition().getFieldName().equals(fieldName))
                             {
                                 if (asg.getDefinition().getDataType() == AttributeIFace.FieldType.StringType.getType())
@@ -213,26 +200,61 @@ public class DataGetterForObj implements DataObjectGettable
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.DataObjectGettable#getFieldValue(java.lang.Object, java.lang.String, java.lang.String)
      */
-    public Object getFieldValue(final Object dataObj, final String fieldName, final String format) 
+    public Object getFieldValue(final Object dataObj, final String fieldNames, final String format)
     {
-        /*
-        if (format != null && format.length() > 0 && fieldName.indexOf(",") > -1)
+        if (format == null)
         {
-            String[] fields = StringUtils.split(fieldName, ",");
-            String   valStr = format;
-            for (int i=0;i<fields.length;i++)
-            {
-                String token = Integer.toString(i);
-                valStr = valStr.replace(token, fields != null ? fields.toString() : "");
-            }
-            return valStr;
+            return getFieldValue(dataObj, fieldNames);
         }
         
-        Object value = getFieldValue(dataObj, fieldName);
-        return value == null ? "" : value;
-        */
-        return null;
-    }    
+        Object data = dataObj;
+        
+        boolean  allFieldsNull = true;
+        String[] fields        = StringUtils.split(fieldNames, ",");
+        Object[] values        = new Object[fields.length];
+        for (int i=0;i<values.length;i++)
+        {
+            values[i] = getFieldValue(dataObj, fields[i]);
+            if (allFieldsNull && values[i] != null)
+            {
+                allFieldsNull = false;
+            }
+        }
+        
+        if (!allFieldsNull)
+        {
+            if (values[0] instanceof java.util.Date)
+            {
+                data = scrDateFormat.format((java.util.Date)values[0]);
+                
+            } else if (values[0] instanceof java.util.Calendar)
+            {
+                data = scrDateFormat.format(((java.util.Calendar)values[0]).getTime());
+                
+            } else
+            {
+                if (values != null && values.length > 0)
+                {
+                    //for (Object o : values) System.out.println(o != null ? o.getClass().toString() : "N/A" + "  [" + (o != null ? o.toString() : "NULL")+"]");
+                    //System.out.println("format: "+format);
+                    try
+                    {
+                        Formatter formatter = new Formatter(); 
+                        formatter.format(format, (Object[])values);
+                        data = formatter.toString();
+                    } catch (java.util.IllegalFormatConversionException ex)
+                    {
+                        data = values[0] != null ? values[0].toString() : "";
+                    }
+                } else
+                {
+                    data = "";
+                }
+            }
+        }
+        return data;
+
+    }
     
 
 }

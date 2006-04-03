@@ -174,7 +174,7 @@ public class BasicSQLUtils
 
     /**
      * Deletes all the records from a table
-     * @param stmt Statement object to execute the SQL
+     * @param connection connection to the DB
      * @param tableName the name of the table
      * @return the return value from the SQL update statment (or -1 on an exception)
      */
@@ -472,7 +472,8 @@ public class BasicSQLUtils
      * "from" field list.
      *
      * @param fromConn DB Connection that the data is coming from
-     * @param toConnDB Connection that the data is going to
+     * @param toConn Connection that the data is going to
+     * @param sql the SQL to be executed
      * @param fromTableName the table name its coming from
      * @param toTableName the table name it is going to
      * @param colNewToOldMap a map of new file names to old file names
@@ -744,7 +745,7 @@ public class BasicSQLUtils
      * Returns the number of records in a table
      * @param connection db connection
      * @param tableName the name of the table
-     * @return
+     * @return the number of records in a table
      */
     public static int getNumRecords(final Connection connection, final String tableName)
     {

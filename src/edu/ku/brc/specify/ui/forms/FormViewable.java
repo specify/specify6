@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.ui.forms;
 
 import java.awt.Component;
+import java.util.List;
 import java.util.Map;
 
 import edu.ku.brc.specify.ui.forms.persist.FormView;
@@ -121,4 +122,10 @@ public interface FormViewable
      * @return a subform (FormViewable)
      */
     public FormViewable getSubView(final String name);
+    
+    /**
+     * List the List with all the names of the cells of type "field"
+     * @param fieldNames the list to be filled
+     */
+    public void getFieldNames(final List<String> fieldNames);
 }

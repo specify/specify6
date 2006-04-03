@@ -54,7 +54,7 @@ public class IdMapperMgr
     /**
      * @param tableName
      * @param idName
-     * @return
+     * @return the IdMapper object
      */
     public IdMapper addMapper(final String tableName, final String idName)
     {
@@ -73,7 +73,7 @@ public class IdMapperMgr
     }
     
     /**
-     * @return
+     * @return the old connection
      */
     public Connection getOldConnection()
     {
@@ -83,7 +83,7 @@ public class IdMapperMgr
     /**
      * @param tableName
      * @param idName
-     * @return
+     * @return the IdMapper object
      */
     public IdMapper get(final String tableName, final String idName)
     {
@@ -126,7 +126,7 @@ public class IdMapperMgr
     }
     
     /**
-     * @return
+     * @return IdMapperMgr instance
      */
     public static IdMapperMgr getInstance()
     {

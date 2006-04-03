@@ -59,7 +59,6 @@ public class ViewSet
      * Constructor 
      * @param name name of view set
      * @param fileName the filename it came from
-     * @param views the list of views
      */
     public ViewSet(final String name, final String fileName)
     {

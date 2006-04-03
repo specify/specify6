@@ -87,7 +87,7 @@ public class FilteredDefaultTreeModel extends DefaultTreeModel implements Filter
 	/**
 	 * Unhides the given node
 	 * 
-	 * @param the node to unhide
+	 * @param node the node to unhide
 	 * 
 	 * @see edu.ku.brc.specify.ui.FilterableTreeModel#unhideNode(javax.swing.tree.TreeNode)
 	 */

@@ -78,7 +78,7 @@ import org.hibernate.criterion.Expression;
 
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
-import com.jgoodies.looks.plastic.theme.DesertBlue;
+import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
@@ -112,6 +112,7 @@ import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.specify.tests.forms.TestDataSubObj;
 import edu.ku.brc.specify.ui.ChooseFromListDlg;
 import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.db.GenericSearchDialog;
 import edu.ku.brc.specify.ui.db.PickList;
 import edu.ku.brc.specify.ui.forms.FormViewObj;
 import edu.ku.brc.specify.ui.forms.FormViewable;
@@ -558,7 +559,12 @@ public class FormEditor
             if (!System.getProperty("os.name").equals("Mac OS X"))
             {
                 UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
-                PlasticLookAndFeel.setMyCurrentTheme(new DesertBlue());
+                //PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
+                //UIManager.setLookAndFeel(new WindowsLookAndFeel());
+                //UIManager.setLookAndFeel(new com.jgoodies.looks.windows.WindowsLookAndFeel());
+                PlasticLookAndFeel.setCurrentTheme(new ExperienceBlue());
+                //PlasticLookAndFeel.setPlasticTheme(new ConfigurableTheme());
+                //PlasticLookAndFeel.setMyCurrentTheme(new ConfigurableTheme());
             }
 
             //UIManager.setLookAndFeel(new PlasticLookAndFeel());
@@ -792,6 +798,16 @@ public class FormEditor
             {
                 FormEditor formEditor = new FormEditor();
                 formEditor.initialize();
+
+                /*
+                GenericSearchDialog dlg = new GenericSearchDialog("Search", 555, "AgentAddressSearch", 
+                                                                  getResourceString("AgentSearchTitle"), 
+                                                                  "edu.ku.brc.specify.datamodel.Agent",
+                                                                  "agentId");
+                dlg.setVisible(true);
+                System.out.println(dlg.getSelectedObject());
+                */
+                HibernateUtil.getCurrentSession(); // loads the HBM files
             }
         });
 

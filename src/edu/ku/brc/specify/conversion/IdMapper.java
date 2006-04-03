@@ -211,8 +211,8 @@ public class IdMapper
     }
     
     /**
-     * @param oldIndex
-     * @return
+     * @param oldIndex old index
+     * @return the new index
      */
     public Integer getNewIndexFromOld(final Integer oldIndex)
     {

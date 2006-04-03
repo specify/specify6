@@ -30,6 +30,9 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
     protected FormView     formView = null;
     protected FormViewable form     = null;
     
+    /**
+     * 
+     */
     public FormattingPrefsPanel()
     {
         Preferences appsNode = UICacheManager.getAppPrefs();

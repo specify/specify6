@@ -34,7 +34,7 @@ public interface FilterableTreeModel
 	/**
 	 * Unhides the given node
 	 * 
-	 * @param the node to unhide
+	 * @param hiddenNode the node to unhide
 	 */
 	public void unhideNode( TreeNode hiddenNode );
 	

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<viewset name="Search" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <view id="555" type="form"
+        name="AgentSearch"
+        class="edu.ku.brc.specify.datamodel.Agent"
+        gettable="edu.ku.brc.specify.ui.forms.DataGetterForHashMap"
+        settable="edu.ku.brc.specify.ui.forms.DataSetterForHashMap"
+        resourceLabels="false"
+        validate="false"
+        >
+        <desc><![CDATA[The Agent Search Form]]></desc>
+        <altviews/>
+
+        <columnDef>p,3dlu,p,3dlu,p,3dlu,p,3dlu,p</columnDef>
+        <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+
+        <rows>
+            <row>
+                <cell type="separator" label="Agent Info" colspan="7"/>
+            </row>
+            <row>
+                <cell type="label" labelfor="LastName" label="Last Name"/>
+                <cell type="field" name="LastName" uitype="text" cols="20"/>
+                <cell type="label" labelfor="FirstName" label="First Name"/>
+                <cell type="field" name="FirstName" uitype="text" cols="20"/>
+            </row>
+            <row>
+                <cell type="label" labelfor="Name" label="Organization"/>
+                <cell type="field" name="Name" uitype="text" cols="20" colspan="5"/>
+            </row>
+            <row>
+                <cell type="label" labelfor="Address" label="Address"/>
+                <cell type="field" name="Address" uitype="text" cols="20"/>
+            </row>
+            <row>
+                <cell type="label" labelfor="City" label="City"/>
+                <cell type="field" name="City" uitype="text" cols="20"/>
+                <cell type="label" labelfor="State" label="State"/>
+                <cell type="field" name="State" uitype="text" cols="15"/>
+            </row>
+            <row>
+                <cell type="label" labelfor="Postalcode" label="Postal Code"/>
+                <cell type="field" name="Postalcode" uitype="text" cols="11"/>
+                <cell type="label" labelfor="Country" label="Country"/>
+                <cell type="field" name="Country" uitype="text" cols="20"/>
+            </row>
+        </rows>
+    </view>
+</viewset>

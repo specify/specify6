@@ -26,6 +26,9 @@ import java.awt.Graphics;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
+import java.util.prefs.Preferences;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -36,6 +39,7 @@ import javax.swing.event.ListSelectionListener;
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.ColorWrapper;
 import edu.ku.brc.specify.ui.GetSetValueIFace;
+import edu.ku.brc.specify.ui.UICacheManager;
 
 /**
  * A JList that implements UIValidatable for participating in validation
@@ -44,7 +48,7 @@ import edu.ku.brc.specify.ui.GetSetValueIFace;
  *
  */
 @SuppressWarnings("serial")
-public class ValListBox extends JList implements UIValidatable, ListSelectionListener, GetSetValueIFace
+public class ValListBox extends JList implements UIValidatable, ListSelectionListener, GetSetValueIFace, PreferenceChangeListener
 {
     protected boolean isInError  = false;
     protected boolean isRequired = false;
@@ -93,6 +97,8 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
             valtextcolor = PrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
             requiredfieldcolor = PrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
+        UICacheManager.getAppPrefs().node("ui/formatting").addPreferenceChangeListener(this);
+
     }
 
     /* (non-Javadoc)
@@ -246,5 +252,17 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
     public Object getValue()
     {
         return getSelectedValue();
+    }
+    
+    //-------------------------------------------------
+    // PreferenceChangeListener
+    //-------------------------------------------------
+
+    public void preferenceChange(PreferenceChangeEvent evt)
+    {
+        if (evt.getKey().equals("requiredfieldcolor"))
+        {
+            setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+        }
     }
 }

@@ -83,7 +83,7 @@ public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListen
     /**
      * Sets info need to make links
      * @param linkStr the name of the static link
-     * @param idCol the column of the id which is used to build the link
+     * @param colId the column of the id which is used to build the link
      */
     public void setLinkInfo(final String linkStr, final int colId)
     {

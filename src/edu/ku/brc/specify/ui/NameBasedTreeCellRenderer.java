@@ -30,7 +30,7 @@ public class NameBasedTreeCellRenderer extends DefaultTreeCellRenderer
 	 * Creates a new RandBasedTreeCellRenderer using the passed in Map to
 	 * determine which icon to use for each rank
 	 * 
-	 * @param ranksToIcons
+	 * @param namesToIcons (XXX need comment)
 	 */
 	public NameBasedTreeCellRenderer( Map<String,Icon> namesToIcons )
 	{

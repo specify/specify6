@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tables>
-  <table id="1" usehitscache="true" name="CollObject" title="Collection Object" priority="1" color="30, 144, 255">
+  <table id="1" usehitscache="true" name="CollObject" title="Collection Object" priority="1" color="30, 144, 255"
+         expresssearch="true">
     <outofdate>
         <table name="collectionobject" title="Collection Object"/>
         <table name="determination" title="Determination"/>
@@ -28,8 +29,9 @@
         <recordset tabletype="1" col="0"/>
 	</detailView>
   </table>
-  
-  <table id="2" name="locality" title="Locality" priority="1" color="30, 144, 255">
+
+  <table id="2" name="locality" title="Locality" priority="1" color="30, 144, 255"
+         expresssearch="true">
     <outofdate>
         <table name="locality" title="Locality"/>
     </outofdate>
@@ -55,9 +57,10 @@
         <recordset tabletype="2" col="3"/>
 	</detailView>
   </table>
-  
-  <!-- 
-  <table id="3" name="geography" title="Geography" priority="1" color="30, 144, 255">
+
+  <!--
+  <table id="3" name="geography" title="Geography" priority="1" color="30, 144, 255"
+         expresssearch="true">
     <outofdate>
         <table name="geography" title="Geography"/>
     </outofdate>
@@ -92,8 +95,9 @@
 	</detailView>
   </table>
   -->
-  
-  <table id="4" name="taxon" title="Taxon" priority="1" color="30, 144, 255">
+
+  <table id="4" name="taxon" title="Taxon" priority="1" color="30, 144, 255"
+         expresssearch="true">
     <outofdate>
         <table name="taxon" title="Taxon"/>
     </outofdate>
@@ -119,8 +123,9 @@
         <recordset tabletype="4" col="2"/>
 	</detailView>
   </table>
-  
-  <table id="5" name="Agent" title="Agent" priority="1" color="30, 144, 255">
+
+  <table id="5" name="Agent" title="Agent" priority="1" color="30, 144, 255"
+         expresssearch="true">
     <outofdate>
         <table name="agent" title="Agent"/>
     </outofdate>
@@ -129,9 +134,9 @@
 	        <![CDATA[select AgentID,FirstName,LastName from agent;]]>
 	    </sql>
 	    <cols>
-	       <col>1</col>
-	       <col>2</col>
-	       <col>3</col>
+	        <col>1</col>
+	        <col key="firstname">2</col>
+	        <col key="lastname">3</col>
 	    </cols>
 	</index>
     <detailView icon="Agent">
@@ -146,22 +151,23 @@
         <recordset tabletype="5" col="2"/>
 	</detailView>
   </table>
-  
-  <table id="6" name="Address" title="Address" priority="1" color="30, 144, 255">
+
+  <table id="6" name="Address" title="Address" priority="1" color="30, 144, 255"
+         expresssearch="true">
     <outofdate>
         <table name="address" title="Address"/>
     </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[select * from address;]]>
+	        <![CDATA[select Address, Address2, City, State, Country, PostalCode from address;]]>
 	    </sql>
 	    <cols>
-	       <col>1</col>
-	       <col>2</col>
-	       <col>3</col>
-	       <col>4</col>
-	       <col>5</col>
-	       <col>6</col>
+	        <col key="address">1</col>
+	        <col key="address">2</col>
+	        <col key="city">3</col>
+	        <col key="state">4</col>
+	        <col key="country">5</col>
+	        <col key="postalcode">6</col>
 	    </cols>
 	</index>
     <detailView icon="Address">
@@ -178,45 +184,46 @@
 	</detailView>
   </table>
 
-  <table id="7" usehitscache="true" name="CollObjToDeterminer" title="Determiner" priority="1" color="30, 144, 255">
+  <table id="7" usehitscache="true" name="CollObjToDeterminer" title="Determiner" priority="1" color="30, 144, 255"
+         expresssearch="true">
     <outofdate>
         <table name="determination" title="Determination"/>
     </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[Select 
- collectionobject.CollectionObjectID,	        
- taxon.Name, 
- taxon.CommonName, 
- agent.LastName, 
+	        <![CDATA[Select
+ collectionobject.CollectionObjectID,
+ taxon.Name,
+ taxon.CommonName,
+ agent.LastName,
  agent.FirstName
-  From 
- collectionobject 
- Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID 
- Inner Join agent ON determination.DeterminerID = agent.AgentID 
+  From
+ collectionobject
+ Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
+ Inner Join agent ON determination.DeterminerID = agent.AgentID
  Inner Join taxon ON determination.TaxonID = taxon.TreeID where determination.IsCurrent <> 0]]>
 	    </sql>
 	    <cols>
-	       <col>1</col>
-	       <col>2</col>
-	       <col>3</col>
-	       <col>4</col>
-	       <col>5</col>
+	        <col>1</col>
+	        <col>2</col>
+	        <col>3</col>
+	        <col key="lastname">4</col>
+	        <col key="firstname">5</col>
 	    </cols>
 	</index>
     <detailView icon="Agent">
 	    <sql>
-	        <![CDATA[select * from (Select 
- taxon.Name, 
- taxon.CommonName, 
- agent.LastName, 
+	        <![CDATA[select * from (Select
+ taxon.Name,
+ taxon.CommonName,
+ agent.LastName,
  agent.FirstName,
  collectionobject.CollectionObjectID,
- From 
- collectionobject 
- Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID 
- Inner Join agent ON determination.DeterminerID = agent.AgentID 
- Inner Join taxon ON determination.TaxonID = taxon.TreeID where determination.IsCurrent <> 0) as tx 
+ From
+ collectionobject
+ Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
+ Inner Join agent ON determination.DeterminerID = agent.AgentID
+ Inner Join taxon ON determination.TaxonID = taxon.TreeID where determination.IsCurrent <> 0) as tx
  where tx.CollectionObjectID in (%s)]]>
 	    </sql>
         <captions>
@@ -230,7 +237,8 @@
 	</detailView>
   </table>
 
-  <table id="8" name="CollObToLocality" title="Localities in Collecting Events" priority="1" color="30, 144, 255">
+  <table id="8" name="CollObToLocality" title="Localities in Collecting Events" priority="1" color="30, 144, 255"
+         expresssearch="true">
     <outofdate>
         <table name="collectingevent" title="Collecting Event"/>
     </outofdate>
@@ -256,10 +264,40 @@
         </captions>
        <recordset tabletype="8" col="1"/>
 	</detailView>
-  </table>  
+  </table>
 
-<!--
-  <table id="10000" usehitscache="true" name="Forms" title="Forms" priority="2" color="95, 158, 160">
+  <table id="5" name="AgentAddressSearch" title="Agent Search" priority="1" color="30, 144, 255" expresssearch="false">
+    <outofdate/>
+    <index>
+	    <sql/>
+	    <cols/>
+	</index>
+    <detailView icon="">
+	    <sql>
+	        <![CDATA[select agent.AgentID, 
+agent.FirstName,  agent.LastName, agent.Name, agentaddress.Email, address.Address, address.City, 
+address.State, address.Postalcode, address.Country From agent  
+Inner Join agentaddress ON agent.AgentID = agentaddress.AgentID 
+Inner Join address ON agentaddress.AddressID = address.AddressID and (%s)]]>
+	    </sql>
+        <captions>
+            <caption col="AgentID" text="AgentID"  visible="false"/>
+            <caption col="FirstName" text="First Name"/>
+            <caption col="LastName" text="Last Name"/>
+            <caption col="Organization" text="Name"/>
+            <caption col="EMail" text="EMail"/>
+            <caption col="Address" text="Address"/>
+            <caption col="City" text="City"/>
+            <caption col="State" text="State"/>
+            <caption col="Postalcode" text="Zip"/>
+            <caption col="Country" text="Country"/>
+        </captions>
+       <recordset tabletype="5" col="0"/>
+	</detailView>
+  </table>
+
+  <table id="10000" usehitscache="true" name="Forms" title="Forms" priority="2" color="95, 158, 160"
+         expresssearch="true">
     <outofdate/>
     <index>
 	    <sql/>
@@ -275,9 +313,10 @@
         </captions>
        <recordset tabletype="10000" col="1"/>
 	</detailView>
-  </table>  
+  </table>
 
-  <table id="20000" usehitscache="true" name="Labels" title="Labels" priority="3" color="189, 183, 107">
+  <table id="20000" usehitscache="true" name="Labels" title="Labels" priority="3" color="189, 183, 107"
+         expresssearch="true">
     <outofdate/>
     <index>
 	    <sql/>
@@ -293,7 +332,7 @@
         </captions>
        <recordset tabletype="20000" col="1"/>
 	</detailView>
-  </table>  
--->
+  </table>
+
 </tables>
-  
+

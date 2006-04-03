@@ -29,12 +29,14 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import edu.ku.brc.specify.exceptions.ConfigurationException;
+import edu.ku.brc.specify.helpers.XMLHelper;
 
 /**
- * Hold information about the subset of returns results. Each Express Search can return results from several different 
+ * Hold information about the subset of returns results. Each Express Search can return results from several different
  * DB tables of information. This information is constructed from an XML descrption
  * @author rods
  *
@@ -42,34 +44,39 @@ import edu.ku.brc.specify.exceptions.ConfigurationException;
 public class ExpressResultsTableInfo
 {
     public enum LOAD_TYPE {Building, Viewing, Both};
-    
-    protected LOAD_TYPE        loadType;
-    
-    protected String           tableId;
-    protected String           title;
-    
+
+    protected LOAD_TYPE                 loadType;
+
+    protected String                    tableId;
+    protected String                    title;
+    protected String                    name;
+    protected boolean                   isExpressSearch = true;
+
     // These are useed for viewing the results
-    protected String           iconName  = null;
-    protected String           viewSql;
-    protected Vector<Integer>  recIds    = new Vector<Integer>();
-    protected int[]            cols      = null;
-    
+    protected String                    iconName      = null;
+    protected String                    viewSql;
+    protected boolean                   viewSQLOverridden = false;
+    protected Vector<Integer>           recIds        = new Vector<Integer>();
+    protected int[]                     cols          = null;
+    protected String[]                  secondaryKeys = null;
+
     // These data members are use for indexing
     protected boolean                   useHitsCache = false;
     protected String                    buildSql;
     protected String[]                  colNames     = null;
+    protected String[]                  colLabels    = null;
     protected boolean[]                 visCols      = null;
     protected Hashtable<String, String> outOfDate    = new Hashtable<String, String>();
     protected Vector<Integer>           indexes      = new Vector<Integer>();
-    
+
     protected int                       tableType;
     protected int                       recordSetColumnInx;
     protected int                       priority;
     protected Color                     color;
-    
+
     // Derived Data member
     protected int                       visColCount = 0;
-    
+
     /**
      * Constructs a table info object
      * @param tableElement the DOM4J element representing the information
@@ -78,10 +85,10 @@ public class ExpressResultsTableInfo
     public ExpressResultsTableInfo(final Element tableElement, final LOAD_TYPE loadType)
     {
         this.loadType = loadType;
-        
+
         fill(tableElement);
     }
-    
+
     /**
      * PRase comma separated r,g,b string
      * @param rgb the string with comma separated color values
@@ -99,61 +106,68 @@ public class ExpressResultsTableInfo
         }
         throw new ConfigurationException("R,G,B value is bad ["+rgb+"]");
     }
-    
+
     /**
      * Fill the current object with the info from the DOM depending on the LOAD_TYPE
      * @param tableElement the DOM4J element used to fill the object
      */
     public void fill(final Element tableElement)
     {
-        tableId      = tableElement.attributeValue("id");
-        title        = tableElement.attributeValue("title");
-        priority     = Integer.parseInt(tableElement.attributeValue("priority"));
-        color        = parseRGB(tableElement.attributeValue("color"));
-        
+        tableId         = tableElement.attributeValue("id");
+        title           = tableElement.attributeValue("title");
+        name            = tableElement.attributeValue("name");
+        isExpressSearch = XMLHelper.getAttr(tableElement, "expresssearch", true);
+        priority        = Integer.parseInt(tableElement.attributeValue("priority"));
+        color           = parseRGB(tableElement.attributeValue("color"));
+
         String uhcStr = tableElement.attributeValue("usehitscache");
         useHitsCache  = uhcStr == null || uhcStr.length() == 0 ? false : getBoolean(uhcStr);
-        
+
        // This info is used for indexing
         if (loadType == LOAD_TYPE.Building || loadType == LOAD_TYPE.Both)
         {
             List tables = tableElement.selectNodes("outofdate/table");
-            for ( Iterator iter = tables.iterator(); iter.hasNext(); ) 
+            for ( Iterator iter = tables.iterator(); iter.hasNext(); )
             {
                 Element tblElement = (Element)iter.next();
                 outOfDate.put(tblElement.attributeValue("name"), tblElement.attributeValue("title"));
-            }  
-            
+            }
+
             Element indexElement = (Element)tableElement.selectSingleNode("index");
-            
+
             buildSql  = indexElement.selectSingleNode("sql").getText();
-                            
+
             List colItems = indexElement.selectNodes("cols/col");
             cols = new int[colItems.size()];
+            secondaryKeys = new String[colItems.size()];
             for (int i=0;i<colItems.size();i++)
             {
                 Element colElement = (Element)colItems.get(i);
                 cols[i] = Integer.parseInt(colElement.getTextTrim());
+                secondaryKeys[i] = XMLHelper.getAttr(colElement, "key", null);
             }
         }
-        
+
         if (loadType == LOAD_TYPE.Viewing || loadType == LOAD_TYPE.Both)
         {
             Element viewElement  = (Element)tableElement.selectSingleNode("detailView");
-            
-            viewSql  = viewElement.selectSingleNode("sql").getText();
+
+            viewSql  = StringUtils.strip(viewElement.selectSingleNode("sql").getText());
+            //System.out.println("["+viewSql+"]");
             iconName = viewElement.attributeValue("icon");
-           
+
             List captionItems = viewElement.selectNodes("captions/caption");
             if (captionItems.size() > 0)
             {
-                colNames = new String[captionItems.size()];
-                visCols  = new boolean[captionItems.size()];
+                colNames  = new String[captionItems.size()];
+                colLabels = new String[captionItems.size()];
+                visCols   = new boolean[captionItems.size()];
                 int i = 0;
-                for ( Iterator capIter = captionItems.iterator(); capIter.hasNext(); ) 
+                for ( Iterator capIter = captionItems.iterator(); capIter.hasNext(); )
                 {
                     Element captionElement = (Element)capIter.next();
-                    colNames[i] = captionElement.attributeValue("text");
+                    colLabels[i] = captionElement.attributeValue("text");
+                    colNames[i]  = captionElement.attributeValue("col");
                     String vc = captionElement.attributeValue("visible");
                     visCols[i] = vc == null || vc.length() == 0 || !vc.toLowerCase().equals("false");
                     visColCount += visCols[i] ? 1 : 0;
@@ -169,17 +183,29 @@ public class ExpressResultsTableInfo
 
         }
     }
-    
+
+    /**
+     * Returns the number of indexes
+     * @return the number of indexes
+     */
     public int getNumIndexes()
     {
         return indexes.size();
     }
-    
+
+    /**
+     * Adds an index
+     * @param index the index to add
+     */
     public void addIndex(int index)
     {
         indexes.add(index);
     }
-    
+
+    /**
+     * Returns the array of indexes
+     * @return the array of indexes
+     */
     public int[] getIndexes()
     {
         int[] inxs = new int[indexes.size()];
@@ -191,7 +217,7 @@ public class ExpressResultsTableInfo
         indexes.clear();
         return inxs;
     }
-    
+
     /**
      * Cleanup any memory
      */
@@ -204,7 +230,7 @@ public class ExpressResultsTableInfo
         viewSql  = null;
         buildSql = null;
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#finalize()
      */
@@ -212,7 +238,7 @@ public class ExpressResultsTableInfo
     {
         cleanUp();
     }
-    
+
     /**
      * Returns an array with the column name mappined, return null if all columns are to be shown
      * @return Returns an array with the column name mappined, return null if all columns are to be shown
@@ -233,8 +259,32 @@ public class ExpressResultsTableInfo
             }
             return mappedColNames;
         }
-      
+
         return colNames;
+    }
+
+    /**
+     * Returns an array with the column name mappined, return null if all columns are to be shown
+     * @return Returns an array with the column name mappined, return null if all columns are to be shown
+     */
+    public String[] getColLabels()
+    {
+        String[] mappedColLabels = null;
+        if (getVisColCount() < colLabels.length)
+        {
+            mappedColLabels = new String[visColCount];
+            int j = 0;
+            for (int i=0;i<visCols.length;i++)
+            {
+                if (visCols[i])
+                {
+                    mappedColLabels[j++] = colNames[i];
+                }
+            }
+            return mappedColLabels;
+        }
+
+        return colLabels;
     }
 
     /**
@@ -259,12 +309,29 @@ public class ExpressResultsTableInfo
         return cols;
     }
 
+    /**
+     * Returns an array of the columns that are to be indexes
+     * @return an array of the columns that are to be indexes
+     */
     public int[] getCols()
     {
         return cols;
     }
 
+    /**
+     * Returns the array of secodary keys for the indexes that are being mapped.
+     * @return the array of secodary keys for the indexes that are being mapped.
+     */
+    public String[] getSecondaryKeys()
+    {
+        return this.secondaryKeys;
+    }
 
+
+    /**
+     * Returns the current LoadType: this object's internal contents were parsed for indexing or search processing
+     * @return the current LoadType
+     */
     public LOAD_TYPE getLoadType()
     {
         return loadType;
@@ -282,17 +349,37 @@ public class ExpressResultsTableInfo
         return recIds;
     }
 
+    public String getName()
+    {
+        return name;
+    }
 
     public String getTitle()
     {
         return title;
     }
-    
+
+    public boolean isExpressSearch()
+    {
+        return isExpressSearch;
+    }
+
     public String getViewSql()
     {
-        return viewSql.replace("%s", getRecIdList());
+        return viewSQLOverridden ? viewSql : viewSql.replace("%s", getRecIdList());
     }
-    
+
+    public void setViewSql(String viewSql)
+    {
+        this.viewSql = viewSql;
+        viewSQLOverridden = true;
+    }
+
+    public void setViewSQLOverridden(boolean viewSQLOverridden)
+    {
+        this.viewSQLOverridden = viewSQLOverridden;
+    }
+
     public void setRecIds(Vector<Integer> recIds)
     {
         this.recIds = recIds;
@@ -302,7 +389,7 @@ public class ExpressResultsTableInfo
     {
         return tableId;
     }
-    
+
     public String getRecIdList()
     {
         StringBuffer idsStr = new StringBuffer();
@@ -318,7 +405,7 @@ public class ExpressResultsTableInfo
     {
         return iconName;
     }
-    
+
     public String getBuildSql()
     {
         return buildSql;
@@ -353,6 +440,6 @@ public class ExpressResultsTableInfo
     {
         return priority;
     }
-    
+
 }
 

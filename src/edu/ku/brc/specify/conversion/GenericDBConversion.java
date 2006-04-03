@@ -1871,12 +1871,12 @@ public class GenericDBConversion
     }
 
     /**
-     * @param name
-     * @param dataType
-     * @param user
-     * @param taxaTreeDef
-     * @param catalogSeries
-     * @return
+     * @param name name
+     * @param dataType dataType
+     * @param user user
+     * @param taxaTreeDef taxaTreeDef
+     * @param  catalogSeries catalogSeries
+     * @return set of objects
      */
     public Set<Object> createCollectionObjDef(final String          name,
                                               final DataType        dataType,

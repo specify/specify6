@@ -25,6 +25,7 @@
     <icon name="ColEvent"   file="collevent.gif" sizes="all"/>
     <icon name="InfoRequest" file="information.gif" sizes="all"/>
     <icon name="SystemSetup" file="information.gif" sizes="all"/>
+    <icon name="Search"      file="search.gif" sizes="all"/>
     
     
     <icon name="UserInterface" file="form.gif" sizes="all"/>

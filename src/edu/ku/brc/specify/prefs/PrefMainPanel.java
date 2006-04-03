@@ -57,9 +57,9 @@ import edu.ku.brc.specify.ui.validation.DataChangeNotifier;
 
 
 /**
- * 
+ *
  * This is the main content panel of the Dialog. It is also responsible for animating the resizing
- * 
+ *
  * @author rods
  *
  */
@@ -70,20 +70,20 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
     protected JTextField    searchText;
     protected JButton       searchBtn;
     protected JButton       okButton;
-    
-    protected PrefsToolbar  prefsToolbar  = null;  
-    protected PrefsToolbar  prefsPane     = null;  
+
+    protected PrefsToolbar  prefsToolbar  = null;
+    protected PrefsToolbar  prefsPane     = null;
 
     protected Color         textBGColor = null;
     protected Color         badSearchColor = new Color(255,235,235);
-    
+
     protected Component     currentComp = null;
-    
+
     protected Hashtable<String, Component> compsHash      = new Hashtable<String, Component>();
     protected String                       firstPanelName = null;
-    
+
     protected List<PrefsPanelIFace>        prefPanels = new ArrayList<PrefsPanelIFace>();
-    
+
 
     /**
      * Constructor
@@ -93,64 +93,64 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
         super(new BorderLayout());
 
         this.dialog = dialog;
-        
+
         initAsToolbar();
-        
+
         dialog.setTitle(getResourceString("preferences"));
 
     }
-    
+
     /**
      * Configure as a toolbar
      */
     protected void initAsToolbar()
     {
-        
+
         Color gray = new Color(230,230,230);
         int   delta = 8;
         Color lighter = new Color(gray.getRed()+delta, gray.getRed()+delta, gray.getRed()+delta);
 
         PanelBuilder    builder    = new PanelBuilder(new FormLayout("l:p, p, r:p:g", "p,"));
         CellConstraints cc         = new CellConstraints();
-       
+
         prefsToolbar = new PrefsToolbar(this);
         prefsToolbar.setBackground(lighter);
-       
-        
+
+
         builder.add( prefsToolbar, cc.xy(1,1));
         builder.add( createSearchPanel(), cc.xy(3,1));
-        
+
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         builder.getPanel().setBackground(lighter);
         add(builder.getPanel(), BorderLayout.NORTH);
-        
+
         okButton = new javax.swing.JButton ("OK");
         okButton.setEnabled(false);
-        
+
         JButton cancelButton = new javax.swing.JButton ("Cancel");
         Component buttonBar = com.jgoodies.forms.factories.ButtonBarFactory.buildRightAlignedBar(new JButton[] {okButton, cancelButton});
-        
+
         okButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 saveChangedPrefs();
                 dialog.setVisible(false);
             }
-        }); 
-        
+        });
+
         cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 removeDataChangeListeners();
                 dialog.setVisible(false);
                 //cleanUp();
             }
-        });    
+        });
         add(buttonBar, BorderLayout.SOUTH);
         showPanel(firstPanelName);
 
     }
-    
+
     /**
      * Remove self as a validation listener
      */
@@ -161,7 +161,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
             pp.getValidator().removeDataChangeListener(this);
         }
     }
-    
+
     /**
      * Save any prefs that have changed
      */
@@ -175,7 +175,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
         {
             ((PrefsSavable)pp).savePrefs();
         }
-        
+
         try
         {
             UICacheManager.getAppPrefs().flush();
@@ -184,38 +184,38 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
             // XXX FIXME
         }
     }
-    
+
     /**
      * Congigure as a multi-row grid
      */
     protected void initAsGrid()
     {
-        
+
         PanelBuilder    builder    = new PanelBuilder(new FormLayout("l:p, p:g, r:p:g", "p"));
         CellConstraints cc         = new CellConstraints();
-        
+
         JButton showAllBtn = new JButton(getResourceString("showall"));
-        
+
         builder.add(showAllBtn, cc.xy(1,1));
         builder.add( createSearchPanel(), cc.xy(3,1));
-        
+
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         add(builder.getPanel(), BorderLayout.NORTH);
-       
+
         prefsPane    = new PrefsToolbar(this);
-        
+
         firstPanelName = "Main";
         addPanel(firstPanelName, prefsPane);
         showPanel(firstPanelName);
-        
+
         showAllBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 showPanel(firstPanelName);
             }
-        });       
+        });
     }
-    
+
     /**
      * Show a named panel
      * @param name the name of the panel to be shown
@@ -227,19 +227,19 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
         {
             return;
         }
-        
+
         boolean   makeVis = false;
         Dimension oldSize = null;
         if (currentComp != null)
         {
             oldSize = currentComp.getSize();
             remove(currentComp);
-            
+
         } else
         {
             makeVis = true;
         }
-        
+
         if (comp != null)
         {
             comp.setVisible(makeVis);
@@ -254,9 +254,9 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
             }
         }
     }
-    
+
     /**
-     * Added named sub panel to 
+     * Added named sub panel to
      * @param name the name of the panel
      * @param comp the comp (Panel) to be added
      */
@@ -265,19 +265,19 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
         // XXX need to check for duplicates
 
         compsHash.put(name, comp);
-        
+
         if (!(comp instanceof PrefsSavable) || !(comp instanceof PrefsPanelIFace))
         {
             return false;
         }
-        
+
         if (comp instanceof PrefsPanelIFace)
         {
             PrefsPanelIFace pp = (PrefsPanelIFace)comp;
             pp.getValidator().addDataChangeListener(this);
             prefPanels.add(pp);
         }
-        
+
         if (firstPanelName == null)
         {
             firstPanelName = name;
@@ -285,15 +285,15 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
 
         return true;
     }
-    
+
     /**
-     * Performs the search for a pref 
+     * Performs the search for a pref
      */
     protected void doPrefSearch()
     {
-        
+
     }
-    
+
     /**
      * Creates a search panel for the prefs
      * @return a JPanel
@@ -303,19 +303,19 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
         // Create Search Panel
         GridBagLayout gridbag = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
-        
+
         JPanel     searchPanel = new JPanel(gridbag);
         JLabel     spacer      = new JLabel(" ");
-        
+
         searchBtn   = new JButton(getResourceString("Search"));
-        
+
         searchText  = new JTextField("", 10);
         textBGColor = searchText.getBackground();
-        
+
         searchText.setMinimumSize(new Dimension(50, searchText.getPreferredSize().height));
-        
+
         ActionListener doQuery = new ActionListener() {
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 String text = searchText.getText();
                 if (isNotEmpty(text))
@@ -324,7 +324,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
                 }
             }
         };
-        
+
         searchBtn.addActionListener(doQuery);
         searchText.addActionListener(doQuery);
         searchText.addKeyListener(new KeyAdapter()
@@ -337,24 +337,24 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
                 }
             }
         });
-        
-        
+
+
         c.weightx = 1.0;
         gridbag.setConstraints(spacer, c);
         searchPanel.add(spacer);
-        
+
         c.weightx = 0.0;
         gridbag.setConstraints(searchText, c);
         searchPanel.add(searchText);
-        
+
         searchPanel.add(spacer);
-        
+
         gridbag.setConstraints(searchBtn, c);
         searchPanel.add(searchBtn);
 
         return searchPanel;
     }
-    
+
    /**
      *  Start animation where painting will occur for the given rect
      * @param window the window to start it in
@@ -362,12 +362,12 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
      * @param delta the delta each time
      * @param fullStep the step
      */
-    public void startAnimation(final Window window, final Component comp, final int delta, final boolean fullStep) 
+    public void startAnimation(final Window window, final Component comp, final int delta, final boolean fullStep)
     {
         new Timer(10, new SlideInOutAnimation(window, comp, delta, fullStep)).start();
     }
 
-    
+
     //-----------------------------------------------------
     // DataChangeListener
     //-----------------------------------------------------
@@ -390,36 +390,36 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
         }
         okButton.setEnabled(okToEnable);
     }
-    
+
     //------------------------------------------------------------
     // Inner Class
     //------------------------------------------------------------
-    private class SlideInOutAnimation implements ActionListener 
+    private class SlideInOutAnimation implements ActionListener
     {
         private int        endHeight;
-        private int        delta; 
-        private int        pixelStep; 
+        private int        delta;
+        private int        pixelStep;
         private Window     window;
         private Rectangle  rect;
         private Component  comp;
 
-        SlideInOutAnimation(final Window window, final Component comp, final int delta, final boolean fullStep) 
+        SlideInOutAnimation(final Window window, final Component comp, final int delta, final boolean fullStep)
         {
             this.window    = window;
             this.delta     = delta;
             this.comp      = comp;
             rect           = window.getBounds();
-            endHeight      = rect.height + delta; 
+            endHeight      = rect.height + delta;
             pixelStep      = fullStep ? delta : delta / 10;
         }
-        
-        public void actionPerformed(ActionEvent e) 
+
+        public void actionPerformed(ActionEvent e)
         {
             rect.height += pixelStep;
             delta       -= pixelStep;
-            
+
             //System.out.println(delta+"  "+pixelStep+"  "+rect);
-            if (delta < 0 && pixelStep > 0) 
+            if (delta < 0 && pixelStep > 0)
             {
                 rect.height = endHeight;
                 comp.setVisible(true);

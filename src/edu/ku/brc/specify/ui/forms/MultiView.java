@@ -139,7 +139,7 @@ public class MultiView extends JPanel
     
     /**
      * Sets the Data Object into the View
-     * @param aData the data object
+     * @param data the data object
      */
     public void setData(Object data)
     {

@@ -194,9 +194,10 @@ public class ResultSetTableModelDM extends ResultSetTableModel
      * Returns a RecordSet object from the table
      * @param rows the selected rows
      * @param column the col that contains the ID
+     * @param returnAll indicates whether all the records should be returned if nothing was selected
      * @return Returns a RecordSet object from the table
      */
-    public RecordSet getRecordSet(final int[] rows, final int column)
+    public RecordSet getRecordSet(final int[] rows, final int column, final boolean returnAll)
     {
         try
         {
@@ -220,6 +221,9 @@ public class ResultSetTableModelDM extends ResultSetTableModel
                     }
                 } else
                 {*/
+                
+                if (returnAll)
+                {
                     if (!resultSet.first())
                     {
                         log.error("Error doing resultSet.first");
@@ -231,7 +235,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
                         rsi.setRecordId(resultSet.getObject(column+1).toString());
                         items.add(rsi);
                     } while (resultSet.next());
-                        
+                }    
 
                 //}
         

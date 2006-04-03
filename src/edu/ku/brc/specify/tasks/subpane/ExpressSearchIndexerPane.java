@@ -24,6 +24,7 @@ import static edu.ku.brc.specify.helpers.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.specify.helpers.UIHelper.getInt;
 import static edu.ku.brc.specify.helpers.UIHelper.getString;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -56,6 +57,7 @@ import javax.swing.border.EtchedBorder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -93,12 +95,14 @@ import edu.ku.brc.specify.ui.forms.persist.ViewSet;
 /**
  * A pane enables the user to see (and control) the indexing process for express search.<BR>
  * NOTE: This creates the index cache locality, it doesn't support is being on the network.
- * 
- * 
+ *
+ * For each table defined in search_config.xml they are parsed into a ExpressResultsTableInfo object
+ * which is used for doing the indexing amd for doing the search results
+ *
  * NOTE: XXX The indexing of the database needs to be abstracted out to be able to run "headless"<br>
- * That way we could run it on a server. The idea is that the UI would be accessed via a proxy 
+ * That way we could run it on a server. The idea is that the UI would be accessed via a proxy
  * and the headless could be a "do nothing stub".
- * 
+ *
  * @author rods
  *
  */
@@ -110,31 +114,32 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
     // Data Members
     protected Thread       thread;
-    protected File         lucenePath = null;
-    protected Element      esDOM;
+    protected File         lucenePath    = null;
+    protected Analyzer     analyzer      = new StandardAnalyzer();//WhitespaceAnalyzer();
+    protected Element      esDOM         = null;
     protected JLabel       indvLabel;
     protected JLabel       globalLabel;
     protected JProgressBar globalProgressBar;
-    protected long         termsIndexed = 0;
-    protected boolean      isCancelled  = false;
+    protected long         termsIndexed  = 0;
+    protected boolean      isCancelled   = false;
     protected JButton      cancelBtn;
     protected JButton      closeBtn;
-    
+
     protected ImageIcon    checkIcon     = new ImageIcon(IconManager.getImagePath("check.gif"));  // Move to icons.xml
     protected ImageIcon    exclaimIcon   = new ImageIcon(IconManager.getImagePath("exclaim.gif"));
     protected ImageIcon    exclaimYWIcon = new ImageIcon(IconManager.getImagePath("exclaim_yellow.gif"));
-    
+
     protected PairsMultipleQueryResultsHandler handler = null;
-    
+
     protected Hashtable<String, JLabel> resultsLabels = new Hashtable<String, JLabel>();
     protected JPanel                    resultsPanel;
-    protected Font                      captionFont = null;
+    protected Font                      captionFont   = null;
     protected JLabel                    explainLabel;
-    protected boolean                   noIndexFile = false;
-    
-    protected boolean                   doIndexForms  = false; // XXX Pref 
-    protected boolean                   doIndexLabels = false; // XXX Pref 
-    
+    protected boolean                   noIndexFile   = false;
+
+    protected boolean                   doIndexForms  = false; // XXX Pref
+    protected boolean                   doIndexLabels = false; // XXX Pref
+
     /**
      * Default Constructor
      *
@@ -142,15 +147,15 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     public ExpressSearchIndexerPane(final ExpressSearchTask task)
     {
         super(getResourceString("IndexerPane"), task);
-         
+
         lucenePath = ExpressSearchTask.getIndexDirPath();
 
         startCheckOutOfDateProcess(); // must be done before openingScreenInit
-        
+
         openingScreenInit();
-           
+
     }
-    
+
     /**
      * @return check to see if luceen exist and whether it is empty
      */
@@ -162,41 +167,44 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         }
         return false;
     }
-    
+
     /**
-     * Read in all the tables that need to be checked 
+     * Read in all the tables that need to be checked
      *
      */
     protected void startCheckOutOfDateProcess()
     {
         Vector<QueryResultsContainer> list = new Vector<QueryResultsContainer>();
-        
+
         noIndexFile = isLuceneEmpty();
-        
+
         Date lastModified = noIndexFile ? new Date(0) : new Date(lucenePath.lastModified());
-        
+
         try
         {
-            Element esDOM = XMLHelper.readDOMFromConfigDir("express_search.xml");         // Describes the definitions of the full text search
-            
+            if (esDOM == null)
+            {
+                esDOM = XMLHelper.readDOMFromConfigDir("search_config.xml");         // Describes the definitions of the full text search
+            }
+
             Hashtable<String, String> namesHash = new Hashtable<String, String>();
-            
+
             List tables = esDOM.selectNodes("/tables/table/outofdate/table");
-            for ( Iterator iter = tables.iterator(); iter.hasNext(); ) 
+            for ( Iterator iter = tables.iterator(); iter.hasNext(); )
             {
                 Element tableElement = (Element)iter.next();
                 namesHash.put(tableElement.attributeValue("name"), tableElement.attributeValue("title"));
-            }            
+            }
 
             PanelBuilder    builder = new PanelBuilder(new FormLayout("p:g,2dlu,p:g", createDuplicateJGoodiesDef("p","5px", namesHash.size())));
             CellConstraints cc      = new CellConstraints();
-            
+
             if (captionFont == null)
             {
                 Font curFont = getFont();
                 captionFont = new Font(curFont.getFontName(), Font.BOLD, 14);
             }
-            
+
             int row = 1;
             DateFormat formatter = new SimpleDateFormat("yyyyMMdd");
             for (Enumeration<String> e=namesHash.keys();e.hasMoreElements();)
@@ -206,42 +214,42 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 log.info(sqlStr);
                 QueryResultsContainer container = new QueryResultsContainer(sqlStr);
                 container.add(new QueryResultsDataObj(nameStr));
-                
-                // Since the index doesn't exist fake like 
+
+                // Since the index doesn't exist fake like
                 // each table has at least one out of date record
                 container.add(noIndexFile ? new QueryResultsDataObj(new Integer(1)) : new QueryResultsDataObj(1,1));
                 list.add(container);
-                
+
                 JLabel label = new JLabel(namesHash.get(nameStr)+":", JLabel.RIGHT);
                 label.setFont(captionFont);
-                
+
                 builder.add(label, cc.xy(1,row));
                 label = new JLabel(exclaimYWIcon);
-                
+
                 resultsLabels.put(nameStr, label);
                 builder.add(label, cc.xy(3,row));
                 row += 2;
             }
             resultsPanel = builder.getPanel();
-            
+
         } catch (Exception ex)
         {
             log.error(ex);
         }
-        
-        handler = new PairsMultipleQueryResultsHandler(); 
+
+        handler = new PairsMultipleQueryResultsHandler();
         handler.init(this, list);
-        
-        // We won't start it up because we no it doesn't exist 
+
+        // We won't start it up because we no it doesn't exist
         // so there is no reason check everything
         if (!noIndexFile)
         {
             handler.startUp();
         }
     }
-    
+
     /**
-     * 
+     *
      *
      */
     protected void openingScreenInit()
@@ -251,16 +259,16 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         CellConstraints cc         = new CellConstraints();
 
         removeAll();
-        
+
         RolloverCommand configureBtn = new RolloverCommand(getResourceString("Configure"), IconManager.getImage("Configure", IconManager.IconSize.Std32));
         RolloverCommand buildBtn     = new RolloverCommand(getResourceString("Build"), new ImageIcon(IconManager.getImagePath("build.gif")));
-        
+
         configureBtn.setVerticalLayout(true);
         buildBtn.setVerticalLayout(true);
-        
+
         JLabel label = new JLabel(getResourceString("ESIndexerCaption"), JLabel.CENTER);
         label.setFont(captionFont);
-        
+
         int row = 1;
         builder.add(label, cc.xywh(1,row,3,1));
         row+=2;
@@ -269,46 +277,46 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         builder.add(resultsPanel, cc.xywh(1,row,3,1));
         row+=2;
         builder.add(new JSeparator(JSeparator.HORIZONTAL), cc.xywh(1,row,3,1));
-        row+=2;   
+        row+=2;
         builder.add(configureBtn, cc.xy(1,row));
         builder.add(buildBtn, cc.xy(3,row));
         row+=2;
-        
+
         explainLabel = new JLabel(getResourceString("UpdatingES"), JLabel.CENTER);
         //explainLabel.setFont(new Font(getFont().getFontName(), Font.ITALIC, getFont().getSize()));
         builder.add(explainLabel, cc.xywh(1,row,3,1));
         row+=2;
-        
+
         //builder.getPanel().setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
         builder.getPanel().setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), BorderFactory.createEmptyBorder(5,5,5,5)));
         PanelBuilder    builder2    = new PanelBuilder(new FormLayout("center:p:g", "center:p:g"));
         builder2.add(builder.getPanel(), cc.xy(1,1));
-   
+
         builder2.getPanel().setBackground(Color.WHITE);
         add(builder2.getPanel(), BorderLayout.CENTER);
-        
+
         configureBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.FRAME), "Sorry, not implemented yet.");
             }
         });
-        
+
         buildBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 buildInit();
             }
         });
-        
+
         // Since we have no index then go ahead and display the resullts
         if (noIndexFile)
         {
             allResultsBack();
         }
-        
+
     }
-    
+
     /**
      * Performs a query and then indexes all the results for each orw and column
      * @param writer the lucene writer
@@ -318,32 +326,33 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     {
         Connection dbConnection = DBConnection.getConnection();
         Statement  dbStatement = null;
-        
-        int     tableId      = Integer.parseInt(tableInfo.getTableId());
-        int[]   fields       = tableInfo.getCols();
-        boolean useHitsCache = tableInfo.isUseHitsCache();
-        
+
+        int      tableId       = Integer.parseInt(tableInfo.getTableId());
+        int[]    fields        = tableInfo.getCols();
+        String[] secondaryKeys = tableInfo.getSecondaryKeys();
+        boolean  useHitsCache  = tableInfo.isUseHitsCache();
+
         StringBuilder strBuf = new StringBuilder();
-        
+
         long begin = 0;
-        
+
         progressBar.setIndeterminate(true);
-        
+
         try
         {
             if (dbConnection != null)
             {
                 dbStatement = dbConnection.createStatement();
-                
+
                 log.info("SQL ["+tableInfo.getBuildSql()+"]");
-                
+
                 ResultSet rs = dbStatement.executeQuery(tableInfo.getBuildSql());
-                
+
                 begin = new Date().getTime();
-                
-                double numRows;
-                int    trigger;
-                int    step = 0;
+
+                double numRows = 0;
+                int    trigger = -1;
+                int    step    = 0;
                 if (rs.last())
                 {
                     numRows = rs.getRow();
@@ -355,9 +364,11 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     trigger = (int)(numRows * 0.02);
                 } else
                 {
-                    throw new RuntimeException("Can't go to last record.");
+                    log.info("Table["+tableInfo.getTitle()+"] is empty.");
+                    //throw new RuntimeException("Can't go to last record.");
                 }
-                
+                log.info("Row ["+numRows+"] to index in ["+tableInfo.getTitle()+"].");
+
                 if (rs.first())
                 {
                     int rowCnt = 1;
@@ -374,7 +385,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                         Document doc = new Document();
                         doc.add(Field.Keyword("id", rs.getObject(fields[0]).toString()));
                         doc.add(Field.UnIndexed("table", Integer.toString(tableId)));
-                        
+
                         int cnt = 0;
                         if (useHitsCache)
                         {
@@ -384,18 +395,23 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                                 Object valObj = rs.getObject(fields[i]);
                                 if (valObj != null)
                                 {
-                                    String valStr =  valObj.toString();
+                                    String valStr = valObj.toString();
                                     if (valStr.length() > 0)
-                                    {          
+                                    {
                                         termsIndexed++;
                                         cnt++;
                                         if (i > 0)
                                         {
                                             doc.add(Field.UnStored("contents", valStr));
+                                            if (secondaryKeys[i] != null)
+                                            {
+                                                doc.add(Field.UnStored(secondaryKeys[i], valStr));
+                                                //System.out.println("indexing["+secondaryKeys[i]+"]["+valStr+"]");
+                                            }
                                         }
                                         strBuf.append(valStr);
                                         strBuf.append('\t');
-                                         
+
                                         if (isCancelled)
                                         {
                                             return 0;
@@ -409,9 +425,9 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                                     strBuf.append(" \t");
                                 }
                             }
-                                
+
                             doc.add(Field.UnIndexed("data", strBuf.toString()));
-                            
+
                         } else
                         {
                             for (int i=1;i<fields.length;i++)
@@ -425,7 +441,12 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                                         termsIndexed++;
                                         cnt++;
                                         doc.add(Field.UnStored("contents", valStr));
-                                        
+                                        if (secondaryKeys[i] != null)
+                                        {
+                                            doc.add(Field.UnStored(secondaryKeys[i], valStr));
+                                            System.out.println("indexing["+secondaryKeys[i]+"]["+valStr+"]");
+                                        }
+
                                         if (isCancelled)
                                         {
                                             dbStatement.close();
@@ -438,7 +459,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                         }
                         if (cnt > 0)
                         {
-                            writer.addDocument(doc);                            
+                            writer.addDocument(doc);
                         }
                     } while(rs.next());
                     log.info("done indexing");
@@ -452,19 +473,19 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         } catch (java.sql.SQLException ex)
         {
             //ex.printStackTrace();
-            log.error("Error in run["+tableInfo.getBuildSql()+"]", ex);      
+            log.error("Error in run["+tableInfo.getBuildSql()+"]", ex);
         } catch (Exception ex)
         {
             //ex.printStackTrace();
-            log.error("Error in run["+tableInfo.getBuildSql()+"]", ex);           
+            log.error("Error in run["+tableInfo.getBuildSql()+"]", ex);
         }
         long end = new Date().getTime();
 
         long delta = end - begin;
         log.info("Time to index (" + delta + " ms)");
-        return delta;       
+        return delta;
     }
-    
+
     /**
      * Creates UI for the build process and starts it up
      *
@@ -472,7 +493,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     public void buildInit()
     {
         removeAll();
-        
+
         PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2dlu,p", createDuplicateJGoodiesDef("c:p", "5dlu", 6)));
         CellConstraints cc         = new CellConstraints();
 
@@ -481,14 +502,14 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         indvLabel         = new JLabel("", JLabel.RIGHT);
         globalLabel       = new JLabel(getResourceString("Indexing_Descr"), JLabel.RIGHT);
         globalProgressBar = new JProgressBar();
-        
+
         cancelBtn = new JButton(getResourceString("CancelIndexing"));
         closeBtn  = new JButton(getResourceString("Close"));
         closeBtn.setVisible(false);
-        
+
         JLabel label = new JLabel(getResourceString("UpdatingES"), JLabel.CENTER);
         label.setFont(captionFont);
-        
+
         int row = 1;
         builder.add(label, cc.xywh(1,row,3,1));
         row +=2;
@@ -504,34 +525,34 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         row += 2;
         builder.add(closeBtn, cc.xywh(1,row,3,1));
         row += 2;
-        
+
         builder.getPanel().setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), BorderFactory.createEmptyBorder(5,5,5,5)));
-        
+
         PanelBuilder builder2 = new PanelBuilder(new FormLayout("center:p:g", "center:p:g"));
         builder2.add(builder.getPanel(), cc.xy(1,1));
-   
+
         builder2.getPanel().setBackground(Color.WHITE);
         add(builder2.getPanel(), BorderLayout.CENTER);
-        
+
         cancelBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 cancelBtn.setEnabled(false);
                 isCancelled = true;
                 //stop();
             }
         });
-        
+
         closeBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 UICacheManager.getSubPaneMgr().closeCurrent();
             }
         });
-        
+
         start();
     }
-    
+
     /**
      * @param writer
      * @param form
@@ -549,10 +570,10 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     Document doc = new Document();
                     doc.add(Field.Keyword("id", Integer.toString(form.getId())));
                     doc.add(Field.Keyword("table", "10000"));
-                    
+
                     String formName = form.getName();
                     String label    = ((FormCellLabel)cell).getLabel();
-                    
+
                     StringBuffer strBuf = new StringBuffer();
                     strBuf.append(formName);
                     strBuf.append('\t');
@@ -565,16 +586,16 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
                     doc.add(Field.UnStored("contents", form.getName()));
                     doc.add(Field.UnStored("contents", label));
-                    
+
                     doc.add(Field.UnIndexed("data", strBuf.toString()));
-                    
+
                     writer.addDocument(doc);
                 }
 
             }
         }
    }
-    
+
     /**
      * @param writer
      * @param form
@@ -584,14 +605,14 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         for (FormColumn formCol : form.getColumns())
         {
             termsIndexed++;
-            
+
             Document doc = new Document();
             doc.add(Field.Keyword("id", Integer.toString(form.getId())));
             doc.add(Field.Keyword("table", "10000"));
-            
+
             String formName = form.getName();
             String label    = formCol.getLabel();
-            
+
             StringBuffer strBuf = new StringBuffer();
             strBuf.append(formName);
             strBuf.append('\t');
@@ -604,14 +625,14 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
             doc.add(Field.UnStored("contents", form.getName()));
             doc.add(Field.UnStored("contents", label));
-            
+
             doc.add(Field.UnIndexed("data", strBuf.toString()));
-            
+
             writer.addDocument(doc);
-           
+
         }
     }
-    
+
     /**
      * Indexes all the fields and forms in the forms
      *
@@ -624,34 +645,34 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         {
             cnt += viewSet.getViews().size();
         }
-            
+
         indvLabel.setVisible(true);
         progressBar.setMaximum(cnt);
         progressBar.setValue(0);
         progressBar.setIndeterminate(false);
         progressBar.setString("0%");
         progressBar.setStringPainted(true);
-        
+
         long begin = new Date().getTime();
-        
+
         cnt = 0;
         for (ViewSet viewSet : ViewMgr.getViewSets())
         {
             for (FormView formView : viewSet.getViews())
             {
                 indvLabel.setText(formView.getViewSetName());
-                
+
                 if (formView.getType() == FormView.ViewType.form)
                 {
                     indexViewForm(writer, (FormFormView)formView);
-                   
+
                 } else if (formView.getType() == FormView.ViewType.table)
                 {
                     indexViewTable(writer, (FormTableView)formView);
-                   
+
                 } else if (formView.getType() == FormView.ViewType.field)
                 {
-                   
+
                 }
                 progressBar.setValue(++cnt);
             }
@@ -662,10 +683,10 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
         progressBar.setString("100%");
         indvLabel.setText("");
-        
+
         return delta;
     }
-    
+
     /**
      * Indexes all the fields and forms in the forms
      *
@@ -674,18 +695,18 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     {
         File configDir = new File(XMLHelper.getConfigDirPath(null));
         File[] files = configDir.listFiles(new DiskFileFilter("jrxml"));
-        
+
         indvLabel.setVisible(true);
         progressBar.setMaximum(files.length);
         progressBar.setValue(0);
         progressBar.setIndeterminate(false);
         progressBar.setString("0%");
         progressBar.setStringPainted(true);
-        
+
         long begin = new Date().getTime();
-        
+
         int cnt = 0;
-        
+
         for (File file : files)
         {
             String fileName = file.getName();
@@ -693,27 +714,27 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             {
                 Element root = XMLHelper.readFileToDOM4J(file.getAbsoluteFile());
                 String labelName = root.attributeValue("name");
-                
+
                 indvLabel.setText(labelName);
-                
+
                 /*List textFields = root.selectNodes("/jasperReport/detail/band/textField");
-                for ( Iterator iter = textFields.iterator(); iter.hasNext(); ) 
+                for ( Iterator iter = textFields.iterator(); iter.hasNext(); )
                 {
                     Element textField = (Element)iter.next();
-                }*/ 
-                
+                }*/
+
                 List staticTexts = root.selectNodes("/jasperReport/detail/band/staticText/text");
-                for ( Iterator iter = staticTexts.iterator(); iter.hasNext(); ) 
+                for ( Iterator iter = staticTexts.iterator(); iter.hasNext(); )
                 {
                     Element text = (Element)iter.next();
                     String label = text.getTextTrim();
-                    
+
                     termsIndexed++;
-                    
+
                     Document doc = new Document();
                     doc.add(Field.Keyword("id", labelName));
                     doc.add(Field.Keyword("table", "20000"));
-                    
+
                     StringBuffer strBuf = new StringBuffer();
                     strBuf.append(fileName);
                     strBuf.append('\t');
@@ -723,15 +744,15 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     strBuf.append('\t');
                     strBuf.append(label);
                     strBuf.append('\t');
- 
-                    doc.add(Field.UnStored("contents", fileName));                    
-                    doc.add(Field.UnStored("contents", labelName));                    
-                    doc.add(Field.UnStored("contents", label));                    
+
+                    doc.add(Field.UnStored("contents", fileName));
+                    doc.add(Field.UnStored("contents", labelName));
+                    doc.add(Field.UnStored("contents", label));
                     doc.add(Field.UnIndexed("data", strBuf.toString()));
-                    
+
                     writer.addDocument(doc);
-               }            
-                
+               }
+
             } catch (Exception ex)
             {
                 log.error(ex);
@@ -744,94 +765,100 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
         progressBar.setString("100%");
         indvLabel.setText("");
-        
+
         return delta;
     }
-    
+
     /**
-     * Starts the index process, it reads all the desired SQL from an XML file "express_search.xml"
+     * Starts the index process, it reads all the desired SQL from an XML file "search_config.xml"
      * in the config directory. If the process is cancelled then the indexing files are removed.
      *
      */
     public void index() throws IOException
     {
-        
+
         Directory dir = FSDirectory.getDirectory(lucenePath, true);
-        IndexWriter writer = new IndexWriter(dir, new StandardAnalyzer(), true);
+        IndexWriter writer = new IndexWriter(dir, analyzer, true);
         writer.mergeFactor   = 1000;
         writer.maxMergeDocs  = 9999999;
         writer.minMergeDocs  = 1000;
-        
+
         long deltaTime = 0;
         try
         {
-            Element esDOM = XMLHelper.readDOMFromConfigDir("express_search.xml");         // Describes the definitions of the full text search
-            
+            if (esDOM == null)
+            {
+                esDOM = XMLHelper.readDOMFromConfigDir("search_config.xml");         // Describes the definitions of the full text search
+            }
+
             List tables = esDOM.selectNodes("/tables/table");
-            
+
             int numOfCategories = tables.size() + (doIndexForms ? 1 : 0) + (doIndexLabels ? 1 : 0);
-            
+
             globalProgressBar.setStringPainted(true);
             globalProgressBar.setMaximum(numOfCategories);
             globalProgressBar.setValue(0);
             globalProgressBar.setString("0%");
             int indexerCnt = 0;
-            for ( Iterator iter = tables.iterator(); iter.hasNext(); ) 
+            for ( Iterator iter = tables.iterator(); iter.hasNext(); )
             {
                 Element tableElement = (Element)iter.next();
                 ExpressResultsTableInfo tableInfo = new ExpressResultsTableInfo(tableElement, ExpressResultsTableInfo.LOAD_TYPE.Building);
 
-               log.info("Indexing: "+tableInfo.getTitle()+"  Id: "+tableInfo.getTableId());
-               indvLabel.setText(tableInfo.getTitle());
-               int id = Integer.parseInt(tableInfo.getTableId()); 
-               if (id < 10000)
-               {
-                   deltaTime += indexQuery(writer, tableInfo);
-                   log.info(deltaTime);
-               }
-               if (isCancelled)
-               {
-                   break;
-               }
-               globalProgressBar.setValue(++indexerCnt);
+                if (isNotEmpty(tableInfo.getBuildSql()))
+                {
+                    log.info("Indexing: "+tableInfo.getTitle()+"  Id: "+tableInfo.getTableId());
+                    indvLabel.setText(tableInfo.getTitle());
+                    int id = Integer.parseInt(tableInfo.getTableId());
+                    if (id < 10000)
+                    {
+                       deltaTime += indexQuery(writer, tableInfo);
+                       log.info(deltaTime);
+                    }
+                    if (isCancelled)
+                    {
+                       break;
+                    }
+                    globalProgressBar.setValue(++indexerCnt);
 
-               globalProgressBar.setString((int)((double)indexerCnt / (double)tables.size() * 100.0)+"%");
-               indvLabel.setText("");
+                    globalProgressBar.setString((int)((double)indexerCnt / (double)tables.size() * 100.0)+"%");
+                    indvLabel.setText("");
+                }
             }
-            
+
             // These could be moved up into the loop above
             if (doIndexForms)
             {
                 deltaTime += indexForms(writer);
                 log.info(deltaTime);
             }
-            
+
             if (doIndexLabels)
             {
                 deltaTime += indexLabels(writer);
                 log.info(deltaTime);
             }
-            
+
         } catch (Exception ex)
         {
             log.error(ex);
         }
-        
+
         // OK, we are done But did we complete or cancel?
-        
+
         indvLabel.setHorizontalAlignment(JLabel.CENTER);
         globalLabel.setHorizontalAlignment(JLabel.CENTER);
         progressBar.setVisible(false);
         globalProgressBar.setVisible(false);
         cancelBtn.setVisible(false);
-        
+
         if (isCancelled)
         {
             indvLabel.setVisible(false);
             globalLabel.setText(getResourceString("indexingWasCancelled"));
-            
+
             writer.close();
-            
+
             // Create a new one and then close it
             String[] fileNames = lucenePath.list();
             for (int i=0;i<fileNames.length;i++)
@@ -841,10 +868,10 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 file.delete();
             }
             log.info(lucenePath.delete() ? "deleted" : "not deleted");
-            
+
         } else
         {
-            
+
             indvLabel.setText(termsIndexed+ " terms indexed in "+(((double)deltaTime) / 1000.0) + " seconds");
             globalLabel.setText(getResourceString("doneIndexing"));
             log.info(deltaTime);
@@ -853,11 +880,11 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             writer.close();
         }
         closeBtn.setVisible(true);
-        
+
         ((ExpressSearchTask)task).checkForIndexer();
-               
+
     }
-    
+
     /**
      * Starts the thread to make the SQL call
      *
@@ -867,7 +894,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         thread = new Thread(this);
         thread.start();
     }
-    
+
     /**
      * Stops the thread making the call
      *
@@ -881,7 +908,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         thread = null;
         notifyAll();
     }
-    
+
     /**
      * Does indexing
      */
@@ -890,7 +917,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         try
         {
             index();
-            
+
         } catch (Exception ex)
         {
             log.error(ex);
@@ -900,7 +927,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     //--------------------------------------
     // QueryResultsListener
     //--------------------------------------
-    
+
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.QueryResultsListener#allResultsBack()
@@ -908,10 +935,10 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     public synchronized void allResultsBack()
     {
         boolean allOK = true;
-        
+
         java.util.List<Object> list = handler.getDataObjects();
         for (int i=0;i<list.size();i++)
-        {         
+        {
             Object name   = list.get(i++);
             Object valObj = list.get(i);
             JLabel label  = resultsLabels.get(getString(name));
@@ -921,7 +948,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 label.setIcon(num == 0 ? checkIcon : exclaimIcon);
                 if (num > 0)
                 {
-                    allOK = false; 
+                    allOK = false;
                 }
             } else
             {
@@ -937,14 +964,14 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         repaint();
 
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.QueryResultsListener#resultsInError(edu.ku.brc.specify.dbsupport.QueryResultsContainer)
      */
     public void resultsInError(final QueryResultsContainer qrc)
     {
         //JOptionPane.showMessageDialog(this, getResourceString("ERROR_CREATNG_BARCHART"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); // XXX LOCALIZE
-        
+
         //addCompletedComp(new JLabel(getResourceString("ERROR_CREATNG_BARCHART"), JLabel.CENTER));
     }
 

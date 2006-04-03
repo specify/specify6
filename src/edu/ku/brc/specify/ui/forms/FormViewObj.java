@@ -21,6 +21,7 @@ package edu.ku.brc.specify.ui.forms;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,28 +30,29 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Formatter;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
+import java.util.prefs.Preferences;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListModel;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -58,11 +60,11 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.ColorChooser;
 import edu.ku.brc.specify.ui.ColorWrapper;
 import edu.ku.brc.specify.ui.GetSetValueIFace;
+import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.db.JAutoCompComboBox;
 import edu.ku.brc.specify.ui.db.PickListItem;
 import edu.ku.brc.specify.ui.forms.persist.FormAltView;
@@ -74,45 +76,45 @@ import edu.ku.brc.specify.ui.validation.FormValidator;
 
 /**
  * Implmentation of the FormViewable interface for the ui
- *  
+ *
  * @author rods
  *
  */
-public class FormViewObj implements FormViewable, ResultSetControllerListener
+public class FormViewObj implements FormViewable, ResultSetControllerListener, PreferenceChangeListener
 {
     private static Log log = LogFactory.getLog(FormViewObj.class);
-    
+
     protected MultiView                     multiView     = null;
     protected FormViewObj                   parent;
     protected FormView                      formViewDef;
     protected Component                     formComp       = null;
     protected List<FormViewObj>             kids           = new ArrayList<FormViewObj>();
-    
+
     protected Map<String, FieldInfo>        controls       = new Hashtable<String, FieldInfo>();
-    
+
     protected FormValidator                 validator      = null;
     protected Object                        dataObj        = null;
-    
+
     protected JPanel                        mainComp       = null;
     protected ControlBarPanel               rsPanel        = null;
     protected ResultSetController           rsController   = null;
     protected java.util.List                list           = null;
     protected JComboBox                     altViewUI      = null;
     protected boolean                       ignoreSelection = false;
-    
+
     protected PanelBuilder                  mainBuilder;
     protected CellConstraints               cc             = new CellConstraints();
-    
-    // Data Members 
-    protected static SimpleDateFormat scrDateFormat = null;
 
+    // Data Members
+    protected static SimpleDateFormat       scrDateFormat  = null;
+    protected static ColorWrapper           viewFieldColor = null;
 
     /**
      * Constructor with FormView definition
      * @param formViewDef the definition of the form
      */
-    public FormViewObj(final FormViewObj parent, 
-                       final FormView    formViewDef, 
+    public FormViewObj(final FormViewObj parent,
+                       final FormView    formViewDef,
                        final Object      dataObj,
                        final MultiView   multiView)
     {
@@ -120,15 +122,19 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
         this.formViewDef = formViewDef;
         this.dataObj     = dataObj;
         this.multiView   = multiView;
-        
+
         if (scrDateFormat == null)
         {
             scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
         }
-        
+
+        Preferences appsNode = UICacheManager.getAppPrefs();
+        Preferences prefNode = appsNode.node("ui/formatting");
+        prefNode.addPreferenceChangeListener(this);
+
         mainBuilder    = new PanelBuilder(new FormLayout("f:p:g", parent == null ? "p,2px,p": "p:g,2px,p"));
         mainComp = mainBuilder.getPanel();
-        
+
         if (formViewDef.getAltViews().size() > 0)
         {
             Vector<String> names = new Vector<String>();
@@ -138,7 +144,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
                 names.add(fv.getLabel());
             }
             altViewUI = new JComboBox(names);
-        } 
+        }
     }
 
     public void aboutToShow()
@@ -150,7 +156,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
             ignoreSelection = false;
         }
     }
-    
+
     /**
      * Constructor with FormView definition
      * @param formViewDef the definition of the form
@@ -163,7 +169,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
         this.formComp        = formComp;
         this.dataObj     = dataObj;
     }*/
-    
+
     /**
      * Returns the definition of the form
      * @return the definition of the form
@@ -172,7 +178,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
     {
         return formViewDef;
     }
-    
+
     /**
      * Returns the name of the form from the FormView
      * @return the name of the form from the FormView
@@ -192,8 +198,8 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
     {
         return dataObj;
     }
-    
-    
+
+
     /**
      * Return list of data objects if this is a recordset
      * @return the list of data objects
@@ -202,7 +208,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
     {
         return list;
     }
-    
+
     /**
      * Sets the component into the object
      * @param formComp the UI component that represents this viewable
@@ -215,11 +221,11 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
             mainComp.remove(this.formComp);
         }
         this.formComp = formComp;
-        
+
         // add new component
         mainBuilder.add(formComp, cc.xy(1,1));
     }
-    
+
     /**
      * Adds child to parent
      * @param child the child to be added
@@ -228,7 +234,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
     {
         kids.add(child);
     }
-    
+
     /**
      * Adds a control by name so it can be looked up later
      * @param formCell the FormCell def that describe the cell
@@ -253,8 +259,8 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
     public void setMultiView(MultiView multiView)
     {
         this.multiView = multiView;
-        
-        
+
+
         class MVActionListener implements ActionListener
         {
             protected MultiView mv;
@@ -270,11 +276,11 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
                 }
             }
         };
-        
+
         if (altViewUI != null)
         {
-            altViewUI.addActionListener(new MVActionListener(multiView)); 
-        }        
+            altViewUI.addActionListener(new MVActionListener(multiView));
+        }
     }
 
     /**
@@ -294,7 +300,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
             kids.add(subView);
         }
     }
-    
+
     /**
      * Sest the form validator
      * @param validator the validator
@@ -304,7 +310,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
         this.validator = validator;
     }
 
-    
+
     /**
      * Cleanup references
      */
@@ -320,9 +326,9 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
         formComp    = null;
     }
 
-    
+
     /**
-     * Adds the ResultSetController to the form 
+     * Adds the ResultSetController to the form
      */
     protected void addRecordSetController()
     {
@@ -342,12 +348,12 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
         }
         mainBuilder.add(rsPanel, cc.xy(1,3));
     }
-    
- 
+
+
     //-------------------------------------------------
     // FormViewable
     //-------------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.FormViewable#getId()
      */
@@ -355,7 +361,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
     {
         return formViewDef.getId();
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.FormViewable#getType()
      */
@@ -363,7 +369,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
     {
         return formViewDef.getType();
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.FormViewable#getUIComponent()
      */
@@ -371,7 +377,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
     {
         return mainComp;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.FormViewable#isSubform()
      */
@@ -379,7 +385,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
     {
         return parent != null;
     }
-    
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.FormViewable#getComp(java.lang.String)
@@ -388,7 +394,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
     {
         return controls.get(name).getComp();
     }
-    
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.FormViewable#getControlMapping()
@@ -402,7 +408,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
         }
         return map;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.FormViewable#getValidator()
      */
@@ -410,7 +416,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
     {
         return validator;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.FormViewable#setDataObj(java.lang.Object)
      */
@@ -422,13 +428,13 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
             Set dataSet = (Set)dataObj;
             data = Collections.list(Collections.enumeration(dataSet));
         }
-        
+
         if (validator != null)
         {
             validator.addRuleObjectMapping("dataObj", dataObj);
             validator.setDataChangeNotification(false);
         }
-        
+
         if (data instanceof java.util.List)
         {
             list = (java.util.List)data;
@@ -453,7 +459,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
             this.dataObj = dataObj;
             this.list    = null;
             setDataIntoUI();
-            
+
             // Don't remove the rsController if the data is NULL because the next non-null one may be a list
             // mostly likely it will be
             if (this.dataObj != null && rsController != null)
@@ -465,12 +471,12 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
                 }
             }
         }
-        
+
         if (validator != null)
         {
             validator.setDataChangeNotification(true);
         }
-        
+
     }
 
     /* (non-Javadoc)
@@ -480,7 +486,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
     {
         return dataObj;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.FormViewable#setDataIntoUI()
      */
@@ -492,78 +498,37 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
             for (FieldInfo fieldInfo : controls.values())
             {
                 Object data = null;//dg.getFieldValue(dataObj, fieldInfo.getName());
-                
+
                 if (fieldInfo.getFormCell().isIgnoreSetGet())
                 {
                     continue;
                 }
-                System.out.println("["+fieldInfo.getFormCell().getName()+"]["+fieldInfo.getFormCell().getType()+"]");
-                
+                //System.out.println("["+fieldInfo.getFormCell().getName()+"]["+fieldInfo.getFormCell().getType()+"]");
+
                 if (fieldInfo.getFormCell().getType() == FormCell.CellType.field)
                 {
                     // Do Formatting here
                     FormCellField cellField = (FormCellField)fieldInfo.getFormCell();
-                    
+
                     String format = cellField.getFormat();
                     if (isNotEmpty(format))
                     {
-                        boolean  allFieldsNull = true;
-                        String[] fields        = StringUtils.split(cellField.getName(), ",");
-                        Object[] values        = new Object[fields.length];
-                        for (int i=0;i<values.length;i++)
-                        {
-                            values[i] = dg.getFieldValue(dataObj, fields[i]);
-                            if (allFieldsNull && values[i] != null)
-                            {
-                                allFieldsNull = false;
-                            }
-                        }
-                        
-                        if (!allFieldsNull)
-                        {
-                            if (values[0] instanceof java.util.Date)
-                            {
-                                data = scrDateFormat.format((java.util.Date)values[0]);
-                                
-                            } else if (values[0] instanceof java.util.Calendar)
-                            {
-                                data = scrDateFormat.format(((java.util.Calendar)values[0]).getTime());
-                                
-                            } else
-                            {
-                                if (values != null && values.length > 0)
-                                {
-                                    //for (Object o : values) System.out.println(o != null ? o.getClass().toString() : "N/A" + "  [" + (o != null ? o.toString() : "NULL")+"]");
-                                    //System.out.println("format: "+format);
-                                    try
-                                    {
-                                        Formatter formatter = new Formatter(); 
-                                        formatter.format(format, (Object[])values);
-                                        data = formatter.toString();
-                                    } catch (java.util.IllegalFormatConversionException ex)
-                                    {
-                                        data = values[0] != null ? values[0].toString() : "";
-                                    }
-                                } else
-                                {
-                                    data = "";
-                                }
-                            }
-                        }
+                        data = dg.getFieldValue(dataObj, cellField.getName(), format);
+
                     } else
                     {
                         data = dg != null ? dg.getFieldValue(dataObj, fieldInfo.getName()) : null;
                         if (data instanceof Date)
                         {
                             data = scrDateFormat.format((Date)data);
-                            
+
                         } else if (data instanceof Calendar)
                         {
                             data = scrDateFormat.format(((java.util.Calendar)data).getTime());
                         }
                     }
                     setDataIntoUIComp(fieldInfo.getName(), data);
-                     
+
                 } else if (fieldInfo.getFormCell().getType() == FormCell.CellType.subview)
                 {
                     data = dg != null ? dg.getFieldValue(dataObj, fieldInfo.getName()) : null;
@@ -572,11 +537,11 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
                         fieldInfo.getSubView().setDataObj(data);
                         fieldInfo.getSubView().setDataIntoUI();
                     }
-                }  
+                }
             }
         }
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.FormViewable#getDataFromUI()
      */
@@ -603,7 +568,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
             throw new RuntimeException("Calling getDataFromUI when the DataObjectSettable is null for the form.");
         }
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.FormViewable#getDataFromUIComp(java.lang.String)
      */
@@ -618,35 +583,35 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
                 if (formComp instanceof GetSetValueIFace)
                 {
                     return ((GetSetValueIFace)formComp).getValue();
-                    
+
                 } else if (formComp instanceof JTextField)
                 {
                     return ((JTextField)formComp).getText();
-                    
+
                 } else if (formComp instanceof JComboBox)
                 {
                     if (formComp instanceof JAutoCompComboBox)
                     {
                         PickListItem pli = (PickListItem)((JAutoCompComboBox)formComp).getSelectedItem();
                         return pli.getValue();
-                        
+
                     } else
                     {
                         return ((JComboBox)formComp).getSelectedItem().toString();
                     }
-                    
+
                 } else if (formComp instanceof JLabel)
                 {
                     return ((JLabel)formComp).getText();
-                    
+
                 } else if (formComp instanceof ColorChooser)
                 {
                     return ColorWrapper.toString(((ColorChooser)formComp).getBackground());
-                    
+
                 } else if(formComp instanceof JList)
                 {
                     return ((JList)formComp).getSelectedValue().toString();
-                    
+
                } else
                 {
                     log.error("Not sure how to get data from object "+formComp);
@@ -661,7 +626,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
         }
         return null;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.FormViewable#getSubView(java.lang.String)
      */
@@ -677,7 +642,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
         }
         return null;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.FormViewable#setDataIntoUIComp(java.lang.String, java.lang.Object)
      */
@@ -686,19 +651,19 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
         Component formComp = controls.get(name).getComp();
         if (formComp instanceof GetSetValueIFace)
         {
-            ((GetSetValueIFace)formComp).setValue(data == null ? "" : data.toString());
-            
+            ((GetSetValueIFace)formComp).setValue(data);
+
         } else if (formComp instanceof JTextField)
         {
             JTextField tf = (JTextField)formComp;
             tf.setText(data == null ? "" : data.toString());
             tf.setCaretPosition(0);
-            
+
         } else if (formComp instanceof JTextArea)
         {
             //System.out.println(name+" - "+formComp.getPreferredSize()+formComp.getSize());
             ((JTextArea)formComp).setText(data == null ? "" : data.toString());
-            
+
         } else if (formComp instanceof JCheckBox)
         {
             //System.out.println(name+" - "+formComp.getPreferredSize()+formComp.getSize());
@@ -709,23 +674,23 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
             {
                 ((JCheckBox)formComp).setSelected(false);
             }
-            
+
         } else if (formComp instanceof JLabel)
         {
             ((JLabel)formComp).setText(data == null ? "" : data.toString());
-            
+
         } else if (formComp instanceof JComboBox)
         {
             setComboboxValue((JComboBox)formComp, data);
-            
+
         } else if (formComp instanceof JList)
         {
             setListValue((JList)formComp, data);
-            
 
-        } 
+
+        }
     }
-    
+
     /**
      * Sets the appropriate index in the combobox for the value
      * @param comboBox the combobox
@@ -734,26 +699,26 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
     protected void setComboboxValue(final JComboBox comboBox, final Object data)
     {
         ComboBoxModel  model = comboBox.getModel();
-        
+
         for (int i=0;i<comboBox.getItemCount();i++)
         {
             Object item = model.getElementAt(i);
             if (item instanceof String)
             {
                 if (((String)item).equals(data))
-                {       
+                {
                     comboBox.setSelectedIndex(i);
                     break;
-                } 
+                }
             } else if (item.equals(data))
             {
                 comboBox.setSelectedIndex(i);
                 break;
             }
-        } 
+        }
 
     }
-    
+
     /**
      * Sets the appropriate ndex in the list box
      * @param list the list box
@@ -766,22 +731,22 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
         if (data instanceof Set)
         {
             iter = ((Set)data).iterator();
-            
+
         } else if (data instanceof org.hibernate.collection.PersistentSet)
         {
             iter = ((org.hibernate.collection.PersistentSet)data).iterator();
         }
-        
+
         if (iter != null)
-        {        
-            DefaultListModel defModel = new DefaultListModel(); 
+        {
+            DefaultListModel defModel = new DefaultListModel();
             while (iter.hasNext())
             {
                 defModel.addElement(iter.next());
             }
             list.setModel(defModel);
-            
-        } else 
+
+        } else
         {
             ListModel  model = list.getModel();
             for (int i=0;i<model.getSize();i++)
@@ -793,7 +758,7 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
                     {
                         list.setSelectedIndex(i);
                         return;
-                    } 
+                    }
                 } else if (item.equals(data))
                 {
                     list.setSelectedIndex(i);
@@ -802,11 +767,11 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
             }
         }
     }
-    
+
     //-------------------------------------------------
     // ResultSetControllerListener
     //-------------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.ResultSetControllerListener#indexChanged(int)
      */
@@ -815,30 +780,160 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
         dataObj = list.get(newIndex);
         setDataIntoUI();
     }
+
+    //-------------------------------------------------
+    // PreferenceChangeListener
+    //-------------------------------------------------
+
+    protected void setColorOnControls(final int colorType, final Color color)
+    {
+        for (FieldInfo fieldInfo : controls.values())
+        {
+            if (fieldInfo.getFormCell().getType() == FormCell.CellType.field)
+            {
+                FormCellField cellField = (FormCellField)fieldInfo.getFormCell();
+                String uiType = cellField.getUiType();
+                //log.info("["+uiType+"]");
+                if (uiType.equals("dsptextfield") || uiType.equals("dsptextarea"))
+                {
+                    Component comp = fieldInfo.getComp();
+                    switch (colorType)
+                    {
+                        case 0 : {
+
+                            if (comp instanceof JScrollPane)
+                            {
+                                ((JScrollPane)comp).getViewport().getView().setBackground(color);
+                            } else
+                            {
+                                fieldInfo.getComp().setBackground(color);
+                            }
+                        } break;
+
+                        /*case 1 : {
+                            if (comp instanceof )
+                            //fieldInfo.getComp().setBackground(color);
+                        } break;*/
+                    }
+                }
+            }
+        }
+
+    }
+
+    public void preferenceChange(PreferenceChangeEvent evt)
+    {
+        Preferences pref = evt.getNode();
+
+        if (formViewDef instanceof FormFormView)
+        {
+            if (evt.getKey().equals("viewfieldcolor"))
+            {
+                ColorWrapper viewFieldColor = PrefsCache.getColorWrapper("ui", "formatting", "viewfieldcolor");
+                Color vfColor = viewFieldColor.getColor();
+
+                setColorOnControls(0, vfColor);
+            }
+        }
+        /*
+        if (formViewDef instanceof FormFormView)
+        {
+
+            for (FieldInfo fieldInfo : controls.values())
+            {
+                if (fieldInfo.getFormCell().getType() == FormCell.CellType.field)
+                {
+                    // Do Formatting here
+                    FormCellField cellField = (FormCellField)fieldInfo.getFormCell();
+
+                    String uiType = cellField.getUiType();
+                    log.info("["+uiType+"]");
+                    if (uiType.equals("dsptextfield") || uiType.equals("dsptextarea"))
+                    {
+                         if (evt.getKey().equals("viewfieldcolor"))
+                         {
+                             fieldInfo.getComp().setBackground(viewFieldColor.getColor());
+                             //fieldInfo.getComp().repaint();
+                         }
+                    }
+                }
+            }
+            mainComp.repaint();
+        }*/
+
+        /*
+        if (formViewDef instanceof FormFormView)
+        {
+            FormFormView ffv = (formViewDef)formViewDef;
+
+            for (FormRow row : ffv.getRows())
+            {
+                for (FormCell cell : row.getCells())
+                {
+                    if (cell instanceof FormCellField)
+                    {
+                        FormCellField fcf = (FormCellField)cell;
+                        if (fcf.getUiType().equals("dsptextfield") ||
+                           fcf.getUiType().equals("dsptextfield"))
+                        {
+                            if (evt.getKey().equals("viewfieldcolor"))
+                            {
+                                //viewFieldColor
+                            }
+                        }
+                    }
+                }
+            }
+        }*/
+
+        log.info("Pref: ["+evt.getKey()+"]["+pref.get(evt.getKey(), "XXX")+"]");
+    }
     
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.forms.FormViewable#getFieldNames(java.util.List)
+     */
+    public void getFieldNames(final List<String> fieldNames)
+    {
+        if (formViewDef instanceof FormFormView)
+        {
+            for (FieldInfo fieldInfo : controls.values())
+            {
+                if (fieldInfo.getFormCell().getType() == FormCell.CellType.field)
+                {
+                    fieldNames.add(((FormCellField)fieldInfo.getFormCell()).getName());
+                }
+            }
+            
+        } else
+        {
+            throw new RuntimeException("getFieldNames not implemented for class["+formViewDef.getClass().getSimpleName()+"]");
+        }
+    }
+
     //-------------------------------------------------
     // FieldInfo
     //-------------------------------------------------
-    class FieldInfo 
+    class FieldInfo
     {
         protected FormCell    formCell;
         protected FormViewObj subView;
         protected Component   comp;
-        
+
         public FieldInfo(FormCell formCell, Component comp)
         {
             this.comp     = comp;
             this.formCell = formCell;
             this.subView  = null;
         }
-        
+
         public FieldInfo(FormCell formCell, FormViewObj subView)
         {
             this.formCell = formCell;
             this.subView  = subView;
             this.comp     = subView.getUIComponent();
         }
-        
+
         public String getName()
         {
             return formCell.getName();
@@ -857,7 +952,9 @@ public class FormViewObj implements FormViewable, ResultSetControllerListener
         {
             return subView;
         }
-        
+
     }
+
+
 
 }

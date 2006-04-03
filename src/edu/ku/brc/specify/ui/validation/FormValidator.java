@@ -370,8 +370,6 @@ public class FormValidator implements ValidationListener, DataChangeListener
         return list;
     }
 
-
-
     /**
      * Return a new combobox, if pickListName has a value it overrides the items arg
      * @param name the name of the control
@@ -398,6 +396,42 @@ public class FormValidator implements ValidationListener, DataChangeListener
             cbx = items == null ? new ValComboBox() : new ValComboBox(items);
         }
         UIValidator        uiv = createValidator(name, cbx,valType);
+        DataChangeNotifier dcn = new DataChangeNotifier(name, cbx, uiv);
+        dcn.addDataChangeListener(this);
+
+        dcNotifiers.put(name, dcn);
+        cbx.getModel().addListDataListener(dcn);
+
+        fields.put(name, cbx);
+        addRuleObjectMapping(name, cbx);
+
+        return cbx;
+    }
+
+    /**
+     * Return a new combobox, if pickListName has a value it overrides the items arg
+     * @param name the name of the control
+     * @param isRequired whether a selected value is required
+     * @param valType the type of validation
+     * @param valStr the validation rule
+     * @param cbxName the name of the picklist
+     * @return Return a new combobox
+     */
+    public ValComboBoxFromQuery createComboBoxFromQuery(final String           name,
+                                                        final boolean          isRequired,
+                                                        final UIValidator.Type valType,
+                                                        final String           valStr,
+                                                        final String           cbxName)
+    {
+        ValComboBoxFromQuery cbx = null;
+        if (isNotEmpty(cbxName))
+        {
+            cbx = ComboBoxFromQueryFactory.getValComboBoxFromQuery(cbxName);
+        } else
+        {
+            throw new RuntimeException("CBX Name for ValComboBoxFromQuery ["+cbxName+"] is empty!");
+        }
+        UIValidator        uiv = createValidator(name, cbx, valType);
         DataChangeNotifier dcn = new DataChangeNotifier(name, cbx, uiv);
         dcn.addDataChangeListener(this);
 

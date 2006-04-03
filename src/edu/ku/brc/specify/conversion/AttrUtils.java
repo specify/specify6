@@ -92,8 +92,8 @@ public class AttrUtils
     
     /**
      * @param colObjDef xxxx
-     * @param discipline xxxx
-     * @param subType xxxx
+     * @param tableType xxxx
+     * @param prepType xxxx
      * @param attrNames xxxx
      * @param dataTypes xxxx
      * @return xxxx

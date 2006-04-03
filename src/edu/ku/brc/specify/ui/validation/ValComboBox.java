@@ -25,6 +25,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.Vector;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
+import java.util.prefs.Preferences;
 
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
@@ -35,6 +38,7 @@ import javax.swing.event.ListDataListener;
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.ColorWrapper;
 import edu.ku.brc.specify.ui.GetSetValueIFace;
+import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.db.JAutoCompComboBox;
 import edu.ku.brc.specify.ui.db.PickListDBAdapter;
 import edu.ku.brc.specify.ui.db.PickListItem;
@@ -47,7 +51,7 @@ import edu.ku.brc.specify.ui.db.PickListItem;
  *
  */
 @SuppressWarnings("serial")
-public class ValComboBox extends JPanel implements UIValidatable, ListDataListener, GetSetValueIFace
+public class ValComboBox extends JPanel implements UIValidatable, ListDataListener, GetSetValueIFace, PreferenceChangeListener
 {
     protected boolean isInError  = false;
     protected boolean isRequired = false;
@@ -126,6 +130,8 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
             valtextcolor = PrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
             requiredfieldcolor = PrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
+        UICacheManager.getAppPrefs().node("ui/formatting").addPreferenceChangeListener(this);
+
         
     }
     
@@ -325,5 +331,17 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
             }
         }
         return selectedObj;
+    }
+    
+    //-------------------------------------------------
+    // PreferenceChangeListener
+    //-------------------------------------------------
+
+    public void preferenceChange(PreferenceChangeEvent evt)
+    {
+        if (evt.getKey().equals("requiredfieldcolor"))
+        {
+            setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+        }
     }
 }

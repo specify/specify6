@@ -38,43 +38,44 @@ import edu.ku.brc.specify.core.NavBoxLayoutManager;
 import edu.ku.brc.specify.core.NavBoxMgr;
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
+import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.specify.ui.IconManager;
 
 /**
  * A pane with a text field for entring in a query and then the results are displayed in a table.
- * 
+ *
  * @author rods
  *
  */
 @SuppressWarnings("serial")
-public class ExpressSearchResultsPane extends BaseSubPane
+public class ExpressSearchResultsPane extends BaseSubPane implements ExpressSearchResultsPaneIFace
 {
     private static Log log = LogFactory.getLog(ExpressSearchResultsPane.class);
-    
+
     protected JPanel      contentPanel;
     protected JScrollPane scrollPane;
     protected NavBox      navBox = null;
-     
+
     /**
      * Default Constructor
      *
      */
-    public ExpressSearchResultsPane(final String name, 
+    public ExpressSearchResultsPane(final String name,
                                     final Taskable task)
     {
         super(name, task);
         removeAll();
-        
+
         setPreferredSize(new Dimension(600,600));
         setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-       
+
         contentPanel = new JPanel(new NavBoxLayoutManager(0,2));
-       
+
         scrollPane = new JScrollPane(contentPanel);
         add(scrollPane, BorderLayout.CENTER);
-        
+
     }
-    
+
     /**
      * Add serach results box to UI
      * @param tableInfo the information about the table being added
@@ -82,29 +83,29 @@ public class ExpressSearchResultsPane extends BaseSubPane
      */
     public void addSearchResults(final ExpressResultsTableInfo tableInfo, final Hits hits)
     {
-         
+
         if (tableInfo.isUseHitsCache())
         {
-            contentPanel.add(new ExpressTableResultsHitsCache(this, tableInfo, hits));
+            contentPanel.add(new ExpressTableResultsHitsCache(this, tableInfo, true, hits));
         } else
         {
-            contentPanel.add(new ExpressTableResults(this, tableInfo));
+            contentPanel.add(new ExpressTableResults(this, tableInfo, true));
         }
-        
+
         if (navBox == null)
         {
             navBox = new NavBox(getResourceString("ESResults"));
         }
-        
+
         if (tableInfo.getIconName() == null)
         {
             log.error("Icon name is null for ["+tableInfo.getTitle()+"]");
         }
         navBox.add(NavBox.createBtn(tableInfo.getTitle(), tableInfo.getIconName(), IconManager.IconSize.Std16, null), true);
-        
+
     }
-    
-    
+
+
     /**
      * Removes a table from the content pane
      * @param table the table of results to be removed
@@ -120,7 +121,7 @@ public class ExpressSearchResultsPane extends BaseSubPane
         scrollPane.doLayout();
         scrollPane.repaint();
     }
-        
+
     /* (non-Javadoc)
      * @see java.awt.Component#showingPane(boolean)
      */
@@ -139,12 +140,12 @@ public class ExpressSearchResultsPane extends BaseSubPane
     }
 
     /**
-     * Revalidate the scroll pane 
+     * Revalidate the scroll pane
      */
     public void revalidateScroll()
     {
         contentPanel.invalidate();
         scrollPane.revalidate();
     }
-    
+
 }

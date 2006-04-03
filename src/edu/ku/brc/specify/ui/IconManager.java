@@ -54,15 +54,19 @@ public class IconManager
         Std32(32, false, false),
         Std24(24, false, false),
         Std16(16, false, false),
+        Std8(8, false, false),
         Std32Fade(32, true, false),
         Std24Fade(24, true, false),
         Std16Fade(16, true, false),     
+        Std8Fade(8, true, false),     
         Std32BW(32, false, true),
         Std24BW(24, false, true),
         Std16BW(16, false, true),
+        Std8BW(8, false, true),
         Std32FadeBW(32, true, true),
         Std24FadeBW(24, true, true),
         Std16FadeBW(16, true, true),
+        Std8FadeBW(8, true, true),
         NonStd(-1, false, false);
         
         IconSize(final int size, final boolean faded, final boolean blackWhite)

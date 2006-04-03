@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: PrefsSettableImpl.java,v $
+/* Filename:    $RCSfile: DataSetterForHashMap.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2006/01/10 16:52:27 $
@@ -17,52 +17,44 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.prefs;
+package edu.ku.brc.specify.ui.forms;
 
-import java.awt.Color;
-import java.util.prefs.Preferences;
+import java.util.Map;
 
-import edu.ku.brc.specify.ui.ColorWrapper;
-import edu.ku.brc.specify.ui.forms.DataObjectSettable;
 
 /**
- * Class that implements the DataObjectSettable for preferences
- * 
+ * This knows how to set a field's value into a Hashtable or any object implementing the java.util.Map interface.<br><br>
+ *
  * @author rods
  *
  */
-public class PrefsSettableImpl implements DataObjectSettable
+public class DataSetterForHashMap implements DataObjectSettable
 {
+    protected Object[] args = new Object[1];
 
-    public PrefsSettableImpl()
+    /**
+     * Default constructor (needed for factory)
+     */
+    public DataSetterForHashMap()
     {
-        super();
+
     }
-    
+
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.DataObjectSettable#setFieldValue(java.lang.Object, java.lang.String, java.lang.Object)
      */
     public void setFieldValue(Object dataObj, String fieldName, Object data)
     {
-        if (dataObj instanceof Preferences)
+        if (dataObj != null)
         {
-            Preferences prefNode = (Preferences)dataObj;
-            if (data instanceof Color)
+            if (!(dataObj instanceof Map))
             {
-                data = ColorWrapper.toString((Color)data);
+                throw new RuntimeException("In DataGetterForHashMap - Object["+dataObj.getClass().getSimpleName()+
+                                            "] does not implement java.util.Map");
             }
-            //System.out.println("setFieldValue["+dataObj+"]  ["+fieldName+"]  ["+ data+"]");
-            prefNode.put(fieldName, data == null ? "" : data.toString());
-            /*try
-            {
-                prefNode.flush();
-            } catch (BackingStoreException ex)
-            {
-                // XXX FIXME
-            }*/
-        } else
-        {
-            throw new RuntimeException("In setFieldValue dataObj["+dataObj+"] is not of class Preferences.");
+            ((Map)dataObj).put(fieldName, data);
         }
     }
+
 }
