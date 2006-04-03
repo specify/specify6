@@ -22,6 +22,8 @@
     <icon name="Locality"   file="locality.gif" sizes="all"/>
     <icon name="ColObj"     file="catobj_fish.gif" sizes="all"/>
     <icon name="Address"    file="address.gif" sizes="all"/>
+    <icon name="Location"   file="location.jpg" sizes="all"/>
+    <icon name="Geologic Time Period" file="clock.png" sizes="all"/>
     <icon name="ColEvent"   file="collevent.gif" sizes="all"/>
     <icon name="InfoRequest" file="information.gif" sizes="all"/>
     <icon name="SystemSetup" file="information.gif" sizes="all"/>
