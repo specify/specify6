@@ -31,7 +31,7 @@
             <one-to-many class="edu.ku.brc.specify.datamodel.Location"/>
         </set>
         
-        <set name="treeDefItems" table="LocationTreeDefItem" inverse="true">
+        <set name="treeDefItems" table="LocationTreeDefItem" inverse="true" lazy="false">
             <meta attribute="field-description"></meta>
             <key column="TreeDefID"/>
             <one-to-many class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"/>
