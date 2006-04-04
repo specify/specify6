@@ -33,8 +33,6 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.plaf.TreeUI;
 import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellEditor;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -129,7 +127,7 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 		
 		Map<Integer,Icon> iconMap = getIconMapForClass(treeableClass);
 		mainRenderer = new RankBasedTreeCellRenderer(iconMap);
-		ImageIcon defIcon = new ImageIcon("C:\\Documents and Settings\\jstewart\\Desktop\\blue_dot.png");
+		Icon defIcon = IconManager.getIcon("Blue Dot", IconManager.IconSize.Std16);
 		mainRenderer.setDefaultIcon(defIcon);
 		
 		Map<String,Icon> nameIconMap = getNameIconMapForClass(treeableClass);		
@@ -145,8 +143,8 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 		// setup other tree rendering options
 		TreeUI treeUI = tree.getUI();
 		BasicTreeUI tui = (BasicTreeUI)treeUI;
-		tui.setCollapsedIcon(new ImageIcon("C:\\Documents and Settings\\jstewart\\Desktop\\temp images\\forward.png"));
-		tui.setExpandedIcon(new ImageIcon("C:\\Documents and Settings\\jstewart\\Desktop\\temp images\\down.png"));
+		tui.setCollapsedIcon(IconManager.getIcon("Forward", IconManager.IconSize.Std8));
+		tui.setExpandedIcon(IconManager.getIcon("Down", IconManager.IconSize.Std8));
 		tui.setLeftChildIndent(50);
 		tree.putClientProperty("JTree.lineStyle", "None");
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);

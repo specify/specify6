@@ -29,6 +29,7 @@
     <icon name="SystemSetup" file="information.gif" sizes="all"/>
     <icon name="Search"      file="search.gif" sizes="all"/>
     
+    <icon name="Blue Dot"    file="blue_dot.png" sizes="all"/>
     
     <icon name="UserInterface" file="form.gif" sizes="all"/>
     
@@ -41,5 +42,8 @@
     
     <icon name="Green Arrow Down" file="green_arrow_down.gif" sizes="16"/>
     <icon name="Green Arrow Up" file="green_arrow_up.gif" sizes="16"/>
+    
+    <icon name="Down" file="down.png" sizes="all"/>
+    <icon name="Forward" file="forward.png" sizes="all"/>
 </icons>
  
