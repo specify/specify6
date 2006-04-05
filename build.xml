@@ -159,7 +159,7 @@
 	            </fileset>
 	         </configuration>
 	         <!-- <hbm2java /> -->
-	         <hbm2ddl update="false"/>
+	         <hbm2ddl update="true"/>
 	      </hibernatetool>
 	   </target>
 
