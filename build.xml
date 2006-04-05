@@ -149,6 +149,19 @@
          <hbm2ddl update="false"/>
       </hibernatetool>
    </target>
+	
+	   <target name="genschemaupdate">
+	      <!-- bit of a best guess, I'm afraid -->
+	      <hibernatetool destdir="${source.root}">
+	         <configuration propertyFile="src/${hibernate.properties}">
+	            <fileset dir="${source.root}">
+	               <include name="**/*.hbm.xml" />
+	            </fileset>
+	         </configuration>
+	         <!-- <hbm2java /> -->
+	         <hbm2ddl update="false"/>
+	      </hibernatetool>
+	   </target>
 
 	<target name="jar" depends="compile">
 	    <jar destfile="${jar.name}.jar" basedir="${class.root}"/>

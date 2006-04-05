@@ -15,7 +15,7 @@
         <meta attribute="field-description">Source of Accession, e.g. 'Collecting', 'Gift',  'Bequest' ...</meta>
     </property>
     
-    <property name="status" type="java.lang.String" column="Status" not-null="true" length="32">
+    <property name="status" type="java.lang.String" column="Status" length="32">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Status of Accession, e.g. 'In process', 'Complete' ...</meta>
     </property>

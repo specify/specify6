@@ -275,10 +275,6 @@
             <meta attribute="field-description"> @hibernate.property column="GroupNumber"length="20" </meta>
         </property>
         
-        <property name="isCurrent" type="java.lang.Boolean" column="IsCurrent">
-            <meta attribute="scope-field">protected</meta>
-        </property>
-
         <!-- Associations -->
 
         <!-- bi-directional one-to-many association to Taxon -->
