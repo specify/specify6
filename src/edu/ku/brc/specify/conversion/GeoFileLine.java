@@ -1,26 +1,26 @@
 package edu.ku.brc.specify.conversion;
 
+/**
+ * GeoFileLine represents a line from a text file of geography entries from
+ * old specify databases.
+ * 
+ * @author jstewart
+ */
 public class GeoFileLine
 {
 	private int id;
-
 	private int parentId;
-
 	private int curId;
-	
 	private String geoLevels[];
-
 	private String islandGrp;
-
 	private String island;
-
 	private String waterBody;
-
 	private String drainage;
-
 	private String full;
 
 	/**
+	 * Construct a GeoFileLine having the given field values
+	 * 
 	 * @param id
 	 * @param curId
 	 * @param contOrOcean
