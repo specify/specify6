@@ -2053,7 +2053,7 @@ public class GenericDBConversion
     	ResultSet rs = st.executeQuery("SELECT DISTINCT GeographyID,ContinentOrOcean,Country,State,County,IslandGroup,Island,WaterBody,Drainage,FullGeographicName from "
     			+ oldTableName + " ORDER BY ContinentOrOcean,Country,State,County");
 
-        IdMapper idMapper =  idMapperMgr.get("gepgraphy", "GeographyID");
+        IdMapper idMapper =  idMapperMgr.get("geography", "GeographyID");
     	while( rs.next() )
     	{
     		int geoId = rs.getInt(1);
