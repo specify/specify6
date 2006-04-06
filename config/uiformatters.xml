@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<formats>
+    <format name="AccessionNumber">
+		<field size="4" type="numeric" value="YEAR"/>
+		<field size="1" type="separator" value="-"/>
+		<field size="2" type="alphanumeric" value="AA"/>
+		<field size="1" type="separator" value="-"/>
+		<field size="4" type="alphanumeric" value="AAAA"/>
+    </format>
+    <format name="Date" type="date"/>
+</formats>
