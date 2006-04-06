@@ -18,7 +18,7 @@
     <icon name="Series"     file="series.gif" sizes="all"/>
     <icon name="Taxon"      file="taxon.gif" sizes="all"/>
     <icon name="Form"       file="form.gif" sizes="all"/>
-    <icon name="Geography"  file="geography.gif" sizes="all"/>
+    <icon name="Geography"  file="earth.png" sizes="all"/>
     <icon name="Locality"   file="locality.gif" sizes="all"/>
     <icon name="ColObj"     file="catobj_fish.gif" sizes="all"/>
     <icon name="Address"    file="address.gif" sizes="all"/>
