@@ -7,7 +7,12 @@ import java.io.IOException;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-
+/**
+ * A DefaultMutableTreeNode customized to allow for transfer using a
+ * TreeNodeTransferHandler
+ * 
+ * @author jstewart
+ */
 public class TransferableMutableTreeNode extends DefaultMutableTreeNode
         implements Transferable
 {
@@ -15,21 +20,21 @@ public class TransferableMutableTreeNode extends DefaultMutableTreeNode
 	public TransferableMutableTreeNode()
     {
 	    super();
-	    // TODO Auto-generated constructor stub
     }
 
 	public TransferableMutableTreeNode(Object userObject, boolean allowsChildren)
     {
 	    super(userObject, allowsChildren);
-	    // TODO Auto-generated constructor stub
     }
 
 	public TransferableMutableTreeNode(Object userObject)
     {
 	    super(userObject);
-	    // TODO Auto-generated constructor stub
     }
 
+	/* (non-Javadoc)
+	 * @see java.awt.datatransfer.Transferable#getTransferDataFlavors()
+	 */
 	public DataFlavor[] getTransferDataFlavors()
 	{
 	    DataFlavor[] flavors = new DataFlavor[1];
@@ -45,6 +50,9 @@ public class TransferableMutableTreeNode extends DefaultMutableTreeNode
 	    return flavors;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.awt.datatransfer.Transferable#isDataFlavorSupported(java.awt.datatransfer.DataFlavor)
+	 */
 	public boolean isDataFlavorSupported(DataFlavor flavor)
 	{
 	    DataFlavor[] flavors = new DataFlavor[1];
@@ -68,6 +76,9 @@ public class TransferableMutableTreeNode extends DefaultMutableTreeNode
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.awt.datatransfer.Transferable#getTransferData(java.awt.datatransfer.DataFlavor)
+	 */
 	public Object getTransferData(DataFlavor flavor)
 	        throws UnsupportedFlavorException, IOException
 	{

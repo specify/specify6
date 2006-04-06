@@ -16,11 +16,22 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import edu.ku.brc.specify.datamodel.Treeable;
 
+/**
+ * A TransferHandler for use for transferring TransferableMutableTreeNodes
+ * between JTrees.
+ * 
+ * @author jstewart
+ */
 @SuppressWarnings("serial")
 public class TreeNodeTransferHandler extends TransferHandler
 {
+	private static Log log  = LogFactory.getLog(TreeNodeTransferHandler.class);
+
 	public static final String mimeType = DataFlavor.javaJVMLocalObjectMimeType+";class=javax.swing.tree.DefaultMutableTreeNode";
 	private DataFlavor nodeFlavor;
 	
@@ -36,6 +47,10 @@ public class TreeNodeTransferHandler extends TransferHandler
 		}
 	}
 	
+	/**
+	 * @param flavors an array of DataFlavors that the dropped object has
+	 * @return true is flavors contains the proper tree node data flavor
+	 */
 	protected boolean hasNodeFlavor(DataFlavor[] flavors)
 	{
 		if( nodeFlavor == null )
@@ -54,16 +69,22 @@ public class TreeNodeTransferHandler extends TransferHandler
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.TransferHandler#canImport(javax.swing.JComponent, java.awt.datatransfer.DataFlavor[])
+	 */
 	@Override
 	public boolean canImport( JComponent comp, DataFlavor[] transferFlavors )
 	{
 		return hasNodeFlavor(transferFlavors);
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.TransferHandler#importData(javax.swing.JComponent, java.awt.datatransfer.Transferable)
+	 */
 	@Override
 	public boolean importData( JComponent comp, Transferable t )
 	{
-		System.out.println("TreeNodeTransferHandler.importData("+comp+", "+t+") called");
+		log.debug("TreeNodeTransferHandler.importData("+comp+", "+t+") called");
 		try
 		{
 			JTree tree = (JTree)comp;
@@ -72,8 +93,8 @@ public class TreeNodeTransferHandler extends TransferHandler
 			// disallow moving the root
 			if( node.isRoot() )
 			{
-				System.out.println("You tried moving the root node.  Don't do this.");
-				System.out.println("TreeNodeTransferHandler.canImport() returning 'false'");
+				log.debug("You tried moving the root node.  Don't do this.");
+				log.debug("TreeNodeTransferHandler.canImport() returning 'false'");
 				return false;
 			}
 			
@@ -83,8 +104,8 @@ public class TreeNodeTransferHandler extends TransferHandler
 //			// ignore dropping on current parent... it's just extra work
 //			if( newParentNode == oldParentNode )
 //			{
-//				System.out.println("End location is same as start location");
-//				System.out.println("TreeNodeTransferHandler.canImport() returning 'false'");
+//				log.debug("End location is same as start location");
+//				log.debug("TreeNodeTransferHandler.canImport() returning 'false'");
 //				return false;
 //			}
 			
@@ -93,8 +114,8 @@ public class TreeNodeTransferHandler extends TransferHandler
 			Treeable oldParentTreeable = (Treeable)oldParentNode.getUserObject();
 			if( newParentTreeable.getRankId().intValue() != oldParentTreeable.getRankId().intValue() )
 			{
-				System.out.println("Cannot reparent to new rank");
-				System.out.println("TreeNodeTransferHandler.canImport() returning 'false'");
+				log.debug("Cannot reparent to new rank");
+				log.debug("TreeNodeTransferHandler.canImport() returning 'false'");
 				return false;
 			}
 			
@@ -145,7 +166,7 @@ public class TreeNodeTransferHandler extends TransferHandler
 				TreePath path = new TreePath(pathArray);
 				tree.expandPath(path);
 			}
-			System.out.println("TreeNodeTransferHandler.canImport() returning 'true'");
+			log.debug("TreeNodeTransferHandler.canImport() returning 'true'");
 			return true;
 		}
 		catch( IOException ex )
@@ -159,10 +180,13 @@ public class TreeNodeTransferHandler extends TransferHandler
             ex.printStackTrace();
         }
 		
-		System.out.println("TreeNodeTransferHandler.canImport() returning 'false'");
+		log.debug("TreeNodeTransferHandler.canImport() returning 'false'");
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.TransferHandler#createTransferable(javax.swing.JComponent)
+	 */
 	@Override
 	protected Transferable createTransferable( JComponent c )
 	{
@@ -175,10 +199,13 @@ public class TreeNodeTransferHandler extends TransferHandler
 		return (TransferableMutableTreeNode)tree.getLastSelectedPathComponent();
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.TransferHandler#exportDone(javax.swing.JComponent, java.awt.datatransfer.Transferable, int)
+	 */
 	@Override
 	protected void exportDone( JComponent source, Transferable data, int action )
 	{
-		System.out.println("TreeNodeTransferHandler.exportDone("+source+", "+data+", "+action+") called.");
+		log.debug("TreeNodeTransferHandler.exportDone("+source+", "+data+", "+action+") called.");
 
 		JTree tree = (JTree)source;
 		DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
@@ -188,9 +215,12 @@ public class TreeNodeTransferHandler extends TransferHandler
 		TreePath path = new TreePath(pathArray);
 		tree.expandPath(path.getParentPath());
 		
-		System.out.println("exportDone completed");
+		log.debug("exportDone completed");
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.TransferHandler#getSourceActions(javax.swing.JComponent)
+	 */
 	@Override
 	public int getSourceActions( JComponent c )
 	{
