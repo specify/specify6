@@ -19,6 +19,8 @@
  */
 package edu.ku.brc.specify.ui.forms;
 
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Formatter;
@@ -70,8 +72,13 @@ public class DataGetterForHashMap implements DataObjectGettable
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.DataObjectGettable#getFieldValue(java.lang.Object, java.lang.String, java.lang.String)
      */
-    public Object getFieldValue(final Object dataObj, final String fieldName, final String format)
+    public Object getFieldValue(final Object dataObj, final String fieldName, final String formatName, final String format)
     {
+        if (isNotEmpty(formatName))
+        {
+            throw new RuntimeException("DataGetterForHashMap doesn't support the formatName argument!");
+        }
+        
         Object value = getFieldValue(dataObj, fieldName);
         if (format == null || value == null)
         {

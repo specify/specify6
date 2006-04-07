@@ -164,7 +164,8 @@ public class SystemSetupTask extends BaseTask
                     PickList pickList = new PickList();
                     pickList.setCreated(null); // this tells us later that it is a new object
                     pickList.setItems(new HashSet());
-                    formPane = createFormPanel(dfo.getViewSetName(), dfo.getFormId(), pickList);
+                    formPane = createFormPanel(dfo.getViewSetName(), DBTableIdMgr.lookupDefaultFormNameById(dfo.getFormId()), pickList);
+                    
                 } else
                 {
                     formPane = createFormPanel(roc);
@@ -346,7 +347,8 @@ public class SystemSetupTask extends BaseTask
 
                 savePickList(pickList);
                 
-                removePanelForData(SYSTEMSETUPTASK, DBTableIdMgr.lookupIdByShortName("picklist"), pickList);
+                String viewName = DBTableIdMgr.lookupDefaultFormNameById(DBTableIdMgr.lookupIdByShortName("picklist"));
+                removePanelForData(SYSTEMSETUPTASK, viewName, pickList);
                                 
             } else if (cmdAction.getAction().equals("DeletePickList"))
             {
@@ -355,7 +357,8 @@ public class SystemSetupTask extends BaseTask
                 
                 if (recentFormPane != null && recentFormPane.getData() != null)
                 {
-                    removePanelForData(SYSTEMSETUPTASK, DBTableIdMgr.lookupIdByShortName("picklist"), pickList);
+                    String viewName = DBTableIdMgr.lookupDefaultFormNameById(DBTableIdMgr.lookupIdByShortName("picklist"));
+                    removePanelForData(SYSTEMSETUPTASK, viewName, pickList);
                 }
                 
                 int inx = Collections.binarySearch(pickListNames, pickList.getName());

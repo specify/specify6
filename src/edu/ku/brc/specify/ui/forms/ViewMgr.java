@@ -34,7 +34,7 @@ import org.dom4j.io.SAXReader;
 
 import edu.ku.brc.specify.exceptions.ConfigurationException;
 import edu.ku.brc.specify.helpers.XMLHelper;
-import edu.ku.brc.specify.ui.forms.persist.FormView;
+import edu.ku.brc.specify.ui.forms.persist.View;
 import edu.ku.brc.specify.ui.forms.persist.ViewSet;
 
 public class ViewMgr
@@ -161,28 +161,28 @@ public class ViewMgr
     }
     
     /**
-     * Checks to see a View Set and View's Id is already in use
+     * Checks to see a View Set and View's Name is already in use
      * @param viewSetName the name of a view set
-     * @param viewId the id of an individual view
+     * @param viewName the name of the view
      * @return return true if the ViewSet/ViewId has been registered
      */
-    public static boolean isViewInUse(final String viewSetName, final Integer viewId)
+    public static boolean isViewInUse(final String viewSetName, final String viewName)
     {
-         return getView(viewSetName, viewId) != null;
+         return getView(viewSetName, viewName) != null;
     }
     
     /**
-     * Gets a FormView by set name and id
+     * Gets a View by ViewSet name and View Name
      * @param viewSetName the view set name of the view
-     * @param viewId the id of the view
+     * @param viewName the name of the view
      * @return the FormView from a view set by id 
      */
-    public static FormView getView(final String viewSetName, final Integer viewId)
+    public static View getView(final String viewSetName, final String viewName)
     {
         ViewSet viewSet = instance.viewsHash.get(viewSetName);
         if (viewSet != null)
         {
-            return viewSet.getForm(viewId);
+            return viewSet.getView(viewName);
         }
         return null; 
     }
@@ -196,63 +196,6 @@ public class ViewMgr
     {
         return instance.viewsHash.get(viewSetName);        
     }
-
-    
-    /**
-     * Validates the views and subview
-     * @throws Exception XXX
-     */
-    /*
-    public static void validate() throws Exception
-    {
-        for (Enumeration e=instance.viewsHash.keys();e.hasMoreElements();)
-        {
-            String viewSetName = (String)e.nextElement();
-            
-            ViewSet viewSet = instance.viewsHash.get(viewSetName);
-             
-           // Validate all the Alt Views and SubViews
-            for (FormView view : viewSet.getViews())
-            {
-                for (FormAltView altView : view.getAltViews())
-                {
-                    if (viewSet.getById(altView.getId()) == null)
-                    {
-                        String msg = "View Set ["+viewSetName+"] ["+view.getId()+"] has invalid Alt View Id ["+altView.getId()+"]";
-                        log.error(msg);
-                        throw new ConfigurationException(msg);
-                        
-                    } else if (view.getId() == altView.getId())
-                    {
-                        String msg = "View Set ["+viewSetName+"] ["+view.getId()+"] cannot be its own AltView.";
-                        log.error(msg);
-                        throw new ConfigurationException(msg);
-                    }
-                }
-                
-                if (view.getType() == FormView.ViewType.form) // faster than instance of
-                {
-                    FormFormView formView = (FormFormView)view;
-                    for (FormRow row : formView.getRows())
-                    {
-                        for (FormCell cell : row.getCells())
-                        {
-                            if (cell.getType() == FormCell.CellType.subview) // faster than instance of
-                            {
-                                FormCellSubView cellSV = (FormCellSubView)cell;
-                                if (!isViewInUse(formView.getViewSetName(), cellSV.getId()))
-                                {
-                                    String msg = "View Set ["+viewSetName+"] ["+view.getId()+"] Cell SubView Id ["+cellSV.getId()+"] cannot be found.";
-                                    log.error(msg);
-                                    throw new ConfigurationException(msg);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }*/
    
      /**
      * Returns a list of all the ViewSets

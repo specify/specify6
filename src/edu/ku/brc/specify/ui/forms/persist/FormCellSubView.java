@@ -22,9 +22,10 @@ package edu.ku.brc.specify.ui.forms.persist;
 public class FormCellSubView extends FormCell
 {
 
-    protected int    id;
     protected String viewSetName;
+    protected String viewName;
     protected String classDesc;
+    protected boolean singleValueFromSet;
     
     /**
      * Constructor
@@ -39,20 +40,22 @@ public class FormCellSubView extends FormCell
      * Constructor
      * @param name name of field for this view
      * @param viewSetName name of view set that this subview is referencing
-     * @param id the id of the view within the view set
+     * @param viewName the name of the view within the view set
      * @param classDesc the class name of the field
      * @param colspan column span
      * @param rowspan row span
+     * @param singleValueFromSet althught the data might be a "Set" pass in only the first data obj from the set
      */
-    public FormCellSubView(String    name, 
-                           String    viewSetName, 
-                           int       id, 
-                           String    classDesc, 
-                           final int colspan, 
-                           final int rowspan)
+    public FormCellSubView(final String name, 
+                           final String viewSetName, 
+                           final String viewName, 
+                           final String classDesc, 
+                           final int    colspan, 
+                           final int    rowspan,
+                           final boolean singleValueFromSet)
     {
         super(CellType.subview, name, colspan, rowspan);
-        this.id          = id;
+        this.viewName    = viewName;
         this.classDesc   = classDesc;
         this.viewSetName = viewSetName;
     }
@@ -67,14 +70,14 @@ public class FormCellSubView extends FormCell
         this.classDesc = classDesc;
     }
 
-    public int getId()
+    public String getViewName()
     {
-        return id;
+        return viewName;
     }
 
-    public void setId(int id)
+    public void setView(String viewName)
     {
-        this.id = id;
+        this.viewName = viewName;
     }
 
     public String getViewSetName()
@@ -85,6 +88,11 @@ public class FormCellSubView extends FormCell
     public void setViewSetName(String viewSetName)
     {
         this.viewSetName = viewSetName;
+    }
+
+    public boolean isSingleValueFromSet()
+    {
+        return singleValueFromSet;
     }
     
 }

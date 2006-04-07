@@ -40,11 +40,6 @@ import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-
-import edu.ku.brc.specify.ui.db.PickListDBAdapter;
-
 /**
  * This class manages all the validators for a single form. One or all the UI components
  * can be validated and the form can have its own set of validation rukes for enabling or
@@ -80,7 +75,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
     protected boolean                       okToDataChangeNotification    = true;
 
     // This is a list of listeners for when any data changes in the form
-    protected List<DataChangeListener>      dcListeners = new ArrayList<DataChangeListener>();
+    protected List<DataChangeListener>      dcListeners  = new ArrayList<DataChangeListener>();
+    protected List<ValidationListener>      valListeners = new ArrayList<ValidationListener>();
 
     /**
      *
@@ -122,7 +118,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     }
 
     /**
-     * Sets whether the orm will notify the listeners of data change notifications
+     * Sets whether the form will notify the listeners of data change notifications
      * @param okToDataChangeNotification whether to notify
      */
     public void setDataChangeNotification(final boolean okToDataChangeNotification)
@@ -205,243 +201,87 @@ public class FormValidator implements ValidationListener, DataChangeListener
         }
         return formIsOK;
     }
-
+    
     /**
-     * Create a new JTextField
-     * @param name The name of the control
-     * @param size the number of columns for the text control
+     * @param textField textField to be hooked up
+     * @param name name of control
      * @param isRequired whether the field must be filled in
      * @param valType the type of validation to do
-     * @param valStr the validation rule where the subject is "obj"
-     * @param pickListName the name of the picklist to use
-     * @param changeListenerOnly no validator, only change listener
-     * @return returns a new JTextField thata is registered with the logical name
+     * @param valStr the validation rule where the subject is its name
+     * @param changeListenerOnly indicates whether to create a validator
      */
-    public JTextField createTextField(final String           name,
-                                      final int              size,
-                                      final boolean          isRequired,
-                                      final UIValidator.Type valType,
-                                      final String           valStr,
-                                      final String           pickListName,
-                                      final boolean          changeListenerOnly)
+    public void hookupTextField(final JTextField       textField,
+                                final String           name,
+                                final boolean          isRequired,
+                                final UIValidator.Type valType,
+                                final String           valStr,
+                                final boolean          changeListenerOnly)
     {
+
+        fields.put(name, textField);
+
         UIValidator.Type type = isRequired ? UIValidator.Type.Changed : valType;
-
-        PickListDBAdapter pickListDBAdapter= null;
-        if (isNotEmpty(pickListName))
-        {
-            pickListDBAdapter = new PickListDBAdapter(pickListName, false);
-        }
-        ValTextField tf = new ValTextField(size, pickListDBAdapter);
-        tf.setRequired(isRequired);
-        fields.put(name, tf);
-
-
-        UIValidator        uiv = changeListenerOnly ? null : createValidator(name, tf, isRequired, type, valStr);
-        DataChangeNotifier dcn = new DataChangeNotifier(name, tf, uiv);
+        
+        UIValidator        uiv = changeListenerOnly ? null : createValidator(name, textField, isRequired, type, valStr);
+        DataChangeNotifier dcn = new DataChangeNotifier(name, textField, uiv);
         dcn.addDataChangeListener(this);
 
         dcNotifiers.put(name, dcn);
 
-        if (type == UIValidator.Type.Changed || isRequired)
+        if (type == UIValidator.Type.Changed || isRequired || changeListenerOnly)
         {
-            //tf.addKeyListener(dcn);
-            tf.getDocument().addDocumentListener(dcn);
+            textField.getDocument().addDocumentListener(dcn);
 
         } else if (type == UIValidator.Type.Focus)
         {
-            tf.addFocusListener(dcn);
+            textField.addFocusListener(dcn);
 
         } else
         {
            // Do nothing for UIValidator.Type.OK
         }
 
-        addRuleObjectMapping(name, tf);
-
-        return tf;
-
+        addRuleObjectMapping(name, textField);   
     }
-
+    
     /**
-     * Create a new JTextField
-     * @param name The name of the control
-     * @param size the number of columns for the text control
+     * @param comp component to be hooked up
+     * @param name name of control
      * @param isRequired whether the field must be filled in
      * @param valType the type of validation to do
      * @param valStr the validation rule where the subject is its name
-     * @return returns a new JTextField thata is registered with the logical name
+     * @param changeListenerOnly indicates whether to create a validator
+     * @return the component passed in
      */
-    public JTextField createPasswordField(final String           name,
-                                          final int              size,
-                                          final boolean          isRequired,
-                                          final boolean          isEncrypted,
-                                          final UIValidator.Type valType,
-                                          final String           valStr)
-    {
-        ValPasswordField tf = new ValPasswordField(size);
-        tf.setRequired(isRequired);
-        tf.setEncrypted(isEncrypted);
-
-        fields.put(name, tf);
-
-        UIValidator        uiv = createValidator(name, tf, isRequired, valType, valStr);
-        DataChangeNotifier dcn = new DataChangeNotifier(name, tf, uiv);
-
-        dcn.addDataChangeListener(this);
-        dcNotifiers.put(name, dcn);
-
-        if (valType == UIValidator.Type.Changed)
-        {
-            //tf.addKeyListener(dcn);
-            tf.getDocument().addDocumentListener(dcn);
-
-        } else if (valType == UIValidator.Type.Focus)
-        {
-            tf.addFocusListener(dcn);
-
-        } else
-        {
-           // Do nothing for UIValidator.Type.OK
-        }
-
-        tf.getDocument().addDocumentListener(dcn);
-
-        addRuleObjectMapping(name, tf);
-        return tf;
-
-    }
-
-    /**
-     * Create Validated TextArea (no validation occurs by it is part of the dataChanged infrastructure)
-     * @param name name of control
-     * @param rows the number of rows
-     * @param cols the number of cols
-     * @return the TextArea
-     */
-    public ValTextArea createTextArea (final String name,
-                                       final int    rows,
-                                       final int    cols)
-    {
-        ValTextArea textArea = new ValTextArea("", rows, cols);
-
-        fields.put(name, textArea);
-
-        DataChangeNotifier dcn = new DataChangeNotifier(name, textArea, null);
-        dcn.addDataChangeListener(this);
-
-        dcNotifiers.put(name, dcn);
-
-        addRuleObjectMapping(name, textArea);
-
-        return textArea;
-    }
-
-    /**
-     * Create Validated JList
-     * @param name name of control
-     * @param items the string items in the list
-     * @param visibleRows the number of visible rows
-     * @param isRequired whether the field must be filled in
-     * @param valType the type of validation to do
-     * @param valStr the validation rule where the subject is its name
-     * @return the TextArea
-     */
-    public ValListBox createList(final String           name,
-                                 final String[]         items,
-                                 final int              visibleRows,
+    public JComponent compHookUp(final JComponent       comp,
+                                 final String           name,
                                  final boolean          isRequired,
                                  final UIValidator.Type valType,
-                                 final String           valStr)
+                                 final String           valStr,
+                                 final boolean          changeListenerOnly)
     {
-        ValListBox list = items == null ? new ValListBox() : new ValListBox(items);
-        list.setVisibleRowCount(visibleRows);
 
-        fields.put(name, list);
+        fields.put(name, comp);
 
-        UIValidator        uiv = createValidator(name, list, isRequired, valType, valStr);
-        DataChangeNotifier dcn = new DataChangeNotifier(name, list, uiv);
-        dcn.addDataChangeListener(this);
-
-        dcNotifiers.put(name, dcn);
-
-        addRuleObjectMapping(name, list);
-
-        return list;
-    }
-
-    /**
-     * Return a new combobox, if pickListName has a value it overrides the items arg
-     * @param name the name of the control
-     * @param items the items to initialize the combobox
-     * @param isRequired whether a selected value is required
-     * @param valType the type of validation
-     * @param valStr the validation rule
-     * @param pickListName the name of the picklist
-     * @return Return a new combobox
-     */
-    public ValComboBox createComboBox(final String           name,
-                                      final String[]         items,
-                                      final boolean          isRequired,
-                                      final UIValidator.Type valType,
-                                      final String           valStr,
-                                      final String           pickListName)
-    {
-        ValComboBox cbx = null;
-        if (isNotEmpty(pickListName))
+        UIValidator uiv = null;
+        if (!changeListenerOnly)
         {
-            cbx = new ValComboBox(new PickListDBAdapter(pickListName, false)); // false means don't auto-create picklist
-        } else
-        {
-            cbx = items == null ? new ValComboBox() : new ValComboBox(items);
+            if (isNotEmpty(valStr))
+            {
+                createValidator(name, comp, isRequired, valType, valStr);
+            } else
+            {
+                createValidator(name, comp, valType);
+            }
         }
-        UIValidator        uiv = createValidator(name, cbx,valType);
-        DataChangeNotifier dcn = new DataChangeNotifier(name, cbx, uiv);
+        DataChangeNotifier dcn = new DataChangeNotifier(name, comp, uiv);
         dcn.addDataChangeListener(this);
 
         dcNotifiers.put(name, dcn);
-        cbx.getModel().addListDataListener(dcn);
 
-        fields.put(name, cbx);
-        addRuleObjectMapping(name, cbx);
+        addRuleObjectMapping(name, comp);
 
-        return cbx;
-    }
-
-    /**
-     * Return a new combobox, if pickListName has a value it overrides the items arg
-     * @param name the name of the control
-     * @param isRequired whether a selected value is required
-     * @param valType the type of validation
-     * @param valStr the validation rule
-     * @param cbxName the name of the picklist
-     * @return Return a new combobox
-     */
-    public ValComboBoxFromQuery createComboBoxFromQuery(final String           name,
-                                                        final boolean          isRequired,
-                                                        final UIValidator.Type valType,
-                                                        final String           valStr,
-                                                        final String           cbxName)
-    {
-        ValComboBoxFromQuery cbx = null;
-        if (isNotEmpty(cbxName))
-        {
-            cbx = ComboBoxFromQueryFactory.getValComboBoxFromQuery(cbxName);
-        } else
-        {
-            throw new RuntimeException("CBX Name for ValComboBoxFromQuery ["+cbxName+"] is empty!");
-        }
-        UIValidator        uiv = createValidator(name, cbx, valType);
-        DataChangeNotifier dcn = new DataChangeNotifier(name, cbx, uiv);
-        dcn.addDataChangeListener(this);
-
-        dcNotifiers.put(name, dcn);
-        cbx.getModel().addListDataListener(dcn);
-
-        fields.put(name, cbx);
-        addRuleObjectMapping(name, cbx);
-
-        return cbx;
+        return comp;
     }
 
     /**
@@ -470,49 +310,6 @@ public class FormValidator implements ValidationListener, DataChangeListener
     }
 
     /**
-     * Returns a new JTextField
-     * @param builder the JGoodies builder
-     * @param cc the CellConstraint
-     * @param row the row
-     * @param col the col
-     * @param name the logical name
-     * @param labelName the label's name for the control
-     * @param size the number of columns in the text control
-     * @param isRequired whether the TextField MUSt have a value
-     * @param valType the type of validation
-     * @param valStr the default string value
-     * @param isPassword maike it a password field
-     * @param pickListName the name of the picklist to use
-     * @param changeListenerOnly no validator, only change listener
-     * @return the new TextControl
-     */
-    public JTextField createTextField(PanelBuilder    builder,
-                                      CellConstraints cc,
-                                      int             row,
-                                      int             col,
-                                      String          name,
-                                      String          labelName,
-                                      int             size,
-                                      boolean         isRequired,
-                                      UIValidator.Type valType,
-                                      String          valStr,
-                                      boolean         isPassword,
-                                      boolean         isEncrypted,
-                                      String          pickListName,
-                                      final boolean   changeListenerOnly)
-    {
-        JTextField tf = isPassword ? createPasswordField(name, size, isRequired, isEncrypted, valType, valStr) :
-                                     createTextField(name, size, isRequired, valType, valStr, pickListName, changeListenerOnly);
-
-        addUILabel(name, builder.addTitle(labelName+":", cc.xy (col, row)));
-        builder.add(tf, cc.xy(col+2, row));
-        addRuleObjectMapping(name, tf);
-
-        return tf;
-
-    }
-
-    /**
      * Gets a component by name and returns it as a ValTextField
      * @param name the name of the component
      * @return returns the component by name
@@ -524,7 +321,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
         {
             return (ValTextField)comp;
         }
-        throw new RuntimeException("desired JComponent is not of type ValTextField"+comp);
+        throw new RuntimeException("Desired JComponent ["+name+"]is not of type ValTextField"+comp);
     }
 
     /**
@@ -784,6 +581,24 @@ public class FormValidator implements ValidationListener, DataChangeListener
         dcListeners.remove(l);
     }
 
+    /**
+     * Adds validation listener
+     * @param l the listener
+     */
+    public void addValidationListener(final ValidationListener l)
+    {
+        valListeners.add(l);
+    }
+
+    /**
+     * Removes validation listener
+     * @param l the listener
+     */
+    public void removeValidationListenerListener(final ValidationListener l)
+    {
+        valListeners.remove(l);
+    }
+
     //-----------------------------------------------------
     // ValidationListener
     //-----------------------------------------------------
@@ -811,6 +626,11 @@ public class FormValidator implements ValidationListener, DataChangeListener
         if (!ignoreValidationNotifications)
         {
             checkForValidForm();
+        }
+        
+        for (ValidationListener vcl : valListeners)
+        {
+            vcl.wasValidated(validator);
         }
     }
 

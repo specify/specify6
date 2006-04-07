@@ -42,6 +42,7 @@ import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.core.NavBoxIFace;
 import edu.ku.brc.specify.core.NavBoxItemIFace;
 import edu.ku.brc.specify.core.Taskable;
+import edu.ku.brc.specify.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.TaskPluginable;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
@@ -265,10 +266,10 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     /**
      * Looks up a SubPane by the viewset name and form id and data
      * @param viewSetName the view set name
-     * @param formId the form id
+     * @param viewName the form id
      * @return the subpane that matches
      */
-    protected FormPane getFormPane(final String viewSetName, final int formId, final Object data)
+    protected FormPane getFormPane(final String viewSetName, final String viewName, final Object data)
     {
         for (SubPaneIFace sp : subPanes)
         {
@@ -277,7 +278,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
                 FormPane fp = (FormPane)sp;
                 
                 if (viewSetName.equals(fp.getViewSetName()) && 
-                    formId == fp.getFormId() && 
+                    viewName == fp.getViewName() && 
                     data == fp.getData())
                 {
                     return fp;
@@ -294,32 +295,32 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     protected FormPane createFormPanel(RolloverCommand roc)
     {
         DroppableFormObject dfo = (DroppableFormObject)roc.getData();
-        return createFormPanel(dfo.getViewSetName(), dfo.getFormId(), dfo.getData());
+        return createFormPanel(dfo.getViewSetName(), DBTableIdMgr.lookupDefaultFormNameById(dfo.getFormId()), dfo.getData());
     }
     
     /**
      * Looks to see if a form already exists for this request and shows it
      * otherwise it creates a form and add it to the SubPaneMgr
      */
-    protected FormPane createFormPanel(final String viewsetName, final int formId, final Object data)
+    protected FormPane createFormPanel(final String viewsetName, final String viewName, final Object data)
     {
         FormPane fp = null;
         
         if (recentFormPane != null && recentFormPane.getComponentCount() == 0)
         {
-            recentFormPane.createForm(viewsetName, formId, data);
+            recentFormPane.createForm(viewsetName, viewName, data);
             fp = recentFormPane;
             
         } else
         {
-            fp = getFormPane(viewsetName, formId, data);
+            fp = getFormPane(viewsetName, viewName, data);
             if (fp != null)
             {
                 UICacheManager.getSubPaneMgr().showPane(fp.getName());
                 
             } else
             {
-                recentFormPane = new FormPane(name, this, viewsetName, formId, data);            
+                recentFormPane = new FormPane(name, this, viewsetName, viewName, data);            
                 addSubPaneToMgr(recentFormPane);
                 fp = recentFormPane; 
             }
@@ -331,11 +332,11 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
      * Checks to see if it is the the only panel of its kind and
      * if it is it clears the panel instead of removing it, if there are more panels of that kind
      * then it removes it. The idea is that it doesn't want to remove all the panels of a certain kind. 
-     * @param viewName the view name
-     * @param viewId the form's id
+     * @param viewSetName the viewset name
+     * @param viewName the form's name
      * @param data the data in the form
      */
-    protected void removePanelForData(final String viewName, final int viewId, Object data)
+    protected void removePanelForData(final String viewSetName, final String viewName, Object data)
     {
         FormPane currPane   = null;
         FormPane fp         = null;
@@ -343,7 +344,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
         for (SubPaneIFace subPane : subPanes)
         {
             fp = (FormPane)subPane;
-            if (viewName.equals(fp.getViewSetName()) &&  viewId == fp.getFormId())
+            if (viewSetName.equals(fp.getViewSetName()) &&  viewName == fp.getViewName())
             {
                 if (fp.getData() == data)
                 {

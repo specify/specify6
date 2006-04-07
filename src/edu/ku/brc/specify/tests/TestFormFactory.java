@@ -27,7 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.ui.forms.ViewMgr;
-import edu.ku.brc.specify.ui.forms.persist.FormViewFactory;
 
 public class TestFormFactory extends TestCase
 {
@@ -93,7 +92,7 @@ public class TestFormFactory extends TestCase
         
         assertTrue(readFile(getPath("view_valid.xml"), true));
         
-        FormViewFactory.save(ViewMgr.getViews("view valid"), getPath("view_valid_new.xml"));
+        // XXX ViewLoader.save(ViewMgr.getViews("view valid"), getPath("view_valid_new.xml"));
     }
     
     /**
@@ -131,7 +130,7 @@ public class TestFormFactory extends TestCase
             rs = ViewMgr.isViewSetNameInUse("view valid");
             if (rs)
             {
-                rs = ViewMgr.isViewInUse("view valid", 2);
+                rs = ViewMgr.isViewInUse("view valid", "2");
             }
         }
         assertTrue(rs);

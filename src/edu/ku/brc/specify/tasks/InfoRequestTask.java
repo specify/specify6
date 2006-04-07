@@ -64,7 +64,6 @@ import edu.ku.brc.specify.ui.CommandAction;
 import edu.ku.brc.specify.ui.CommandDispatcher;
 import edu.ku.brc.specify.ui.RolloverCommand;
 import edu.ku.brc.specify.ui.SubPaneIFace;
-import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.Trash;
 import edu.ku.brc.specify.ui.UICacheManager;
 

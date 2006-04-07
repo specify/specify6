@@ -21,23 +21,10 @@ package edu.ku.brc.specify.ui.forms;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
-import java.util.Formatter;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import edu.ku.brc.specify.datamodel.AttributeIFace;
-import edu.ku.brc.specify.datamodel.AttributeDef;
-import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.specify.datamodel.Preparation;
-import edu.ku.brc.specify.prefs.PrefsCache;
 
 
 /**

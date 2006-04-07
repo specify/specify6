@@ -5,12 +5,13 @@ import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 import java.awt.BorderLayout;
 
 import edu.ku.brc.specify.core.Taskable;
+import edu.ku.brc.specify.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.dnd.GhostActionable;
-import edu.ku.brc.specify.ui.forms.FormViewable;
+import edu.ku.brc.specify.ui.forms.Viewable;
 import edu.ku.brc.specify.ui.forms.ViewFactory;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
-import edu.ku.brc.specify.ui.forms.persist.FormView;
+import edu.ku.brc.specify.ui.forms.persist.View;
 
 /**
  * A class that can display a form, it is dervied from DroppableTaskPane which means objects can be
@@ -23,10 +24,10 @@ import edu.ku.brc.specify.ui.forms.persist.FormView;
 public class FormPane extends DroppableTaskPane
 {
     protected String        viewSetName   = null;
-    protected int           formId        = -1;
+    protected String        viewName      = null;
     protected Object        data          = null;
     
-    protected FormViewable  formViewable  = null;
+    protected Viewable  Viewable  = null;
     protected FormProcessor formProcessor = null;
     
     protected String        cacheDesc   = null;
@@ -47,22 +48,22 @@ public class FormPane extends DroppableTaskPane
      * @param name the name of the pane
      * @param task the owning task
      * @param viewSetName the name of the view set to use 
-     * @param formId the ID of the form to be created from within the ViewSet
+     * @param viewName the ID of the form to be created from within the ViewSet
      * @param data the data to fill the form
      */
     public FormPane(final String   name, 
                     final Taskable task,
                     final String   viewSetName,
-                    final int      formId,
+                    final String   viewName,
                     final Object   data)
     {
         this(name, task, null);
         
         this.viewSetName = viewSetName;
-        this.formId      = formId;
+        this.viewName      = viewName;
         this.data        = data;
         
-        createForm(viewSetName, formId, data);
+        createForm(viewSetName, viewName, data);
     }
     
     /**
@@ -81,7 +82,7 @@ public class FormPane extends DroppableTaskPane
     public void setFormProcessor(FormProcessor formProcessor)
     {
         this.formProcessor = formProcessor;
-        formProcessor.setFormViewable(this);
+        formProcessor.setViewable(this);
     }
     
     //-----------------------------------------------
@@ -101,7 +102,7 @@ public class FormPane extends DroppableTaskPane
             if (data != null && data instanceof DroppableFormObject)
             {
                 DroppableFormObject dfo = (DroppableFormObject)data;
-                createForm(dfo.getViewSetName(), dfo.getFormId(), dfo.getData());
+                createForm(dfo.getViewSetName(), DBTableIdMgr.lookupDefaultFormNameById(dfo.getFormId()), dfo.getData());
              }
         }
     }
@@ -109,37 +110,37 @@ public class FormPane extends DroppableTaskPane
     /**
      * Creates a form from the viewSet name and id and sets the data in
      * @param viewSetName the name of the view set to use 
-     * @param formId the ID of the form to be created from within the ViewSet
+     * @param viewName the ID of the form to be created from within the ViewSet
      * @param data the data to fill the form
      */
     public void createForm(final String viewSetName,
-                           final int    formId,
+                           final String viewName,
                            final Object data)
     {
-        formViewable = createFormView(viewSetName, formId, data);
-        if (formViewable != null)
+        Viewable = createFormView(viewSetName, viewName, data);
+        if (Viewable != null)
         {
             this.viewSetName = viewSetName;
-            this.formId      = formId;
+            this.viewName      = viewName;
             this.data        = data;
             
             this.removeAll();
             
-            formViewable.getUIComponent().invalidate(); 
-            add(formViewable.getUIComponent(), BorderLayout.CENTER);
+            Viewable.getUIComponent().invalidate(); 
+            add(Viewable.getUIComponent(), BorderLayout.CENTER);
             
             if (data != null)
             {
-                formViewable.setDataObj(data);
+                Viewable.setDataObj(data);
             }
             
-            if (formViewable.getValidator() != null)
+            if (Viewable.getValidator() != null)
             {
-                formViewable.getValidator().validateForm();
+                Viewable.getValidator().validateForm();
             }
             
             cacheDesc = desc;
-            desc = null;
+            desc      = null;
             doLayout();
             UICacheManager.forceTopFrameRepaint();
             
@@ -157,7 +158,7 @@ public class FormPane extends DroppableTaskPane
         
         if (formProcessor != null)
         {
-            formProcessor.setFormViewable(null);
+            formProcessor.setViewable(null);
             formProcessor = null;
         }
         doLayout();
@@ -167,27 +168,28 @@ public class FormPane extends DroppableTaskPane
     /**
      * Helper to create a form component from the View Set Name and the Id
      * @param viewSetName the view set name to get the ID from
-     * @param id the ID within the view set
+     * @param viewName the viewName within the view set
      * @param data the data to fill into the form
      * @return the form component
      */
-    public static FormViewable createFormView(final String viewSetName, final int id, final Object data)
+    public static Viewable createFormView(final String viewSetName, final String viewName, final Object data)
     {
         // create form
-        FormView formDef = ViewMgr.getView(viewSetName, id);
-        if (formDef != null)
+        View view = ViewMgr.getView(viewSetName, viewName);
+        if (view != null)
         {
-            FormViewable form = ViewFactory.createView(formDef, data);
+            Viewable form = ViewFactory.createFormView(null, view, null, data);
             if (form != null)
             {
                 return form;
+                
             } else
             {
-                UICacheManager.displayErrorDlg(getResourceString("cantcreateform")+" viewset name["+viewSetName+"]  id["+id+"]");
+                UICacheManager.displayErrorDlg(getResourceString("cantcreateform")+" viewset name["+viewSetName+"]  id["+viewName+"]");
             }
         } else
         {
-            UICacheManager.displayErrorDlg(getResourceString("cantfindviewdef")+" viewset name["+viewSetName+"]  id["+id+"]");
+            UICacheManager.displayErrorDlg(getResourceString("cantfindviewdef")+" viewset name["+viewSetName+"]  id["+viewName+"]");
         }
         return null;
     }
@@ -196,9 +198,9 @@ public class FormPane extends DroppableTaskPane
      * Return the ID of the form
      * @return Return the ID of the form
      */
-    public int getFormId()
+    public String getViewName()
     {
-        return formId;
+        return viewName;
     }
 
     /**
@@ -219,12 +221,12 @@ public class FormPane extends DroppableTaskPane
     }
 
     /**
-     * Returns the FormViewable for this FormPane
-     * @return the FormViewable for this FormPane
+     * Returns the Viewable for this FormPane
+     * @return the Viewable for this FormPane
      */
-    public FormViewable getFormViewable()
+    public Viewable getViewable()
     {
-        return formViewable;
+        return Viewable;
     }
 
     

@@ -25,7 +25,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
-import java.util.prefs.Preferences;
 
 import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
@@ -237,6 +236,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
         setText(value.toString());
     }
 
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.GetSetValueIFace#getValue()
      */

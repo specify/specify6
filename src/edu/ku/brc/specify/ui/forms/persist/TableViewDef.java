@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: FormTableView.java,v $
+/* Filename:    $RCSfile: TableViewDef.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2005/10/12 16:52:27 $
@@ -22,30 +22,30 @@ package edu.ku.brc.specify.ui.forms.persist;
 import java.util.List;
 import java.util.Vector;
 
-public class FormTableView extends FormView
+/**
+ * @author rods
+ *
+ */
+public class TableViewDef extends ViewDef
 {
 
     protected Vector<FormColumn> columns = new Vector<FormColumn>();
     
     /**
      * Constructor
-     * @param id the id
      * @param name the name
      * @param className the class name of the data object
      * @param gettableClassName the class name of the gettable
      * @param settableClassName the class name of the settable
      * @param desc description
-     * @param isValidated whether to turn on validation
      */
-    public FormTableView(final int    id, 
-                         final String name, 
-                         final String className, 
-                         final String gettableClassName, 
-                         final String settableClassName, 
-                         final String desc,
-                         final boolean isValidated)
+    public TableViewDef(final String name, 
+                        final String className, 
+                        final String gettableClassName, 
+                        final String settableClassName, 
+                        final String desc)
     {
-        super(ViewType.table, id, name, className, gettableClassName, settableClassName, desc, isValidated);
+        super(ViewType.table, name, className, gettableClassName, settableClassName, desc);
         
     }
     

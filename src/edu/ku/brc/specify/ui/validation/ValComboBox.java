@@ -27,7 +27,6 @@ import java.awt.Graphics;
 import java.util.Vector;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
-import java.util.prefs.Preferences;
 
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
@@ -234,7 +233,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     public void contentsChanged(ListDataEvent e)
     {
         isChanged = true;
-        isInError = isRequired && comboBox.getSelectedIndex() != -1;
+        isInError = isRequired && comboBox.getSelectedIndex() == -1;
         repaint();
     }
 
@@ -313,7 +312,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         }
         repaint();
     }
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.GetSetValueIFace#getValue()
      */

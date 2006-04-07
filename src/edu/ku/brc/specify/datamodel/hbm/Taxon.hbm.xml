@@ -45,7 +45,7 @@
     		}
     		
     		/**
-    		 * @param parent the new TaxonTreeDef object
+    		 * @param treeDef the new TaxonTreeDef object
     		 *
     		 * @throws IllegalArgumentException if treeDef is not instance of TaxonTreeDef
     		 */

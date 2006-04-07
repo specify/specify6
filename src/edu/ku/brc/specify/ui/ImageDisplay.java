@@ -231,7 +231,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
             loadImage();
         }
     }
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.GetSetValueIFace#getValue()
      */

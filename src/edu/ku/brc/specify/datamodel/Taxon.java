@@ -41,7 +41,6 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
      protected Short accepted;
      protected Integer rankId;
      protected String groupNumber;
-     protected Boolean isCurrent;
      private Set acceptedChildren;
      private Taxon acceptedTaxon;
      private Set taxonCitations;
@@ -364,17 +363,6 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     }
 
     /**
-     * 
-     */
-    public Boolean getIsCurrent() {
-        return this.isCurrent;
-    }
-    
-    public void setIsCurrent(Boolean isCurrent) {
-        this.isCurrent = isCurrent;
-    }
-
-    /**
      *      *  @hibernate.set lazy="true" inverse="true"cascade="none" @hibernate.collection-key column="AcceptedID"@hibernate.collection-one-to-many class="edu.ku.brc.specify.datamodel.Taxon" 
      */
     public Set getAcceptedChildren() {
@@ -477,7 +465,7 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     		}
     		
     		/**
-    		 * @param parent the new TaxonTreeDef object
+    		 * @param treeDef the new TaxonTreeDef object
     		 *
     		 * @throws IllegalArgumentException if treeDef is not instance of TaxonTreeDef
     		 */

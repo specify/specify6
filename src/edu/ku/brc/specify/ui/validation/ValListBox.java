@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
-import java.util.prefs.Preferences;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -246,6 +245,7 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
         repaint();
     }
 
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.GetSetValueIFace#getValue()
      */

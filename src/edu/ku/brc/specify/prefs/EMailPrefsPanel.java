@@ -56,10 +56,10 @@ import edu.ku.brc.specify.ui.CommandDispatcher;
 import edu.ku.brc.specify.ui.CommandListener;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.forms.FormViewable;
+import edu.ku.brc.specify.ui.forms.Viewable;
 import edu.ku.brc.specify.ui.forms.ViewFactory;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
-import edu.ku.brc.specify.ui.forms.persist.FormView;
+import edu.ku.brc.specify.ui.forms.persist.View;
 import edu.ku.brc.specify.ui.validation.FormValidator;
 import edu.ku.brc.specify.ui.validation.ValPasswordField;
 
@@ -80,8 +80,8 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
 
     protected Preferences  prefNode = null;
     
-    protected FormView     formView = null;
-    protected FormViewable form     = null;
+    protected View         formView = null;
+    protected Viewable form     = null;
     
     // Checker
     protected ImageIcon  checkIcon     = new ImageIcon(IconManager.getImagePath("check.gif"));  // Move to icons.xml
@@ -126,19 +126,19 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
     protected void createUI()
     {
         
-        int id = 1;
-        String name = "Preferences";
+        String viewName = "EMail";
+        String name     = "Preferences";
         
-        formView = ViewMgr.getView(name, id);
+        formView = ViewMgr.getView(name, viewName);
 
         if (formView != null)
         {
-            form = ViewFactory.createView(formView, prefNode);
+            form = ViewFactory.createFormView(null, formView, null, prefNode);
             add(form.getUIComponent(), BorderLayout.CENTER);
             
         } else
         {
-            log.info("Couldn't load form with name ["+name+"] Id ["+id+"]");
+            log.info("Couldn't load form with name ["+name+"] Id ["+viewName+"]");
         }
 
         form.setDataObj(prefNode);

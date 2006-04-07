@@ -19,6 +19,8 @@
  */
 package edu.ku.brc.specify.ui.forms.persist;
 
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
 /**
  * This represents all the information about a cell in the form.
  * @author rods
@@ -27,7 +29,9 @@ package edu.ku.brc.specify.ui.forms.persist;
 public class FormCellField extends FormCell
 {
     protected String   uiType;
+    protected String   dspUIType;
     protected String   format;   
+    protected String   formatName;   
     protected boolean  isRequired     = false;
     protected boolean  isEncrypted    = false;
     protected String   label          = null;
@@ -40,7 +44,8 @@ public class FormCellField extends FormCell
     
     protected String   validationType = "";
     protected String   validationRule = "";      
-    protected String   initialize     = "";      
+    protected String   initialize     = "";   
+    protected boolean  isTextField    = false;
    
     /**
      * Constructor
@@ -48,11 +53,11 @@ public class FormCellField extends FormCell
      * @param name the name
      * @param colspan the number of columns to span
      * @param rowspan the number of rows to span
-     */
-    public FormCellField(final FormCell.CellType type, 
-                         final String            name,
-                         final int               colspan, 
-                         final int               rowspan)
+     */ 
+    protected FormCellField(final FormCell.CellType type, 
+                            final String            name,
+                            final int               colspan, 
+                            final int               rowspan)
     {
         super(type, name, colspan, rowspan);
     }
@@ -74,7 +79,9 @@ public class FormCellField extends FormCell
     public FormCellField(final FormCell.CellType type, 
                          final String  name, 
                          final String  uiType, 
+                         final String  dspUIType, 
                          final String  format,
+                         final String  formatName,
                          final boolean isRequired, 
                          final int     cols, 
                          final int     rows, 
@@ -87,13 +94,18 @@ public class FormCellField extends FormCell
         this(type, name, colspan, rowspan);
         
         this.uiType         = uiType;
+        this.dspUIType      = dspUIType;
         this.format         = format;
+        this.formatName     = formatName;
         this.cols           = cols;
         this.rows           = rows;
         this.validationRule = validationRule;
         this.validationType = validationType;
         this.isRequired     = isRequired;
         this.isEncrypted    = isEncrypted;
+        
+        this.isTextField = isEmpty(uiType) || uiType.equals("dsptextfield") || uiType.equals("text");
+
     }
 
     public int getCols()
@@ -101,19 +113,9 @@ public class FormCellField extends FormCell
         return cols;
     }
 
-    public void setCols(int cols)
-    {
-        this.cols = cols;
-    }
-
     public String getFormat()
     {
         return format;
-    }
-
-    public void setFormat(String format)
-    {
-        this.format = format;
     }
 
     public String getName()
@@ -121,24 +123,14 @@ public class FormCellField extends FormCell
         return name;
     }
 
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    public void setType(CellType type)
-    {
-        this.type = type;
-    }
-
     public String getUiType()
     {
         return uiType;
     }
 
-    public void setUiType(String uiType)
+    public String getDspUIType()
     {
-        this.uiType = uiType;
+        return dspUIType;
     }
 
     public int getRows()
@@ -151,54 +143,23 @@ public class FormCellField extends FormCell
         return pickListName;
     }
 
-    public void setPickListName(String pickListName)
-    {
-        this.pickListName = pickListName;
-    }
-
-    public void setRows(int rows)
-    {
-        this.rows = rows;
-    }
-
     public String getValidationRule()
     {
         return validationRule;
     }
-
-    public void setValidationRule(String validationRule)
-    {
-        this.validationRule = validationRule;
-    }
-
+    
     public String getInitialize()
     {
         return initialize;
     }
-
-    public void setInitialize(String initialize)
-    {
-        this.initialize = initialize;
-    }
-
+    
     public boolean isRequired()
     {
         return isRequired;
     }
-
-    public void setRequired(boolean isRequired)
-    {
-        this.isRequired = isRequired;
-    }
-
     public String getValidationType()
     {
         return validationType;
-    }
-
-    public void setValidationType(String validationType)
-    {
-        this.validationType = validationType;
     }
 
     public boolean isEncrypted()
@@ -206,23 +167,34 @@ public class FormCellField extends FormCell
         return isEncrypted;
     }
 
-    public void setEncrypted(boolean isEncrypted)
+    public String getFormatName()
     {
-        this.isEncrypted = isEncrypted;
+        return formatName;
     }
-
-
 
     public String getLabel()
     {
         return label;
     }
 
+    public boolean isTextField()
+    {
+        return isTextField;
+    }
 
+    public void setInitialize(String initialize)
+    {
+        this.initialize = initialize;
+    }
 
     public void setLabel(String label)
     {
         this.label = label;
+    }
+
+    public void setPickListName(String pickListName)
+    {
+        this.pickListName = pickListName;
     }
     
 }

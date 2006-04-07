@@ -32,6 +32,6 @@ public interface FormProcessor
      * The form pane that the process will work on. This enables it to have access to the UI components.
      * @param formPane the form pane
      */
-    public void setFormViewable(final FormPane formPane); 
+    public void setViewable(final FormPane formPane); 
     
 }

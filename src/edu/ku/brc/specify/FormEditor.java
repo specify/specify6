@@ -44,6 +44,8 @@ import static edu.ku.brc.specify.tests.ObjCreatorHelper.createTaxonTreeDef;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserGroup;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -58,7 +60,6 @@ import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -68,7 +69,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -76,6 +76,9 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
@@ -93,7 +96,6 @@ import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Geography;
-import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.PrepType;
@@ -110,17 +112,12 @@ import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.prefs.PrefMainPanel;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.specify.tests.forms.TestDataSubObj;
-import edu.ku.brc.specify.ui.ChooseFromListDlg;
 import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.db.GenericSearchDialog;
-import edu.ku.brc.specify.ui.db.PickList;
-import edu.ku.brc.specify.ui.forms.FormViewObj;
-import edu.ku.brc.specify.ui.forms.FormViewable;
+import edu.ku.brc.specify.ui.forms.Viewable;
 import edu.ku.brc.specify.ui.forms.MultiView;
 import edu.ku.brc.specify.ui.forms.ViewFactory;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
-import edu.ku.brc.specify.ui.forms.persist.FormView;
-import edu.ku.brc.specify.ui.forms.persist.ViewSet;
+import edu.ku.brc.specify.ui.forms.persist.View;
 
 /**
  * The stand alone part of the FormEditor (this is a prototype at the moment that is used for viewing forms)
@@ -132,19 +129,23 @@ public class FormEditor
 {
     private static Log log = LogFactory.getLog(FormEditor.class);
 
-    protected JPanel contentPane;
-    protected JFrame mainFrame;
+    protected JPanel    contentPane = new JPanel(new BorderLayout());
+    protected JFrame    mainFrame;
 
-    protected String currViewSetName;
-    protected int    currFormId;
+    protected String    currViewSetName;
+    protected String    currViewName;
 
     protected Object            dataObj     = null;
     protected TestDataObj       testDataObj = null;
     protected List<TestDataObj> list        = new ArrayList<TestDataObj>();
 
-    protected FormViewable      fvo;
+    protected Viewable      fvo;
     protected DataType          dataType;
     protected MultiView         multiView;
+    
+    protected PanelBuilder    builder    = null;
+    protected CellConstraints cc         = new CellConstraints();
+
 
 
     public FormEditor()
@@ -333,153 +334,158 @@ public class FormEditor
      * Create a form
      * @param formView the definition of the form to create
      */
-    protected FormViewable createForm(FormView formView)
+    protected Viewable createView(View view)
     {
-        FormViewable form = ViewFactory.createView(formView);
-        fvo = form;
+        multiView   = new MultiView(null, view, null);
+        contentPane.removeAll();
+        builder.add(multiView, cc.xy(1,1));
+        //contentPane.setBackground(Color.BLUE);
+        //contentPane.setOpaque(true);
+        
+        //Viewable form = ViewFactory.createView(view, null, null);
+        //fvo = multiView.get;
 
-        multiView.removeAll();
-        Component comp = form.getUIComponent();
-        if (comp != null)
-        {
-            comp.invalidate();
-            multiView.addView((FormViewObj)form);
+        //Component comp = form.getUIComponent();
+        //if (comp != null)
+       // {
+            //comp.invalidate();
+           
             //contentPane.add(new CatalogSeriesWizard(null), BorderLayout.CENTER);
 
-            //SwingUtilities.invokeLater(new Runnable() {
-            //    public void run()
-            //    {
-                    contentPane.doLayout();
-                    UICacheManager.forceTopFrameRepaint();
 
-                    mainFrame.invalidate();
-                    mainFrame.doLayout();
-                    mainFrame.repaint();
+            contentPane.doLayout();
+            UICacheManager.forceTopFrameRepaint();
 
-                    // XXX Why???
-                    mainFrame.pack();
-                    mainFrame.setSize(new Dimension(800, 550));
-                    //mainFrame.pack();
-                    UIHelper.centerAndShow(mainFrame);
+            mainFrame.invalidate();
+            mainFrame.doLayout();
+            mainFrame.repaint();
 
-                    boolean doSend = false;
-                    if (doSend)
-                    {
-                        String msg = "<!-- NUM_ITEMS 1 --><form name=\"form\"><table><tr><td><!-- ITEM0 101 -->[  ]</td><td>Megalotis</td></tr></table><form>";
-                        EMailHelper.sendMsg("imap.ku.edu", "rods", "Inverness1601*", "rods@ku.edu",
-                                "rods@ku.edu",
-                                "Catalog Items You Requested",
-                                 msg, "text/html", null);
-                    } else
-                    {
-                        //EMailHelper.findRepliesFromResearch("imap.ku.edu", "rods", "Inverness1601*");
-                    }
+            // XXX Why???
+            mainFrame.pack();
+            mainFrame.setSize(new Dimension(800, 550));
+            //mainFrame.pack();
+            UIHelper.centerAndShow(mainFrame);
 
-                    if (currViewSetName.equals("view valid") && (currFormId == 0 || currFormId == 333))
-                    {
-                        form.setDataObj(dataObj);
+            boolean doSend = false;
+            if (doSend)
+            {
+                String msg = "<!-- NUM_ITEMS 1 --><form name=\"form\"><table><tr><td><!-- ITEM0 101 -->[  ]</td><td>Megalotis</td></tr></table><form>";
+                EMailHelper.sendMsg("imap.ku.edu", "rods", "Inverness1601*", "rods@ku.edu",
+                        "rods@ku.edu",
+                        "Catalog Items You Requested",
+                         msg, "text/html", null);
+            } else
+            {
+                //EMailHelper.findRepliesFromResearch("imap.ku.edu", "rods", "Inverness1601*");
+            }
 
-                        JButton btn = (JButton)form.getComp("OK");
-                        if (btn != null)
-                        {
-                            ((FormViewObj)form).getValidator().registerOKButton(btn);
-                        }
+            /*
+            if (currViewSetName.equals("view valid") && (currViewName == 0 || currViewName == 333))
+            {
+                form.setDataObj(dataObj);
 
-                        btn = (JButton)form.getComp("validateBtn");
-                        if (btn != null)
-                        {
-                            btn.addActionListener(new ActionListener() {
-                                public void actionPerformed(ActionEvent ae)
-                                {
-                                    fvo.getValidator().validateFormForOK();
-                                }
-                            });
-                        }
-
-                    } else if (currViewSetName.equals("SystemSetup") && currFormId == 500)
-                    {
-                        PickList pl = new PickList();
-                        pl.setItems(new HashSet());
-                        form.setDataObj(pl);
-
-                        FormViewObj fvo = (FormViewObj)form;
-                        fvo.getValidator().registerOKButton((JButton)form.getComp("savePL"));
-                        fvo.getValidator().validateForm();
-
-                    } else if (currViewSetName.equals("Fish Views") && currFormId == 1)
-                    {
-
-
-                        //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class);
-                        //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setFetchMode(Accession.class.getName(), FetchMode.DEFAULT).setMaxResults(300);
-                        //java.util.List list = criteria.list();//session.find("from collev");
-                        boolean skip = false;
-                        if (skip)
-                        {
-                            Query q = HibernateUtil.getCurrentSession().createQuery("from accession in class Accession where accession.accessionId in (74,68262114,508322272)");
-                            java.util.List list = q.list();
-                            for (Object obj : list)
-                            {
-                                Accession accession = (Accession)obj;
-                                System.out.println(accession.getAccessionId());
-                            }
-                        }
-
-
-                        boolean doCatalogItems = false;
-                        if (doCatalogItems)
-                        {
-                            Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CollectionObject.class).setMaxResults(300);
-                            //criteria.add(Expression.isNull("derivedFromId"));
-
-
-                            java.util.List data = criteria.list();
-                            System.out.println("Items Returned: "+data.size());
-
-                            dataObj = data;
-                        }
-
-                        boolean doMemoryCollection = true;
-                        if (doMemoryCollection)
-                        {
-                            CollectionObject[] colObjs = createSingleDiscipline("Fish");
-
-                            Set set = new HashSet<CollectionObject>();
-                            for (int i=0;i<colObjs.length;i++)
-                            {
-                                set.add(colObjs[i]);
-                            }
-                            dataObj = set;
-                        }
-
-
-                        boolean doit = false;
-                        if (doit)
-                        {
-                            //Query q = HibernateUtil.getCurrentSession().createQuery("from accession in class Accession where accession.accessionId in (74,68262114,508322272)");
-                            Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(InfoRequest.class);
-                            java.util.List list = criteria.list();
-                            for (Object obj : list)
-                            {
-                                InfoRequest infoReq = (InfoRequest)obj;
-                                JXPathContext context = JXPathContext.newContext(infoReq);
-
-                                System.out.println(context.getValue(""));
-                            }
-
-                        }
-
-                        form.setDataObj(dataObj);
-                        form.setDataIntoUI();
-
-                    }
-
+                JButton btn = (JButton)form.getComp("OK");
+                if (btn != null)
+                {
+                    ((FormViewObj)form).getValidator().registerOKButton(btn);
                 }
-          //});
+
+                btn = (JButton)form.getComp("validateBtn");
+                if (btn != null)
+                {
+                    btn.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            fvo.getValidator().validateFormForOK();
+                        }
+                    });
+                }
+
+            } else if (currViewSetName.equals("SystemSetup") && currViewName == 500)
+            {
+                PickList pl = new PickList();
+                pl.setItems(new HashSet());
+                form.setDataObj(pl);
+
+                FormViewObj fvo = (FormViewObj)form;
+                fvo.getValidator().registerOKButton((JButton)form.getComp("savePL"));
+                fvo.getValidator().validateForm();
+
+            } else 
+            */
+            if (currViewSetName.equals("Fish Views") && currViewName.equals("Collection Object"))
+            {
+
+
+                //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class);
+                //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setFetchMode(Accession.class.getName(), FetchMode.DEFAULT).setMaxResults(300);
+                //java.util.List list = criteria.list();//session.find("from collev");
+                boolean skip = false;
+                if (skip)
+                {
+                    Query q = HibernateUtil.getCurrentSession().createQuery("from accession in class Accession where accession.accessionId in (74,68262114,508322272)");
+                    java.util.List list = q.list();
+                    for (Object obj : list)
+                    {
+                        Accession accession = (Accession)obj;
+                        System.out.println(accession.getAccessionId());
+                    }
+                }
+
+
+                boolean doCatalogItems = false;
+                if (doCatalogItems)
+                {
+                    Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CollectionObject.class).setMaxResults(300);
+                    //criteria.add(Expression.isNull("derivedFromId"));
+
+
+                    java.util.List data = criteria.list();
+                    System.out.println("Items Returned: "+data.size());
+
+                    dataObj = data;
+                }
+
+                boolean doMemoryCollection = true;
+                if (doMemoryCollection)
+                {
+                    CollectionObject[] colObjs = createSingleDiscipline("Fish");
+
+                    Set set = new HashSet<CollectionObject>();
+                    for (int i=0;i<colObjs.length;i++)
+                    {
+                        set.add(colObjs[i]);
+                    }
+                    dataObj = set;
+                }
+
+
+                /*boolean doit = false;
+                if (doit)
+                {
+                    //Query q = HibernateUtil.getCurrentSession().createQuery("from accession in class Accession where accession.accessionId in (74,68262114,508322272)");
+                    Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(InfoRequest.class);
+                    java.util.List list = criteria.list();
+                    for (Object obj : list)
+                    {
+                        InfoRequest infoReq = (InfoRequest)obj;
+                        JXPathContext context = JXPathContext.newContext(infoReq);
+
+                        System.out.println(context.getValue(""));
+                    }
+
+                }*/
+
+                multiView.setData(dataObj);
+                //multiView.setDataIntoUI();
+
+            }
+                    
 
         //}
 
-        return form;
+
+        return null;
     }
 
     /**
@@ -487,9 +493,9 @@ public class FormEditor
      */
     protected void reload()
     {
-        ViewMgr.reset();
+       // ViewMgr.reset();
 
-        fvo = createForm(ViewMgr.getView(currViewSetName, currFormId));
+        //fvo = createForm(ViewMgr.getView(currViewSetName, currViewName));
     }
 
     /**
@@ -497,6 +503,8 @@ public class FormEditor
      */
     protected void selectForm()
     {
+        /*
+    
         List<FormView>    fullFormsList = new ArrayList<FormView>();
 
         for (ViewSet viewSet : ViewMgr.getViewSets())
@@ -513,10 +521,11 @@ public class FormEditor
         if (form != null)
         {
             currViewSetName = form.getViewSetName();
-            currFormId      = form.getId();
+            currViewName      = form.getId();
 
             fvo = createForm(form);
         }
+        */
     }
 
      /**
@@ -583,15 +592,12 @@ public class FormEditor
         // Create and set up the window.
         mainFrame = new JFrame("Specify Form Editor");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setContentPane(contentPane);
+        
+        builder = new PanelBuilder(new FormLayout("p", "p"), contentPane);
 
         UICacheManager.register(UICacheManager.TOPFRAME, mainFrame);
 
-        // Create and set up the content pane.
-        //contentPane = new JPanel(new BorderLayout());
-        //contentPane.setOpaque(true); //content panes must be opaque
-        multiView = new MultiView();
-        contentPane = multiView;
-        mainFrame.setContentPane(contentPane);
 
         JMenuBar menuBar = createMenus();
         if (menuBar != null)
@@ -602,24 +608,24 @@ public class FormEditor
 
         // temp for testing
 
-        currFormId      = 500;
+        currViewName      = "";
         currViewSetName =   "SystemSetup";
 
-        currFormId      = 333;
+        currViewName      = "";
         currViewSetName =  "view valid";
 
-        currFormId      = 1;
+        currViewName      = "Collection Object";
         currViewSetName =   "Fish Views";
 
 
-        FormView form = ViewMgr.getView(currViewSetName, currFormId);
+        View view = ViewMgr.getView(currViewSetName, currViewName);
 
-        if (form != null)
+        if (view != null)
         {
-            createForm(form);
+            createView(view);
         } else
         {
-            log.info("Couldn't load form with name ["+currViewSetName+"] Id ["+currFormId+"]");
+            log.info("Couldn't load form with name ["+currViewSetName+"] Id ["+currViewName+"]");
         }
 
     }
@@ -807,7 +813,7 @@ public class FormEditor
                 dlg.setVisible(true);
                 System.out.println(dlg.getSelectedObject());
                 */
-                HibernateUtil.getCurrentSession(); // loads the HBM files
+                //HibernateUtil.getCurrentSession(); // loads the HBM files
             }
         });
 

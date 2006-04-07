@@ -32,20 +32,13 @@ import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.PlainDocument;
 
 import org.apache.commons.lang.StringUtils;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.ColorWrapper;
@@ -62,10 +55,10 @@ import edu.ku.brc.specify.ui.forms.UIFieldFormatterMgr;
  *
  */
 @SuppressWarnings("serial")
-public class ValFormattedTextField extends JPanel implements UIValidatable,
-                                                             GetSetValueIFace,
-                                                             DocumentListener,
-                                                             PreferenceChangeListener
+public class ValFormattedTextField extends JTextField implements UIValidatable,
+                                                                 GetSetValueIFace,
+                                                                 DocumentListener,
+                                                                 PreferenceChangeListener
 {
     protected boolean  isInError  = false;
     protected boolean  isRequired = false;
@@ -74,8 +67,8 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
 
     protected int      inputLen   = 0;
     protected Object[] formatObj  = null;
-
-    protected JSpecialTextField   textField;
+    
+    protected JFormattedDoc document;
 
     protected static ColorWrapper valtextcolor       = null;
     protected static ColorWrapper requiredfieldcolor = null;
@@ -83,34 +76,40 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     protected UIFieldFormatterMgr.Formatter            formatter;
     protected List<UIFieldFormatterMgr.FormatterField> fields = null;
 
-
+    //---
+    protected String bgStr = null;
+    protected Point  pnt   = null;
+    protected Color textColor = new Color(0,0,0,64);
+    protected Insets inner;
+    
+    
     /**
      * Constructor
-     * @param arg0 the formatters name
+     * @param formatterName the formatters name
      */
     public ValFormattedTextField(final String formatterName)
     {
-
+        super();
+        
         init();
 
         formatter = UIFieldFormatterMgr.getFormatter(formatterName);
         fields = formatter.getFields();
 
-        PanelBuilder    builder = new PanelBuilder(new FormLayout("p", "p"), this);
-        CellConstraints cc      = new CellConstraints();
-
         StringBuilder strBuf = new StringBuilder();
-        int x = 1;
         for (UIFieldFormatterMgr.FormatterField field : fields)
         {
             inputLen += field.getSize();
             strBuf.append(field.getValue());
         }
+        bgStr = strBuf.toString();
+        inner = getInsets();
 
-        textField = new JSpecialTextField(strBuf.toString(), inputLen);
-        textField.setDocument(new JFormattedDoc(textField, formatter, inputLen));
-        builder.add(textField, cc.xy(x, 1));
-        textField.addFocusListener(new FocusAdapter()
+        this.setColumns(inputLen);
+        
+        document = new JFormattedDoc(this, formatter, inputLen);
+        setDocument(document);
+        addFocusListener(new FocusAdapter()
                 {
                     public void focusGained(FocusEvent e)
                     {
@@ -137,9 +136,6 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
      */
     public void init()
     {
-
-        setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
-
         bgColor = getBackground();
         if (valtextcolor == null || requiredfieldcolor == null)
         {
@@ -149,13 +145,14 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         UICacheManager.getAppPrefs().node("ui/formatting").addPreferenceChangeListener(this);
     }
 
+
     /**
      * Helper method for validation sripting to see if the text field is empty
      * @return whether the text field is empty or not
      */
     public boolean isNotEmpty()
     {
-        return textField.getText().length() > 0;
+        return getText().length() > 0;
     }
 
     /* (non-Javadoc)
@@ -165,10 +162,18 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     {
         super.paint(g);
 
+        String text = getText();
+        FontMetrics fm = g.getFontMetrics();
+        int w = fm.stringWidth(text);
+        pnt = new Point(inner.left+w, inner.top + fm.getAscent());
+
+        g.setColor(textColor);
+        g.drawString(bgStr.substring(text.length(), bgStr.length()), pnt.x, pnt.y);
+        
+        
         if (isInError() && isEnabled())
         {
-            Dimension dim = getSize();
-            Dimension tfDim = textField.getSize();
+            Dimension tfDim = getSize();
             g.setColor(valtextcolor.getColor());
             g.drawRect(1, 1, tfDim.width-1, tfDim.height-1);
         }
@@ -183,7 +188,17 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
 
         setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
     }
-
+    
+    /* (non-Javadoc)
+     * @see javax.swing.text.JTextComponent#setText(java.lang.String)
+     */
+    public void setText(String text)
+    {
+        document.setIgnoreNotify(true);
+        super.setText(text);
+        document.setIgnoreNotify(false);
+    }
+    
     //--------------------------------------------------
     //-- UIValidatable Interface
     //--------------------------------------------------
@@ -259,13 +274,13 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
             data = value.toString();
         }
 
-        textField.setText(data);
+        setText(data);
 
         this.isInError = (isRequired && (StringUtils.isEmpty(data) || data.length() != inputLen));
 
         repaint();
     }
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.GetSetValueIFace#getValue()
      */
@@ -307,48 +322,14 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         }
     }
 
-    //--------------------------------------------------
-    //-- Inner Class
-    //--------------------------------------------------
-    public class JSpecialTextField extends JTextField
-    {
-        protected String bgStr = null;
-        protected Point  pnt   = null;
-        protected Color textColor = new Color(0,0,0,64);
-        protected Insets inner;
+    //-------------------------------------------------
+    // PreferenceChangeListener
+    //-------------------------------------------------
 
-        public JSpecialTextField(final String bgStr, final int columns)
-        {
-            super(columns);
-            this.bgStr = bgStr;
-            inner = this.getInsets();
-        }
-
-        public void setBGStr(final String bgStr)
-        {
-            this.bgStr = bgStr;
-        }
-
-        public void paint(Graphics g)
-        {
-            super.paint(g);
-
-            String text = getText();
-            FontMetrics fm = g.getFontMetrics();
-            int w = fm.stringWidth(text);
-            pnt = new Point(inner.left+w, inner.top + fm.getAscent());
-
-            g.setColor(textColor);
-            g.drawString(bgStr.substring(text.length(), bgStr.length()), pnt.x, pnt.y);
-
-        }
-
-    }
-
-    public class JFormattedDoc extends PlainDocument
+    public class JFormattedDoc extends ValPlainTextDocument
     {
         protected int limit;
-        protected JSpecialTextField textField;
+        protected ValFormattedTextField textField;
         protected UIFieldFormatterMgr.Formatter formatter;
         protected UIFieldFormatterMgr.FormatterField[] fields;
 
@@ -358,7 +339,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
          * @param formatter the formatter
          * @param limit the lengthof the format
          */
-        public JFormattedDoc(JSpecialTextField textField, UIFieldFormatterMgr.Formatter formatter, int limit)
+        public JFormattedDoc(ValFormattedTextField textField, UIFieldFormatterMgr.Formatter formatter, int limit)
         {
             super();
             this.textField   = textField;

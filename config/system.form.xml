@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<viewset name="SystemSetup" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="form.xsd">
+<viewset name="SystemSetup" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   
   <view id="500" name="Pick List" 
          class="edu.ku.brc.specify.ui.db.PickList" 

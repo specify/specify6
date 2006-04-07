@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: FormFormView.java,v $
+/* Filename:    $RCSfile: FormViewDef.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2005/10/12 16:52:27 $
@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Vector;
 
 
-public class FormFormView extends FormView
+public class FormViewDef extends ViewDef
 {
     protected String        columnDef = "";
     protected String        rowDef    = "";
@@ -34,24 +34,20 @@ public class FormFormView extends FormView
 
     /**
      * @param type the type (could be form or field)
-     * @param id the id
      * @param name the name
      * @param className the class name of the data object
      * @param gettableClassName the class name of the gettable
      * @param settableClassName the class name of the settable
      * @param desc description
-     * @param isValidated whether to turn on validation
-     */
-    public FormFormView(final FormView.ViewType type, 
-                        final int     id, 
+      */
+    public FormViewDef(final ViewDef.ViewType type, 
                         final String  name, 
                         final String  className, 
                         final String  gettableClassName, 
                         final String  settableClassName, 
-                        final String  desc, 
-                        final boolean isValidated)
+                        final String  desc)
     {
-        super(type, id, name, className, gettableClassName, settableClassName, desc, isValidated);
+        super(type, name, className, gettableClassName, settableClassName, desc);
         
     }
     

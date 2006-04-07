@@ -127,7 +127,7 @@ public class DBConnection
     
     /**
      * @param dbDriver the driver name
-     * @param bName the database name
+     * @param dbName the database name
      * @param dbUserid the username
      * @param dbPassword the password
      * @return a new instance of a DBConnection

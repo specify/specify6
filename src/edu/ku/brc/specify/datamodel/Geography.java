@@ -325,7 +325,7 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     		}
     		
     		/**
-    		 * @param parent the new GeographyTreeDef object
+    		 * @param treeDef the new GeographyTreeDef object
     		 *
     		 * @throws IllegalArgumentException if treeDef is not instance of GeographyTreeDef
     		 */

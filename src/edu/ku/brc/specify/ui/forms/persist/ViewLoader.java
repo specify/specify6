@@ -1,4 +1,4 @@
- /* Filename:    $RCSfile: FormViewFactory,v $
+ /* Filename:    $RCSfile: ViewLoader,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2005/10/12 16:52:27 $
@@ -27,7 +27,6 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -36,11 +35,11 @@ import java.util.Vector;
 
 import org.apache.commons.betwixt.XMLIntrospector;
 import org.apache.commons.betwixt.io.BeanWriter;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.specify.exceptions.ConfigurationException;
-import edu.ku.brc.specify.ui.forms.ViewMgr;
 
 /**
  * Factory that creates Views from ViewSet files. This class uses the singleton ViewMgr to verify the View Set Name is unique.
@@ -49,20 +48,20 @@ import edu.ku.brc.specify.ui.forms.ViewMgr;
  *
  * @author Rod Spears <rods@ku.edu>
  */
-public class FormViewFactory
+public class ViewLoader
 {
     // Statics
-    private static final Logger     log = Logger.getLogger(FormViewFactory.class);
-    private static final FormViewFactory instance = new FormViewFactory();
+    private static final Logger     log = Logger.getLogger(ViewLoader.class);
+    private static final ViewLoader instance = new ViewLoader();
 
-    private static final String NAME  = "name";
-    private static final String ID    = "id";
-    private static final String TYPE  = "type";
-    private static final String LABEL = "label";
-    private static final String DESC  = "desc";
+    private static final String NAME       = "name";
+    private static final String TYPE       = "type";
+    private static final String LABEL      = "label";
+    private static final String DESC       = "desc";
     private static final String CLASSNAME  = "class";
     private static final String GETTABLE   = "gettable";
     private static final String SETTABLE   = "settable";
+    private static final String RESOURCELABELS = "resourcelabels";
 
     // Data Members
     protected boolean doingResourceLabels = false;
@@ -72,98 +71,181 @@ public class FormViewFactory
      * Default Constructor
      *
      */
-    protected FormViewFactory()
+    protected ViewLoader()
     {
     }
 
-     /**
-     * Creates the view object hierarchy
-     * @param element the element to build the FormView from
-     * @return a form view
+    /**
+     * Creates the view
+     * @param element the element to build the View from
+     * @return the view
+     * @throws Exception anything
      */
-    public static FormView createView(final Element element) throws Exception
+    public static View createView(final Element element,
+                                  final Hashtable<String, ViewDef> viewDefs) throws Exception
     {
         // set a global value while creating this form as to whether the labels are keys to a resource bundle
         // or whether they are the actual label
         instance.doingResourceLabels = getAttr(element, "useresourcelabels", "false").equals("true");
 
-        FormView view        = null;
-        int      id          = Integer.parseInt(element.attributeValue(ID));
-        String   name        = element.attributeValue(NAME);
-        String   className   = element.attributeValue(CLASSNAME);
+        String   name              = element.attributeValue(NAME);
+        String   className         = element.attributeValue(CLASSNAME);
+        String   resLabels         = element.attributeValue(RESOURCELABELS);
+        String   desc              = getDesc(element);
+        
+        View view = new View(instance.viewSetName, name, className, desc, resLabels);
+
+        Element altviews = (Element)element.selectSingleNode("altviews");
+        if (altviews != null)
+        {
+            AltView defaultAltView = null;
+            
+            // iterate through child elements of root with element name "foo"
+            for ( Iterator i = altviews.elementIterator( "altview" ); i.hasNext(); )
+            {
+                Element altElement = (Element) i.next();
+
+                String altName      = altElement.attributeValue(NAME);
+                String viewDefName  = altElement.attributeValue("viewdef");
+                String label        = altElement.attributeValue(LABEL);
+                String modeStr      = getAttr(altElement, "mode", "");
+                boolean isValidated = getAttr(altElement, "validated", false);
+                boolean isDefault   = getAttr(altElement, "default", false);
+                
+                AltView.CreationMode mode;
+                if (isEmpty(modeStr))
+                {
+                    mode = AltView.CreationMode.None;
+                    
+                } else
+                {
+                    mode = modeStr.equals("edit") ? AltView.CreationMode.Edit : AltView.CreationMode.View;
+                }
+                
+                ViewDef viewDef = viewDefs.get(viewDefName);
+                if (viewDef == null)
+                {
+                    throw new RuntimeException("View Name["+name+"] refers to a ViewDef that doesn't exist.");
+                }
+                
+                // Make sure we only have one default view
+                if (defaultAltView != null && isDefault)
+                {
+                    isDefault = false; 
+                }
+                
+                AltView altView = new AltView(view, altName, label, mode, isValidated, isDefault, viewDef);
+                
+                if (defaultAltView == null && isDefault)
+                {
+                    defaultAltView = altView;
+                }
+                
+                view.addAltView(altView);
+            }
+            
+            // No default Alt View was indicated, so choose the first one
+            if (defaultAltView == null && view.getAltViews() != null)
+            {
+                view.getAltViews().get(0).setDefault(true);
+            }
+        }
+        
+        return view;
+    }
+  
+    /**
+     * Creates a ViewDef
+     * @param element the element to build the ViewDef from
+     * @return a viewdef
+     * @throws Exception
+     */
+    public static ViewDef createViewDef(final Element element) throws Exception
+    {
+        String   name              = element.attributeValue(NAME);
+        String   className         = element.attributeValue(CLASSNAME);
         String   gettableClassName = element.attributeValue(GETTABLE);
         String   settableClassName = element.attributeValue(SETTABLE);
-        String   desc        = "";
-        boolean  isValidated = getAttr(element, "validated", false);
+        String   desc              = getDesc(element);
+        
+        ViewDef.ViewType type;
+        try
+        {
+            String t = element.attributeValue(TYPE);
+            type = ViewDef.ViewType.valueOf(element.attributeValue(TYPE));
+            
+        } catch (Exception ex)
+        {
+            log.error("view["+name+"] has illegal type["+element.attributeValue(TYPE)+"]", ex);
+            throw ex;
+        }
+        
+        ViewDef viewDef = null;//new ViewDef(type, name, className, gettableClassName, settableClassName, desc);
+        
+        switch (type)
+        {
+            case form :
+                viewDef = createFormViewDef(element, type, name, className, gettableClassName, settableClassName, desc, instance.doingResourceLabels);
+                break;
 
+            case table :
+                //view = createTableView(element, id, name, className, gettableClassName, settableClassName,
+                //                       desc, instance.doingResourceLabels, isValidated);
+                break;
+
+            case field :
+                //view = createFormView(FormView.ViewType.field, element, id, name, gettableClassName, settableClassName,
+                //                      className, desc, instance.doingResourceLabels, isValidated);
+               break;
+        }
+        return viewDef;
+    }
+
+    
+    /**
+     * Gets the optoinal description text
+     * @param element the parent eleemnt of the desc node
+     * @return the string of the text or null
+     */
+    protected static String getDesc(final Element element)
+    {
+        String desc = null;
         Element descElement = (Element)element.selectSingleNode(DESC);
         if (descElement != null)
         {
             desc = descElement.getTextTrim();
-        }
-
-        FormView.ViewType type;
-        try
-        {
-            type = FormView.ViewType.valueOf(element.attributeValue(TYPE));
-        } catch (Exception ex)
-        {
-            log.error("view["+id+"] has illegal type["+element.attributeValue(TYPE)+"]", ex);
-            throw ex;
-        }
-
-        switch (type)
-        {
-            case form :
-                view = createFormView(FormView.ViewType.form, element, id, name,
-                                      className, gettableClassName, settableClassName,
-                                      desc, instance.doingResourceLabels, isValidated);
-                break;
-
-            case table :
-                view = createTableView(element, id, name, className, gettableClassName, settableClassName,
-                                       desc, instance.doingResourceLabels, isValidated);
-                break;
-
-            case field :
-                view = createFormView(FormView.ViewType.field, element, id, name, gettableClassName, settableClassName,
-                                      className, desc, instance.doingResourceLabels, isValidated);
-               break;
-        }
-
-        addAltViews(view, element);
-
-        return view;
+        }  
+        return desc;
     }
 
     /**
      * Fill the Vector with all the views from the DOM document
-     * @param aDocument the DOM document conforming to form.xsd
-     * @param aList the liust to be filled
-     * @param aDoValidation indicates it should validate subviews ids
-     * @return the name of the views
+     * @param doc the DOM document conforming to form.xsd
+     * @param views the liust to be filled
      * @throws Exception for duplicate view set names or if a Form ID is not unique
      */
-    public static String getViews(final Element aDocument, final Vector<FormView> aList, final boolean aDoValidation) throws Exception
+    public static String getViews(final Element doc, 
+                                  final Hashtable<String, View> views,
+                                  final Hashtable<String, ViewDef> viewDefs) throws Exception
     {
-        instance.viewSetName = aDocument.attributeValue(NAME);
+        instance.viewSetName = doc.attributeValue(NAME);
 
-        Hashtable<Integer, FormView> idHash = new Hashtable<Integer, FormView>();
-
-        for ( Iterator i = aDocument.elementIterator( "view" ); i.hasNext(); )
+        Element viewsElement = (Element)doc.selectSingleNode("views");
+        if (viewsElement != null)
         {
-            Element  element = (Element) i.next(); // assume element is NOT null, if it is null it will cause an exception
-            FormView view    = createView(element);
-            if (idHash.get(view.getId()) == null)
+            for ( Iterator i = viewsElement.elementIterator( "view" ); i.hasNext(); )
             {
-                view.setViewSetName(instance.viewSetName); // create the full name which the views element name plus the view's id
-                idHash.put(view.getId(), view);
-                aList.add(view);
-            } else
-            {
-                String msg = "View Set ["+instance.viewSetName+"] ["+view.getId()+"] is not unique.";
-                log.error(msg);
-                throw new ConfigurationException(msg);
+                Element  element = (Element) i.next(); // assume element is NOT null, if it is null it will cause an exception
+                View     view    = createView(element, viewDefs);
+                if (views.get(view.getName()) == null)
+                {
+                    views.put(view.getName(), view);
+                } else
+                {
+                    String msg = "View Set ["+instance.viewSetName+"] ["+view.getName()+"] is not unique.";
+                    log.error(msg);
+                    throw new ConfigurationException(msg);
+                }
             }
         }
 
@@ -171,32 +253,37 @@ public class FormViewFactory
     }
 
     /**
-     * Processes all the AltViews
-     * @param aFormView the form they should be associated with
-     * @param aElement the element to process
+     * Fill the Vector with all the views from the DOM document
+     * @param doc the DOM document conforming to form.xsd
+     * @param viewDefs the list to be filled
+     * @throws Exception for duplicate view set names or if a ViewDef name is not unique
      */
-    protected static void addAltViews(final FormView aFormView, final Element aElement)
+    public static String getViewDefs(final Element doc, final Hashtable<String, ViewDef> viewDefs) throws Exception
     {
-        if (aFormView != null && aElement != null)
+        instance.viewSetName = doc.attributeValue(NAME);
+        
+        Element viewDefsElement = (Element)doc.selectSingleNode("viewdefs");
+        if (viewDefsElement != null)
         {
-            Element altviews = (Element)aElement.selectSingleNode("altviews");
-            if (altviews != null)
+            for ( Iterator i = viewDefsElement.elementIterator( "viewdef" ); i.hasNext(); )
             {
-                // iterate through child elements of root with element name "foo"
-                for ( Iterator i = altviews.elementIterator( "alt" ); i.hasNext(); )
+                Element  element = (Element) i.next(); // assume element is NOT null, if it is null it will cause an exception
+                ViewDef  viewDef = createViewDef(element);
+                if (viewDefs.get(viewDef.getName()) == null)
                 {
-                    Element element = (Element) i.next();
-
-                    String label = element.attributeValue(LABEL);
-                    int id = Integer.parseInt(element.attributeValue(ID));
-                    aFormView.addAltView(new FormAltView(id, getResourceLabel(label)));
+                    viewDefs.put(viewDef.getName(), viewDef);
+                } else
+                {
+                    String msg = "View Set ["+instance.viewSetName+"] ["+viewDef.getName()+"] is not unique.";
+                    log.error(msg);
+                    throw new ConfigurationException(msg);
                 }
             }
-        } else
-        {
-            log.error("View Set ["+instance.viewSetName+"] ["+aFormView+"] or element ["+aElement+"] is null.");
         }
+
+        return instance.viewSetName;
     }
+
 
     /**
      * Processes all the AltViews
@@ -335,6 +422,7 @@ public class FormViewFactory
                         {
                             String uitype         = getAttr(cellElement, "uitype", "");
                             String format         = getAttr(cellElement, "format", "");
+                            String formatName     = getAttr(cellElement, "formatname", "");
                             int    cols           = getAttr(cellElement, "cols", 10); // XXX PREF for default width of text field
                             int    rows           = getAttr(cellElement, "rows", 5);  // XXX PREF for default heightof text area
                             String validationType = getAttr(cellElement, "valtype", "OK");
@@ -342,6 +430,23 @@ public class FormViewFactory
                             String initialize     = getAttr(cellElement, "initialize", "");
                             boolean isRequired    = getAttr(cellElement, "isrequired", false);
                             boolean isEncrypted    = getAttr(cellElement, "isencrypted", false);
+
+                            String dspUIType;
+                            if (uitype.equals("checkbox"))
+                            {
+                                dspUIType = getAttr(cellElement, "dspuitype", "checkbox");
+                                
+                            } else if (uitype.equals("textarea"))
+                            {
+                                dspUIType = getAttr(cellElement, "dspuitype", "dsptextarea");
+                                
+                            } else if (uitype.equals("list"))
+                            {
+                                dspUIType = getAttr(cellElement, "dspuitype", "list");
+                            } else
+                            {
+                                dspUIType = getAttr(cellElement, "dspuitype", "dsptextfield");
+                            }
 
                             // check to see see if the validation is a node in the cell
                             if (isEmpty(validationRule))
@@ -358,11 +463,11 @@ public class FormViewFactory
                             }
 
                             FormCellField field = new FormCellField(FormCell.CellType.field,
-                                                                    cellName, uitype, format, isRequired,
+                                                                    cellName, uitype, dspUIType, format, formatName, isRequired,
                                                                     cols, rows, colspan, rowspan, validationType, validationRule, isEncrypted);
                             field.setLabel(getAttr(cellElement, "label", ""));
                             field.setPickListName(getAttr(cellElement, "picklist", ""));
-                            field.setChangeListenerOnly(getAttr(cellElement, "changesonly", false));
+                            field.setChangeListenerOnly(getAttr(cellElement, "changesonly", true));
                             field.setInitialize(initialize);
 
                             cell = formRow.addCell(field);
@@ -390,16 +495,19 @@ public class FormViewFactory
                         case subview:
                         {
                             String vsName = cellElement.attributeValue("viewsetname");
-                            if (vsName == null ||vsName.length() == 0)
+                            if (StringUtils.isEmpty(vsName))
                             {
                                 vsName = instance.viewSetName;
                             }
+                            
                             cell = formRow.addCell(new FormCellSubView(cellElement.attributeValue(NAME),
-                                                  vsName,
-                                                  Integer.parseInt(cellElement.attributeValue(ID)),
-                                                  cellElement.attributeValue("class"),
-                                                  colspan,
-                                                  rowspan));
+                                                   vsName,
+                                                   cellElement.attributeValue("viewname"),
+                                                   cellElement.attributeValue("class"),
+                                                   colspan,
+                                                   rowspan,
+                                                   getAttr(cellElement, "single", false)));
+                                                  
                         }
                         break;
                     } // switch
@@ -424,24 +532,20 @@ public class FormViewFactory
      * @param isValidated whether to turn on validation
      * @return a form view of type "form"
      */
-    protected static FormFormView createFormView(final FormView.ViewType type,
-                                                 final Element element,
-                                                 final int     id,
-                                                 final String  name,
-                                                 final String  className,
-                                                 final String  gettableClassName,
-                                                 final String  settableClassName,
-                                                 final String  desc,
-                                                 final boolean resLabels,
-                                                 final boolean isValidated)
+    protected static FormViewDef createFormViewDef(final Element element,
+                                                   final ViewDef.ViewType type,
+                                                   final String  name,
+                                                   final String  className,
+                                                   final String  gettableClassName,
+                                                   final String  settableClassName,
+                                                   final String  desc,
+                                                   final boolean resLabels)
     {
-        FormFormView formView = new FormFormView(type, id, name, className, gettableClassName, settableClassName, desc, isValidated);
+        FormViewDef formView = new FormViewDef(type, name, className, gettableClassName, settableClassName, desc);
 
-        formView.setResourceLabels(resLabels);
         formView.setColumnDef(createDef(element, "columnDef"));
         formView.setRowDef(createDef(element, "rowDef"));
         formView.setEnableRules(getEnableRules(element));
-        formView.setValidated(getAttr(element, "validate", "false").equals("true"));
 
         processRows(element, formView.getRows());
 
@@ -464,7 +568,7 @@ public class FormViewFactory
      * @param isValidated whether to turn on validation
      * @return a form view of type "table"
      */
-    protected static FormTableView createTableView(final Element element,
+    protected static TableViewDef createTableView(final Element element,
                                                    final int     id,
                                                    final String  name,
                                                    final String  className,
@@ -474,9 +578,9 @@ public class FormViewFactory
                                                    final boolean resLabels,
                                                    final boolean isValidated)
     {
-        FormTableView tableView = new FormTableView(id, name, className, gettableClassName, settableClassName, desc, isValidated);
+        TableViewDef tableView = new TableViewDef( name, className, gettableClassName, settableClassName, desc);
 
-        tableView.setResourceLabels(resLabels);
+        //tableView.setResourceLabels(resLabels);
 
         Element columns = (Element)element.selectSingleNode("columns");
         if (columns != null)
@@ -494,31 +598,6 @@ public class FormViewFactory
         }
 
         return tableView;
-    }
-
-    /**
-     * This is a temporary method for testing this needs to be moved somewhere
-     * XXX please move me!
-     */
-
-    public class FormViewComparator implements Comparator<FormView>
-    {
-
-        public int compare(FormView o1, FormView o2)
-        {
-            if (o1.getId() == o2.getId())
-            {
-                return 0;
-            } else
-            {
-               return o1.getId() > o2.getId() ? 1 : -1;
-            }
-        }
-
-        public boolean equals(Object obj)
-        {
-            return (obj instanceof FormView);
-        }
     }
 
     /**

@@ -51,10 +51,10 @@ import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsHitsCache;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.db.GenericSearchDialog;
-import edu.ku.brc.specify.ui.forms.FormViewable;
+import edu.ku.brc.specify.ui.forms.Viewable;
 import edu.ku.brc.specify.ui.forms.ViewFactory;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
-import edu.ku.brc.specify.ui.forms.persist.FormView;
+import edu.ku.brc.specify.ui.forms.persist.View;
 
 /**
  * NOTE: Thiks is an example of how to do the Search dialog usin express search instead of a regular search.
@@ -93,8 +93,8 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
     protected RecordSet      recordSet      = null;
 
     // Form Stuff
-    protected FormView       formView = null;
-    protected FormViewable   form     = null;
+    protected View           formView = null;
+    protected Viewable   form     = null;
     //protected Agent          agent    = new Agent();
     protected Hashtable<String, String> dataMap = new Hashtable<String, String>();
 
@@ -170,21 +170,19 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
             }
         });
 
-        int id = 555;
+        String viewName = "test";
         String name = "Fish Views";
 
-        formView = ViewMgr.getView(name, id);
+        formView = ViewMgr.getView(name, viewName);
         if (formView != null)
         {
-            form = ViewFactory.createView(formView, null);
-            form.setDataObj(dataMap);
-            form.setDataIntoUI();
+            form = ViewFactory.createFormView(null, formView, null, dataMap);
             add(form.getUIComponent(), BorderLayout.CENTER);
             //getter = new DataGetterForObj();
 
         } else
         {
-            log.info("Couldn't load form with name ["+name+"] Id ["+id+"]");
+            log.info("Couldn't load form with name ["+name+"] Id ["+viewName+"]");
         }
         //form.setDataObj(prefNode);
         //form.getValidator().validateForm();

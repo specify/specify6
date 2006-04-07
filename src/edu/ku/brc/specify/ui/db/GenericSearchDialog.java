@@ -73,10 +73,11 @@ import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResults;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase;
 import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.forms.FormViewable;
+import edu.ku.brc.specify.ui.forms.Viewable;
 import edu.ku.brc.specify.ui.forms.ViewFactory;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
-import edu.ku.brc.specify.ui.forms.persist.FormView;
+import edu.ku.brc.specify.ui.forms.persist.View;
+import edu.ku.brc.specify.ui.forms.persist.ViewDef;
 
 /**
  * This is a "generic" or more specifically "configurable" search dialog class. This enables you to specify a form to be used to enter the search criteria
@@ -92,8 +93,8 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
     private static Log log  = LogFactory.getLog(GenericSearchDialog.class);
 
     // Form Stuff
-    protected FormView       formView = null;
-    protected FormViewable   form     = null;
+    protected View           formView = null;
+    protected Viewable   form     = null;
     protected List<String>   fieldNames;
     
     // Members needed for creating results
@@ -127,7 +128,7 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
     /**
      * Constructs a search dialog from form infor and from search info
      * @param viewSetName the viewset name
-     * @param formId the form ID from the viewset
+     * @param viewName the form name from the viewset
      * @param searchName the search name, this is looked up by name in the "search_config.xml" file
      * @param title the title (should be already localized before passing in)
      * @param className the name of the class to be created from the selected results
@@ -135,7 +136,7 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
      * @throws HeadlessException an exception
      */
     public GenericSearchDialog(final String viewSetName, 
-                               final int    formId, 
+                               final String viewName, 
                                final String searchName,
                                final String title,
                                final String className,
@@ -160,7 +161,7 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
             }
         }
 
-        createUI(viewSetName, formId, title);
+        createUI(viewSetName, viewName, title);
         
         setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -174,7 +175,7 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
      *
      */
     protected void createUI(final String viewSetName, 
-                            final int    formId, 
+                            final String viewName, 
                             final String title)
     {
         searchText = new JTextField(30);
@@ -225,17 +226,15 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
             }
         });
 
-        formView = ViewMgr.getView(viewSetName, formId);
+        formView = ViewMgr.getView(viewSetName, viewName);
         if (formView != null)
         {
-            form = ViewFactory.createView(formView, null);
-            form.setDataObj(dataMap);
-            form.setDataIntoUI();
+            form = ViewFactory.createFormView(null, formView, null, dataMap);
             add(form.getUIComponent(), BorderLayout.CENTER);
 
         } else
         {
-            log.info("Couldn't load form with name ["+viewSetName+"] Id ["+formId+"]");
+            log.info("Couldn't load form with name ["+viewSetName+"] Id ["+viewName+"]");
         }
         
         fieldNames = new ArrayList<String>();

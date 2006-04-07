@@ -25,7 +25,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
-import java.util.prefs.Preferences;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -59,7 +58,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     protected static ColorWrapper valtextcolor       = null;
     protected static ColorWrapper requiredfieldcolor = null;
 
-    
+    protected ValPlainTextDocument document;
 
     /**
      * Constructor
@@ -118,6 +117,8 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     {
         super.init();
         
+        setDocument(document = new ValPlainTextDocument());
+        
         bgColor = getBackground();
         if (valtextcolor == null || requiredfieldcolor == null)
         {
@@ -160,7 +161,18 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
         
         setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
     }
+    
 
+    /* (non-Javadoc)
+     * @see javax.swing.text.JTextComponent#setText(java.lang.String)
+     */
+    public void setText(String text)
+    {
+        document.setIgnoreNotify(true);
+        super.setText(text);
+        document.setIgnoreNotify(false);
+    }
+    
     //--------------------------------------------------
     //-- UIValidatable Interface
     //--------------------------------------------------
@@ -230,18 +242,18 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
         if (value instanceof String)
         {
             data = (String)value;
-            setText(data);
             
         } else
         {
             data = value.toString();
         }
+        setText(data);
         
         this.isInError = (isRequired && StringUtils.isEmpty(data));
         
         repaint();
     }
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.GetSetValueIFace#getValue()
      */

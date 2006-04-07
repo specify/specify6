@@ -21,8 +21,8 @@ package edu.ku.brc.specify.ui.forms.persist;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.Collections;
-import java.util.Vector;
+import java.util.Hashtable;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -40,11 +40,11 @@ public class ViewSet
 {
     private final static Logger  log = Logger.getLogger(ViewSet.class);
 
-    private static FormView comparable = new FormView();
-    
     private String           name     = null;
     private String           fileName = null;
-    private Vector<FormView> views    = null;
+    
+    private Hashtable<String, View>    views    = null;
+    private Hashtable<String, ViewDef> viewDefs = new Hashtable<String, ViewDef>();
     
     /**
      * Default Constructor
@@ -73,10 +73,10 @@ public class ViewSet
     {
         if (views != null)
         {
-            for (FormView fv : views)
-            {
-                fv.cleanUp();
-            }
+            //for (View fv : views)
+            //{
+            //    fv.cleanUp();
+            //}
             views.clear();
             views = null; // will force it to be reloaded.
         }
@@ -84,13 +84,13 @@ public class ViewSet
     
     /**
      * Added a form to the view set
-     * @param formView the form to be added
+     * @param view the view to be added
      */
-    public void add(final FormView formView)
+    /*public void addView(final View view)
     {
         loadViews();
-        views.add(formView);
-    }
+        views.put(view);
+    }*/
     
     /**
      * Loads the view from the file
@@ -102,35 +102,35 @@ public class ViewSet
             try
             {
                 loadViewFile(new FileInputStream(XMLHelper.getConfigDirPath(fileName)));
+                
             } catch (FileNotFoundException ex)
             {
                 log.error(ex);
             } catch (Exception ex)
             {
                 log.error(ex);
+                ex.printStackTrace();
             }
         }
     }
     
     /**
-     * Gets form
-     * @param id id of form to be trieved
-     * @return the form or null if it isn't found 
+     * Gets view
+     * @param name name of view to be retrieved
+     * @return the view or null if it isn't found 
      */
-    public FormView getForm(final Integer id)
+    public View getView(final String name)
     {
         loadViews();
 
-        comparable.setId(id);
-        int inx = Collections.binarySearch(views, comparable);  
-        return inx > -1 ? views.elementAt(inx) : null;
+        return views.get(name);
     }
 
     /**
      * Get the views. It loads them if they have not been loaded yet.
      * @return the vector of all the view in the ViewSet
      */
-    public Vector<FormView> getViews()
+    public Map<String, View> getViews()
     {
         loadViews();
         return views;
@@ -140,11 +140,18 @@ public class ViewSet
      * Sets the Views
      * @param views the vector of new views
      */
-    public void setViews(final Vector<FormView> views)
+    public void setViews(final Hashtable<String, View> views)
     {
         this.views = views;
-        
-        Collections.sort(views);
+    }
+
+    /**
+     * Sets the ViewDefs
+     * @param viewDefs the vector of new views
+     */
+    public void setViewDefs(final Hashtable<String, ViewDef> viewDefs)
+    {
+        this.viewDefs = viewDefs;
     }
 
     /**
@@ -175,11 +182,15 @@ public class ViewSet
         Element root = XMLHelper.readFileToDOM4J(fileInputStream);
         if (root != null)
         {
-            Vector<FormView> newViews = new Vector<FormView>(); // will eventually be moved to where it can be reused
+            // Do these first so the view can check their altViews against them
+            Hashtable<String, ViewDef> newViewDefs = new Hashtable<String, ViewDef>(); // will eventually be moved to where it can be reused
+            ViewLoader.getViewDefs(root, newViewDefs);
+            setViewDefs(newViewDefs);
+                
+
+            Hashtable<String, View> newViews = new Hashtable<String, View>(); // will eventually be moved to where it can be reused
             
-            // Note this will check for the uniqueness of the ViewSet's name
-            // so we can assume the ViewSet is unique (throws an exception if not unique)
-            String viewsName = FormViewFactory.getViews(root, newViews, true);
+            String viewsName = ViewLoader.getViews(root, newViews, newViewDefs);
             if (!viewsName.equals(name))
             {
                 String msg = "The name in the registry doesn't match the name in the file!["+name+"]["+viewsName+"]";
@@ -187,7 +198,7 @@ public class ViewSet
                 throw new ConfigurationException(msg);
             }
             setViews(newViews);
-                
+            
         } else
         {
             String msg = "The root element for the document was null!";

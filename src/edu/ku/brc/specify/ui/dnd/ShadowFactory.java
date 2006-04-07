@@ -69,7 +69,7 @@ import java.util.HashMap;
  * <h2>Generating a Shadow</h2>
  * <p>A shadow is generated as a <code>BufferedImage</code> from another
  * <code>BufferedImage</code>. Once the factory is set up, you must call
- * {@link #createShadow} to actually generate the shadow:
+ * to actually generate the shadow:
  * <pre>
  * ShadowFactory factory = new ShadowFactory();
  * // factory setup

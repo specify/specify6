@@ -19,6 +19,8 @@
  */
 package edu.ku.brc.specify.ui.forms;
 
+import java.util.List;
+
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -39,19 +41,28 @@ import edu.ku.brc.specify.helpers.UIHelper;
  */
 public class ControlBarPanel extends JPanel
 {
-    protected PanelBuilder builder;
-    protected JPanel       leftSidePanel  = null;
-    protected JPanel       rightSidePanel = null;
+    protected PanelBuilder        builder;
+    protected JPanel              leftSidePanel  = null;
+    protected JPanel              rightSidePanel = null;
+    protected ResultSetController recordSetController;
     
     /**
      * Constructor
-     * @param rsc the recordset cntroller
      */
-    public ControlBarPanel(final ResultSetController rsc)
+    public ControlBarPanel()
     {
         builder = new PanelBuilder(new FormLayout("p,2px,c:p:g,2px,p", "p"), this);
+    }
+
+    
+    /**
+     * Adds a ResultSetController to the center pane
+     * @param recordSetController the recordset cntroller
+     */
+    public void add(final ResultSetController recordSetController)
+    {
         CellConstraints cc = new CellConstraints();
-        builder.add(rsc.getPanel(), cc.xy(3,1));
+        builder.add(recordSetController.getPanel(), cc.xy(3,1));
     }
     
     /**
@@ -79,15 +90,15 @@ public class ControlBarPanel extends JPanel
      * @param comps the array of controls
      * @param onLeftSide true for the left side, false for the right side
      */
-    public void addComponents(final JComponent[] comps, final boolean onLeftSide)
+    public void addComponents(final List<JComponent> compsList, final boolean onLeftSide)
     {
         CellConstraints cc       = new CellConstraints();
-        String          colsDef  = comps.length == 1 ? "p" : UIHelper.createDuplicateJGoodiesDef("p", "2px", comps.length);
+        String          colsDef  = compsList.size() == 1 ? "p" : UIHelper.createDuplicateJGoodiesDef("p", "2px", compsList.size());
         PanelBuilder    pBuilder = new PanelBuilder(new FormLayout(colsDef, "p"));
         
-        for (int i=0;i<comps.length;i++)
+        for (int i=0;i<compsList.size();i++)
         {
-            pBuilder.add(comps[i], cc.xy((i*2)+1, 1));
+            pBuilder.add(compsList.get(i), cc.xy((i*2)+1, 1));
         }
         if (onLeftSide)
         {
@@ -100,6 +111,16 @@ public class ControlBarPanel extends JPanel
         }
     }
     
-    
+    /**
+     * Sets the RecordSetController's visibility
+     * @param vis true visible, false hidden
+     */
+    public void setRSCVisibility(final boolean vis)
+    {
+        if (recordSetController != null)
+        {
+            recordSetController.getPanel().setVisible(vis);
+        }
+    }
 
 }

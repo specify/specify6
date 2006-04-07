@@ -104,13 +104,13 @@
     </set>
     
     <!-- bi-directional many-to-one association to AgentAddress -->
-    <many-to-one name="agentAddressByIssueeId" class="edu.ku.brc.specify.datamodel.AgentAddress" not-null="true" outer-join="true">
+    <many-to-one name="agentAddressByIssuee" class="edu.ku.brc.specify.datamodel.AgentAddress" not-null="true" outer-join="true">
         <meta attribute="field-description">AgentAddressID of Issuee</meta>
         <column name="IssueeID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to AgentAddress -->
-    <many-to-one name="agentAddressByIssuerId" class="edu.ku.brc.specify.datamodel.AgentAddress" not-null="true" outer-join="true">
+    <many-to-one name="agentAddressByIssuer" class="edu.ku.brc.specify.datamodel.AgentAddress" not-null="true" outer-join="true">
         <meta attribute="field-description">AgentAddressID of Issuer</meta>
         <column name="IssuerID"/>
     </many-to-one>

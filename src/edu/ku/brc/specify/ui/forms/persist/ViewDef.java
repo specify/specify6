@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: FormView.java,v $
+/* Filename:    $RCSfile: ViewDef.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2005/10/12 16:52:27 $
@@ -17,12 +17,10 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 package edu.ku.brc.specify.ui.forms.persist;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
-
-import java.util.List;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
@@ -31,24 +29,18 @@ import edu.ku.brc.specify.ui.forms.DataObjectGettableFactory;
 import edu.ku.brc.specify.ui.forms.DataObjectSettable;
 import edu.ku.brc.specify.ui.forms.DataObjectSettableFactory;
 
-public class FormView implements Comparable<FormView>
+public class ViewDef
 {
-    private final static Logger log = Logger.getLogger(FormView.class);
+    private final static Logger log = Logger.getLogger(ViewDef.class);
     
     public enum ViewType {form, table, field};
     
     protected ViewType             type;
-    protected int                  id;
     protected String               name;
     protected String               desc;
     protected String               className;
     protected String               dataGettableName;
     protected String               dataSettableName;
-    protected List<FormAltView>    altViews       = new Vector<FormAltView>();
-    protected boolean              resourceLabels = false;
-    protected boolean              validated      = false;
-    
-    protected String               viewSetName    = null;
     
     protected DataObjectGettable   dataGettable   = null;
     protected DataObjectSettable   dataSettable   = null;
@@ -57,33 +49,33 @@ public class FormView implements Comparable<FormView>
      * Default Constructor
      *
      */
-    public FormView()
+    public ViewDef()
     {
         
     }
     
     /**
-     * CReate FormView
+     * Create View Def
      * @param type the type of form (form, table, field)
-     * @param id the unique id of the form
+     * @param name a unique name for the ViewDef
+     * @param className the clas name that this view def can display
+     * @param dataGettableName the gettable name
+     * @param dataSettableName the settable name
+     * @param desc a description of the view def
      */
-    public FormView(final ViewType type, 
-                    final int      id, 
-                    final String   name, 
-                    final String   className, 
-                    final String   dataGettableName, 
-                    final String   dataSettableName, 
-                    final String   desc, 
-                    final boolean  validated)
+    public ViewDef(final ViewType type, 
+                   final String   name, 
+                   final String   className, 
+                   final String   dataGettableName, 
+                   final String   dataSettableName, 
+                   final String   desc)
     {
         this.type = type;
-        this.id   = id;
         this.name = name;
         this.className = className;
         this.dataGettableName = dataGettableName;
         this.dataSettableName = dataSettableName;
         this.desc = desc;
-        this.validated = validated;
         
         try
         {
@@ -93,7 +85,7 @@ public class FormView implements Comparable<FormView>
                 dataGettable = (DataObjectGettable)DataObjectGettableFactory.get(className, dataGettableName);
             } else
             {
-                log.info("dataGettableName or is null for "+id);
+                log.info("dataGettableName or is null for "+name);
             }
            
             // OK to NOT have a Settable
@@ -110,48 +102,14 @@ public class FormView implements Comparable<FormView>
     }
     
     /**
-     * Adds an alternative view
-     * @param altView the alternate view
-     * @return the form that was passed in
-     */
-    public FormAltView addAltView(final FormAltView altView)
-    {
-        altViews.add(altView);
-        return altView;
-    }
-
-    /**
      * Clean up internal data 
      */
     public void cleanUp()
     {
-        altViews.clear();
         dataGettable = null;
         dataSettable = null;
     }
     
-    public int compareTo(FormView obj)
-    {
-        if (id == obj.getId())
-        {
-            return 0;
-            
-        } else
-        {
-           return id > obj.getId() ? 1 : -1;
-        }
-    }
-    
-    public int getId()
-    {
-        return id;
-    }
-
-    public void setId(final int id)
-    {
-        this.id = id;
-    }
-
     public ViewType getType()
     {
         return type;
@@ -160,36 +118,6 @@ public class FormView implements Comparable<FormView>
     public void setType(final ViewType type)
     {
         this.type = type;
-    }
-
-    public List<FormAltView> getAltViews()
-    {
-        return altViews;
-    }
-
-    public void setAltViews(List<FormAltView> altViews)
-    {
-        this.altViews = altViews;
-    }
-
-    public boolean isResourceLabels()
-    {
-        return resourceLabels;
-    }
-
-    public void setResourceLabels(final boolean resourceLabels)
-    {
-        this.resourceLabels = resourceLabels;
-    }
-
-    public String getViewSetName()
-    {
-        return viewSetName;
-    }
-
-    public void setViewSetName(final String viewSetName)
-    {
-        this.viewSetName = viewSetName;
     }
 
     public String getDesc()
@@ -242,19 +170,7 @@ public class FormView implements Comparable<FormView>
         return dataSettable;
     }
 
-    public boolean isValidated()
-    {
-        return validated;
-    }
-
-    public void setValidated(boolean validated)
-    {
-        this.validated = validated;
-    }
-
     public String toString()
     {
-        return this.viewSetName + " - " + this.name;
-    }
-     
-}
+        return this.name;
+    }}

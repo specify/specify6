@@ -63,7 +63,7 @@ public class PrefsGettableImpl implements DataObjectGettable
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.DataObjectGettable#getFieldValue(java.lang.Object, java.lang.String, java.lang.String)
      */
-    public Object getFieldValue(Object dataObj, String fieldName, String format) 
+    public Object getFieldValue(Object dataObj, String fieldName, String formatName, String format) 
     {
         
         if (isNotEmpty(format) && fieldName.indexOf(",") > -1)

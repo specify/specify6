@@ -64,16 +64,32 @@ public class DBTableIdMgr
         try
         {
             //hash.put(1, new TableInfo(1, "edu.ku.brc.specify.datamodel.CollectionObj", "collectionobj", "collectionObjectId"));
-            instance.hash.put(1,   new TableInfo(1, "edu.ku.brc.specify.datamodel.CollectionObject", "collectionobject", "collectionObjectId"));
-            instance.hash.put(5,   new TableInfo(5, "edu.ku.brc.specify.datamodel.Agent", "agent", "agentId"));
-            instance.hash.put(80,  new TableInfo(80, "edu.ku.brc.specify.datamodel.InfoRequest", "inforequest", "infoRequestID"));
-            instance.hash.put(500, new TableInfo(500, "edu.ku.brc.specify.ui.db.PickList", "picklist", "picklist_id"));
+            instance.hash.put(1,   new TableInfo(1, "edu.ku.brc.specify.datamodel.CollectionObject", "collectionobject", "collectionObjectId", "CollectionObject"));
+            instance.hash.put(5,   new TableInfo(5, "edu.ku.brc.specify.datamodel.Agent", "agent", "agentId", "Agent"));
+            instance.hash.put(80,  new TableInfo(80, "edu.ku.brc.specify.datamodel.InfoRequest", "inforequest", "infoRequestID", "InfoRequest"));
+            instance.hash.put(500, new TableInfo(500, "edu.ku.brc.specify.ui.db.PickList", "picklist", "picklist_id", "PickList"));
 
         } catch (Exception ex)
         {
             log.error(ex);
         }
         
+    }
+    
+    /**
+     * Returns the defualt form name for a given table ID
+     * @param id the ID of a table
+     * @return the default form name
+     */
+    public static String lookupDefaultFormNameById(final int id)
+    {
+        // for now the default name will
+        TableInfo tableInfo = instance.hash.get(id);
+        if (tableInfo != null)
+        {
+            return tableInfo.getDefaultFormName();
+        }
+        return null;
     }
 
     /**
@@ -162,13 +178,15 @@ public class DBTableIdMgr
         protected String tableName;
         protected String primaryKeyName;
         protected Class  classObj;
+        protected String defaultFormName;
 
-        public TableInfo(int tableId, String className, String tableName, String primaryKeyName) throws ClassNotFoundException
+        public TableInfo(int tableId, String className, String tableName, String primaryKeyName, String defaultFormName) throws ClassNotFoundException
         {
             this.tableId        = tableId;
             this.className      = className;
             this.tableName      = tableName;
             this.primaryKeyName = primaryKeyName;
+            this.defaultFormName = defaultFormName;
 
             this.classObj       = Class.forName(className);
         }
@@ -204,6 +222,11 @@ public class DBTableIdMgr
         public Class getClassObj()
         {
             return classObj;
+        }
+
+        public String getDefaultFormName()
+        {
+            return defaultFormName;
         }
 
 

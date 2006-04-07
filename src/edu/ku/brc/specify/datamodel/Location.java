@@ -285,7 +285,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     		}
     		
     		/**
-    		 * @param parent the new LocationTreeDef object
+    		 * @param treeDef the new LocationTreeDef object
     		 *
     		 * @throws IllegalArgumentException if treeDef is not instance of LocationTreeDef
     		 */

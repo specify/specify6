@@ -39,7 +39,7 @@ public interface Treeable extends Comparable<Treeable>
 	/**
 	 * Re-parents the node by setting its parent to <code>node</code>.
 	 * 
-	 * @param the new parent
+	 * @param node the new parent
 	 */
 	public void setParentNode(Treeable node);
 	

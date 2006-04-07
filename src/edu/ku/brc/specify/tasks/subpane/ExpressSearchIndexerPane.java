@@ -82,15 +82,7 @@ import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.RolloverCommand;
 import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.forms.ViewMgr;
-import edu.ku.brc.specify.ui.forms.persist.FormCell;
-import edu.ku.brc.specify.ui.forms.persist.FormCellLabel;
-import edu.ku.brc.specify.ui.forms.persist.FormColumn;
-import edu.ku.brc.specify.ui.forms.persist.FormFormView;
-import edu.ku.brc.specify.ui.forms.persist.FormRow;
-import edu.ku.brc.specify.ui.forms.persist.FormTableView;
-import edu.ku.brc.specify.ui.forms.persist.FormView;
-import edu.ku.brc.specify.ui.forms.persist.ViewSet;
+import edu.ku.brc.specify.ui.forms.persist.FormViewDef;
 
 /**
  * A pane enables the user to see (and control) the indexing process for express search.<BR>
@@ -557,8 +549,9 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
      * @param writer
      * @param form
      */
-    protected void indexViewForm(final IndexWriter writer ,final FormFormView form) throws IOException
+    protected void indexViewForm(final IndexWriter writer, final FormViewDef form) throws IOException
     {
+        /*
         // separator, field, label, subview
         for (FormRow row :  form.getRows())
         {
@@ -594,14 +587,16 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
             }
         }
+        */
    }
 
     /**
      * @param writer
      * @param form
      */
-    protected void indexViewTable(final IndexWriter writer, final FormTableView form) throws IOException
+    protected void indexViewTable(final IndexWriter writer, final FormViewDef form) throws IOException
     {
+        /*
         for (FormColumn formCol : form.getColumns())
         {
             termsIndexed++;
@@ -631,6 +626,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             writer.addDocument(doc);
 
         }
+        */
     }
 
     /**
@@ -639,6 +635,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
      */
     protected long indexForms(final IndexWriter writer) throws IOException
     {
+        /*
         // Count up how many View we are going to process
         int cnt = 0;
         for (ViewSet viewSet : ViewMgr.getViewSets())
@@ -685,6 +682,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         indvLabel.setText("");
 
         return delta;
+        */
+        return 0;
     }
 
     /**

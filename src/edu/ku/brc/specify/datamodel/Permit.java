@@ -32,8 +32,8 @@ public class Permit  implements java.io.Serializable {
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      private Set accessionAuthorizations;
-     private AgentAddress agentAddressByIssueeId;
-     private AgentAddress agentAddressByIssuerId;
+     private AgentAddress agentAddressByIssuee;
+     private AgentAddress agentAddressByIssuer;
      private Set externalResources;
 
 
@@ -254,23 +254,23 @@ public class Permit  implements java.io.Serializable {
     /**
      *      * AgentAddressID of Issuee
      */
-    public AgentAddress getAgentAddressByIssueeId() {
-        return this.agentAddressByIssueeId;
+    public AgentAddress getAgentAddressByIssuee() {
+        return this.agentAddressByIssuee;
     }
     
-    public void setAgentAddressByIssueeId(AgentAddress agentAddressByIssueeId) {
-        this.agentAddressByIssueeId = agentAddressByIssueeId;
+    public void setAgentAddressByIssuee(AgentAddress agentAddressByIssuee) {
+        this.agentAddressByIssuee = agentAddressByIssuee;
     }
 
     /**
      *      * AgentAddressID of Issuer
      */
-    public AgentAddress getAgentAddressByIssuerId() {
-        return this.agentAddressByIssuerId;
+    public AgentAddress getAgentAddressByIssuer() {
+        return this.agentAddressByIssuer;
     }
     
-    public void setAgentAddressByIssuerId(AgentAddress agentAddressByIssuerId) {
-        this.agentAddressByIssuerId = agentAddressByIssuerId;
+    public void setAgentAddressByIssuer(AgentAddress agentAddressByIssuer) {
+        this.agentAddressByIssuer = agentAddressByIssuer;
     }
 
     /**

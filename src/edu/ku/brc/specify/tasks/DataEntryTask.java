@@ -125,14 +125,15 @@ public class DataEntryTask extends BaseTask
     }
     
     /**
-     * CReate a form for a recordset
+     * Create a form for a recordset
      * @param recordSet the record to create a form for
      */
     protected void createFormFor(final RecordSet recordSet)
     {
         DBTableIdMgr.getInClause(recordSet);
 
-        //int tableId = recordSet.getTableId();
+        String defaultFormName = DBTableIdMgr.lookupDefaultFormNameById(recordSet.getTableId());
+        
         //FormView formView = ViewMgr.getView("Fish Views", tableId);
         
         Query query = DBTableIdMgr.getQueryForTable(recordSet);
@@ -141,7 +142,8 @@ public class DataEntryTask extends BaseTask
         System.out.println(query.toString());
         System.out.println("ResultSet: "+list.size());
         
-        FormPane form = new FormPane(name, this, "Fish Views", 1, query.list()); 
+        // XXX Hard Coded ViewSet Name
+        FormPane form = new FormPane(name, this, "Fish Views", defaultFormName, query.list()); 
         addSubPaneToMgr(form);
     }
     

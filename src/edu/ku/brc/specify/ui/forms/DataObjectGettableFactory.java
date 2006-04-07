@@ -50,28 +50,28 @@ public class DataObjectGettableFactory
      * @param className the name of the DataGettable implementation class
      * @return the data gettable object
      */
-    public static DataObjectGettable get(final String gettableClassName, final String className)
+    public static DataObjectGettable get(final String className, final String gettableClassName)
     {
-        if (className == null || className.length() == 0) return null;
+        if (gettableClassName == null || gettableClassName.length() == 0) return null;
         
-        Hashtable<String, DataObjectGettable> gettableHash = instance.hashTable.get(gettableClassName);
+        Hashtable<String, DataObjectGettable> gettableHash = instance.hashTable.get(className);
         if (gettableHash == null)
         {
             gettableHash = new Hashtable<String, DataObjectGettable>();
-            instance.hashTable.put(gettableClassName, gettableHash);
+            instance.hashTable.put(className, gettableHash);
         }
         
-        DataObjectGettable dataGettable = gettableHash.get(className);
+        DataObjectGettable dataGettable = gettableHash.get(gettableClassName);
         if (dataGettable == null)
         {
             try
             {
-                dataGettable = (DataObjectGettable)Class.forName(className).newInstance();
-                gettableHash.put(className, dataGettable);
+                dataGettable = (DataObjectGettable)Class.forName(gettableClassName).newInstance();
+                gettableHash.put(gettableClassName, dataGettable);
                 
             } catch (Exception ex)
             {
-                ex.printStackTrace(); // XXX FIXME
+                ex.printStackTrace(); // gettableClassName FIXME
             }
         }
         return dataGettable;

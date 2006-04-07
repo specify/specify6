@@ -248,7 +248,7 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
     		}
     		
     		/**
-    		 * @param parent the new GeologicTimePeriodTreeDef object
+    		 * @param treeDef the new GeologicTimePeriodTreeDef object
     		 *
     		 * @throws IllegalArgumentException if treeDef is not instance of GeologicTimePeriodTreeDef
     		 */

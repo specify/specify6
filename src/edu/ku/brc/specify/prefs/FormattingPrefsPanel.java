@@ -9,10 +9,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.forms.FormViewable;
+import edu.ku.brc.specify.ui.forms.Viewable;
 import edu.ku.brc.specify.ui.forms.ViewFactory;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
-import edu.ku.brc.specify.ui.forms.persist.FormView;
+import edu.ku.brc.specify.ui.forms.persist.View;
 import edu.ku.brc.specify.ui.validation.FormValidator;
 
 /**
@@ -27,8 +27,8 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
     private static Log log  = LogFactory.getLog(FormattingPrefsPanel.class);
     
     protected Preferences  prefNode = null;
-    protected FormView     formView = null;
-    protected FormViewable form     = null;
+    protected View         formView = null;
+    protected Viewable     form     = null;
     
     /**
      * 
@@ -52,19 +52,19 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
     protected void createUI()
     {
         
-        int id = 2;
+        String viewName = "Formatting";
         String name = "Preferences";
         
-        formView = ViewMgr.getView(name, id);
+        formView = ViewMgr.getView(name, viewName);
 
         if (formView != null)
         {
-            form = ViewFactory.createView(formView, prefNode);
+            form = ViewFactory.createFormView(null, formView, null, prefNode);
             add(form.getUIComponent(), BorderLayout.CENTER);
             
         } else
         {
-            log.info("Couldn't load form with name ["+name+"] Id ["+id+"]");
+            log.info("Couldn't load form with name ["+name+"] Id ["+viewName+"]");
         }
         
         form.setDataObj(prefNode);

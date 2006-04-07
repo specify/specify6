@@ -1,51 +1,25 @@
-/* Filename:    $RCSfile: FormViewable.java,v $
- * Author:      $Author: rods $
- * Revision:    $Revision: 1.1 $
- * Date:        $Date: 2005/10/12 16:52:27 $
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 package edu.ku.brc.specify.ui.forms;
 
 import java.awt.Component;
 import java.util.List;
 import java.util.Map;
 
-import edu.ku.brc.specify.ui.forms.persist.FormView;
+import edu.ku.brc.specify.ui.forms.persist.View;
+import edu.ku.brc.specify.ui.forms.persist.ViewDef;
 import edu.ku.brc.specify.ui.validation.FormValidator;
 
-/**
- * Interface to encapsulate and object that can implment a UI component as a form
- * 
- * @author rods
- *
- */
-public interface FormViewable
+public interface Viewable
 {
-
     /**
-     * Returns the Id for the form
-     * @return Returns the Id for the form
+     * Returns a unique name
+     * @return a unique name
      */
-    public int getId();
-    
+    public String getName();
     /**
      * Returns the form's type (field, form, table)
      * @return the form's type (field, form, table)
      */
-    public FormView.ViewType getType();
+    public ViewDef.ViewType getType();
     
     /**
      * Returns the Form's UI Component
@@ -119,13 +93,34 @@ public interface FormViewable
     /**
      * Returns a subform by name
      * @param name the name of the sub form to be returned
-     * @return a subform (FormViewable)
+     * @return a subform (Viewable)
      */
-    public FormViewable getSubView(final String name);
+    public MultiView getSubView(final String name);
     
     /**
      * List the List with all the names of the cells of type "field"
      * @param fieldNames the list to be filled
      */
     public void getFieldNames(final List<String> fieldNames);
+    
+    /**
+     * Tells the object it is abut to be shown
+     */
+    public void aboutToShow();
+    
+    /**
+     * Returns the View definition for this viewable
+     * @return the View definition for this viewable
+     */
+    public View getView();
+    
+    /**
+     * Indicates it should hide the UI that enables switching between different AltViews
+     *  This is used for children MultiView when there are only two of the same ViewDef differing only by edit mode or view mode
+     * @param hide true - hide, false show
+     */
+    public void hideMultiViewSwitch(boolean hide);
+    
+    public void dataHasChanged();
+
 }

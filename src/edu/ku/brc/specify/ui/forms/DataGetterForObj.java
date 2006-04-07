@@ -19,6 +19,9 @@
  */
 package edu.ku.brc.specify.ui.forms;
 
+import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang.StringUtils.split;
+
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
@@ -33,10 +36,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.datamodel.AttributeIFace;
-import edu.ku.brc.specify.datamodel.AttributeDef;
-import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.prefs.PrefsCache;
 
 
@@ -73,7 +72,7 @@ public class DataGetterForObj implements DataObjectGettable
      */
     public Object getFieldValueInternal(Object dataObj, String fieldName) 
     {
-        boolean debug = true;
+        //boolean debug = true;
         /*if (dataObj instanceof Locality)
         {
             System.out.println("getLocalityName ["+((Locality)dataObj).getLocalityName()+"]");
@@ -169,7 +168,7 @@ public class DataGetterForObj implements DataObjectGettable
     {
        
         // XXX need to replace this code with the library that does this from the Cookbook
-        String[] fieldsNames = StringUtils.split(fieldName, " ,");
+        String[] fieldsNames = split(fieldName, " ,");
         Object[] values = new Object[fieldsNames.length];
         int cnt = 0;
         for (String fldName : fieldsNames)
@@ -198,13 +197,24 @@ public class DataGetterForObj implements DataObjectGettable
     }  
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.forms.DataObjectGettable#getFieldValue(java.lang.Object, java.lang.String, java.lang.String)
+     * @see edu.ku.brc.specify.ui.forms.DataObjectGettable#getFieldValue(java.lang.Object, java.lang.String, java.lang.String, java.lang.String)
      */
-    public Object getFieldValue(final Object dataObj, final String fieldNames, final String format)
+    public Object getFieldValue(final Object dataObj, final String fieldNames, final String formatName, final String format)
     {
-        if (format == null)
+        boolean formatNameIsEmpty = isEmpty(formatName);
+        
+        // if both are empty then use the non-formatting call
+        if (formatNameIsEmpty && isEmpty(format))
         {
             return getFieldValue(dataObj, fieldNames);
+        }
+        
+        // if the formatName is fill in then use it.
+        // XXX We may want to throw an exception inside DataObjFieldFormatMgr.format is there was a problem finding the
+        // the specified format. That way we could catch it here and continue on with "some" kind of value:
+        if (!formatNameIsEmpty)
+        {
+            return DataObjFieldFormatMgr.format(getFieldValue(dataObj, fieldNames), formatName);
         }
         
         Object data = dataObj;
@@ -242,6 +252,7 @@ public class DataGetterForObj implements DataObjectGettable
                         Formatter formatter = new Formatter(); 
                         formatter.format(format, (Object[])values);
                         data = formatter.toString();
+                        
                     } catch (java.util.IllegalFormatConversionException ex)
                     {
                         data = values[0] != null ? values[0].toString() : "";

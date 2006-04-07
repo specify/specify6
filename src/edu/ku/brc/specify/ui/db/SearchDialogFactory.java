@@ -42,7 +42,7 @@ public class SearchDialogFactory
     {
         // These will eventually be defined in an XML file.
         
-        dialogs.put("AgentSearch", new SearchDialogInfo("Search", 555, "AgentAddressSearch", 
+        dialogs.put("AgentSearch", new SearchDialogInfo("Search", "AgentAddressSearch", "AgentAddressSearch", 
                 getResourceString("AgentSearchTitle"), 
                 "edu.ku.brc.specify.datamodel.Agent",
                 "agentId"));
@@ -60,7 +60,7 @@ public class SearchDialogFactory
         if (info != null)
         {
             return new GenericSearchDialog(info.getViewSetName(), 
-                                             info.getFormId(), 
+                                             info.getViewName(), 
                                              info.getSearchName(),
                                              info.getTitle(),
                                              info.getClassName(),
@@ -78,18 +78,18 @@ public class SearchDialogFactory
     class SearchDialogInfo
     {
         protected String viewSetName; 
-        protected int    formId; 
+        protected String viewName; 
         protected String searchName;
         protected String title;
         protected String className;
         protected String idFieldName;
         
-        public SearchDialogInfo(String viewSetName, int formId, String searchName, String title, String className, String idFieldName)
+        public SearchDialogInfo(String viewSetName, String viewName, String searchName, String title, String className, String idFieldName)
         {
             super();
             // TODO Auto-generated constructor stub
             this.viewSetName = viewSetName;
-            this.formId = formId;
+            this.viewName = viewName;
             this.searchName = searchName;
             this.title = title;
             this.className = className;
@@ -101,9 +101,9 @@ public class SearchDialogFactory
             return className;
         }
 
-        public int getFormId()
+        public String getViewName()
         {
-            return formId;
+            return viewName;
         }
 
         public String getIdFieldName()

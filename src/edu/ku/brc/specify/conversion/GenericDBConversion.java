@@ -2101,7 +2101,7 @@ public class GenericDBConversion
     }
 
     /**
-     * @brief Parses a tab-delimited file containing geographical location data
+     * Parses a tab-delimited file containing geographical location data
      *        and fills a db table with the appropriate data.
      *
      * The input file must format the data in the following order: id, current
@@ -2110,9 +2110,8 @@ public class GenericDBConversion
      * INPUT DATA HAS BEEN SORTED ALPHABETICALLY BY CONTINENT, THEN COUNTRY,
      * THEN STATE, AND FINALLY COUNTY.<b>
      *
-     * @param filename
-     *            full pathname of a tab-delimited file containing the geography
-     *            data
+     * @param tablename
+     *            Table name (FIX ME COMMENT
      * @throws IOException
      *             if filename doesn't refer to a valid file path or there is an
      *             error while reading the file. In either situation, the

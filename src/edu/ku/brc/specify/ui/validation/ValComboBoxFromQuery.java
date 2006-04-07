@@ -20,10 +20,6 @@
 
 package edu.ku.brc.specify.ui.validation;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
-
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -33,10 +29,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.List;
-import java.util.Vector;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
-import java.util.prefs.Preferences;
 
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
@@ -55,7 +49,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.ColorWrapper;
@@ -63,10 +56,7 @@ import edu.ku.brc.specify.ui.GetSetValueIFace;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.db.GenericSearchDialog;
-import edu.ku.brc.specify.ui.db.JAutoCompComboBox;
 import edu.ku.brc.specify.ui.db.JComboBoxFromQuery;
-import edu.ku.brc.specify.ui.db.PickListDBAdapter;
-import edu.ku.brc.specify.ui.db.PickListItem;
 import edu.ku.brc.specify.ui.db.SearchDialogFactory;
 import edu.ku.brc.specify.ui.forms.DataGetterForObj;
 
@@ -160,7 +150,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
         //setLayout(new BorderLayout());
         //add(comboBox, BorderLayout.CENTER);
         
-        PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,1px,p", "p"), this);
+        PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,1px,p", "b:p"), this);
         CellConstraints cc         = new CellConstraints();
 
         builder.add(comboBox, cc.xy(1,1));
@@ -176,7 +166,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
         
         comboBox.getModel().addListDataListener(this);
 
-        bgColor = getBackground();
+        bgColor = comboBox.getTextField().getBackground();
         if (valtextcolor == null || requiredfieldcolor == null)
         {
             valtextcolor = PrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
@@ -281,7 +271,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
      */
     public void setRequired(boolean isRequired)
     {
-        setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+        comboBox.getTextField().setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
         this.isRequired = isRequired;
     }
 
@@ -349,7 +339,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
                 getter = new DataGetterForObj();
             }
             
-            Object val = getter.getFieldValue(value, keyName, format);
+            Object val = getter.getFieldValue(value, keyName, null, format);
           
             if (val != null)
             {
@@ -368,7 +358,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
         }
         repaint();
     }
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.GetSetValueIFace#getValue()
      */

@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.tests;
 
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAddress;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAccessionAgent;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPermit;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAgent;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAgentAddress;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAttributeDef;
@@ -69,6 +71,7 @@ import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
+import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -918,6 +921,54 @@ public class CreateTestDatabases
         }
 
         return true;
+    }
+
+    /**
+     * @param name 
+     * @return true on success
+     */
+    public static boolean createAccessionsDatabase(final String name)
+    {
+        BasicSQLUtils.cleanAllTables();
+
+        try
+        {
+            Session session = HibernateUtil.getCurrentSession();
+            setSession(session);
+            HibernateUtil.beginTransaction();
+
+            UserGroup        userGroup        = createUserGroup(name);
+            SpecifyUser      user             = createSpecifyUser("John", "Doe", (short)0, userGroup);
+            
+            createMultipleAgents();
+            
+            String[] agentNames = { "Darwin", "Agassiz", "Bentley", "Stewart", "Kumin", "Beach" };
+            Agent[] agents = new Agent[agentNames.length];
+            for (int i = 0; i < agents.length; i++)
+            {
+                agents[i] = getAgentByLastName(agentNames[i]);
+            }
+            
+            Object[] permitInfo = {"101", "Field Work",};
+            /*
+            final String permitNumber,
+            final String type,
+            final Calendar issuedDate,
+            final Calendar startDate,
+            final Calendar endDate,
+            final Calendar renewalDate
+            */
+            //Permit[] permits = new 
+            
+            log.info("Done Created Accession Database " + name);
+
+        } catch (Exception ex)
+        {
+            log.error("******* " + ex);
+            ex.printStackTrace();
+            HibernateUtil.rollbackTransaction();
+        }
+       return true;
     }
 
     /**
