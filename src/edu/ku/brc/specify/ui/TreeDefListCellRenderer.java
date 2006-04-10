@@ -15,8 +15,12 @@ public class TreeDefListCellRenderer extends DefaultListCellRenderer
 		JLabel l = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected,
 				cellHasFocus);
 		
-		TreeDefinitionIface treeDef = (TreeDefinitionIface)value;
-		l.setText(treeDef.getName());
+		// only process customizations if the passed in value is the correct class
+		if( value instanceof TreeDefinitionIface )
+		{
+			TreeDefinitionIface treeDef = (TreeDefinitionIface)value;
+			l.setText(treeDef.getName());			
+		}
 		
 		return l;
 	}

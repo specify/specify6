@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -69,6 +70,7 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 	protected JPanel northPanel;
 	protected JPanel southPanel;
 	protected JPanel buttonPanel;
+	protected Vector<AbstractButton> buttons;
 	protected JLabel statusBar;
 	protected JLabel selectMessageLabel;
 	
@@ -80,6 +82,8 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 	protected TreeNodeTransferHandler transferHandler;
 	protected boolean subRendsEnabled;
 	protected JPopupMenu popupMenu;
+	
+	protected Vector<Treeable> deletedNodes;
 	
 	protected JComboBox defsBox;
 	
@@ -101,7 +105,7 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 		Criteria c = session.createCriteria(treeDefClass);
 		List results = c.list();
 		HibernateUtil.closeSession();
-		
+				
 		init(results);
 	}
 	
@@ -112,6 +116,9 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 	 */
 	protected void init( List<TreeDefinitionIface> definitions )
 	{
+		deletedNodes = new Vector<Treeable>();
+		buttons = new Vector<AbstractButton>();
+		
 		this.uiComp = new JPanel();
 		uiComp.setLayout(new BorderLayout());
 
@@ -126,15 +133,20 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 		northPanel.setLayout(new BorderLayout());
 		uiComp.add(northPanel,BorderLayout.NORTH);
 		
-		Vector<TreeDefinitionIface> defs = new Vector<TreeDefinitionIface>(definitions);
+		Vector<Object> defs = new Vector<Object>(definitions);
+		defs.add(0, "Choose a tree definition");
 		defsBox = new JComboBox(defs);
 		defsBox.setRenderer(new TreeDefListCellRenderer());
 		defsBox.addActionListener(new ActionListener()
 				{
 					public void actionPerformed(ActionEvent e)
 					{
-						TreeDefinitionIface treeDef = (TreeDefinitionIface)defsBox.getSelectedItem();
-						initTree(treeDef);
+						Object selection = defsBox.getSelectedItem();
+						if( selection instanceof TreeDefinitionIface )
+						{
+							TreeDefinitionIface treeDef = (TreeDefinitionIface)defsBox.getSelectedItem();
+							initTreeData(treeDef);
+						}
 					}
 				});
 		northPanel.add(defsBox,BorderLayout.CENTER);
@@ -153,7 +165,7 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 	 * 
 	 * @param treeDef the TreeDefinitionIface defining the tree to be viewed/edited
 	 */
-	protected synchronized void initTree(TreeDefinitionIface treeDef)
+	protected synchronized void initTreeData(TreeDefinitionIface treeDef)
 	{
 		Session session = HibernateUtil.getCurrentSession();
 		session.lock(treeDef, LockMode.NONE);
@@ -163,25 +175,10 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 		
 		rootNode = null;
 		
-//		JProgressBar progress = new JProgressBar(0,treeables.size()*2);
-//		int amountDone = 0;
-//		uiComp.remove(selectMessageLabel);
-//		JPanel tempCenterPanel = new JPanel(new BorderLayout());
-//		tempCenterPanel.add(Box.createVerticalGlue(),BorderLayout.CENTER);
-//		tempCenterPanel.add(progress);
-//		tempCenterPanel.add(Box.createVerticalGlue(),BorderLayout.CENTER);
-//		uiComp.add(tempCenterPanel,BorderLayout.CENTER);
-
 		Vector<TransferableMutableTreeNode> nodes = new Vector<TransferableMutableTreeNode>();
 		for( Treeable t: treeables )
 		{
 			nodes.add( new TransferableMutableTreeNode(t) );
-//			amountDone++;
-//			if( amountDone % 5 == 0 )
-//			{
-//				progress.setValue(amountDone);
-//				progress.repaint();
-//			}
 		}
 		
 		// setup TransferableMutableTreeNode objects for each userObject
@@ -195,12 +192,6 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 				{
 					int newChildPos = TreeTableUtils.findIndexOfNewChild(nodeI, nodeJ);
 					nodeI.insert(nodeJ, newChildPos);
-//					amountDone++;
-//					if( amountDone % 5 == 0 )
-//					{
-//						progress.setValue(amountDone);
-//						progress.repaint();
-//					}
 				}
 				if( treeableJ.getParentNode() == null )
 				{
@@ -216,7 +207,6 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 			tree = new JTree(model);
 			initTreeComponent();
 
-//			uiComp.remove(tempCenterPanel);
 			uiComp.remove(selectMessageLabel);
 			uiComp.add(new JScrollPane(tree),BorderLayout.CENTER);
 			uiComp.repaint();
@@ -225,6 +215,8 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 		{
 			tree.setModel(model);
 		}
+		
+		enableAllButtons();
 	}
 	
 	/**
@@ -291,6 +283,8 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 
 		tree.addMouseListener(ma);
 		tree.addTreeSelectionListener(this);
+		
+		disableAllButtons();
 	}
 	
 	/**
@@ -331,16 +325,39 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 				{
 					public void actionPerformed(ActionEvent ae)
 					{
-						boolean success = commitStructureToDb();
+						commitStructureToDb();
 					}
 				});
 		
 		buttonPanel = new JPanel();
+				
+		buttons.add(displayFlags);
+		buttons.add(addNode);
+		buttons.add(deleteNode);
+		buttons.add(commitButton);
+		
+		disableAllButtons();
 		
 		buttonPanel.add(displayFlags);
 		buttonPanel.add(addNode);
 		buttonPanel.add(deleteNode);
 		buttonPanel.add(commitButton);
+	}
+	
+	protected void disableAllButtons()
+	{
+		for( AbstractButton b: buttons )
+		{
+			b.setEnabled(false);
+		}
+	}
+	
+	protected void enableAllButtons()
+	{
+		for( AbstractButton b: buttons )
+		{
+			b.setEnabled(true);
+		}
 	}
 
 	/**
@@ -390,7 +407,25 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 		}
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode)path.getLastPathComponent();
 		model.removeNodeFromParent(node);
+		Treeable t = (Treeable)node.getUserObject();
+		t.setParentNode(null);
+		//removeAllChildrenOfDeletedNode(node);
+		deletedNodes.add((Treeable)node.getUserObject());
 	}
+	
+//	protected void removeAllChildrenOfDeletedNode(DefaultMutableTreeNode parent)
+//	{
+//		while( parent.getChildCount() > 0 )
+//		{
+//			DefaultMutableTreeNode child = (DefaultMutableTreeNode)parent.getFirstChild();
+//			Treeable childT = (Treeable)child.getUserObject();
+//
+//			childT.setParentNode(null);
+//			
+//			parent.remove(child);
+//			removeAllChildrenOfDeletedNode(child);
+//		}
+//	}
 	
 	/**
 	 * Enables or disables the sub-renderers that have been registered with the main
@@ -515,15 +550,24 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 	 */
 	protected boolean updateAllTreeablesInDb()
 	{
+		Session session = HibernateUtil.getCurrentSession();
+		HibernateUtil.beginTransaction();
+
+		// call saveOrUpdate for all the nodes still in the tree
 		Enumeration nodes = rootNode.breadthFirstEnumeration();
 		while( nodes.hasMoreElements() )
 		{
-			Session session = HibernateUtil.getCurrentSession();
-			HibernateUtil.beginTransaction();
 			session.saveOrUpdate(((DefaultMutableTreeNode)nodes.nextElement()).getUserObject() );
-			HibernateUtil.commitTransaction();
-			HibernateUtil.closeSession();
 		}
+		
+		// call delete for all nodes that have been removed from the tree
+		for( Treeable t: deletedNodes )
+		{
+			session.delete(t);
+		}
+
+		HibernateUtil.commitTransaction();
+		HibernateUtil.closeSession();
 		
 		return true;
 	}
