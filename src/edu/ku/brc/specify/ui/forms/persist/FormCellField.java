@@ -19,6 +19,7 @@
  */
 package edu.ku.brc.specify.ui.forms.persist;
 
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 /**
@@ -30,33 +31,36 @@ public class FormCellField extends FormCell
 {
     protected String   uiType;
     protected String   dspUIType;
-    protected String   format;   
-    protected String   formatName;   
+    protected String   format;
+    protected String   formatName;
+    protected String   uiFieldFormatter;
     protected boolean  isRequired     = false;
     protected boolean  isEncrypted    = false;
     protected String   label          = null;
-    
+
     protected String   pickListName       = null; // Comboboxes and TextFields
-    
+
     // Needed for Text Components
     protected int      cols    = 10; // TextField and TextArea
     protected int      rows    = 1; // Text Area Only
-    
+
     protected String   validationType = "";
-    protected String   validationRule = "";      
-    protected String   initialize     = "";   
+    protected String   validationRule = "";
+    protected String   initialize     = "";
+
     protected boolean  isTextField    = false;
-   
+    protected boolean  isBothFormatterDefined = false;
+
     /**
      * Constructor
      * @param type type of cell
      * @param name the name
      * @param colspan the number of columns to span
      * @param rowspan the number of rows to span
-     */ 
-    protected FormCellField(final FormCell.CellType type, 
+     */
+    protected FormCellField(final FormCell.CellType type,
                             final String            name,
-                            final int               colspan, 
+                            final int               colspan,
                             final int               rowspan)
     {
         super(type, name, colspan, rowspan);
@@ -67,6 +71,8 @@ public class FormCellField extends FormCell
      * @param name the name
      * @param uiType the type of ui component to be created (i.e. "checkbox", "textfield")
      * @param format the format for a text field
+     * @param formatName name of formatter to use
+     * @param uiFieldFormatter name of UIFieldFormatter to use
      * @param isRequired whether the control MUST have value
      * @param cols the number of default columns to make the text field/area
      * @param rows the number of default rows to make TextArea
@@ -76,35 +82,44 @@ public class FormCellField extends FormCell
      * @param validationRule the rule on how to validate
      * @param isEncrypted whether the control should have its value encrypted
      */
-    public FormCellField(final FormCell.CellType type, 
-                         final String  name, 
-                         final String  uiType, 
-                         final String  dspUIType, 
+    public FormCellField(final FormCell.CellType type,
+                         final String  name,
+                         final String  uiType,
+                         final String  dspUIType,
                          final String  format,
                          final String  formatName,
-                         final boolean isRequired, 
-                         final int     cols, 
-                         final int     rows, 
-                         final int     colspan, 
+                         final String  uiFieldFormatter,
+                         final boolean isRequired,
+                         final int     cols,
+                         final int     rows,
+                         final int     colspan,
                          final int     rowspan,
                          final String  validationType,
                          final String  validationRule,
                          final boolean isEncrypted)
     {
         this(type, name, colspan, rowspan);
-        
+
         this.uiType         = uiType;
         this.dspUIType      = dspUIType;
         this.format         = format;
         this.formatName     = formatName;
+        this.uiFieldFormatter = uiFieldFormatter;
         this.cols           = cols;
         this.rows           = rows;
         this.validationRule = validationRule;
         this.validationType = validationType;
         this.isRequired     = isRequired;
         this.isEncrypted    = isEncrypted;
+
+        this.isTextField = isEmpty(uiType) || 
+                           uiType.equals("dsptextfield") || 
+                           uiType.equals("text") || 
+                           uiType.equals("formattedtext") || 
+                           uiType.equals("textarea") || 
+                           uiType.equals("dsptextarea");
         
-        this.isTextField = isEmpty(uiType) || uiType.equals("dsptextfield") || uiType.equals("text");
+        isBothFormatterDefined = isNotEmpty(formatName) && isNotEmpty(uiFieldFormatter);
 
     }
 
@@ -113,19 +128,9 @@ public class FormCellField extends FormCell
         return cols;
     }
 
-    public String getFormat()
+    public void setCols(int cols)
     {
-        return format;
-    }
-
-    public String getName()
-    {
-        return name;
-    }
-
-    public String getUiType()
-    {
-        return uiType;
+        this.cols = cols;
     }
 
     public String getDspUIType()
@@ -133,38 +138,19 @@ public class FormCellField extends FormCell
         return dspUIType;
     }
 
-    public int getRows()
+    public void setDspUIType(String dspUIType)
     {
-        return rows;
+        this.dspUIType = dspUIType;
     }
 
-    public String getPickListName()
+    public String getFormat()
     {
-        return pickListName;
+        return format;
     }
 
-    public String getValidationRule()
+    public void setFormat(String format)
     {
-        return validationRule;
-    }
-    
-    public String getInitialize()
-    {
-        return initialize;
-    }
-    
-    public boolean isRequired()
-    {
-        return isRequired;
-    }
-    public String getValidationType()
-    {
-        return validationType;
-    }
-
-    public boolean isEncrypted()
-    {
-        return isEncrypted;
+        this.format = format;
     }
 
     public String getFormatName()
@@ -172,14 +158,14 @@ public class FormCellField extends FormCell
         return formatName;
     }
 
-    public String getLabel()
+    public void setFormatName(String formatName)
     {
-        return label;
+        this.formatName = formatName;
     }
 
-    public boolean isTextField()
+    public String getInitialize()
     {
-        return isTextField;
+        return initialize;
     }
 
     public void setInitialize(String initialize)
@@ -187,14 +173,125 @@ public class FormCellField extends FormCell
         this.initialize = initialize;
     }
 
+    public boolean isEncrypted()
+    {
+        return isEncrypted;
+    }
+
+    public void setEncrypted(boolean isEncrypted)
+    {
+        this.isEncrypted = isEncrypted;
+    }
+
+    public boolean isRequired()
+    {
+        return isRequired;
+    }
+
+    public void setRequired(boolean isRequired)
+    {
+        this.isRequired = isRequired;
+    }
+
+    public boolean isTextField()
+    {
+        return isTextField;
+    }
+
+    public void setTextField(boolean isTextField)
+    {
+        this.isTextField = isTextField;
+    }
+
+    public String getLabel()
+    {
+        return label;
+    }
+
     public void setLabel(String label)
     {
         this.label = label;
+    }
+
+    public String getPickListName()
+    {
+        return pickListName;
     }
 
     public void setPickListName(String pickListName)
     {
         this.pickListName = pickListName;
     }
-    
+
+    public int getRows()
+    {
+        return rows;
+    }
+
+    public void setRows(int rows)
+    {
+        this.rows = rows;
+    }
+
+    public String getUIFieldFormatter()
+    {
+        return uiFieldFormatter;
+    }
+
+    public void setUIFieldFormatter(String uiFieldFormatter)
+    {
+        this.uiFieldFormatter = uiFieldFormatter;
+    }
+
+    public String getUiType()
+    {
+        return uiType;
+    }
+
+    public void setUiType(String uiType)
+    {
+        this.uiType = uiType;
+    }
+
+    public String getValidationRule()
+    {
+        return validationRule;
+    }
+
+    public void setValidationRule(String validationRule)
+    {
+        this.validationRule = validationRule;
+    }
+
+    public String getValidationType()
+    {
+        return validationType;
+    }
+
+    public void setValidationType(String validationType)
+    {
+        this.validationType = validationType;
+    }
+
+    public boolean isBothFormatterDefined()
+    {
+        return isBothFormatterDefined;
+    }
+
+    public void setBothFormatterDefined(boolean isBothFormatterDefined)
+    {
+        this.isBothFormatterDefined = isBothFormatterDefined;
+    }
+
+    public String getUiFieldFormatter()
+    {
+        return uiFieldFormatter;
+    }
+
+    public void setUiFieldFormatter(String uiFieldFormatter)
+    {
+        this.uiFieldFormatter = uiFieldFormatter;
+    }
+
+
 }

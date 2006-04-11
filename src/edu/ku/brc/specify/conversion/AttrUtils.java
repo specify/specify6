@@ -24,7 +24,6 @@ import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.getStrValue;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -32,13 +31,11 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 
 import edu.ku.brc.specify.datamodel.AttributeDef;
-import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.AttributeIFace;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttr;
-import edu.ku.brc.specify.datamodel.PrepType;
-import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 

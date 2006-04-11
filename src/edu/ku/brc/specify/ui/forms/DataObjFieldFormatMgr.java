@@ -38,11 +38,11 @@ public class DataObjFieldFormatMgr
 {
     protected static Log log = LogFactory.getLog(DataObjFieldFormatMgr.class);
     protected static DataObjFieldFormatMgr  instance = new DataObjFieldFormatMgr();
-    
-    
+
+
     protected Hashtable<String, DataFieldFormat> hash = new Hashtable<String, DataFieldFormat>();
-    protected Object[]                           args = new Object[2]; // start with two slots  
-    
+    protected Object[]                           args = new Object[2]; // start with two slots
+
     /**
      * Protected Constructor
      */
@@ -50,7 +50,7 @@ public class DataObjFieldFormatMgr
     {
         load();
     }
-    
+
     /**
      * Loads formats from config file
      *
@@ -64,26 +64,26 @@ public class DataObjFieldFormatMgr
             if (root != null)
             {
                 List formatters = root.selectNodes("/formatters/format");
-                for ( Object formatObj : formatters) 
+                for ( Object formatObj : formatters)
                 {
                     Element formatElement = (Element)formatObj;
-                    
+
                     String name      = formatElement.attributeValue("name");
                     String className = formatElement.attributeValue("class");
                     String format    = formatElement.attributeValue("format");
-                    
+
                     List fields = formatElement.selectNodes("fields/field");
                     String[] fieldNames = new String[fields.size()];
                     int inx = 0;
-                    for (Object fieldObj : fields) 
+                    for (Object fieldObj : fields)
                     {
                         fieldNames[inx++] = ((Element)fieldObj).getTextTrim();
                     }
-                    
+
                     if (hash.get(name) == null)
                     {
                         hash.put(name, new DataFieldFormat(name, className, format, fieldNames));
-                        
+
                     } else
                     {
                         throw new RuntimeException("Duplicate formatter name["+name+"]");
@@ -99,7 +99,7 @@ public class DataObjFieldFormatMgr
             log.error(ex);
         }
     }
-    
+
     /**
      * Format a data object using a named formatter
      * @param dataObj the data object for which fields will be formatted for it
@@ -111,6 +111,7 @@ public class DataObjFieldFormatMgr
         DataFieldFormat format = hash.get(formatName);
         if (format != null)
         {
+            // XXX FIXME this shouldn't be hard coded here
             DataObjectGettable getter = DataObjectGettableFactory.get(format.getClassName(), "edu.ku.brc.specify.ui.forms.DataGetterForObj");
             if (getter != null)
             {
@@ -126,7 +127,7 @@ public class DataObjFieldFormatMgr
                 }
                 Formatter formatter = new Formatter();
                 formatter.format(format.getFormat(), args);
-                
+
                 // clear any references to data
                 for (int i=0;i<fieldsNames.length;i++)
                 {
@@ -137,7 +138,7 @@ public class DataObjFieldFormatMgr
         }
         return "";
     }
-    
+
     /**
      * Format a data object using a named formatter
      * @param dataObj the data object for which fields will be formatted for it
@@ -148,12 +149,12 @@ public class DataObjFieldFormatMgr
     {
         return instance.formatInternal(dataObj, formatName);
     }
-    
+
 
     //----------------------------------------------------------------
     // Inner Classes
     //----------------------------------------------------------------
-    
+
     protected class DataFieldFormat
     {
         protected String   name;
@@ -161,18 +162,18 @@ public class DataObjFieldFormatMgr
         protected String   format;
         protected String[] fieldNames;
         protected Class    classObj;
-        
+
         public DataFieldFormat(String name, String className, String format, String[] fieldNames)
         {
             this.name = name;
             this.className = className;
             this.format = format;
             this.fieldNames = fieldNames;
-            
+
             try
             {
                 classObj = Class.forName(className);
-                
+
             } catch (Exception ex)
             {
                 throw new RuntimeException(ex);
@@ -203,9 +204,9 @@ public class DataObjFieldFormatMgr
         {
             return classObj;
         }
-        
-        
-        
+
+
+
     }
 
 }

@@ -3,26 +3,32 @@ package edu.ku.brc.specify.helpers;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
-import java.awt.event.KeyEvent;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Formatter;
 import java.util.GregorianCalendar;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
-import javax.swing.KeyStroke;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import edu.ku.brc.specify.prefs.PrefsCache;
+import edu.ku.brc.specify.ui.ColorWrapper;
 import edu.ku.brc.specify.ui.dnd.GhostDataAggregatable;
-import edu.ku.brc.specify.ui.*;
+import edu.ku.brc.specify.ui.forms.DataObjectGettable;
+import edu.ku.brc.specify.ui.forms.persist.FormCell;
 
 public final class UIHelper
 {
@@ -33,6 +39,9 @@ public final class UIHelper
     protected static Calendar calendar = new GregorianCalendar();
     protected static OSTYPE   oSType;
 
+    protected static Object[]          values   = new Object[2];
+    protected static SimpleDateFormat  scrDateFormat = null;
+    
     static {
 
         String osStr = System.getProperty("os.name");
@@ -52,6 +61,7 @@ public final class UIHelper
         {
             oSType   = OSTYPE.Unknown;
         }
+
     }
 
     /**
@@ -461,6 +471,120 @@ public final class UIHelper
             log.info("Couldn't create menu for " + labelKey + "  " + mneuKey);
         }
         return menu;
+    }
+
+
+    /**
+     * Returna an array of values given a FormCell definition. Note: The returned array is owned by the utility and
+     * may be longer than the number of fields defined in the CellForm object. Any additional "slots" in the array that are used
+     * are set to null;
+     * @param formCell the defition of the field to get
+     * @param dataObj the dataObj from which to get the data from
+     * @param getter the DataObjectGettable to use to get the data
+     * @return an array of values at least as long as the fielName list, but may be longer
+     */
+    public static Object[] getFieldValues(final String[] fieldNames, final Object dataObj, final DataObjectGettable getter)
+    {
+        if (scrDateFormat == null)
+        {
+            scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+        }
+        
+        if (fieldNames.length > values.length)
+        {
+            values = new Object[fieldNames.length];
+        } else
+        {
+            for (int i=fieldNames.length;i<values.length;i++)
+            {
+                values[i] = null;
+            }
+        }
+        
+        boolean  allFieldsNull = true;
+    
+        int cnt = 0;
+        for (String fldName : fieldNames)
+        {
+            Object dataValue;
+            int inx = fldName.indexOf(".");
+            if (inx > -1)
+            {
+                StringTokenizer st = new StringTokenizer(fldName, ".");
+                Object data = dataObj;
+                while (data != null && st.hasMoreTokens())
+                {
+                    data = getter.getFieldValue(data, st.nextToken());
+                }
+                dataValue = data == null ? "" : data;
+            } else
+            {
+                dataValue = getter.getFieldValue(dataObj, fldName);
+            }
+            
+            if (dataValue instanceof java.util.Date)
+            {
+                dataValue = scrDateFormat.format((java.util.Date)dataValue);
+                
+            } else if (dataValue instanceof java.util.Calendar)
+            {
+                dataValue = scrDateFormat.format(((java.util.Calendar)dataValue).getTime());
+            }
+
+            if (allFieldsNull && dataValue != null)
+            {
+                allFieldsNull = false;
+            }
+            values[cnt++] = dataValue;
+        }
+
+
+         return allFieldsNull ? null : values;
+    }
+
+    /**
+     * Returna an array of values given a FormCell definition. Note: The returned array is owned by the utility and
+     * may be longer than the number of fields defined in the CellForm object. Any additional "slots" in the array that are used
+     * are set to null;
+     * @param formCell the defition of the field to get
+     * @param dataObj the dataObj from which to get the data from
+     * @param getter the DataObjectGettable to use to get the data
+     * @return an array of values at least as long as the fielName list, but may be longer
+     */
+    public static Object[] getFieldValues(final FormCell formCell, final Object dataObj, final DataObjectGettable getter)
+    {
+        String[] fieldNames = formCell.getFieldNames();
+        return getFieldValues(fieldNames, dataObj, getter);
+    }
+
+
+
+
+    /**
+     * Returns a single String value that formats all the value in the array per the format mask
+     * @param values the array of values
+     * @param format the format mask
+     * @return a string with the formatted values
+     */
+    public static Object getFormattedValue(Object[] values,
+                                           String format)
+    {
+        if (values == null)
+        {
+            return "";
+        }
+
+        try
+        {
+            Formatter formatter = new Formatter();
+            formatter.format(format, (Object[])values);
+            return formatter.toString();
+
+        } catch (java.util.IllegalFormatConversionException ex)
+        {
+            return values[0] != null ? values[0].toString() : "";
+        }
+
     }
 
 }

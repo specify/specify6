@@ -107,13 +107,6 @@
         <column name="CollectionObjectID"/>
     </many-to-one>	
 
-    <!-- bi-directional many-to-one association to Preparation -->
-    <many-to-one name="preparations" class="edu.ku.brc.specify.datamodel.Preparation" not-null="true" outer-join="true" cascade="none">
-	<meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Preparations can also be assigned determinations. Must a Preparation of BiologicalObjectID.</meta>
-        <column name="PreparationID"/>
-    </many-to-one>	
-
     <!-- bi-directional one-to-many association to DeterminationCitation -->
     <set name="determinationCitations" lazy="true" inverse="true" cascade="delete">
         <meta attribute="field-description"></meta>

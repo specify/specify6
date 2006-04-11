@@ -1,112 +1,133 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <viewset name="Preferences" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
-    <view id="1" type="form" 
-                 name="EMail" 
-                 class="java.util.prefs.Preferences" 
-                 gettable="edu.ku.brc.specify.prefs.PrefsGettableImpl"
-                 settable="edu.ku.brc.specify.prefs.PrefsSettableImpl"
-                 useresourcelabels="true"
-                 validate="true"
-                 >
-    	<desc><![CDATA[EMail Preference Form.]]></desc>
-    	
-    	<enableRules>
-    		<rule name="localmailbox"><![CDATA[accounttype.getSelectedIndex() == 1]]></rule>
-    		
-    		<rule name="accountname"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
-    		<rule name="servername"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
-    		<rule name="smtp"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
-    		<rule name="username"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
-    		<rule name="password"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
-    		<rule name="email"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
-    		
-    	</enableRules>
-    	
-		<columnDef>r:p, 2dlu, l:p, 5dlu, r:p, 2dlu, l:p</columnDef>
-		<rowDef dup="14" cell="p" sep="4dlu"/>
+	<views>
+	    <view
+	    		name="EMail"
+			class="java.util.prefs.Preferences"
+			resourcelabels="true">
+		    	<desc><![CDATA[EMail Preference Form.]]></desc>
+			<altviews>
+				<altview name="EMail" viewdef="EMail" label="EMail" mode="edit" validated="true"/>
+			</altviews>
+		</view>
 
-		<rows>
-			<row>
-				<cell type="separator" label="emailacctsettings"/>
-			</row>
-			<row>
-				<cell type="label" name="accounttypeLabel" labelfor="accounttype" label="accounttype"/>
-				<cell type="field" uitype="combobox" name="accounttype" initialize="Not in use, POP3, IMAP"/>
-			</row>				
-			<row>
-				<cell type="label" name="accountnameLabel" labelfor="accountname" label="accountname"/>
-				<cell type="field" uitype="text" cols="20" name="accountname" isrequired="true"/>
-			</row>				
-			<row>
-				<cell type="label" name="servernameLabel" labelfor="servername" label="servername"/>
-				<cell type="field" uitype="text" cols="20" name="servername" isrequired="true"/>
-				
-				<cell type="label" name="smtpLabel" labelfor="smtp" label="smtp"/>
-				<cell type="field" uitype="text" cols="20" name="smtp" isrequired="true"/>
-			</row>				
-			<row>
-				<cell type="label" name="localmailboxLabel" labelfor="localmailbox" label="localmailbox"/>
-				<cell type="field" name="localmailbox" cols="20" colspan="5" uitype="browse" isrequired="true" validation="obj.isNotEmpty()" valtype="Changed"/>
-			</row>
-			<row>
-				<cell type="separator" label="userinfo"/>
-			</row>
-			<row>
-				<cell type="label" name="usernameLabel" labelfor="username" label="username"/>
-				<cell type="field" name="username" cols="20" isrequired="true"/>
-				
-				<cell type="label" name="passwordLabel" labelfor="password" label="password"/>
-				<cell type="field" name="password" cols="20" uitype="password" ispassword="true" isrequired="true" isencrypted="true"/>
-			</row>
-			<row>				
-				<cell type="label" name="emailLabel" labelfor="email" label="email" />
-				<cell type="field" name="email" cols="20" isrequired="true"/>
-			</row>
-			<row>				
-				<cell type="label" labelfor="" label="" />
-				<cell type="command" name="testconnection" label="testconnection" commandtype="EmailPref" action="test"/>
-				
-			</row>
-		</rows>
-	</view>
+	    <view
+			name="Formatting"
+	         class="java.util.prefs.Preferences"
+	         resourcelabels="true">
+	    		<desc><![CDATA[Formatting Preference Form.]]></desc>
+			<altviews>
+				<altview name="Formatting" viewdef="Formatting" label="Formatting" mode="edit" validated="true"/>
+			</altviews>
+		</view>
 
-    <view id="2" type="form" 
-                 name="Formatting" 
-                 class="java.util.prefs.Preferences" 
-                 gettable="edu.ku.brc.specify.prefs.PrefsGettableImpl"
-                 settable="edu.ku.brc.specify.prefs.PrefsSettableImpl"
-                 useresourcelabels="true"
-                 validate="true"
-                 >
-    	<desc><![CDATA[Formatting Preference Form.]]></desc>
+	</views>
 
-    	
-		<columnDef>r:p, 2dlu, l:p, 5dlu, r:p, 2dlu, l:p</columnDef>
-		<rowDef dup="14" cell="p" sep="4dlu"/>
+	<viewdefs>
+	    <viewdef
+	    		type="form"
+	         name="EMail"
+	         class="java.util.prefs.Preferences"
+             gettable="edu.ku.brc.specify.prefs.PrefsGettableImpl"
+             settable="edu.ku.brc.specify.prefs.PrefsSettableImpl">
 
-		<rows>
-			<row>
-				<cell type="separator" label="formatting"/>
-			</row>
-			<row>
-				<cell type="label" name="scrdateformatLabel" labelfor="scrdateformat" label="scrdateformat"/>
-				<cell type="field" uitype="text" cols="10" name="scrdateformat" isrequired="true"/>
-			</row>				
-			<row>
-				<cell type="label" labelfor="valtextcolor" label="valtextcolor"/>
-				<cell type="field" uitype="colorchooser" name="valtextcolor"/>
-			</row>				
-		    <row>
-		        <cell type="label" labelfor="requiredfieldcolor" label="requiredfieldcolor"/>
-		        <cell type="field" uitype="colorchooser" name="requiredfieldcolor"/>
-		    </row>				
-		    <row>
-		        <cell type="label" labelfor="viewfieldcolor" label="viewfieldcolor"/>
-		        <cell type="field" uitype="colorchooser" name="viewfieldcolor"/>
-		    </row>				
-		</rows>
-	</view>
-	
-	
-</viewset>	
+		    	<desc><![CDATA[EMail Preference Form.]]></desc>
+
+		    	<enableRules>
+		    		<rule name="localmailbox"><![CDATA[accounttype.getSelectedIndex() == 1]]></rule>
+
+		    		<rule name="accountname"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
+		    		<rule name="servername"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
+		    		<rule name="smtp"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
+		    		<rule name="username"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
+		    		<rule name="password"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
+		    		<rule name="email"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
+
+		    	</enableRules>
+
+			<columnDef>r:p, 2dlu, l:p, 5dlu, r:p, 2dlu, l:p</columnDef>
+			<rowDef dup="14" cell="p" sep="4dlu"/>
+
+			<rows>
+				<row>
+					<cell type="separator" label="emailacctsettings"/>
+				</row>
+				<row>
+					<cell type="label" name="accounttypeLabel" labelfor="accounttype" label="accounttype"/>
+					<cell type="field" uitype="combobox" name="accounttype" initialize="Not in use, POP3, IMAP"/>
+				</row>
+				<row>
+					<cell type="label" name="accountnameLabel" labelfor="accountname" label="accountname"/>
+					<cell type="field" uitype="text" cols="20" name="accountname" isrequired="true"/>
+				</row>
+				<row>
+					<cell type="label" name="servernameLabel" labelfor="servername" label="servername"/>
+					<cell type="field" uitype="text" cols="20" name="servername" isrequired="true"/>
+
+					<cell type="label" name="smtpLabel" labelfor="smtp" label="smtp"/>
+					<cell type="field" uitype="text" cols="20" name="smtp" isrequired="true"/>
+				</row>
+				<row>
+					<cell type="label" name="localmailboxLabel" labelfor="localmailbox" label="localmailbox"/>
+					<cell type="field" name="localmailbox" cols="20" colspan="5" uitype="browse" isrequired="true" validation="obj.isNotEmpty()" valtype="Changed"/>
+				</row>
+				<row>
+					<cell type="separator" label="userinfo"/>
+				</row>
+				<row>
+					<cell type="label" name="usernameLabel" labelfor="username" label="username"/>
+					<cell type="field" name="username" cols="20" isrequired="true"/>
+
+					<cell type="label" name="passwordLabel" labelfor="password" label="password"/>
+					<cell type="field" name="password" cols="20" uitype="password" ispassword="true" isrequired="true" isencrypted="true"/>
+				</row>
+				<row>
+					<cell type="label" name="emailLabel" labelfor="email" label="email" />
+					<cell type="field" name="email" cols="20" isrequired="true"/>
+				</row>
+				<row>
+					<cell type="label" labelfor="" label="" />
+					<cell type="command" name="testconnection" label="testconnection" commandtype="EmailPref" action="test"/>
+
+				</row>
+			</rows>
+		</viewdef>
+
+	    <viewdef
+	    		type="form"
+             name="Formatting"
+             class="java.util.prefs.Preferences"
+             gettable="edu.ku.brc.specify.prefs.PrefsGettableImpl"
+             settable="edu.ku.brc.specify.prefs.PrefsSettableImpl">
+
+	    		<desc><![CDATA[Formatting Preference Form.]]></desc>
+
+			<columnDef>r:p, 2dlu, l:p, 5dlu, r:p, 2dlu, l:p</columnDef>
+			<rowDef dup="14" cell="p" sep="4dlu"/>
+
+			<rows>
+				<row>
+					<cell type="separator" label="formatting"/>
+				</row>
+				<row>
+					<cell type="label" name="scrdateformatLabel" labelfor="scrdateformat" label="scrdateformat"/>
+					<cell type="field" uitype="text" cols="10" name="scrdateformat" isrequired="true"/>
+				</row>
+				<row>
+					<cell type="label" labelfor="valtextcolor" label="valtextcolor"/>
+					<cell type="field" uitype="colorchooser" name="valtextcolor"/>
+				</row>
+			    <row>
+			        <cell type="label" labelfor="requiredfieldcolor" label="requiredfieldcolor"/>
+			        <cell type="field" uitype="colorchooser" name="requiredfieldcolor"/>
+			    </row>
+			    <row>
+			        <cell type="label" labelfor="viewfieldcolor" label="viewfieldcolor"/>
+			        <cell type="field" uitype="colorchooser" name="viewfieldcolor"/>
+			    </row>
+			</rows>
+		</viewdef>
+	</viewdefs>
+
+</viewset>

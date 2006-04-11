@@ -21,7 +21,7 @@
 package edu.ku.brc.specify;
 
 
-import static edu.ku.brc.specify.tests.CreateTestDatabases.createAgents;
+import static edu.ku.brc.specify.tests.CreateTestDatabases.createAgentsInMemory;
 import static edu.ku.brc.specify.tests.CreateTestDatabases.createGeographies;
 import static edu.ku.brc.specify.tests.CreateTestDatabases.createLocations;
 import static edu.ku.brc.specify.tests.CreateTestDatabases.createTaxonomy;
@@ -45,9 +45,6 @@ import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserGroup;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -57,6 +54,7 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -110,13 +108,13 @@ import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.EMailHelper;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.prefs.PrefMainPanel;
+import edu.ku.brc.specify.tests.CreateTestDatabases;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.specify.tests.forms.TestDataSubObj;
 import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.forms.Viewable;
 import edu.ku.brc.specify.ui.forms.MultiView;
-import edu.ku.brc.specify.ui.forms.ViewFactory;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
+import edu.ku.brc.specify.ui.forms.Viewable;
 import edu.ku.brc.specify.ui.forms.persist.View;
 
 /**
@@ -186,7 +184,7 @@ public class FormEditor
         Location[] locations = createLocations(collectionObjDef, "GLocationTree");
         Taxon[]    taxonomy  = createTaxonomy(taxonTreeDef);
 
-        Agent[] agents = createAgents();
+        Agent[] agents = createAgentsInMemory();
 
         CatalogSeries catalogSeries = createCatalogSeries("KUFSH", "Fish");
 
@@ -339,6 +337,7 @@ public class FormEditor
         multiView   = new MultiView(null, view, null);
         contentPane.removeAll();
         builder.add(multiView, cc.xy(1,1));
+        
         //contentPane.setBackground(Color.BLUE);
         //contentPane.setOpaque(true);
         
@@ -362,7 +361,7 @@ public class FormEditor
 
             // XXX Why???
             mainFrame.pack();
-            mainFrame.setSize(new Dimension(800, 550));
+            //mainFrame.setSize(new Dimension(800, 550));
             //mainFrame.pack();
             UIHelper.centerAndShow(mainFrame);
 
@@ -413,6 +412,32 @@ public class FormEditor
 
             } else 
             */
+            
+            if (currViewSetName.equals("Fish Views") && currViewName.equals("Accession"))
+            {
+                boolean doDB = false;
+                if (doDB)
+                {
+                    Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setMaxResults(10);
+                    //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setFetchMode(Accession.class.getName(), FetchMode.DEFAULT).setMaxResults(300);
+                    java.util.List list = criteria.list();//session.find("from collev");
+                    dataObj = list;
+                } else
+                {
+                    
+                    
+                    Accession[] accessions = CreateTestDatabases.createAccessionsInMemory();
+                    Vector<Object> list = new Vector<Object>();
+                    for (Accession accession : accessions)
+                    {
+                        list.add(accession);
+                    }
+                    dataObj = list;
+                }
+                multiView.setData(dataObj);
+            }
+
+
             if (currViewSetName.equals("Fish Views") && currViewName.equals("Collection Object"))
             {
 
@@ -433,7 +458,7 @@ public class FormEditor
                 }
 
 
-                boolean doCatalogItems = false;
+                boolean doCatalogItems = true;
                 if (doCatalogItems)
                 {
                     Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CollectionObject.class).setMaxResults(300);
@@ -446,7 +471,7 @@ public class FormEditor
                     dataObj = data;
                 }
 
-                boolean doMemoryCollection = true;
+                boolean doMemoryCollection = false;
                 if (doMemoryCollection)
                 {
                     CollectionObject[] colObjs = createSingleDiscipline("Fish");
@@ -614,7 +639,8 @@ public class FormEditor
         currViewName      = "";
         currViewSetName =  "view valid";
 
-        currViewName      = "Collection Object";
+        //currViewName      = "Collection Object";
+        currViewName      = "Accession";
         currViewSetName =   "Fish Views";
 
 

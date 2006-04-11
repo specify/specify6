@@ -33,19 +33,20 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.specify.helpers.UIHelper;
 
 /**
- * A panel at the bottom of a form that is divided into 3 sections, 
+ * A panel at the bottom of a form that is divided into 3 sections,
  * the middle section is reserved for the record controller UI
- * 
+ *
  * @author rods
  *
  */
+@SuppressWarnings("serial")
 public class ControlBarPanel extends JPanel
 {
     protected PanelBuilder        builder;
     protected JPanel              leftSidePanel  = null;
     protected JPanel              rightSidePanel = null;
     protected ResultSetController recordSetController;
-    
+
     /**
      * Constructor
      */
@@ -54,7 +55,7 @@ public class ControlBarPanel extends JPanel
         builder = new PanelBuilder(new FormLayout("p,2px,c:p:g,2px,p", "p"), this);
     }
 
-    
+
     /**
      * Adds a ResultSetController to the center pane
      * @param recordSetController the recordset cntroller
@@ -64,7 +65,7 @@ public class ControlBarPanel extends JPanel
         CellConstraints cc = new CellConstraints();
         builder.add(recordSetController.getPanel(), cc.xy(3,1));
     }
-    
+
     /**
      * Adds a row of buttons to the left or right side of the recordset controller
      * @param btns the array of buttons to be added
@@ -84,7 +85,7 @@ public class ControlBarPanel extends JPanel
             builder.add(rightSidePanel, cc.xy(5,1));
         }
     }
-    
+
     /**
      * Adds an array of components to the left or right side of the recordset controller
      * @param comps the array of controls
@@ -95,7 +96,7 @@ public class ControlBarPanel extends JPanel
         CellConstraints cc       = new CellConstraints();
         String          colsDef  = compsList.size() == 1 ? "p" : UIHelper.createDuplicateJGoodiesDef("p", "2px", compsList.size());
         PanelBuilder    pBuilder = new PanelBuilder(new FormLayout(colsDef, "p"));
-        
+
         for (int i=0;i<compsList.size();i++)
         {
             pBuilder.add(compsList.get(i), cc.xy((i*2)+1, 1));
@@ -110,7 +111,7 @@ public class ControlBarPanel extends JPanel
             builder.add(rightSidePanel, cc.xy(5,1));
         }
     }
-    
+
     /**
      * Sets the RecordSetController's visibility
      * @param vis true visible, false hidden

@@ -23,7 +23,7 @@ import java.util.Hashtable;
 
 /**
  * This factory knows how to create AutoComplete Comboboxes that get their data from a query.
- * 
+ *
  * @author rods
  *
  */
@@ -32,35 +32,35 @@ public class ComboBoxFromQueryFactory
     protected static ComboBoxFromQueryFactory instance = new ComboBoxFromQueryFactory();
 
     protected Hashtable<String, ComboBoxFromQueryInfo> comboBoxes = new Hashtable<String, ComboBoxFromQueryInfo>();
-    
+
     /**
      * Protected Constructor
      */
     protected  ComboBoxFromQueryFactory()
     {
         // These will eventually be defined in an XML file.
-        
-        comboBoxes.put("Agent", new ComboBoxFromQueryInfo("agent", 
-                "AgentID", 
-                "lastName", 
-                "LastName,FirstName", 
-                "edu.ku.brc.specify.datamodel.Agent", 
-                "agentId", 
-                "lastName,firstName", 
+
+        comboBoxes.put("Agent", new ComboBoxFromQueryInfo("agent",
+                "AgentID",
+                "lastName",
+                "LastName,FirstName",
+                "edu.ku.brc.specify.datamodel.Agent",
+                "agentId",
+                "lastName,firstName",
                 "%s, %s",
                 "AgentSearch"));
-        
-        comboBoxes.put("Taxon", new ComboBoxFromQueryInfo("taxon", 
-                "TreeID", 
-                "Name", 
-                null, 
-                "edu.ku.brc.specify.datamodel.Taxon", 
-                "treeId", 
-                "name", 
+
+        comboBoxes.put("Taxon", new ComboBoxFromQueryInfo("taxon",
+                "TreeID",
+                "Name",
+                null,
+                "edu.ku.brc.specify.datamodel.Taxon",
+                "treeId",
+                "name",
                 null,
                 null));
     }
-    
+
     /**
      * Creates a new ValComboBoxFromQuery by name
      * @param name the name of the ValComboBoxFromQuery to return
@@ -71,8 +71,8 @@ public class ComboBoxFromQueryFactory
         ComboBoxFromQueryInfo info =  instance.comboBoxes.get(name);
         if (info != null)
         {
-            return new ValComboBoxFromQuery(info.getTableName(), 
-                                             info.getIdColumn(), 
+            return new ValComboBoxFromQuery(info.getTableName(),
+                                             info.getIdColumn(),
                                              info.getKeyColumn(),
                                              info.getDisplayColumn(),
                                              info.getClassName(),
@@ -86,14 +86,14 @@ public class ComboBoxFromQueryFactory
             throw new RuntimeException("Couldn't create ValComboBoxFromQuery by name["+name+"]");
         }
     }
-    
+
     //-----------------------------------------------------
     //-- Inner Classes
     //-----------------------------------------------------
     class ComboBoxFromQueryInfo
     {
-        protected String tableName; 
-        protected String idColumn; 
+        protected String tableName;
+        protected String idColumn;
         protected String keyColumn;
         protected String displayColumn;
         protected String className;
@@ -101,15 +101,15 @@ public class ComboBoxFromQueryFactory
         protected String keyName;
         protected String format;
         protected String searchDialogName;
-        
-        public ComboBoxFromQueryInfo(String tableName, 
-                                     String idColumn, 
-                                     String keyColumn, 
-                                     String displayColumn, 
-                                     String className, 
-                                     String idName, 
-                                     String keyName, 
-                                     String format, 
+
+        public ComboBoxFromQueryInfo(String tableName,
+                                     String idColumn,
+                                     String keyColumn,
+                                     String displayColumn,
+                                     String className,
+                                     String idName,
+                                     String keyName,
+                                     String format,
                                      String searchDialogName)
         {
             this.tableName = tableName;
@@ -167,7 +167,7 @@ public class ComboBoxFromQueryFactory
         {
             return searchDialogName;
         }
-        
+
     }
 
 

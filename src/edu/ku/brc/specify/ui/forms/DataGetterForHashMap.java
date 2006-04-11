@@ -19,14 +19,7 @@
  */
 package edu.ku.brc.specify.ui.forms;
 
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Formatter;
 import java.util.Map;
-
-import edu.ku.brc.specify.prefs.PrefsCache;
 
 
 /**
@@ -36,20 +29,20 @@ import edu.ku.brc.specify.prefs.PrefsCache;
  * @author rods
  *
  */
+/**
+ * @author rods
+ *
+ */
 public class DataGetterForHashMap implements DataObjectGettable
 {
-    protected static SimpleDateFormat scrDateFormat = null;
-    protected Object[] objectArray = new Object[1];
+    protected Object[] values = new Object[2];
+
 
     /**
      * Default constructor (needed for factory)
      */
     public DataGetterForHashMap()
     {
-        if (scrDateFormat == null)
-        {
-            scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
-        }
     }
 
     /* (non-Javadoc)
@@ -69,44 +62,4 @@ public class DataGetterForHashMap implements DataObjectGettable
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.forms.DataObjectGettable#getFieldValue(java.lang.Object, java.lang.String, java.lang.String)
-     */
-    public Object getFieldValue(final Object dataObj, final String fieldName, final String formatName, final String format)
-    {
-        if (isNotEmpty(formatName))
-        {
-            throw new RuntimeException("DataGetterForHashMap doesn't support the formatName argument!");
-        }
-        
-        Object value = getFieldValue(dataObj, fieldName);
-        if (format == null || value == null)
-        {
-            return value;
-        }
-
-        if (value instanceof java.util.Date)
-        {
-            value = scrDateFormat.format((java.util.Date)value);
-
-        } else if (value instanceof Calendar)
-        {
-            value = scrDateFormat.format(((Calendar)value).getTime());
-
-        } else
-        {
-            try
-            {
-                objectArray[0] = value;
-                Formatter formatter = new Formatter();
-                formatter.format(format, (Object[])objectArray);
-                value = formatter.toString();
-
-            } catch (java.util.IllegalFormatConversionException ex)
-            {
-                value = value != null ? value.toString() : "";
-            }
-        }
-        return value;
-    }
 }

@@ -19,8 +19,6 @@
  */
 package edu.ku.brc.specify.prefs;
 
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
-
 import java.util.prefs.Preferences;
 
 import edu.ku.brc.specify.ui.forms.DataObjectGettable;
@@ -59,19 +57,5 @@ public class PrefsGettableImpl implements DataObjectGettable
         //System.out.println("getFieldValue["+dataObj+"]  ["+fieldName+"]  ["+ ((Preferences)dataObj).get(fieldName, "")+"]");
         return ((Preferences)dataObj).get(fieldName, "");
     }  
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.forms.DataObjectGettable#getFieldValue(java.lang.Object, java.lang.String, java.lang.String)
-     */
-    public Object getFieldValue(Object dataObj, String fieldName, String formatName, String format) 
-    {
-        
-        if (isNotEmpty(format) && fieldName.indexOf(",") > -1)
-        {
-
-        }
-        return ((Preferences)dataObj).get(fieldName, "");
-    }    
-    
 
 }

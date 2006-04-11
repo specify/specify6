@@ -58,7 +58,6 @@ import edu.ku.brc.specify.datamodel.LocalityCitation;
 import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
-import edu.ku.brc.specify.datamodel.Observation;
 import edu.ku.brc.specify.datamodel.OtherIdentifier;
 import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.PrepType;
@@ -759,6 +758,32 @@ public class ObjCreatorHelper
     }
 
     //-----------------------------------------------------------
+    
+    public static Accession createAccession(final String type,
+                                            final String status,
+                                            final String number,
+                                            final String verbatimDate,
+                                            final Calendar dateAccessioned,
+                                            final Calendar dateReceived)
+    {
+        Accession accession = new Accession();
+        accession.setNumber(number);
+        accession.setVerbatimDate(verbatimDate);
+        accession.setDateAccessioned(dateAccessioned);
+        accession.setDateReceived(dateReceived);
+        accession.setTimestampCreated(new Date());
+        accession.setTimestampModified(new Date());
+        accession.setCollectionObjects(new HashSet<Object>());
+        accession.setAccessionAuthorizations(new HashSet<Object>());
+        accession.setAccessionAgents(new HashSet<Object>());
+        accession.setStatus(status);
+        accession.setType(type);
+        if (session != null)
+        {
+          session.saveOrUpdate(accession);
+        }
+        return accession;
+    }
 
 
     public static AccessionAgent createAccessionAgent(final String role,
@@ -1366,14 +1391,12 @@ public class ObjCreatorHelper
                                                     final String featureOrBasis,
                                                     final Taxon taxon,
                                                     final CollectionObject collectionObject,
-                                                    final Preparation preparations,
                                                     final Agent determiner)
     {
         Determination determination = new Determination();
         determination.setTimestampCreated(new Date());
         determination.setTimestampModified(new Date());
         determination.setIsCurrent(isCurrent);
-        determination.setPreparations(preparations);
         determination.setDeterminationCitations(new HashSet<Object>());
         determination.setCollectionObject(collectionObject);
         determination.setTypeStatusName(typeStatusName);
@@ -1779,27 +1802,6 @@ public class ObjCreatorHelper
           session.saveOrUpdate(localitycitation);
         }
         return localitycitation;
-    }
-
-    public static Observation createObservation(final String observationMethod,
-                                                final Short count1,
-                                                final String description,
-                                                final String activity,
-                                                final CollectionObject collectionObject)
-    {
-        Observation observation = new Observation();
-        observation.setTimestampCreated(new Date());
-        observation.setTimestampModified(new Date());
-        observation.setCollectionObject(collectionObject);
-        observation.setObservationMethod(observationMethod);
-        observation.setCount1(count1);
-        observation.setActivity(activity);
-        observation.setDescription(description);
-        if (session != null)
-        {
-          session.saveOrUpdate(observation);
-        }
-        return observation;
     }
 
     public static OtherIdentifier createOtherIdentifier(final String identifier,

@@ -245,6 +245,8 @@ public class IdMapper
                 } else
                 {
                     log.error("********** Couldn't find old index ["+oldIndex+"] for "+mapTableName+" "+idName);
+                    rs.close();
+                    stmt.close();
                     return null;
                 }
                 rs.close();

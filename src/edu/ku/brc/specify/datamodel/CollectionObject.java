@@ -491,4 +491,13 @@ public class CollectionObject  implements java.io.Serializable {
 
 
 
+  // The following is extra code specified in the hbm.xml files
+
+        public void addDetermination(Determination determination)
+        {
+            determinations.add(determination);
+            determination.setCollectionObject(this);
+        }
+    
+  // end of extra code specified in the hbm.xml files
 }

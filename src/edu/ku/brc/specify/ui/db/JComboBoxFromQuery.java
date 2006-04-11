@@ -171,6 +171,15 @@ public class JComboBoxFromQuery extends JComboBox
     }
     
     /**
+     * Returns the list of IDs for the combobox
+     * @return the list of IDs for the combobox
+     */
+    public List<Integer> getIDList()
+    {
+        return idList;
+    }
+    
+    /**
      * 
      */
     protected void lookForMatch()

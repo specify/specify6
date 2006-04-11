@@ -4,7 +4,14 @@
 <class name="edu.ku.brc.specify.datamodel.CollectionObject" table="collectionobject" lazy="true" batch-size="50">
     <meta attribute="class-description" inherit="false"/>
 
-
+    <meta attribute="class-code">
+        public void addDetermination(Determination determination)
+        {
+            determinations.add(determination);
+            determination.setCollectionObject(this);
+        }
+    </meta>
+    
     <id name="collectionObjectId" type="java.lang.Integer" column="CollectionObjectID">
         <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
@@ -90,11 +97,11 @@
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
     </property>
-    
+
     <property name="groupPermittedToView" type="java.lang.Integer" column="GroupPermittedToView" length="10">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
-    </property>    
+        <meta attribute="field-description"></meta>
+    </property>
 
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
@@ -177,7 +184,7 @@
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.Determination"/>
     </set>
-    
+
     <!-- bi-directional many-to-one association to CollectionObjDef -->
     <many-to-one name="collectionObjDef" class="edu.ku.brc.specify.datamodel.CollectionObjDef" not-null="false" outer-join="auto">
         <meta attribute="scope-field">protected</meta>
@@ -185,7 +192,7 @@
         <column name="CollectionObjDefID"/>
     </many-to-one>
 
-    
+
 
 	<!-- Old CollectionObjectCatalog Associations -->
 

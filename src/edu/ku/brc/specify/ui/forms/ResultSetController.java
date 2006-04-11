@@ -22,6 +22,9 @@ import java.awt.Color;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -34,14 +37,19 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.specify.ui.validation.FormValidator;
+import edu.ku.brc.specify.ui.validation.UIValidator;
+import edu.ku.brc.specify.ui.validation.ValidationListener;
 
 /**
  * @author rods
  *
  */
-public class ResultSetController
+public class ResultSetController implements ValidationListener
 {
-    protected Vector<ResultSetControllerListener> listeners = new Vector<ResultSetControllerListener>();
+    protected List<ResultSetControllerListener> listeners = new ArrayList<ResultSetControllerListener>();
+    
+    protected FormValidator formValidator = null;
     
     protected JPanel  panel    = null;
     protected JButton firstBtn = null;
@@ -49,6 +57,7 @@ public class ResultSetController
     protected JLabel  recDisp  = null;
     protected JButton nextBtn  = null;
     protected JButton lastBtn  = null;  
+    protected JButton newRecBtn = null;  
     
     protected int     currentInx = 0;
     protected int     lastInx    = 0;
@@ -56,32 +65,32 @@ public class ResultSetController
     
     /**
      * Constructor
-     */
-    public ResultSetController()
-    {
-       buildRecordNavBar();
-       updateUI();
-    }
-    
-    /**
-     * Constructor
      * @param len
      */
-    public ResultSetController(int len)
+    public ResultSetController(final FormValidator formValidator, final boolean addNewBtn, final int len)
     {
+        this.formValidator = formValidator;
+        
        setLength(len);
        
-       buildRecordNavBar();
+       if (formValidator != null)
+       {
+           formValidator.addValidationListener(this);
+       }
+       
+       buildRecordNavBar(addNewBtn);
        updateUI();
     }
     
     /**
      * 
      */
-    protected void buildRecordNavBar()
+    protected void buildRecordNavBar(final boolean addNewBtn)
     {
+        String colDef = "p,2dlu,p,2dlu,max(50dlu;p):grow,2dlu,p,2dlu,p" + (addNewBtn ? ",2dlu,p" : "");
         Insets insets = new Insets(1,1,1,1);
-        DefaultFormBuilder rowBuilder = new DefaultFormBuilder(new FormLayout("p,2dlu,p,2dlu,max(50dlu;p):grow,2dlu,p,2dlu,p", "p"));
+        DefaultFormBuilder rowBuilder = new DefaultFormBuilder(new FormLayout(colDef, "p"));
+        
         firstBtn = new JButton(IconManager.getImage("FirstRec"));
         prevBtn  = new JButton(IconManager.getImage("PrevRec"));
         
@@ -106,10 +115,19 @@ public class ResultSetController
         rowBuilder.add(nextBtn, cc.xy(7,1));
         rowBuilder.add(lastBtn, cc.xy(9,1));
         
+        if (addNewBtn)
+        {
+            newRecBtn = new JButton(IconManager.getImage("NewRec"));
+            newRecBtn.setMargin(insets);
+            rowBuilder.add(newRecBtn, cc.xy(11,1));
+        }
+        
+ 
         firstBtn.addActionListener(new ActionListener()
                 {
             public void actionPerformed(ActionEvent ae)
             {
+                notifyListenersABoutToChangeIndex(currentInx, 0);
                 currentInx = 0;
                 updateUI();
                 notifyListeners();
@@ -119,6 +137,7 @@ public class ResultSetController
                 {
             public void actionPerformed(ActionEvent ae)
             {
+                notifyListenersABoutToChangeIndex(currentInx, currentInx-1);
                 currentInx--;
                 updateUI();
                 notifyListeners();
@@ -128,6 +147,7 @@ public class ResultSetController
                 {
             public void actionPerformed(ActionEvent ae)
             {
+                notifyListenersABoutToChangeIndex(currentInx, currentInx+1);
                 currentInx++;
                 updateUI();
                 notifyListeners();
@@ -137,6 +157,7 @@ public class ResultSetController
                 {
             public void actionPerformed(ActionEvent ae)
             {
+                notifyListenersABoutToChangeIndex(currentInx, lastInx);
                 currentInx = lastInx;
                 updateUI();
                 notifyListeners();
@@ -156,6 +177,17 @@ public class ResultSetController
         lastInx    = numRecords - 1;
         updateUI(); 
     }
+    
+    /**
+     * Sets the controller to a new index
+     * @param index the new index
+     */
+    public void setIndex(int index)
+    {
+        currentInx = index;
+        updateUI(); 
+    }
+    
     
     /**
      * 
@@ -201,12 +233,21 @@ public class ResultSetController
     }
     
     /**
+     * Returns the JBUtton that is used to create new records
+     * @return the JBUtton that is used to create new records
+     */
+    public JButton getNewRecBtn()
+    {
+        return newRecBtn;
+    }
+
+    /**
      * Adds a listener
      * @param l thelistener
      */
     public void addListener(ResultSetControllerListener l)
     {
-        listeners.addElement(l);
+        listeners.add(l);
     }
     
     /**
@@ -235,5 +276,51 @@ public class ResultSetController
         {
             rscl.indexChanged(currentInx);
         }
+    }
+    
+    /**
+     * Notifies all the listeners that the index has changed
+     */
+    protected void notifyListenersABoutToChangeIndex(final int oldIndex, final int newIndex)
+    {
+        for (ResultSetControllerListener rscl : listeners)
+        {
+            rscl.indexAboutToChange(oldIndex, newIndex);
+        }
+    }
+    
+    /**
+     * Sets all the UI Enabled/Disabled
+     * @param enabled true/false
+     */
+    protected void setUIEnabled(final boolean enabled)
+    {
+        firstBtn.setEnabled(enabled);
+        prevBtn.setEnabled(enabled);
+        nextBtn.setEnabled(enabled);
+        lastBtn.setEnabled(enabled);
+        recDisp.setEnabled(enabled);
+        
+        if (newRecBtn != null)
+        {
+            newRecBtn.setEnabled(enabled);
+
+        }
+    }
+    
+    //-----------------------------------------------------
+    // ValidationListener
+    //-----------------------------------------------------
+
+   /* (non-Javadoc)
+     * @see ValidationListener#wasValidated(UIValidator)
+     */
+    public void wasValidated(final UIValidator validator)
+    {
+        if (formValidator != null && firstBtn.isEnabled() != formValidator.isFormValid())
+        {
+            setUIEnabled(formValidator.isFormValid());
+        }
+
     }
 }

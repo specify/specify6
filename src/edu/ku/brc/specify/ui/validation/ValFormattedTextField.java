@@ -67,7 +67,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
 
     protected int      inputLen   = 0;
     protected Object[] formatObj  = null;
-    
+
     protected JFormattedDoc document;
 
     protected static ColorWrapper valtextcolor       = null;
@@ -77,12 +77,12 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     protected List<UIFieldFormatterMgr.FormatterField> fields = null;
 
     //---
-    protected String bgStr = null;
-    protected Point  pnt   = null;
-    protected Color textColor = new Color(0,0,0,64);
+    protected String bgStr     = null;
+    protected Point  pnt       = null;
+    protected Color  textColor = new Color(0,0,0,64);
     protected Insets inner;
-    
-    
+
+
     /**
      * Constructor
      * @param formatterName the formatters name
@@ -90,7 +90,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     public ValFormattedTextField(final String formatterName)
     {
         super();
-        
+
         init();
 
         formatter = UIFieldFormatterMgr.getFormatter(formatterName);
@@ -106,7 +106,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         inner = getInsets();
 
         this.setColumns(inputLen);
-        
+
         document = new JFormattedDoc(this, formatter, inputLen);
         setDocument(document);
         addFocusListener(new FocusAdapter()
@@ -169,13 +169,13 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
 
         g.setColor(textColor);
         g.drawString(bgStr.substring(text.length(), bgStr.length()), pnt.x, pnt.y);
-        
-        
+
+
         if (isInError() && isEnabled())
         {
-            Dimension tfDim = getSize();
+            Dimension dim = getSize();
             g.setColor(valtextcolor.getColor());
-            g.drawRect(1, 1, tfDim.width-1, tfDim.height-1);
+            g.drawRect(1, 1, dim.width-2, dim.height-2);
         }
     }
 
@@ -188,7 +188,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
 
         setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
     }
-    
+
     /* (non-Javadoc)
      * @see javax.swing.text.JTextComponent#setText(java.lang.String)
      */
@@ -198,7 +198,13 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         super.setText(text);
         document.setIgnoreNotify(false);
     }
-    
+
+    public boolean isOK()
+    {
+        System.out.println("isOK "+(!isInError));
+        return !isInError;
+    }
+
     //--------------------------------------------------
     //-- UIValidatable Interface
     //--------------------------------------------------
@@ -280,7 +286,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
 
         repaint();
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.GetSetValueIFace#getValue()
      */
@@ -409,6 +415,21 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         }
 
         /* (non-Javadoc)
+         * @see javax.swing.text.Document#remove(int, int)
+         */
+        public void remove(int offset, int len)
+        {
+            isInError = getLength() - len < inputLen;
+            try
+            {
+                super.remove(offset, len);
+            } catch (BadLocationException ex)
+            {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        /* (non-Javadoc)
          * @see javax.swing.text.Document#insertString(int, java.lang.String, javax.swing.text.AttributeSet)
          */
         public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException
@@ -421,12 +442,16 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
             {
                 if (okToInsertText(str))
                 {
-                    super.insertString(offset, str.substring(0, Math.min(str.length(), limit)), attr);
+                    int newLen = Math.min(str.length(), limit);
+                    isInError = offset + newLen < inputLen;
+                    super.insertString(offset, str.substring(0, newLen), attr);
 
                 } else
                 {
+                    isInError = true;
                     getToolkit().beep();
                 }
+                System.out.println("******* "+(isInError));
                 return;
             }
 
@@ -437,6 +462,8 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                 if (!isCharOK(field, str))
                 {
                     getToolkit().beep();
+                    isInError = true;
+                    System.out.println("******* "+(isInError));
                     return;
                 }
 
@@ -446,15 +473,21 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                     {
                         if (!isCharOK(fields[offset + 1], str))
                         {
+                            isInError = true;
                             getToolkit().beep();
+                            System.out.println("******* "+(isInError));
                             return;
                         }
                         str = field.getValue() + str;
                     }
                 }
-
+                isInError = offset + str.length() < inputLen;
                 super.insertString(offset, str, attr);
+            } else
+            {
+                isInError = true;
             }
+            System.out.println("******* "+(isInError));
         }
     }
 }

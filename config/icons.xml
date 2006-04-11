@@ -37,9 +37,10 @@
     <icon name="PrevRec"  file="prev.gif"  sizes="NonStd"/>
     <icon name="NextRec"  file="next.gif"  sizes="NonStd"/>
     <icon name="LastRec"  file="last.gif"  sizes="NonStd"/>
+    <icon name="NewRec"   file="newrec.gif"  sizes="NonStd"/>
     
-    <icon name="EditIcon"  file="edit_icon.gif"  sizes="NonStd"/>
-    <icon name="Save"  file="save_disk.gif"  sizes="all"/>
+    <icon name="EditIcon" file="edit_icon.gif"  sizes="NonStd"/>
+    <icon name="Save"     file="save_disk.gif"  sizes="all"/>
     
     <icon name="Green Arrow Down" file="green_arrow_down.gif" sizes="16"/>
     <icon name="Green Arrow Up" file="green_arrow_up.gif" sizes="16"/>

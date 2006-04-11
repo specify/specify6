@@ -380,8 +380,8 @@ public class GenericDBConversion
             "Collectors", "CollectingEventID", "CollectingEvent", "CollectingEventID",
             "Collectors", "AgentID", "Agent", "AgentID",
 
-            "Permit", "IssuerID", "Agent", "AgentID",
-            "Permit", "IssueeID", "Agent", "AgentID",
+            "Permit", "IssuerID", "AgentAddress", "AgentAddressID",
+            "Permit", "IssueeID", "AgentAddress", "AgentAddressID",
             //"Permit", "TypeID", "Type", "TypeID",
 
             "Sound", "RecordedByID", "Agent", "AgentID",
@@ -664,6 +664,7 @@ public class GenericDBConversion
             // check for no records which is OK
             if (!rs.first())
             {
+                oldDBConn.close();
                 return true;
             }
             
@@ -711,6 +712,8 @@ public class GenericDBConversion
             session.saveOrUpdate(pl);
             
             HibernateUtil.commitTransaction();
+            
+            oldDBConn.close();
             
             return true;
 
@@ -1668,8 +1671,10 @@ public class GenericDBConversion
     {
 
         Connection newDBConn = DBConnection.getConnection();
-        deleteAllRecordsFromTable(newDBConn, "collectionobject");
-
+        deleteAllRecordsFromTable(newDBConn, "collectionobject"); // automatically closes the connection
+        
+        newDBConn = DBConnection.getConnection();
+        
         Connection   oldDBConn = oldDB.getConnectionToDB();
         try
         {
@@ -1811,6 +1816,10 @@ public class GenericDBConversion
                     log.error("Count: "+count);
                     e.printStackTrace();
                     log.error(e);
+                    rs.close();
+                    stmt.close();
+                    oldDBConn.close();
+                    newDBConn.close();
                     return false;
                 }
 
@@ -1818,7 +1827,11 @@ public class GenericDBConversion
                 //if (count > 10) break;
             }
             log.info("Processed CollectionObject "+count+" records.");
-
+            
+            rs.close();
+            stmt.close();
+            oldDBConn.close();
+            newDBConn.close();
 
         } catch (SQLException e)
         {

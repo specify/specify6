@@ -58,12 +58,26 @@ public interface Viewable
      * @param dataObj the data
      */
     public void setDataObj(final Object dataObj);
-
+    
     /**
      * Returns the data object for the form
      * @return Returns the data object for the form
      */
     public Object getDataObj();
+    
+    /**
+     * Sets the Parent Data Object into the Viewable. This is usually when the form will manage a list (Set)
+     * of items that are "owned" in the Hibernate sense by a parent object. This is typically
+     * a One-to-Many where the parent data object is the "One" and the List (Set) of objects is the "Many"
+     * @param parentDataObj the parent data object
+     */
+    public void setParentDataObj(Object parentDataObj);
+    
+    /**
+     * Returns the parent data object for the form
+     * @return Returns the parent data object for the form
+     */
+    public Object getParentDataObj();
     
     /**
      * Fill the form from the data obj
@@ -121,6 +135,6 @@ public interface Viewable
      */
     public void hideMultiViewSwitch(boolean hide);
     
-    public void dataHasChanged();
+    public void validationWasOK(boolean wasOK);
 
 }

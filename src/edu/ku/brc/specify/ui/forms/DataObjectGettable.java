@@ -26,13 +26,7 @@ package edu.ku.brc.specify.ui.forms;
  * <li>The data object may be a resultset (list of objects) and each row may be a field.</li>
  * <li>The data object may be a XML document and the field name may be a XPath to the data.</li></ul>
  * <br>
- * <br>
- * NOTE: Arguments format and formatName are mutually exclusive and that formatName is checked first and then format
- * is checked.<br>
- * <BR>
- * <B><span color="red">IMPORTANT:</span></b> There is no requirement for any implementing class to have to support either the "format"
- * or the "formatName" arguments (and they may throw an exception to tell you).
- * 
+ *
  * @author rods
  *
  */
@@ -45,15 +39,5 @@ public interface DataObjectGettable
      * @return the value of the field
      */
     public Object getFieldValue(Object dataObj, String fieldName);
-    
-    /**
-     * Returns a field's value
-     * @param dataObj the data object that contains the field
-     * @param fieldName the fields name
-     * @param formatName the name of the DataObjFieldFormMgr to use (this is mutually exclusive with format)
-     * @param format format the field before returning it (this is mutually exclusive with formatName)
-     * @return the value of the field
-     */
-    public Object getFieldValue(Object dataObj, String fieldName, String formatName, String format);
 
 }

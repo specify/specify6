@@ -198,6 +198,8 @@ public class BasicSQLUtils
             stmt.clearBatch();
             stmt.close();
 
+            connection.close();
+            
             log.info("Deleted "+count+" records from "+tableName);
 
             return retVal;
@@ -206,6 +208,7 @@ public class BasicSQLUtils
         {
             //e.printStackTrace();
             log.error(ex);
+            
         }
         return -1;
     }
@@ -385,6 +388,7 @@ public class BasicSQLUtils
         } catch (SQLException ex)
         {
             log.error(ex);
+            ex.printStackTrace();
         }
     }
 
@@ -623,6 +627,10 @@ public class BasicSQLUtils
                                 str.append(getStrValue(dateMap.get(colName)));
                             }
 
+                        } else if (dataObj == null && fieldMetaData.getName().equals("TimestampCreated"))
+                        {
+                            str.append(getStrValue(Calendar.getInstance().getTime(), fieldMetaData.getType()));
+                            
                         } else
                         {
                             str.append(getStrValue(dataObj, fieldMetaData.getType()));
@@ -657,6 +665,8 @@ public class BasicSQLUtils
                     rs.close();
                     stmt.clearBatch();
                     stmt.close();
+                    fromConn.close();
+                    toConn.close();
                     return false;
                 }
                 count++;
@@ -667,6 +677,8 @@ public class BasicSQLUtils
             rs.close();
             stmt.clearBatch();
             stmt.close();
+            fromConn.close();
+            toConn.close();
 
         } catch (SQLException ex)
         {

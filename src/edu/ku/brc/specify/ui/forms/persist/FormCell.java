@@ -19,6 +19,10 @@
  */
 package edu.ku.brc.specify.ui.forms.persist;
 
+import static org.apache.commons.lang.StringUtils.split;
+
+import org.apache.commons.lang.StringUtils;
+
 /**
  * This represents all the information about a cell in the form.
  * @author rods
@@ -27,23 +31,26 @@ package edu.ku.brc.specify.ui.forms.persist;
 public class FormCell
 {
     public enum CellType {separator, field, label, subview, command, panel};
-    
+
     // Required fields
     protected CellType type;
     protected String   name;
     protected boolean  ignoreSetGet       = false;
     protected boolean  changeListenerOnly = false;
+    protected boolean  isMultiField       = false; // Meaning does it have a comma separating mulitple field
+
+    protected String[] fieldNames     = null;
 
     protected int      colspan = 1;
     protected int      rowspan = 1;
-   
-   
+
+
     /**
-     * 
+     *
      */
     public FormCell()
     {
-        
+
     }
 
     /**
@@ -55,8 +62,21 @@ public class FormCell
     {
         this.type = type;
         this.name = name;
+        this.isMultiField = name.indexOf(',') > -1;
+        //if (isMultiField)
+        //{
+        if (StringUtils.isNotBlank(name))
+        {
+            fieldNames = split(StringUtils.deleteWhitespace(name), ",");
+        }
+        //} else
+       // {
+        //    fieldNames = new String[1];
+        //    fieldNames[0] = name;
+        //}
+
     }
-    
+
     /**
      * Constructor
      * @param type type of cell
@@ -64,9 +84,9 @@ public class FormCell
      * @param colspan the number of columns to span
      * @param rowspan the number of rows to span
      */
-    public FormCell(final CellType type, 
-                    final String   name, 
-                    final int      colspan, 
+    public FormCell(final CellType type,
+                    final String   name,
+                    final int      colspan,
                     final int      rowspan)
     {
         this(type, name);
@@ -80,19 +100,9 @@ public class FormCell
         return colspan;
     }
 
-    public void setColspan(int colspan)
-    {
-        this.colspan = colspan;
-    }
-
     public String getName()
     {
         return name;
-    }
-
-    public void setName(String name)
-    {
-        this.name = name;
     }
 
     public int getRowspan()
@@ -100,19 +110,9 @@ public class FormCell
         return rowspan;
     }
 
-    public void setRowspan(int rowspan)
-    {
-        this.rowspan = rowspan;
-    }
-
     public CellType getType()
     {
         return type;
-    }
-
-    public void setType(CellType type)
-    {
-        this.type = type;
     }
 
     public boolean isIgnoreSetGet()
@@ -120,19 +120,59 @@ public class FormCell
         return ignoreSetGet;
     }
 
-    public void setIgnoreSetGet(boolean ignoreSetGet)
-    {
-        this.ignoreSetGet = ignoreSetGet;
-    }
-
     public boolean isChangeListenerOnly()
     {
         return changeListenerOnly;
     }
 
+    public boolean isMultiField()
+    {
+        return isMultiField;
+    }
+
+    public String[] getFieldNames()
+    {
+        return fieldNames;
+    }
+
     public void setChangeListenerOnly(boolean changeListenerOnly)
     {
         this.changeListenerOnly = changeListenerOnly;
+    }
+
+    public void setColspan(int colspan)
+    {
+        this.colspan = colspan;
+    }
+
+    public void setFieldNames(String[] fieldNames)
+    {
+        this.fieldNames = fieldNames;
+    }
+
+    public void setIgnoreSetGet(boolean ignoreSetGet)
+    {
+        this.ignoreSetGet = ignoreSetGet;
+    }
+
+    public void setMultiField(boolean isMultiField)
+    {
+        this.isMultiField = isMultiField;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public void setRowspan(int rowspan)
+    {
+        this.rowspan = rowspan;
+    }
+
+    public void setType(CellType type)
+    {
+        this.type = type;
     }
 
  }

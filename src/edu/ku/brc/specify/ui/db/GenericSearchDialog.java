@@ -56,6 +56,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.search.Hits;
 import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Expression;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
@@ -335,10 +338,17 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
             RecordSetItem item = (RecordSetItem)recordSet.getItems().iterator().next();
             try
             {
+                log.info("getSelectedObject class["+className+"] idFieldName["+idFieldName+"] id["+item.getRecordId()+"]");
+                
                 Class classObj = Class.forName(className);
-                Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(classObj);
+                SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+                Session session = sessionFactory.openSession();
+               
+                Criteria criteria = session.createCriteria(classObj);
                 criteria.add(Expression.eq(idFieldName, Integer.parseInt(item.getRecordId())));
                 java.util.List list = criteria.list();
+                session.close();
+                
                 if (list.size() == 1)
                 {
                     return list.get(0);

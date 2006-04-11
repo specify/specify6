@@ -40,6 +40,8 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.specify.exceptions.ConfigurationException;
+import edu.ku.brc.specify.ui.forms.UIFieldFormatterMgr;
+import edu.ku.brc.specify.ui.forms.UIFieldFormatterMgr.Formatter;
 
 /**
  * Factory that creates Views from ViewSet files. This class uses the singleton ViewMgr to verify the View Set Name is unique.
@@ -92,14 +94,14 @@ public class ViewLoader
         String   className         = element.attributeValue(CLASSNAME);
         String   resLabels         = element.attributeValue(RESOURCELABELS);
         String   desc              = getDesc(element);
-        
+
         View view = new View(instance.viewSetName, name, className, desc, resLabels);
 
         Element altviews = (Element)element.selectSingleNode("altviews");
         if (altviews != null)
         {
             AltView defaultAltView = null;
-            
+
             // iterate through child elements of root with element name "foo"
             for ( Iterator i = altviews.elementIterator( "altview" ); i.hasNext(); )
             {
@@ -111,49 +113,49 @@ public class ViewLoader
                 String modeStr      = getAttr(altElement, "mode", "");
                 boolean isValidated = getAttr(altElement, "validated", false);
                 boolean isDefault   = getAttr(altElement, "default", false);
-                
+
                 AltView.CreationMode mode;
                 if (isEmpty(modeStr))
                 {
                     mode = AltView.CreationMode.None;
-                    
+
                 } else
                 {
                     mode = modeStr.equals("edit") ? AltView.CreationMode.Edit : AltView.CreationMode.View;
                 }
-                
+
                 ViewDef viewDef = viewDefs.get(viewDefName);
                 if (viewDef == null)
                 {
                     throw new RuntimeException("View Name["+name+"] refers to a ViewDef that doesn't exist.");
                 }
-                
+
                 // Make sure we only have one default view
                 if (defaultAltView != null && isDefault)
                 {
-                    isDefault = false; 
+                    isDefault = false;
                 }
-                
+
                 AltView altView = new AltView(view, altName, label, mode, isValidated, isDefault, viewDef);
-                
+
                 if (defaultAltView == null && isDefault)
                 {
                     defaultAltView = altView;
                 }
-                
+
                 view.addAltView(altView);
             }
-            
+
             // No default Alt View was indicated, so choose the first one
             if (defaultAltView == null && view.getAltViews() != null)
             {
                 view.getAltViews().get(0).setDefault(true);
             }
         }
-        
+
         return view;
     }
-  
+
     /**
      * Creates a ViewDef
      * @param element the element to build the ViewDef from
@@ -167,21 +169,21 @@ public class ViewLoader
         String   gettableClassName = element.attributeValue(GETTABLE);
         String   settableClassName = element.attributeValue(SETTABLE);
         String   desc              = getDesc(element);
-        
+
         ViewDef.ViewType type;
         try
         {
             String t = element.attributeValue(TYPE);
             type = ViewDef.ViewType.valueOf(element.attributeValue(TYPE));
-            
+
         } catch (Exception ex)
         {
             log.error("view["+name+"] has illegal type["+element.attributeValue(TYPE)+"]", ex);
             throw ex;
         }
-        
+
         ViewDef viewDef = null;//new ViewDef(type, name, className, gettableClassName, settableClassName, desc);
-        
+
         switch (type)
         {
             case form :
@@ -201,7 +203,7 @@ public class ViewLoader
         return viewDef;
     }
 
-    
+
     /**
      * Gets the optoinal description text
      * @param element the parent eleemnt of the desc node
@@ -214,7 +216,7 @@ public class ViewLoader
         if (descElement != null)
         {
             desc = descElement.getTextTrim();
-        }  
+        }
         return desc;
     }
 
@@ -224,7 +226,7 @@ public class ViewLoader
      * @param views the liust to be filled
      * @throws Exception for duplicate view set names or if a Form ID is not unique
      */
-    public static String getViews(final Element doc, 
+    public static String getViews(final Element doc,
                                   final Hashtable<String, View> views,
                                   final Hashtable<String, ViewDef> viewDefs) throws Exception
     {
@@ -261,7 +263,7 @@ public class ViewLoader
     public static String getViewDefs(final Element doc, final Hashtable<String, ViewDef> viewDefs) throws Exception
     {
         instance.viewSetName = doc.attributeValue(NAME);
-        
+
         Element viewDefsElement = (Element)doc.selectSingleNode("viewdefs");
         if (viewDefsElement != null)
         {
@@ -423,30 +425,61 @@ public class ViewLoader
                             String uitype         = getAttr(cellElement, "uitype", "");
                             String format         = getAttr(cellElement, "format", "");
                             String formatName     = getAttr(cellElement, "formatname", "");
+                            String uiFieldFormatter = getAttr(cellElement, "uifieldformatter", "");
                             int    cols           = getAttr(cellElement, "cols", 10); // XXX PREF for default width of text field
                             int    rows           = getAttr(cellElement, "rows", 5);  // XXX PREF for default heightof text area
                             String validationType = getAttr(cellElement, "valtype", "OK");
                             String validationRule = getAttr(cellElement, "validation", "");
                             String initialize     = getAttr(cellElement, "initialize", "");
                             boolean isRequired    = getAttr(cellElement, "isrequired", false);
-                            boolean isEncrypted    = getAttr(cellElement, "isencrypted", false);
+                            boolean isEncrypted   = getAttr(cellElement, "isencrypted", false);
+
+                            if (isNotEmpty(format) && isNotEmpty(formatName))
+                            {
+                                //throw new RuntimeException("Both format and formatname cannot both be set! ["+cellName+"]");
+                                log.error("Both format and formatname cannot both be set! ["+cellName+"] ignoring format");
+                                format = "";
+                            }
+                            
+                            if (cellName.equals("agentAddressByIssuer.agent"))
+                            {
+                                int x = 0;
+                                x++;
+                            }
 
                             String dspUIType;
                             if (uitype.equals("checkbox"))
                             {
                                 dspUIType = getAttr(cellElement, "dspuitype", "checkbox");
-                                
+
                             } else if (uitype.equals("textarea"))
                             {
                                 dspUIType = getAttr(cellElement, "dspuitype", "dsptextarea");
-                                
+
                             } else if (uitype.equals("list"))
                             {
                                 dspUIType = getAttr(cellElement, "dspuitype", "list");
+
+                            } else if (uitype.equals("formattedtext"))
+                            {
+                                validationRule = getAttr(cellElement, "validation", "formatted");
+                                dspUIType = getAttr(cellElement, "dspuitype", "dsptextfield");
+                                if (isNotEmpty(uiFieldFormatter))
+                                {
+                                    Formatter formatter = UIFieldFormatterMgr.getFormatter(uiFieldFormatter);
+                                    if (formatter == null)
+                                    {
+                                        log.info("Couldn't find formatter["+uiFieldFormatter+"]");
+                                        uiFieldFormatter = "";
+                                        uitype = "text";
+                                    }
+                                }
+
                             } else
                             {
                                 dspUIType = getAttr(cellElement, "dspuitype", "dsptextfield");
                             }
+
 
                             // check to see see if the validation is a node in the cell
                             if (isEmpty(validationRule))
@@ -454,7 +487,7 @@ public class ViewLoader
                                 Element valNode = (Element)cellElement.selectSingleNode("validation");
                                 if (valNode != null)
                                 {
-                                    String str = valNode.getTextTrim();;
+                                    String str = valNode.getTextTrim();
                                     if (isNotEmpty(str))
                                     {
                                         validationRule = str;
@@ -463,11 +496,11 @@ public class ViewLoader
                             }
 
                             FormCellField field = new FormCellField(FormCell.CellType.field,
-                                                                    cellName, uitype, dspUIType, format, formatName, isRequired,
+                                                                    cellName, uitype, dspUIType, format, formatName, uiFieldFormatter, isRequired,
                                                                     cols, rows, colspan, rowspan, validationType, validationRule, isEncrypted);
                             field.setLabel(getAttr(cellElement, "label", ""));
                             field.setPickListName(getAttr(cellElement, "picklist", ""));
-                            field.setChangeListenerOnly(getAttr(cellElement, "changesonly", true));
+                            field.setChangeListenerOnly(getAttr(cellElement, "changesonly", true) && !isRequired);
                             field.setInitialize(initialize);
 
                             cell = formRow.addCell(field);
@@ -499,7 +532,7 @@ public class ViewLoader
                             {
                                 vsName = instance.viewSetName;
                             }
-                            
+
                             cell = formRow.addCell(new FormCellSubView(cellElement.attributeValue(NAME),
                                                    vsName,
                                                    cellElement.attributeValue("viewname"),
@@ -507,7 +540,7 @@ public class ViewLoader
                                                    colspan,
                                                    rowspan,
                                                    getAttr(cellElement, "single", false)));
-                                                  
+
                         }
                         break;
                     } // switch

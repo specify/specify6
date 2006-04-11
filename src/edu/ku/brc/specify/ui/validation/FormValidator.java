@@ -201,7 +201,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
         }
         return formIsOK;
     }
-    
+
     /**
      * @param textField textField to be hooked up
      * @param name name of control
@@ -221,8 +221,15 @@ public class FormValidator implements ValidationListener, DataChangeListener
         fields.put(name, textField);
 
         UIValidator.Type type = isRequired ? UIValidator.Type.Changed : valType;
-        
-        UIValidator        uiv = changeListenerOnly ? null : createValidator(name, textField, isRequired, type, valStr);
+
+        UIValidator uiv;
+        if (valStr == null)
+        {
+            uiv = createValidator(name, textField, valType);
+        } else
+        {
+            uiv = changeListenerOnly ? null : createValidator(name, textField, isRequired, type, valStr);
+        }
         DataChangeNotifier dcn = new DataChangeNotifier(name, textField, uiv);
         dcn.addDataChangeListener(this);
 
@@ -241,10 +248,11 @@ public class FormValidator implements ValidationListener, DataChangeListener
            // Do nothing for UIValidator.Type.OK
         }
 
-        addRuleObjectMapping(name, textField);   
+        addRuleObjectMapping(name, textField);
     }
-    
+
     /**
+     * Hooks up generic component to be validated
      * @param comp component to be hooked up
      * @param name name of control
      * @param isRequired whether the field must be filled in
@@ -253,13 +261,13 @@ public class FormValidator implements ValidationListener, DataChangeListener
      * @param changeListenerOnly indicates whether to create a validator
      * @return the component passed in
      */
-    public JComponent compHookUp(final JComponent       comp,
-                                 final String           name,
-                                 final boolean          isRequired,
-                                 final UIValidator.Type valType,
-                                 final String           valStr,
-                                 final boolean          changeListenerOnly)
-    {
+    public JComponent hookupComponent(final JComponent       comp,
+                                      final String           name,
+                                      final boolean          isRequired,
+                                      final UIValidator.Type valType,
+                                      final String           valStr,
+                                      final boolean          changeListenerOnly)
+        {
 
         fields.put(name, comp);
 
@@ -268,10 +276,10 @@ public class FormValidator implements ValidationListener, DataChangeListener
         {
             if (isNotEmpty(valStr))
             {
-                createValidator(name, comp, isRequired, valType, valStr);
+                uiv = createValidator(name, comp, isRequired, valType, valStr);
             } else
             {
-                createValidator(name, comp, valType);
+                uiv = createValidator(name, comp, valType);
             }
         }
         DataChangeNotifier dcn = new DataChangeNotifier(name, comp, uiv);
@@ -426,7 +434,15 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
             if (isFormValid)
             {
-                for (DataChangeNotifier dcn : dcNotifiers.values())
+                for (UIValidator uiv : validators)
+                {
+                    if (uiv.isInError())
+                    {
+                        isFormValid = false;
+                        break; // at the first sign of an error
+                    }
+                }
+                /*for (DataChangeNotifier dcn : dcNotifiers.values())
                 {
                     UIValidator uiv = dcn.getUIV();
                     if (uiv != null && uiv.isInError())
@@ -434,7 +450,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
                         isFormValid = false;
                         break; // at the first sign of an error
                     }
-                }
+                }*/
             }
         }
         turnOnOKButton(hasChanged && isFormValid);
@@ -627,7 +643,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
         {
             checkForValidForm();
         }
-        
+
         for (ValidationListener vcl : valListeners)
         {
             vcl.wasValidated(validator);

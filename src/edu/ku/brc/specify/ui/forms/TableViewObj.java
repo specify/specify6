@@ -140,7 +140,6 @@ public class TableViewObj implements Viewable
         return null;
     }
     
-
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#setDataObj(java.lang.Object)
      */
@@ -148,8 +147,7 @@ public class TableViewObj implements Viewable
     {
         
     }
-
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#getDataObj()
      */
@@ -158,6 +156,22 @@ public class TableViewObj implements Viewable
         return null;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.forms.Viewable#setParentDataObj(java.lang.Object)
+     */
+    public void setParentDataObj(Object parentDataObj)
+    {
+        
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.forms.Viewable#getParentDataObj()
+     */
+    public Object getParentDataObj()
+    {
+        return null;
+        
+    }   
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#setDataIntoUI()
@@ -241,8 +255,8 @@ public class TableViewObj implements Viewable
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#dataHasChanged()
      */
-    public void dataHasChanged()
+    public void validationWasOK(boolean wasOK)
     {
 
-    }   
+    }
 }

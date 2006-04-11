@@ -32,4 +32,8 @@ public interface ResultSetControllerListener
      * @param newIndex the new index
      */
     public void indexChanged(int newIndex);
+    
+    
+    public boolean indexAboutToChange(int oldIndex, int newIndex);
+    
 }

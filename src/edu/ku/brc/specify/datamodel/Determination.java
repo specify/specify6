@@ -33,7 +33,6 @@ public class Determination  implements java.io.Serializable {
      protected Boolean yesNo2;
      protected Taxon taxon;
      protected CollectionObject collectionObject;
-     protected Preparation preparations;
      private Set determinationCitations;
      private Agent determiner;
 
@@ -261,17 +260,6 @@ public class Determination  implements java.io.Serializable {
     
     public void setCollectionObject(CollectionObject collectionObject) {
         this.collectionObject = collectionObject;
-    }
-
-    /**
-     *      * Preparations can also be assigned determinations. Must a Preparation of BiologicalObjectID.
-     */
-    public Preparation getPreparations() {
-        return this.preparations;
-    }
-    
-    public void setPreparations(Preparation preparations) {
-        this.preparations = preparations;
     }
 
     /**

@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.tests;
 
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAddress;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.*;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAccessionAgent;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPermit;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAgent;
@@ -45,6 +45,9 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 
+import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.AccessionAgent;
+import edu.ku.brc.specify.datamodel.AccessionAuthorizations;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AgentAddress;
@@ -479,6 +482,33 @@ public class CreateTestDatabases
         }
         return false;
     }
+    
+    /**
+     * Creates an array of address and hooks them up to agents
+     * @param agents the agents to get addresses
+     * @return
+     */
+    public static Address[] createAddresses(Agent[] agents)
+    {
+        String[] addresses = {"101 High Street.",  "St. Charles",  "Kent", "Great Britain", "AE00939",
+                "Harvard Square",     "Cambridge",   "MA",   "USA",           "009391",
+                "99 East Street.",    "Lawrence",    "KS",   "USA",         "66045",
+                "123 Johnson Street", "Olathe",      "KS",   "USA",         "66045",
+                "RR1",                "Olathe",      "KS",   "USA",         "66045",
+                "12 Mississippi",     "Lawrence",    "KS",   "USA",         "66045",
+                "156 Inverness",      "Lawrence",    "KS",   "USA",         "66045",
+                "100 Main Street",    "Topeka",      "KS",   "USA",         "66099",
+        };
+
+        Address[] addrs = new Address[addresses.length / 5];
+        for (int i = 0; i < addresses.length; i += 5)
+        {
+            AgentAddress agentAddress = createAgentAddress((short)1, "", "", "", "", "", "", "", true, null, agents[i/5], null);
+            Address addr = createAddress(agentAddress, addresses[i], "", addresses[i+1], addresses[i+2], addresses[i+3], addresses[i+4]);
+            addrs[i/5] = addr;
+        }
+        return addrs;
+    }
 
 
     /**
@@ -519,14 +549,8 @@ public class CreateTestDatabases
                                   "100 Main Street",    "Topeka",      "KS",   "USA",         "66099",
             };
 
-            Address[] addrs = new Address[addresses.length/5];
-            for (int i=0;i<addresses.length;i+=5)
-            {
-                AgentAddress agentAddress = createAgentAddress((short)1, "", "", "", "", "", "", "", true, null, agents[i/5], null);
-                Address addr = createAddress(agentAddress, addresses[i], "", addresses[i+1], addresses[i+2], addresses[i+3], addresses[i+4]);
-                addrs[i/5] = addr;
+            Address[] addrs = createAddresses(agents);
 
-            }
             // Add an extra address for one of them
             AgentAddress agentAddress = createAgentAddress((short)2, "", "", "", "", "", "", "", true, null, agents[6], null);
             Address addr = createAddress(agentAddress, "34 Vintage Drive", "", "San Diego", "CA",   "USA", "92129");
@@ -545,7 +569,11 @@ public class CreateTestDatabases
         return false;
     }
 
-    public static Agent[] createAgents()
+    /**
+     * Return an array of Agents that are in memory (not in database)
+     * @return an array of Agents that are in memory (not in database)
+     */
+    public static Agent[] createAgentsInMemory()
     {
         log.info("Create Agents");
 
@@ -568,6 +596,75 @@ public class CreateTestDatabases
         }
         return agents;
 
+    }
+    
+    /**
+     * @param agents
+     * @return
+     */
+    public static Accession[] createAccessionsInMemory()
+    {
+        setSession(null);
+        
+        Agent[]   agents    = createAgentsInMemory();
+        Address[] addresses = createAddresses(agents); // created AgentAddress also
+        
+        String[] roles    = {"Reviewer", "Submitter", "Accepter"};
+        String[] division = {"Botany", "Entomology", "Herpetology", "Ichthyology", "Invertebrate Paleo", "Invertebrate Zoology", "Mammalogy", "Ornithology", "Paleobotany", "Vertebrate Paleo"};
+        String[] status   = {"In Process", "Complete", "Closed"};
+        String[] types    = {"Field Work", "Bequest", "Gift", "Collection", "Purchase", "Exchange", "Abandonement", "Salvage", "Other"};
+        
+        String[] permitType = {"International", "Federal", "State"};
+                
+        String[] accessionNumbers = {"2005-IT-0121", "2005-PB-0122"};
+        String[] permitNumbers    = {"P101", "P102"};
+        
+        int agentsInx = 0;
+        Accession[] accessions = new Accession[accessionNumbers.length];
+        for (int i=0;i<accessions.length;i++)
+        {
+            accessions[i] = createAccession(types[i],
+                                            status[i],
+                                            accessionNumbers[i],
+                                            "",
+                                            Calendar.getInstance(),
+                                            Calendar.getInstance());
+            accessions[i].setText1(division[i]);
+           
+            AgentAddress[] agentAddress = new AgentAddress[roles.length];
+            for (int j=0;j<roles.length;j++)
+            {
+                
+                agentAddress[j] = (AgentAddress)agents[agentsInx % agents.length].getAgentAddressesByAgent().iterator().next();
+                agentsInx++;
+                System.out.println(agents[i].getLastName()+" " + agentAddress[j].getAgent().getLastName());
+                //AgentAddress agentAddress = ObjCreatorHelper.createAgentAddress(agents[i], "", "", "");
+                AccessionAgent accessionAgent = createAccessionAgent(roles[j],  agentAddress[j], accessions[i], null);
+                accessions[i].getAccessionAgents().add(accessionAgent);
+            }
+            
+            int aaInx = 0;
+            for (int j=0;j<permitNumbers.length;j++)
+            {
+                Permit permit = createPermit(permitNumbers[j], permitType[1], 
+                        Calendar.getInstance(),  // issuedDate
+                        Calendar.getInstance(), // startDate
+                        Calendar.getInstance(), // endDate
+                        Calendar.getInstance());// renewalDate
+                
+                permit.setAgentAddressByIssuee(i == 1 && j == 0 ? null : agentAddress[aaInx % agentAddress.length]);
+                System.out.println( agentAddress[aaInx % agentAddress.length].getAgent().getFirstName()+"  "+aaInx % agentAddress.length);
+                aaInx++;
+                permit.setAgentAddressByIssuer(agentAddress[aaInx % agentAddress.length]);
+                System.out.println( agentAddress[aaInx % agentAddress.length].getAgent().getFirstName()+"  "+aaInx % agentAddress.length);
+                aaInx++;
+                
+                AccessionAuthorizations accessionAuthorizations = createAccessionAuthorizations(permit, accessions[i], null);
+                accessions[i].getAccessionAuthorizations().add(accessionAuthorizations);
+            }
+            
+        }
+        return accessions;
     }
 
 
