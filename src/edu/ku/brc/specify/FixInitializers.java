@@ -54,18 +54,29 @@ public class FixInitializers
             Collections.addAll(fileList, names);
             Collections.sort(fileList);
             
+            // Make Hash of the Class names
+            Hashtable<String, String> classNamesHash = new Hashtable<String, String>();
+            for (String name : names)
+            {
+                if (name.startsWith(".") || name.startsWith("hbm") || name.endsWith("IFace.java"))
+                {
+                    continue;
+                }
+                System.out.println(name);
+                String shortName = name.substring(0, name.indexOf('.'));
+                classNamesHash.put(shortName, shortName);
+            }
+            
             int cnt = 0;
             for (String fileName : fileList)
             {
-                //System.out.println("["+fileName+"]");
-                if (fileName.startsWith(".") || fileName.endsWith("IFace.java"))
+                System.out.println("["+fileName+"]");
+                if (fileName.startsWith(".") || fileName.indexOf("hbm") > -1 || fileName.endsWith("IFace.java"))
                 {
                     continue;
                 }
                 
                 File file = new File(path+"/"+fileName);
-                //String buffer = getContents(file);
-                
                 if (fileName.indexOf("xml") > -1)
                 {
                     continue;
@@ -88,11 +99,16 @@ public class FixInitializers
                     String startStr = "class " + shortName;
                     // Read Contents of file
                     BufferedReader input = new BufferedReader( new FileReader(file) );
-                    String line;
+                    
                     boolean started = false;
                     boolean done    = false;
+                    boolean doneInit = false;
                     Hashtable<String, String> namesToFix = new Hashtable<String, String>();
+                    List<String>              initLines  = new ArrayList<String>();
+                    List<String>              addMethods = new ArrayList<String>();
                     
+                    int maxWidth = 0;
+                    String line;
                     while (( line = input.readLine()) != null)
                     {
                         //System.out.println(line);
@@ -110,6 +126,11 @@ public class FixInitializers
                                 done = true;
                             }
                         }
+                        
+                        if (!done && !started && line.startsWith("import java.util.Set;"))
+                        {
+                            output.write("import java.util.HashSet;\nimport java.util.Calendar;\n");
+                        }
 
                         
                         if (started)
@@ -119,32 +140,41 @@ public class FixInitializers
                                 String[] strs = StringUtils.split(line, " ");
                                 if (strs.length == 3)
                                 {
-                                    String type      = strs[1];
                                     String fieldName = StringUtils.stripEnd(strs[2], ";");
-
-                                    output.write("     protected ");
+                                    maxWidth = Math.max(maxWidth, fieldName.length());
+                                    
                                     if (strs[1].equals("Set"))
                                     {
-                                        String capName = StringUtils.capitalize(fieldName);
-                                        if (fieldName.charAt(fieldName.length()-1) == 's')
+                                        String  capName       = StringUtils.capitalize(fieldName);
+                                        String  singleObjName = fieldName;
+                                        boolean endsInS       = fieldName.charAt(fieldName.length()-1) == 's';
+                                        if (endsInS && classNamesHash.get(capName) == null)
                                         {
-                                            capName = capName.substring(0, capName.length()-1);
+                                            
+                                            if (endsInS)
+                                            {
+                                                capName = capName.substring(0, capName.length()-1);
+                                                singleObjName = fieldName.substring(0, fieldName.length()-1);
+                                            }
                                         }
-                                        output.write("Set<"+capName+"> " + fieldName+" = new HashSet<"+capName+">();");
+
+                                        initLines.add("        " + fieldName+" = new HashSet<"+capName+">();");
                                         namesToFix.put("get"+capName+"s", capName);
                                         namesToFix.put("set"+capName+"s", capName);
                                         
+                                        addMethods.add("\n    public void add"+capName+"(final "+capName+" "+singleObjName+")\n    {");
+                                        addMethods.add("        this."+fieldName+".add("+singleObjName+");\n    }");
+                                        
+                                        output.write("     protected Set<"+capName+"> " + fieldName+" = new HashSet<"+capName+">();\n");
+                                        doWrite = false;
+                                        
                                     } else if (fieldName.equals("timestampCreated"))
                                     {
-                                        output.write("timestampCreated = Calendar.getInstance();");
+                                        initLines.add("        timestampCreated = Calendar.getInstance().getTime();");
                                     } else
                                     {
-                                        output.write(type+" "+fieldName+" = null;");
+                                        initLines.add("        "+fieldName+" = null;");
                                     }
-                                    output.write("\n");
-
-                                    
-                                    doWrite = false;
                                 } else
                                 {
                                     System.out.println("More than 3 tokens["+line+"]");
@@ -152,17 +182,42 @@ public class FixInitializers
                             } 
                         }
                         
+                        if (done && !doneInit && line.indexOf("// Property accessors") > -1)
+                        {
+                            output.write("    // Initializer\n");
+                            output.write("    public void initialize()\n    {\n");
+                            for (String s : initLines)
+                            {
+                                output.write(s);
+                                output.write("\n");
+                            }
+                            output.write("    }\n    // End Initializer\n\n");
+                            doneInit = true;
+                        }
+                        
+                        if (line.startsWith("}"))
+                        {
+                            output.write("    // Add Methods\n");
+                            for (String s : addMethods)
+                            {
+                                output.write(s);
+                                output.write("\n");   
+                            }
+                            output.write("\n    // Done Add Methods\n");
+                        }
+                        
                         
                         if (doWrite)
                         {
                             int inx = line.indexOf(" get");
-                            if (inx > -1)
+                            if (inx > -1 && line.indexOf("if(") == -1)
                             {
                                 int eInx = line.indexOf("(");
                                 if (eInx > -1)
                                 {
+                                    //System.out.println(inx+"  "+eInx+"[ "+line+"]");
                                     String methodName = line.substring(inx+1, eInx);
-                                    System.out.println(methodName);
+                                    //System.out.println(methodName);
                                     String clsName = namesToFix.get(methodName);
                                     if (clsName != null)
                                     {
@@ -180,7 +235,7 @@ public class FixInitializers
                                     if (eInx > -1)
                                     {
                                         String methodName = line.substring(inx+1, eInx);
-                                        System.out.println(methodName);
+                                        //System.out.println(methodName);
                                         String clsName = namesToFix.get(methodName);
                                         if (clsName != null)
                                         {
@@ -200,112 +255,8 @@ public class FixInitializers
                     output.flush();
                     output.close();
                     
-                    //System.out.println(strBuf.toString());
-                    if (true) return;
-
-                    /*int cnt = 0;
-                    int indent = code.length();
-                    Field[] fields = classObj.getDeclaredFields();
-                    int fieldsUsed = 0;
-                    for (Field fld : fields)
-                    {
-                        String fieldName = fld.getName();
-                        String type      = fld.getType().getSimpleName();
-                        if (fieldsToSkip.get(fieldName) != null ||
-                            fieldName.endsWith("Id") ||
-                            type.equals("Set") || 
-                            type.equals("Date"))
-                        {
-                            continue;
-                        }
-                        fieldsUsed++;
-                    }
-                    
-                    // Parameter (Fields) for the "create" method call
-                    for (Field fld : fields)
-                    {
-                        String fieldName = fld.getName();
-                        String type      = fld.getType().getSimpleName();
-                        if (fieldsToSkip.get(fieldName) != null ||
-                                fieldName.endsWith("Id") ||
-                                type.equals("Set") || 
-                                type.equals("Date"))
-                        {
-                            continue;
-                        }
-                        
-                        if (cnt > 0) 
-                        {
-                            for (int ii=0;ii<indent;ii++) strBuf.append(' ');
-                        }
-                        
-                        strBuf.append("final "+type+" " +fld.getName());
-                        
-                        if (cnt < fieldsUsed-1)
-                        {
-                            strBuf.append(",\n");
-                        }
-                        cnt++;
-                    }
-                    
-                    strBuf.append(")\n    {\n");
-                    
-                    strBuf.append("        "+shortName+" "+lowerName+" = new "+shortName+"();\n");
-                
-                
-                    Method[] methods = classObj.getMethods();
-                    for (Method method : methods)
-                    {
-                        //String fieldName
-                        if (method.getName().startsWith("setTimestamp"))
-                        {
-                            strBuf.append("        "+lowerName+"."+method.getName()+"(new Date());\n"); 
-                            
-                        } else if (method.getName().startsWith("set"))
-                        {
-                            Class[] parms    = method.getParameterTypes();
-                            String type      = parms[0].getSimpleName();
-                            String mn        = method.getName();
-                            String fieldName = mn.toLowerCase().charAt(3) + mn.substring(4, mn.length());
-                            
-                            if (fieldsToSkip.get(fieldName) != null ||
-                                    fieldName.endsWith("Id"))
-                            {
-                                continue;
-                            }
-                            
-                            strBuf.append("        "+lowerName+"."+method.getName());
-                            //System.out.println(parms[0].getSimpleName());
-                            if (parms[0].getSimpleName().equals("Set"))
-                            {
-                                strBuf.append("(new HashSet<Object>());\n");
-                                
-                            } else if (type.equals("Set"))
-                            {
-                                strBuf.append("(new HashSet<Object>());\n");
-                            } else
-                            {
-                                strBuf.append("("+ fieldName +");\n");
-                            }
-
-                        }
-                    }
-                    
-                    strBuf.append("        if (session != null)\n");
-                    strBuf.append("        {\n");
-                    strBuf.append("          session.saveOrUpdate("+lowerName+");\n");
-                    strBuf.append("        }\n");
-                    strBuf.append("        return "+lowerName+";\n");
-                    strBuf.append("    }\n");
-                    
-                    System.out.println(strBuf.toString());
-                    entireFile.append(strBuf);
-                    
-                    //Object obj = classObj.newInstance();
-                     */
-                     
                     cnt++;
-                    if (cnt == 1) break;
+                    //if (cnt == 1) break;
                     
                 } catch (Exception ex)
                 {
