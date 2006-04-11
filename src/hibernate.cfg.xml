@@ -92,7 +92,6 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Location.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/LocationTreeDef.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/LocationTreeDefItem.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Observation.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/OtherIdentifier.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Permit.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Preparation.hbm.xml"/>
