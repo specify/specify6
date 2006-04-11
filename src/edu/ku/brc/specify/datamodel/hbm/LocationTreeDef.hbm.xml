@@ -25,7 +25,7 @@
         
         <!-- Associations -->
         
-        <set name="treeEntries" table="Location" inverse="true">
+        <set name="treeEntries" table="Location" inverse="true" lazy="true">
             <meta attribute="field-description"></meta>
             <key column="TreeDefID"/>
             <one-to-many class="edu.ku.brc.specify.datamodel.Location"/>

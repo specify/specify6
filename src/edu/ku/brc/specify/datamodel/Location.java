@@ -29,6 +29,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
      protected Date timestampVersion;
      protected String lastEditedBy;
      private LocationTreeDef definition;
+     private LocationTreeDefItem definitionItem;
      private Location parent;
      protected Set preparations;
      protected Set containers;
@@ -216,6 +217,17 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     }
 
     /**
+     *      *  @hibernate.many-to-one not-null="true"@hibernate.column name="TreeDefItemID" 
+     */
+    public LocationTreeDefItem getDefinitionItem() {
+        return this.definitionItem;
+    }
+    
+    public void setDefinitionItem(LocationTreeDefItem definitionItem) {
+        this.definitionItem = definitionItem;
+    }
+
+    /**
      * 
      */
     public Location getParent() {
@@ -269,6 +281,12 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     		 */
     		public void setParentNode(Treeable parent)
     		{
+    		    if( parent == null )
+    		    {
+    		        setParent(null);
+    		        return;
+    		    }
+    		    
     			if( !(parent instanceof Location) )
     			{
     				throw new IllegalArgumentException("Argument must be an instance of Location");
@@ -297,6 +315,29 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     			}
     			
     			setDefinition((LocationTreeDef)treeDef);
+    		}
+    		
+    		/**
+    		 *
+    		 */
+    		public TreeDefinitionItemIface getDefItem()
+    		{
+    			return getDefinitionItem();
+    		}
+    		
+    		/**
+    		 * @param defItem the new LocationTreeDefItem object representing this items level
+    		 *
+    		 * @throws IllegalArgumentException if defItem is not instance of LocationTreeDefItem
+    		 */
+    		public void setDefItem(TreeDefinitionItemIface defItem)
+    		{
+    			if( !(defItem instanceof LocationTreeDefItem) )
+    			{
+    				throw new IllegalArgumentException("Argument must be an instance of LocationTreeDefItem");
+    			}
+    			
+    			setDefinitionItem((LocationTreeDefItem)defItem);
     		}
     		
     		/**

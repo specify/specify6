@@ -29,13 +29,13 @@
         
         <one-to-one name="collObjDef" class="edu.ku.brc.specify.datamodel.CollectionObjDef" constrained="true"/>
         
-        <set name="treeEntries" table="Taxon" inverse="true" lazy="false">
+        <set name="treeEntries" table="Taxon" inverse="true" lazy="true">
             <meta attribute="field-description"></meta>
             <key column="TreeDefID"/>
             <one-to-many class="edu.ku.brc.specify.datamodel.Taxon"/>
         </set>
         
-        <set name="treeDefItems" table="TaxonTreeDefItem" inverse="true" lazy="false">
+        <set name="treeDefItems" table="TaxonTreeDefItem" inverse="true" lazy="false" cascade="save-update">
             <meta attribute="field-description"></meta>
             <key column="TreeDefID"/>
             <one-to-many class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"/>

@@ -27,6 +27,7 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
      protected Date timestampVersion;
      protected String lastEditedBy;
      private GeologicTimePeriodTreeDef definition;
+     private GeologicTimePeriodTreeDefItem definitionItem;
      private GeologicTimePeriod parent;
 
 
@@ -201,6 +202,17 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
     }
 
     /**
+     *      *  @hibernate.many-to-one not-null="true"@hibernate.column name="TreeDefItemID" 
+     */
+    public GeologicTimePeriodTreeDefItem getDefinitionItem() {
+        return this.definitionItem;
+    }
+    
+    public void setDefinitionItem(GeologicTimePeriodTreeDefItem definitionItem) {
+        this.definitionItem = definitionItem;
+    }
+
+    /**
      *      *  @hibernate.many-to-one not-null="true"@hibernate.column name="ParentID" 
      */
     public GeologicTimePeriod getParent() {
@@ -232,6 +244,12 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
     		 */
     		public void setParentNode(Treeable parent)
     		{
+    		    if( parent == null )
+    		    {
+    		        setParent(null);
+    		        return;
+    		    }
+    		
     			if( !(parent instanceof GeologicTimePeriod) )
     			{
     				throw new IllegalArgumentException("Argument must be an instance of GeologicTimePeriod");
@@ -260,6 +278,29 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
     			}
     			
     			setDefinition((GeologicTimePeriodTreeDef)treeDef);
+    		}
+    		
+    		/**
+    		 *
+    		 */
+    		public TreeDefinitionItemIface getDefItem()
+    		{
+    			return getDefinitionItem();
+    		}
+    		
+    		/**
+    		 * @param defItem the new GeologicTimePeriodTreeDefItem object representing this items level
+    		 *
+    		 * @throws IllegalArgumentException if defItem is not instance of GeologicTimePeriodTreeDefItem
+    		 */
+    		public void setDefItem(TreeDefinitionItemIface defItem)
+    		{
+    			if( !(defItem instanceof GeologicTimePeriodTreeDefItem) )
+    			{
+    				throw new IllegalArgumentException("Argument must be an instance of GeologicTimePeriodTreeDefItem");
+    			}
+    			
+    			setDefinitionItem((GeologicTimePeriodTreeDefItem)defItem);
     		}
     		
     		/**

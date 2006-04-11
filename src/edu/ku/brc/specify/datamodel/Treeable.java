@@ -4,13 +4,21 @@ package edu.ku.brc.specify.datamodel;
  * Describes any class where a collection of its objects can be modeled as
  * a tree.  Each instance of the implementing class represents a single node
  * in a tree.  Database tables can contain multiple trees simultaneously as
- * long as each node in a given tree has a common identifier, the series id.
+ * long as each node in a given tree has a common identifier, the tree definition.
  * Each node in the tree must have a unique ID, which is the primary key of
  * the corresponding database table.  Each node must also be numbered (the
  * node number) using a depth-first traversal of the tree.  The highest child
  * node number field contains the largest node number in the tree that is a
- * descendant of the given node.  The rank id represents the nodes depth in
+ * descendant of the given node.  The rank id represents the node's depth in
  * the tree.  Possible depths are defined in the tree definition.
+ * 
+ * A few of the methods defined in this interface are expected, at times,
+ * to throw IllegalArgumentException.  This occurs when a setter
+ * method is called on a Treeable object, but the passed in argument
+ * represents a tree definition or tree definition item of another type of 
+ * Treeable object.  For example, if setTreeDef(TreeDefinitionIface)
+ * is called on a Taxon object, but the argument given is an instance of
+ * GeographyTreeDef, an IllegalArgumentException will be thrown.
  * 
  * @author jstewart
  */
@@ -92,6 +100,20 @@ public interface Treeable extends Comparable<Treeable>
 	
 	/**
 	 * @param id the new series ID of the tree that this node is contained in
+	 * 
+	 * @throws IllegalArgumentException if treeDef isn't an object of the correct type to represent this Treeable's tree definition item
 	 */
-	public void setTreeDef(TreeDefinitionIface id);
+	public void setTreeDef(TreeDefinitionIface treeDef);
+	
+	/**
+	 * @return the TreeDefinitionItemIface object representing this Treeable's location in the tree
+	 */
+	public TreeDefinitionItemIface getDefItem();
+	
+	/**
+	 * @param defItem the new TreeDefinitionItemIface object representing this Treeable's location in the tree
+	 * 
+	 * @throws IllegalArgumentException if defItem isn't an object of the correct type to represent this Treeable's tree definition
+	 */
+	public void setDefItem(TreeDefinitionItemIface defItem);
 }

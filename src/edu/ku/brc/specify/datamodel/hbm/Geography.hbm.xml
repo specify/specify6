@@ -29,6 +29,12 @@
     		 */
     		public void setParentNode(Treeable parent)
     		{
+    		    if( parent == null )
+    		    {
+    		        setParent(null);
+    		        return;
+    		    }
+    		    
     			if( !(parent instanceof Geography) )
     			{
     				throw new IllegalArgumentException("Argument must be an instance of Geography");
@@ -57,6 +63,29 @@
     			}
     			
     			setDefinition((GeographyTreeDef)treeDef);
+    		}
+    		
+    		/**
+    		 *
+    		 */
+    		public TreeDefinitionItemIface getDefItem()
+    		{
+    			return getDefinitionItem();
+    		}
+    		
+    		/**
+    		 * @param defItem the new GeographyTreeDefItem object representing this items level
+    		 *
+    		 * @throws IllegalArgumentException if defItem is not instance of GeographyTreeDefItem
+    		 */
+    		public void setDefItem(TreeDefinitionItemIface defItem)
+    		{
+    			if( !(defItem instanceof GeographyTreeDefItem) )
+    			{
+    				throw new IllegalArgumentException("Argument must be an instance of GeographyTreeDefItem");
+    			}
+    			
+    			setDefinitionItem((GeographyTreeDefItem)defItem);
     		}
     		
     		/**
@@ -241,14 +270,21 @@
 
         <!-- bi-directional many-to-one association to GeographyTreeDef -->
         <many-to-one name="definition" class="edu.ku.brc.specify.datamodel.GeographyTreeDef"
-            not-null="true" outer-join="true">
+            lazy="false" not-null="true" outer-join="true">
             <meta attribute="field-description"> @hibernate.many-to-one not-null="true"@hibernate.column name="TreeDefID" </meta>
             <column name="TreeDefID"/>
         </many-to-one>
 
+        <!-- bi-directional many-to-one association to GeographyTreeDefItem -->
+        <many-to-one name="definitionItem" class="edu.ku.brc.specify.datamodel.GeographyTreeDefItem"
+            lazy="false" not-null="true" outer-join="true">
+            <meta attribute="field-description"> @hibernate.many-to-one not-null="true"@hibernate.column name="TreeDefItemID" </meta>
+            <column name="TreeDefItemID"/>
+        </many-to-one>
+        
         <!-- bi-directional many-to-one association to Geography -->
-        <many-to-one name="parent" class="edu.ku.brc.specify.datamodel.Geography" not-null="false"
-            outer-join="true" lazy="false">
+        <many-to-one name="parent" class="edu.ku.brc.specify.datamodel.Geography"
+            not-null="false" outer-join="true">
             <meta attribute="field-description"> @hibernate.many-to-one not-null="false"@hibernate.column name="ParentID" </meta>
             <column name="ParentID"/>
         </many-to-one>

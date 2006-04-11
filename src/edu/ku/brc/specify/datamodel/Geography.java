@@ -33,6 +33,7 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
      protected Boolean isCurrent;
      private Set localities;
      private GeographyTreeDef definition;
+     private GeographyTreeDefItem definitionItem;
      private Geography parent;
 
 
@@ -262,6 +263,17 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     }
 
     /**
+     *      *  @hibernate.many-to-one not-null="true"@hibernate.column name="TreeDefItemID" 
+     */
+    public GeographyTreeDefItem getDefinitionItem() {
+        return this.definitionItem;
+    }
+    
+    public void setDefinitionItem(GeographyTreeDefItem definitionItem) {
+        this.definitionItem = definitionItem;
+    }
+
+    /**
      *      *  @hibernate.many-to-one not-null="false"@hibernate.column name="ParentID" 
      */
     public Geography getParent() {
@@ -309,6 +321,12 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     		 */
     		public void setParentNode(Treeable parent)
     		{
+    		    if( parent == null )
+    		    {
+    		        setParent(null);
+    		        return;
+    		    }
+    		    
     			if( !(parent instanceof Geography) )
     			{
     				throw new IllegalArgumentException("Argument must be an instance of Geography");
@@ -337,6 +355,29 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
     			}
     			
     			setDefinition((GeographyTreeDef)treeDef);
+    		}
+    		
+    		/**
+    		 *
+    		 */
+    		public TreeDefinitionItemIface getDefItem()
+    		{
+    			return getDefinitionItem();
+    		}
+    		
+    		/**
+    		 * @param defItem the new GeographyTreeDefItem object representing this items level
+    		 *
+    		 * @throws IllegalArgumentException if defItem is not instance of GeographyTreeDefItem
+    		 */
+    		public void setDefItem(TreeDefinitionItemIface defItem)
+    		{
+    			if( !(defItem instanceof GeographyTreeDefItem) )
+    			{
+    				throw new IllegalArgumentException("Argument must be an instance of GeographyTreeDefItem");
+    			}
+    			
+    			setDefinitionItem((GeographyTreeDefItem)defItem);
     		}
     		
     		/**

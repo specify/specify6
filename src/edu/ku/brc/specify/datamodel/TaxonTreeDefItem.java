@@ -17,7 +17,9 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
      protected Integer treeDefItemId;
      protected String name;
      protected Integer rankId;
+     protected Boolean isEnforced;
      protected TaxonTreeDef treeDef;
+     protected Set treeEntries;
      protected TaxonTreeDefItem parent;
      protected Set children;
 
@@ -74,12 +76,34 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
     /**
      * 
      */
+    public Boolean getIsEnforced() {
+        return this.isEnforced;
+    }
+    
+    public void setIsEnforced(Boolean isEnforced) {
+        this.isEnforced = isEnforced;
+    }
+
+    /**
+     * 
+     */
     public TaxonTreeDef getTreeDef() {
         return this.treeDef;
     }
     
     public void setTreeDef(TaxonTreeDef treeDef) {
         this.treeDef = treeDef;
+    }
+
+    /**
+     * 
+     */
+    public Set getTreeEntries() {
+        return this.treeEntries;
+    }
+    
+    public void setTreeEntries(Set treeEntries) {
+        this.treeEntries = treeEntries;
     }
 
     /**

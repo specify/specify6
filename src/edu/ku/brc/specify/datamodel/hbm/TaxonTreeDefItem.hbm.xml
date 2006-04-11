@@ -75,6 +75,11 @@
                 <meta attribute="field-description"></meta>
             </property>
             
+            <property name="isEnforced" type="java.lang.Boolean" column="IsEnforced">
+                <meta attribute="scope-field">protected</meta>
+                <meta attribute="field-description"></meta>
+            </property>            
+            
             <!-- Associations -->
             
             <many-to-one name="treeDef" column="TreeDefID" class="edu.ku.brc.specify.datamodel.TaxonTreeDef" lazy="false">
@@ -82,6 +87,12 @@
                 <meta attribute="use-in-tostring">true</meta>
                 <meta attribute="field-description"></meta>
             </many-to-one>
+            
+            <set name="treeEntries" table="Taxon" inverse="true" lazy="true">
+            	<meta attribute="scope-field">protected</meta>
+            	<key column="TreeDefItemID"/>
+            	<one-to-many class="edu.ku.brc.specify.datamodel.Taxon"/>
+        	</set>
             
             <many-to-one name="parent" column="ParentItemID" class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" cascade="save-update" lazy="false">
                 <meta attribute="scope-field">protected</meta>

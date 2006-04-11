@@ -17,8 +17,10 @@ public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Se
      protected Integer treeDefItemId;
      protected String name;
      protected Integer rankId;
+     protected Boolean isEnforced;
      protected GeographyTreeDef treeDef;
      protected GeographyTreeDefItem parent;
+     protected Set treeEntries;
      protected Set children;
 
 
@@ -74,6 +76,17 @@ public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Se
     /**
      * 
      */
+    public Boolean getIsEnforced() {
+        return this.isEnforced;
+    }
+    
+    public void setIsEnforced(Boolean isEnforced) {
+        this.isEnforced = isEnforced;
+    }
+
+    /**
+     * 
+     */
     public GeographyTreeDef getTreeDef() {
         return this.treeDef;
     }
@@ -91,6 +104,17 @@ public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Se
     
     public void setParent(GeographyTreeDefItem parent) {
         this.parent = parent;
+    }
+
+    /**
+     * 
+     */
+    public Set getTreeEntries() {
+        return this.treeEntries;
+    }
+    
+    public void setTreeEntries(Set treeEntries) {
+        this.treeEntries = treeEntries;
     }
 
     /**

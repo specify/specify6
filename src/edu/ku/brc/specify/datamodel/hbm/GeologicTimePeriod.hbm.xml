@@ -30,6 +30,12 @@
     		 */
     		public void setParentNode(Treeable parent)
     		{
+    		    if( parent == null )
+    		    {
+    		        setParent(null);
+    		        return;
+    		    }
+    		
     			if( !(parent instanceof GeologicTimePeriod) )
     			{
     				throw new IllegalArgumentException("Argument must be an instance of GeologicTimePeriod");
@@ -58,6 +64,29 @@
     			}
     			
     			setDefinition((GeologicTimePeriodTreeDef)treeDef);
+    		}
+    		
+    		/**
+    		 *
+    		 */
+    		public TreeDefinitionItemIface getDefItem()
+    		{
+    			return getDefinitionItem();
+    		}
+    		
+    		/**
+    		 * @param defItem the new GeologicTimePeriodTreeDefItem object representing this items level
+    		 *
+    		 * @throws IllegalArgumentException if defItem is not instance of GeologicTimePeriodTreeDefItem
+    		 */
+    		public void setDefItem(TreeDefinitionItemIface defItem)
+    		{
+    			if( !(defItem instanceof GeologicTimePeriodTreeDefItem) )
+    			{
+    				throw new IllegalArgumentException("Argument must be an instance of GeologicTimePeriodTreeDefItem");
+    			}
+    			
+    			setDefinitionItem((GeologicTimePeriodTreeDefItem)defItem);
     		}
     		
     		/**
@@ -210,11 +239,18 @@
         <!-- bi-directional many-to-one association to GeologicTimePeriodTreeDef -->
         <many-to-one name="definition"
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef" not-null="true"
-            outer-join="true">
+            lazy="false" outer-join="true">
             <meta attribute="field-description"> @hibernate.many-to-one not-null="true"@hibernate.column name="TreeDefID" </meta>
             <column name="TreeDefID"/>
         </many-to-one>
 
+        <!-- bi-directional many-to-one association to GeologicTimePeriodTreeDefItem -->
+        <many-to-one name="definitionItem" class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"
+            lazy="false" not-null="true" outer-join="true">
+            <meta attribute="field-description"> @hibernate.many-to-one not-null="true"@hibernate.column name="TreeDefItemID" </meta>
+            <column name="TreeDefItemID"/>
+        </many-to-one>
+        
         <!-- bi-directional many-to-one association to GeologicTimePeriod -->
         <many-to-one name="parent" class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
             not-null="true" outer-join="true">

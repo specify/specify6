@@ -1,5 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Set;
+
 public interface TreeDefinitionItemIface
 {
 	public Integer getTreeDefItemId();
@@ -19,4 +21,10 @@ public interface TreeDefinitionItemIface
 	
 	public TreeDefinitionItemIface getChildItem();
 	public void setChildItem(TreeDefinitionItemIface child);
+	
+	public Boolean getIsEnforced();
+	public void setIsEnforced(Boolean enforced);
+	
+	public Set getTreeEntries();
+	public void setTreeEntries(Set treeables);
 }

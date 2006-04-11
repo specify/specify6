@@ -45,6 +45,7 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
      private Taxon acceptedTaxon;
      private Set taxonCitations;
      private TaxonTreeDef definition;
+     private TaxonTreeDefItem definitionItem;
      private Taxon parent;
      private Set externalResources;
 
@@ -407,6 +408,17 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     }
 
     /**
+     *      *  @hibernate.many-to-one not-null="true"@hibernate.column name="TreeDefItemID" 
+     */
+    public TaxonTreeDefItem getDefinitionItem() {
+        return this.definitionItem;
+    }
+    
+    public void setDefinitionItem(TaxonTreeDefItem definitionItem) {
+        this.definitionItem = definitionItem;
+    }
+
+    /**
      *      *  @hibernate.many-to-one not-null="true"@hibernate.column name="ParentID" 
      */
     public Taxon getParent() {
@@ -449,6 +461,12 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     		 */
     		public void setParentNode(Treeable parent)
     		{
+    		    if( parent == null )
+    		    {
+    		        setParent(null);
+    		        return;
+    		    }
+    		    
     			if( !(parent instanceof Taxon) )
     			{
     				throw new IllegalArgumentException("Argument must be an instance of Taxon");
@@ -477,6 +495,29 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
     			}
     			
     			setDefinition((TaxonTreeDef)treeDef);
+    		}
+    		
+    		/**
+    		 *
+    		 */
+    		public TreeDefinitionItemIface getDefItem()
+    		{
+    			return getDefinitionItem();
+    		}
+    		
+    		/**
+    		 * @param defItem the new TaxonTreeDefItem object representing this items level
+    		 *
+    		 * @throws IllegalArgumentException if defItem is not instance of TaxonTreeDefItem
+    		 */
+    		public void setDefItem(TreeDefinitionItemIface defItem)
+    		{
+    			if( !(defItem instanceof TaxonTreeDefItem) )
+    			{
+    				throw new IllegalArgumentException("Argument must be an instance of TaxonTreeDefItem");
+    			}
+    			
+    			setDefinitionItem((TaxonTreeDefItem)defItem);
     		}
     		
     		/**

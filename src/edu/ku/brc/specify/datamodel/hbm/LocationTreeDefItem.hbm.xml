@@ -75,6 +75,11 @@
                 <meta attribute="field-description"></meta>
             </property>
             
+            <property name="isEnforced" type="java.lang.Boolean" column="IsEnforced">
+                <meta attribute="scope-field">protected</meta>
+                <meta attribute="field-description"></meta>
+            </property>
+            
             <!-- Associations -->
             
             <!-- bi-directional many-to-one association to TreeDef -->
@@ -88,6 +93,12 @@
                 <meta attribute="scope-field">protected</meta>
             </many-to-one>
             
+	        <set name="treeEntries" table="Location" inverse="true" lazy="true">
+	            <meta attribute="scope-field">protected</meta>
+	            <key column="TreeDefItemID"/>
+	            <one-to-many class="edu.ku.brc.specify.datamodel.Location"/>
+	        </set>
+        
             <set name="children" table="LocationTreeDefItem" inverse="true" lazy="false">
                 <meta attribute="scope-field">protected</meta>
                 <key column="ParentItemID"/>
