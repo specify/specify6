@@ -3,12 +3,6 @@ package edu.ku.brc.specify.datamodel;
 import java.util.HashSet;
 import java.util.Set;
 
-
-
-
-/**
-
- */
 public class GeographyTreeDef  implements TreeDefinitionIface,java.io.Serializable {
 
     // Fields    
@@ -16,10 +10,9 @@ public class GeographyTreeDef  implements TreeDefinitionIface,java.io.Serializab
      protected Integer treeDefId;
      protected String name;
      protected String remarks;
-     protected Set treeEntries;
-     protected Set treeDefItems;
-     protected Set collObjDefs;
-
+     protected Set<Geography> treeEntries;
+     protected Set<GeographyTreeDefItem> treeDefItems;
+     protected Set<CollectionObjDef> collObjDefs;
 
     // Constructors
 
@@ -34,15 +27,15 @@ public class GeographyTreeDef  implements TreeDefinitionIface,java.io.Serializab
    
     
     // Initializer
-    /*public void initialize()
+    public void initialize()
     {
         treeDefId = null;
         name = null;
         remarks = null;
-        treeEntries = new HashSet<TreeEntrie>();
-        treeDefItems = new HashSet<TreeDefItem>();
-        collObjDefs = new HashSet<CollObjDef>();
-    }*/
+        treeEntries = new HashSet<Geography>();
+        treeDefItems = new HashSet<GeographyTreeDefItem>();
+        collObjDefs = new HashSet<CollectionObjDef>();
+    }
     // End Initializer
 
     // Property accessors
@@ -112,22 +105,4 @@ public class GeographyTreeDef  implements TreeDefinitionIface,java.io.Serializab
     public void setCollObjDefs(Set collObjDefs) {
         this.collObjDefs = collObjDefs;
     }
-
-  /**
-	 * toString
-	 * @return String
-	 */
-  public String toString() {
-	  StringBuffer buffer = new StringBuffer();
-
-      buffer.append(getClass().getName()).append("@").append(Integer.toHexString(hashCode())).append(" [");
-      buffer.append("treeDefId").append("='").append(getTreeDefId()).append("' ");			
-      buffer.append("name").append("='").append(getName()).append("' ");			
-      buffer.append("]");
-      
-      return buffer.toString();
-	}
-
-
-
 }

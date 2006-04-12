@@ -3,12 +3,6 @@ package edu.ku.brc.specify.datamodel;
 import java.util.HashSet;
 import java.util.Set;
 
-
-
-
-/**
-
- */
 public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
 
     // Fields    
@@ -19,7 +13,6 @@ public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
      protected CollectionObjDef collObjDef;
      protected Set treeEntries;
      protected Set treeDefItems;
-
 
     // Constructors
 
@@ -34,18 +27,17 @@ public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
    
     
     // Initializer
-    /*public void initialize()
+    public void initialize()
     {
         treeDefId = null;
         name = null;
         remarks = null;
         collObjDef = null;
-        treeEntries = new HashSet<TreeEntrie>();
-        treeDefItems = new HashSet<TreeDefItem>();
-    }*/
+        treeEntries = new HashSet<Taxon>();
+        treeDefItems = new HashSet<TaxonTreeDefItem>();
+    }
     // End Initializer
  
-
     // Property accessors
 
     /**
@@ -113,22 +105,4 @@ public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
     public void setTreeDefItems(Set treeDefItems) {
         this.treeDefItems = treeDefItems;
     }
-
-  /**
-	 * toString
-	 * @return String
-	 */
-  public String toString() {
-	  StringBuffer buffer = new StringBuffer();
-
-      buffer.append(getClass().getName()).append("@").append(Integer.toHexString(hashCode())).append(" [");
-      buffer.append("treeDefId").append("='").append(getTreeDefId()).append("' ");			
-      buffer.append("name").append("='").append(getName()).append("' ");			
-      buffer.append("]");
-      
-      return buffer.toString();
-	}
-
-
-
 }

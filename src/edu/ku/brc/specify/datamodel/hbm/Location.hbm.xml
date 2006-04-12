@@ -1,274 +1,139 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
-    <class name="edu.ku.brc.specify.datamodel.Location" table="location" lazy="true">
-    <meta attribute="class-description" inherit="false"/>
-        <meta attribute="implements">Treeable</meta>
-        <meta attribute="implements">java.awt.datatransfer.Transferable</meta>
-        <meta attribute="extra-import">java.awt.datatransfer.DataFlavor</meta>
-        <meta attribute="extra-import">java.io.IOException</meta>
-        <meta attribute="extra-import">java.awt.datatransfer.UnsupportedFlavorException</meta>
-        <meta attribute="class-code">
-            <![CDATA[
-    		/**
-    		 * @return the parent Location object
-    		 */
-    		public Treeable getParentNode()
-    		{
-    			return getParent();
-    		}
-    		
-    		/**
-    		 * @param parent the new parent Location object
-    		 *
-    		 * @throws IllegalArgumentException if treeDef is not instance of Location
-    		 */
-    		public void setParentNode(Treeable parent)
-    		{
-    		    if( parent == null )
-    		    {
-    		        setParent(null);
-    		        return;
-    		    }
-    		    
-    			if( !(parent instanceof Location) )
-    			{
-    				throw new IllegalArgumentException("Argument must be an instance of Location");
-    			}
-    			setParent((Location)parent);
-    		}
-    		
-    		/**
-    		 * @return the parent LocationTreeDef object
-    		 */
-    		public TreeDefinitionIface getTreeDef()
-    		{
-    			return getDefinition();
-    		}
-    		
-    		/**
-    		 * @param treeDef the new LocationTreeDef object
-    		 *
-    		 * @throws IllegalArgumentException if treeDef is not instance of LocationTreeDef
-    		 */
-    		public void setTreeDef(TreeDefinitionIface treeDef)
-    		{
-    			if( !(treeDef instanceof LocationTreeDef) )
-    			{
-    				throw new IllegalArgumentException("Argument must be an instance of LocationTreeDef");
-    			}
-    			
-    			setDefinition((LocationTreeDef)treeDef);
-    		}
-    		
-    		/**
-    		 *
-    		 */
-    		public TreeDefinitionItemIface getDefItem()
-    		{
-    			return getDefinitionItem();
-    		}
-    		
-    		/**
-    		 * @param defItem the new LocationTreeDefItem object representing this items level
-    		 *
-    		 * @throws IllegalArgumentException if defItem is not instance of LocationTreeDefItem
-    		 */
-    		public void setDefItem(TreeDefinitionItemIface defItem)
-    		{
-    			if( !(defItem instanceof LocationTreeDefItem) )
-    			{
-    				throw new IllegalArgumentException("Argument must be an instance of LocationTreeDefItem");
-    			}
-    			
-    			setDefinitionItem((LocationTreeDefItem)defItem);
-    		}
-    		
-    		/**
-    		 * @param other the Treeable to compare to
-    		 */
-    		public int compareTo(Treeable other)
-    		{
-    			return name.compareTo(other.getName());
-    		}
-    		
-    		public DataFlavor[] getTransferDataFlavors()
-    		{
-    		    DataFlavor[] flavors = new DataFlavor[1];
-    		    try
-    		    {
-    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType +
-    		                ";class=edu.ku.brc.specify.datamodel.Treeable");
-    		    }
-    		    catch( ClassNotFoundException ex )
-    		    {
-    		        //TODO: What do we want to do here?
-    		    }
-    		
-    		    return flavors;
-	        }
+<hibernate-mapping>
 
-        	public boolean isDataFlavorSupported( DataFlavor flavor )
-        	{
-    		    DataFlavor[] flavors = new DataFlavor[1];
-    		    try
-    		    {
-    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType +
-    		                ";class=edu.ku.brc.specify.datamodel.Treeable");
-    		    }
-    		    catch( ClassNotFoundException ex )
-    		    {
-    		        //TODO: What do we want to do here?
-    		    }
+	<class name="edu.ku.brc.specify.datamodel.Location" table="location"
+		lazy="true">
+		<meta attribute="class-description" inherit="false" />
 
-        		for( DataFlavor df: flavors )
-        		{
-        			if( df.equals(flavor) )
-        			{
-        				return true;
-        			}
-        		}
-        		
-        		return false;
-        	}
+		<id name="treeId" type="java.lang.Integer" column="TreeID">
+			<meta attribute="scope-field">protected</meta>
+			<generator class="native" />
+		</id>
 
-        	public Object getTransferData( DataFlavor flavor ) throws UnsupportedFlavorException, IOException
-        	{
-    		    DataFlavor[] flavors = new DataFlavor[1];
-    		    try
-    		    {
-    		        flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType +
-    		                ";class=edu.ku.brc.specify.datamodel.Treeable");
-    		    }
-    		    catch( ClassNotFoundException ex )
-    		    {
-    		        //TODO: What do we want to do here?
-    		    }
+		<property name="name" type="java.lang.String" column="Name"
+			length="128">
+			<meta attribute="scope-field">protected</meta>
+		</property>
 
-        		if( flavor.equals(flavors[0]) )
-        		{
-        			return this;
-        		}
-        		else
-        		{
-        			return null;
-        		}
-        	}
-        	]]>
-        </meta>
+		<property name="rankId" type="java.lang.Integer" column="RankID"
+			length="10">
+			<meta attribute="scope-field">protected</meta>
+		</property>
 
-        <id name="treeId" type="java.lang.Integer" column="TreeID">
-            <meta attribute="field-description"></meta>
-            <meta attribute="scope-field">protected</meta>
-            <generator class="native"/>
-        </id>
+		<property name="nodeNumber" type="java.lang.Integer"
+			column="NodeNumber" length="10" index="IX_LOC_NodeNumber">
+			<meta attribute="scope-field">protected</meta>
+		</property>
 
-        <property name="name" type="java.lang.String" column="Name" length="128">
-            <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"></meta>
-        </property>
+		<property name="highestChildNodeNumber" type="java.lang.Integer"
+			column="HighestChildNodeNumber" length="10"
+			index="IX_LOC_HighestChildNodeNumber">
+			<meta attribute="scope-field">protected</meta>
+		</property>
 
-        <property name="rankId" type="java.lang.Integer" column="RankID" length="10">
-            <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"></meta>
-        </property>
+		<property name="abbrev" type="java.lang.String" column="Abbrev"
+			length="16">
+			<meta attribute="scope-field">protected</meta>
+		</property>
 
-        <property name="nodeNumber" type="java.lang.Integer" column="NodeNumber" length="10" index="IX_LOC_NodeNumber">
-            <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"></meta>
-        </property>
+		<property name="text1" type="java.lang.String" column="Text1"
+			length="32">
+			<meta attribute="scope-field">protected</meta>
+		</property>
 
-        <property name="highestChildNodeNumber" type="java.lang.Integer" column="HighestChildNodeNumber" length="10" index="IX_LOC_HighestChildNodeNumber">
-            <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"></meta>
-        </property>
+		<property name="text2" type="java.lang.String" column="Text2"
+			length="32">
+			<meta attribute="scope-field">protected</meta>
+		</property>
 
-        <property name="abbrev" type="java.lang.String" column="Abbrev" length="16">
-            <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"></meta>
-        </property>
+		<property name="number1" type="java.lang.Integer"
+			column="Number1" length="10">
+			<meta attribute="scope-field">protected</meta>
+		</property>
 
-        <property name="text1" type="java.lang.String" column="Text1" length="32">
-            <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"></meta>
-        </property>
+		<property name="number2" type="java.lang.Integer"
+			column="Number2" length="10">
+			<meta attribute="scope-field">protected</meta>
+		</property>
 
-        <property name="text2" type="java.lang.String" column="Text2" length="32">
-            <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"></meta>
-        </property>
+		<property name="timestampCreated" type="java.sql.Timestamp"
+			column="TimestampCreated" length="23">
+			<meta attribute="scope-field">protected</meta>
+		</property>
 
-        <property name="number1" type="java.lang.Integer" column="Number1" length="10">
-            <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"></meta>
-        </property>
+		<property name="timestampModified" type="java.sql.Timestamp"
+			column="TimestampModified" length="23">
+			<meta attribute="scope-field">protected</meta>
+		</property>
 
-        <property name="number2" type="java.lang.Integer" column="Number2" length="10">
-            <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"></meta>
-        </property>
+		<property name="timestampVersion" type="java.sql.Timestamp"
+			column="TimestampVersion" length="16">
+			<meta attribute="scope-field">protected</meta>
+		</property>
 
-        <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23">
-            <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"></meta>
-        </property>
+		<property name="lastEditedBy" type="java.lang.String"
+			column="LastEditedBy" length="50">
+			<meta attribute="scope-field">protected</meta>
+		</property>
 
-        <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
-            <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"></meta>
-        </property>
+		<!-- Associations -->
 
-        <property name="timestampVersion" type="java.sql.Timestamp" column="TimestampVersion" length="16">
-            <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"></meta>
-        </property>
+		<!-- bi-directional many-to-one association to LocationTreeDef -->
+		<many-to-one name="definition"
+			class="edu.ku.brc.specify.datamodel.LocationTreeDef" lazy="false"
+			not-null="true" outer-join="true">
+			<column name="TreeDefID" />
+		</many-to-one>
 
-        <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
-            <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"></meta>
-        </property>
+		<!-- bi-directional many-to-one association to LocationTreeDefItem -->
+		<many-to-one name="definitionItem"
+			class="edu.ku.brc.specify.datamodel.LocationTreeDefItem" lazy="false"
+			not-null="true" outer-join="true">
+			<column name="TreeDefItemID" />
+		</many-to-one>
 
-        <!-- Associations -->
+		<!-- bi-directional many-to-one association to Location -->
+		<many-to-one name="parent"
+			class="edu.ku.brc.specify.datamodel.Location" not-null="true"
+			outer-join="true">
+			<meta attribute="field-description"></meta>
+			<column name="ParentID" />
+		</many-to-one>
 
-        <!-- bi-directional many-to-one association to LocationTreeDef -->
-        <many-to-one name="definition" class="edu.ku.brc.specify.datamodel.LocationTreeDef" lazy="false" not-null="true" outer-join="true">
-            <meta attribute="field-description"></meta>
-            <column name="TreeDefID"/>
-        </many-to-one>
+		<!-- bi-directional one-to-many association to Preparation -->
+		<set name="preparations" lazy="true" inverse="true"
+			cascade="all">
+			<meta attribute="scope-field">protected</meta>
+			<key>
+				<column name="LocationID" />
+			</key>
+			<one-to-many
+				class="edu.ku.brc.specify.datamodel.Preparation" />
+		</set>
 
-        <!-- bi-directional many-to-one association to LocationTreeDefItem -->
-        <many-to-one name="definitionItem" class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"
-            lazy="false" not-null="true" outer-join="true">
-            <meta attribute="field-description"> @hibernate.many-to-one not-null="true"@hibernate.column name="TreeDefItemID" </meta>
-            <column name="TreeDefItemID"/>
-        </many-to-one>
-        
-        <!-- bi-directional many-to-one association to Location -->
-        <many-to-one name="parent" class="edu.ku.brc.specify.datamodel.Location" not-null="true" outer-join="true">
-            <meta attribute="field-description"></meta>
-            <column name="ParentID"/>
-        </many-to-one>
+		<!-- bi-directional one-to-many association to Container -->
+		<set name="containers" lazy="true" inverse="true"
+			cascade="all">
+			<meta attribute="scope-field">protected</meta>
+			<key>
+				<column name="LocationID" />
+			</key>
+			<one-to-many class="edu.ku.brc.specify.datamodel.Container" />
+		</set>
 
-        <!-- bi-directional one-to-many association to Preparation -->
-        <set name="preparations" lazy="true" inverse="true" cascade="all">
-            <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"></meta>
-            <key>
-                <column name="LocationID"/>
-            </key>
-            <one-to-many class="edu.ku.brc.specify.datamodel.Preparation"/>
-        </set>
+		<set name="children" lazy="true" inverse="true"
+			cascade="none">
+			<meta attribute="scope-field">protected</meta>
+			<key>
+				<column name="ParentId" />
+			</key>
+			<one-to-many class="edu.ku.brc.specify.datamodel.Location" />
+		</set>
 
-        <!-- bi-directional one-to-many association to Container -->
-        <set name="containers" lazy="true" inverse="true" cascade="all">
-            <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"></meta>
-            <key>
-                <column name="LocationID"/>
-            </key>
-            <one-to-many class="edu.ku.brc.specify.datamodel.Container"/>
-        </set>
+	</class>
 
-    </class>
-    
 </hibernate-mapping>

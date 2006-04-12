@@ -1,5 +1,7 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Set;
+
 /**
  * Describes any class where a collection of its objects can be modeled as
  * a tree.  Each instance of the implementing class represents a single node
@@ -22,7 +24,7 @@ package edu.ku.brc.specify.datamodel;
  * 
  * @author jstewart
  */
-public interface Treeable extends Comparable<Treeable>
+public interface Treeable
 {
 	/**
 	 * @return the ID (primary key) of this node
@@ -50,6 +52,12 @@ public interface Treeable extends Comparable<Treeable>
 	 * @param node the new parent
 	 */
 	public void setParentNode(Treeable node);
+	
+	public Set<Treeable> getChildNodes();
+	
+	public void setChildNodes( Set<Treeable> children );
+	
+	public void addChildNode( Treeable child );
 	
 	/**
 	 * @return the node number as determined by a depth-first traversal of the containing tree
@@ -116,7 +124,4 @@ public interface Treeable extends Comparable<Treeable>
 	 * @throws IllegalArgumentException if defItem isn't an object of the correct type to represent this Treeable's tree definition
 	 */
 	public void setDefItem(TreeDefinitionItemIface defItem);
-    // Add Methods
-
-    // Done Add Methods
 }

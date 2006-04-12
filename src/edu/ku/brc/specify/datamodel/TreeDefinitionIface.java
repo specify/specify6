@@ -4,20 +4,6 @@ import java.util.Set;
 
 public interface TreeDefinitionIface
 {
-	/** Old Tree Definition Interface **/
-//	public Integer getTreeNodeId();
-//	public void setTreeNodeId(Integer id);
-//	
-//	public String getName();
-//	public void setName(String name);
-//	
-//	public Integer getTreeDefId();
-//	public void setTreeDefId(Integer id);
-//	
-//	public TreeDefinitionIface getParentDef();
-//	public void setParentDef(TreeDefinitionIface parent);
-	
-	/** New Tree Definition Interface **/
 	public Integer getTreeDefId();
 	public void setTreeDefId(Integer id);
 	
@@ -32,7 +18,4 @@ public interface TreeDefinitionIface
 	
 	public Set getTreeDefItems();
 	public void setTreeDefItems(Set treeDefItems);
-    // Add Methods
-
-    // Done Add Methods
 }

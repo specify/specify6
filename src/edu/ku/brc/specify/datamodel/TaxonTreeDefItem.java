@@ -4,12 +4,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-
-
-
-/**
-
- */
 public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serializable {
 
     // Fields    
@@ -23,7 +17,6 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
      protected TaxonTreeDefItem parent;
      protected Set children;
 
-
     // Constructors
 
     /** default constructor */
@@ -36,19 +29,18 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
     }
    
     // Initializer
-    /*public void initialize()
+    public void initialize()
     {
         treeDefItemId = null;
         name = null;
         rankId = null;
         isEnforced = null;
         treeDef = null;
-        treeEntries = new HashSet<TreeEntrie>();
+        treeEntries = new HashSet<Taxon>();
         parent = null;
-        children = new HashSet<Children>();
-    }*/
+        children = new HashSet<TaxonTreeDefItem>();
+    }
     // End Initializer
-    
 
     // Property accessors
 
@@ -140,76 +132,54 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
         this.children = children;
     }
 
-  /**
-	 * toString
-	 * @return String
-	 */
-  public String toString() {
-	  StringBuffer buffer = new StringBuffer();
-
-      buffer.append(getClass().getName()).append("@").append(Integer.toHexString(hashCode())).append(" [");
-      buffer.append("treeDefItemId").append("='").append(getTreeDefItemId()).append("' ");			
-      buffer.append("name").append("='").append(getName()).append("' ");			
-      buffer.append("treeDef").append("='").append(getTreeDef()).append("' ");			
-      buffer.append("]");
-      
-      return buffer.toString();
-	}
-
-
-
-  // The following is extra code specified in the hbm.xml files
-
+    // Added code to implement TreeDefinitionItemIface
                             
-                public TreeDefinitionIface getTreeDefinition()
-                {
-                    return getTreeDef();
-                }
-                
-                public void setTreeDefinition(TreeDefinitionIface treeDef)
-                {
-                    if( !(treeDef instanceof TaxonTreeDef) )
-                    {
-                        throw new IllegalArgumentException("Argument must be an instanceof TaxonTreeDef");
-                    }
-                    setTreeDef((TaxonTreeDef)treeDef);
-                }
-                
-                public TreeDefinitionItemIface getParentItem()
-                {
-                    return getParent();
-                }
-                
-                public void setParentItem(TreeDefinitionItemIface parent)
-                {
-                    if( !(parent instanceof TaxonTreeDefItem) )
-                    {
-                        throw new IllegalArgumentException("Argument must be an instanceof TaxonTreeDefItem");
-                    }
-                    setParent((TaxonTreeDefItem)parent);
-                }
+    public TreeDefinitionIface getTreeDefinition()
+    {
+        return getTreeDef();
+    }
     
-                public TreeDefinitionItemIface getChildItem()
-                {
-                    if( getChildren().isEmpty() )
-                    {
-                        return null;
-                    }
-                    
-                    return (TreeDefinitionItemIface)getChildren().iterator().next();
-                }
-                
-                public void setChildItem(TreeDefinitionItemIface child)
-                {
-                    if( !(child instanceof TaxonTreeDefItem) )
-                    {
-                        throw new IllegalArgumentException("Argument must be an instanceof TaxonTreeDefItem");
-                    }
-                    Set children = Collections.synchronizedSet(new HashSet());
-                    children.add(child);
-                    setChildren(children);
-                }
-                
-            
-  // end of extra code specified in the hbm.xml files
+    public void setTreeDefinition(TreeDefinitionIface treeDef)
+    {
+        if( !(treeDef instanceof TaxonTreeDef) )
+        {
+            throw new IllegalArgumentException("Argument must be an instance of TaxonTreeDef");
+        }
+        setTreeDef((TaxonTreeDef)treeDef);
+    }
+    
+    public TreeDefinitionItemIface getParentItem()
+    {
+        return getParent();
+    }
+    
+    public void setParentItem(TreeDefinitionItemIface parent)
+    {
+        if( !(parent instanceof TaxonTreeDefItem) )
+        {
+            throw new IllegalArgumentException("Argument must be an instance of TaxonTreeDefItem");
+        }
+        setParent((TaxonTreeDefItem)parent);
+    }
+
+    public TreeDefinitionItemIface getChildItem()
+    {
+        if( getChildren().isEmpty() )
+        {
+            return null;
+        }
+        
+        return (TreeDefinitionItemIface)getChildren().iterator().next();
+    }
+    
+    public void setChildItem(TreeDefinitionItemIface child)
+    {
+        if( !(child instanceof TaxonTreeDefItem) )
+        {
+            throw new IllegalArgumentException("Argument must be an instance of TaxonTreeDefItem");
+        }
+        Set children = new HashSet<TaxonTreeDefItem>();
+        children.add(child);
+        setChildren(children);
+    }
 }

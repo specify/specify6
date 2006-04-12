@@ -3,12 +3,6 @@ package edu.ku.brc.specify.datamodel;
 import java.util.HashSet;
 import java.util.Set;
 
-
-
-
-/**
-
- */
 public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.Serializable {
 
     // Fields    
@@ -19,7 +13,6 @@ public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.S
      protected Set treeEntries;
      protected Set treeDefItems;
      protected Set collObjDefs;
-
 
     // Constructors
 
@@ -33,17 +26,16 @@ public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.S
     }
    
     // Initializer
-    /*public void initialize()
+    public void initialize()
     {
         treeDefId = null;
         name = null;
         remarks = null;
-        treeEntries = new HashSet<TreeEntrie>();
-        treeDefItems = new HashSet<TreeDefItem>();
-        collObjDefs = new HashSet<CollObjDef>();
-    }*/
+        treeEntries = new HashSet<GeologicTimePeriod>();
+        treeDefItems = new HashSet<GeologicTimePeriodTreeDefItem>();
+        collObjDefs = new HashSet<CollectionObjDef>();
+    }
     // End Initializer
-    
 
     // Property accessors
 
@@ -112,22 +104,4 @@ public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.S
     public void setCollObjDefs(Set collObjDefs) {
         this.collObjDefs = collObjDefs;
     }
-
-  /**
-	 * toString
-	 * @return String
-	 */
-  public String toString() {
-	  StringBuffer buffer = new StringBuffer();
-
-      buffer.append(getClass().getName()).append("@").append(Integer.toHexString(hashCode())).append(" [");
-      buffer.append("treeDefId").append("='").append(getTreeDefId()).append("' ");			
-      buffer.append("name").append("='").append(getName()).append("' ");			
-      buffer.append("]");
-      
-      return buffer.toString();
-	}
-
-
-
 }

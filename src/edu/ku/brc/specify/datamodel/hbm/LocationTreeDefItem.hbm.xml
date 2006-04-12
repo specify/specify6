@@ -1,110 +1,64 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
-        
-        <class name="edu.ku.brc.specify.datamodel.LocationTreeDefItem" table="locationtreedefitem" lazy="true">
-    <meta attribute="class-description" inherit="false"/>
-            <meta attribute="implements">TreeDefinitionItemIface</meta>
-            <meta attribute="class-code">
-                <![CDATA[
-                public TreeDefinitionIface getTreeDefinition()
-                {
-                    return getTreeDef();
-                }
-                
-                public void setTreeDefinition(TreeDefinitionIface treeDef)
-                {
-                    if( !(treeDef instanceof LocationTreeDef) )
-                    {
-                        throw new IllegalArgumentException("Argument must be an instanceof LocationTreeDef");
-                    }
-                    setTreeDef((LocationTreeDef)treeDef);
-                }
-                
-                public TreeDefinitionItemIface getParentItem()
-                {
-                    return getParent();
-                }
-                
-                public void setParentItem(TreeDefinitionItemIface parent)
-                {
-                    if( !(parent instanceof LocationTreeDefItem) )
-                    {
-                        throw new IllegalArgumentException("Argument must be an instanceof LocationTreeDefItem");
-                    }
-                    setParent((LocationTreeDefItem)parent);
-                }
-    
-                public TreeDefinitionItemIface getChildItem()
-                {
-                    if( getChildren().isEmpty() )
-                    {
-                        return null;
-                    }
-                    
-                    return (TreeDefinitionItemIface)getChildren().iterator().next();
-                }
-                
-                public void setChildItem(TreeDefinitionItemIface child)
-                {
-                    if( !(child instanceof LocationTreeDefItem) )
-                    {
-                        throw new IllegalArgumentException("Argument must be an instanceof LocationTreeDefItem");
-                    }
-                    Set children = Collections.synchronizedSet(new HashSet());
-                    children.add(child);
-                    setChildren(children);
-                }
-                ]]>
-            </meta>
-            
-            <id name="treeDefItemId" type="java.lang.Integer" column="TreeDefItemID" length="10">
-                <meta attribute="scope-field">protected</meta>
-                <meta attribute="use-in-tostring">true</meta>
-                <meta attribute="field-description"></meta>
-                <generator class="native"/>
-            </id>
-            
-            <property name="name" type="java.lang.String" column="Name" length="64">
-                <meta attribute="scope-field">protected</meta>
-                <meta attribute="use-in-tostring">true</meta>
-                <meta attribute="field-description"></meta>
-            </property>
-            
-            <property name="rankId" type="java.lang.Integer" column="RankID">
-                <meta attribute="scope-field">protected</meta>
-                <meta attribute="field-description"></meta>
-            </property>
-            
-            <property name="isEnforced" type="java.lang.Boolean" column="IsEnforced">
-                <meta attribute="scope-field">protected</meta>
-                <meta attribute="field-description"></meta>
-            </property>
-            
-            <!-- Associations -->
-            
-            <!-- bi-directional many-to-one association to TreeDef -->
-            <many-to-one name="treeDef" column="TreeDefID" class="edu.ku.brc.specify.datamodel.LocationTreeDef" lazy="false">
-                <meta attribute="scope-field">protected</meta>
-                <meta attribute="use-in-tostring">true</meta>
-                <meta attribute="field-description"></meta>
-            </many-to-one>
-            
-            <many-to-one name="parent" column="ParentItemID" class="edu.ku.brc.specify.datamodel.LocationTreeDefItem" cascade="save-update" lazy="false">
-                <meta attribute="scope-field">protected</meta>
-            </many-to-one>
-            
-	        <set name="treeEntries" table="Location" inverse="true" lazy="true">
-	            <meta attribute="scope-field">protected</meta>
-	            <key column="TreeDefItemID"/>
-	            <one-to-many class="edu.ku.brc.specify.datamodel.Location"/>
-	        </set>
-        
-            <set name="children" table="LocationTreeDefItem" inverse="true" lazy="false">
-                <meta attribute="scope-field">protected</meta>
-                <key column="ParentItemID"/>
-                <one-to-many class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"/>
-            </set>
-            
-        </class>
-        
-    </hibernate-mapping>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+	<class name="edu.ku.brc.specify.datamodel.LocationTreeDefItem"
+		table="locationtreedefitem" lazy="true">
+		<meta attribute="class-description" inherit="false" />
+
+		<id name="treeDefItemId" type="java.lang.Integer"
+			column="TreeDefItemID" length="10">
+			<meta attribute="scope-field">protected</meta>
+			<generator class="native" />
+		</id>
+
+		<property name="name" type="java.lang.String" column="Name"
+			length="64">
+			<meta attribute="scope-field">protected</meta>
+		</property>
+
+		<property name="rankId" type="java.lang.Integer"
+			column="RankID">
+			<meta attribute="scope-field">protected</meta>
+		</property>
+
+		<property name="isEnforced" type="java.lang.Boolean"
+			column="IsEnforced">
+			<meta attribute="scope-field">protected</meta>
+		</property>
+
+		<!-- Associations -->
+
+		<!-- bi-directional many-to-one association to TreeDef -->
+		<many-to-one name="treeDef" column="TreeDefID"
+			class="edu.ku.brc.specify.datamodel.LocationTreeDef" lazy="false">
+			<meta attribute="scope-field">protected</meta>
+		</many-to-one>
+
+		<many-to-one name="parent" column="ParentItemID"
+			class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"
+			cascade="save-update" lazy="false">
+			<meta attribute="scope-field">protected</meta>
+		</many-to-one>
+
+		<set name="treeEntries" table="Location" inverse="true"
+			lazy="true">
+			<meta attribute="scope-field">protected</meta>
+			<key column="TreeDefItemID" />
+			<one-to-many class="edu.ku.brc.specify.datamodel.Location" />
+		</set>
+
+		<set name="children" table="LocationTreeDefItem" inverse="true"
+			lazy="false">
+			<meta attribute="scope-field">protected</meta>
+			<key column="ParentItemID" />
+			<one-to-many
+				class="edu.ku.brc.specify.datamodel.LocationTreeDefItem" />
+		</set>
+
+	</class>
+
+</hibernate-mapping>

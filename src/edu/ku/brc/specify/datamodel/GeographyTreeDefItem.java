@@ -1,15 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-
-
-
-/**
-
- */
 public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Serializable {
 
     // Fields    
@@ -23,7 +16,6 @@ public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Se
      protected Set treeEntries;
      protected Set children;
 
-
     // Constructors
 
     /** default constructor */
@@ -36,7 +28,7 @@ public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Se
     }
    
     // Initializer
-    /*public void initialize()
+    public void initialize()
     {
         treeDefItemId = null;
         name = null;
@@ -44,12 +36,11 @@ public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Se
         isEnforced = null;
         treeDef = null;
         parent = null;
-        treeEntries = new HashSet<TreeEntrie>();
-        children = new HashSet<Children>();
-    }*/
+        treeEntries = new HashSet<Geography>();
+        children = new HashSet<GeographyTreeDefItem>();
+    }
     // End Initializer
     
-
     // Property accessors
 
     /**
@@ -140,76 +131,54 @@ public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Se
         this.children = children;
     }
 
-  /**
-	 * toString
-	 * @return String
-	 */
-  public String toString() {
-	  StringBuffer buffer = new StringBuffer();
+    // Added code to implement TreeDefinitionItemIface
+    
+    public TreeDefinitionIface getTreeDefinition()
+    {
+        return getTreeDef();
+    }
+    
+    public void setTreeDefinition(TreeDefinitionIface treeDef)
+    {
+        if( !(treeDef instanceof GeographyTreeDef) )
+        {
+            throw new IllegalArgumentException("Argument must be an instance of GeographyTreeDef");
+        }
+        setTreeDef((GeographyTreeDef)treeDef);
+    }
+    
+    public TreeDefinitionItemIface getParentItem()
+    {
+        return getParent();
+    }
+    
+    public void setParentItem(TreeDefinitionItemIface parent)
+    {
+        if( !(parent instanceof GeographyTreeDefItem) )
+        {
+            throw new IllegalArgumentException("Argument must be an instance of GeographyTreeDefItem");
+        }
+        setParent((GeographyTreeDefItem)parent);
+    }
 
-      buffer.append(getClass().getName()).append("@").append(Integer.toHexString(hashCode())).append(" [");
-      buffer.append("treeDefItemId").append("='").append(getTreeDefItemId()).append("' ");			
-      buffer.append("name").append("='").append(getName()).append("' ");			
-      buffer.append("treeDef").append("='").append(getTreeDef()).append("' ");			
-      buffer.append("]");
-      
-      return buffer.toString();
-	}
-
-
-
-  // The following is extra code specified in the hbm.xml files
-
-            
-            public TreeDefinitionIface getTreeDefinition()
-            {
-                return getTreeDef();
-            }
-            
-            public void setTreeDefinition(TreeDefinitionIface treeDef)
-            {
-                if( !(treeDef instanceof GeographyTreeDef) )
-                {
-                    throw new IllegalArgumentException("Argument must be an instanceof GeographyTreeDef");
-                }
-                setTreeDef((GeographyTreeDef)treeDef);
-            }
-            
-            public TreeDefinitionItemIface getParentItem()
-            {
-                return getParent();
-            }
-            
-            public void setParentItem(TreeDefinitionItemIface parent)
-            {
-                if( !(parent instanceof GeographyTreeDefItem) )
-                {
-                    throw new IllegalArgumentException("Argument must be an instanceof GeographyTreeDefItem");
-                }
-                setParent((GeographyTreeDefItem)parent);
-            }
-
-            public TreeDefinitionItemIface getChildItem()
-            {
-                if( getChildren().isEmpty() )
-                {
-                    return null;
-                }
-                
-                return (TreeDefinitionItemIface)getChildren().iterator().next();
-            }
-            
-            public void setChildItem(TreeDefinitionItemIface child)
-            {
-                if( !(child instanceof GeographyTreeDefItem) )
-                {
-                    throw new IllegalArgumentException("Argument must be an instanceof GeographyTreeDefItem");
-                }
-                Set children = Collections.synchronizedSet(new HashSet());
-                children.add(child);
-                setChildren(children);
-            }
-            
+    public TreeDefinitionItemIface getChildItem()
+    {
+        if( getChildren().isEmpty() )
+        {
+            return null;
+        }
         
-  // end of extra code specified in the hbm.xml files
+        return (TreeDefinitionItemIface)getChildren().iterator().next();
+    }
+    
+    public void setChildItem(TreeDefinitionItemIface child)
+    {
+        if( !(child instanceof GeographyTreeDefItem) )
+        {
+            throw new IllegalArgumentException("Argument must be an instance of GeographyTreeDefItem");
+        }
+        Set children = new HashSet<GeographyTreeDefItem>();
+        children.add(child);
+        setChildren(children);
+    }
 }

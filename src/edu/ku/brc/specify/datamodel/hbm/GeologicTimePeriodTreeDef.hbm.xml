@@ -1,48 +1,53 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
-    <class name="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef" table="geologictimeperiodtreedef" lazy="true">
-    <meta attribute="class-description" inherit="false"/>
-        <meta attribute="implements">TreeDefinitionIface</meta>
+<hibernate-mapping>
 
-        <id name="treeDefId" type="java.lang.Integer" column="TreeDefID">
-            <meta attribute="scope-field">protected</meta>
-            <meta attribute="use-in-tostring">true</meta>
-            <meta attribute="field-description"></meta>
-            <generator class="native"/>
-        </id>
+	<class name="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"
+		table="geologictimeperiodtreedef" lazy="true">
+		<meta attribute="class-description" inherit="false" />
 
-        <property name="name" type="java.lang.String" column="Name" length="64">
-            <meta attribute="scope-field">protected</meta>
-            <meta attribute="use-in-tostring">true</meta>
-            <meta attribute="field-description"></meta>
-        </property>
+		<id name="treeDefId" type="java.lang.Integer"
+			column="TreeDefID">
+			<meta attribute="scope-field">protected</meta>
+			<generator class="native" />
+		</id>
 
-        <property name="remarks" type="java.lang.String" column="Remarks" length="255">
-            <meta attribute="scope-field">protected</meta>
-            <meta attribute="field-description"></meta>
-        </property>
-        
-        <!-- Associations -->
-        
-        <set name="treeEntries" table="GeologicTimePeriod" inverse="true" lazy="true">
-            <meta attribute="field-description"></meta>
-            <key column="TreeDefID"/>
-            <one-to-many class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
-        </set>
-        
-        <set name="treeDefItems" table="GeologicTimePeriodTreeDefItem" inverse="true" lazy="false">
-            <meta attribute="field-description"></meta>
-            <key column="TreeDefID"/>
-            <one-to-many class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"/>
-        </set>
+		<property name="name" type="java.lang.String" column="Name"
+			length="64">
+			<meta attribute="scope-field">protected</meta>
+		</property>
 
-        <set name="collObjDefs" table="CollectionObjDef" inverse="true">
-            <meta attribute="field-description"></meta>
-            <key column="geologicTimePeriodTreeDefID"/>
-            <one-to-many class="edu.ku.brc.specify.datamodel.CollectionObjDef"/>
-        </set>
-        
-    </class>
-    
+		<property name="remarks" type="java.lang.String"
+			column="Remarks" length="255">
+			<meta attribute="scope-field">protected</meta>
+		</property>
+
+		<!-- Associations -->
+
+		<set name="treeEntries" table="GeologicTimePeriod"
+			inverse="true" lazy="true">
+			<key column="TreeDefID" />
+			<one-to-many
+				class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" />
+		</set>
+
+		<set name="treeDefItems" table="GeologicTimePeriodTreeDefItem"
+			inverse="true" lazy="false">
+			<key column="TreeDefID" />
+			<one-to-many
+				class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem" />
+		</set>
+
+		<set name="collObjDefs" table="CollectionObjDef"
+			inverse="true">
+			<key column="geologicTimePeriodTreeDefID" />
+			<one-to-many
+				class="edu.ku.brc.specify.datamodel.CollectionObjDef" />
+		</set>
+
+	</class>
+
 </hibernate-mapping>
