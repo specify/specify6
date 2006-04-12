@@ -3,7 +3,9 @@ package edu.ku.brc.specify.datamodel;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -41,13 +43,13 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
      protected Short accepted;
      protected Integer rankId;
      protected String groupNumber;
-     private Set acceptedChildren;
-     private Taxon acceptedTaxon;
-     private Set taxonCitations;
-     private TaxonTreeDef definition;
-     private TaxonTreeDefItem definitionItem;
-     private Taxon parent;
-     private Set externalResources;
+     protected Set acceptedChildren;
+     protected Taxon acceptedTaxon;
+     protected Set taxonCitations;
+     protected TaxonTreeDef definition;
+     protected TaxonTreeDefItem definitionItem;
+     protected Taxon parent;
+     protected Set externalResources;
 
 
     // Constructors
@@ -61,7 +63,45 @@ public class Taxon  implements Treeable,java.awt.datatransfer.Transferable,java.
         this.treeId = treeId;
     }
    
-    
+    // Initializer
+    /*public void initialize()
+    {
+        treeId = null;
+        taxonomicSerialNumber = null;
+        guid = null;
+        name = null;
+        unitInd1 = null;
+        unitName1 = null;
+        unitInd2 = null;
+        unitName2 = null;
+        unitInd3 = null;
+        unitName3 = null;
+        unitInd4 = null;
+        unitName4 = null;
+        fullName = null;
+        commonName = null;
+        author = null;
+        source = null;
+        groupPermittedToView = null;
+        environmentalProtectionStatus = null;
+        remarks = null;
+        nodeNumber = null;
+        highestChildNodeNumber = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        lastEditedBy = null;
+        accepted = null;
+        rankId = null;
+        groupNumber = null;
+        acceptedChildren = new HashSet<AcceptedChildren>();
+        acceptedTaxon = null;
+        taxonCitations = new HashSet<TaxonCitation>();
+        definition = null;
+        definitionItem = null;
+        parent = null;
+        externalResources = new HashSet<ExternalResource>();
+    }*/
+    // End Initializer   
     
 
     // Property accessors

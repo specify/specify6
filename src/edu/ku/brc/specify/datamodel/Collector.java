@@ -14,13 +14,13 @@ public class Collector  implements java.io.Serializable {
     // Fields    
 
      protected Integer collectorsId;
-     private Integer orderNumber;
+     protected Integer orderNumber;
      protected String remarks;
-     private Date timestampModified;
-     private Date timestampCreated;
-     private String lastEditedBy;
-     private CollectingEvent collectingEvent;
-     private Agent agent;
+     protected Date timestampModified;
+     protected Date timestampCreated;
+     protected String lastEditedBy;
+     protected CollectingEvent collectingEvent;
+     protected Agent agent;
 
 
     // Constructors

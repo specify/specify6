@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -15,9 +16,9 @@ public class LocationTreeDef  implements TreeDefinitionIface,java.io.Serializabl
      protected Integer treeDefId;
      protected String name;
      protected String remarks;
-     private Set treeEntries;
-     private Set treeDefItems;
-     private Set collObjDefs;
+     protected Set treeEntries;
+     protected Set treeDefItems;
+     protected Set collObjDefs;
 
 
     // Constructors
@@ -32,7 +33,18 @@ public class LocationTreeDef  implements TreeDefinitionIface,java.io.Serializabl
     }
    
     
-    
+
+    // Initializer
+    /*public void initialize()
+    {
+        treeDefId = null;
+        name = null;
+        remarks = null;
+        treeEntries = new HashSet<TreeEntrie>();
+        treeDefItems = new HashSet<TreeDefItem>();
+        collObjDefs = new HashSet<CollObjDef>();
+    }*/
+    // End Initializer 
 
     // Property accessors
 

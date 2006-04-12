@@ -15,7 +15,7 @@ public class PickList  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer picklist_id;
+     protected Integer pickListId;
      protected String name;
      protected Boolean readOnly;
      protected Integer sizeLimit;
@@ -30,8 +30,8 @@ public class PickList  implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public PickList(Integer picklist_id) {
-        this.picklist_id = picklist_id;
+    public PickList(Integer pickListId) {
+        this.pickListId = pickListId;
     }
    
     
@@ -42,12 +42,12 @@ public class PickList  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getPicklist_id() {
-        return this.picklist_id;
+    public Integer getPickListId() {
+        return this.pickListId;
     }
     
-    public void setPicklist_id(Integer picklist_id) {
-        this.picklist_id = picklist_id;
+    public void setPickListId(Integer pickListId) {
+        this.pickListId = pickListId;
     }
 
     /**

@@ -35,7 +35,7 @@ public class Determination  implements java.io.Serializable {
      protected Taxon taxon;
      protected CollectionObject collectionObject;
      protected Set<DeterminationCitation> determinationCitations;
-     private Agent determiner;
+     protected Agent determiner;
 
 
     // Constructors

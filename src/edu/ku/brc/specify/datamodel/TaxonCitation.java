@@ -24,8 +24,8 @@ public class TaxonCitation  implements java.io.Serializable {
      protected String lastEditedBy;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     private ReferenceWork referenceWork;
-     private Taxon taxon;
+     protected ReferenceWork referenceWork;
+     protected Taxon taxon;
 
 
     // Constructors

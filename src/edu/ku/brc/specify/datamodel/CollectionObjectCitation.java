@@ -18,8 +18,8 @@ public class CollectionObjectCitation  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     private ReferenceWork referenceWork;
-     private CollectionObject collectionObject;
+     protected ReferenceWork referenceWork;
+     protected CollectionObject collectionObject;
 
 
     // Constructors

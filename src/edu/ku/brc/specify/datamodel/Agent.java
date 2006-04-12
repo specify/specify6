@@ -33,7 +33,7 @@ public class Agent  implements java.io.Serializable {
      protected Set<BorrowReturnMaterial> borrowReturnMaterials;
      protected Set<ExchangeIn> exchangeIns;
      protected Set<Agent> members;
-     private Agent organization;
+     protected Agent organization;
      protected Set<Project> projects;
      protected Set<Preparation> preparations;
      protected Set<GroupPerson> groupPersonsByGroup;

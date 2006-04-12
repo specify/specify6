@@ -27,9 +27,9 @@ public class ExchangeOut  implements java.io.Serializable {
      protected String lastEditedBy;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     private AgentAddress agentAddress;
-     private Agent agent;
-     private Shipment shipment;
+     protected AgentAddress agentAddress;
+     protected Agent agent;
+     protected Shipment shipment;
 
 
     // Constructors

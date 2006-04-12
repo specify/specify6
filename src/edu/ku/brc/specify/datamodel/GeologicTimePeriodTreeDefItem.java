@@ -35,7 +35,19 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
         this.treeDefItemId = treeDefItemId;
     }
    
-    
+    // Initializer
+    /*public void initialize()
+    {
+        treeDefItemId = null;
+        name = null;
+        rankId = null;
+        isEnforced = null;
+        treeDef = null;
+        parent = null;
+        treeEntries = new HashSet<TreeEntrie>();
+        children = new HashSet<Children>();
+    }*/
+    // End Initializer
     
 
     // Property accessors

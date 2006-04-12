@@ -19,7 +19,7 @@ public class SpecifyUser  implements java.io.Serializable {
      protected Short privLevel;
      protected Set<CollectionObjDef> collectionObjDef;
      protected Set<RecordSet> recordSets;
-     private UserGroup userGroup;
+     protected UserGroup userGroup;
 
 
     // Constructors

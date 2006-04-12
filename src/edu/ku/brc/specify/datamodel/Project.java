@@ -16,22 +16,22 @@ public class Project  implements java.io.Serializable {
     // Fields    
 
      protected Integer projectId;
-     private String projectName;
-     private String projectDescription;
-     private String url;
-     private Calendar startDate;
-     private Calendar endDate;
+     protected String projectName;
+     protected String projectDescription;
+     protected String url;
+     protected Calendar startDate;
+     protected Calendar endDate;
      protected String remarks;
      protected String text1;
      protected String text2;
-     private Float number1;
-     private Float number2;
-     private Date timestampCreated;
-     private Date timestampModified;
-     private String lastEditedBy;
+     protected Float number1;
+     protected Float number2;
+     protected Date timestampCreated;
+     protected Date timestampModified;
+     protected String lastEditedBy;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     private Agent agent;
+     protected Agent agent;
      protected Set<ProjectCollectionObject> projectCollectionObjects;
 
 

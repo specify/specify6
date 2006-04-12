@@ -544,7 +544,6 @@ public class GenericDBConversion
                                     "LoanReturnPhysicalObject",
                                     //"locality",
                                     "LocalityCitation",
-                                    "Observation",
                                     "OtherIdentifier",
                                     "Permit",
                                     "Project",
@@ -737,16 +736,16 @@ public class GenericDBConversion
         BasicSQLUtils.deleteAllRecordsFromTable("picklist_items");
 
         String[] tables = {
-                "usysaccessiontype",   "AccessionType",
-                "usysborrowagenrole",  "BorrowAgentRole",
-                "usysaccessionarole",  "AccessionaRole",
-                "usysdeaccessiorole",  "DeaccessionaRole",
-                "usysloanagentsrole",  "LoanAgentsRole",
-                "usysbiologicalsex",   "BiologicalSex",
-                "usysbiologicalstage", "BiologicalStage",
-                "usyscollectingmethod", "CollectingMethod",
-                "usyscollobjprepmeth",  "CollObjPrepMeth",
-                "usysdeaccessiotype",   "DeaccessionType",
+                "usysaccessiontype",              "AccessionType",
+                "usysborrowagenrole",             "BorrowAgentRole",
+                "usysaccessionarole",             "AccessionaRole",
+                "usysdeaccessiorole",             "DeaccessionaRole",
+                "usysloanagentsrole",             "LoanAgentsRole",
+                "usysbiologicalsex",              "BiologicalSex",
+                "usysbiologicalstage",            "BiologicalStage",
+                "usyscollectingmethod",           "CollectingMethod",
+                "usyscollobjprepmeth",            "CollObjPrepMeth",
+                "usysdeaccessiotype",             "DeaccessionType",
                 "usysdeterminatconfidence",       "DeterminationConfidence",
                 "usysdeterminatmethod",           "DeterminationMethod",
                 "usysdeterminattypestatusname",   "DeterminationTypeStatus",
@@ -2564,7 +2563,7 @@ public class GenericDBConversion
     public void convertTaxon()
     {
         // Ignore these field names from new table schema when mapping IDs
-        BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(new String[] {"NationalParkName", "GUID", "Current", "TreeDefID"});
+        BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(new String[] {"NationalParkName", "GUID", "Current", "TreeDefID", "TreeDefItemID"});
 
         //boolean showMappingErrors = BasicSQLUtils.isShowMappingError();
         //BasicSQLUtils.setShowMappingError(false); // turn off notification because of errors with TaxonTreeDefID

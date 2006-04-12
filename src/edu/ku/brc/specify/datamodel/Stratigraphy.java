@@ -31,7 +31,7 @@ public class Stratigraphy  implements java.io.Serializable {
      protected String lastEditedBy;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     private CollectingEvent collectingEvent;
+     protected CollectingEvent collectingEvent;
      protected Set<GeologicTimePeriod> children;
 
 

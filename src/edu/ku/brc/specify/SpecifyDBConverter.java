@@ -56,7 +56,7 @@ public class SpecifyDBConverter
     {
 
     }
-
+    
     protected void testPaging()
     {
         boolean testPaging = false;
@@ -155,16 +155,13 @@ public class SpecifyDBConverter
 
     }
 
+
     /**
      * Utility method to associate an artist with a catObj
      */
-    //private static void addCatalogObjCollectionEvent(CatalogObj catObj, CollectionEvent artist) {
-    //    catObj.getCollectionEvent().add(artist);
-    //}
-
     public static void main(String args[]) throws Exception
     {
-        String oldDatabaseName = "demo_fish4";
+        String oldDatabaseName = "demo_fish2";
 
         DBConnection oldDB       = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/"+oldDatabaseName, "rods", "rods");
         IdMapperMgr  idMapperMgr = new IdMapperMgr(oldDB.getConnectionToDB());
@@ -175,8 +172,7 @@ public class SpecifyDBConverter
 
         try
         {
-            //BasicSQLUtils.cleanAllTables();
-            GenericDBConversion.setShouldCreateMapTables(true);
+           GenericDBConversion.setShouldCreateMapTables(true);
             GenericDBConversion.setShouldDeleteMapTables(false);
 
             boolean doAll = true; // when converting

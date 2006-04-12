@@ -15,12 +15,12 @@ public class AccessionAuthorizations  implements java.io.Serializable {
 
      protected Integer accessionAuthorizationsId;
      protected String remarks;
-     private Date timestampModified;
-     private Date timestampCreated;
-     private String lastEditedBy;
-     private Permit permit;
-     private Accession accession;
-     private RepositoryAgreement repositoryAgreement;
+     protected Date timestampModified;
+     protected Date timestampCreated;
+     protected String lastEditedBy;
+     protected Permit permit;
+     protected Accession accession;
+     protected RepositoryAgreement repositoryAgreement;
 
 
     // Constructors

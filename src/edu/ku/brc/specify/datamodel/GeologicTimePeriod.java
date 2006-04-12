@@ -27,9 +27,9 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
      protected Date timestampCreated;
      protected Date timestampVersion;
      protected String lastEditedBy;
-     private GeologicTimePeriodTreeDef definition;
-     private GeologicTimePeriodTreeDefItem definitionItem;
-     private GeologicTimePeriod parent;
+     protected GeologicTimePeriodTreeDef definition;
+     protected GeologicTimePeriodTreeDefItem definitionItem;
+     protected GeologicTimePeriod parent;
 
 
     // Constructors
@@ -399,7 +399,5 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
     	    
         
   // end of extra code specified in the hbm.xml files
-    // Add Methods
 
-    // Done Add Methods
 }

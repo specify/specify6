@@ -30,9 +30,9 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
      protected Date timestampModified;
      protected Date timestampVersion;
      protected String lastEditedBy;
-     private LocationTreeDef definition;
-     private LocationTreeDefItem definitionItem;
-     private Location parent;
+     protected LocationTreeDef definition;
+     protected LocationTreeDefItem definitionItem;
+     protected Location parent;
      protected Set<Preparation> preparations;
      protected Set<Container> containers;
 
@@ -440,6 +440,7 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
         	
         
   // end of extra code specified in the hbm.xml files
+            
     // Add Methods
 
     public void addPreparation(final Preparation preparation)

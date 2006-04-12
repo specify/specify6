@@ -19,8 +19,8 @@ public class LoanAgent  implements java.io.Serializable {
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
-     private Loan loan;
-     private AgentAddress agentAddress;
+     protected Loan loan;
+     protected AgentAddress agentAddress;
 
 
     // Constructors

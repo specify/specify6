@@ -16,22 +16,22 @@ public class Borrow  implements java.io.Serializable {
     // Fields    
 
      protected Integer borrowId;
-     private String invoiceNumber;
-     private Calendar receivedDate;
-     private Calendar originalDueDate;
-     private Calendar dateClosed;
+     protected String invoiceNumber;
+     protected Calendar receivedDate;
+     protected Calendar originalDueDate;
+     protected Calendar dateClosed;
      protected String remarks;
-     private String text1;
-     private String text2;
-     private Float number1;
-     private Float number2;
-     private Date timestampModified;
-     private Date timestampCreated;
-     private String lastEditedBy;
-     private Short closed;
+     protected String text1;
+     protected String text2;
+     protected Float number1;
+     protected Float number2;
+     protected Date timestampModified;
+     protected Date timestampCreated;
+     protected String lastEditedBy;
+     protected Short closed;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     private Calendar currentDueDate;
+     protected Calendar currentDueDate;
      protected Set<BorrowShipment> borrowShipments;
      protected Set<BorrowAgent> borrowAgents;
      protected Set<BorrowMaterial> borrowMaterials;

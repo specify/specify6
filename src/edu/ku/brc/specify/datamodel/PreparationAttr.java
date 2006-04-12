@@ -19,7 +19,7 @@ public class PreparationAttr  implements AttributeIFace,java.io.Serializable {
      protected Date timestampCreated;
      protected Date timestampModified;
      protected AttributeDef definition;
-     private Preparation preparation;
+     protected Preparation preparation;
 
 
     // Constructors

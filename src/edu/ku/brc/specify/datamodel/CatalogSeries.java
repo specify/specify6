@@ -24,7 +24,7 @@ public class CatalogSeries  implements java.io.Serializable {
      protected Date timestampCreated;
      protected String lastEditedBy;
      protected Set<CollectionObjDef> collectionObjDefItems;
-     private CatalogSeries tissue;
+     protected CatalogSeries tissue;
 
 
     // Constructors

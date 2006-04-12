@@ -19,8 +19,8 @@ public class Author  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     private ReferenceWork referenceWork;
-     private Agent agent;
+     protected ReferenceWork referenceWork;
+     protected Agent agent;
 
 
     // Constructors

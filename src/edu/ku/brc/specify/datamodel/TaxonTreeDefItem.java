@@ -35,7 +35,19 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
         this.treeDefItemId = treeDefItemId;
     }
    
-    
+    // Initializer
+    /*public void initialize()
+    {
+        treeDefItemId = null;
+        name = null;
+        rankId = null;
+        isEnforced = null;
+        treeDef = null;
+        treeEntries = new HashSet<TreeEntrie>();
+        parent = null;
+        children = new HashSet<Children>();
+    }*/
+    // End Initializer
     
 
     // Property accessors

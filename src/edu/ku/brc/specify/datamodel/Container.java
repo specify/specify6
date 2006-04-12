@@ -21,12 +21,12 @@ public class Container  implements java.io.Serializable {
      protected String name;
      protected String description;
      protected Integer number;
-     private Date timestampModified;
-     private Date timestampCreated;
-     private String lastEditedBy;
+     protected Date timestampModified;
+     protected Date timestampCreated;
+     protected String lastEditedBy;
      protected Set<ContainerItem> items;
      protected CollectionObject container;
-     private Location location;
+     protected Location location;
 
 
     // Constructors

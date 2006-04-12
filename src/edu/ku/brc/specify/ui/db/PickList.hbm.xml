@@ -13,7 +13,7 @@
       @author Rod Spears (with help from Hibernate)
     </meta>
 
-    <id name="picklist_id" type="int" column="picklist_id">
+      <id name="pickListId" type="int" column="PickListID">
       <meta attribute="scope-set">public</meta>
       <meta attribute="scope-field">protected</meta>
       <generator class="native"/>
@@ -81,7 +81,7 @@
     <set
         name="items" table="picklist_items" lazy="false">
         <meta attribute="scope-field">protected</meta>
-        <key column="pl_id"/>
+        <key column="pickListItemID"/>
     	<composite-element class="PickListItem">
     		<property name="title" not-null="true" unique="false" length="64"/>
     		<property name="value" not-null="false" unique="false" length="64"/>

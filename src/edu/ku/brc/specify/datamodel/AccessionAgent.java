@@ -19,7 +19,7 @@ public class AccessionAgent  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     private AgentAddress agentAddress;
+     protected AgentAddress agentAddress;
      protected Accession accession;
      protected RepositoryAgreement repositoryAgreement;
 

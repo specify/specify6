@@ -18,8 +18,8 @@ public class BorrowShipment  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     private Shipment shipment;
-     private Borrow borrow;
+     protected Shipment shipment;
+     protected Borrow borrow;
 
 
     // Constructors

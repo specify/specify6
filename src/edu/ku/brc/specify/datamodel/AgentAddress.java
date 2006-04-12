@@ -39,9 +39,9 @@ public class AgentAddress  implements java.io.Serializable {
      protected Set<BorrowAgent> borrowAgents;
      protected Set<AccessionAgent> accessionAgents;
      protected Set<ExchangeOut> exchangeOuts;
-     private Agent organization;
-     private Agent agent;
-     private Address address;
+     protected Agent organization;
+     protected Agent agent;
+     protected Address address;
 
 
     // Constructors

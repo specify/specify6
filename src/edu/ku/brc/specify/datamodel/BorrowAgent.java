@@ -19,8 +19,8 @@ public class BorrowAgent  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     private AgentAddress agentAddress;
-     private Borrow borrow;
+     protected AgentAddress agentAddress;
+     protected Borrow borrow;
 
 
     // Constructors

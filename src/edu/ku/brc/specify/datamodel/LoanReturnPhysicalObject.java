@@ -20,9 +20,9 @@ public class LoanReturnPhysicalObject  implements java.io.Serializable {
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
-     private LoanPhysicalObject loanPhysicalObject;
-     private DeaccessionCollectionObject deaccessionCollectionObject;
-     private Agent agent;
+     protected LoanPhysicalObject loanPhysicalObject;
+     protected DeaccessionCollectionObject deaccessionCollectionObject;
+     protected Agent agent;
 
 
     // Constructors

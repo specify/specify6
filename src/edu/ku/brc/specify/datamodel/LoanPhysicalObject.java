@@ -25,8 +25,8 @@ public class LoanPhysicalObject  implements java.io.Serializable {
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
-     private Preparation preparation;
-     private Loan loan;
+     protected Preparation preparation;
+     protected Loan loan;
      protected Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects;
 
 

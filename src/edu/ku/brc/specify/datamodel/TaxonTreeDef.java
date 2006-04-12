@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -15,9 +16,9 @@ public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
      protected Integer treeDefId;
      protected String name;
      protected String remarks;
-     private CollectionObjDef collObjDef;
-     private Set treeEntries;
-     private Set treeDefItems;
+     protected CollectionObjDef collObjDef;
+     protected Set treeEntries;
+     protected Set treeDefItems;
 
 
     // Constructors
@@ -32,7 +33,18 @@ public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
     }
    
     
-    
+    // Initializer
+    /*public void initialize()
+    {
+        treeDefId = null;
+        name = null;
+        remarks = null;
+        collObjDef = null;
+        treeEntries = new HashSet<TreeEntrie>();
+        treeDefItems = new HashSet<TreeDefItem>();
+    }*/
+    // End Initializer
+ 
 
     // Property accessors
 

@@ -19,8 +19,8 @@ public class GroupPerson  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     private Agent agentByGroup;
-     private Agent agentByMember;
+     protected Agent agentByGroup;
+     protected Agent agentByMember;
 
 
     // Constructors

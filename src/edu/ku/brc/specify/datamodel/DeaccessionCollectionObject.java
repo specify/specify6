@@ -21,8 +21,8 @@ public class DeaccessionCollectionObject  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     private CollectionObject collectionObjectCatalog;
-     private Deaccession deaccession;
+     protected CollectionObject collectionObjectCatalog;
+     protected Deaccession deaccession;
      protected Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects;
 
 

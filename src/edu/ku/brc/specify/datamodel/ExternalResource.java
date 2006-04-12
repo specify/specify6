@@ -25,7 +25,7 @@ public class ExternalResource  implements java.io.Serializable {
      protected Date timestampModified;
      protected String lastEditedBy;
      protected Set<AttributeIFace> attrs;
-     private Agent createdByAgent;
+     protected Agent createdByAgent;
      protected Set<Agent> agents;
      protected Set<CollectionObject> collectionObjects;
      protected Set<CollectingEvent> collectinEvents;

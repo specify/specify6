@@ -11,7 +11,7 @@ public class RecordSetItem  implements java.io.Serializable {
 
     // Fields    
 
-     private String recordId;
+     protected String recordId;
 
 
     // Constructors

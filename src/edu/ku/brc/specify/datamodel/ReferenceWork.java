@@ -41,7 +41,7 @@ public class ReferenceWork  implements java.io.Serializable {
      protected Set<CollectionObjectCitation> collectionObjectCitations;
      protected Set<TaxonCitation> taxonCitations;
      protected Set<DeterminationCitation> determinationCitations;
-     private Journal journal;
+     protected Journal journal;
      protected Set<Author> authors;
 
 

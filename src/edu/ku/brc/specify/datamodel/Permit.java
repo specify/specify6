@@ -33,8 +33,8 @@ public class Permit  implements java.io.Serializable {
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      protected Set<AccessionAuthorizations> accessionAuthorizations;
-     private AgentAddress agentAddressByIssuee;
-     private AgentAddress agentAddressByIssuer;
+     protected AgentAddress agentAddressByIssuee;
+     protected AgentAddress agentAddressByIssuer;
      protected Set<ExternalResource> externalResources;
 
 

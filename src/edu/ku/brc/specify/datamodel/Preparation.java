@@ -27,10 +27,10 @@ public class Preparation  implements java.io.Serializable {
      protected String lastEditedBy;
      protected Set<LoanPhysicalObject> loanPhysicalObjects;
      protected Set<AttributeIFace> attrs;
-     private PrepType prepType;
-     private CollectionObject collectionObject;
-     private Agent preparedByAgent;
-     private Location location;
+     protected PrepType prepType;
+     protected CollectionObject collectionObject;
+     protected Agent preparedByAgent;
+     protected Location location;
      protected Set<ExternalResource> externalResources;
 
 

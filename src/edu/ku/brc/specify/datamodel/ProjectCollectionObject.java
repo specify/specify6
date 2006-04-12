@@ -18,8 +18,8 @@ public class ProjectCollectionObject  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     private CollectionObject collectionObject;
-     private Project project;
+     protected CollectionObject collectionObject;
+     protected Project project;
 
 
     // Constructors

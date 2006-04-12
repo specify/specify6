@@ -18,8 +18,8 @@ public class DeterminationCitation  implements java.io.Serializable {
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
-     private ReferenceWork referenceWork;
-     private Determination determination;
+     protected ReferenceWork referenceWork;
+     protected Determination determination;
 
 
     // Constructors

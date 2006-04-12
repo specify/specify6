@@ -19,9 +19,9 @@ public class CollectionObjDef  implements java.io.Serializable {
      protected Set<CatalogSeries> catalogSeries;
      protected SpecifyUser user;
      protected Set<AttributeDef> attributeDefs;
-     private GeographyTreeDef geographyTreeDef;
-     private GeologicTimePeriodTreeDef geologicTimePeriodTreeDef;
-     private LocationTreeDef locationTreeDef;
+     protected GeographyTreeDef geographyTreeDef;
+     protected GeologicTimePeriodTreeDef geologicTimePeriodTreeDef;
+     protected LocationTreeDef locationTreeDef;
      protected TaxonTreeDef taxonTreeDef;
      protected Set<Locality> localities;
 

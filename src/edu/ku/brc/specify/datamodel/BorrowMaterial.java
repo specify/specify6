@@ -27,7 +27,7 @@ public class BorrowMaterial  implements java.io.Serializable {
      protected Date timestampCreated;
      protected String lastEditedBy;
      protected Set<BorrowReturnMaterial> borrowReturnMaterials;
-     private Borrow borrow;
+     protected Borrow borrow;
 
 
     // Constructors

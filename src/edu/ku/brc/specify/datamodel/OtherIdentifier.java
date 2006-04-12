@@ -19,7 +19,7 @@ public class OtherIdentifier  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     private CollectionObject collectionObject;
+     protected CollectionObject collectionObject;
 
 
     // Constructors

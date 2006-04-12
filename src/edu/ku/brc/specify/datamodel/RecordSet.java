@@ -15,11 +15,11 @@ public class RecordSet  implements java.io.Serializable {
 
     // Fields
 
-     private Long recordSetID;
-     private String name;
-     private Integer tableId;
-     private Date timestampModified;
-     private Date timestampCreated;
+     protected Long recordSetID;
+     protected String name;
+     protected Integer tableId;
+     protected Date timestampModified;
+     protected Date timestampCreated;
      protected Set<RecordSetItem> items;
      protected SpecifyUser owner;
 

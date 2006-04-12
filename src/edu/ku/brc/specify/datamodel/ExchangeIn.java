@@ -27,8 +27,8 @@ public class ExchangeIn  implements java.io.Serializable {
      protected String lastEditedBy;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     private AgentAddress agentAddress;
-     private Agent agent;
+     protected AgentAddress agentAddress;
+     protected Agent agent;
 
 
     // Constructors

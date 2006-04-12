@@ -18,8 +18,8 @@ public class LocalityCitation  implements java.io.Serializable {
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
-     private ReferenceWork referenceWork;
-     private Locality locality;
+     protected ReferenceWork referenceWork;
+     protected Locality locality;
 
 
     // Constructors

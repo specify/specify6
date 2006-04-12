@@ -35,7 +35,7 @@ public class Loan  implements java.io.Serializable {
      protected Boolean yesNo2;
      protected Set<LoanAgent> loanAgents;
      protected Set<LoanPhysicalObject> loanPhysicalObjects;
-     private Shipment shipment;
+     protected Shipment shipment;
      protected Set<ExternalResource> externalResources;
 
 

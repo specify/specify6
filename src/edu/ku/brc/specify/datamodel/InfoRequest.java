@@ -13,7 +13,7 @@ public class InfoRequest  implements java.io.Serializable {
 
     // Fields    
 
-     private Long infoRequestID;
+     protected Long infoRequestID;
      protected String firstName;
      protected String lastName;
      protected String institution;
@@ -24,7 +24,7 @@ public class InfoRequest  implements java.io.Serializable {
      protected Date timestampCreated;
      protected Date timestampModified;
      protected RecordSet recordSet;
-     private Agent agent;
+     protected Agent agent;
 
 
     // Constructors

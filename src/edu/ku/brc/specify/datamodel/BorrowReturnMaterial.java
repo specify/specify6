@@ -20,8 +20,8 @@ public class BorrowReturnMaterial  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     private Agent agent;
-     private BorrowMaterial borrowMaterial;
+     protected Agent agent;
+     protected BorrowMaterial borrowMaterial;
 
 
     // Constructors

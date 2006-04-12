@@ -16,8 +16,8 @@ public class ContainerItem  implements java.io.Serializable {
     // Fields    
 
      protected Integer containerItemId;
-     private Date timestampModified;
-     private Date timestampCreated;
+     protected Date timestampModified;
+     protected Date timestampCreated;
      protected Container container;
      protected Set<CollectionObject> collectionObjects;
 

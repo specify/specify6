@@ -3,7 +3,9 @@ package edu.ku.brc.specify.datamodel;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -31,10 +33,10 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
      protected Date timestampVersion;
      protected String lastEditedBy;
      protected Boolean isCurrent;
-     private Set localities;
-     private GeographyTreeDef definition;
-     private GeographyTreeDefItem definitionItem;
-     private Geography parent;
+     protected Set<Locality> localities;
+     protected GeographyTreeDef definition;
+     protected GeographyTreeDefItem definitionItem;
+     protected Geography parent;
 
 
     // Constructors
@@ -48,7 +50,32 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
         this.treeId = treeId;
     }
    
-    
+    // Initializer
+    public void initialize()
+    {
+        treeId = null;
+        name = null;
+        commonName = null;
+        geographyCode = null;
+        rankId = null;
+        nodeNumber = null;
+        highestChildNodeNumber = null;
+        abbrev = null;
+        text1 = null;
+        text2 = null;
+        number1 = null;
+        number2 = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        timestampVersion = null;
+        lastEditedBy = null;
+        isCurrent = null;
+        localities = new HashSet<Locality>();
+        definition = null;
+        definitionItem = null;
+        parent = null;
+    }
+    // End Initializer 
     
 
     // Property accessors
@@ -453,4 +480,13 @@ public class Geography  implements Treeable,java.awt.datatransfer.Transferable,j
         	
         
   // end of extra code specified in the hbm.xml files
+            
+            // Add Methods
+
+            public void addLocalities(final Locality locality)
+            {
+                this.localities.add(locality);
+            }
+
+            // Done Add Methods
 }

@@ -32,9 +32,9 @@ public class Shipment  implements java.io.Serializable {
      protected String lastEditedBy;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     private AgentAddress agentAddressByShipper;
-     private AgentAddress agentAddressByShippedTo;
-     private Agent agent;
+     protected AgentAddress agentAddressByShipper;
+     protected AgentAddress agentAddressByShippedTo;
+     protected Agent agent;
      protected Set<BorrowShipment> borrowShipments;
      protected Set<Loan> loans;
      protected Set<ExchangeOut> exchangeOuts;
