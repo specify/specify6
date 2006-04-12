@@ -2,6 +2,7 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -31,9 +32,9 @@ public class Borrow  implements java.io.Serializable {
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      private Calendar currentDueDate;
-     private Set borrowShipments;
-     private Set borrowAgents;
-     private Set borrowMaterials;
+     protected Set<BorrowShipment> borrowShipments;
+     protected Set<BorrowAgent> borrowAgents;
+     protected Set<BorrowMaterial> borrowMaterials;
 
 
     // Constructors
@@ -49,6 +50,32 @@ public class Borrow  implements java.io.Serializable {
    
     
     
+
+    // Initializer
+    public void initialize()
+    {
+        borrowId = null;
+        invoiceNumber = null;
+        receivedDate = null;
+        originalDueDate = null;
+        dateClosed = null;
+        remarks = null;
+        text1 = null;
+        text2 = null;
+        number1 = null;
+        number2 = null;
+        timestampModified = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        lastEditedBy = null;
+        closed = null;
+        yesNo1 = null;
+        yesNo2 = null;
+        currentDueDate = null;
+        borrowShipments = new HashSet<BorrowShipment>();
+        borrowAgents = new HashSet<BorrowAgent>();
+        borrowMaterials = new HashSet<BorrowMaterial>();
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -242,37 +269,55 @@ public class Borrow  implements java.io.Serializable {
     /**
      * 
      */
-    public Set getBorrowShipments() {
+    public Set<BorrowShipment> getBorrowShipments() {
         return this.borrowShipments;
     }
     
-    public void setBorrowShipments(Set borrowShipments) {
+    public void setBorrowShipments(Set<BorrowShipment> borrowShipments) {
         this.borrowShipments = borrowShipments;
     }
 
     /**
      * 
      */
-    public Set getBorrowAgents() {
+    public Set<BorrowAgent> getBorrowAgents() {
         return this.borrowAgents;
     }
     
-    public void setBorrowAgents(Set borrowAgents) {
+    public void setBorrowAgents(Set<BorrowAgent> borrowAgents) {
         this.borrowAgents = borrowAgents;
     }
 
     /**
      * 
      */
-    public Set getBorrowMaterials() {
+    public Set<BorrowMaterial> getBorrowMaterials() {
         return this.borrowMaterials;
     }
     
-    public void setBorrowMaterials(Set borrowMaterials) {
+    public void setBorrowMaterials(Set<BorrowMaterial> borrowMaterials) {
         this.borrowMaterials = borrowMaterials;
     }
 
 
 
 
+    // Add Methods
+
+    public void addBorrowShipment(final BorrowShipment borrowShipment)
+    {
+        this.borrowShipments.add(borrowShipment);
+    }
+
+    public void addBorrowAgent(final BorrowAgent borrowAgent)
+    {
+        this.borrowAgents.add(borrowAgent);
+    }
+
+    public void addBorrowMaterial(final BorrowMaterial borrowMaterial)
+    {
+        this.borrowMaterials.add(borrowMaterial);
+    }
+
+    // Done Add Methods
 }

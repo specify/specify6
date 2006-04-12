@@ -590,17 +590,17 @@ public class GenericDBConversion
 
     /**
      * Converts an old USYS table to a PickList
-     * @param usysTableName old table name 
+     * @param usysTableName old table name
      * @param pickListName new pciklist name
      * @return true on success, false on failure
      */
     public boolean convertUSYSToPicklist(final String usysTableName, final String pickListName)
     {
         Connection   oldDBConn = oldDB.getConnectionToDB();
-        
+
         List<BasicSQLUtils.FieldMetaData> fieldMetaData = new ArrayList<BasicSQLUtils.FieldMetaData>();
         getFieldMetaDataFromSchema(oldDBConn, usysTableName, fieldMetaData);
-        
+
         int ifaceInx    = -1;
         int dataInx     = -1;
         int fieldSetInx = -1;
@@ -610,27 +610,27 @@ public class GenericDBConversion
             if (ifaceInx == -1 && md.getName().equals("InterfaceID"))
             {
                 ifaceInx = i+1;
-                
+
             } else if (fieldSetInx == -1 && md.getName().equals("FieldSetSubTypeID"))
             {
                 fieldSetInx = i+1;
-                
+
             } else if (dataInx  == -1 && md.getType().toLowerCase().indexOf("varchar") > -1)
             {
                 dataInx = i+1;
             }
             i++;
         }
-        
+
         if (ifaceInx == -1 || dataInx == -1 || fieldSetInx == -1)
         {
             throw new RuntimeException("Couldn't decypher USYS table ifaceInx["+ifaceInx+"] dataInx["+dataInx+"] fieldSetInx["+fieldSetInx+"]");
         }
-        
+
         Session session = HibernateUtil.getCurrentSession();
         PickList pl     = new PickList();
         Set      items  = new HashSet<Object>();
-        
+
         try
         {
             pl.setName(pickListName);
@@ -638,37 +638,37 @@ public class GenericDBConversion
             pl.setItems(items);
             pl.setReadOnly(shouldDeleteMapTables);
             pl.setSizeLimit(-1);
-            
-            
+
+
             HibernateUtil.beginTransaction();
             session.saveOrUpdate(pl);
             HibernateUtil.commitTransaction();
-            
+
         } catch (Exception ex)
         {
             log.error("******* " + ex);
             HibernateUtil.rollbackTransaction();
             throw new RuntimeException("Couldn't create PickList for ["+usysTableName+"]");
         }
-        
+
         try
         {
             Statement stmt   = oldDBConn.createStatement();
             String    sqlStr = "select * from "+usysTableName+" where InterfaceID is not null";
 
             log.info(sqlStr);
-            
+
             boolean   useField = false;
             ResultSet rs       = stmt.executeQuery(sqlStr);
-            
+
             // check for no records which is OK
             if (!rs.first())
             {
                 oldDBConn.close();
                 return true;
             }
-            
-            do 
+
+            do
             {
                 Object fieldObj = rs.getObject(fieldSetInx);
                 if (fieldObj != null)
@@ -677,13 +677,13 @@ public class GenericDBConversion
                     break;
                 }
             } while (rs.next());
-            
+
             Hashtable<String, String> values = new Hashtable<String, String>();
-            
+
             log.info("Using FieldSetSubTypeID "+useField);
             rs.first();
             int       count   = 0;
-            do 
+            do
             {
                 if (!useField || rs.getObject(fieldSetInx) != null)
                 {
@@ -704,27 +704,27 @@ public class GenericDBConversion
                     }
                 }
             } while (rs.next());
-            
+
             log.info("Processed "+usysTableName+"  "+count+" records.");
 
             HibernateUtil.beginTransaction();
 
             session.saveOrUpdate(pl);
-            
+
             HibernateUtil.commitTransaction();
-            
+
             oldDBConn.close();
-            
+
             return true;
 
         } catch (SQLException e)
         {
             e.printStackTrace();
             log.error(e);
-        }        
+        }
         return false;
     }
-    
+
     /**
      * Converts all the USYS tables to PickLists
      * @return true on success, false on failure
@@ -732,7 +732,7 @@ public class GenericDBConversion
     public boolean convertUSYSTables()
     {
         log.info("Converting USYS Tables.");
-        
+
         BasicSQLUtils.deleteAllRecordsFromTable("picklist");
         BasicSQLUtils.deleteAllRecordsFromTable("picklist_items");
 
@@ -759,7 +759,7 @@ public class GenericDBConversion
                 "usyspreparatiopreparationtype",  "PreparationType",
                 "usysshipmentshipmentmethod",     "ShipmentMethod"
                 };
-        
+
         for (int i=0;i<tables.length;i++)
         {
             boolean status = convertUSYSToPicklist(tables[i], tables[i+1]);
@@ -772,7 +772,7 @@ public class GenericDBConversion
         }
         return true;
     }
-    
+
 
     /**
      * Creates a map from a String Preparation Type to its ID in the table
@@ -1672,9 +1672,9 @@ public class GenericDBConversion
 
         Connection newDBConn = DBConnection.getConnection();
         deleteAllRecordsFromTable(newDBConn, "collectionobject"); // automatically closes the connection
-        
+
         newDBConn = DBConnection.getConnection();
-        
+
         Connection   oldDBConn = oldDB.getConnectionToDB();
         try
         {
@@ -1827,7 +1827,7 @@ public class GenericDBConversion
                 //if (count > 10) break;
             }
             log.info("Processed CollectionObject "+count+" records.");
-            
+
             rs.close();
             stmt.close();
             oldDBConn.close();
@@ -1891,15 +1891,15 @@ public class GenericDBConversion
      * @param  catalogSeries catalogSeries
      * @return set of objects
      */
-    public Set<Object> createCollectionObjDef(final String          name,
-                                              final DataType        dataType,
-                                              final SpecifyUser     user,
-                                              final TaxonTreeDef taxaTreeDef,
-                                              final CatalogSeries   catalogSeries)
+    public Set<CollectionObjDef> createCollectionObjDef(final String          name,
+                                                        final DataType        dataType,
+                                                        final SpecifyUser     user,
+                                                        final TaxonTreeDef taxaTreeDef,
+                                                        final CatalogSeries   catalogSeries)
     {
         try
         {
-            Set<Object> catalogSeriesSet = new HashSet<Object>();
+            Set<CatalogSeries> catalogSeriesSet = new HashSet<CatalogSeries>();
             if (catalogSeries != null)
             {
                 catalogSeriesSet.add(catalogSeries);
@@ -1909,6 +1909,7 @@ public class GenericDBConversion
             HibernateUtil.beginTransaction();
 
             CollectionObjDef colObjDef = new CollectionObjDef();
+            colObjDef.initialize();
             colObjDef.setName(name);
             colObjDef.setDataType(dataType);
             colObjDef.setUser(user);
@@ -1916,11 +1917,10 @@ public class GenericDBConversion
             colObjDef.setTaxonTreeDef(taxaTreeDef);
 
             colObjDef.setCatalogSeries(catalogSeriesSet);
-            colObjDef.setAttributeDefs(new HashSet<Object>());
 
             session.save(colObjDef);
 
-            HashSet<Object> set = new HashSet<Object>();
+            HashSet<CollectionObjDef> set = new HashSet<CollectionObjDef>();
             set.add(colObjDef);
             user.setCollectionObjDef(set);
             session.saveOrUpdate(user);

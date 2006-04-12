@@ -49,7 +49,7 @@
         <meta attribute="field-description"></meta>
     </property>
 
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" not-null="true" length="23" index="IX_Agent_1">
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" not-null="false" length="23" index="IX_Agent_1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
     </property>

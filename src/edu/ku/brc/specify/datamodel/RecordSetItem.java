@@ -24,6 +24,13 @@ public class RecordSetItem  implements java.io.Serializable {
     
     
 
+    // Initializer
+    public void initialize()
+    {
+        recordId = null;
+    }
+    // End Initializer
+
     // Property accessors
 
     /**
@@ -40,4 +47,7 @@ public class RecordSetItem  implements java.io.Serializable {
 
 
 
+    // Add Methods
+
+    // Done Add Methods
 }

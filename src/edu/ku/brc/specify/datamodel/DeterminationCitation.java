@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -34,6 +35,19 @@ public class DeterminationCitation  implements java.io.Serializable {
    
     
     
+
+    // Initializer
+    public void initialize()
+    {
+        determinationCitationId = null;
+        remarks = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        lastEditedBy = null;
+        referenceWork = null;
+        determination = null;
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -117,4 +131,7 @@ public class DeterminationCitation  implements java.io.Serializable {
 
 
 
+    // Add Methods
+
+    // Done Add Methods
 }

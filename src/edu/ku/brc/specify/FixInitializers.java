@@ -13,20 +13,20 @@ import org.apache.commons.lang.StringUtils;
 public class FixInitializers
 {
     /**
-     * 
+     *
      */
     protected String createCapitalizedName(final String name)
     {
         StringBuilder newName = new StringBuilder();
         newName.append(name.toUpperCase().charAt(0));
         newName.append(name.substring(1, name.length()));
-        
+
         return newName.toString();
     }
 
-      
+
     /**
-     * 
+     *
      */
     public FixInitializers()
     {
@@ -36,14 +36,13 @@ public class FixInitializers
         {
             outDir.mkdir();
         }
-        
+
         String path = "src/edu/ku/brc/specify/datamodel";
         String prefix = "edu.ku.brc.specify.datamodel.";
-        
-        StringBuilder strBuf     = new StringBuilder();
-        StringBuilder entireFile = new StringBuilder();
 
-        
+        StringBuilder strBuf     = new StringBuilder();
+
+
         File srcDir = new File(path);
         String[] names = srcDir.list();
         List<String> fileList = new ArrayList<String>();
@@ -53,7 +52,7 @@ public class FixInitializers
         {
             Collections.addAll(fileList, names);
             Collections.sort(fileList);
-            
+
             // Make Hash of the Class names
             Hashtable<String, String> classNamesHash = new Hashtable<String, String>();
             for (String name : names)
@@ -66,7 +65,7 @@ public class FixInitializers
                 String shortName = name.substring(0, name.indexOf('.'));
                 classNamesHash.put(shortName, shortName);
             }
-            
+
             int cnt = 0;
             for (String fileName : fileList)
             {
@@ -75,7 +74,7 @@ public class FixInitializers
                 {
                     continue;
                 }
-                
+
                 File file = new File(path+"/"+fileName);
                 if (fileName.indexOf("xml") > -1)
                 {
@@ -84,7 +83,7 @@ public class FixInitializers
                 String shortName = fileName.substring(0, fileName.indexOf('.'));
                 String className = prefix + shortName;
                 String lowerName = shortName.toLowerCase();
-                
+
                 try
                 {
                     Class classObj = Class.forName(className);
@@ -92,47 +91,50 @@ public class FixInitializers
 
                     File oFile = new File(outDir.toString() + "/" + shortName + ".java");
                     Writer output = new BufferedWriter( new FileWriter( oFile ) );
-       
-                
+
+
                     strBuf.setLength(0);
-                    
+
                     String startStr = "class " + shortName;
                     // Read Contents of file
                     BufferedReader input = new BufferedReader( new FileReader(file) );
-                    
+
                     boolean started = false;
                     boolean done    = false;
                     boolean doneInit = false;
+                    boolean importDone = false;
+
                     Hashtable<String, String> namesToFix = new Hashtable<String, String>();
                     List<String>              initLines  = new ArrayList<String>();
                     List<String>              addMethods = new ArrayList<String>();
-                    
+
                     int maxWidth = 0;
                     String line;
                     while (( line = input.readLine()) != null)
                     {
                         //System.out.println(line);
-                        
+
                         boolean doWrite = true;
                         if (!done)
                         {
                             if (!started && line.indexOf(" // Fields") > -1)
                             {
                                 started = true;
-                                
+
                             } else if (started && line.indexOf(" // Constructors") > -1)
                             {
                                 started = false;
                                 done = true;
                             }
                         }
-                        
-                        if (!done && !started && line.startsWith("import java.util.Set;"))
+
+                        if (!importDone &&!done && !started && line.startsWith("import"))
                         {
                             output.write("import java.util.HashSet;\nimport java.util.Calendar;\n");
+                            importDone = true;
                         }
 
-                        
+
                         if (started)
                         {
                             if (StringUtils.isNotEmpty(line) && (line.indexOf("protected") > -1 || line.indexOf("private") > -1))
@@ -142,7 +144,7 @@ public class FixInitializers
                                 {
                                     String fieldName = StringUtils.stripEnd(strs[2], ";");
                                     maxWidth = Math.max(maxWidth, fieldName.length());
-                                    
+
                                     if (strs[1].equals("Set"))
                                     {
                                         String  capName       = StringUtils.capitalize(fieldName);
@@ -150,7 +152,7 @@ public class FixInitializers
                                         boolean endsInS       = fieldName.charAt(fieldName.length()-1) == 's';
                                         if (endsInS && classNamesHash.get(capName) == null)
                                         {
-                                            
+
                                             if (endsInS)
                                             {
                                                 capName = capName.substring(0, capName.length()-1);
@@ -161,13 +163,13 @@ public class FixInitializers
                                         initLines.add("        " + fieldName+" = new HashSet<"+capName+">();");
                                         namesToFix.put("get"+capName+"s", capName);
                                         namesToFix.put("set"+capName+"s", capName);
-                                        
+
                                         addMethods.add("\n    public void add"+capName+"(final "+capName+" "+singleObjName+")\n    {");
                                         addMethods.add("        this."+fieldName+".add("+singleObjName+");\n    }");
-                                        
-                                        output.write("     protected Set<"+capName+"> " + fieldName+" = new HashSet<"+capName+">();\n");
+
+                                        output.write("     protected Set<"+capName+"> " + fieldName+";\n");
                                         doWrite = false;
-                                        
+
                                     } else if (fieldName.equals("timestampCreated"))
                                     {
                                         initLines.add("        timestampCreated = Calendar.getInstance().getTime();");
@@ -179,9 +181,9 @@ public class FixInitializers
                                 {
                                     System.out.println("More than 3 tokens["+line+"]");
                                 }
-                            } 
+                            }
                         }
-                        
+
                         if (done && !doneInit && line.indexOf("// Property accessors") > -1)
                         {
                             output.write("    // Initializer\n");
@@ -194,19 +196,19 @@ public class FixInitializers
                             output.write("    }\n    // End Initializer\n\n");
                             doneInit = true;
                         }
-                        
+
                         if (line.startsWith("}"))
                         {
                             output.write("    // Add Methods\n");
                             for (String s : addMethods)
                             {
                                 output.write(s);
-                                output.write("\n");   
+                                output.write("\n");
                             }
                             output.write("\n    // Done Add Methods\n");
                         }
-                        
-                        
+
+
                         if (doWrite)
                         {
                             int inx = line.indexOf(" get");
@@ -226,7 +228,7 @@ public class FixInitializers
                                         continue;
                                     }
                                 }
-                            } else 
+                            } else
                             {
                                 inx = line.indexOf(" set");
                                 if (inx > - 1)
@@ -244,7 +246,7 @@ public class FixInitializers
                                             continue;
                                         }
                                     }
-                                    
+
                                 }
                             }
                             output.write(line);
@@ -254,24 +256,24 @@ public class FixInitializers
                     input.close();
                     output.flush();
                     output.close();
-                    
+
                     cnt++;
                     //if (cnt == 1) break;
-                    
+
                 } catch (Exception ex)
                 {
                     ex.printStackTrace();
                 }
             }
 
-            
+
         } else
         {
             System.out.println("Dir was null");
         }
 
     }
-    
+
     /**
      * @param args
      */

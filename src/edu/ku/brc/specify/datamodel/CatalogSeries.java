@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -11,7 +13,7 @@ import java.util.Set;
  */
 public class CatalogSeries  implements java.io.Serializable {
 
-    // Fields    
+    // Fields
 
      protected Integer catalogSeriesId;
      protected Boolean isTissueSeries;
@@ -21,7 +23,7 @@ public class CatalogSeries  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     private Set collectionObjDefItems;
+     protected Set<CollectionObjDef> collectionObjDefItems;
      private CatalogSeries tissue;
 
 
@@ -30,14 +32,30 @@ public class CatalogSeries  implements java.io.Serializable {
     /** default constructor */
     public CatalogSeries() {
     }
-    
+
     /** constructor with id */
     public CatalogSeries(Integer catalogSeriesId) {
         this.catalogSeriesId = catalogSeriesId;
     }
-   
-    
-    
+
+
+
+
+    // Initializer
+    public void initialize()
+    {
+        catalogSeriesId = null;
+        isTissueSeries = null;
+        seriesName = null;
+        catalogSeriesPrefix = null;
+        remarks = null;
+        timestampModified = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        lastEditedBy = null;
+        collectionObjDefItems = new HashSet<CollectionObjDef>();
+        tissue = null;
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -47,18 +65,18 @@ public class CatalogSeries  implements java.io.Serializable {
     public Integer getCatalogSeriesId() {
         return this.catalogSeriesId;
     }
-    
+
     public void setCatalogSeriesId(Integer catalogSeriesId) {
         this.catalogSeriesId = catalogSeriesId;
     }
 
     /**
-     * 
+     *
      */
     public Boolean getIsTissueSeries() {
         return this.isTissueSeries;
     }
-    
+
     public void setIsTissueSeries(Boolean isTissueSeries) {
         this.isTissueSeries = isTissueSeries;
     }
@@ -69,7 +87,7 @@ public class CatalogSeries  implements java.io.Serializable {
     public String getSeriesName() {
         return this.seriesName;
     }
-    
+
     public void setSeriesName(String seriesName) {
         this.seriesName = seriesName;
     }
@@ -80,73 +98,73 @@ public class CatalogSeries  implements java.io.Serializable {
     public String getCatalogSeriesPrefix() {
         return this.catalogSeriesPrefix;
     }
-    
+
     public void setCatalogSeriesPrefix(String catalogSeriesPrefix) {
         this.catalogSeriesPrefix = catalogSeriesPrefix;
     }
 
     /**
-     * 
+     *
      */
     public String getRemarks() {
         return this.remarks;
     }
-    
+
     public void setRemarks(String remarks) {
         this.remarks = remarks;
     }
 
     /**
-     * 
+     *
      */
     public Date getTimestampModified() {
         return this.timestampModified;
     }
-    
+
     public void setTimestampModified(Date timestampModified) {
         this.timestampModified = timestampModified;
     }
 
     /**
-     * 
+     *
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
     }
-    
+
     public void setTimestampCreated(Date timestampCreated) {
         this.timestampCreated = timestampCreated;
     }
 
     /**
-     * 
+     *
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
     }
-    
+
     public void setLastEditedBy(String lastEditedBy) {
         this.lastEditedBy = lastEditedBy;
     }
 
     /**
-     * 
+     *
      */
-    public Set getCollectionObjDefItems() {
+    public Set<CollectionObjDef> getCollectionObjDefItems() {
         return this.collectionObjDefItems;
     }
-    
-    public void setCollectionObjDefItems(Set collectionObjDefItems) {
+
+    public void setCollectionObjDefItems(Set<CollectionObjDef> collectionObjDefItems) {
         this.collectionObjDefItems = collectionObjDefItems;
     }
 
     /**
-     * 
+     *
      */
     public CatalogSeries getTissue() {
         return this.tissue;
     }
-    
+
     public void setTissue(CatalogSeries tissue) {
         this.tissue = tissue;
     }
@@ -154,4 +172,12 @@ public class CatalogSeries  implements java.io.Serializable {
 
 
 
+    // Add Methods
+
+    public void addCollectionObjDefItem(final CollectionObjDef collectionObjDefItem)
+    {
+        this.collectionObjDefItems.add(collectionObjDefItem);
+    }
+
+    // Done Add Methods
 }

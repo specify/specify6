@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -35,12 +37,12 @@ public class ReferenceWork  implements java.io.Serializable {
      protected Short published;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     private Set localityCitations;
-     private Set collectionObjectCitations;
-     private Set taxonCitations;
-     private Set determinationCitations;
+     protected Set<LocalityCitation> localityCitations;
+     protected Set<CollectionObjectCitation> collectionObjectCitations;
+     protected Set<TaxonCitation> taxonCitations;
+     protected Set<DeterminationCitation> determinationCitations;
      private Journal journal;
-     private Set authors;
+     protected Set<Author> authors;
 
 
     // Constructors
@@ -56,6 +58,40 @@ public class ReferenceWork  implements java.io.Serializable {
    
     
     
+
+    // Initializer
+    public void initialize()
+    {
+        referenceWorkId = null;
+        containingReferenceWorkId = null;
+        referenceWorkType = null;
+        title = null;
+        publisher = null;
+        placeOfPublication = null;
+        workDate = null;
+        volume = null;
+        pages = null;
+        url = null;
+        libraryNumber = null;
+        remarks = null;
+        text1 = null;
+        text2 = null;
+        number1 = null;
+        number2 = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        lastEditedBy = null;
+        published = null;
+        yesNo1 = null;
+        yesNo2 = null;
+        localityCitations = new HashSet<LocalityCitation>();
+        collectionObjectCitations = new HashSet<CollectionObjectCitation>();
+        taxonCitations = new HashSet<TaxonCitation>();
+        determinationCitations = new HashSet<DeterminationCitation>();
+        journal = null;
+        authors = new HashSet<Author>();
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -304,44 +340,44 @@ public class ReferenceWork  implements java.io.Serializable {
     /**
      * 
      */
-    public Set getLocalityCitations() {
+    public Set<LocalityCitation> getLocalityCitations() {
         return this.localityCitations;
     }
     
-    public void setLocalityCitations(Set localityCitations) {
+    public void setLocalityCitations(Set<LocalityCitation> localityCitations) {
         this.localityCitations = localityCitations;
     }
 
     /**
      * 
      */
-    public Set getCollectionObjectCitations() {
+    public Set<CollectionObjectCitation> getCollectionObjectCitations() {
         return this.collectionObjectCitations;
     }
     
-    public void setCollectionObjectCitations(Set collectionObjectCitations) {
+    public void setCollectionObjectCitations(Set<CollectionObjectCitation> collectionObjectCitations) {
         this.collectionObjectCitations = collectionObjectCitations;
     }
 
     /**
      * 
      */
-    public Set getTaxonCitations() {
+    public Set<TaxonCitation> getTaxonCitations() {
         return this.taxonCitations;
     }
     
-    public void setTaxonCitations(Set taxonCitations) {
+    public void setTaxonCitations(Set<TaxonCitation> taxonCitations) {
         this.taxonCitations = taxonCitations;
     }
 
     /**
      * 
      */
-    public Set getDeterminationCitations() {
+    public Set<DeterminationCitation> getDeterminationCitations() {
         return this.determinationCitations;
     }
     
-    public void setDeterminationCitations(Set determinationCitations) {
+    public void setDeterminationCitations(Set<DeterminationCitation> determinationCitations) {
         this.determinationCitations = determinationCitations;
     }
 
@@ -359,15 +395,43 @@ public class ReferenceWork  implements java.io.Serializable {
     /**
      * 
      */
-    public Set getAuthors() {
+    public Set<Author> getAuthors() {
         return this.authors;
     }
     
-    public void setAuthors(Set authors) {
+    public void setAuthors(Set<Author> authors) {
         this.authors = authors;
     }
 
 
 
 
+    // Add Methods
+
+    public void addLocalityCitation(final LocalityCitation localityCitation)
+    {
+        this.localityCitations.add(localityCitation);
+    }
+
+    public void addCollectionObjectCitation(final CollectionObjectCitation collectionObjectCitation)
+    {
+        this.collectionObjectCitations.add(collectionObjectCitation);
+    }
+
+    public void addTaxonCitation(final TaxonCitation taxonCitation)
+    {
+        this.taxonCitations.add(taxonCitation);
+    }
+
+    public void addDeterminationCitation(final DeterminationCitation determinationCitation)
+    {
+        this.determinationCitations.add(determinationCitation);
+    }
+
+    public void addAuthor(final Author author)
+    {
+        this.authors.add(author);
+    }
+
+    // Done Add Methods
 }

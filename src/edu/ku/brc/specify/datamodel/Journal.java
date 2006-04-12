@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -20,7 +22,7 @@ public class Journal  implements java.io.Serializable {
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
-     private Set referenceWorks;
+     protected Set<ReferenceWork> referenceWorks;
 
 
     // Constructors
@@ -36,6 +38,20 @@ public class Journal  implements java.io.Serializable {
    
     
     
+
+    // Initializer
+    public void initialize()
+    {
+        journalId = null;
+        journalName = null;
+        journalAbbreviation = null;
+        remarks = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        lastEditedBy = null;
+        referenceWorks = new HashSet<ReferenceWork>();
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -119,15 +135,23 @@ public class Journal  implements java.io.Serializable {
     /**
      * 
      */
-    public Set getReferenceWorks() {
+    public Set<ReferenceWork> getReferenceWorks() {
         return this.referenceWorks;
     }
     
-    public void setReferenceWorks(Set referenceWorks) {
+    public void setReferenceWorks(Set<ReferenceWork> referenceWorks) {
         this.referenceWorks = referenceWorks;
     }
 
 
 
 
+    // Add Methods
+
+    public void addReferenceWork(final ReferenceWork referenceWork)
+    {
+        this.referenceWorks.add(referenceWork);
+    }
+
+    // Done Add Methods
 }

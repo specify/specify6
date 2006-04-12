@@ -3,6 +3,7 @@ package edu.ku.brc.specify.datamodel;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -44,6 +45,28 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
    
     
     
+
+    // Initializer
+    public void initialize()
+    {
+        treeId = null;
+        rankId = null;
+        name = null;
+        nodeNumber = null;
+        highestChildNodeNumber = null;
+        standard = null;
+        age = null;
+        ageUncertainty = null;
+        remarks = null;
+        timestampModified = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampVersion = null;
+        lastEditedBy = null;
+        definition = null;
+        definitionItem = null;
+        parent = null;
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -376,4 +399,7 @@ public class GeologicTimePeriod  implements Treeable,java.awt.datatransfer.Trans
     	    
         
   // end of extra code specified in the hbm.xml files
+    // Add Methods
+
+    // Done Add Methods
 }

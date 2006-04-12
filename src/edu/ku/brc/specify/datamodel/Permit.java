@@ -2,6 +2,7 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -12,7 +13,7 @@ import java.util.Set;
  */
 public class Permit  implements java.io.Serializable {
 
-    // Fields    
+    // Fields
 
      protected Integer permitId;
      protected String permitNumber;
@@ -31,10 +32,10 @@ public class Permit  implements java.io.Serializable {
      protected String lastEditedBy;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     private Set accessionAuthorizations;
+     protected Set<AccessionAuthorizations> accessionAuthorizations;
      private AgentAddress agentAddressByIssuee;
      private AgentAddress agentAddressByIssuer;
-     private Set externalResources;
+     protected Set<ExternalResource> externalResources;
 
 
     // Constructors
@@ -42,14 +43,41 @@ public class Permit  implements java.io.Serializable {
     /** default constructor */
     public Permit() {
     }
-    
+
     /** constructor with id */
     public Permit(Integer permitId) {
         this.permitId = permitId;
     }
-   
-    
-    
+
+
+
+
+    // Initializer
+    public void initialize()
+    {
+        permitId = null;
+        permitNumber = null;
+        type = null;
+        issuedDate = null;
+        startDate = null;
+        endDate = null;
+        renewalDate = null;
+        remarks = null;
+        text1 = null;
+        text2 = null;
+        number1 = null;
+        number2 = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        lastEditedBy = null;
+        yesNo1 = null;
+        yesNo2 = null;
+        accessionAuthorizations = new HashSet<AccessionAuthorizations>();
+        agentAddressByIssuee = null;
+        agentAddressByIssuer = null;
+        externalResources = new HashSet<ExternalResource>();
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -59,7 +87,7 @@ public class Permit  implements java.io.Serializable {
     public Integer getPermitId() {
         return this.permitId;
     }
-    
+
     public void setPermitId(Integer permitId) {
         this.permitId = permitId;
     }
@@ -70,7 +98,7 @@ public class Permit  implements java.io.Serializable {
     public String getPermitNumber() {
         return this.permitNumber;
     }
-    
+
     public void setPermitNumber(String permitNumber) {
         this.permitNumber = permitNumber;
     }
@@ -81,7 +109,7 @@ public class Permit  implements java.io.Serializable {
     public String getType() {
         return this.type;
     }
-    
+
     public void setType(String type) {
         this.type = type;
     }
@@ -92,7 +120,7 @@ public class Permit  implements java.io.Serializable {
     public Calendar getIssuedDate() {
         return this.issuedDate;
     }
-    
+
     public void setIssuedDate(Calendar issuedDate) {
         this.issuedDate = issuedDate;
     }
@@ -103,7 +131,7 @@ public class Permit  implements java.io.Serializable {
     public Calendar getStartDate() {
         return this.startDate;
     }
-    
+
     public void setStartDate(Calendar startDate) {
         this.startDate = startDate;
     }
@@ -114,7 +142,7 @@ public class Permit  implements java.io.Serializable {
     public Calendar getEndDate() {
         return this.endDate;
     }
-    
+
     public void setEndDate(Calendar endDate) {
         this.endDate = endDate;
     }
@@ -125,18 +153,18 @@ public class Permit  implements java.io.Serializable {
     public Calendar getRenewalDate() {
         return this.renewalDate;
     }
-    
+
     public void setRenewalDate(Calendar renewalDate) {
         this.renewalDate = renewalDate;
     }
 
     /**
-     * 
+     *
      */
     public String getRemarks() {
         return this.remarks;
     }
-    
+
     public void setRemarks(String remarks) {
         this.remarks = remarks;
     }
@@ -147,7 +175,7 @@ public class Permit  implements java.io.Serializable {
     public String getText1() {
         return this.text1;
     }
-    
+
     public void setText1(String text1) {
         this.text1 = text1;
     }
@@ -158,7 +186,7 @@ public class Permit  implements java.io.Serializable {
     public String getText2() {
         return this.text2;
     }
-    
+
     public void setText2(String text2) {
         this.text2 = text2;
     }
@@ -169,7 +197,7 @@ public class Permit  implements java.io.Serializable {
     public Float getNumber1() {
         return this.number1;
     }
-    
+
     public void setNumber1(Float number1) {
         this.number1 = number1;
     }
@@ -180,40 +208,40 @@ public class Permit  implements java.io.Serializable {
     public Float getNumber2() {
         return this.number2;
     }
-    
+
     public void setNumber2(Float number2) {
         this.number2 = number2;
     }
 
     /**
-     * 
+     *
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
     }
-    
+
     public void setTimestampCreated(Date timestampCreated) {
         this.timestampCreated = timestampCreated;
     }
 
     /**
-     * 
+     *
      */
     public Date getTimestampModified() {
         return this.timestampModified;
     }
-    
+
     public void setTimestampModified(Date timestampModified) {
         this.timestampModified = timestampModified;
     }
 
     /**
-     * 
+     *
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
     }
-    
+
     public void setLastEditedBy(String lastEditedBy) {
         this.lastEditedBy = lastEditedBy;
     }
@@ -224,7 +252,7 @@ public class Permit  implements java.io.Serializable {
     public Boolean getYesNo1() {
         return this.yesNo1;
     }
-    
+
     public void setYesNo1(Boolean yesNo1) {
         this.yesNo1 = yesNo1;
     }
@@ -235,19 +263,19 @@ public class Permit  implements java.io.Serializable {
     public Boolean getYesNo2() {
         return this.yesNo2;
     }
-    
+
     public void setYesNo2(Boolean yesNo2) {
         this.yesNo2 = yesNo2;
     }
 
     /**
-     * 
+     *
      */
-    public Set getAccessionAuthorizations() {
+    public Set<AccessionAuthorizations> getAccessionAuthorizations() {
         return this.accessionAuthorizations;
     }
-    
-    public void setAccessionAuthorizations(Set accessionAuthorizations) {
+
+    public void setAccessionAuthorizations(Set<AccessionAuthorizations> accessionAuthorizations) {
         this.accessionAuthorizations = accessionAuthorizations;
     }
 
@@ -257,7 +285,7 @@ public class Permit  implements java.io.Serializable {
     public AgentAddress getAgentAddressByIssuee() {
         return this.agentAddressByIssuee;
     }
-    
+
     public void setAgentAddressByIssuee(AgentAddress agentAddressByIssuee) {
         this.agentAddressByIssuee = agentAddressByIssuee;
     }
@@ -268,23 +296,36 @@ public class Permit  implements java.io.Serializable {
     public AgentAddress getAgentAddressByIssuer() {
         return this.agentAddressByIssuer;
     }
-    
+
     public void setAgentAddressByIssuer(AgentAddress agentAddressByIssuer) {
         this.agentAddressByIssuer = agentAddressByIssuer;
     }
 
     /**
-     * 
+     *
      */
-    public Set getExternalResources() {
+    public Set<ExternalResource> getExternalResources() {
         return this.externalResources;
     }
-    
-    public void setExternalResources(Set externalResources) {
+
+    public void setExternalResources(Set<ExternalResource> externalResources) {
         this.externalResources = externalResources;
     }
 
 
 
 
+    // Add Methods
+
+    public void addAccessionAuthorizations(final AccessionAuthorizations accessionAuthorizations)
+    {
+        this.accessionAuthorizations.add(accessionAuthorizations);
+    }
+
+    public void addExternalResource(final ExternalResource externalResource)
+    {
+        this.externalResources.add(externalResource);
+    }
+
+    // Done Add Methods
 }

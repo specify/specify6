@@ -27,4 +27,7 @@ public interface TreeDefinitionItemIface
 	
 	public Set getTreeEntries();
 	public void setTreeEntries(Set treeables);
+    // Add Methods
+
+    // Done Add Methods
 }

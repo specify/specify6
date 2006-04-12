@@ -482,7 +482,7 @@ public class CreateTestDatabases
         }
         return false;
     }
-    
+
     /**
      * Creates an array of address and hooks them up to agents
      * @param agents the agents to get addresses
@@ -554,7 +554,7 @@ public class CreateTestDatabases
             // Add an extra address for one of them
             AgentAddress agentAddress = createAgentAddress((short)2, "", "", "", "", "", "", "", true, null, agents[6], null);
             Address addr = createAddress(agentAddress, "34 Vintage Drive", "", "San Diego", "CA",   "USA", "92129");
-            
+
             HibernateUtil.commitTransaction();
 
             return true;
@@ -597,7 +597,7 @@ public class CreateTestDatabases
         return agents;
 
     }
-    
+
     /**
      * @param agents
      * @return
@@ -605,20 +605,20 @@ public class CreateTestDatabases
     public static Accession[] createAccessionsInMemory()
     {
         setSession(null);
-        
+
         Agent[]   agents    = createAgentsInMemory();
         Address[] addresses = createAddresses(agents); // created AgentAddress also
-        
+
         String[] roles    = {"Reviewer", "Submitter", "Accepter"};
         String[] division = {"Botany", "Entomology", "Herpetology", "Ichthyology", "Invertebrate Paleo", "Invertebrate Zoology", "Mammalogy", "Ornithology", "Paleobotany", "Vertebrate Paleo"};
         String[] status   = {"In Process", "Complete", "Closed"};
         String[] types    = {"Field Work", "Bequest", "Gift", "Collection", "Purchase", "Exchange", "Abandonement", "Salvage", "Other"};
-        
+
         String[] permitType = {"International", "Federal", "State"};
-                
+
         String[] accessionNumbers = {"2005-IT-0121", "2005-PB-0122"};
         String[] permitNumbers    = {"P101", "P102"};
-        
+
         int agentsInx = 0;
         Accession[] accessions = new Accession[accessionNumbers.length];
         for (int i=0;i<accessions.length;i++)
@@ -630,11 +630,11 @@ public class CreateTestDatabases
                                             Calendar.getInstance(),
                                             Calendar.getInstance());
             accessions[i].setText1(division[i]);
-           
+
             AgentAddress[] agentAddress = new AgentAddress[roles.length];
             for (int j=0;j<roles.length;j++)
             {
-                
+
                 agentAddress[j] = (AgentAddress)agents[agentsInx % agents.length].getAgentAddressesByAgent().iterator().next();
                 agentsInx++;
                 System.out.println(agents[i].getLastName()+" " + agentAddress[j].getAgent().getLastName());
@@ -642,27 +642,27 @@ public class CreateTestDatabases
                 AccessionAgent accessionAgent = createAccessionAgent(roles[j],  agentAddress[j], accessions[i], null);
                 accessions[i].getAccessionAgents().add(accessionAgent);
             }
-            
+
             int aaInx = 0;
             for (int j=0;j<permitNumbers.length;j++)
             {
-                Permit permit = createPermit(permitNumbers[j], permitType[1], 
+                Permit permit = createPermit(permitNumbers[j], permitType[1],
                         Calendar.getInstance(),  // issuedDate
                         Calendar.getInstance(), // startDate
                         Calendar.getInstance(), // endDate
                         Calendar.getInstance());// renewalDate
-                
+
                 permit.setAgentAddressByIssuee(i == 1 && j == 0 ? null : agentAddress[aaInx % agentAddress.length]);
                 System.out.println( agentAddress[aaInx % agentAddress.length].getAgent().getFirstName()+"  "+aaInx % agentAddress.length);
                 aaInx++;
                 permit.setAgentAddressByIssuer(agentAddress[aaInx % agentAddress.length]);
                 System.out.println( agentAddress[aaInx % agentAddress.length].getAgent().getFirstName()+"  "+aaInx % agentAddress.length);
                 aaInx++;
-                
+
                 AccessionAuthorizations accessionAuthorizations = createAccessionAuthorizations(permit, accessions[i], null);
                 accessions[i].getAccessionAuthorizations().add(accessionAuthorizations);
             }
-            
+
         }
         return accessions;
     }
@@ -1021,7 +1021,7 @@ public class CreateTestDatabases
     }
 
     /**
-     * @param name 
+     * @param name
      * @return true on success
      */
     public static boolean createAccessionsDatabase(final String name)
@@ -1036,16 +1036,16 @@ public class CreateTestDatabases
 
             UserGroup        userGroup        = createUserGroup(name);
             SpecifyUser      user             = createSpecifyUser("John", "Doe", (short)0, userGroup);
-            
+
             createMultipleAgents();
-            
+
             String[] agentNames = { "Darwin", "Agassiz", "Bentley", "Stewart", "Kumin", "Beach" };
             Agent[] agents = new Agent[agentNames.length];
             for (int i = 0; i < agents.length; i++)
             {
                 agents[i] = getAgentByLastName(agentNames[i]);
             }
-            
+
             Object[] permitInfo = {"101", "Field Work",};
             /*
             final String permitNumber,
@@ -1055,8 +1055,8 @@ public class CreateTestDatabases
             final Calendar endDate,
             final Calendar renewalDate
             */
-            //Permit[] permits = new 
-            
+            //Permit[] permits = new
+
             log.info("Done Created Accession Database " + name);
 
         } catch (Exception ex)

@@ -2,6 +2,7 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -34,9 +35,9 @@ public class Shipment  implements java.io.Serializable {
      private AgentAddress agentAddressByShipper;
      private AgentAddress agentAddressByShippedTo;
      private Agent agent;
-     private Set borrowShipments;
-     private Set loans;
-     private Set exchangeOuts;
+     protected Set<BorrowShipment> borrowShipments;
+     protected Set<Loan> loans;
+     protected Set<ExchangeOut> exchangeOuts;
 
 
     // Constructors
@@ -52,6 +53,35 @@ public class Shipment  implements java.io.Serializable {
    
     
     
+
+    // Initializer
+    public void initialize()
+    {
+        shipmentId = null;
+        shipmentDate = null;
+        shipmentNumber = null;
+        shipmentMethod = null;
+        numberOfPackages = null;
+        weight = null;
+        insuredForAmount = null;
+        remarks = null;
+        text1 = null;
+        text2 = null;
+        number1 = null;
+        number2 = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        lastEditedBy = null;
+        yesNo1 = null;
+        yesNo2 = null;
+        agentAddressByShipper = null;
+        agentAddressByShippedTo = null;
+        agent = null;
+        borrowShipments = new HashSet<BorrowShipment>();
+        loans = new HashSet<Loan>();
+        exchangeOuts = new HashSet<ExchangeOut>();
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -278,37 +308,55 @@ public class Shipment  implements java.io.Serializable {
     /**
      * 
      */
-    public Set getBorrowShipments() {
+    public Set<BorrowShipment> getBorrowShipments() {
         return this.borrowShipments;
     }
     
-    public void setBorrowShipments(Set borrowShipments) {
+    public void setBorrowShipments(Set<BorrowShipment> borrowShipments) {
         this.borrowShipments = borrowShipments;
     }
 
     /**
      * 
      */
-    public Set getLoans() {
+    public Set<Loan> getLoans() {
         return this.loans;
     }
     
-    public void setLoans(Set loans) {
+    public void setLoans(Set<Loan> loans) {
         this.loans = loans;
     }
 
     /**
      * 
      */
-    public Set getExchangeOuts() {
+    public Set<ExchangeOut> getExchangeOuts() {
         return this.exchangeOuts;
     }
     
-    public void setExchangeOuts(Set exchangeOuts) {
+    public void setExchangeOuts(Set<ExchangeOut> exchangeOuts) {
         this.exchangeOuts = exchangeOuts;
     }
 
 
 
 
+    // Add Methods
+
+    public void addBorrowShipment(final BorrowShipment borrowShipment)
+    {
+        this.borrowShipments.add(borrowShipment);
+    }
+
+    public void addLoan(final Loan loan)
+    {
+        this.loans.add(loan);
+    }
+
+    public void addExchangeOut(final ExchangeOut exchangeOut)
+    {
+        this.exchangeOuts.add(exchangeOut);
+    }
+
+    // Done Add Methods
 }

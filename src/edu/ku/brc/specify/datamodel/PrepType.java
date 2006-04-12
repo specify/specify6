@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -14,8 +15,8 @@ public class PrepType  implements java.io.Serializable {
 
      protected Integer prepTypeId;
      protected String name;
-     protected Set preparations;
-     protected Set attributeDefs;
+     protected Set<Preparation> preparations;
+     protected Set<AttributeDef> attributeDefs;
 
 
     // Constructors
@@ -31,6 +32,16 @@ public class PrepType  implements java.io.Serializable {
    
     
     
+
+    // Initializer
+    public void initialize()
+    {
+        prepTypeId = null;
+        name = null;
+        preparations = new HashSet<Preparation>();
+        attributeDefs = new HashSet<AttributeDef>();
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -59,26 +70,39 @@ public class PrepType  implements java.io.Serializable {
     /**
      * 
      */
-    public Set getPreparations() {
+    public Set<Preparation> getPreparations() {
         return this.preparations;
     }
     
-    public void setPreparations(Set preparations) {
+    public void setPreparations(Set<Preparation> preparations) {
         this.preparations = preparations;
     }
 
     /**
      * 
      */
-    public Set getAttributeDefs() {
+    public Set<AttributeDef> getAttributeDefs() {
         return this.attributeDefs;
     }
     
-    public void setAttributeDefs(Set attributeDefs) {
+    public void setAttributeDefs(Set<AttributeDef> attributeDefs) {
         this.attributeDefs = attributeDefs;
     }
 
 
 
 
+    // Add Methods
+
+    public void addPreparation(final Preparation preparation)
+    {
+        this.preparations.add(preparation);
+    }
+
+    public void addAttributeDef(final AttributeDef attributeDef)
+    {
+        this.attributeDefs.add(attributeDef);
+    }
+
+    // Done Add Methods
 }

@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -40,6 +41,25 @@ public class TaxonCitation  implements java.io.Serializable {
    
     
     
+
+    // Initializer
+    public void initialize()
+    {
+        taxonCitationId = null;
+        remarks = null;
+        text1 = null;
+        text2 = null;
+        number1 = null;
+        number2 = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        lastEditedBy = null;
+        yesNo1 = null;
+        yesNo2 = null;
+        referenceWork = null;
+        taxon = null;
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -189,4 +209,7 @@ public class TaxonCitation  implements java.io.Serializable {
 
 
 
+    // Add Methods
+
+    // Done Add Methods
 }

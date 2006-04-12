@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -34,6 +35,19 @@ public class OtherIdentifier  implements java.io.Serializable {
    
     
     
+
+    // Initializer
+    public void initialize()
+    {
+        otherIdentifierId = null;
+        identifier = null;
+        remarks = null;
+        timestampModified = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        lastEditedBy = null;
+        collectionObject = null;
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -117,4 +131,7 @@ public class OtherIdentifier  implements java.io.Serializable {
 
 
 
+    // Add Methods
+
+    // Done Add Methods
 }

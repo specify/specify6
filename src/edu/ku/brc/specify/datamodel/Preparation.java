@@ -2,6 +2,7 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -24,13 +25,13 @@ public class Preparation  implements java.io.Serializable {
      protected Date timestampCreated;
      protected Date timestampModified;
      protected String lastEditedBy;
-     protected Set loanPhysicalObjects;
-     protected Set attrs;
+     protected Set<LoanPhysicalObject> loanPhysicalObjects;
+     protected Set<AttributeIFace> attrs;
      private PrepType prepType;
      private CollectionObject collectionObject;
      private Agent preparedByAgent;
      private Location location;
-     private Set externalResources;
+     protected Set<ExternalResource> externalResources;
 
 
     // Constructors
@@ -46,6 +47,29 @@ public class Preparation  implements java.io.Serializable {
    
     
     
+
+    // Initializer
+    public void initialize()
+    {
+        preparationId = null;
+        text1 = null;
+        text2 = null;
+        count = null;
+        storageLocation = null;
+        remarks = null;
+        preparedDate = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        lastEditedBy = null;
+        loanPhysicalObjects = new HashSet<LoanPhysicalObject>();
+        attrs = new HashSet<AttributeIFace>();
+        prepType = null;
+        collectionObject = null;
+        preparedByAgent = null;
+        location = null;
+        externalResources = new HashSet<ExternalResource>();
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -162,22 +186,22 @@ public class Preparation  implements java.io.Serializable {
     /**
      * 
      */
-    public Set getLoanPhysicalObjects() {
+    public Set<LoanPhysicalObject> getLoanPhysicalObjects() {
         return this.loanPhysicalObjects;
     }
     
-    public void setLoanPhysicalObjects(Set loanPhysicalObjects) {
+    public void setLoanPhysicalObjects(Set<LoanPhysicalObject> loanPhysicalObjects) {
         this.loanPhysicalObjects = loanPhysicalObjects;
     }
 
     /**
      * 
      */
-    public Set getAttrs() {
+    public Set<AttributeIFace> getAttrs() {
         return this.attrs;
     }
     
-    public void setAttrs(Set attrs) {
+    public void setAttrs(Set<AttributeIFace> attrs) {
         this.attrs = attrs;
     }
 
@@ -228,15 +252,33 @@ public class Preparation  implements java.io.Serializable {
     /**
      * 
      */
-    public Set getExternalResources() {
+    public Set<ExternalResource> getExternalResources() {
         return this.externalResources;
     }
     
-    public void setExternalResources(Set externalResources) {
+    public void setExternalResources(Set<ExternalResource> externalResources) {
         this.externalResources = externalResources;
     }
 
 
 
 
+    // Add Methods
+
+    public void addLoanPhysicalObject(final LoanPhysicalObject loanPhysicalObject)
+    {
+        this.loanPhysicalObjects.add(loanPhysicalObject);
+    }
+
+    public void addAttr(final AttributeIFace attr)
+    {
+        this.attrs.add(attr);
+    }
+
+    public void addExternalResource(final ExternalResource externalResource)
+    {
+        this.externalResources.add(externalResource);
+    }
+
+    // Done Add Methods
 }

@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -35,6 +36,20 @@ public class Author  implements java.io.Serializable {
    
     
     
+
+    // Initializer
+    public void initialize()
+    {
+        authorsId = null;
+        orderNumber = null;
+        remarks = null;
+        timestampModified = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        lastEditedBy = null;
+        referenceWork = null;
+        agent = null;
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -129,4 +144,7 @@ public class Author  implements java.io.Serializable {
 
 
 
+    // Add Methods
+
+    // Done Add Methods
 }

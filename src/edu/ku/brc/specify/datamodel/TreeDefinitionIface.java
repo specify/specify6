@@ -32,4 +32,7 @@ public interface TreeDefinitionIface
 	
 	public Set getTreeDefItems();
 	public void setTreeDefItems(Set treeDefItems);
+    // Add Methods
+
+    // Done Add Methods
 }

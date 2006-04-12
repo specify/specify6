@@ -2,6 +2,7 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -12,7 +13,7 @@ import java.util.Set;
  */
 public class CollectionObject  implements java.io.Serializable {
 
-    // Fields    
+    // Fields
 
      protected Integer collectionObjectId;
      protected String fieldNumber;
@@ -39,18 +40,18 @@ public class CollectionObject  implements java.io.Serializable {
      protected Float catalogNumber;
      protected CollectingEvent collectingEvent;
      protected ContainerItem containerItem;
-     protected Set collectionObjectCitations;
-     protected Set attrs;
-     protected Set preparations;
-     protected Set determinations;
+     protected Set<CollectionObjectCitation> collectionObjectCitations;
+     protected Set<AttributeIFace> attrs;
+     protected Set<Preparation> preparations;
+     protected Set<Determination> determinations;
      protected CollectionObjDef collectionObjDef;
-     protected Set projectCollectionObjects;
-     protected Set deaccessionCollectionObjects;
-     protected Set otherIdentifiers;
+     protected Set<ProjectCollectionObject> projectCollectionObjects;
+     protected Set<DeaccessionCollectionObject> deaccessionCollectionObjects;
+     protected Set<OtherIdentifier> otherIdentifiers;
      protected CatalogSeries catalogSeries;
      protected Accession accession;
      protected Agent cataloger;
-     private Set externalResources;
+     protected Set<ExternalResource> externalResources;
      protected Container container;
 
 
@@ -59,24 +60,68 @@ public class CollectionObject  implements java.io.Serializable {
     /** default constructor */
     public CollectionObject() {
     }
-    
+
     /** constructor with id */
     public CollectionObject(Integer collectionObjectId) {
         this.collectionObjectId = collectionObjectId;
     }
-   
-    
-    
+
+
+
+
+    // Initializer
+    public void initialize()
+    {
+        collectionObjectId = null;
+        fieldNumber = null;
+        description = null;
+        text1 = null;
+        text2 = null;
+        number1 = null;
+        number2 = null;
+        yesNo1 = null;
+        yesNo2 = null;
+        countAmt = null;
+        remarks = null;
+        name = null;
+        modifier = null;
+        catalogedDate = null;
+        catalogedDateVerbatim = null;
+        guid = null;
+        altCatalogNumber = null;
+        groupPermittedToView = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        lastEditedBy = null;
+        deaccessioned = null;
+        catalogNumber = null;
+        collectingEvent = null;
+        containerItem = null;
+        collectionObjectCitations = new HashSet<CollectionObjectCitation>();
+        attrs = new HashSet<AttributeIFace>();
+        preparations = new HashSet<Preparation>();
+        determinations = new HashSet<Determination>();
+        collectionObjDef = null;
+        projectCollectionObjects = new HashSet<ProjectCollectionObject>();
+        deaccessionCollectionObjects = new HashSet<DeaccessionCollectionObject>();
+        otherIdentifiers = new HashSet<OtherIdentifier>();
+        catalogSeries = null;
+        accession = null;
+        cataloger = null;
+        externalResources = new HashSet<ExternalResource>();
+        container = null;
+    }
+    // End Initializer
 
     // Property accessors
 
     /**
-     * 
+     *
      */
     public Integer getCollectionObjectId() {
         return this.collectionObjectId;
     }
-    
+
     public void setCollectionObjectId(Integer collectionObjectId) {
         this.collectionObjectId = collectionObjectId;
     }
@@ -87,7 +132,7 @@ public class CollectionObject  implements java.io.Serializable {
     public String getFieldNumber() {
         return this.fieldNumber;
     }
-    
+
     public void setFieldNumber(String fieldNumber) {
         this.fieldNumber = fieldNumber;
     }
@@ -98,7 +143,7 @@ public class CollectionObject  implements java.io.Serializable {
     public String getDescription() {
         return this.description;
     }
-    
+
     public void setDescription(String description) {
         this.description = description;
     }
@@ -109,7 +154,7 @@ public class CollectionObject  implements java.io.Serializable {
     public String getText1() {
         return this.text1;
     }
-    
+
     public void setText1(String text1) {
         this.text1 = text1;
     }
@@ -120,7 +165,7 @@ public class CollectionObject  implements java.io.Serializable {
     public String getText2() {
         return this.text2;
     }
-    
+
     public void setText2(String text2) {
         this.text2 = text2;
     }
@@ -131,7 +176,7 @@ public class CollectionObject  implements java.io.Serializable {
     public Float getNumber1() {
         return this.number1;
     }
-    
+
     public void setNumber1(Float number1) {
         this.number1 = number1;
     }
@@ -142,7 +187,7 @@ public class CollectionObject  implements java.io.Serializable {
     public Float getNumber2() {
         return this.number2;
     }
-    
+
     public void setNumber2(Float number2) {
         this.number2 = number2;
     }
@@ -153,7 +198,7 @@ public class CollectionObject  implements java.io.Serializable {
     public Boolean getYesNo1() {
         return this.yesNo1;
     }
-    
+
     public void setYesNo1(Boolean yesNo1) {
         this.yesNo1 = yesNo1;
     }
@@ -164,161 +209,161 @@ public class CollectionObject  implements java.io.Serializable {
     public Boolean getYesNo2() {
         return this.yesNo2;
     }
-    
+
     public void setYesNo2(Boolean yesNo2) {
         this.yesNo2 = yesNo2;
     }
 
     /**
-     * 
+     *
      */
     public Integer getCountAmt() {
         return this.countAmt;
     }
-    
+
     public void setCountAmt(Integer countAmt) {
         this.countAmt = countAmt;
     }
 
     /**
-     * 
+     *
      */
     public String getRemarks() {
         return this.remarks;
     }
-    
+
     public void setRemarks(String remarks) {
         this.remarks = remarks;
     }
 
     /**
-     * 
+     *
      */
     public String getName() {
         return this.name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * 
+     *
      */
     public String getModifier() {
         return this.modifier;
     }
-    
+
     public void setModifier(String modifier) {
         this.modifier = modifier;
     }
 
     /**
-     * 
+     *
      */
     public Calendar getCatalogedDate() {
         return this.catalogedDate;
     }
-    
+
     public void setCatalogedDate(Calendar catalogedDate) {
         this.catalogedDate = catalogedDate;
     }
 
     /**
-     * 
+     *
      */
     public String getCatalogedDateVerbatim() {
         return this.catalogedDateVerbatim;
     }
-    
+
     public void setCatalogedDateVerbatim(String catalogedDateVerbatim) {
         this.catalogedDateVerbatim = catalogedDateVerbatim;
     }
 
     /**
-     * 
+     *
      */
     public String getGuid() {
         return this.guid;
     }
-    
+
     public void setGuid(String guid) {
         this.guid = guid;
     }
 
     /**
-     * 
+     *
      */
     public String getAltCatalogNumber() {
         return this.altCatalogNumber;
     }
-    
+
     public void setAltCatalogNumber(String altCatalogNumber) {
         this.altCatalogNumber = altCatalogNumber;
     }
 
     /**
-     * 
+     *
      */
     public Integer getGroupPermittedToView() {
         return this.groupPermittedToView;
     }
-    
+
     public void setGroupPermittedToView(Integer groupPermittedToView) {
         this.groupPermittedToView = groupPermittedToView;
     }
 
     /**
-     * 
+     *
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
     }
-    
+
     public void setTimestampCreated(Date timestampCreated) {
         this.timestampCreated = timestampCreated;
     }
 
     /**
-     * 
+     *
      */
     public Date getTimestampModified() {
         return this.timestampModified;
     }
-    
+
     public void setTimestampModified(Date timestampModified) {
         this.timestampModified = timestampModified;
     }
 
     /**
-     * 
+     *
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
     }
-    
+
     public void setLastEditedBy(String lastEditedBy) {
         this.lastEditedBy = lastEditedBy;
     }
 
     /**
-     * 
+     *
      */
     public Boolean getDeaccessioned() {
         return this.deaccessioned;
     }
-    
+
     public void setDeaccessioned(Boolean deaccessioned) {
         this.deaccessioned = deaccessioned;
     }
 
     /**
-     * 
+     *
      */
     public Float getCatalogNumber() {
         return this.catalogNumber;
     }
-    
+
     public void setCatalogNumber(Float catalogNumber) {
         this.catalogNumber = catalogNumber;
     }
@@ -329,151 +374,151 @@ public class CollectionObject  implements java.io.Serializable {
     public CollectingEvent getCollectingEvent() {
         return this.collectingEvent;
     }
-    
+
     public void setCollectingEvent(CollectingEvent collectingEvent) {
         this.collectingEvent = collectingEvent;
     }
 
     /**
-     * 
+     *
      */
     public ContainerItem getContainerItem() {
         return this.containerItem;
     }
-    
+
     public void setContainerItem(ContainerItem containerItem) {
         this.containerItem = containerItem;
     }
 
     /**
-     * 
+     *
      */
-    public Set getCollectionObjectCitations() {
+    public Set<CollectionObjectCitation> getCollectionObjectCitations() {
         return this.collectionObjectCitations;
     }
-    
-    public void setCollectionObjectCitations(Set collectionObjectCitations) {
+
+    public void setCollectionObjectCitations(Set<CollectionObjectCitation> collectionObjectCitations) {
         this.collectionObjectCitations = collectionObjectCitations;
     }
 
     /**
-     * 
+     *
      */
-    public Set getAttrs() {
+    public Set<AttributeIFace> getAttrs() {
         return this.attrs;
     }
-    
-    public void setAttrs(Set attrs) {
+
+    public void setAttrs(Set<AttributeIFace> attrs) {
         this.attrs = attrs;
     }
 
     /**
-     * 
+     *
      */
-    public Set getPreparations() {
+    public Set<Preparation> getPreparations() {
         return this.preparations;
     }
-    
-    public void setPreparations(Set preparations) {
+
+    public void setPreparations(Set<Preparation> preparations) {
         this.preparations = preparations;
     }
 
     /**
-     * 
+     *
      */
-    public Set getDeterminations() {
+    public Set<Determination> getDeterminations() {
         return this.determinations;
     }
-    
-    public void setDeterminations(Set determinations) {
+
+    public void setDeterminations(Set<Determination> determinations) {
         this.determinations = determinations;
     }
 
     /**
-     * 
+     *
      */
     public CollectionObjDef getCollectionObjDef() {
         return this.collectionObjDef;
     }
-    
+
     public void setCollectionObjDef(CollectionObjDef collectionObjDef) {
         this.collectionObjDef = collectionObjDef;
     }
 
     /**
-     * 
+     *
      */
-    public Set getProjectCollectionObjects() {
+    public Set<ProjectCollectionObject> getProjectCollectionObjects() {
         return this.projectCollectionObjects;
     }
-    
-    public void setProjectCollectionObjects(Set projectCollectionObjects) {
+
+    public void setProjectCollectionObjects(Set<ProjectCollectionObject> projectCollectionObjects) {
         this.projectCollectionObjects = projectCollectionObjects;
     }
 
     /**
-     * 
+     *
      */
-    public Set getDeaccessionCollectionObjects() {
+    public Set<DeaccessionCollectionObject> getDeaccessionCollectionObjects() {
         return this.deaccessionCollectionObjects;
     }
-    
-    public void setDeaccessionCollectionObjects(Set deaccessionCollectionObjects) {
+
+    public void setDeaccessionCollectionObjects(Set<DeaccessionCollectionObject> deaccessionCollectionObjects) {
         this.deaccessionCollectionObjects = deaccessionCollectionObjects;
     }
 
     /**
-     * 
+     *
      */
-    public Set getOtherIdentifiers() {
+    public Set<OtherIdentifier> getOtherIdentifiers() {
         return this.otherIdentifiers;
     }
-    
-    public void setOtherIdentifiers(Set otherIdentifiers) {
+
+    public void setOtherIdentifiers(Set<OtherIdentifier> otherIdentifiers) {
         this.otherIdentifiers = otherIdentifiers;
     }
 
     /**
-     * 
+     *
      */
     public CatalogSeries getCatalogSeries() {
         return this.catalogSeries;
     }
-    
+
     public void setCatalogSeries(CatalogSeries catalogSeries) {
         this.catalogSeries = catalogSeries;
     }
 
     /**
-     * 
+     *
      */
     public Accession getAccession() {
         return this.accession;
     }
-    
+
     public void setAccession(Accession accession) {
         this.accession = accession;
     }
 
     /**
-     * 
+     *
      */
     public Agent getCataloger() {
         return this.cataloger;
     }
-    
+
     public void setCataloger(Agent cataloger) {
         this.cataloger = cataloger;
     }
 
     /**
-     * 
+     *
      */
-    public Set getExternalResources() {
+    public Set<ExternalResource> getExternalResources() {
         return this.externalResources;
     }
-    
-    public void setExternalResources(Set externalResources) {
+
+    public void setExternalResources(Set<ExternalResource> externalResources) {
         this.externalResources = externalResources;
     }
 
@@ -483,21 +528,52 @@ public class CollectionObject  implements java.io.Serializable {
     public Container getContainer() {
         return this.container;
     }
-    
+
     public void setContainer(Container container) {
         this.container = container;
     }
 
+    // Add Methods
 
+    public void addCollectionObjectCitation(final CollectionObjectCitation collectionObjectCitation)
+    {
+        this.collectionObjectCitations.add(collectionObjectCitation);
+    }
 
+    public void addAttr(final AttributeIFace attr)
+    {
+        this.attrs.add(attr);
+    }
 
-  // The following is extra code specified in the hbm.xml files
+    public void addPreparation(final Preparation preparation)
+    {
+        this.preparations.add(preparation);
+    }
 
-        public void addDetermination(Determination determination)
-        {
-            determinations.add(determination);
-            determination.setCollectionObject(this);
-        }
-    
-  // end of extra code specified in the hbm.xml files
+    public void addDetermination(final Determination determination)
+    {
+        this.determinations.add(determination);
+    }
+
+    public void addProjectCollectionObject(final ProjectCollectionObject projectCollectionObject)
+    {
+        this.projectCollectionObjects.add(projectCollectionObject);
+    }
+
+    public void addDeaccessionCollectionObject(final DeaccessionCollectionObject deaccessionCollectionObject)
+    {
+        this.deaccessionCollectionObjects.add(deaccessionCollectionObject);
+    }
+
+    public void addOtherIdentifier(final OtherIdentifier otherIdentifier)
+    {
+        this.otherIdentifiers.add(otherIdentifier);
+    }
+
+    public void addExternalResource(final ExternalResource externalResource)
+    {
+        this.externalResources.add(externalResource);
+    }
+
+    // Done Add Methods
 }

@@ -41,6 +41,24 @@ public class InfoRequest  implements java.io.Serializable {
     
     
 
+    // Initializer
+    public void initialize()
+    {
+        infoRequestID = null;
+        firstName = null;
+        lastName = null;
+        institution = null;
+        email = null;
+        requestDate = null;
+        replyDate = null;
+        remarks = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        recordSet = null;
+        agent = null;
+    }
+    // End Initializer
+
     // Property accessors
 
     /**
@@ -178,4 +196,7 @@ public class InfoRequest  implements java.io.Serializable {
 
 
 
+    // Add Methods
+
+    // Done Add Methods
 }

@@ -45,6 +45,28 @@ public class ExchangeIn  implements java.io.Serializable {
     
     
 
+    // Initializer
+    public void initialize()
+    {
+        exchangeInId = null;
+        exchangeDate = null;
+        quantityExchanged = null;
+        descriptionOfMaterial = null;
+        remarks = null;
+        text1 = null;
+        text2 = null;
+        number1 = null;
+        number2 = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        lastEditedBy = null;
+        yesNo1 = null;
+        yesNo2 = null;
+        agentAddress = null;
+        agent = null;
+    }
+    // End Initializer
+
     // Property accessors
 
     /**
@@ -226,4 +248,7 @@ public class ExchangeIn  implements java.io.Serializable {
 
 
 
+    // Add Methods
+
+    // Done Add Methods
 }

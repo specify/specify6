@@ -46,6 +46,29 @@ public class ExchangeOut  implements java.io.Serializable {
     
     
 
+    // Initializer
+    public void initialize()
+    {
+        exchangeOutId = null;
+        exchangeDate = null;
+        quantityExchanged = null;
+        descriptionOfMaterial = null;
+        remarks = null;
+        text1 = null;
+        text2 = null;
+        number1 = null;
+        number2 = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        lastEditedBy = null;
+        yesNo1 = null;
+        yesNo2 = null;
+        agentAddress = null;
+        agent = null;
+        shipment = null;
+    }
+    // End Initializer
+
     // Property accessors
 
     /**
@@ -238,4 +261,7 @@ public class ExchangeOut  implements java.io.Serializable {
 
 
 
+    // Add Methods
+
+    // Done Add Methods
 }

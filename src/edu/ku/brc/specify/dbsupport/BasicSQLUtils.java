@@ -198,8 +198,6 @@ public class BasicSQLUtils
             stmt.clearBatch();
             stmt.close();
 
-            connection.close();
-            
             log.info("Deleted "+count+" records from "+tableName);
 
             return retVal;
@@ -208,7 +206,7 @@ public class BasicSQLUtils
         {
             //e.printStackTrace();
             log.error(ex);
-            
+
         }
         return -1;
     }
@@ -259,8 +257,8 @@ public class BasicSQLUtils
 
         } catch (SQLException ex)
         {
-            //e.printStackTrace();
             log.error(ex);
+            ex.printStackTrace();
         }
     }
 
@@ -630,7 +628,7 @@ public class BasicSQLUtils
                         } else if (dataObj == null && fieldMetaData.getName().equals("TimestampCreated"))
                         {
                             str.append(getStrValue(Calendar.getInstance().getTime(), fieldMetaData.getType()));
-                            
+
                         } else
                         {
                             str.append(getStrValue(dataObj, fieldMetaData.getType()));

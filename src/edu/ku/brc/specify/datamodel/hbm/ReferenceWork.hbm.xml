@@ -14,100 +14,100 @@
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Link to Reference containing (if Section)</meta>
     </property>
-    
+
     <property name="referenceWorkType" type="byte" column="ReferenceWorkType" not-null="true" length="3">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
+
     <property name="title" type="java.lang.String" column="Title" length="255">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Title of reference</meta>
     </property>
-    
+
     <property name="publisher" type="java.lang.String" column="Publisher" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
+
     <property name="placeOfPublication" type="java.lang.String" column="PlaceOfPublication" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
+
     <property name="workDate" type="java.lang.String" column="WorkDate" length="25">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
+
     <property name="volume" type="java.lang.String" column="Volume" length="25">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Volume/Issue for Journal articles</meta>
     </property>
-    
+
     <property name="pages" type="java.lang.String" column="Pages" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Number of pages or Page range for Journal articles</meta>
     </property>
-    
+
     <property name="url" type="text" column="URL">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
+
     <property name="libraryNumber" type="java.lang.String" column="LibraryNumber" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
+
     <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
+
     <property name="text1" type="text" column="Text1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">User definable</meta>
     </property>
-    
+
     <property name="text2" type="text" column="Text2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">User definable</meta>
     </property>
-    
+
     <property name="number1" type="java.lang.Float" column="Number1" length="24">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">User definable</meta>
     </property>
-    
+
     <property name="number2" type="java.lang.Float" column="Number2" length="24">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">User definable</meta>
     </property>
-    
+
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" not-null="true" length="23" index="IX_ReferenceWork_1">
+
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" not-null="false" length="23" index="IX_ReferenceWork_1">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
     <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" not-null="true" length="50" index="IX_ReferenceWork_2">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
     <property name="published" type="short" column="Published">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
+
     <property name="yesNo1" type="boolean" column="YesNo1">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">User definable</meta>
     </property>
-    
+
     <property name="yesNo2" type="boolean" column="YesNo2">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">User definable</meta>
@@ -116,7 +116,7 @@
 
 
     <!-- Associations -->
-  
+
     <!-- bi-directional one-to-many association to LocalityCitation -->
     <set name="localityCitations" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>
@@ -133,7 +133,7 @@
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.CollectionObjectCitation"/>
     </set>
- 
+
     <!-- bi-directional one-to-many association to TaxonCitation -->
     <set name="taxonCitations" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>

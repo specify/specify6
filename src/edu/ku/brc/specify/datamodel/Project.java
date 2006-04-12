@@ -2,6 +2,7 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -31,7 +32,7 @@ public class Project  implements java.io.Serializable {
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      private Agent agent;
-     private Set projectCollectionObjects;
+     protected Set<ProjectCollectionObject> projectCollectionObjects;
 
 
     // Constructors
@@ -47,6 +48,30 @@ public class Project  implements java.io.Serializable {
    
     
     
+
+    // Initializer
+    public void initialize()
+    {
+        projectId = null;
+        projectName = null;
+        projectDescription = null;
+        url = null;
+        startDate = null;
+        endDate = null;
+        remarks = null;
+        text1 = null;
+        text2 = null;
+        number1 = null;
+        number2 = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        lastEditedBy = null;
+        yesNo1 = null;
+        yesNo2 = null;
+        agent = null;
+        projectCollectionObjects = new HashSet<ProjectCollectionObject>();
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -240,15 +265,23 @@ public class Project  implements java.io.Serializable {
     /**
      * 
      */
-    public Set getProjectCollectionObjects() {
+    public Set<ProjectCollectionObject> getProjectCollectionObjects() {
         return this.projectCollectionObjects;
     }
     
-    public void setProjectCollectionObjects(Set projectCollectionObjects) {
+    public void setProjectCollectionObjects(Set<ProjectCollectionObject> projectCollectionObjects) {
         this.projectCollectionObjects = projectCollectionObjects;
     }
 
 
 
 
+    // Add Methods
+
+    public void addProjectCollectionObject(final ProjectCollectionObject projectCollectionObject)
+    {
+        this.projectCollectionObjects.add(projectCollectionObject);
+    }
+
+    // Done Add Methods
 }

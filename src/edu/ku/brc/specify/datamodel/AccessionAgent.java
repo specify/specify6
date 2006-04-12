@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -36,6 +37,21 @@ public class AccessionAgent  implements java.io.Serializable {
    
     
     
+
+    // Initializer
+    public void initialize()
+    {
+        accessionAgentsId = null;
+        role = null;
+        remarks = null;
+        timestampModified = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        lastEditedBy = null;
+        agentAddress = null;
+        accession = null;
+        repositoryAgreement = null;
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -141,4 +157,7 @@ public class AccessionAgent  implements java.io.Serializable {
 
 
 
+    // Add Methods
+
+    // Done Add Methods
 }

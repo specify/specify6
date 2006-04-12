@@ -165,9 +165,9 @@ public class SpecifyDBConverter
     public static void main(String args[]) throws Exception
     {
         String oldDatabaseName = "demo_fish4";
-        
-        DBConnection oldDB     = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/"+oldDatabaseName, "rods", "rods");
-        IdMapperMgr idMapperMgr = new IdMapperMgr(oldDB.getConnectionToDB());
+
+        DBConnection oldDB       = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/"+oldDatabaseName, "rods", "rods");
+        IdMapperMgr  idMapperMgr = new IdMapperMgr(oldDB.getConnectionToDB());
 
         DBConnection.setUsernamePassword("rods", "rods");
         DBConnection.setDriver("com.mysql.jdbc.Driver");
@@ -178,6 +178,7 @@ public class SpecifyDBConverter
             //BasicSQLUtils.cleanAllTables();
             GenericDBConversion.setShouldCreateMapTables(true);
             GenericDBConversion.setShouldDeleteMapTables(false);
+
             boolean doAll = true; // when converting
 
             boolean doConvert = true;
@@ -197,7 +198,7 @@ public class SpecifyDBConverter
                     conversion.mapIds();
                     BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(null);
                 }
-                
+
                 boolean copyUSYSTables = false;
                 if (copyUSYSTables || doAll)
                 {
@@ -331,7 +332,7 @@ public class SpecifyDBConverter
                         }*/
 
 
-                        Set<Object>  colObjDefSet = conversion.createCollectionObjDef("Fish", dataType, user, null, null);//(CatalogSeries)catalogSeriesList.get(0));
+                        Set<CollectionObjDef>  colObjDefSet = conversion.createCollectionObjDef("Fish", dataType, user, null, null);//(CatalogSeries)catalogSeriesList.get(0));
 
 
                         Object obj = colObjDefSet.iterator().next();

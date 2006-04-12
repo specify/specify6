@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -25,7 +27,7 @@ public class LoanPhysicalObject  implements java.io.Serializable {
      protected String lastEditedBy;
      private Preparation preparation;
      private Loan loan;
-     private Set loanReturnPhysicalObjects;
+     protected Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects;
 
 
     // Constructors
@@ -41,6 +43,25 @@ public class LoanPhysicalObject  implements java.io.Serializable {
    
     
     
+
+    // Initializer
+    public void initialize()
+    {
+        loanPhysicalObjectId = null;
+        quantity = null;
+        descriptionOfMaterial = null;
+        outComments = null;
+        inComments = null;
+        quantityResolved = null;
+        quantityReturned = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        lastEditedBy = null;
+        preparation = null;
+        loan = null;
+        loanReturnPhysicalObjects = new HashSet<LoanReturnPhysicalObject>();
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -179,15 +200,23 @@ public class LoanPhysicalObject  implements java.io.Serializable {
     /**
      * 
      */
-    public Set getLoanReturnPhysicalObjects() {
+    public Set<LoanReturnPhysicalObject> getLoanReturnPhysicalObjects() {
         return this.loanReturnPhysicalObjects;
     }
     
-    public void setLoanReturnPhysicalObjects(Set loanReturnPhysicalObjects) {
+    public void setLoanReturnPhysicalObjects(Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects) {
         this.loanReturnPhysicalObjects = loanReturnPhysicalObjects;
     }
 
 
 
 
+    // Add Methods
+
+    public void addLoanReturnPhysicalObject(final LoanReturnPhysicalObject loanReturnPhysicalObject)
+    {
+        this.loanReturnPhysicalObjects.add(loanReturnPhysicalObject);
+    }
+
+    // Done Add Methods
 }

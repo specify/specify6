@@ -2,6 +2,7 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -32,10 +33,10 @@ public class Loan  implements java.io.Serializable {
      protected Short closed;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     private Set loanAgents;
-     private Set loanPhysicalObjects;
+     protected Set<LoanAgent> loanAgents;
+     protected Set<LoanPhysicalObject> loanPhysicalObjects;
      private Shipment shipment;
-     private Set externalResources;
+     protected Set<ExternalResource> externalResources;
 
 
     // Constructors
@@ -51,6 +52,34 @@ public class Loan  implements java.io.Serializable {
    
     
     
+
+    // Initializer
+    public void initialize()
+    {
+        loanId = null;
+        loanNumber = null;
+        loanDate = null;
+        currentDueDate = null;
+        originalDueDate = null;
+        dateClosed = null;
+        category = null;
+        remarks = null;
+        text1 = null;
+        text2 = null;
+        number1 = null;
+        number2 = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        lastEditedBy = null;
+        closed = null;
+        yesNo1 = null;
+        yesNo2 = null;
+        loanAgents = new HashSet<LoanAgent>();
+        loanPhysicalObjects = new HashSet<LoanPhysicalObject>();
+        shipment = null;
+        externalResources = new HashSet<ExternalResource>();
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -255,22 +284,22 @@ public class Loan  implements java.io.Serializable {
     /**
      * 
      */
-    public Set getLoanAgents() {
+    public Set<LoanAgent> getLoanAgents() {
         return this.loanAgents;
     }
     
-    public void setLoanAgents(Set loanAgents) {
+    public void setLoanAgents(Set<LoanAgent> loanAgents) {
         this.loanAgents = loanAgents;
     }
 
     /**
      * 
      */
-    public Set getLoanPhysicalObjects() {
+    public Set<LoanPhysicalObject> getLoanPhysicalObjects() {
         return this.loanPhysicalObjects;
     }
     
-    public void setLoanPhysicalObjects(Set loanPhysicalObjects) {
+    public void setLoanPhysicalObjects(Set<LoanPhysicalObject> loanPhysicalObjects) {
         this.loanPhysicalObjects = loanPhysicalObjects;
     }
 
@@ -288,15 +317,33 @@ public class Loan  implements java.io.Serializable {
     /**
      * 
      */
-    public Set getExternalResources() {
+    public Set<ExternalResource> getExternalResources() {
         return this.externalResources;
     }
     
-    public void setExternalResources(Set externalResources) {
+    public void setExternalResources(Set<ExternalResource> externalResources) {
         this.externalResources = externalResources;
     }
 
 
 
 
+    // Add Methods
+
+    public void addLoanAgent(final LoanAgent loanAgent)
+    {
+        this.loanAgents.add(loanAgent);
+    }
+
+    public void addLoanPhysicalObject(final LoanPhysicalObject loanPhysicalObject)
+    {
+        this.loanPhysicalObjects.add(loanPhysicalObject);
+    }
+
+    public void addExternalResource(final ExternalResource externalResource)
+    {
+        this.externalResources.add(externalResource);
+    }
+
+    // Done Add Methods
 }

@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -34,6 +35,19 @@ public class PreparationAttr  implements AttributeIFace,java.io.Serializable {
    
     
     
+
+    // Initializer
+    public void initialize()
+    {
+        attrId = null;
+        strValue = null;
+        dblValue = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        definition = null;
+        preparation = null;
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -117,4 +131,7 @@ public class PreparationAttr  implements AttributeIFace,java.io.Serializable {
 
 
 
+    // Add Methods
+
+    // Done Add Methods
 }

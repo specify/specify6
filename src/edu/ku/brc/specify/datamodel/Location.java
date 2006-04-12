@@ -3,7 +3,9 @@ package edu.ku.brc.specify.datamodel;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -31,8 +33,8 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
      private LocationTreeDef definition;
      private LocationTreeDefItem definitionItem;
      private Location parent;
-     protected Set preparations;
-     protected Set containers;
+     protected Set<Preparation> preparations;
+     protected Set<Container> containers;
 
 
     // Constructors
@@ -48,6 +50,31 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
    
     
     
+
+    // Initializer
+    public void initialize()
+    {
+        treeId = null;
+        name = null;
+        rankId = null;
+        nodeNumber = null;
+        highestChildNodeNumber = null;
+        abbrev = null;
+        text1 = null;
+        text2 = null;
+        number1 = null;
+        number2 = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        timestampVersion = null;
+        lastEditedBy = null;
+        definition = null;
+        definitionItem = null;
+        parent = null;
+        preparations = new HashSet<Preparation>();
+        containers = new HashSet<Container>();
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -241,22 +268,22 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
     /**
      * 
      */
-    public Set getPreparations() {
+    public Set<Preparation> getPreparations() {
         return this.preparations;
     }
     
-    public void setPreparations(Set preparations) {
+    public void setPreparations(Set<Preparation> preparations) {
         this.preparations = preparations;
     }
 
     /**
      * 
      */
-    public Set getContainers() {
+    public Set<Container> getContainers() {
         return this.containers;
     }
     
-    public void setContainers(Set containers) {
+    public void setContainers(Set<Container> containers) {
         this.containers = containers;
     }
 
@@ -413,4 +440,17 @@ public class Location  implements Treeable,java.awt.datatransfer.Transferable,ja
         	
         
   // end of extra code specified in the hbm.xml files
+    // Add Methods
+
+    public void addPreparation(final Preparation preparation)
+    {
+        this.preparations.add(preparation);
+    }
+
+    public void addContainer(final Container container)
+    {
+        this.containers.add(container);
+    }
+
+    // Done Add Methods
 }

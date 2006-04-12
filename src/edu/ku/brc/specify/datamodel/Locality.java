@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -59,11 +61,11 @@ public class Locality  implements java.io.Serializable {
      protected String island;
      protected String waterBody;
      protected String drainage;
-     private Set collectionObjDefs;
+     protected Set<CollectionObjDef> collectionObjDefs;
      protected Geography geography;
-     protected Set localityCitations;
-     protected Set collectingEvents;
-     private Set externalResources;
+     protected Set<LocalityCitation> localityCitations;
+     protected Set<CollectingEvent> collectingEvents;
+     protected Set<ExternalResource> externalResources;
 
 
     // Constructors
@@ -79,6 +81,63 @@ public class Locality  implements java.io.Serializable {
    
     
     
+
+    // Initializer
+    public void initialize()
+    {
+        localityId = null;
+        namedPlace = null;
+        relationToNamedPlace = null;
+        localityName = null;
+        baseMeridian = null;
+        range = null;
+        rangeDirection = null;
+        township = null;
+        townshipDirection = null;
+        section = null;
+        sectionPart = null;
+        verbatimElevation = null;
+        originalElevationUnit = null;
+        minElevation = null;
+        maxElevation = null;
+        elevationMethod = null;
+        elevationAccuracy = null;
+        originalLatLongUnit = null;
+        latLongType = null;
+        latitude1 = null;
+        longitude1 = null;
+        latitude2 = null;
+        longitude2 = null;
+        latLongMethod = null;
+        latLongAccuracy = null;
+        datum = null;
+        groupPermittedToView = null;
+        remarks = null;
+        text1 = null;
+        text2 = null;
+        number1 = null;
+        number2 = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        lastEditedBy = null;
+        yesNo1 = null;
+        yesNo2 = null;
+        lat1text = null;
+        lat2text = null;
+        long1text = null;
+        long2text = null;
+        nationalParkName = null;
+        islandGroup = null;
+        island = null;
+        waterBody = null;
+        drainage = null;
+        collectionObjDefs = new HashSet<CollectionObjDef>();
+        geography = null;
+        localityCitations = new HashSet<LocalityCitation>();
+        collectingEvents = new HashSet<CollectingEvent>();
+        externalResources = new HashSet<ExternalResource>();
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -591,11 +650,11 @@ public class Locality  implements java.io.Serializable {
     /**
      * 
      */
-    public Set getCollectionObjDefs() {
+    public Set<CollectionObjDef> getCollectionObjDefs() {
         return this.collectionObjDefs;
     }
     
-    public void setCollectionObjDefs(Set collectionObjDefs) {
+    public void setCollectionObjDefs(Set<CollectionObjDef> collectionObjDefs) {
         this.collectionObjDefs = collectionObjDefs;
     }
 
@@ -613,37 +672,60 @@ public class Locality  implements java.io.Serializable {
     /**
      * 
      */
-    public Set getLocalityCitations() {
+    public Set<LocalityCitation> getLocalityCitations() {
         return this.localityCitations;
     }
     
-    public void setLocalityCitations(Set localityCitations) {
+    public void setLocalityCitations(Set<LocalityCitation> localityCitations) {
         this.localityCitations = localityCitations;
     }
 
     /**
      * 
      */
-    public Set getCollectingEvents() {
+    public Set<CollectingEvent> getCollectingEvents() {
         return this.collectingEvents;
     }
     
-    public void setCollectingEvents(Set collectingEvents) {
+    public void setCollectingEvents(Set<CollectingEvent> collectingEvents) {
         this.collectingEvents = collectingEvents;
     }
 
     /**
      * 
      */
-    public Set getExternalResources() {
+    public Set<ExternalResource> getExternalResources() {
         return this.externalResources;
     }
     
-    public void setExternalResources(Set externalResources) {
+    public void setExternalResources(Set<ExternalResource> externalResources) {
         this.externalResources = externalResources;
     }
 
 
 
 
+    // Add Methods
+
+    public void addCollectionObjDef(final CollectionObjDef collectionObjDef)
+    {
+        this.collectionObjDefs.add(collectionObjDef);
+    }
+
+    public void addLocalityCitation(final LocalityCitation localityCitation)
+    {
+        this.localityCitations.add(localityCitation);
+    }
+
+    public void addCollectingEvent(final CollectingEvent collectingEvent)
+    {
+        this.collectingEvents.add(collectingEvent);
+    }
+
+    public void addExternalResource(final ExternalResource externalResource)
+    {
+        this.externalResources.add(externalResource);
+    }
+
+    // Done Add Methods
 }

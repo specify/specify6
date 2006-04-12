@@ -38,6 +38,21 @@ public class BorrowReturnMaterial  implements java.io.Serializable {
     
     
 
+    // Initializer
+    public void initialize()
+    {
+        borrowReturnMaterialId = null;
+        returnedDate = null;
+        quantity = null;
+        remarks = null;
+        timestampModified = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        lastEditedBy = null;
+        agent = null;
+        borrowMaterial = null;
+    }
+    // End Initializer
+
     // Property accessors
 
     /**
@@ -142,4 +157,7 @@ public class BorrowReturnMaterial  implements java.io.Serializable {
 
 
 
+    // Add Methods
+
+    // Done Add Methods
 }

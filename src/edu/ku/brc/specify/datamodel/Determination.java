@@ -2,6 +2,7 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -33,7 +34,7 @@ public class Determination  implements java.io.Serializable {
      protected Boolean yesNo2;
      protected Taxon taxon;
      protected CollectionObject collectionObject;
-     private Set determinationCitations;
+     protected Set<DeterminationCitation> determinationCitations;
      private Agent determiner;
 
 
@@ -50,6 +51,33 @@ public class Determination  implements java.io.Serializable {
    
     
     
+
+    // Initializer
+    public void initialize()
+    {
+        determinationId = null;
+        isCurrent = null;
+        typeStatusName = null;
+        determinedDate = null;
+        confidence = null;
+        method = null;
+        featureOrBasis = null;
+        remarks = null;
+        text1 = null;
+        text2 = null;
+        number1 = null;
+        number2 = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        lastEditedBy = null;
+        yesNo1 = null;
+        yesNo2 = null;
+        taxon = null;
+        collectionObject = null;
+        determinationCitations = new HashSet<DeterminationCitation>();
+        determiner = null;
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -265,11 +293,11 @@ public class Determination  implements java.io.Serializable {
     /**
      * 
      */
-    public Set getDeterminationCitations() {
+    public Set<DeterminationCitation> getDeterminationCitations() {
         return this.determinationCitations;
     }
     
-    public void setDeterminationCitations(Set determinationCitations) {
+    public void setDeterminationCitations(Set<DeterminationCitation> determinationCitations) {
         this.determinationCitations = determinationCitations;
     }
 
@@ -287,4 +315,12 @@ public class Determination  implements java.io.Serializable {
 
 
 
+    // Add Methods
+
+    public void addDeterminationCitation(final DeterminationCitation determinationCitation)
+    {
+        this.determinationCitations.add(determinationCitation);
+    }
+
+    // Done Add Methods
 }

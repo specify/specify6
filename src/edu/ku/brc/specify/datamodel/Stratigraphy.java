@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -11,7 +13,7 @@ import java.util.Set;
  */
 public class Stratigraphy  implements java.io.Serializable {
 
-    // Fields    
+    // Fields
 
      protected Integer stratigraphyId;
      protected String superGroup;
@@ -30,7 +32,7 @@ public class Stratigraphy  implements java.io.Serializable {
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      private CollectingEvent collectingEvent;
-     private Set children;
+     protected Set<GeologicTimePeriod> children;
 
 
     // Constructors
@@ -38,14 +40,38 @@ public class Stratigraphy  implements java.io.Serializable {
     /** default constructor */
     public Stratigraphy() {
     }
-    
+
     /** constructor with id */
     public Stratigraphy(Integer stratigraphyId) {
         this.stratigraphyId = stratigraphyId;
     }
-   
-    
-    
+
+
+
+
+    // Initializer
+    public void initialize()
+    {
+        stratigraphyId = null;
+        superGroup = null;
+        lithoGroup = null;
+        formation = null;
+        member = null;
+        bed = null;
+        remarks = null;
+        text1 = null;
+        text2 = null;
+        number1 = null;
+        number2 = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        lastEditedBy = null;
+        yesNo1 = null;
+        yesNo2 = null;
+        collectingEvent = null;
+        children = new HashSet<GeologicTimePeriod>();
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -55,7 +81,7 @@ public class Stratigraphy  implements java.io.Serializable {
     public Integer getStratigraphyId() {
         return this.stratigraphyId;
     }
-    
+
     public void setStratigraphyId(Integer stratigraphyId) {
         this.stratigraphyId = stratigraphyId;
     }
@@ -66,18 +92,18 @@ public class Stratigraphy  implements java.io.Serializable {
     public String getSuperGroup() {
         return this.superGroup;
     }
-    
+
     public void setSuperGroup(String superGroup) {
         this.superGroup = superGroup;
     }
 
     /**
-     * 
+     *
      */
     public String getLithoGroup() {
         return this.lithoGroup;
     }
-    
+
     public void setLithoGroup(String lithoGroup) {
         this.lithoGroup = lithoGroup;
     }
@@ -88,7 +114,7 @@ public class Stratigraphy  implements java.io.Serializable {
     public String getFormation() {
         return this.formation;
     }
-    
+
     public void setFormation(String formation) {
         this.formation = formation;
     }
@@ -99,7 +125,7 @@ public class Stratigraphy  implements java.io.Serializable {
     public String getMember() {
         return this.member;
     }
-    
+
     public void setMember(String member) {
         this.member = member;
     }
@@ -110,18 +136,18 @@ public class Stratigraphy  implements java.io.Serializable {
     public String getBed() {
         return this.bed;
     }
-    
+
     public void setBed(String bed) {
         this.bed = bed;
     }
 
     /**
-     * 
+     *
      */
     public String getRemarks() {
         return this.remarks;
     }
-    
+
     public void setRemarks(String remarks) {
         this.remarks = remarks;
     }
@@ -132,7 +158,7 @@ public class Stratigraphy  implements java.io.Serializable {
     public String getText1() {
         return this.text1;
     }
-    
+
     public void setText1(String text1) {
         this.text1 = text1;
     }
@@ -143,7 +169,7 @@ public class Stratigraphy  implements java.io.Serializable {
     public String getText2() {
         return this.text2;
     }
-    
+
     public void setText2(String text2) {
         this.text2 = text2;
     }
@@ -154,7 +180,7 @@ public class Stratigraphy  implements java.io.Serializable {
     public Float getNumber1() {
         return this.number1;
     }
-    
+
     public void setNumber1(Float number1) {
         this.number1 = number1;
     }
@@ -165,40 +191,40 @@ public class Stratigraphy  implements java.io.Serializable {
     public Float getNumber2() {
         return this.number2;
     }
-    
+
     public void setNumber2(Float number2) {
         this.number2 = number2;
     }
 
     /**
-     * 
+     *
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
     }
-    
+
     public void setTimestampCreated(Date timestampCreated) {
         this.timestampCreated = timestampCreated;
     }
 
     /**
-     * 
+     *
      */
     public Date getTimestampModified() {
         return this.timestampModified;
     }
-    
+
     public void setTimestampModified(Date timestampModified) {
         this.timestampModified = timestampModified;
     }
 
     /**
-     * 
+     *
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
     }
-    
+
     public void setLastEditedBy(String lastEditedBy) {
         this.lastEditedBy = lastEditedBy;
     }
@@ -209,7 +235,7 @@ public class Stratigraphy  implements java.io.Serializable {
     public Boolean getYesNo1() {
         return this.yesNo1;
     }
-    
+
     public void setYesNo1(Boolean yesNo1) {
         this.yesNo1 = yesNo1;
     }
@@ -220,34 +246,42 @@ public class Stratigraphy  implements java.io.Serializable {
     public Boolean getYesNo2() {
         return this.yesNo2;
     }
-    
+
     public void setYesNo2(Boolean yesNo2) {
         this.yesNo2 = yesNo2;
     }
 
     /**
-     * 
+     *
      */
     public CollectingEvent getCollectingEvent() {
         return this.collectingEvent;
     }
-    
+
     public void setCollectingEvent(CollectingEvent collectingEvent) {
         this.collectingEvent = collectingEvent;
     }
 
     /**
-     * 
+     *
      */
-    public Set getChildren() {
+    public Set<GeologicTimePeriod> getChildren() {
         return this.children;
     }
-    
-    public void setChildren(Set children) {
+
+    public void setChildren(Set<GeologicTimePeriod> children) {
         this.children = children;
     }
 
 
 
 
+    // Add Methods
+
+    public void addChildren(final GeologicTimePeriod children)
+    {
+        this.children.add(children);
+    }
+
+    // Done Add Methods
 }

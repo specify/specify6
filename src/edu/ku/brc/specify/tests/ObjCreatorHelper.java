@@ -111,30 +111,14 @@ public class ObjCreatorHelper
                                                   final Address address)
     {
         AgentAddress agentAddress = new AgentAddress();
-        agentAddress.setAccessionAgents(new HashSet<Object>());
+        agentAddress.initialize();
         agentAddress.setAddress(address);
         agentAddress.setAgent(agent);
-        agentAddress.setBorrowAgents(new HashSet<Object>());
-        agentAddress.setDeaccessionAgents(new HashSet<Object>());
-        agentAddress.setEmail(null);
-        agentAddress.setExchangeIns(new HashSet<Object>());
-        agentAddress.setExchangeOuts(new HashSet<Object>());
-        agentAddress.setFax(null);
         agentAddress.setIsCurrent(true);
         agentAddress.setJobTitle(jobTitle);
-        agentAddress.setLastEditedBy(null);
-        agentAddress.setLoanAgents(new HashSet<Object>());
-        agentAddress.setOrganization(null);
-        agentAddress.setPermitsByIssuee(new HashSet<Object>());
-        agentAddress.setPermitsByIssuer(new HashSet<Object>());
         agentAddress.setPhone1(phone);
-        agentAddress.setPhone2(null);
-        agentAddress.setRemarks(null);
-        agentAddress.setShipmentsByShippedTo(new HashSet<Object>());
-        agentAddress.setShipmentsByShipper(new HashSet<Object>());
         agentAddress.setTypeOfAgentAddressed((short)1);
         agentAddress.setUrl(null);
-        agentAddress.setTimestampCreated(new Date());
         agentAddress.setTimestampModified(new Date());
 
         return agentAddress;
@@ -148,33 +132,12 @@ public class ObjCreatorHelper
     {
         // Create Collection Object Definition
         Agent agent = new Agent();
-        agent.setTimestampCreated(new Date());
-        agent.setTimestampModified(new Date());
-        agent.setExchangeIns(new HashSet<Object>());
-        agent.setExchangeOuts(new HashSet<Object>());
-        agent.setOrganization(null);
-        agent.setExternalResources(new HashSet<Object>());
-        agent.setAgentType((byte)0);
+        agent.initialize();
+        agent.setAgentType((byte)1);
         agent.setFirstName(firstName);
         agent.setLastName(lastName);
         agent.setMiddleInitial(middleInit);
-        agent.setInterests(null);
         agent.setAbbreviation(abbreviation);
-        agent.setAuthors(new HashSet<Object>());
-        agent.setLoanReturnPhysicalObjects(new HashSet<Object>());
-        agent.setBorrowReturnMaterials(new HashSet<Object>());
-        agent.setMembers(new HashSet<Object>());
-        agent.setProjects(new HashSet<Object>());
-        agent.setPreparations(new HashSet<Object>());
-        agent.setGroupPersonsByGroup(new HashSet<Object>());
-        agent.setGroupPersonsByMember(new HashSet<Object>());
-        agent.setDeterminations(new HashSet<Object>());
-        agent.setAgentAddressesByOrganization(new HashSet<Object>());
-        agent.setAgentAddressesByAgent(new HashSet<Object>());
-        agent.setShipments(new HashSet<Object>());
-        agent.setCollectors(new HashSet<Object>());
-        agent.setRepositoryAgreements(new HashSet<Object>());
-        agent.setName(null);
         agent.setTitle(title);
 
         if (session != null)
@@ -205,12 +168,11 @@ public class ObjCreatorHelper
                                                           final TaxonTreeDef taxonTreeDef)
     {
         CollectionObjDef colObjDef = new CollectionObjDef();
+        colObjDef.initialize();
         colObjDef.setName(name);
         colObjDef.setDataType(dataType);
         colObjDef.setUser(user);
         colObjDef.setTaxonTreeDef(taxonTreeDef);
-        colObjDef.setCatalogSeries(new HashSet<Object>());
-        colObjDef.setAttributeDefs(new HashSet<Object>());
 
         taxonTreeDef.setCollObjDef(colObjDef);
 
@@ -225,8 +187,8 @@ public class ObjCreatorHelper
     public static CatalogSeries createCatalogSeries(final String prefix, final String name)
     {
         CatalogSeries catalogSeries = new CatalogSeries();
+        catalogSeries.initialize();
         catalogSeries.setCatalogSeriesPrefix(prefix);
-        catalogSeries.setCollectionObjDefItems(new HashSet<Object>());
         catalogSeries.setLastEditedBy(null);
         catalogSeries.setRemarks("These are the remarks");
         catalogSeries.setSeriesName(name);
@@ -243,6 +205,7 @@ public class ObjCreatorHelper
                                                         final Collector[] collectors)
     {
         CollectingEvent colEv = new CollectingEvent();
+        colEv.initialize();
 
         startCal.clear();
         startCal.set(2006, 0, 1);
@@ -251,9 +214,9 @@ public class ObjCreatorHelper
         startCal.clear();
         startCal.set(2006, 0, 2);
         colEv.setEndDate(startCal);
-        colEv.setAttrs(new HashSet<Object>());
 
-        HashSet collectorsSet = new HashSet<Object>();
+
+        HashSet<Collector> collectorsSet = new HashSet<Collector>();
         if (collectors != null)
         {
             for (Collector c : collectors)
@@ -262,12 +225,11 @@ public class ObjCreatorHelper
                 c.setCollectingEvent(colEv);
             }
         }
-        colEv.setCollectionObjects(new HashSet<Object>());
         colEv.setCollectors(collectorsSet);
         colEv.setLocality(locality);
         colEv.setTimestampCreated(new Date());
         colEv.setTimestampModified(new Date());
-        locality.getCollectingEvents().add(new HashSet<Object>());
+
         if (session != null)
         {
             session.saveOrUpdate(colEv);
@@ -283,6 +245,8 @@ public class ObjCreatorHelper
     {
         // Create CollectionObjectAttr
         CollectingEventAttr colEvAttr = new CollectingEventAttr();
+        colEvAttr.initialize();
+
         colEvAttr.setDefinition(colObjAttrDef);
         colEvAttr.setCollectingEvent(colEv);
         if (strVal != null)
@@ -312,6 +276,8 @@ public class ObjCreatorHelper
     {
         // Create CollectionObjectAttr
         CollectionObjectAttr colObjAttr = new CollectionObjectAttr();
+        colObjAttr.initialize();
+
         colObjAttr.setDefinition(colObjAttrDef);
         colObjAttr.setCollectionObject(colObj);
         if (strVal != null)
@@ -337,6 +303,8 @@ public class ObjCreatorHelper
     public static Collector createCollector(final Agent agent, int orderNum)
     {
         Collector collector = new Collector();
+        collector.initialize();
+
         collector.setAgent(agent);
         collector.setLastEditedBy(null);
         collector.setOrderNumber(orderNum);
@@ -373,31 +341,26 @@ public class ObjCreatorHelper
 
         // Create Collection Object
         CollectionObject colObj = new CollectionObject();
+        colObj.initialize();
         colObj.setAccession(accession);
-        colObj.setAttrs(new HashSet());
         colObj.setCataloger(cataloger);
         colObj.setCatalogedDate(startCal);
         colObj.setCatalogedDateVerbatim("Sometime this year");
         colObj.setCatalogNumber(catalogNumber);
         colObj.setCatalogSeries(catalogSeries);
-        colObj.setCollectionObjectCitations(new HashSet<Object>());
         colObj.setCollectionObjDef(colObjDef);
         colObj.setCollectingEvent(collectingEvent);
         colObj.setContainer(null);
         colObj.setContainerItem(null);
         colObj.setCountAmt(countAmt);
-        colObj.setDeaccessionCollectionObjects(new HashSet<Object>());
         colObj.setDeaccessioned(false);
         colObj.setDescription("This is the description");
-        colObj.setDeterminations(new HashSet());
-        colObj.setExternalResources(new HashSet());
+
         colObj.setFieldNumber(fieldNumber);
         colObj.setGuid("This is the GUID");
         colObj.setLastEditedBy("rods");
         colObj.setModifier("modifier");
         colObj.setName("The Name!!!!!!");
-        colObj.setPreparations(new HashSet<Object>());
-        colObj.setProjectCollectionObjects(new HashSet<Object>());
         colObj.setRemarks("These are the remarks");
         colObj.setYesNo1(false);
         colObj.setYesNo2(true);
@@ -433,6 +396,8 @@ public class ObjCreatorHelper
 
         // Create Determination
         Determination determination = new Determination();
+        determination.initialize();
+
         determination.setIsCurrent(isCurrent);
         determination.setCollectionObject(collectionObject);
         determination.setDeterminedDate(calendar == null ? startCal : calendar);
@@ -514,14 +479,12 @@ public class ObjCreatorHelper
     public static Locality createLocality(final String name, final Geography geo)
     {
         Locality locality = new Locality();
+        locality.initialize();
+
         locality.setLocalityName(name);
         locality.setGeography(geo);
-        locality.setTimestampCreated(new Date());
         locality.setTimestampModified(new Date());
-        locality.setCollectionObjDefs(new HashSet<Object>());
-        locality.setCollectingEvents(new HashSet<Object>());
-        locality.setExternalResources(new HashSet<Object>());
-        locality.setLocalityCitations(new HashSet<Object>());
+
         if (session != null)
         {
             session.saveOrUpdate(locality);
@@ -568,6 +531,8 @@ public class ObjCreatorHelper
                                           final int rankId)
     {
         Location location = new Location();
+        location.initialize();
+
         //location.setAbbrev(abbrev);
         location.setDefinition(ltd);
         location.setName(name);
@@ -648,12 +613,11 @@ public class ObjCreatorHelper
                                                 final int              count)
     {
         Preparation prep = new Preparation();
-        prep.setAttrs(new HashSet<Object>());
+        prep.initialize();
+
         prep.setCollectionObject(colObj);
         prep.setCount(count);
-        prep.setExternalResources(new HashSet<Object>());
         prep.setLastEditedBy("");
-        prep.setLoanPhysicalObjects(new HashSet<Object>());
         prep.setLocation(location);
         prep.setPreparedByAgent(preparedBy);
         prep.setPreparedDate(Calendar.getInstance());
@@ -662,7 +626,6 @@ public class ObjCreatorHelper
         prep.setStorageLocation("This is the textual storage location");
         prep.setText1("Thi is text1");
         prep.setText2("This is text2");
-        prep.setTimestampCreated(new Date());
         prep.setTimestampModified(new Date());
 
         colObj.getPreparations().add(prep);
@@ -680,6 +643,8 @@ public class ObjCreatorHelper
                                                         final Double dblVal)
     {
         PreparationAttr prepAttr = new PreparationAttr();
+        prepAttr.initialize();
+
         prepAttr.setDefinition(attrDef);
         prepAttr.setPreparation(prep);
          if (strVal != null)
@@ -757,8 +722,64 @@ public class ObjCreatorHelper
         return taxon;
     }
 
+
+    public static Address createAddress(final AgentAddress agentAddress,
+                                        final String address1,
+                                        final String address2,
+                                        final String city,
+                                        final String state,
+                                        final String country,
+                                        final String postalCode)
+    {
+        Address address = new Address();
+        address.initialize();
+        address.getAgentAddresses().add(agentAddress);
+        address.setTimestampCreated(new Date());
+        address.setTimestampModified(new Date());
+        address.setAddress(address1);
+        address.setAddress2(address2);
+        address.setCity(city);
+        address.setCountry(country);
+        address.setPostalCode(postalCode);
+        address.setState(state);
+
+        agentAddress.setAddress(address);
+        if (session != null)
+        {
+            session.saveOrUpdate(address);
+            session.saveOrUpdate(agentAddress);
+        }
+        return address;
+    }
+
+
+
+    public static Permit createPermit(final String permitNumber,
+                                      final String type,
+                                      final Calendar issuedDate,
+                                      final Calendar startDate,
+                                      final Calendar endDate,
+                                      final Calendar renewalDate)
+    {
+        Permit permit = new Permit();
+        permit.initialize();
+        permit.setTimestampCreated(new Date());
+        permit.setTimestampModified(new Date());
+        permit.setStartDate(startDate);
+        permit.setEndDate(endDate);
+        permit.setPermitNumber(permitNumber);
+        permit.setIssuedDate(issuedDate);
+        permit.setRenewalDate(renewalDate);
+        permit.setType(type);
+        if (session != null)
+        {
+          session.saveOrUpdate(permit);
+        }
+        return permit;
+    }
     //-----------------------------------------------------------
-    
+
+
     public static Accession createAccession(final String type,
                                             final String status,
                                             final String number,
@@ -767,15 +788,13 @@ public class ObjCreatorHelper
                                             final Calendar dateReceived)
     {
         Accession accession = new Accession();
+        accession.initialize();
         accession.setNumber(number);
         accession.setVerbatimDate(verbatimDate);
         accession.setDateAccessioned(dateAccessioned);
         accession.setDateReceived(dateReceived);
         accession.setTimestampCreated(new Date());
         accession.setTimestampModified(new Date());
-        accession.setCollectionObjects(new HashSet<Object>());
-        accession.setAccessionAuthorizations(new HashSet<Object>());
-        accession.setAccessionAgents(new HashSet<Object>());
         accession.setStatus(status);
         accession.setType(type);
         if (session != null)
@@ -785,19 +804,19 @@ public class ObjCreatorHelper
         return accession;
     }
 
-
     public static AccessionAgent createAccessionAgent(final String role,
                                                       final AgentAddress agentAddress,
                                                       final Accession accession,
                                                       final RepositoryAgreement repositoryAgreement)
     {
         AccessionAgent accessionagent = new AccessionAgent();
+        accessionagent.initialize();
         accessionagent.setTimestampCreated(new Date());
         accessionagent.setTimestampModified(new Date());
-        accessionagent.setRole(role);
-        accessionagent.setAgentAddress(agentAddress);
         accessionagent.setAccession(accession);
         accessionagent.setRepositoryAgreement(repositoryAgreement);
+        accessionagent.setRole(role);
+        accessionagent.setAgentAddress(agentAddress);
         if (session != null)
         {
           session.saveOrUpdate(accessionagent);
@@ -810,11 +829,12 @@ public class ObjCreatorHelper
                                                                         final RepositoryAgreement repositoryAgreement)
     {
         AccessionAuthorizations accessionauthorizations = new AccessionAuthorizations();
+        accessionauthorizations.initialize();
         accessionauthorizations.setTimestampCreated(new Date());
         accessionauthorizations.setTimestampModified(new Date());
         accessionauthorizations.setAccession(accession);
-        accessionauthorizations.setRepositoryAgreement(repositoryAgreement);
         accessionauthorizations.setPermit(permit);
+        accessionauthorizations.setRepositoryAgreement(repositoryAgreement);
         if (session != null)
         {
           session.saveOrUpdate(accessionauthorizations);
@@ -822,33 +842,6 @@ public class ObjCreatorHelper
         return accessionauthorizations;
     }
 
-    public static Address createAddress(final AgentAddress agentAddr,
-                                        final String address1,
-                                        final String address2,
-                                        final String city,
-                                        final String state,
-                                        final String country,
-                                        final String postalCode)
-    {
-        Address address = new Address();
-        address.setTimestampCreated(new Date());
-        address.setTimestampModified(new Date());
-        address.setAddress(address1);
-        address.setAddress2(address2);
-        address.setCity(city);
-        address.setCountry(country);
-        address.setPostalCode(postalCode);
-        address.setAgentAddresses(new HashSet<Object>());
-        address.getAgentAddresses().add(agentAddr);
-        agentAddr.setAddress(address);
-        address.setState(state);
-        if (session != null)
-        {
-            session.saveOrUpdate(agentAddr);
-            session.saveOrUpdate(address);
-        }
-        return address;
-    }
 
     public static Agent createAgent(final Byte agentType,
                                     final String firstName,
@@ -861,32 +854,21 @@ public class ObjCreatorHelper
                                     final Agent organization)
     {
         Agent agent = new Agent();
+        agent.initialize();
         agent.setTimestampCreated(new Date());
         agent.setTimestampModified(new Date());
-        agent.setExchangeIns(new HashSet<Object>());
-        agent.setExchangeOuts(new HashSet<Object>());
         agent.setOrganization(organization);
-        agent.setExternalResources(new HashSet<Object>());
         agent.setAgentType(agentType);
         agent.setFirstName(firstName);
         agent.setLastName(lastName);
         agent.setMiddleInitial(middleInitial);
         agent.setInterests(interests);
         agent.setAbbreviation(abbreviation);
-        agent.setAuthors(new HashSet<Object>());
-        agent.setLoanReturnPhysicalObjects(new HashSet<Object>());
-        agent.setBorrowReturnMaterials(new HashSet<Object>());
-        agent.setMembers(new HashSet<Object>());
-        agent.setProjects(new HashSet<Object>());
-        agent.setPreparations(new HashSet<Object>());
-        agent.setDeterminations(new HashSet<Object>());
-        agent.setShipments(new HashSet<Object>());
-        agent.setCollectors(new HashSet<Object>());
         agent.setName(name);
         agent.setTitle(title);
         if (session != null)
         {
-            session.saveOrUpdate(agent);
+          session.saveOrUpdate(agent);
         }
         return agent;
     }
@@ -905,9 +887,9 @@ public class ObjCreatorHelper
                                                   final Address address)
     {
         AgentAddress agentaddress = new AgentAddress();
+        agentaddress.initialize();
         agentaddress.setTimestampCreated(new Date());
         agentaddress.setTimestampModified(new Date());
-        agentaddress.setAccessionAgents(new HashSet<Object>());
         agentaddress.setTypeOfAgentAddressed(typeOfAgentAddressed);
         agentaddress.setJobTitle(jobTitle);
         agentaddress.setPhone1(phone1);
@@ -917,29 +899,23 @@ public class ObjCreatorHelper
         agentaddress.setEmail(email);
         agentaddress.setUrl(url);
         agentaddress.setIsCurrent(isCurrent);
-        agentaddress.setLoanAgents(new HashSet<Object>());
-        agentaddress.setShipmentsByShipper(new HashSet<Object>());
-        agentaddress.setShipmentsByShippedTo(new HashSet<Object>());
-        agentaddress.setDeaccessionAgents(new HashSet<Object>());
-        agentaddress.setExchangeIns(new HashSet<Object>());
-        agentaddress.setPermitsByIssuee(new HashSet<Object>());
-        agentaddress.setPermitsByIssuer(new HashSet<Object>());
-        agentaddress.setBorrowAgents(new HashSet<Object>());
-        agentaddress.setExchangeOuts(new HashSet<Object>());
         agentaddress.setOrganization(organization);
         agentaddress.setAgent(agent);
         agentaddress.setAddress(address);
-        if (agent != null)
+
+        if (address != null)
         {
-            agent.getAgentAddressesByAgent().add(agentaddress);
-            if (session != null)
-            {
-              session.saveOrUpdate(agent);
-            }
+            address.getAgentAddresses().add(agentaddress);
         }
+        agent.getAgentAddressesByAgent().add(agentaddress);
         if (session != null)
         {
-          session.saveOrUpdate(agentaddress);
+            session.saveOrUpdate(agent);
+            session.saveOrUpdate(agentaddress);
+            if (address != null)
+            {
+                session.saveOrUpdate(address);
+            }
         }
         return agentaddress;
     }
@@ -951,15 +927,12 @@ public class ObjCreatorHelper
                                                   final PrepType prepType)
     {
         AttributeDef attributedef = new AttributeDef();
-        attributedef.setExternalResources(new HashSet<Object>());
+        attributedef.initialize();
+        attributedef.setCollectionObjDef(collectionObjDef);
+        attributedef.setPrepType(prepType);
         attributedef.setTableType(tableType);
         attributedef.setFieldName(fieldName);
         attributedef.setDataType(dataType);
-        attributedef.setCollectionObjDef(collectionObjDef);
-        attributedef.setPrepType(prepType);
-        attributedef.setCollectingEventAttrs(new HashSet<Object>());
-        attributedef.setPreparationAttr(new HashSet<Object>());
-        attributedef.setCollectionObjectAttrs(new HashSet<Object>());
         if (session != null)
         {
           session.saveOrUpdate(attributedef);
@@ -972,6 +945,7 @@ public class ObjCreatorHelper
                                       final Agent agent)
     {
         Author author = new Author();
+        author.initialize();
         author.setTimestampCreated(new Date());
         author.setTimestampModified(new Date());
         author.setAgent(agent);
@@ -992,16 +966,14 @@ public class ObjCreatorHelper
                                       final Calendar currentDueDate)
     {
         Borrow borrow = new Borrow();
+        borrow.initialize();
         borrow.setTimestampCreated(new Date());
         borrow.setTimestampModified(new Date());
-        borrow.setBorrowAgents(new HashSet<Object>());
         borrow.setInvoiceNumber(invoiceNumber);
         borrow.setReceivedDate(receivedDate);
         borrow.setOriginalDueDate(originalDueDate);
         borrow.setDateClosed(dateClosed);
         borrow.setCurrentDueDate(currentDueDate);
-        borrow.setBorrowShipments(new HashSet<Object>());
-        borrow.setBorrowMaterials(new HashSet<Object>());
         borrow.setClosed(closed);
         if (session != null)
         {
@@ -1015,6 +987,7 @@ public class ObjCreatorHelper
                                                 final Borrow borrow)
     {
         BorrowAgent borrowagent = new BorrowAgent();
+        borrowagent.initialize();
         borrowagent.setTimestampCreated(new Date());
         borrowagent.setTimestampModified(new Date());
         borrowagent.setRole(role);
@@ -1037,12 +1010,12 @@ public class ObjCreatorHelper
                                                       final Borrow borrow)
     {
         BorrowMaterial borrowmaterial = new BorrowMaterial();
+        borrowmaterial.initialize();
         borrowmaterial.setTimestampCreated(new Date());
         borrowmaterial.setTimestampModified(new Date());
-        borrowmaterial.setBorrowReturnMaterials(new HashSet<Object>());
+        borrowmaterial.setQuantity(quantity);
         borrowmaterial.setBorrow(borrow);
         borrowmaterial.setMaterialNumber(materialNumber);
-        borrowmaterial.setQuantity(quantity);
         borrowmaterial.setOutComments(outComments);
         borrowmaterial.setInComments(inComments);
         borrowmaterial.setQuantityResolved(quantityResolved);
@@ -1061,11 +1034,12 @@ public class ObjCreatorHelper
                                                                   final BorrowMaterial borrowMaterial)
     {
         BorrowReturnMaterial borrowreturnmaterial = new BorrowReturnMaterial();
+        borrowreturnmaterial.initialize();
         borrowreturnmaterial.setTimestampCreated(new Date());
         borrowreturnmaterial.setTimestampModified(new Date());
         borrowreturnmaterial.setAgent(agent);
-        borrowreturnmaterial.setQuantity(quantity);
         borrowreturnmaterial.setReturnedDate(returnedDate);
+        borrowreturnmaterial.setQuantity(quantity);
         borrowreturnmaterial.setBorrowMaterial(borrowMaterial);
         if (session != null)
         {
@@ -1078,10 +1052,11 @@ public class ObjCreatorHelper
                                                       final Borrow borrow)
     {
         BorrowShipment borrowshipment = new BorrowShipment();
+        borrowshipment.initialize();
         borrowshipment.setTimestampCreated(new Date());
         borrowshipment.setTimestampModified(new Date());
-        borrowshipment.setBorrow(borrow);
         borrowshipment.setShipment(shipment);
+        borrowshipment.setBorrow(borrow);
         if (session != null)
         {
           session.saveOrUpdate(borrowshipment);
@@ -1095,12 +1070,12 @@ public class ObjCreatorHelper
                                                     final CatalogSeries tissue)
     {
         CatalogSeries catalogseries = new CatalogSeries();
+        catalogseries.initialize();
         catalogseries.setTimestampCreated(new Date());
         catalogseries.setTimestampModified(new Date());
         catalogseries.setIsTissueSeries(isTissueSeries);
         catalogseries.setSeriesName(seriesName);
         catalogseries.setCatalogSeriesPrefix(catalogSeriesPrefix);
-        catalogseries.setCollectionObjDefItems(new HashSet<Object>());
         catalogseries.setTissue(tissue);
         if (session != null)
         {
@@ -1126,14 +1101,13 @@ public class ObjCreatorHelper
                                                         final Stratigraphy stratigraphy)
     {
         CollectingEvent collectingevent = new CollectingEvent();
+        collectingevent.initialize();
         collectingevent.setVerbatimDate(verbatimDate);
         collectingevent.setTimestampCreated(new Date());
         collectingevent.setTimestampModified(new Date());
-        collectingevent.setCollectionObjects(new HashSet<Object>());
+        collectingevent.setGroupPermittedToView(groupPermittedToView);
         collectingevent.setStartDate(startDate);
         collectingevent.setEndDate(endDate);
-        collectingevent.setExternalResources(new HashSet<Object>());
-        collectingevent.setCollectors(new HashSet<Object>());
         collectingevent.setStationFieldNumber(stationFieldNumber);
         collectingevent.setStartDatePrecision(startDatePrecision);
         collectingevent.setStartDateVerbatim(startDateVerbatim);
@@ -1141,10 +1115,8 @@ public class ObjCreatorHelper
         collectingevent.setEndDateVerbatim(endDateVerbatim);
         collectingevent.setEndTime(endTime);
         collectingevent.setVerbatimLocality(verbatimLocality);
-        collectingevent.setGroupPermittedToView(groupPermittedToView);
         collectingevent.setLocality(locality);
         collectingevent.setStratigraphy(stratigraphy);
-        collectingevent.setAttrs(new HashSet<Object>());
         collectingevent.setMethod(method);
         collectingevent.setStartTime(startTime);
         if (session != null)
@@ -1160,6 +1132,7 @@ public class ObjCreatorHelper
                                                                 final AttributeDef definition)
     {
         CollectingEventAttr collectingeventattr = new CollectingEventAttr();
+        collectingeventattr.initialize();
         collectingeventattr.setTimestampCreated(new Date());
         collectingeventattr.setTimestampModified(new Date());
         collectingeventattr.setCollectingEvent(collectingEvent);
@@ -1173,6 +1146,30 @@ public class ObjCreatorHelper
         return collectingeventattr;
     }
 
+    public static CollectionObjDef createCollectionObjDef(final String name,
+                                                          final DataType dataType,
+                                                          final SpecifyUser user,
+                                                          final GeographyTreeDef geographyTreeDef,
+                                                          final GeologicTimePeriodTreeDef geologicTimePeriodTreeDef,
+                                                          final LocationTreeDef locationTreeDef,
+                                                          final TaxonTreeDef taxonTreeDef)
+    {
+        CollectionObjDef collectionobjdef = new CollectionObjDef();
+        collectionobjdef.initialize();
+        collectionobjdef.setDataType(dataType);
+        collectionobjdef.setUser(user);
+        collectionobjdef.setGeographyTreeDef(geographyTreeDef);
+        collectionobjdef.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);
+        collectionobjdef.setLocationTreeDef(locationTreeDef);
+        collectionobjdef.setTaxonTreeDef(taxonTreeDef);
+        collectionobjdef.setName(name);
+        if (session != null)
+        {
+          session.saveOrUpdate(collectionobjdef);
+        }
+        return collectionobjdef;
+    }
+
     public static CollectionObject createCollectionObject(final String fieldNumber,
                                                           final String description,
                                                           final Integer countAmt,
@@ -1182,6 +1179,7 @@ public class ObjCreatorHelper
                                                           final String catalogedDateVerbatim,
                                                           final String guid,
                                                           final String altCatalogNumber,
+                                                          final Integer groupPermittedToView,
                                                           final Boolean deaccessioned,
                                                           final Float catalogNumber,
                                                           final CollectingEvent collectingEvent,
@@ -1193,17 +1191,9 @@ public class ObjCreatorHelper
                                                           final Container container)
     {
         CollectionObject collectionobject = new CollectionObject();
+        collectionobject.initialize();
         collectionobject.setTimestampCreated(new Date());
         collectionobject.setTimestampModified(new Date());
-        collectionobject.setAccession(accession);
-        collectionobject.setExternalResources(new HashSet<Object>());
-        collectionobject.setPreparations(new HashSet<Object>());
-        collectionobject.setDeterminations(new HashSet<Object>());
-        collectionobject.setCollectionObjDef(collectionObjDef);
-        collectionobject.setCatalogSeries(catalogSeries);
-        collectionobject.setCollectionObjectCitations(new HashSet<Object>());
-        collectionobject.setAttrs(new HashSet<Object>());
-        collectionobject.setCollectingEvent(collectingEvent);
         collectionobject.setFieldNumber(fieldNumber);
         collectionobject.setCountAmt(countAmt);
         collectionobject.setModifier(modifier);
@@ -1211,12 +1201,14 @@ public class ObjCreatorHelper
         collectionobject.setCatalogedDateVerbatim(catalogedDateVerbatim);
         collectionobject.setGuid(guid);
         collectionobject.setAltCatalogNumber(altCatalogNumber);
+        collectionobject.setGroupPermittedToView(groupPermittedToView);
         collectionobject.setDeaccessioned(deaccessioned);
         collectionobject.setCatalogNumber(catalogNumber);
+        collectionobject.setCollectingEvent(collectingEvent);
         collectionobject.setContainerItem(containerItem);
-        collectionobject.setProjectCollectionObjects(new HashSet<Object>());
-        collectionobject.setDeaccessionCollectionObjects(new HashSet<Object>());
-        collectionobject.setOtherIdentifiers(new HashSet<Object>());
+        collectionobject.setCollectionObjDef(collectionObjDef);
+        collectionobject.setCatalogSeries(catalogSeries);
+        collectionobject.setAccession(accession);
         collectionobject.setCataloger(cataloger);
         collectionobject.setContainer(container);
         collectionobject.setName(name);
@@ -1234,12 +1226,13 @@ public class ObjCreatorHelper
                                                                   final AttributeDef definition)
     {
         CollectionObjectAttr collectionobjectattr = new CollectionObjectAttr();
+        collectionobjectattr.initialize();
         collectionobjectattr.setTimestampCreated(new Date());
         collectionobjectattr.setTimestampModified(new Date());
+        collectionobjectattr.setCollectionObject(collectionObject);
         collectionobjectattr.setStrValue(strValue);
         collectionobjectattr.setDblValue(dblValue);
         collectionobjectattr.setDefinition(definition);
-        collectionobjectattr.setCollectionObject(collectionObject);
         if (session != null)
         {
           session.saveOrUpdate(collectionobjectattr);
@@ -1251,10 +1244,11 @@ public class ObjCreatorHelper
                                                                           final CollectionObject collectionObject)
     {
         CollectionObjectCitation collectionobjectcitation = new CollectionObjectCitation();
+        collectionobjectcitation.initialize();
         collectionobjectcitation.setTimestampCreated(new Date());
         collectionobjectcitation.setTimestampModified(new Date());
-        collectionobjectcitation.setReferenceWork(referenceWork);
         collectionobjectcitation.setCollectionObject(collectionObject);
+        collectionobjectcitation.setReferenceWork(referenceWork);
         if (session != null)
         {
           session.saveOrUpdate(collectionobjectcitation);
@@ -1267,11 +1261,12 @@ public class ObjCreatorHelper
                                             final Agent agent)
     {
         Collector collector = new Collector();
+        collector.initialize();
         collector.setTimestampCreated(new Date());
         collector.setTimestampModified(new Date());
+        collector.setCollectingEvent(collectingEvent);
         collector.setAgent(agent);
         collector.setOrderNumber(orderNumber);
-        collector.setCollectingEvent(collectingEvent);
         if (session != null)
         {
           session.saveOrUpdate(collector);
@@ -1287,11 +1282,11 @@ public class ObjCreatorHelper
                                             final Location location)
     {
         Container container = new Container();
+        container.initialize();
         container.setNumber(number);
         container.setTimestampCreated(new Date());
         container.setTimestampModified(new Date());
         container.setContainer(colObj);
-        container.setItems(new HashSet<Object>());
         container.setName(name);
         container.setLocation(location);
         container.setDescription(description);
@@ -1306,9 +1301,9 @@ public class ObjCreatorHelper
     public static ContainerItem createContainerItem(final Container container)
     {
         ContainerItem containeritem = new ContainerItem();
+        containeritem.initialize();
         containeritem.setTimestampCreated(new Date());
         containeritem.setTimestampModified(new Date());
-        containeritem.setCollectionObjects(new HashSet<Object>());
         containeritem.setContainer(container);
         if (session != null)
         {
@@ -1320,7 +1315,7 @@ public class ObjCreatorHelper
     public static DataType createDataType(final String name)
     {
         DataType datatype = new DataType();
-        datatype.setCollectionObjDef(new HashSet<Object>());
+        datatype.initialize();
         datatype.setName(name);
         if (session != null)
         {
@@ -1334,10 +1329,9 @@ public class ObjCreatorHelper
                                                 final Calendar deaccessionDate)
     {
         Deaccession deaccession = new Deaccession();
+        deaccession.initialize();
         deaccession.setTimestampCreated(new Date());
         deaccession.setTimestampModified(new Date());
-        deaccession.setDeaccessionAgents(new HashSet<Object>());
-        deaccession.setDeaccessionCollectionObjects(new HashSet<Object>());
         deaccession.setDeaccessionNumber(deaccessionNumber);
         deaccession.setDeaccessionDate(deaccessionDate);
         deaccession.setType(type);
@@ -1353,6 +1347,7 @@ public class ObjCreatorHelper
                                                           final Deaccession deaccession)
     {
         DeaccessionAgent deaccessionagent = new DeaccessionAgent();
+        deaccessionagent.initialize();
         deaccessionagent.setTimestampCreated(new Date());
         deaccessionagent.setTimestampModified(new Date());
         deaccessionagent.setRole(role);
@@ -1370,9 +1365,9 @@ public class ObjCreatorHelper
                                                                                 final Deaccession deaccession)
     {
         DeaccessionCollectionObject deaccessioncollectionobject = new DeaccessionCollectionObject();
+        deaccessioncollectionobject.initialize();
         deaccessioncollectionobject.setTimestampCreated(new Date());
         deaccessioncollectionobject.setTimestampModified(new Date());
-        deaccessioncollectionobject.setLoanReturnPhysicalObjects(new HashSet<Object>());
         deaccessioncollectionobject.setQuantity(quantity);
         deaccessioncollectionobject.setDeaccession(deaccession);
         deaccessioncollectionobject.setCollectionObjectCatalog(collectionObjectCatalog);
@@ -1394,10 +1389,10 @@ public class ObjCreatorHelper
                                                     final Agent determiner)
     {
         Determination determination = new Determination();
+        determination.initialize();
         determination.setTimestampCreated(new Date());
         determination.setTimestampModified(new Date());
         determination.setIsCurrent(isCurrent);
-        determination.setDeterminationCitations(new HashSet<Object>());
         determination.setCollectionObject(collectionObject);
         determination.setTypeStatusName(typeStatusName);
         determination.setDeterminedDate(determinedDate);
@@ -1417,6 +1412,7 @@ public class ObjCreatorHelper
                                                                     final Determination determination)
     {
         DeterminationCitation determinationcitation = new DeterminationCitation();
+        determinationcitation.initialize();
         determinationcitation.setTimestampCreated(new Date());
         determinationcitation.setTimestampModified(new Date());
         determinationcitation.setReferenceWork(referenceWork);
@@ -1435,6 +1431,7 @@ public class ObjCreatorHelper
                                               final Agent agent)
     {
         ExchangeIn exchangein = new ExchangeIn();
+        exchangein.initialize();
         exchangein.setTimestampCreated(new Date());
         exchangein.setTimestampModified(new Date());
         exchangein.setAgentAddress(agentAddress);
@@ -1457,14 +1454,15 @@ public class ObjCreatorHelper
                                                 final Shipment shipment)
     {
         ExchangeOut exchangeout = new ExchangeOut();
+        exchangeout.initialize();
         exchangeout.setTimestampCreated(new Date());
         exchangeout.setTimestampModified(new Date());
         exchangeout.setAgentAddress(agentAddress);
         exchangeout.setAgent(agent);
-        exchangeout.setShipment(shipment);
         exchangeout.setExchangeDate(exchangeDate);
         exchangeout.setQuantityExchanged(quantityExchanged);
         exchangeout.setDescriptionOfMaterial(descriptionOfMaterial);
+        exchangeout.setShipment(shipment);
         if (session != null)
         {
           session.saveOrUpdate(exchangeout);
@@ -1479,22 +1477,14 @@ public class ObjCreatorHelper
                                                           final Agent createdByAgent)
     {
         ExternalResource externalresource = new ExternalResource();
+        externalresource.initialize();
         externalresource.setTimestampCreated(new Date());
         externalresource.setTimestampModified(new Date());
-        externalresource.setCollectionObjects(new HashSet<Object>());
-        externalresource.setAgents(new HashSet<Object>());
-        externalresource.setPreparations(new HashSet<Object>());
-        externalresource.setLoans(new HashSet<Object>());
-        externalresource.setAttrs(new HashSet<Object>());
         externalresource.setMimeType(mimeType);
         externalresource.setFileName(fileName);
         externalresource.setFileCreatedDate(fileCreatedDate);
         externalresource.setExternalLocation(externalLocation);
         externalresource.setCreatedByAgent(createdByAgent);
-        externalresource.setCollectinEvents(new HashSet<Object>());
-        externalresource.setLocalities(new HashSet<Object>());
-        externalresource.setPermits(new HashSet<Object>());
-        externalresource.setTaxonomy(new HashSet<Object>());
         if (session != null)
         {
           session.saveOrUpdate(externalresource);
@@ -1508,6 +1498,7 @@ public class ObjCreatorHelper
                                                                   final AttributeDef definition)
     {
         ExternalResourceAttr externalresourceattr = new ExternalResourceAttr();
+        externalresourceattr.initialize();
         externalresourceattr.setTimestampCreated(new Date());
         externalresourceattr.setTimestampModified(new Date());
         externalresourceattr.setStrValue(strValue);
@@ -1521,40 +1512,17 @@ public class ObjCreatorHelper
         return externalresourceattr;
     }
 
-    public static GeologicTimePeriod createGeologicTimePeriod(final String name,
-                                                              final Integer nodeNumber,
-                                                              final Integer highestChildNodeNumber,
-                                                              final String standard,
-                                                              final Float age,
-                                                              final Float ageUncertainty,
-                                                              final GeologicTimePeriodTreeDef definition,
-                                                              final GeologicTimePeriod parent)
-    {
-        GeologicTimePeriod geologictimeperiod = new GeologicTimePeriod();
-        geologictimeperiod.setTimestampCreated(new Date());
-        geologictimeperiod.setTimestampModified(new Date());
-        geologictimeperiod.setDefinition(definition);
-        geologictimeperiod.setNodeNumber(nodeNumber);
-        geologictimeperiod.setHighestChildNodeNumber(highestChildNodeNumber);
-        geologictimeperiod.setTimestampVersion(new Date());
-        geologictimeperiod.setStandard(standard);
-        geologictimeperiod.setAge(age);
-        geologictimeperiod.setAgeUncertainty(ageUncertainty);
-        geologictimeperiod.setName(name);
-        geologictimeperiod.setParent(parent);
-        if (session != null)
-        {
-          session.saveOrUpdate(geologictimeperiod);
-        }
-        return geologictimeperiod;
-    }
-
-    public static GroupPerson createGroupPerson(final Short orderNumber)
+    public static GroupPerson createGroupPerson(final Short orderNumber,
+                                                final Agent agentByGroup,
+                                                final Agent agentByMember)
     {
         GroupPerson groupperson = new GroupPerson();
+        groupperson.initialize();
         groupperson.setTimestampCreated(new Date());
         groupperson.setTimestampModified(new Date());
         groupperson.setOrderNumber(orderNumber);
+        groupperson.setAgentByGroup(agentByGroup);
+        groupperson.setAgentByMember(agentByMember);
         if (session != null)
         {
           session.saveOrUpdate(groupperson);
@@ -1573,6 +1541,7 @@ public class ObjCreatorHelper
                                                 final Agent agent)
     {
         InfoRequest inforequest = new InfoRequest();
+        inforequest.initialize();
         inforequest.setTimestampCreated(new Date());
         inforequest.setTimestampModified(new Date());
         inforequest.setEmail(email);
@@ -1595,11 +1564,11 @@ public class ObjCreatorHelper
                                         final String journalAbbreviation)
     {
         Journal journal = new Journal();
+        journal.initialize();
         journal.setTimestampCreated(new Date());
         journal.setTimestampModified(new Date());
         journal.setJournalName(journalName);
         journal.setJournalAbbreviation(journalAbbreviation);
-        journal.setReferenceWorks(new HashSet<Object>());
         if (session != null)
         {
           session.saveOrUpdate(journal);
@@ -1617,15 +1586,13 @@ public class ObjCreatorHelper
                                   final Shipment shipment)
     {
         Loan loan = new Loan();
+        loan.initialize();
         loan.setTimestampCreated(new Date());
         loan.setTimestampModified(new Date());
-        loan.setLoanAgents(new HashSet<Object>());
-        loan.setExternalResources(new HashSet<Object>());
+        loan.setShipment(shipment);
         loan.setOriginalDueDate(originalDueDate);
         loan.setDateClosed(dateClosed);
         loan.setCurrentDueDate(currentDueDate);
-        loan.setShipment(shipment);
-        loan.setLoanPhysicalObjects(new HashSet<Object>());
         loan.setLoanNumber(loanNumber);
         loan.setLoanDate(loanDate);
         loan.setCategory(category);
@@ -1642,6 +1609,7 @@ public class ObjCreatorHelper
                                             final AgentAddress agentAddress)
     {
         LoanAgent loanagent = new LoanAgent();
+        loanagent.initialize();
         loanagent.setTimestampCreated(new Date());
         loanagent.setTimestampModified(new Date());
         loanagent.setRole(role);
@@ -1664,17 +1632,17 @@ public class ObjCreatorHelper
                                                               final Loan loan)
     {
         LoanPhysicalObject loanphysicalobject = new LoanPhysicalObject();
+        loanphysicalobject.initialize();
         loanphysicalobject.setTimestampCreated(new Date());
         loanphysicalobject.setTimestampModified(new Date());
-        loanphysicalobject.setLoanReturnPhysicalObjects(new HashSet<Object>());
+        loanphysicalobject.setDescriptionOfMaterial(descriptionOfMaterial);
         loanphysicalobject.setQuantity(quantity);
+        loanphysicalobject.setLoan(loan);
+        loanphysicalobject.setPreparation(preparation);
         loanphysicalobject.setOutComments(outComments);
         loanphysicalobject.setInComments(inComments);
         loanphysicalobject.setQuantityResolved(quantityResolved);
         loanphysicalobject.setQuantityReturned(quantityReturned);
-        loanphysicalobject.setDescriptionOfMaterial(descriptionOfMaterial);
-        loanphysicalobject.setLoan(loan);
-        loanphysicalobject.setPreparation(preparation);
         if (session != null)
         {
           session.saveOrUpdate(loanphysicalobject);
@@ -1689,11 +1657,12 @@ public class ObjCreatorHelper
                                                                           final Agent agent)
     {
         LoanReturnPhysicalObject loanreturnphysicalobject = new LoanReturnPhysicalObject();
+        loanreturnphysicalobject.initialize();
         loanreturnphysicalobject.setTimestampCreated(new Date());
         loanreturnphysicalobject.setTimestampModified(new Date());
         loanreturnphysicalobject.setAgent(agent);
-        loanreturnphysicalobject.setQuantity(quantity);
         loanreturnphysicalobject.setReturnedDate(returnedDate);
+        loanreturnphysicalobject.setQuantity(quantity);
         loanreturnphysicalobject.setLoanPhysicalObject(loanPhysicalObject);
         loanreturnphysicalobject.setDeaccessionCollectionObject(deaccessionCollectionObject);
         if (session != null)
@@ -1741,10 +1710,9 @@ public class ObjCreatorHelper
                                           final Geography geography)
     {
         Locality locality = new Locality();
+        locality.initialize();
         locality.setTimestampCreated(new Date());
         locality.setTimestampModified(new Date());
-        locality.setExternalResources(new HashSet<Object>());
-        locality.setLocalityCitations(new HashSet<Object>());
         locality.setGroupPermittedToView(groupPermittedToView);
         locality.setNamedPlace(namedPlace);
         locality.setRelationToNamedPlace(relationToNamedPlace);
@@ -1781,7 +1749,6 @@ public class ObjCreatorHelper
         locality.setWaterBody(waterBody);
         locality.setDrainage(drainage);
         locality.setGeography(geography);
-        locality.setCollectingEvents(new HashSet<Object>());
         if (session != null)
         {
           session.saveOrUpdate(locality);
@@ -1793,6 +1760,7 @@ public class ObjCreatorHelper
                                                           final Locality locality)
     {
         LocalityCitation localitycitation = new LocalityCitation();
+        localitycitation.initialize();
         localitycitation.setTimestampCreated(new Date());
         localitycitation.setTimestampModified(new Date());
         localitycitation.setReferenceWork(referenceWork);
@@ -1808,6 +1776,7 @@ public class ObjCreatorHelper
                                                         final CollectionObject collectionObject)
     {
         OtherIdentifier otheridentifier = new OtherIdentifier();
+        otheridentifier.initialize();
         otheridentifier.setTimestampCreated(new Date());
         otheridentifier.setTimestampModified(new Date());
         otheridentifier.setCollectionObject(collectionObject);
@@ -1819,36 +1788,11 @@ public class ObjCreatorHelper
         return otheridentifier;
     }
 
-    public static Permit createPermit(final String permitNumber,
-                                      final String type,
-                                      final Calendar issuedDate,
-                                      final Calendar startDate,
-                                      final Calendar endDate,
-                                      final Calendar renewalDate)
-    {
-        Permit permit = new Permit();
-        permit.setTimestampCreated(new Date());
-        permit.setTimestampModified(new Date());
-        permit.setAccessionAuthorizations(new HashSet<Object>());
-        permit.setStartDate(startDate);
-        permit.setEndDate(endDate);
-        permit.setPermitNumber(permitNumber);
-        permit.setIssuedDate(issuedDate);
-        permit.setRenewalDate(renewalDate);
-        permit.setExternalResources(new HashSet<Object>());
-        permit.setType(type);
-        if (session != null)
-        {
-          session.saveOrUpdate(permit);
-        }
-        return permit;
-    }
 
     public static PrepType createPrepType(final String name)
     {
         PrepType preptype = new PrepType();
-        preptype.setPreparations(new HashSet<Object>());
-        preptype.setAttributeDefs(new HashSet<Object>());
+        preptype.initialize();
         preptype.setName(name);
         if (session != null)
         {
@@ -1866,16 +1810,14 @@ public class ObjCreatorHelper
                                                 final Location location)
     {
         Preparation preparation = new Preparation();
+        preparation.initialize();
         preparation.setTimestampCreated(new Date());
         preparation.setTimestampModified(new Date());
-        preparation.setExternalResources(new HashSet<Object>());
-        preparation.setPrepType(prepType);
-        preparation.setAttrs(new HashSet<Object>());
-        preparation.setCollectionObject(collectionObject);
         preparation.setCount(count);
         preparation.setStorageLocation(storageLocation);
         preparation.setPreparedDate(preparedDate);
-        preparation.setLoanPhysicalObjects(new HashSet<Object>());
+        preparation.setPrepType(prepType);
+        preparation.setCollectionObject(collectionObject);
         preparation.setPreparedByAgent(preparedByAgent);
         preparation.setLocation(location);
         if (session != null)
@@ -1891,6 +1833,7 @@ public class ObjCreatorHelper
                                                         final Preparation preparation)
     {
         PreparationAttr preparationattr = new PreparationAttr();
+        preparationattr.initialize();
         preparationattr.setTimestampCreated(new Date());
         preparationattr.setTimestampModified(new Date());
         preparationattr.setStrValue(strValue);
@@ -1912,13 +1855,13 @@ public class ObjCreatorHelper
                                         final Agent agent)
     {
         Project project = new Project();
+        project.initialize();
         project.setTimestampCreated(new Date());
         project.setTimestampModified(new Date());
         project.setUrl(url);
         project.setAgent(agent);
         project.setStartDate(startDate);
         project.setEndDate(endDate);
-        project.setProjectCollectionObjects(new HashSet<Object>());
         project.setProjectName(projectName);
         project.setProjectDescription(projectDescription);
         if (session != null)
@@ -1932,6 +1875,7 @@ public class ObjCreatorHelper
                                                                         final Project project)
     {
         ProjectCollectionObject projectcollectionobject = new ProjectCollectionObject();
+        projectcollectionobject.initialize();
         projectcollectionobject.setTimestampCreated(new Date());
         projectcollectionobject.setTimestampModified(new Date());
         projectcollectionobject.setCollectionObject(collectionObject);
@@ -1948,9 +1892,9 @@ public class ObjCreatorHelper
                                             final SpecifyUser owner)
     {
         RecordSet recordset = new RecordSet();
+        recordset.initialize();
         recordset.setTimestampCreated(new Date());
         recordset.setTimestampModified(new Date());
-        recordset.setItems(new HashSet<Object>());
         recordset.setRecordSetID(recordSetID);
         recordset.setOwner(owner);
         recordset.setName(name);
@@ -1964,6 +1908,7 @@ public class ObjCreatorHelper
     public static RecordSetItem createRecordSetItem()
     {
         RecordSetItem recordsetitem = new RecordSetItem();
+        recordsetitem.initialize();
         if (session != null)
         {
           session.saveOrUpdate(recordsetitem);
@@ -1984,10 +1929,10 @@ public class ObjCreatorHelper
                                                     final Journal journal)
     {
         ReferenceWork referencework = new ReferenceWork();
+        referencework.initialize();
         referencework.setTimestampCreated(new Date());
         referencework.setTimestampModified(new Date());
         referencework.setUrl(url);
-        referencework.setAuthors(new HashSet<Object>());
         referencework.setReferenceWorkType(referenceWorkType);
         referencework.setPublisher(publisher);
         referencework.setPlaceOfPublication(placeOfPublication);
@@ -1996,10 +1941,6 @@ public class ObjCreatorHelper
         referencework.setPages(pages);
         referencework.setLibraryNumber(libraryNumber);
         referencework.setPublished(published);
-        referencework.setLocalityCitations(new HashSet<Object>());
-        referencework.setCollectionObjectCitations(new HashSet<Object>());
-        referencework.setTaxonCitations(new HashSet<Object>());
-        referencework.setDeterminationCitations(new HashSet<Object>());
         referencework.setJournal(journal);
         referencework.setTitle(title);
         if (session != null)
@@ -2013,18 +1954,18 @@ public class ObjCreatorHelper
                                                                 final String status,
                                                                 final Calendar startDate,
                                                                 final Calendar endDate,
-                                                                final Calendar dateReceived)
+                                                                final Calendar dateReceived,
+                                                                final Agent originator)
     {
         RepositoryAgreement repositoryagreement = new RepositoryAgreement();
+        repositoryagreement.initialize();
         repositoryagreement.setNumber(number);
         repositoryagreement.setDateReceived(dateReceived);
         repositoryagreement.setTimestampCreated(new Date());
         repositoryagreement.setTimestampModified(new Date());
-        repositoryagreement.setCollectionObjects(new HashSet<Object>());
         repositoryagreement.setStartDate(startDate);
         repositoryagreement.setEndDate(endDate);
-        repositoryagreement.setRepositoryAgreementAuthorizations(new HashSet<Object>());
-        repositoryagreement.setRepositoryAgreementAgents(new HashSet<Object>());
+        repositoryagreement.setOriginator(originator);
         repositoryagreement.setStatus(status);
         if (session != null)
         {
@@ -2039,21 +1980,23 @@ public class ObjCreatorHelper
                                           final Short numberOfPackages,
                                           final String weight,
                                           final String insuredForAmount,
+                                          final AgentAddress agentAddressByShipper,
+                                          final AgentAddress agentAddressByShippedTo,
                                           final Agent agent)
     {
         Shipment shipment = new Shipment();
+        shipment.initialize();
         shipment.setTimestampCreated(new Date());
         shipment.setTimestampModified(new Date());
-        shipment.setExchangeOuts(new HashSet<Object>());
         shipment.setAgent(agent);
-        shipment.setBorrowShipments(new HashSet<Object>());
         shipment.setShipmentDate(shipmentDate);
         shipment.setShipmentNumber(shipmentNumber);
         shipment.setShipmentMethod(shipmentMethod);
         shipment.setNumberOfPackages(numberOfPackages);
         shipment.setWeight(weight);
         shipment.setInsuredForAmount(insuredForAmount);
-        shipment.setLoans(new HashSet<Object>());
+        shipment.setAgentAddressByShipper(agentAddressByShipper);
+        shipment.setAgentAddressByShippedTo(agentAddressByShippedTo);
         if (session != null)
         {
           session.saveOrUpdate(shipment);
@@ -2066,18 +2009,17 @@ public class ObjCreatorHelper
                                                 final Short privLevel,
                                                 final UserGroup userGroup)
     {
-        SpecifyUser user = new SpecifyUser();
-        user.setCollectionObjDef(new HashSet<Object>());
-        user.setPassword(password);
-        user.setPrivLevel(privLevel);
-        user.setRecordSets(new HashSet<Object>());
-        user.setUserGroup(userGroup);
-        user.setName(name);
+        SpecifyUser specifyuser = new SpecifyUser();
+        specifyuser.initialize();
+        specifyuser.setPassword(password);
+        specifyuser.setPrivLevel(privLevel);
+        specifyuser.setUserGroup(userGroup);
+        specifyuser.setName(name);
         if (session != null)
         {
-          session.saveOrUpdate(user);
+          session.saveOrUpdate(specifyuser);
         }
-        return user;
+        return specifyuser;
     }
 
     public static Stratigraphy createStratigraphy(final String superGroup,
@@ -2088,15 +2030,15 @@ public class ObjCreatorHelper
                                                   final CollectingEvent collectingEvent)
     {
         Stratigraphy stratigraphy = new Stratigraphy();
+        stratigraphy.initialize();
         stratigraphy.setTimestampCreated(new Date());
         stratigraphy.setTimestampModified(new Date());
+        stratigraphy.setCollectingEvent(collectingEvent);
         stratigraphy.setSuperGroup(superGroup);
         stratigraphy.setLithoGroup(lithoGroup);
         stratigraphy.setFormation(formation);
         stratigraphy.setMember(member);
         stratigraphy.setBed(bed);
-        stratigraphy.setCollectingEvent(collectingEvent);
-        stratigraphy.setChildren(new HashSet<Object>());
         if (session != null)
         {
           session.saveOrUpdate(stratigraphy);
@@ -2104,14 +2046,16 @@ public class ObjCreatorHelper
         return stratigraphy;
     }
 
+
     public static TaxonCitation createTaxonCitation(final ReferenceWork referenceWork,
                                                     final Taxon taxon)
     {
         TaxonCitation taxoncitation = new TaxonCitation();
+        taxoncitation.initialize();
         taxoncitation.setTimestampCreated(new Date());
         taxoncitation.setTimestampModified(new Date());
-        taxoncitation.setReferenceWork(referenceWork);
         taxoncitation.setTaxon(taxon);
+        taxoncitation.setReferenceWork(referenceWork);
         if (session != null)
         {
           session.saveOrUpdate(taxoncitation);
@@ -2119,11 +2063,10 @@ public class ObjCreatorHelper
         return taxoncitation;
     }
 
-
     public static UserGroup createUserGroup(final String name)
     {
         UserGroup usergroup = new UserGroup();
-        usergroup.setUsers(new HashSet<Object>());
+        usergroup.initialize();
         usergroup.setName(name);
         if (session != null)
         {
@@ -2131,6 +2074,5 @@ public class ObjCreatorHelper
         }
         return usergroup;
     }
-
 
 }

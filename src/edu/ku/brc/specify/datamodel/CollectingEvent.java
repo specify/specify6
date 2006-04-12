@@ -2,6 +2,7 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -32,12 +33,12 @@ public class CollectingEvent  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     protected Set collectionObjects;
-     private Set collectors;
+     protected Set<CollectionObject> collectionObjects;
+     protected Set<Collector> collectors;
      protected Locality locality;
      protected Stratigraphy stratigraphy;
-     protected Set attrs;
-     private Set externalResources;
+     protected Set<AttributeIFace> attrs;
+     protected Set<ExternalResource> externalResources;
 
 
     // Constructors
@@ -53,6 +54,36 @@ public class CollectingEvent  implements java.io.Serializable {
    
     
     
+
+    // Initializer
+    public void initialize()
+    {
+        collectingEventId = null;
+        stationFieldNumber = null;
+        method = null;
+        verbatimDate = null;
+        startDate = null;
+        startDatePrecision = null;
+        startDateVerbatim = null;
+        endDate = null;
+        endDatePrecision = null;
+        endDateVerbatim = null;
+        startTime = null;
+        endTime = null;
+        verbatimLocality = null;
+        groupPermittedToView = null;
+        remarks = null;
+        timestampModified = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        lastEditedBy = null;
+        collectionObjects = new HashSet<CollectionObject>();
+        collectors = new HashSet<Collector>();
+        locality = null;
+        stratigraphy = null;
+        attrs = new HashSet<AttributeIFace>();
+        externalResources = new HashSet<ExternalResource>();
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -257,22 +288,22 @@ public class CollectingEvent  implements java.io.Serializable {
     /**
      * 
      */
-    public Set getCollectionObjects() {
+    public Set<CollectionObject> getCollectionObjects() {
         return this.collectionObjects;
     }
     
-    public void setCollectionObjects(Set collectionObjects) {
+    public void setCollectionObjects(Set<CollectionObject> collectionObjects) {
         this.collectionObjects = collectionObjects;
     }
 
     /**
      * 
      */
-    public Set getCollectors() {
+    public Set<Collector> getCollectors() {
         return this.collectors;
     }
     
-    public void setCollectors(Set collectors) {
+    public void setCollectors(Set<Collector> collectors) {
         this.collectors = collectors;
     }
 
@@ -301,26 +332,49 @@ public class CollectingEvent  implements java.io.Serializable {
     /**
      * 
      */
-    public Set getAttrs() {
+    public Set<AttributeIFace> getAttrs() {
         return this.attrs;
     }
     
-    public void setAttrs(Set attrs) {
+    public void setAttrs(Set<AttributeIFace> attrs) {
         this.attrs = attrs;
     }
 
     /**
      * 
      */
-    public Set getExternalResources() {
+    public Set<ExternalResource> getExternalResources() {
         return this.externalResources;
     }
     
-    public void setExternalResources(Set externalResources) {
+    public void setExternalResources(Set<ExternalResource> externalResources) {
         this.externalResources = externalResources;
     }
 
 
 
 
+    // Add Methods
+
+    public void addCollectionObject(final CollectionObject collectionObject)
+    {
+        this.collectionObjects.add(collectionObject);
+    }
+
+    public void addCollector(final Collector collector)
+    {
+        this.collectors.add(collector);
+    }
+
+    public void addAttr(final AttributeIFace attr)
+    {
+        this.attrs.add(attr);
+    }
+
+    public void addExternalResource(final ExternalResource externalResource)
+    {
+        this.externalResources.add(externalResource);
+    }
+
+    // Done Add Methods
 }

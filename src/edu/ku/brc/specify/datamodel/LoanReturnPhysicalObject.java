@@ -39,6 +39,22 @@ public class LoanReturnPhysicalObject  implements java.io.Serializable {
     
     
 
+    // Initializer
+    public void initialize()
+    {
+        loanReturnPhysicalObjectId = null;
+        returnedDate = null;
+        quantity = null;
+        remarks = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = null;
+        lastEditedBy = null;
+        loanPhysicalObject = null;
+        deaccessionCollectionObject = null;
+        agent = null;
+    }
+    // End Initializer
+
     // Property accessors
 
     /**
@@ -154,4 +170,7 @@ public class LoanReturnPhysicalObject  implements java.io.Serializable {
 
 
 
+    // Add Methods
+
+    // Done Add Methods
 }

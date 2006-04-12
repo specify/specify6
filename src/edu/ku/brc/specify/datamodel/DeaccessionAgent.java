@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -35,6 +36,20 @@ public class DeaccessionAgent  implements java.io.Serializable {
    
     
     
+
+    // Initializer
+    public void initialize()
+    {
+        deaccessionAgentsId = null;
+        role = null;
+        remarks = null;
+        timestampModified = null;
+        timestampCreated = Calendar.getInstance().getTime();
+        lastEditedBy = null;
+        agentAddress = null;
+        deaccession = null;
+    }
+    // End Initializer
 
     // Property accessors
 
@@ -129,4 +144,7 @@ public class DeaccessionAgent  implements java.io.Serializable {
 
 
 
+    // Add Methods
+
+    // Done Add Methods
 }

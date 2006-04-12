@@ -116,4 +116,7 @@ public interface Treeable extends Comparable<Treeable>
 	 * @throws IllegalArgumentException if defItem isn't an object of the correct type to represent this Treeable's tree definition
 	 */
 	public void setDefItem(TreeDefinitionItemIface defItem);
+    // Add Methods
+
+    // Done Add Methods
 }

@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -10,11 +11,11 @@ import java.util.Set;
  */
 public class DataType  implements java.io.Serializable {
 
-    // Fields    
+    // Fields
 
      protected Integer dataTypeId;
      protected String name;
-     private Set collectionObjDef;
+     protected Set<CollectionObjDef> collectionObjDef;
 
 
     // Constructors
@@ -22,47 +23,56 @@ public class DataType  implements java.io.Serializable {
     /** default constructor */
     public DataType() {
     }
-    
+
     /** constructor with id */
     public DataType(Integer dataTypeId) {
         this.dataTypeId = dataTypeId;
     }
-   
-    
-    
+
+
+
+
+    // Initializer
+    public void initialize()
+    {
+        dataTypeId = null;
+        name = null;
+        collectionObjDef = new HashSet<CollectionObjDef>();
+    }
+    // End Initializer
 
     // Property accessors
 
     /**
-     * 
+     *
      */
     public Integer getDataTypeId() {
         return this.dataTypeId;
     }
-    
+
     public void setDataTypeId(Integer dataTypeId) {
         this.dataTypeId = dataTypeId;
     }
 
     /**
-     * 
+     *
      */
     public String getName() {
         return this.name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * 
+     *
      */
-    public Set getCollectionObjDef() {
+    public Set<CollectionObjDef> getCollectionObjDef() {
         return this.collectionObjDef;
     }
-    
-    public void setCollectionObjDef(Set collectionObjDef) {
+
+    public void setCollectionObjDef(Set<CollectionObjDef> collectionObjDef) {
         this.collectionObjDef = collectionObjDef;
     }
 
@@ -74,12 +84,20 @@ public class DataType  implements java.io.Serializable {
 	  StringBuffer buffer = new StringBuffer();
 
       buffer.append(getClass().getName()).append("@").append(Integer.toHexString(hashCode())).append(" [");
-      buffer.append("name").append("='").append(getName()).append("' ");			
+      buffer.append("name").append("='").append(getName()).append("' ");
       buffer.append("]");
-      
+
       return buffer.toString();
 	}
 
 
 
+    // Add Methods
+
+    public void addCollectionObjDef(final CollectionObjDef collectionObjDef)
+    {
+        this.collectionObjDef.add(collectionObjDef);
+    }
+
+    // Done Add Methods
 }
