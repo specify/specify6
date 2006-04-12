@@ -11,8 +11,8 @@ public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
      protected String name;
      protected String remarks;
      protected CollectionObjDef collObjDef;
-     protected Set treeEntries;
-     protected Set treeDefItems;
+     protected Set<Taxon> treeEntries;
+     protected Set<TaxonTreeDefItem> treeDefItems;
 
     // Constructors
 
@@ -91,7 +91,8 @@ public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
         return this.treeEntries;
     }
     
-    public void setTreeEntries(Set treeEntries) {
+    @SuppressWarnings("unchecked")
+	public void setTreeEntries(Set treeEntries) {
         this.treeEntries = treeEntries;
     }
 
@@ -102,7 +103,8 @@ public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
         return this.treeDefItems;
     }
     
-    public void setTreeDefItems(Set treeDefItems) {
+    @SuppressWarnings("unchecked")
+	public void setTreeDefItems(Set treeDefItems) {
         this.treeDefItems = treeDefItems;
     }
 }

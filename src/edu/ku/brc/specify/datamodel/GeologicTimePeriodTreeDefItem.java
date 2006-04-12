@@ -13,8 +13,8 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
      protected Boolean isEnforced;
      protected GeologicTimePeriodTreeDef treeDef;
      protected GeologicTimePeriodTreeDefItem parent;
-     protected Set treeEntries;
-     protected Set children;
+     protected Set<GeologicTimePeriod> treeEntries;
+     protected Set<GeologicTimePeriodTreeDefItem> children;
 
     // Constructors
 
@@ -116,7 +116,8 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
         return this.treeEntries;
     }
     
-    public void setTreeEntries(Set treeEntries) {
+    @SuppressWarnings("unchecked")
+	public void setTreeEntries(Set treeEntries) {
         this.treeEntries = treeEntries;
     }
 
@@ -127,7 +128,8 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
         return this.children;
     }
     
-    public void setChildren(Set children) {
+    @SuppressWarnings("unchecked")
+	public void setChildren(Set children) {
         this.children = children;
     }
 
@@ -171,7 +173,8 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
         return (TreeDefinitionItemIface)getChildren().iterator().next();
     }
     
-    public void setChildItem(TreeDefinitionItemIface child)
+    @SuppressWarnings("unchecked")
+	public void setChildItem(TreeDefinitionItemIface child)
     {
         if( !(child instanceof GeologicTimePeriodTreeDefItem) )
         {

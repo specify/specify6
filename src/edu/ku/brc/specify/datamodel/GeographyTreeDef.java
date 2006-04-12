@@ -80,7 +80,8 @@ public class GeographyTreeDef  implements TreeDefinitionIface,java.io.Serializab
         return this.treeEntries;
     }
     
-    public void setTreeEntries(Set treeEntries) {
+    @SuppressWarnings("unchecked")
+	public void setTreeEntries(Set treeEntries) {
         this.treeEntries = treeEntries;
     }
 
@@ -91,7 +92,8 @@ public class GeographyTreeDef  implements TreeDefinitionIface,java.io.Serializab
         return this.treeDefItems;
     }
     
-    public void setTreeDefItems(Set treeDefItems) {
+    @SuppressWarnings("unchecked")
+	public void setTreeDefItems(Set treeDefItems) {
         this.treeDefItems = treeDefItems;
     }
 
@@ -102,7 +104,8 @@ public class GeographyTreeDef  implements TreeDefinitionIface,java.io.Serializab
         return this.collObjDefs;
     }
     
-    public void setCollObjDefs(Set collObjDefs) {
+    @SuppressWarnings("unchecked")
+	public void setCollObjDefs(Set collObjDefs) {
         this.collObjDefs = collObjDefs;
     }
 }

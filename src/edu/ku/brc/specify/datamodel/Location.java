@@ -378,14 +378,15 @@ public class Location  implements java.io.Serializable,Treeable {
 		setDefinitionItem((LocationTreeDefItem)defItem);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Set getChildNodes()
 	{
 		return children;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setChildNodes(Set children)
 	{
-		//TODO: type checking: make sure children contains the correct types of objects
 		setChildren(children);
 	}
 

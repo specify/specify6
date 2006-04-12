@@ -10,9 +10,9 @@ public class LocationTreeDef  implements TreeDefinitionIface,java.io.Serializabl
      protected Integer treeDefId;
      protected String name;
      protected String remarks;
-     protected Set treeEntries;
-     protected Set treeDefItems;
-     protected Set collObjDefs;
+     protected Set<Location> treeEntries;
+     protected Set<LocationTreeDefItem> treeDefItems;
+     protected Set<CollectionObjDef> collObjDefs;
 
     // Constructors
 
@@ -79,7 +79,8 @@ public class LocationTreeDef  implements TreeDefinitionIface,java.io.Serializabl
         return this.treeEntries;
     }
     
-    public void setTreeEntries(Set treeEntries) {
+    @SuppressWarnings("unchecked")
+	public void setTreeEntries(Set treeEntries) {
         this.treeEntries = treeEntries;
     }
 
@@ -90,18 +91,19 @@ public class LocationTreeDef  implements TreeDefinitionIface,java.io.Serializabl
         return this.treeDefItems;
     }
     
-    public void setTreeDefItems(Set treeDefItems) {
+    @SuppressWarnings("unchecked")
+	public void setTreeDefItems(Set treeDefItems) {
         this.treeDefItems = treeDefItems;
     }
 
     /**
      * 
      */
-    public Set getCollObjDefs() {
+    public Set<CollectionObjDef> getCollObjDefs() {
         return this.collObjDefs;
     }
     
-    public void setCollObjDefs(Set collObjDefs) {
+    public void setCollObjDefs(Set<CollectionObjDef> collObjDefs) {
         this.collObjDefs = collObjDefs;
     }
 }

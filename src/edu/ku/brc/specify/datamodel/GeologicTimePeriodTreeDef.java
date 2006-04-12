@@ -10,9 +10,9 @@ public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.S
      protected Integer treeDefId;
      protected String name;
      protected String remarks;
-     protected Set treeEntries;
-     protected Set treeDefItems;
-     protected Set collObjDefs;
+     protected Set<GeologicTimePeriod> treeEntries;
+     protected Set<GeologicTimePeriodTreeDefItem> treeDefItems;
+     protected Set<CollectionObjDef> collObjDefs;
 
     // Constructors
 
@@ -79,7 +79,8 @@ public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.S
         return this.treeEntries;
     }
     
-    public void setTreeEntries(Set treeEntries) {
+    @SuppressWarnings("unchecked")
+	public void setTreeEntries(Set treeEntries) {
         this.treeEntries = treeEntries;
     }
 
@@ -90,7 +91,8 @@ public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.S
         return this.treeDefItems;
     }
     
-    public void setTreeDefItems(Set treeDefItems) {
+    @SuppressWarnings("unchecked")
+	public void setTreeDefItems(Set treeDefItems) {
         this.treeDefItems = treeDefItems;
     }
 
@@ -101,7 +103,7 @@ public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.S
         return this.collObjDefs;
     }
     
-    public void setCollObjDefs(Set collObjDefs) {
+    public void setCollObjDefs(Set<CollectionObjDef> collObjDefs) {
         this.collObjDefs = collObjDefs;
     }
 }

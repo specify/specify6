@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,9 +12,9 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
      protected Integer rankId;
      protected Boolean isEnforced;
      protected TaxonTreeDef treeDef;
-     protected Set treeEntries;
      protected TaxonTreeDefItem parent;
-     protected Set children;
+     protected Set<Taxon> treeEntries;
+     protected Set<TaxonTreeDefItem> children;
 
     // Constructors
 
@@ -102,17 +101,6 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
     /**
      * 
      */
-    public Set getTreeEntries() {
-        return this.treeEntries;
-    }
-    
-    public void setTreeEntries(Set treeEntries) {
-        this.treeEntries = treeEntries;
-    }
-
-    /**
-     * 
-     */
     public TaxonTreeDefItem getParent() {
         return this.parent;
     }
@@ -124,15 +112,28 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
     /**
      * 
      */
+    public Set getTreeEntries() {
+        return this.treeEntries;
+    }
+    
+    @SuppressWarnings("unchecked")
+	public void setTreeEntries(Set treeEntries) {
+        this.treeEntries = treeEntries;
+    }
+
+    /**
+     * 
+     */
     public Set getChildren() {
         return this.children;
     }
     
-    public void setChildren(Set children) {
+    @SuppressWarnings("unchecked")
+	public void setChildren(Set children) {
         this.children = children;
     }
 
-    // Added code to implement TreeDefinitionItemIface
+    // Code added to implement TreeDefinitionItemIface
                             
     public TreeDefinitionIface getTreeDefinition()
     {
@@ -172,7 +173,8 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
         return (TreeDefinitionItemIface)getChildren().iterator().next();
     }
     
-    public void setChildItem(TreeDefinitionItemIface child)
+    @SuppressWarnings("unchecked")
+	public void setChildItem(TreeDefinitionItemIface child)
     {
         if( !(child instanceof TaxonTreeDefItem) )
         {

@@ -559,14 +559,15 @@ public class Taxon  implements java.io.Serializable,Treeable {
 		setDefinitionItem((TaxonTreeDefItem)defItem);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Set getChildNodes()
 	{
 		return children;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setChildNodes(Set children)
 	{
-		//TODO: type checking: make sure children contains the correct types of objects
 		setChildren(children);
 	}
 

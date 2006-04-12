@@ -13,8 +13,8 @@ public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Ser
      protected Boolean isEnforced;
      protected LocationTreeDef treeDef;
      protected LocationTreeDefItem parent;
-     protected Set treeEntries;
-     protected Set children;
+     protected Set<Location> treeEntries;
+     protected Set<LocationTreeDefItem> children;
 
     // Constructors
 
@@ -116,7 +116,8 @@ public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Ser
         return this.treeEntries;
     }
     
-    public void setTreeEntries(Set treeEntries) {
+    @SuppressWarnings("unchecked")
+	public void setTreeEntries(Set treeEntries) {
         this.treeEntries = treeEntries;
     }
 
@@ -127,11 +128,12 @@ public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Ser
         return this.children;
     }
     
-    public void setChildren(Set children) {
+    @SuppressWarnings("unchecked")
+	public void setChildren(Set children) {
         this.children = children;
     }
 
-    // Added code to implement TreeDefinitionItemIface
+    // Code added to implement TreeDefinitionItemIface
 
     public TreeDefinitionIface getTreeDefinition()
     {
@@ -171,7 +173,8 @@ public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Ser
         return (TreeDefinitionItemIface)getChildren().iterator().next();
     }
     
-    public void setChildItem(TreeDefinitionItemIface child)
+    @SuppressWarnings("unchecked")
+	public void setChildItem(TreeDefinitionItemIface child)
     {
         if( !(child instanceof LocationTreeDefItem) )
         {
