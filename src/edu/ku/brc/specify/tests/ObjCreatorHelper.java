@@ -420,34 +420,36 @@ public class ObjCreatorHelper
     public static GeographyTreeDef createGeographyTreeDef(final String name)
     {
         GeographyTreeDef gtd = new GeographyTreeDef();
+        gtd.initialize();
         gtd.setName(name);
-        gtd.setTreeDefItems(new HashSet<Object>());
-        gtd.setTreeEntries(new HashSet<Object>());
-        gtd.setCollObjDefs(new HashSet<Object>());
-        if (session != null)
-        {
-            session.saveOrUpdate(gtd);
-        }
-       return gtd;
+
+        saveOrUpdate(gtd);
+        return gtd;
     }
 
-    public static GeographyTreeDefItem createGeographyTreeDefItem(final GeographyTreeDefItem parent, final GeographyTreeDef gtd, final String name, final int rankId)
+    @SuppressWarnings("unchecked")
+	public static GeographyTreeDefItem createGeographyTreeDefItem(final GeographyTreeDefItem parent,
+																final GeographyTreeDef gtd,
+																final String name,
+																final int rankId)
     {
         GeographyTreeDefItem gtdi = new GeographyTreeDefItem();
+        gtdi.initialize();
         gtdi.setName(name);
         gtdi.setParent(parent);
         gtdi.setRankId(rankId);
-        gtdi.setChildren(new HashSet<Object>());
         gtdi.setTreeDef(gtd);
-        gtd.getTreeDefItems().add(gtdi);
-        if (session != null)
+        if( gtd != null )
         {
-            session.saveOrUpdate(gtdi);
+        	gtd.getTreeDefItems().add(gtdi);
         }
+
+        saveOrUpdate(gtdi);
         return gtdi;
     }
 
-    public static Geography createGeography(final GeographyTreeDef gtd,
+    @SuppressWarnings("unchecked")
+	public static Geography createGeography(final GeographyTreeDef gtd,
                                             final Geography parent,
                                             //final String abbrev,
                                             final String name,
@@ -456,6 +458,7 @@ public class ObjCreatorHelper
                                             final int rankId)
     {
         Geography geography = new Geography();
+        geography.initialize();
         //geography.setAbbrev(abbrev);
         geography.setDefinition(gtd);
         geography.setName(name);
@@ -467,10 +470,8 @@ public class ObjCreatorHelper
         {
             gtd.getTreeEntries().add(geography);
         }
-        if (session != null)
-        {
-            session.saveOrUpdate(geography);
-        }
+
+        saveOrUpdate(geography);
         return geography;
     }
 
@@ -495,34 +496,36 @@ public class ObjCreatorHelper
     public static LocationTreeDef createLocationTreeDef(final String name)
     {
         LocationTreeDef ltd = new LocationTreeDef();
-        ltd.setCollObjDefs(new HashSet<CollectionObjDef>());
+        ltd.initialize();
         ltd.setName(name);
-        ltd.setTreeDefItems(new HashSet<Object>());
-        ltd.setTreeEntries(new HashSet<Object>());
-        if (session != null)
-        {
-            session.saveOrUpdate(ltd);
-        }
+
+        saveOrUpdate(ltd);
         return ltd;
     }
 
-    public static LocationTreeDefItem createLocationTreeDefItem(final LocationTreeDefItem parent, final LocationTreeDef ltd, final String name, final int rankId)
+    @SuppressWarnings("unchecked")
+	public static LocationTreeDefItem createLocationTreeDefItem(final LocationTreeDefItem parent,
+																final LocationTreeDef ltd,
+																final String name,
+																final int rankId)
     {
         LocationTreeDefItem ltdi = new LocationTreeDefItem();
+        ltdi.initialize();
         ltdi.setName(name);
         ltdi.setParent(parent);
         ltdi.setRankId(rankId);
-        ltdi.setChildren(new HashSet<Object>());
         ltdi.setTreeDef(ltd);
-        ltd.getTreeDefItems().add(ltdi);
-        if (session != null)
+        if( ltd != null )
         {
-            session.saveOrUpdate(ltdi);
+            ltd.getTreeDefItems().add(ltdi);
         }
+
+        saveOrUpdate(ltdi);
         return ltdi;
     }
 
-    public static Location createLocation(final LocationTreeDef ltd,
+    @SuppressWarnings("unchecked")
+	public static Location createLocation(final LocationTreeDef ltd,
                                           final Location parent,
                                           //final String abbrev,
                                           final String name,
@@ -544,52 +547,50 @@ public class ObjCreatorHelper
         {
             ltd.getTreeEntries().add(location);
         }
-        if (session != null)
-        {
-            session.saveOrUpdate(location);
-        }
+        
+        saveOrUpdate(location);
         return location;
     }
 
     public static GeologicTimePeriodTreeDef createGeologicTimePeriodTreeDef(final String name)
     {
         GeologicTimePeriodTreeDef gtp = new GeologicTimePeriodTreeDef();
-        gtp.setCollObjDefs(new HashSet<CollectionObjDef>());
+        gtp.initialize();
         gtp.setName(name);
-        gtp.setTreeDefItems(new HashSet<Object>());
-        gtp.setTreeEntries(new HashSet<Object>());
-        if (session != null)
-        {
-            session.saveOrUpdate(gtp);
-        }
+
+        saveOrUpdate(gtp);
         return gtp;
     }
 
-    public static GeologicTimePeriodTreeDefItem createGeologicTimePeriodTreeDefItem(final GeologicTimePeriodTreeDefItem parent,
+    @SuppressWarnings("unchecked")
+	public static GeologicTimePeriodTreeDefItem createGeologicTimePeriodTreeDefItem(final GeologicTimePeriodTreeDefItem parent,
                                                                                     final GeologicTimePeriodTreeDef gltptd,
                                                                                     final String name,
                                                                                     final int rankId)
     {
         GeologicTimePeriodTreeDefItem gtdi = new GeologicTimePeriodTreeDefItem();
+        gtdi.initialize();
         gtdi.setName(name);
         gtdi.setParent(parent);
         gtdi.setRankId(rankId);
-        gtdi.setChildren(new HashSet<Object>());
         gtdi.setTreeDef(gltptd);
-        gltptd.getTreeDefItems().add(gtdi);
-        if (session != null)
+        if( gltptd != null )
         {
-            session.saveOrUpdate(gtdi);
+        	gltptd.getTreeDefItems().add(gtdi);
         }
+
+        saveOrUpdate(gtdi);
         return gtdi;
     }
 
-    public static GeologicTimePeriod createGeologicTimePeriod(final GeologicTimePeriodTreeDef gtptd,
+    @SuppressWarnings("unchecked")
+	public static GeologicTimePeriod createGeologicTimePeriod(final GeologicTimePeriodTreeDef gtptd,
                                                               final GeologicTimePeriod parent,
                                                               final String name,
                                                               final int rankId)
    {
         GeologicTimePeriod gtp = new GeologicTimePeriod();
+        gtp.initialize();
         gtp.setTreeDef(gtptd);
         gtp.setDefinition(gtptd);
         gtp.setName(name);
@@ -599,10 +600,8 @@ public class ObjCreatorHelper
         {
             gtptd.getTreeEntries().add(gtp);
         }
-        if (session != null)
-        {
-            session.saveOrUpdate(gtp);
-        }
+
+        saveOrUpdate(gtp);
         return gtp;
     }
 
@@ -669,33 +668,34 @@ public class ObjCreatorHelper
     public static TaxonTreeDef createTaxonTreeDef(final String name)
     {
         TaxonTreeDef ttd = new TaxonTreeDef();
+        ttd.initialize();
         ttd.setName(name);
-        ttd.setCollObjDef(null);
-        ttd.setTreeDefItems(new HashSet<Object>());
-        ttd.setTreeEntries(new HashSet<Object>());
         return ttd;
     }
 
-    public static TaxonTreeDefItem createTaxonTreeDefItem(final TaxonTreeDefItem parent,
+    @SuppressWarnings("unchecked")
+	public static TaxonTreeDefItem createTaxonTreeDefItem(final TaxonTreeDefItem parent,
                                                           final TaxonTreeDef ttd,
                                                           final String name,
                                                           final int rankId)
     {
         TaxonTreeDefItem ttdi = new TaxonTreeDefItem();
+        ttdi.initialize();
         ttdi.setName(name);
         ttdi.setParent(parent);
         ttdi.setRankId(rankId);
-        ttdi.setChildren(new HashSet<Object>());
         ttdi.setTreeDef(ttd);
-        ttd.getTreeDefItems().add(ttdi);
-        if (session != null)
+        if( ttd != null )
         {
-            session.saveOrUpdate(ttdi);
+        	ttd.getTreeDefItems().add(ttdi);
         }
+
+        saveOrUpdate(ttdi);
         return ttdi;
     }
 
-    public static Taxon createTaxon(final TaxonTreeDef ttd,
+    @SuppressWarnings("unchecked")
+	public static Taxon createTaxon(final TaxonTreeDef ttd,
                                       final Taxon parent,
                                       //final String abbrev,
                                       final String name,
@@ -704,6 +704,7 @@ public class ObjCreatorHelper
                                       final int rankId)
     {
         Taxon taxon = new Taxon();
+        taxon.initialize();
         //taxon.setAbbrev(abbrev);
         taxon.setDefinition(ttd);
         taxon.setName(name);
@@ -715,10 +716,8 @@ public class ObjCreatorHelper
         {
             ttd.getTreeEntries().add(taxon);
         }
-        if (session != null)
-        {
-            session.saveOrUpdate(taxon);
-        }
+
+        saveOrUpdate(taxon);
         return taxon;
     }
 
@@ -2075,4 +2074,11 @@ public class ObjCreatorHelper
         return usergroup;
     }
 
+    public static void saveOrUpdate(Object transientObject)
+    {
+    	if( session != null )
+    	{
+    		session.saveOrUpdate(transientObject);
+    	}
+    }
 }
