@@ -38,7 +38,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -65,16 +64,16 @@ import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
 import edu.ku.brc.specify.datamodel.PrepType;
+import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.helpers.Encryption;
 import edu.ku.brc.specify.helpers.UIHelper;
+import edu.ku.brc.specify.tests.ObjCreatorHelper;
 import edu.ku.brc.specify.ui.db.PickList;
 import edu.ku.brc.specify.ui.db.PickListItem;
 
@@ -1938,6 +1937,67 @@ public class GenericDBConversion
         return null;
     }
 
+    public static TaxonTreeDef createStdTaxonTreeDef()
+    {
+    	Object[][] stdItems = {
+    			{  0,"Taxonomy Root",true},
+    			{ 10,"Kingdom",true},
+    			{ 20,"Subkingdom",false},
+    			{ 30,"Phylum/Division",true},
+    			{ 40,"Subphylum/Subdivision",false},
+    			{ 50,"Superclass",false},
+    			{ 60,"Class",true},
+    			{ 70,"Subclass",false},
+    			{ 80,"Infraclass",false},
+    			{ 90,"Superorder",false},
+    			{100,"Order",true},
+    			{110,"Suborder",false},
+    			{120,"Infraorder",false},
+    			{130,"Superfamily",false},
+    			{140,"Tribe",false},
+    			{150,"Subtribe",false},
+    			{160,"Genus",true},
+    			{170,"Subgenus",false},
+    			{180,"Section",false},
+    			{190,"Subsection",false},
+    			{200,"Species",false},
+    			{210,"Subspecies",false},
+    			{220,"Variety",false},
+    			{230,"Subvariety",false},
+    			{240,"Forma",false},
+    			{250,"Subforma",false}
+    	};
+
+    	Session session = HibernateUtil.getCurrentSession();
+    	ObjCreatorHelper.setSession(session);
+    	HibernateUtil.beginTransaction();
+    	
+    	TaxonTreeDef ttd = new TaxonTreeDef();
+    	ttd.initialize();
+    	ttd.setName("Standard Taxonomy Tree Definition");
+    	
+    	TaxonTreeDefItem[] items = new TaxonTreeDefItem[stdItems.length];
+    	
+    	TaxonTreeDefItem parent = null;
+    	for( int i = 0; i < stdItems.length; ++i )
+    	{
+    		if( i > 0 )
+    		{
+    			parent = items[i-1];
+    		}
+    		int rank = (Integer)stdItems[i][0];
+    		String name = (String)stdItems[i][1];
+    		boolean enforced = (Boolean)stdItems[i][2];
+    		
+    		items[i] = ObjCreatorHelper.createTaxonTreeDefItem(parent, ttd, name, rank);
+   			items[i].setIsEnforced(enforced);
+    	}
+
+    	HibernateUtil.commitTransaction();
+    	
+    	return ttd;
+    }
+    
     public GeographyTreeDef createStandardGeographyDefinitionAndItems()
     {
     	Session session = HibernateUtil.getCurrentSession();
