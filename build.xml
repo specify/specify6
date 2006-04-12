@@ -9,6 +9,7 @@
   <property name="externallib.dir" value="external_libs"/>
   <property name="hibernate.properties" value="hibernate.properties"/>
   <property name="dir.dest" value="dest"/>
+  <property name="hibernate.generated.code.destdir" value="generated-src"/>
 
   <property name="data.dir" value="data"/>
 
@@ -125,12 +126,12 @@
 
    <target name="gencode">
       <!-- bit of a best guess, I'm afraid -->
-      <hibernatetool destdir="${source.root}">
+     <mkdir dir="${hibernate.generated.code.destdir}"/>
+     <hibernatetool destdir="${hibernate.generated.code.destdir}">
          <configuration propertyFile="src/${hibernate.properties}">
             <fileset dir="${source.root}">
-                <!-- Now you MUST add just the files you want to have run -->
-                <!-- <include name="**/<FILE NAME HERE>.hbm.xml" /> -->
-                <exclude name="**/PickList.hbm.xml" />
+              <include name="**/*.hbm.xml"/>
+              <exclude name="**/PickList.hbm.xml" />
             </fileset>
          </configuration>
          <hbm2java />
