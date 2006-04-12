@@ -495,7 +495,7 @@ public class ObjCreatorHelper
     public static LocationTreeDef createLocationTreeDef(final String name)
     {
         LocationTreeDef ltd = new LocationTreeDef();
-        ltd.setCollObjDefs(new HashSet<Object>());
+        ltd.setCollObjDefs(new HashSet<CollectionObjDef>());
         ltd.setName(name);
         ltd.setTreeDefItems(new HashSet<Object>());
         ltd.setTreeEntries(new HashSet<Object>());
@@ -554,7 +554,7 @@ public class ObjCreatorHelper
     public static GeologicTimePeriodTreeDef createGeologicTimePeriodTreeDef(final String name)
     {
         GeologicTimePeriodTreeDef gtp = new GeologicTimePeriodTreeDef();
-        gtp.setCollObjDefs(new HashSet<Object>());
+        gtp.setCollObjDefs(new HashSet<CollectionObjDef>());
         gtp.setName(name);
         gtp.setTreeDefItems(new HashSet<Object>());
         gtp.setTreeEntries(new HashSet<Object>());
