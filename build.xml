@@ -128,7 +128,8 @@
       <hibernatetool destdir="${source.root}">
          <configuration propertyFile="src/${hibernate.properties}">
             <fileset dir="${source.root}">
-                <include name="**/*.hbm.xml" />
+                <!-- Now you MUST add just the files you want to have run -->
+                <!-- <include name="**/<FILE NAME HERE>.hbm.xml" /> -->
                 <exclude name="**/PickList.hbm.xml" />
             </fileset>
          </configuration>
