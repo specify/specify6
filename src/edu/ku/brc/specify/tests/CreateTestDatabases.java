@@ -1,8 +1,10 @@
 package edu.ku.brc.specify.tests;
 
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.*;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAccessionAgent;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPermit;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAccession;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAccessionAuthorizations;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAddress;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAgent;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAgentAddress;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAttributeDef;
@@ -97,7 +99,7 @@ public class CreateTestDatabases
     }
 
     /**
-     * Retuturns the first item from a table
+     * Returns the first item from a table
      * @param classObj the class of the item to get
      * @return null if no items in table
      */
@@ -107,7 +109,7 @@ public class CreateTestDatabases
     }
 
     /**
-     * Retuturns the first item from a table
+     * Returns the item at the given index from a table
      * @param classObj the class of the item to get
      * @return null if no items in table
      */
@@ -494,6 +496,7 @@ public class CreateTestDatabases
                 "Harvard Square",     "Cambridge",   "MA",   "USA",           "009391",
                 "99 East Street.",    "Lawrence",    "KS",   "USA",         "66045",
                 "123 Johnson Street", "Olathe",      "KS",   "USA",         "66045",
+                "11911 S Redbud Ln",  "Olathe",      "KS",   "USA",         "66061",
                 "RR1",                "Olathe",      "KS",   "USA",         "66045",
                 "12 Mississippi",     "Lawrence",    "KS",   "USA",         "66045",
                 "156 Inverness",      "Lawrence",    "KS",   "USA",         "66045",
