@@ -40,7 +40,7 @@
 		</set>
 
 		<set name="treeDefItems" table="TaxonTreeDefItem" inverse="true"
-			lazy="false" cascade="save-update">
+			lazy="false" cascade="all-delete-orphan">
 			<key column="TreeDefID" />
 			<one-to-many
 				class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" />

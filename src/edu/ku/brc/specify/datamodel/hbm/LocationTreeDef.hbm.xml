@@ -34,7 +34,7 @@
 		</set>
 
 		<set name="treeDefItems" table="LocationTreeDefItem"
-			inverse="true" lazy="false">
+			inverse="true" lazy="false" cascade="all-delete-orphan">
 			<key column="TreeDefID" />
 			<one-to-many
 				class="edu.ku.brc.specify.datamodel.LocationTreeDefItem" />
