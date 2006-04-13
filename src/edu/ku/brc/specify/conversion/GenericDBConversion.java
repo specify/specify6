@@ -1936,7 +1936,104 @@ public class GenericDBConversion
         }
         return null;
     }
+    
+    public void convertAllTaxonTreeDefs() throws SQLException
+    {
+    	Connection conn = oldDB.getConnectionToDB();
+    	Statement  st   = conn.createStatement();
 
+    	TaxonTreeDef ttd = new TaxonTreeDef();
+    	ttd.initialize();
+    	
+    	ResultSet rs = st.executeQuery("SELECT TaxonomyTypeID FROM taxonomytype");
+    	Vector<Integer> ttIds = new Vector<Integer>();
+    	while( rs.next() )
+    	{
+    		ttIds.add(rs.getInt(1));
+    	}
+    	
+    	for( Integer id: ttIds )
+    	{
+    		convertTaxonTreeDefinition(id);
+    	}
+    }
+
+    /**
+     * Converts the taxonomy tree definition from the old taxonomicunittype
+     * table to the new table pair: TaxonTreeDef & TaxonTreeDefItems.
+     * 
+     * @param taxonomyTypeId the tree def id in taxonomicunittype
+     * @return the TaxonTreeDef object
+     * @throws SQLException
+     */
+    @SuppressWarnings("unchecked")
+	public TaxonTreeDef convertTaxonTreeDefinition( int taxonomyTypeId ) throws SQLException
+    {
+    	Connection conn = oldDB.getConnectionToDB();
+    	Statement  st   = conn.createStatement();
+
+    	TaxonTreeDef ttd = new TaxonTreeDef();
+    	ttd.initialize();
+    	
+    	ResultSet rs = st.executeQuery("SELECT TaxonomyTypeName FROM taxonomytype WHERE TaxonomyTypeID="+taxonomyTypeId);
+    	rs.next();
+    	String taxonomyTypeName = rs.getString(1);
+    	
+    	ttd.setName(taxonomyTypeName + " taxonomy tree");
+    	ttd.setRemarks("Tree converted from " + oldDBName);
+
+    	rs = st.executeQuery("SELECT DISTINCT RankID,RankName,RequiredParentRankID FROM taxonomicunittype WHERE TaxonomyTypeID="
+    			+ taxonomyTypeId + " ORDER BY RankID");
+
+    	int rank;
+    	String name;
+    	int requiredRank;
+    	
+    	Vector<TaxonTreeDefItem> items = new Vector<TaxonTreeDefItem>();
+    	Vector<Integer> enforcedRanks = new Vector<Integer>();
+    	
+    	while( rs.next() )
+    	{
+    		rank = rs.getInt(1);
+    		name = rs.getString(2);
+    		requiredRank = rs.getInt(3);
+    		System.out.println( rank + "  " + name );
+    		TaxonTreeDefItem i = new TaxonTreeDefItem();
+    		i.initialize();
+    		i.setName(name);
+    		i.setRankId(rank);
+    		i.setTreeDef(ttd);
+    		ttd.getTreeDefItems().add(i);
+
+    		// setup the parent/child relationship
+    		if( items.isEmpty() )
+    		{
+    			i.setParent(null);
+    		}
+    		else
+    		{
+    			i.setParent(items.lastElement());
+    		}
+    		items.add(i);
+    		
+    		enforcedRanks.add(requiredRank);
+    	}
+    	
+    	for( TaxonTreeDefItem i: items )
+    	{
+    		if( enforcedRanks.contains(i.getRankId()) )
+    		{
+    			i.setIsEnforced(true);
+    		}
+    		else
+    		{
+    			i.setIsEnforced(false);
+    		}
+    	}
+    	
+    	return ttd;
+    }
+    
     public static TaxonTreeDef createStdTaxonTreeDef()
     {
     	Object[][] stdItems = {
@@ -2118,8 +2215,14 @@ public class GenericDBConversion
     	Connection conn = oldDB.getConnectionToDB();
     	Statement  st   = conn.createStatement();
 
-    	ResultSet rs = st.executeQuery("SELECT DISTINCT GeographyID,ContinentOrOcean,Country,State,County,IslandGroup,Island,WaterBody,Drainage,FullGeographicName from "
-    			+ oldTableName + " ORDER BY ContinentOrOcean,Country,State,County");
+    	ResultSet rs = st.executeQuery(
+    			"SELECT DISTINCT GeographyID,ContinentOrOcean,Country,State,County FROM "
+    			+ oldTableName +
+    			" WHERE (ContinentOrOcean IS NOT NULL) " +
+    			"OR (Country IS NOT NULL) " +
+    			"OR (State IS NOT NULL) " +
+    			"OR (County IS NOT NULL) " +
+    			"ORDER BY ContinentOrOcean,Country,State,County");
 
         IdMapper idMapper =  idMapperMgr.get("geography", "GeographyID");
     	while( rs.next() )
