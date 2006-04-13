@@ -1943,8 +1943,10 @@ public class GenericDBConversion
     			{  0,"Taxonomy Root",true},
     			{ 10,"Kingdom",true},
     			{ 20,"Subkingdom",false},
-    			{ 30,"Phylum/Division",true},
-    			{ 40,"Subphylum/Subdivision",false},
+    			{ 30,"Phylum",true},
+    		//	{ 30,"Division",true}, // botanical collections
+    			{ 40,"Subphylum",false},
+    		//	{ 40,"Subdivision",false}, // botanical collections
     			{ 50,"Superclass",false},
     			{ 60,"Class",true},
     			{ 70,"Subclass",false},
@@ -1967,10 +1969,6 @@ public class GenericDBConversion
     			{240,"Forma",false},
     			{250,"Subforma",false}
     	};
-
-    	Session session = HibernateUtil.getCurrentSession();
-    	ObjCreatorHelper.setSession(session);
-    	HibernateUtil.beginTransaction();
     	
     	TaxonTreeDef ttd = new TaxonTreeDef();
     	ttd.initialize();
@@ -1992,8 +1990,6 @@ public class GenericDBConversion
     		items[i] = ObjCreatorHelper.createTaxonTreeDefItem(parent, ttd, name, rank);
    			items[i].setIsEnforced(enforced);
     	}
-
-    	HibernateUtil.commitTransaction();
     	
     	return ttd;
     }
@@ -2050,7 +2046,7 @@ public class GenericDBConversion
 		HibernateUtil.closeSession();
 
 		return def;
-}
+    }
 
     /**
      * @param filename the input file
@@ -2509,8 +2505,8 @@ public class GenericDBConversion
                     newTableRows.add(newCounty);
                 }
             }
-        }
-    	}
+        }// end of "for( GeoFileLine geo: oldGeoRecords )"
+    	} //end of weird code block inserted for debugging purposes
 
         // now we have a Vector of Geography's that contains all the data
         // we simply need to fixup all the highChildNodeNumber fields
@@ -2544,61 +2540,8 @@ public class GenericDBConversion
         }
         HibernateUtil.commitTransaction();
         HibernateUtil.closeSession();
-
-//        Connection conn = DBConnection.getConnection();
-//        Statement st = conn.createStatement();
-//
-//        // put together a huge 'insert' statement, starting with the 'values
-//        // (...)' portion
-//        int rowsInserted = 0;
-//        StringBuilder insertStatement = new StringBuilder();
-//        for( Geography item: newTableRows )
-//        {
-//            insertStatement.setLength(0);
-//            insertStatement.append( "INSERT INTO geography (Name,GeographyId,ParentId,NodeNumber,HighestChildNodeNumber,RankId,GeographyTreeDefId) values ");
-//            insertStatement.append("(\"");
-//            insertStatement.append(item.getName());
-//            insertStatement.append("\",");
-//            insertStatement.append(item.getGeographyId());
-//            insertStatement.append(",");
-//            insertStatement.append(item.getParentId());
-//            insertStatement.append(",");
-//            insertStatement.append(item.getNodeNumber());
-//            insertStatement.append(",");
-//            insertStatement.append(item.getHighChildNodeNumber());
-//            insertStatement.append(",");
-//            insertStatement.append(item.getRankId());
-//            insertStatement.append(",");
-//            insertStatement.append(geographyTreeDefId);
-//            insertStatement.append(")");
-//
-//            int row = st.executeUpdate(insertStatement.toString());
-//            if (rowsInserted % 1000 == 0)
-//            {
-//                log.info("Geography: " + rowsInserted);
-//            }
-//            rowsInserted++;
-//        }
-//        log.info("Rows inserted: " + rowsInserted);
     }
-
-//    /**
-//     * @param nodes
-//     * @param id
-//     * @return
-//     */
-//    private static Geography findNodeById(final Vector<Geography> nodes, int id )
-//    {
-//        for( Geography node: nodes )
-//        {
-//            if( node.getGeographyId() == id )
-//            {
-//                return node;
-//            }
-//        }
-//        return null;
-//    }
-//
+    
     /**
      * Finds the smallest <code>int</code> not in the <code>Collection</code>
      *
