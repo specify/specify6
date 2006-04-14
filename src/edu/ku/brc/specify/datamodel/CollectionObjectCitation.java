@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
 import java.util.Date;
 
 
@@ -41,8 +40,8 @@ public class CollectionObjectCitation  implements java.io.Serializable {
     {
         collectionObjectCitationId = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = new Date();
+        timestampCreated = new Date();
         lastEditedBy = null;
         referenceWork = null;
         collectionObject = null;
@@ -131,7 +130,12 @@ public class CollectionObjectCitation  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     // Done Add Methods
+
+    // Delete Methods
+
+    // Delete Add Methods
 }

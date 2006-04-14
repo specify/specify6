@@ -161,7 +161,7 @@ public class SpecifyDBConverter
      */
     public static void main(String args[]) throws Exception
     {
-        String oldDatabaseName = "demo_fish2";
+        String oldDatabaseName = "demo_fish4";
 
         DBConnection oldDB       = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/"+oldDatabaseName, "rods", "rods");
         IdMapperMgr  idMapperMgr = new IdMapperMgr(oldDB.getConnectionToDB());
@@ -173,7 +173,7 @@ public class SpecifyDBConverter
         try
         {
            GenericDBConversion.setShouldCreateMapTables(true);
-            GenericDBConversion.setShouldDeleteMapTables(false);
+            GenericDBConversion.setShouldDeleteMapTables(true);
 
             boolean doAll = true; // when converting
 

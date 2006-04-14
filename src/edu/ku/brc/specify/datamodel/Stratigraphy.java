@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -63,8 +62,8 @@ public class Stratigraphy  implements java.io.Serializable {
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampCreated = Calendar.getInstance().getTime();
-        timestampModified = null;
+        timestampCreated = new Date();
+        timestampModified = new Date();
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
@@ -276,12 +275,24 @@ public class Stratigraphy  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     public void addChildren(final GeologicTimePeriod children)
     {
         this.children.add(children);
+        //children.set(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeChildren(final GeologicTimePeriod children)
+    {
+        this.children.remove(children);
+        //children.setStratigraphy(null);
+    }
+
+    // Delete Add Methods
 }

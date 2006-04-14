@@ -21,6 +21,7 @@ package edu.ku.brc.specify.ui.db;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
+import java.awt.Color;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
@@ -142,6 +143,18 @@ public class JAutoCompComboBox extends JComboBox
     public void setCaseInsensitive(final boolean caseInsensitve)
     {
         this.caseInsensitve = caseInsensitve;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.awt.Component#setBackground(java.awt.Color)
+     */
+    public void setBackground(Color bgColor)
+    {
+        super.setBackground(bgColor);
+        if (tf != null)
+        {
+            tf.setBackground(bgColor);
+        }
     }
 
     /* (non-Javadoc)
@@ -301,6 +314,7 @@ public class JAutoCompComboBox extends JComboBox
         if (anEditor.getEditorComponent() instanceof JTextField)
         {
             tf = (JTextField) anEditor.getEditorComponent();
+            tf.setBackground(super.getBackground());
             tf.addFocusListener(new FocusAdapter() 
             {
                 public void focusLost(FocusEvent e)

@@ -38,6 +38,7 @@
     <icon name="NextRec"  file="next.gif"  sizes="NonStd"/>
     <icon name="LastRec"  file="last.gif"  sizes="NonStd"/>
     <icon name="NewRec"   file="newrec.gif"  sizes="NonStd"/>
+    <icon name="SmallTrash" file="smalltrash.gif" sizes="NonStd"/>
     
     <icon name="EditIcon" file="edit_icon.gif"  sizes="NonStd"/>
     <icon name="Save"     file="save_disk.gif"  sizes="all"/>

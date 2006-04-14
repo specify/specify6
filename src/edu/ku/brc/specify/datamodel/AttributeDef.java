@@ -22,7 +22,7 @@ public class AttributeDef  implements java.io.Serializable {
      protected Set<CollectingEventAttr> collectingEventAttrs;
      protected Set<PreparationAttr> preparationAttr;
      protected Set<CollectionObjectAttr> collectionObjectAttrs;
-     protected Set<ExternalResource> externalResources;
+     protected Set<ExternalResourceAttr> externalResourcesAttrs;
 
 
     // Constructors
@@ -51,7 +51,7 @@ public class AttributeDef  implements java.io.Serializable {
         collectingEventAttrs = new HashSet<CollectingEventAttr>();
         preparationAttr = new HashSet<PreparationAttr>();
         collectionObjectAttrs = new HashSet<CollectionObjectAttr>();
-        externalResources = new HashSet<ExternalResource>();
+        externalResourcesAttrs = new HashSet<ExternalResourceAttr>();
     }
     // End Initializer
 
@@ -159,13 +159,14 @@ public class AttributeDef  implements java.io.Serializable {
     /**
      *
      */
-    public Set<ExternalResource> getExternalResources() {
-        return this.externalResources;
+    public Set<ExternalResourceAttr> getexternalResourcesAttrs() {
+        return this.externalResourcesAttrs;
     }
 
-    public void setExternalResources(Set<ExternalResource> externalResources) {
-        this.externalResources = externalResources;
+    public void setexternalResourcesAttrs(Set<ExternalResourceAttr> externalResourcesAttrs) {
+        this.externalResourcesAttrs = externalResourcesAttrs;
     }
+
 
 
 
@@ -175,22 +176,54 @@ public class AttributeDef  implements java.io.Serializable {
     public void addCollectingEventAttr(final CollectingEventAttr collectingEventAttr)
     {
         this.collectingEventAttrs.add(collectingEventAttr);
+        collectingEventAttr.setDefinition(this);
     }
 
     public void addPreparationAttr(final PreparationAttr preparationAttr)
     {
         this.preparationAttr.add(preparationAttr);
+        preparationAttr.setDefinition(this);
     }
 
     public void addCollectionObjectAttr(final CollectionObjectAttr collectionObjectAttr)
     {
         this.collectionObjectAttrs.add(collectionObjectAttr);
+        collectionObjectAttr.setDefinition(this);
     }
 
-    public void addExternalResource(final ExternalResource externalResource)
+    public void addExternalResource(final ExternalResourceAttr externalResourceAttr)
     {
-        this.externalResources.add(externalResource);
+        this.externalResourcesAttrs.add(externalResourceAttr);
+        externalResourceAttr.setDefinition(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeCollectingEventAttr(final CollectingEventAttr collectingEventAttr)
+    {
+        this.collectingEventAttrs.remove(collectingEventAttr);
+        collectingEventAttr.setCollectingEvent(null);
+    }
+
+    public void removePreparationAttr(final PreparationAttr preparationAttr)
+    {
+        this.preparationAttr.remove(preparationAttr);
+        preparationAttr.setPreparation(null);
+    }
+
+    public void removeCollectionObjectAttr(final CollectionObjectAttr collectionObjectAttr)
+    {
+        this.collectionObjectAttrs.remove(collectionObjectAttr);
+        collectionObjectAttr.setCollectionObject(null);
+    }
+
+    public void removeExternalResource(final ExternalResourceAttr externalResource)
+    {
+        this.externalResourcesAttrs.remove(externalResource);
+        externalResource.setExternalResource(null);
+    }
+
+    // Delete Add Methods
 }

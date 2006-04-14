@@ -4,14 +4,6 @@
 <class name="edu.ku.brc.specify.datamodel.CollectionObject" table="collectionobject" lazy="true" batch-size="50">
     <meta attribute="class-description" inherit="false"/>
 
-    <meta attribute="class-code">
-        public void addDetermination(Determination determination)
-        {
-            determinations.add(determination);
-            determination.setCollectionObject(this);
-        }
-    </meta>
-    
     <id name="collectionObjectId" type="java.lang.Integer" column="CollectionObjectID">
         <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>

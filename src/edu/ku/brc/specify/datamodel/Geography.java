@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -58,8 +57,8 @@ public class Geography  implements java.io.Serializable,Treeable {
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampCreated = Calendar.getInstance().getTime();
-        timestampModified = null;
+        timestampCreated = new Date();
+        timestampModified = new Date();
         timestampVersion = null;
         lastEditedBy = null;
         isCurrent = null;
@@ -314,14 +313,6 @@ public class Geography  implements java.io.Serializable,Treeable {
         this.children = children;
     }
     
-    // Add Methods
-
-    public void addLocalities(final Locality locality)
-    {
-        this.localities.add(locality);
-    }
-
-    // Done Add Methods
     
 	/* Code added in order to implement Treeable */
     
@@ -419,4 +410,24 @@ public class Geography  implements java.io.Serializable,Treeable {
 		}
 		children.add((Geography)child);
 	}
+
+    // Add Methods
+
+    public void addLocalities(final Locality localities)
+    {
+        this.localities.add(localities);
+        localities.setGeography(this);
+    }
+
+    // Done Add Methods
+
+    // Delete Methods
+
+    public void removeLocalities(final Locality localities)
+    {
+        this.localities.remove(localities);
+        localities.setGeography(null);
+    }
+
+     // Delete Add Methods
 }

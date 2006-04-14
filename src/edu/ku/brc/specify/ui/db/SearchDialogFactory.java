@@ -47,6 +47,11 @@ public class SearchDialogFactory
                 "edu.ku.brc.specify.datamodel.Agent",
                 "agentId"));
         
+        dialogs.put("PermitSearch", new SearchDialogInfo("Search", "PermitSearch", "PermitSearch", 
+                getResourceString("PermitSearchTitle"), 
+                "edu.ku.brc.specify.datamodel.Permit",
+                "permitId"));
+        
     }
     
     /**

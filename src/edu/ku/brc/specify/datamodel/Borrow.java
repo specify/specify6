@@ -64,8 +64,8 @@ public class Borrow  implements java.io.Serializable {
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampModified = null;
-        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = new Date();
+        timestampCreated = new Date();
         lastEditedBy = null;
         closed = null;
         yesNo1 = null;
@@ -302,22 +302,48 @@ public class Borrow  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     public void addBorrowShipment(final BorrowShipment borrowShipment)
     {
         this.borrowShipments.add(borrowShipment);
+        borrowShipment.setBorrow(this);
     }
 
     public void addBorrowAgent(final BorrowAgent borrowAgent)
     {
         this.borrowAgents.add(borrowAgent);
+        borrowAgent.setBorrow(this);
     }
 
     public void addBorrowMaterial(final BorrowMaterial borrowMaterial)
     {
         this.borrowMaterials.add(borrowMaterial);
+        borrowMaterial.setBorrow(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeBorrowShipment(final BorrowShipment borrowShipment)
+    {
+        this.borrowShipments.remove(borrowShipment);
+        borrowShipment.setBorrow(null);
+    }
+
+    public void removeBorrowAgent(final BorrowAgent borrowAgent)
+    {
+        this.borrowAgents.remove(borrowAgent);
+        borrowAgent.setBorrow(null);
+    }
+
+    public void removeBorrowMaterial(final BorrowMaterial borrowMaterial)
+    {
+        this.borrowMaterials.remove(borrowMaterial);
+        borrowMaterial.setBorrow(null);
+    }
+
+    // Delete Add Methods
 }

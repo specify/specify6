@@ -57,12 +57,13 @@ import javax.swing.ListModel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Session;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.prefs.PrefsCache;
@@ -76,6 +77,7 @@ import edu.ku.brc.specify.ui.db.PickListItem;
 import edu.ku.brc.specify.ui.forms.persist.AltView;
 import edu.ku.brc.specify.ui.forms.persist.FormCell;
 import edu.ku.brc.specify.ui.forms.persist.FormCellField;
+import edu.ku.brc.specify.ui.forms.persist.FormCellLabel;
 import edu.ku.brc.specify.ui.forms.persist.FormCellSubView;
 import edu.ku.brc.specify.ui.forms.persist.FormViewDef;
 import edu.ku.brc.specify.ui.forms.persist.View;
@@ -104,6 +106,7 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
     protected List<MultiView>               kids           = new ArrayList<MultiView>();
 
     protected Map<String, FieldInfo>        controls       = new Hashtable<String, FieldInfo>();
+    protected Map<String, FieldInfo>        labels         = new Hashtable<String, FieldInfo>();
 
     protected FormValidator                 validator      = null;
     protected Object                        parentDataObj  = null;
@@ -118,6 +121,7 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
     protected JComboBox                     altViewUI      = null;
     protected boolean                       ignoreSelection = false;
     protected JButton                       saveBtn         = null;
+    protected boolean                       wasNull         = false;
 
     protected PanelBuilder                  mainBuilder;
     protected CellConstraints               cc             = new CellConstraints();
@@ -199,6 +203,7 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
                     });
 
                     comps.add(saveBtn);
+
                 }
                 comps.add(altViewUI);
 
@@ -207,26 +212,6 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
             }
         }
 
-    }
-    
-    /**
-     * Save any changes to the current object
-     */
-    protected void saveObject()
-    {
-        try
-        {
-            Session session = HibernateUtil.getCurrentSession();
-            HibernateUtil.beginTransaction();
-            session.saveOrUpdate(dataObj);
-            HibernateUtil.commitTransaction();
-            
-        } catch (Exception e)
-        {
-            log.error("******* " + e);
-            e.printStackTrace();
-            HibernateUtil.rollbackTransaction();
-        }
     }
 
     /**
@@ -320,7 +305,37 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
             {
                 throw new RuntimeException("Two controls have the same name ["+formCell.getName()+"] "+formViewDef.getName());
             }
-            controls.put(formCell.getName(), new FieldInfo(formCell, control));
+            
+            JScrollPane scrollPane;
+            Component comp;
+            if (control instanceof JScrollPane)
+            {
+                scrollPane = (JScrollPane)control;
+                comp = scrollPane.getViewport().getView();
+            } else
+            {
+                scrollPane = null;
+                comp = control;
+            }
+            controls.put(formCell.getName(), new FieldInfo(formCell, comp, scrollPane, controls.size()));
+        }
+    }
+
+    /**
+     * Adds a control by name so it can be looked up later
+     * @param formCell the FormCell def that describe the cell
+     * @param control the control
+     */
+    public void addLabel(final FormCellLabel formCell, final JLabel label)
+    {
+        
+        if (formCell != null)
+        {
+            if (labels.get(formCell.getLabelFor()) != null)
+            {
+                throw new RuntimeException("Two labels have the same name ["+formCell.getLabelFor()+"] "+formViewDef.getName());
+            }
+            labels.put(formCell.getLabelFor(), new FieldInfo(formCell, label, null, controls.size()));
         }
     }
 
@@ -366,7 +381,7 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
                 throw new RuntimeException("Two controls have the same name ["+formCell.getName()+"] "+formViewDef.getName());
             }
 
-            controls.put(formCell.getName(), new FieldInfo(formCell, subView));
+            controls.put(formCell.getName(), new FieldInfo(formCell, subView, controls.size()));
             kids.add(subView);
         }
     }
@@ -390,14 +405,22 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
         }
     }
     
-    protected void addToParent(final Object newDataObj)
+    /**
+     * Adds new child object to its parent to a Set
+     * @param newDataObj the new object to be added to a Set
+     */
+    protected void initAndAddToParent(final Object newDataObj)
     {
         if (parentDataObj != null)
         {
             String methodName = "add" + newDataObj.getClass().getSimpleName();
+            log.info("Invoking method["+methodName+"]");
             try
             {
-                Method method = parentDataObj.getClass().getMethod(methodName, new Class[] {newDataObj.getClass()});
+                Method method = newDataObj.getClass().getMethod("initialize", new Class[] {});
+                method.invoke(newDataObj, new Object[] {});
+                
+                method = parentDataObj.getClass().getMethod(methodName, new Class[] {newDataObj.getClass()});
                 method.invoke(parentDataObj, new Object[] {newDataObj});
                 
             } catch (NoSuchMethodException ex)
@@ -416,6 +439,48 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
     }
     
     /**
+     * Adds new child object to its parent to a Set
+     * @param newDataObj the new object to be added to a Set
+     */
+    protected void removeFromParent(final Object oldDataObj)
+    {
+        if (parentDataObj != null)
+        {
+            String methodName = "remove" + oldDataObj.getClass().getSimpleName();
+            try
+            {
+                Method method = parentDataObj.getClass().getMethod(methodName, new Class[] {oldDataObj.getClass()});
+                method.invoke(parentDataObj, new Object[] {oldDataObj});
+                
+            } catch (NoSuchMethodException ex)
+            {
+                ex.printStackTrace();
+                
+            } catch (IllegalAccessException ex)
+            {
+                ex.printStackTrace();   
+                
+            } catch (InvocationTargetException ex)
+            {
+                ex.printStackTrace();    
+            }
+        }
+    }
+    
+    /**
+     * Walks the MultiView hierarchy and has them transfer their data from the UI to the DB Object
+     * @param parentMV
+     */
+    protected void traverseToGetDataFromForms(final MultiView parentMV)
+    {
+        for (MultiView mv : parentMV.getKids())
+        {
+            mv.getDataFromUI();
+            traverseToGetDataFromForms(mv);
+        }
+    }
+    
+    /**
      * Creates a new Record and adds it to the List and dataSet if necessary
      */
     protected void createNewRecord()
@@ -428,10 +493,9 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
             if (list != null)
             {
                 list.add(obj);
-                //origDataSet.add(obj);
                 rsController.setLength(list.size());
                 rsController.setIndex(list.size()-1);
-                addToParent(obj);
+                UIHelper.initAndAddToParent(parentDataObj, obj);
             }
             this.setDataIntoUI();
             
@@ -448,7 +512,101 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
             ex.printStackTrace();            
         }
     }
+    
+    
+    /**
+     * Save any changes to the current object
+     */
+    protected void saveObject()
+    {
+        try
+        {
+            HibernateUtil.beginTransaction();
+            
+            traverseToGetDataFromForms(mvParent);
+            
+            /*Accession a = (Accession)dataObj;
+            Set<AccessionAgent> set = a.getAccessionAgents();
+            for (Iterator<AccessionAgent> e=set.iterator();e.hasNext();)
+            {
+                AccessionAgent aa = e.next();
+                if (aa.getAccessionAgentsId() == null)
+                {
+                    HibernateUtil.getCurrentSession().saveOrUpdate(aa);
+                }
+            }*/
+            
+            
+            HibernateUtil.getCurrentSession().saveOrUpdate(dataObj);
+            HibernateUtil.commitTransaction();
+            
+        } catch (Exception e)
+        {
+            log.error("******* " + e);
+            e.printStackTrace();
+            HibernateUtil.rollbackTransaction();
+        }
+        saveBtn.setEnabled(false);
+    }
 
+    /**
+     * Save any changes to the current object
+     */
+    protected void removeObject()
+    {
+        try
+        {
+            removeFromParent(dataObj);
+            
+            HibernateUtil.beginTransaction();
+            HibernateUtil.getCurrentSession().delete(dataObj);
+            HibernateUtil.commitTransaction();
+            
+            if (rsController != null)
+            {
+                int currInx = rsController.getCurrentIndex();
+                list.remove(dataObj);
+                rsController.setLength(rsController.getLength()-1);
+                
+                int newInx = Math.min(currInx, rsController.getLength());
+                if (newInx > 0)
+                {
+                    rsController.setIndex(newInx);
+                    dataObj = list.get(newInx);
+                    this.setDataIntoUI();
+                }
+            }
+            
+        } catch (Exception e)
+        {
+            log.error("******* " + e);
+            e.printStackTrace();
+            HibernateUtil.rollbackTransaction();
+        }
+    }
+
+    /**
+     * Returns the list of MultiView kids (subforms)
+     * @return the list of MultiView kids (subforms)
+     */
+    public List<MultiView> getKids()
+    {
+        return kids;
+    }
+    
+    /**
+     * Sets the focus to the first control in the form
+     */
+    protected void focusFirstFormControl()
+    {
+        for (FieldInfo compFI : controls.values())
+        {
+            if (compFI.getInsertPos() == 0)
+            {
+                compFI.getComp().requestFocus();
+            }
+        }
+    }
 
     /**
      * Cleanup references
@@ -529,7 +687,6 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
      */
     public void setDataObj(final Object dataObj)
     {
-        this.parentDataObj = parentDataObj;
         
         Object data = dataObj;
         if (data instanceof java.util.Set)
@@ -559,17 +716,28 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
             // If the Control panel doesn't exist, then add it
             if (rsController == null)
             {
-                rsController = new ResultSetController(validator, altView.getMode() == AltView.CreationMode.Edit, list.size());
+                boolean inEditMode = altView.getMode() == AltView.CreationMode.Edit;
+                rsController = new ResultSetController(validator, inEditMode, inEditMode, list.size());
                 rsController.addListener(this);
                 controlPanel.add(rsController);
                 
                 if (rsController.getNewRecBtn() != null)
                 {
-                    rsController.getNewRecBtn().addActionListener(new ActionListener()
-                            {
+                    rsController.getNewRecBtn().addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent ae)
                         {
                             createNewRecord();
+                            focusFirstFormControl();
+                        }
+                    });
+                }
+                
+                if (rsController.getDelRecBtn() != null)
+                {
+                    rsController.getDelRecBtn().addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            removeObject();
                         }
                     });
                 }
@@ -630,19 +798,81 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
     public void setDataIntoUI()
     {
         DataObjectGettable dg = formViewDef.getDataGettable();
+        
+        // This is a short circut for when we were switch from being enabled to disabled or visa-versus
+        // This way we won't need to set the controls enabled or disabled each time we advance to a new record,
+        // we only have to do it once
+        if (dataObj == null && !wasNull)
+        {
+            // Disable all the labels
+            for (FieldInfo labelFI : labels.values())
+            {
+                labelFI.getComp().setEnabled(false);
+            }
+            
+            // Diable all the form controls and set their values to NULL
+            for (FieldInfo fieldInfo : controls.values())
+            {
+                fieldInfo.getComp().setEnabled(false);
+                if (fieldInfo.getFormCell().getType() == FormCell.CellType.field)
+                {
+                    setDataIntoUIComp(fieldInfo.getComp(), null);
+                    //System.out.println("Setting ["+fieldInfo.getName()+"] to enabled=false");
+                    
+                } else if (fieldInfo.getFormCell().getType() == FormCell.CellType.subview)
+                {
+                    fieldInfo.getSubView().setData(null);
+                }
+            }
+            // Disable the RecordSet Controller
+            if (rsController != null)
+            {
+                rsController.setEnabled(false);
+            }
+            wasNull = true;
+            return;
+            
+        } else if (dataObj != null && wasNull)
+        {
+            // Enable the labels
+            for (FieldInfo labelFI : labels.values())
+            {
+                labelFI.getComp().setEnabled(true);
+            }
+            
+            // Enable the formn controls
+            for (FieldInfo compFI : controls.values())
+            {
+                compFI.setEnabled(true);
+            }
+            
+            // Enable the RecordSet Controller
+            if (rsController != null)
+            {
+                rsController.setEnabled(true);
+            }
+            wasNull = false; 
+        }
 
+
+        // Now we know the we have data, so loop through all the controls 
+        // and set their values
         for (FieldInfo fieldInfo : controls.values())
         {
-            Component comp = controls.get(fieldInfo.getName()).getComp();
+            Component comp = fieldInfo.getComp();
 
-            Object data = null;//dg.getFieldValue(dataObj, fieldInfo.getName());
+            Object data = null;
 
+            // This is for panels that use in layout but have no data
             if (fieldInfo.getFormCell().isIgnoreSetGet())
             {
                 continue;
             }
-            System.out.println("["+fieldInfo.getFormCell().getName()+"]["+fieldInfo.getFormCell().getType()+"]");
-            if (fieldInfo.getFormCell().getName().equals("agentAddress.agent"))
+
+            
+            //System.out.println("["+fieldInfo.getFormCell().getName()+"]["+fieldInfo.getFormCell().getType()+"]");
+            //if (fieldInfo.getFormCell().getName().equals("agentAddressByIssuer.agent"))
+            if (fieldInfo.getFormCell().getName().equals("number"))
             {
                 int x = 0;
                 x++;
@@ -654,9 +884,10 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
                 FormCellField cellField        = (FormCellField)fieldInfo.getFormCell();
                 String        formatName       = cellField.getFormatName();
 
-                //boolean useFormatName = (cellField.isBothFormatterDefined() && cellField.isTextField()) || isNotEmpty(formatName);
-                boolean useFormatName = cellField.isTextField() && (isNotEmpty(cellField.getUiFieldFormatter()) || isNotEmpty(formatName));
-                System.out.println("["+cellField.getName()+"] "+useFormatName+"  "+comp.getClass().getSimpleName());
+                boolean isTextFieldPerMode = cellField.isTextField(altView.getMode());
+                
+               boolean useFormatName = isTextFieldPerMode && isNotEmpty(formatName);
+                //System.out.println("["+cellField.getName()+"] "+useFormatName+"  "+comp.getClass().getSimpleName());
 
                 if (useFormatName)
                 {
@@ -665,7 +896,7 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
                         throw new RuntimeException("formatName ["+formatName+"] only works on a single value.");
                     }
                     Object[] vals = UIHelper.getFieldValues(cellField.getFieldNames(), dataObj, dg);
-                    setDataIntoUIComp(fieldInfo.getName(), DataObjFieldFormatMgr.format(vals[0], formatName));
+                    setDataIntoUIComp(comp, DataObjFieldFormatMgr.format(vals[0], formatName));
 
                 } else
                 {
@@ -674,7 +905,7 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
                     String   format = cellField.getFormat();
                     if (isNotEmpty(format))
                     {
-                        setDataIntoUIComp(fieldInfo.getName(), UIHelper.getFormattedValue(values, cellField.getFormat()));
+                        setDataIntoUIComp(comp, UIHelper.getFormattedValue(values, cellField.getFormat()));
 
                     } else
                     {
@@ -683,13 +914,13 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
                             throw new RuntimeException("No Format but mulitple fields were specified for["+cellField.getName()+"]");
                         }
                         
-                        if (cellField.isTextField())
+                        if (isTextFieldPerMode)
                         {
+                            setDataIntoUIComp(comp, values != null && values[0] != null ? values[0].toString() : "");
                             
-                            setDataIntoUIComp(fieldInfo.getName(), values != null && values[0] != null ? values[0].toString() : "");
                         } else
                         {
-                            setDataIntoUIComp(fieldInfo.getName(), values == null ? null : values[0]);
+                            setDataIntoUIComp(comp, values == null ? null : values[0]);
                         }
                         
                     }
@@ -714,7 +945,16 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
                 }
             }
         }
-
+        
+        if (validator != null)
+        {
+            validator.setHasChanged(false);
+        }
+        
+        if (mvParent != null && mvParent.isRoot() && saveBtn != null)
+        {
+            saveBtn.setEnabled(false);
+        }
     }
 
     /* (non-Javadoc)
@@ -723,6 +963,7 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
     public void getDataFromUI()
     {
         DataObjectSettable ds = formViewDef.getDataSettable();
+        DataObjectGettable dg = formViewDef.getDataGettable();
         if (ds != null)
         {
             for (FieldInfo fieldInfo : controls.values())
@@ -732,13 +973,23 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
                     continue;
                 }
                 String name = fieldInfo.getFormCell().getName();
-                if (name.equals("isCurrent"))
+                if (name.toLowerCase().equals("type"))
                 {
                     int x = 0;
                     x++;
                 }
+                //System.out.println("["+name+"]");
                 Object uiData = getDataFromUIComp(name);
-                ds.setFieldValue(dataObj, name, uiData);
+                if (name.equals("type"))
+                {
+                    int x = 0;
+                    x++;
+                }
+                if (uiData != null)
+                {
+                    //ds.setFieldValue(dataObj, name, uiData);
+                    UIHelper.setFieldValue(name, dataObj, uiData, dg, ds);
+                }
             }
         } else
         {
@@ -1094,26 +1345,31 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
     //-------------------------------------------------
     class FieldInfo
     {
-        protected FormCell  formCell;
-        protected MultiView subView;
-        protected Component comp;
+        protected FormCell    formCell;
+        protected MultiView   subView;
+        protected Component   comp;
+        protected JScrollPane scrollPane;
+        protected int         insertPos;
 
-        public FieldInfo(FormCell formCell, Component comp)
+        public FieldInfo(FormCell formCell, Component comp, JScrollPane scrollPane, int insertPos)
         {
             this.comp     = comp;
             this.formCell = formCell;
             this.subView  = null;
+            this.scrollPane = scrollPane;
+            this.insertPos = insertPos;
         }
 
-        public FieldInfo(FormCell formCell, MultiView subView)
+        public FieldInfo(FormCell formCell, MultiView subView, int insertPos)
         {
             this.formCell = formCell;
             this.subView  = subView;
             this.comp     = subView;
-        }
+            this.insertPos = insertPos;
+       }
 
         public String getName()
-        {
+        {   
             return formCell.getName();
         }
 
@@ -1129,6 +1385,21 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
         public MultiView getSubView()
         {
             return subView;
+        }
+        
+        public int getInsertPos()
+        {
+            return insertPos;
+        }
+
+        public void setEnabled(boolean enabled)
+        {
+            log.info(formCell.getName()+"  "+(scrollPane != null ? "has Pane" : "no pane"));
+            comp.setEnabled(enabled);
+            if (scrollPane != null)
+            {
+                scrollPane.setEnabled(enabled);
+            }
         }
 
     }

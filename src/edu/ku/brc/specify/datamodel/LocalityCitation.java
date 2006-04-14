@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
 import java.util.Date;
 
 
@@ -41,8 +40,8 @@ public class LocalityCitation  implements java.io.Serializable {
     {
         localityCitationId = null;
         remarks = null;
-        timestampCreated = Calendar.getInstance().getTime();
-        timestampModified = null;
+        timestampCreated = new Date();
+        timestampModified = new Date();
         lastEditedBy = null;
         referenceWork = null;
         locality = null;
@@ -131,7 +130,12 @@ public class LocalityCitation  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     // Done Add Methods
+
+    // Delete Methods
+
+    // Delete Add Methods
 }

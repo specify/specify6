@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
 import java.util.Date;
 
 
@@ -41,8 +40,8 @@ public class BorrowShipment  implements java.io.Serializable {
     {
         borrowShipmentsId = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = new Date();
+        timestampCreated = new Date();
         lastEditedBy = null;
         shipment = null;
         borrow = null;
@@ -131,7 +130,12 @@ public class BorrowShipment  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     // Done Add Methods
+
+    // Delete Methods
+
+    // Delete Add Methods
 }

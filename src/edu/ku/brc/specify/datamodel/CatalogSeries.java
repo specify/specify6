@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -49,8 +48,8 @@ public class CatalogSeries  implements java.io.Serializable {
         seriesName = null;
         catalogSeriesPrefix = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = new Date();
+        timestampCreated = new Date();
         lastEditedBy = null;
         collectionObjDefItems = new HashSet<CollectionObjDef>();
         tissue = null;
@@ -172,12 +171,24 @@ public class CatalogSeries  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     public void addCollectionObjDefItem(final CollectionObjDef collectionObjDefItem)
     {
         this.collectionObjDefItems.add(collectionObjDefItem);
+        collectionObjDefItem.getCatalogSeries().add(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeCollectionObjDefItem(final CollectionObjDef collectionObjDefItem)
+    {
+        this.collectionObjDefItems.remove(collectionObjDefItem);
+        collectionObjDefItem.getCatalogSeries().remove(this);
+    }
+
+    // Delete Add Methods
 }

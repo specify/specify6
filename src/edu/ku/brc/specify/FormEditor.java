@@ -115,6 +115,7 @@ import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.forms.MultiView;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
 import edu.ku.brc.specify.ui.forms.Viewable;
+import edu.ku.brc.specify.ui.forms.persist.AltView;
 import edu.ku.brc.specify.ui.forms.persist.View;
 
 /**
@@ -334,7 +335,7 @@ public class FormEditor
      */
     protected Viewable createView(View view)
     {
-        multiView   = new MultiView(null, view, null);
+        multiView   = new MultiView(null, view, AltView.CreationMode.Edit);
         contentPane.removeAll();
         builder.add(multiView, cc.xy(1,1));
         
@@ -415,7 +416,7 @@ public class FormEditor
             
             if (currViewSetName.equals("Fish Views") && currViewName.equals("Accession"))
             {
-                boolean doDB = false;
+                boolean doDB = true;
                 if (doDB)
                 {
                     Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setMaxResults(10);

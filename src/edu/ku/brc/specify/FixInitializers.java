@@ -12,16 +12,111 @@ import org.apache.commons.lang.StringUtils;
 
 public class FixInitializers
 {
-    /**
-     *
-     */
-    protected String createCapitalizedName(final String name)
+    
+    Hashtable<String, String> props    = new Hashtable<String, String>();
+    Hashtable<String, String> propsType = new Hashtable<String, String>();
+    
+    protected String getAttrName(final String line, final String attrName)
     {
-        StringBuilder newName = new StringBuilder();
-        newName.append(name.toUpperCase().charAt(0));
-        newName.append(name.substring(1, name.length()));
-
-        return newName.toString();
+        String name = attrName + "=\"";
+        int inx = line.indexOf(name);
+        boolean inError = false;
+        if (inx > -1)
+        {
+            inx += name.length();
+            
+            int einx = line.indexOf('"', inx);
+            if (einx > -1)
+            {
+                //System.out.println(line);
+                return line.substring(inx, einx);
+            }
+        }
+        //System.out.println("For ["+line+"] couldn't find ["+attrName+"]");
+        return null;
+    }
+    
+    protected boolean getHBMProperties(final File hbmFile)
+    {
+        try
+        {
+            BufferedReader input = new BufferedReader( new FileReader(hbmFile) );
+            String         line;
+            int            lineCnt = 0;
+            while (( line = input.readLine()) != null)
+            {
+                lineCnt++;
+                
+                if (line.indexOf("<set") > -1)
+                {
+                    int setLineCnt = lineCnt;
+                    String setName = getAttrName(line, "name");
+                    String className = null;
+                    String type = "";
+                    boolean doNextLine = false;
+                    while (( line = input.readLine()) != null)
+                    {
+                        lineCnt++;
+                        
+                        if (doNextLine ||
+                            line.indexOf("one-to-many") > -1 || 
+                            line.indexOf("many-to-many") > -1 ||
+                            line.indexOf("many-to-one") > -1)
+                        {
+                            if (line.indexOf("one-to-many") > -1)
+                            {
+                                type = "one-to-many";
+                                
+                            } else if (line.indexOf("many-to-many") > -1)
+                            {
+                                type = "many-to-many";
+                                
+                            } else if (line.indexOf("many-to-one") > -1)
+                            {
+                                type = "many-to-one";
+                            }
+                            
+                            className = getAttrName(line, "class");
+                            if (className != null)
+                            {
+                                break;
+                            } else
+                            {
+                                doNextLine = true;
+                            }
+                        }
+                        if (line.indexOf("</set") > -1)
+                        {
+                            break;
+                        }
+                    }
+                    if (className == null)
+                    {
+                        System.out.println("Couldn't find class for set ["+setName+"]");
+                        className = ".RecordSetItem"; // RecordSet
+                    }
+                    if (setName == null)
+                    {
+                        System.out.println("Couldn't find set for file ["+hbmFile.getName()+"] line count["+setLineCnt+"]");
+                    }
+                    className = className.substring(className.lastIndexOf('.')+1, className.length());
+                    props.put(setName, className);
+                    propsType.put(setName, type);
+                    System.out.println("["+setName+"]["+className+"]");
+                }
+            }
+            input.close();
+          
+        } catch (FileNotFoundException ex)
+        {
+            return false;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        
+        return true;
     }
 
 
@@ -65,12 +160,19 @@ public class FixInitializers
                 String shortName = name.substring(0, name.indexOf('.'));
                 classNamesHash.put(shortName, shortName);
             }
-
+            
+            boolean skipTrees = true;
+            
             int cnt = 0;
             for (String fileName : fileList)
             {
                 System.out.println("["+fileName+"]");
-                if (fileName.startsWith(".") || fileName.indexOf("hbm") > -1 || fileName.endsWith("IFace.java"))
+                if (fileName.startsWith(".") || fileName.indexOf("hbm") > -1 || fileName.toLowerCase().endsWith("iface.java"))
+                {
+                    continue;
+                }
+                
+                if (skipTrees && fileName.indexOf("TreeDef") > -1)
                 {
                     continue;
                 }
@@ -80,10 +182,20 @@ public class FixInitializers
                 {
                     continue;
                 }
+                
                 String shortName = fileName.substring(0, fileName.indexOf('.'));
                 String className = prefix + shortName;
-                String lowerName = shortName.toLowerCase();
 
+                props.clear();
+                propsType.clear();
+                
+                boolean ok = getHBMProperties(new File(path+"/hbm/"+shortName+".hbm.xml"));
+                if (!ok)
+                {
+                    System.out.println("Skipping file["+shortName+"] no corresponding HBM file.");
+                    continue;
+                }
+                
                 try
                 {
                     Class classObj = Class.forName(className);
@@ -99,20 +211,41 @@ public class FixInitializers
                     // Read Contents of file
                     BufferedReader input = new BufferedReader( new FileReader(file) );
 
-                    boolean started = false;
-                    boolean done    = false;
-                    boolean doneInit = false;
-                    boolean importDone = false;
+                    boolean started             = false;
+                    boolean done                = false;
+                    boolean doneInit            = false;
+                    boolean importDone          = false;
+                    boolean filterOutAddMethods = true;
+                    boolean addImports          = false;
+                    boolean writeNewDataMembers = false;
+                    boolean addInitializer      = false;
+                    boolean fixGetSetMethods    = false;
+
 
                     Hashtable<String, String> namesToFix = new Hashtable<String, String>();
                     List<String>              initLines  = new ArrayList<String>();
                     List<String>              addMethods = new ArrayList<String>();
+                    List<String>              delMethods = new ArrayList<String>();
 
                     int maxWidth = 0;
                     String line;
                     while (( line = input.readLine()) != null)
                     {
                         //System.out.println(line);
+                        
+                        if (filterOutAddMethods && line.indexOf("// Add Methods") > -1)
+                        {
+                            while (( line = input.readLine()) != null)
+                            {
+                                if (line.indexOf("// Done Add Methods") > -1)
+                                {
+                                    break;
+                                }
+                            }
+                            filterOutAddMethods = false;
+                            continue;
+                        }
+                                
 
                         boolean doWrite = true;
                         if (!done)
@@ -128,7 +261,7 @@ public class FixInitializers
                             }
                         }
 
-                        if (!importDone &&!done && !started && line.startsWith("import"))
+                        if (addImports && !importDone && !done && !started && line.startsWith("import"))
                         {
                             output.write("import java.util.HashSet;\nimport java.util.Calendar;\n");
                             importDone = true;
@@ -145,11 +278,17 @@ public class FixInitializers
                                     String fieldName = StringUtils.stripEnd(strs[2], ";");
                                     maxWidth = Math.max(maxWidth, fieldName.length());
 
-                                    if (strs[1].equals("Set"))
+                                    if (strs[1].startsWith("Set"))
                                     {
                                         String  capName       = StringUtils.capitalize(fieldName);
                                         String  singleObjName = fieldName;
-                                        boolean endsInS       = fieldName.charAt(fieldName.length()-1) == 's';
+                                        boolean endsInS       = !fieldName.endsWith("ies") && !fieldName.endsWith("sses") && fieldName.charAt(fieldName.length()-1) == 's';
+                                        String singleObjClassName = props.get(singleObjName);
+                                        
+                                        if (singleObjClassName == null)
+                                        {
+                                            throw new RuntimeException("Couldn't find class for datamember["+singleObjName+"]");
+                                        }
                                         if (endsInS && classNamesHash.get(capName) == null)
                                         {
 
@@ -160,15 +299,31 @@ public class FixInitializers
                                             }
                                         }
 
-                                        initLines.add("        " + fieldName+" = new HashSet<"+capName+">();");
+                                        initLines.add("        " + fieldName+" = new HashSet<"+singleObjClassName+">();");
                                         namesToFix.put("get"+capName+"s", capName);
                                         namesToFix.put("set"+capName+"s", capName);
 
-                                        addMethods.add("\n    public void add"+capName+"(final "+capName+" "+singleObjName+")\n    {");
-                                        addMethods.add("        this."+fieldName+".add("+singleObjName+");\n    }");
+                                        //if (propsType.get(singleObjName).equals("many-to-many"))
+                                        addMethods.add("\n    public void add"+capName+"(final "+singleObjClassName+" "+singleObjName+")\n    {");
+                                        addMethods.add("        this."+fieldName+".add("+singleObjName+");");
+                                        addMethods.add("        "+singleObjName+".set"+shortName+"(this);\n    }");
 
-                                        output.write("     protected Set<"+capName+"> " + fieldName+";\n");
-                                        doWrite = false;
+                                        delMethods.add("\n    public void remove"+capName+"(final "+singleObjClassName+" "+singleObjName+")\n    {");
+                                        delMethods.add("        this."+fieldName+".remove("+singleObjName+");");
+                                        if (singleObjClassName.endsWith("Attr"))
+                                        {
+                                            String name = StringUtils.capitalize(singleObjClassName.substring(0, singleObjClassName.indexOf("Attr")));
+                                            delMethods.add("        "+singleObjName+".set"+name+"(null);\n    }");
+                                        } else
+                                        {
+                                            delMethods.add("        "+singleObjName+".set"+shortName+"(null);\n    }");
+                                        }
+
+                                        if (writeNewDataMembers)
+                                        {
+                                            output.write("     protected Set<"+singleObjClassName+"> " + fieldName+";\n");
+                                            doWrite = false;
+                                        }
 
                                     } else if (fieldName.equals("timestampCreated"))
                                     {
@@ -184,7 +339,7 @@ public class FixInitializers
                             }
                         }
 
-                        if (done && !doneInit && line.indexOf("// Property accessors") > -1)
+                        if (addInitializer && done && !doneInit && line.indexOf("// Property accessors") > -1)
                         {
                             output.write("    // Initializer\n");
                             output.write("    public void initialize()\n    {\n");
@@ -199,54 +354,65 @@ public class FixInitializers
 
                         if (line.startsWith("}"))
                         {
-                            output.write("    // Add Methods\n");
+                            output.write("\n    // Add Methods\n");
                             for (String s : addMethods)
                             {
                                 output.write(s);
                                 output.write("\n");
                             }
                             output.write("\n    // Done Add Methods\n");
+                            
+                            output.write("\n    // Delete Methods\n");
+                            for (String s : delMethods)
+                            {
+                                output.write(s);
+                                output.write("\n");
+                            }
+                            output.write("\n    // Delete Add Methods\n");
                         }
 
 
                         if (doWrite)
                         {
-                            int inx = line.indexOf(" get");
-                            if (inx > -1 && line.indexOf("if(") == -1)
+                            if (fixGetSetMethods)
                             {
-                                int eInx = line.indexOf("(");
-                                if (eInx > -1)
-                                {
-                                    //System.out.println(inx+"  "+eInx+"[ "+line+"]");
-                                    String methodName = line.substring(inx+1, eInx);
-                                    //System.out.println(methodName);
-                                    String clsName = namesToFix.get(methodName);
-                                    if (clsName != null)
-                                    {
-                                        output.write("    public Set<"+clsName+"> "+methodName+"() {");
-                                        output.write("\n");
-                                        continue;
-                                    }
-                                }
-                            } else
-                            {
-                                inx = line.indexOf(" set");
-                                if (inx > - 1)
+                                int inx = line.indexOf(" get");
+                                if (inx > -1 && line.indexOf("if(") == -1)
                                 {
                                     int eInx = line.indexOf("(");
                                     if (eInx > -1)
                                     {
+                                        //System.out.println(inx+"  "+eInx+"[ "+line+"]");
                                         String methodName = line.substring(inx+1, eInx);
                                         //System.out.println(methodName);
                                         String clsName = namesToFix.get(methodName);
                                         if (clsName != null)
                                         {
-                                            output.write("    public void "+methodName+"(Set<"+clsName+"> "+StringUtils.uncapitalize(clsName)+"s) {");
+                                            output.write("    public Set<"+clsName+"> "+methodName+"() {");
                                             output.write("\n");
                                             continue;
                                         }
                                     }
-
+                                } else
+                                {
+                                    inx = line.indexOf(" set");
+                                    if (inx > - 1)
+                                    {
+                                        int eInx = line.indexOf("(");
+                                        if (eInx > -1)
+                                        {
+                                            String methodName = line.substring(inx+1, eInx);
+                                            //System.out.println(methodName);
+                                            String clsName = namesToFix.get(methodName);
+                                            if (clsName != null)
+                                            {
+                                                output.write("    public void "+methodName+"(Set<"+clsName+"> "+StringUtils.uncapitalize(clsName)+"s) {");
+                                                output.write("\n");
+                                                continue;
+                                            }
+                                        }
+    
+                                    }
                                 }
                             }
                             output.write(line);

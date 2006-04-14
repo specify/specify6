@@ -90,8 +90,8 @@ public class CollectionObject  implements java.io.Serializable {
         guid = null;
         altCatalogNumber = null;
         groupPermittedToView = null;
-        timestampCreated = Calendar.getInstance().getTime();
-        timestampModified = null;
+        timestampCreated = new Date();
+        timestampModified = new Date();
         lastEditedBy = null;
         deaccessioned = null;
         catalogNumber = null;
@@ -533,47 +533,108 @@ public class CollectionObject  implements java.io.Serializable {
         this.container = container;
     }
 
+
     // Add Methods
 
     public void addCollectionObjectCitation(final CollectionObjectCitation collectionObjectCitation)
     {
         this.collectionObjectCitations.add(collectionObjectCitation);
+        collectionObjectCitation.setCollectionObject(this);
     }
 
-    public void addAttr(final AttributeIFace attr)
+    public void addAttr(final CollectionObjectAttr attr)
     {
         this.attrs.add(attr);
+        attr.setCollectionObject(this);
     }
 
     public void addPreparation(final Preparation preparation)
     {
         this.preparations.add(preparation);
+        preparation.setCollectionObject(this);
     }
 
     public void addDetermination(final Determination determination)
     {
         this.determinations.add(determination);
+        determination.setCollectionObject(this);
     }
 
     public void addProjectCollectionObject(final ProjectCollectionObject projectCollectionObject)
     {
         this.projectCollectionObjects.add(projectCollectionObject);
+        projectCollectionObject.setCollectionObject(this);
     }
 
     public void addDeaccessionCollectionObject(final DeaccessionCollectionObject deaccessionCollectionObject)
     {
         this.deaccessionCollectionObjects.add(deaccessionCollectionObject);
+        deaccessionCollectionObject.setCollectionObjectCatalog(this);
     }
 
     public void addOtherIdentifier(final OtherIdentifier otherIdentifier)
     {
         this.otherIdentifiers.add(otherIdentifier);
+        otherIdentifier.setCollectionObject(this);
     }
 
     public void addExternalResource(final ExternalResource externalResource)
     {
         this.externalResources.add(externalResource);
+        externalResource.getCollectionObjects().add(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeCollectionObjectCitation(final CollectionObjectCitation collectionObjectCitation)
+    {
+        this.collectionObjectCitations.remove(collectionObjectCitation);
+        collectionObjectCitation.setCollectionObject(null);
+    }
+
+    public void removeAttr(final CollectionObjectAttr attr)
+    {
+        this.attrs.remove(attr);
+        attr.setCollectionObject(null);
+    }
+
+    public void removePreparation(final Preparation preparation)
+    {
+        this.preparations.remove(preparation);
+        preparation.setCollectionObject(null);
+    }
+
+    public void removeDetermination(final Determination determination)
+    {
+        this.determinations.remove(determination);
+        determination.setCollectionObject(null);
+    }
+
+    public void removeProjectCollectionObject(final ProjectCollectionObject projectCollectionObject)
+    {
+        this.projectCollectionObjects.remove(projectCollectionObject);
+        projectCollectionObject.setCollectionObject(null);
+    }
+
+    public void removeDeaccessionCollectionObject(final DeaccessionCollectionObject deaccessionCollectionObject)
+    {
+        this.deaccessionCollectionObjects.remove(deaccessionCollectionObject);
+        deaccessionCollectionObject.setCollectionObjectCatalog(null);
+    }
+
+    public void removeOtherIdentifier(final OtherIdentifier otherIdentifier)
+    {
+        this.otherIdentifiers.remove(otherIdentifier);
+        otherIdentifier.setCollectionObject(null);
+    }
+
+    public void removeExternalResource(final ExternalResource externalResource)
+    {
+        this.externalResources.remove(externalResource);
+        externalResource.getCollectionObjects().remove(this);
+    }
+
+    // Delete Add Methods
 }

@@ -40,7 +40,7 @@ public class ComboBoxFromQueryFactory
     {
         // These will eventually be defined in an XML file.
 
-        comboBoxes.put("Agent", new ComboBoxFromQueryInfo("agent",
+        comboBoxes.put("Agent", new ComboBoxFromQueryInfo(null, "agent",
                 "AgentID",
                 "lastName",
                 "LastName,FirstName",
@@ -48,9 +48,21 @@ public class ComboBoxFromQueryFactory
                 "agentId",
                 "lastName,firstName",
                 "%s, %s",
-                "AgentSearch"));
+                "AgentSearch",
+                null));
 
-        comboBoxes.put("Taxon", new ComboBoxFromQueryInfo("taxon",
+        comboBoxes.put("AgentAddress", new ComboBoxFromQueryInfo(
+                "select agent.LastName, agent.FirstName, agentaddress.AgentID From agentaddress Inner Join agent ON agentaddress.AgentID = agent.AgentID " +
+                "where lower(agent.LastName) like '%s%' order by agent.LastName asc",
+                null, null, null, null,
+                "edu.ku.brc.specify.datamodel.AgentAddress",
+                "agentAddressId",
+                "agent.lastName,agent.firstName",
+                "%s, %s",
+                "AgentAddressSearch",
+                null));
+
+        comboBoxes.put("Taxon", new ComboBoxFromQueryInfo(null, "taxon",
                 "TreeID",
                 "Name",
                 null,
@@ -58,7 +70,19 @@ public class ComboBoxFromQueryFactory
                 "treeId",
                 "name",
                 null,
+                null,
                 null));
+        
+        comboBoxes.put("Permit", new ComboBoxFromQueryInfo(null, "permit",
+                "PermitID",
+                "PermitNumber",
+                "PermitNumber",
+                "edu.ku.brc.specify.datamodel.Permit",
+                "permitId",
+                "permitNumber",
+                "%s",
+                "PermitSearch",
+                "PermitCreate"));
     }
 
     /**
@@ -71,16 +95,30 @@ public class ComboBoxFromQueryFactory
         ComboBoxFromQueryInfo info =  instance.comboBoxes.get(name);
         if (info != null)
         {
-            return new ValComboBoxFromQuery(info.getTableName(),
-                                             info.getIdColumn(),
-                                             info.getKeyColumn(),
-                                             info.getDisplayColumn(),
-                                             info.getClassName(),
-                                             info.getIdName(),
-                                             info.getKeyName(),
-                                             info.getFormat(),
-                                             info.getSearchDialogName()
-                                             );
+            if (info.getSQL() == null)
+            {
+                return new ValComboBoxFromQuery(info.getTableName(),
+                                                 info.getIdColumn(),
+                                                 info.getKeyColumn(),
+                                                 info.getDisplayColumn(),
+                                                 info.getClassName(),
+                                                 info.getIdName(),
+                                                 info.getKeyName(),
+                                                 info.getFormat(),
+                                                 info.getSearchDialogName()//,
+                                                 //info.getCreateDialogName()
+                                                 );
+            } else
+            {
+                return new ValComboBoxFromQuery(info.getSQL(),
+                                                info.getClassName(),
+                                                info.getIdName(),
+                                                info.getKeyName(),
+                                                info.getFormat(),
+                                                info.getSearchDialogName()//,
+                                                //info.getCreateDialogName()
+                                                );
+            }
         } else
         {
             throw new RuntimeException("Couldn't create ValComboBoxFromQuery by name["+name+"]");
@@ -92,6 +130,7 @@ public class ComboBoxFromQueryFactory
     //-----------------------------------------------------
     class ComboBoxFromQueryInfo
     {
+        protected String sql;
         protected String tableName;
         protected String idColumn;
         protected String keyColumn;
@@ -101,8 +140,10 @@ public class ComboBoxFromQueryFactory
         protected String keyName;
         protected String format;
         protected String searchDialogName;
+        protected String createDialogName;
 
-        public ComboBoxFromQueryInfo(String tableName,
+        public ComboBoxFromQueryInfo(String sql,
+                                     String tableName,
                                      String idColumn,
                                      String keyColumn,
                                      String displayColumn,
@@ -110,8 +151,10 @@ public class ComboBoxFromQueryFactory
                                      String idName,
                                      String keyName,
                                      String format,
-                                     String searchDialogName)
+                                     String searchDialogName,
+                                     String createDialogName)
         {
+            this.sql = sql;
             this.tableName = tableName;
             this.idColumn = idColumn;
             this.keyColumn = keyColumn;
@@ -121,6 +164,12 @@ public class ComboBoxFromQueryFactory
             this.keyName = keyName;
             this.format = format;
             this.searchDialogName = searchDialogName;
+            this.createDialogName = createDialogName;
+        }
+
+        public String getSQL()
+        {
+            return sql;
         }
 
         public String getClassName()
@@ -166,6 +215,11 @@ public class ComboBoxFromQueryFactory
         public String getSearchDialogName()
         {
             return searchDialogName;
+        }
+
+        public String getCreateDialogName()
+        {
+            return createDialogName;
         }
 
     }

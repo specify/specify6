@@ -131,17 +131,36 @@ public class SpecifyUser  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     public void addCollectionObjDef(final CollectionObjDef collectionObjDef)
     {
         this.collectionObjDef.add(collectionObjDef);
+        collectionObjDef.setSpecifyUser(this);
     }
 
     public void addRecordSet(final RecordSet recordSet)
     {
         this.recordSets.add(recordSet);
+        recordSet.setOwner(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeCollectionObjDef(final CollectionObjDef collectionObjDef)
+    {
+        this.collectionObjDef.remove(collectionObjDef);
+        collectionObjDef.setSpecifyUser(null);
+    }
+
+    public void removeRecordSet(final RecordSet recordSet)
+    {
+        this.recordSets.remove(recordSet);
+        recordSet.setOwner(null);
+    }
+
+    // Delete Add Methods
 }

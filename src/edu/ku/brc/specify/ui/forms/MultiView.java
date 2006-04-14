@@ -21,6 +21,7 @@ package edu.ku.brc.specify.ui.forms;
 
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -69,6 +70,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected boolean                      editable        = false;
     protected AltView.CreationMode         createWithMode  = AltView.CreationMode.None;
     protected Vector<FormValidator>        formValidators  = new Vector<FormValidator>();
+    
+    protected List<MultiView>              kids            = new ArrayList<MultiView>();
 
     /**
      * Constructor - Note that createWithMode can be null and is passed in from parent ALWAYS.
@@ -86,11 +89,44 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         this.mvParent       = mvParent;
         this.view           = view;
         this.createWithMode = createWithMode;
-        this.parentDataObj  = parentDataObj;
 
         specialEditView = view.isSpecialViewEdit();
 
         createDefaultViewable();
+    }
+    
+    /**
+     * Adds child view
+     * @param mv add child view
+     */
+    public void addChild(final MultiView mv)
+    {
+        kids.add(mv);
+    }
+    
+    /**
+     * Asks the Viewable to get the data from the UI and transfer the changes (really all the fields) to
+     * the DB object 
+     */
+    public void getDataFromUI()
+    {
+        for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
+        {
+            Viewable viewable = e.nextElement();
+            if (viewable.getValidator() != null && viewable.getValidator().hasChanged())
+            {
+                viewable.getDataFromUI();
+            }
+        }
+    }
+
+    /**
+     * Returns all the Multiview children
+     * @return all the Multiview children
+     */
+    public List<MultiView> getKids()
+    {
+        return kids;
     }
 
     /**
@@ -273,7 +309,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
-     * @return
+     * Returns  the data object for this form
+     * @return the data object for this form
      */
     public Object getData()
     {
@@ -281,7 +318,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
-     * @return
+     * Returns whether all the validation of this form and child forms is OK
+     * @return whether all the validation of this form and child forms is OK
      */
     protected boolean isAllValidationOK()
     {
@@ -296,6 +334,10 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
     
 
+    /**
+     * Sets the dataObj of the parent, this is need to add new child node from subforms
+     * @param parentDataObj the dataObj of the parent
+     */
     public void setParentDataObj(Object parentDataObj)
     {
         this.parentDataObj = parentDataObj;
@@ -306,17 +348,41 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
 
+    /**
+     * Returns the dataObj of of the parent
+     * @return the dataObj of of the parent
+     */
     public Object getParentDataObj()
     {
         return parentDataObj;
-        
+    }
+    
+    
+    /**
+     * Returns whether this MulitView is the very top MultiView which typically contains the save UI
+     * @return whether this MulitView is the very top MultiView
+     */
+    public boolean isRoot()
+    {
+        return this.mvParent == null;
+    }
+    
+
+    /**
+     * Returns the current
+     * @return
+     */
+    public Viewable getCurrentView()
+    {
+        return currentView;
     }
     
     //-----------------------------------------------------
     // ValidationListener
     //-----------------------------------------------------
 
-   /* (non-Javadoc)
+
+    /* (non-Javadoc)
      * @see ValidationListener#wasValidated(UIValidator)
      */
     public void wasValidated(final UIValidator validator)

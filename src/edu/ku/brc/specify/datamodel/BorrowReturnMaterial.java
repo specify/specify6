@@ -45,8 +45,8 @@ public class BorrowReturnMaterial  implements java.io.Serializable {
         returnedDate = null;
         quantity = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = new Date();
+        timestampCreated = new Date();
         lastEditedBy = null;
         agent = null;
         borrowMaterial = null;
@@ -157,7 +157,12 @@ public class BorrowReturnMaterial  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     // Done Add Methods
+
+    // Delete Methods
+
+    // Delete Add Methods
 }

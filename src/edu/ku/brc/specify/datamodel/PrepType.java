@@ -92,17 +92,36 @@ public class PrepType  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     public void addPreparation(final Preparation preparation)
     {
         this.preparations.add(preparation);
+        preparation.setPrepType(this);
     }
 
     public void addAttributeDef(final AttributeDef attributeDef)
     {
         this.attributeDefs.add(attributeDef);
+        attributeDef.setPrepType(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removePreparation(final Preparation preparation)
+    {
+        this.preparations.remove(preparation);
+        preparation.setPrepType(null);
+    }
+
+    public void removeAttributeDef(final AttributeDef attributeDef)
+    {
+        this.attributeDefs.remove(attributeDef);
+        attributeDef.setPrepType(null);
+    }
+
+    // Delete Add Methods
 }

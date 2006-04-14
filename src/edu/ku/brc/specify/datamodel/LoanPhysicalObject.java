@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -54,8 +53,8 @@ public class LoanPhysicalObject  implements java.io.Serializable {
         inComments = null;
         quantityResolved = null;
         quantityReturned = null;
-        timestampCreated = Calendar.getInstance().getTime();
-        timestampModified = null;
+        timestampCreated = new Date();
+        timestampModified = new Date();
         lastEditedBy = null;
         preparation = null;
         loan = null;
@@ -211,12 +210,24 @@ public class LoanPhysicalObject  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     public void addLoanReturnPhysicalObject(final LoanReturnPhysicalObject loanReturnPhysicalObject)
     {
         this.loanReturnPhysicalObjects.add(loanReturnPhysicalObject);
+        loanReturnPhysicalObject.setLoanPhysicalObject(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeLoanReturnPhysicalObject(final LoanReturnPhysicalObject loanReturnPhysicalObject)
+    {
+        this.loanReturnPhysicalObjects.remove(loanReturnPhysicalObject);
+        loanReturnPhysicalObject.setLoanPhysicalObject(null);
+    }
+
+    // Delete Add Methods
 }

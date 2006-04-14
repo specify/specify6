@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
 import java.util.Date;
 
 
@@ -43,8 +42,8 @@ public class LoanAgent  implements java.io.Serializable {
         loanAgentsId = null;
         role = null;
         remarks = null;
-        timestampCreated = Calendar.getInstance().getTime();
-        timestampModified = null;
+        timestampCreated = new Date();
+        timestampModified = new Date();
         lastEditedBy = null;
         loan = null;
         agentAddress = null;
@@ -144,7 +143,12 @@ public class LoanAgent  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     // Done Add Methods
+
+    // Delete Methods
+
+    // Delete Add Methods
 }

@@ -51,6 +51,9 @@ public class DataSetterForObj implements DataObjectSettable
     }
 
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.forms.DataObjectSettable#setFieldValue(java.lang.Object, java.lang.String, java.lang.Object)
+     */
     public void setFieldValue(Object dataObj, String fieldName, Object data)
     {
         try
@@ -70,7 +73,9 @@ public class DataSetterForObj implements DataObjectSettable
             }
         } catch (Exception ex)
         {
+            log.error("Trouble setting value field named[" + fieldName.trim()+ "] in data object [" + dataObj.getClass().toString() + "]");
             log.error(ex);
+            ex.printStackTrace();
         }
     }
     

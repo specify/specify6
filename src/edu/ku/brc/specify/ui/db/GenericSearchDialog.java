@@ -58,7 +58,6 @@ import org.apache.lucene.search.Hits;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.criterion.Expression;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
@@ -76,11 +75,10 @@ import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResults;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase;
 import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.forms.Viewable;
 import edu.ku.brc.specify.ui.forms.ViewFactory;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
+import edu.ku.brc.specify.ui.forms.Viewable;
 import edu.ku.brc.specify.ui.forms.persist.View;
-import edu.ku.brc.specify.ui.forms.persist.ViewDef;
 
 /**
  * This is a "generic" or more specifically "configurable" search dialog class. This enables you to specify a form to be used to enter the search criteria
@@ -97,7 +95,7 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
 
     // Form Stuff
     protected View           formView = null;
-    protected Viewable   form     = null;
+    protected Viewable       form     = null;
     protected List<String>   fieldNames;
     
     // Members needed for creating results
@@ -126,7 +124,7 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
     protected RecordSet      recordSet      = null;
     protected String         sqlStr;
 
-    protected Hashtable<String, String> dataMap = new Hashtable<String, String>();
+    protected Hashtable<String, Object> dataMap = new Hashtable<String, Object>();
 
     /**
      * Constructs a search dialog from form infor and from search info
@@ -196,21 +194,25 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
                 String[] columnNames = tableInfo.getColNames();
                 for (String colName : columnNames)
                 {
-                  String value  = dataMap.get(colName);
-                  if (isNotEmpty(value))
+                  Object value  = dataMap.get(colName);
+                  if (value != null)
                   {
-                      if (cnt > 0)
+                      String valStr = value.toString();
+                      if (valStr.length() > 0)
                       {
-                          strBuf.append(" OR ");
+                          if (cnt > 0)
+                          {
+                              strBuf.append(" OR ");
+                          }
+                          strBuf.append(" lower("+colName+") like '%"+valStr+"%'");
+                          cnt++;
                       }
-                      strBuf.append(" lower("+colName+") like '%"+value+"%'");
-                      cnt++;
                   }
 
                 }
                 String fullSQL = sqlStr.replace("%s", strBuf.toString());
                 tableInfo.setViewSql(fullSQL);
-                //log.info(fullSQL);
+                log.info(fullSQL);
                 setUIEnabled(false);
                 addSearchResults(tableInfo, null);
             }

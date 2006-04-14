@@ -27,6 +27,7 @@ import java.util.Vector;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
@@ -84,14 +85,17 @@ public class PickListDBAdapter
      */
     protected PickList getPickListItem(final String name)
     {
+        PickList pickList = null;
+        Session  session  = null;
         try
         {
-	        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(PickList.class).add(Expression.eq("name", name));
+            session = HibernateUtil.getSessionFactory().openSession();
+	        Criteria criteria = session.createCriteria(PickList.class).add(Expression.eq("name", name));
             
 	        List items = criteria.list();
 	        if (items != null && items.size() > 0)
 	        {
-	            return (PickList)items.get(0);
+                pickList = (PickList)items.get(0);
 	        }
 	        
         } catch (Exception e)
@@ -100,9 +104,10 @@ public class PickListDBAdapter
             
         } finally 
         {
-            HibernateUtil.closeSession();
+             session.close();
         }
-        return null;
+        
+        return pickList;
         
     }
     

@@ -188,6 +188,12 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
     public void setValue(Object value)
     {
 
+        if (value == null)
+        {
+            setSelectedIndex(-1);
+            return;
+        }
+        
         Iterator iter = null;
         if (value instanceof Set)
         {

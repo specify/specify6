@@ -619,8 +619,8 @@ public class CreateTestDatabases
 
         String[] permitType = {"International", "Federal", "State"};
 
-        String[] accessionNumbers = {"2005-IT-0121", "2005-PB-0122"};
-        String[] permitNumbers    = {"P101", "P102"};
+        String[] accessionNumbers = {"2005-IT-0121", "2005-PB-0122", "2005-PB-0123"};
+        String[] permitNumbers    = {"P101", "P102", "P103"};
 
         int agentsInx = 0;
         Accession[] accessions = new Accession[accessionNumbers.length];
@@ -646,8 +646,9 @@ public class CreateTestDatabases
                 accessions[i].getAccessionAgents().add(accessionAgent);
             }
 
+            // Make as many permits as the position of the accession in the array
             int aaInx = 0;
-            for (int j=0;j<permitNumbers.length;j++)
+            for (int j=0;j<i+1;j++)
             {
                 Permit permit = createPermit(permitNumbers[j], permitType[1],
                         Calendar.getInstance(),  // issuedDate

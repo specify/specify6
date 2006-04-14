@@ -68,8 +68,8 @@ public class Loan  implements java.io.Serializable {
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampCreated = Calendar.getInstance().getTime();
-        timestampModified = null;
+        timestampCreated = new Date();
+        timestampModified = new Date();
         lastEditedBy = null;
         closed = null;
         yesNo1 = null;
@@ -328,22 +328,48 @@ public class Loan  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     public void addLoanAgent(final LoanAgent loanAgent)
     {
         this.loanAgents.add(loanAgent);
+        loanAgent.setLoan(this);
     }
 
     public void addLoanPhysicalObject(final LoanPhysicalObject loanPhysicalObject)
     {
         this.loanPhysicalObjects.add(loanPhysicalObject);
+        loanPhysicalObject.setLoan(this);
     }
 
     public void addExternalResource(final ExternalResource externalResource)
     {
         this.externalResources.add(externalResource);
+        externalResource.getLoans().add(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeLoanAgent(final LoanAgent loanAgent)
+    {
+        this.loanAgents.remove(loanAgent);
+        loanAgent.setLoan(null);
+    }
+
+    public void removeLoanPhysicalObject(final LoanPhysicalObject loanPhysicalObject)
+    {
+        this.loanPhysicalObjects.remove(loanPhysicalObject);
+        loanPhysicalObject.setLoan(null);
+    }
+
+    public void removeExternalResource(final ExternalResource externalResource)
+    {
+        this.externalResources.remove(externalResource);
+        externalResource.getLoans().remove(this);
+    }
+
+    // Delete Add Methods
 }

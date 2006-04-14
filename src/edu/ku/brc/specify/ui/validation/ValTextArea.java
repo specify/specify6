@@ -233,7 +233,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
      */
     public void setValue(Object value)
     {
-        setText(value.toString());
+        setText(value != null ? value.toString() : "");
     }
 
     

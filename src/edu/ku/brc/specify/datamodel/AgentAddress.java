@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -71,8 +70,8 @@ public class AgentAddress  implements java.io.Serializable {
         email = null;
         url = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = new Date();
+        timestampCreated = new Date();
         lastEditedBy = null;
         isCurrent = null;
         loanAgents = new HashSet<LoanAgent>();
@@ -393,57 +392,132 @@ public class AgentAddress  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     public void addLoanAgent(final LoanAgent loanAgent)
     {
         this.loanAgents.add(loanAgent);
+        loanAgent.setAgentAddress(this);
     }
 
     public void addShipmentsByShipper(final Shipment shipmentsByShipper)
     {
         this.shipmentsByShipper.add(shipmentsByShipper);
+        shipmentsByShipper.setAgentAddressByShipper(this);
     }
 
     public void addShipmentsByShippedTo(final Shipment shipmentsByShippedTo)
     {
         this.shipmentsByShippedTo.add(shipmentsByShippedTo);
+        shipmentsByShippedTo.setAgentAddressByShippedTo(this);
     }
 
     public void addDeaccessionAgent(final DeaccessionAgent deaccessionAgent)
     {
         this.deaccessionAgents.add(deaccessionAgent);
+        deaccessionAgent.setAgentAddress(this);
     }
 
     public void addExchangeIn(final ExchangeIn exchangeIn)
     {
         this.exchangeIns.add(exchangeIn);
+        exchangeIn.setAgentAddress(this);
     }
 
     public void addPermitsByIssuee(final Permit permitsByIssuee)
     {
         this.permitsByIssuee.add(permitsByIssuee);
+        permitsByIssuee.setAgentAddressByIssuee(this);
     }
 
     public void addPermitsByIssuer(final Permit permitsByIssuer)
     {
         this.permitsByIssuer.add(permitsByIssuer);
+        permitsByIssuer.setAgentAddressByIssuer(this);
     }
 
     public void addBorrowAgent(final BorrowAgent borrowAgent)
     {
         this.borrowAgents.add(borrowAgent);
+        borrowAgent.setAgentAddress(this);
     }
 
     public void addAccessionAgent(final AccessionAgent accessionAgent)
     {
         this.accessionAgents.add(accessionAgent);
+        accessionAgent.setAgentAddress(this);
     }
 
     public void addExchangeOut(final ExchangeOut exchangeOut)
     {
         this.exchangeOuts.add(exchangeOut);
+        exchangeOut.setAgentAddress(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeLoanAgent(final LoanAgent loanAgent)
+    {
+        this.loanAgents.remove(loanAgent);
+        loanAgent.setAgentAddress(null);
+    }
+
+    public void removeShipmentsByShipper(final Shipment shipmentsByShipper)
+    {
+        this.shipmentsByShipper.remove(shipmentsByShipper);
+        shipmentsByShipper.setAgentAddressByShipper(null);
+    }
+
+    public void removeShipmentsByShippedTo(final Shipment shipmentsByShippedTo)
+    {
+        this.shipmentsByShippedTo.remove(shipmentsByShippedTo);
+        shipmentsByShippedTo.setAgentAddressByShippedTo(null);
+    }
+
+    public void removeDeaccessionAgent(final DeaccessionAgent deaccessionAgent)
+    {
+        this.deaccessionAgents.remove(deaccessionAgent);
+        deaccessionAgent.setAgentAddress(null);
+    }
+
+    public void removeExchangeIn(final ExchangeIn exchangeIn)
+    {
+        this.exchangeIns.remove(exchangeIn);
+        exchangeIn.setAgentAddress(null);
+    }
+
+    public void removePermitsByIssuee(final Permit permitsByIssuee)
+    {
+        this.permitsByIssuee.remove(permitsByIssuee);
+        permitsByIssuee.setAgentAddressByIssuee(null);
+    }
+
+    public void removePermitsByIssuer(final Permit permitsByIssuer)
+    {
+        this.permitsByIssuer.remove(permitsByIssuer);
+        permitsByIssuer.setAgentAddressByIssuer(null);
+    }
+
+    public void removeBorrowAgent(final BorrowAgent borrowAgent)
+    {
+        this.borrowAgents.remove(borrowAgent);
+        borrowAgent.setAgentAddress(null);
+    }
+
+    public void removeAccessionAgent(final AccessionAgent accessionAgent)
+    {
+        this.accessionAgents.remove(accessionAgent);
+        accessionAgent.setAgentAddress(null);
+    }
+
+    public void removeExchangeOut(final ExchangeOut exchangeOut)
+    {
+        this.exchangeOuts.remove(exchangeOut);
+        exchangeOut.setAgentAddress(null);
+    }
+
+    // Delete Add Methods
 }

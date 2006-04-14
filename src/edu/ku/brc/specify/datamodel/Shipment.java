@@ -69,8 +69,8 @@ public class Shipment  implements java.io.Serializable {
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampCreated = Calendar.getInstance().getTime();
-        timestampModified = null;
+        timestampCreated = new Date();
+        timestampModified = new Date();
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
@@ -341,22 +341,48 @@ public class Shipment  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     public void addBorrowShipment(final BorrowShipment borrowShipment)
     {
         this.borrowShipments.add(borrowShipment);
+        borrowShipment.setShipment(this);
     }
 
     public void addLoan(final Loan loan)
     {
         this.loans.add(loan);
+        loan.setShipment(this);
     }
 
     public void addExchangeOut(final ExchangeOut exchangeOut)
     {
         this.exchangeOuts.add(exchangeOut);
+        exchangeOut.setShipment(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeBorrowShipment(final BorrowShipment borrowShipment)
+    {
+        this.borrowShipments.remove(borrowShipment);
+        borrowShipment.setShipment(null);
+    }
+
+    public void removeLoan(final Loan loan)
+    {
+        this.loans.remove(loan);
+        loan.setShipment(null);
+    }
+
+    public void removeExchangeOut(final ExchangeOut exchangeOut)
+    {
+        this.exchangeOuts.remove(exchangeOut);
+        exchangeOut.setShipment(null);
+    }
+
+    // Delete Add Methods
 }

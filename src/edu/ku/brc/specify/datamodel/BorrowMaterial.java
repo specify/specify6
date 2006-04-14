@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -55,8 +54,8 @@ public class BorrowMaterial  implements java.io.Serializable {
         inComments = null;
         quantityResolved = null;
         quantityReturned = null;
-        timestampModified = null;
-        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = new Date();
+        timestampCreated = new Date();
         lastEditedBy = null;
         borrowReturnMaterials = new HashSet<BorrowReturnMaterial>();
         borrow = null;
@@ -211,12 +210,24 @@ public class BorrowMaterial  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     public void addBorrowReturnMaterial(final BorrowReturnMaterial borrowReturnMaterial)
     {
         this.borrowReturnMaterials.add(borrowReturnMaterial);
+        borrowReturnMaterial.setBorrowMaterial(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeBorrowReturnMaterial(final BorrowReturnMaterial borrowReturnMaterial)
+    {
+        this.borrowReturnMaterials.remove(borrowReturnMaterial);
+        borrowReturnMaterial.setBorrowMaterial(null);
+    }
+
+    // Delete Add Methods
 }

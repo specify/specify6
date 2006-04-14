@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -50,8 +49,8 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
         age = null;
         ageUncertainty = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = new Date();
+        timestampCreated = new Date();
         timestampVersion = null;
         lastEditedBy = null;
         definition = null;
@@ -346,4 +345,5 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
 		}
 		children.add((GeologicTimePeriod)child);
 	}
+
 }

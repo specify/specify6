@@ -11,6 +11,16 @@
                 <altview name="AgentSearch" viewdef="AgentSearch" label="Edit" editable="true" validated="false" default="true"/>
             </altviews>
         </view>
+        
+        <view 
+            name="PermitSearch"
+            class="edu.ku.brc.specify.datamodel.Permit"
+            resourcelabels="false">
+            <desc><![CDATA[The Permit Search Form]]></desc>
+            <altviews>
+                <altview name="PermitSearch" viewdef="PermitSearch" label="Edit" editable="true" validated="false" default="true"/>
+            </altviews>
+        </view>
     </views>
     
     <viewdefs>
@@ -58,5 +68,54 @@
                 </row>
             </rows>
         </viewdef>        
+        
+        <viewdef type="form"
+            name="PermitSearch"
+            class="edu.ku.brc.specify.datamodel.Permit"
+            gettable="edu.ku.brc.specify.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.specify.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The Agent Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>80px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="PermitNumber" label="Number"/>
+                    <cell type="field" name="PermitNumber" uitype="text" isrequired="true"/>
+                    
+                    <cell type="label" labelfor="Type" label="Type"/>
+                    <cell type="field" name="Type" uitype="combobox" picklist="PermitType"/>
+                </row>
+                
+                <row>
+                    <cell type="label" labelfor="agent.LastName" label="Issued By (Last Name)"/>
+                    <cell type="field" name="agent.LastName" uitype="text"/>
+                    
+                    <cell type="label" labelfor="agentAddressByIssuee.agent" label="Issued To  (Last Name)"/>
+                    <cell type="field" name="agentAddressByIssuee.agent" uitype="text"/>
+                </row>
+                
+                <row>
+                    <cell type="label" labelfor="issuedDate" label="Date Issued"/>
+                    <cell type="field" name="issuedDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    
+                    <cell type="label" labelfor="renewalDate" label="Date Renewed"/>
+                    <cell type="field" name="renewalDate" uitype="formattedtext" uifieldformatter="Date"/>
+                </row>
+                
+                <row>
+                    <cell type="label" labelfor="startDate" label="Start Date"/>
+                    <cell type="field" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    
+                    <cell type="label" labelfor="endDate" label="End Date"/>
+                    <cell type="field" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>
+                </row>
+               
+            </rows>
+        </viewdef>        
+        
     </viewdefs>
 </viewset>

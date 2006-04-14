@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -54,8 +53,8 @@ public class Location  implements java.io.Serializable,Treeable {
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampCreated = Calendar.getInstance().getTime();
-        timestampModified = null;
+        timestampCreated = new Date();
+        timestampModified = new Date();
         timestampVersion = null;
         lastEditedBy = null;
         definition = null;
@@ -288,19 +287,6 @@ public class Location  implements java.io.Serializable,Treeable {
         this.children = children;
     }
 
-    // Add Methods
-
-    public void addPreparation(final Preparation preparation)
-    {
-        this.preparations.add(preparation);
-    }
-
-    public void addContainer(final Container container)
-    {
-        this.containers.add(container);
-    }
-
-    // Done Add Methods
 
 	/* Code added in order to implement Treeable */
     
@@ -398,4 +384,36 @@ public class Location  implements java.io.Serializable,Treeable {
 		}
 		children.add((Location)child);
 	}
+
+    // Add Methods
+
+    public void addPreparation(final Preparation preparation)
+    {
+        this.preparations.add(preparation);
+        preparation.setLocation(this);
+    }
+
+    public void addContainer(final Container container)
+    {
+        this.containers.add(container);
+        container.setLocation(this);
+    }
+
+    // Done Add Methods
+
+    // Delete Methods
+
+    public void removePreparation(final Preparation preparation)
+    {
+        this.preparations.remove(preparation);
+        preparation.setLocation(null);
+    }
+
+    public void removeContainer(final Container container)
+    {
+        this.containers.remove(container);
+        container.setLocation(null);
+    }
+
+    // Delete Add Methods
 }

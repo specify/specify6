@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -54,8 +53,8 @@ public class Address  implements java.io.Serializable {
         country = null;
         postalCode = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = new Date();
+        timestampCreated = new Date();
         lastEditedBy = null;
         agentAddresses = new HashSet<AgentAddress>();
     }
@@ -198,12 +197,24 @@ public class Address  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
-    public void addAgentAddress(final AgentAddress agentAddresses)
+    public void addAgentAddresses(final AgentAddress agentAddresses)
     {
         this.agentAddresses.add(agentAddresses);
+        agentAddresses.setAddress(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeAgentAddresses(final AgentAddress agentAddresses)
+    {
+        this.agentAddresses.remove(agentAddresses);
+        agentAddresses.setAddress(null);
+    }
+
+    // Delete Add Methods
 }

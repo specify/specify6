@@ -22,4 +22,14 @@
         </fields>
     </format>
     
+    <format 
+        name="Permit"
+        class="edu.ku.brc.specify.datamodel.Permit"
+        format="%s"
+        >
+        <fields>
+            <field>permitNumber</field>
+        </fields>
+    </format>
+    
 </formatters>

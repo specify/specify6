@@ -23,7 +23,7 @@
     <!-- Associations -->
   
     <!-- bi-directional one-to-many association to SpecifyUser -->
-    <set name="users" lazy="true" inverse="true" cascade="none">
+    <set name="specifyUsers" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>
         <key>
             <column name="UserGroupID"/>

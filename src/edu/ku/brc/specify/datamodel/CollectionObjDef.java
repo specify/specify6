@@ -17,7 +17,7 @@ public class CollectionObjDef  implements java.io.Serializable {
      protected String name;
      protected DataType dataType;
      protected Set<CatalogSeries> catalogSeries;
-     protected SpecifyUser user;
+     protected SpecifyUser specifyUser;
      protected Set<AttributeDef> attributeDefs;
      protected GeographyTreeDef geographyTreeDef;
      protected GeologicTimePeriodTreeDef geologicTimePeriodTreeDef;
@@ -47,7 +47,7 @@ public class CollectionObjDef  implements java.io.Serializable {
         name = null;
         dataType = null;
         catalogSeries = new HashSet<CatalogSeries>();
-        user = null;
+        specifyUser = null;
         attributeDefs = new HashSet<AttributeDef>();
         geographyTreeDef = null;
         geologicTimePeriodTreeDef = null;
@@ -106,12 +106,12 @@ public class CollectionObjDef  implements java.io.Serializable {
     /**
      *
      */
-    public SpecifyUser getUser() {
-        return this.user;
+    public SpecifyUser getSpecifyUser() {
+        return this.specifyUser;
     }
 
-    public void setUser(SpecifyUser user) {
-        this.user = user;
+    public void setSpecifyUser(SpecifyUser specifyUser) {
+        this.specifyUser = specifyUser;
     }
 
     /**
@@ -196,22 +196,49 @@ public class CollectionObjDef  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     public void addCatalogSeries(final CatalogSeries catalogSeries)
     {
         this.catalogSeries.add(catalogSeries);
+        catalogSeries.getCollectionObjDefItems().add(this);
     }
 
     public void addAttributeDef(final AttributeDef attributeDef)
     {
         this.attributeDefs.add(attributeDef);
+        attributeDef.setCollectionObjDef(this);
     }
 
-    public void addLocalitie(final Locality localities)
+    public void addLocalities(final Locality localities)
     {
         this.localities.add(localities);
+        localities.getCollectionObjDefs().add(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeCatalogSeries(final CatalogSeries catalogSeries)
+    {
+        this.catalogSeries.remove(catalogSeries);
+        catalogSeries.getCollectionObjDefItems().remove(this);
+    }
+
+    public void removeAttributeDef(final AttributeDef attributeDef)
+    {
+        this.attributeDefs.remove(attributeDef);
+        attributeDef.setCollectionObjDef(null);
+    }
+
+    public void removeLocalities(final Locality localities)
+    {
+        this.localities.remove(localities);
+        localities.getCollectionObjDefs().remove(this);
+       ;
+    }
+
+    // Delete Add Methods
 }

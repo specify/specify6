@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -80,8 +79,8 @@ public class Taxon  implements java.io.Serializable,Treeable {
         remarks = null;
         nodeNumber = null;
         highestChildNodeNumber = null;
-        timestampCreated = Calendar.getInstance().getTime();
-        timestampModified = null;
+        timestampCreated = new Date();
+        timestampModified = new Date();
         lastEditedBy = null;
         accepted = null;
         rankId = null;
@@ -579,4 +578,36 @@ public class Taxon  implements java.io.Serializable,Treeable {
 		}
 		children.add((Taxon)child);
 	}
+
+    // Add Methods
+
+    public void addTaxonCitation(final TaxonCitation taxonCitation)
+    {
+        this.taxonCitations.add(taxonCitation);
+        taxonCitation.setTaxon(this);
+    }
+
+    public void addExternalResource(final ExternalResource externalResource)
+    {
+        this.externalResources.add(externalResource);
+        externalResource.getTaxonomy().add(this);
+    }
+
+    // Done Add Methods
+
+    // Delete Methods
+
+    public void removeTaxonCitation(final TaxonCitation taxonCitation)
+    {
+        this.taxonCitations.remove(taxonCitation);
+        taxonCitation.setTaxon(null);
+    }
+
+    public void removeExternalResource(final ExternalResource externalResource)
+    {
+        this.externalResources.remove(externalResource);
+        externalResource.getTaxonomy().remove(this);
+    }
+
+    // Delete Add Methods
 }

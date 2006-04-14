@@ -73,8 +73,8 @@ public class CollectingEvent  implements java.io.Serializable {
         verbatimLocality = null;
         groupPermittedToView = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = new Date();
+        timestampCreated = new Date();
         lastEditedBy = null;
         collectionObjects = new HashSet<CollectionObject>();
         collectors = new HashSet<Collector>();
@@ -354,27 +354,60 @@ public class CollectingEvent  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     public void addCollectionObject(final CollectionObject collectionObject)
     {
         this.collectionObjects.add(collectionObject);
+        collectionObject.setCollectingEvent(this);
     }
 
     public void addCollector(final Collector collector)
     {
         this.collectors.add(collector);
+        collector.setCollectingEvent(this);
     }
 
-    public void addAttr(final AttributeIFace attr)
+    public void addAttr(final CollectingEventAttr attr)
     {
         this.attrs.add(attr);
+        attr.setCollectingEvent(this);
     }
 
     public void addExternalResource(final ExternalResource externalResource)
     {
         this.externalResources.add(externalResource);
+        externalResource.getCollectinEvents().add(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeCollectionObject(final CollectionObject collectionObject)
+    {
+        this.collectionObjects.remove(collectionObject);
+        collectionObject.setCollectingEvent(null);
+    }
+
+    public void removeCollector(final Collector collector)
+    {
+        this.collectors.remove(collector);
+        collector.setCollectingEvent(null);
+    }
+
+    public void removeAttr(final CollectingEventAttr attr)
+    {
+        this.attrs.remove(attr);
+        attr.setCollectingEvent(null);
+    }
+
+    public void removeExternalResource(final ExternalResource externalResource)
+    {
+        this.externalResources.remove(externalResource);
+        externalResource.getCollectinEvents().remove(null);
+    }
+
+    // Delete Add Methods
 }

@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -75,8 +74,8 @@ public class Agent  implements java.io.Serializable {
         abbreviation = null;
         name = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = new Date();
+        timestampCreated = new Date();
         lastEditedBy = null;
         authors = new HashSet<Author>();
         loanReturnPhysicalObjects = new HashSet<LoanReturnPhysicalObject>();
@@ -445,92 +444,198 @@ public class Agent  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     public void addAuthor(final Author author)
     {
         this.authors.add(author);
+        author.setAgent(this);
     }
 
     public void addLoanReturnPhysicalObject(final LoanReturnPhysicalObject loanReturnPhysicalObject)
     {
         this.loanReturnPhysicalObjects.add(loanReturnPhysicalObject);
+        loanReturnPhysicalObject.setAgent(this);
     }
 
     public void addBorrowReturnMaterial(final BorrowReturnMaterial borrowReturnMaterial)
     {
         this.borrowReturnMaterials.add(borrowReturnMaterial);
+        borrowReturnMaterial.setAgent(this);
     }
 
     public void addExchangeIn(final ExchangeIn exchangeIn)
     {
         this.exchangeIns.add(exchangeIn);
+        exchangeIn.setAgent(this);
     }
 
-    public void addMembers(final Agent member)
+    public void addMember(final Agent member)
     {
         this.members.add(member);
+        member.getMembers().add(this);
     }
 
     public void addProject(final Project project)
     {
         this.projects.add(project);
-    }
-
-    public void addPreparation(final Preparation preparation)
-    {
-        this.preparations.add(preparation);
-    }
-
-    public void groupPersonsByGroup(final GroupPerson groupPersonsByGroup)
-    {
-        this.groupPersonsByGroup.add(groupPersonsByGroup);
-    }
-
-    public void addGroupPersonsByMember(final GroupPerson groupPersonsByMember)
-    {
-        this.groupPersonsByMember.add(groupPersonsByMember);
-    }
-
-    public void addDetermination(final Determination determination)
-    {
-        this.determinations.add(determination);
+        project.setAgent(this);
     }
 
     public void addAgentAddressesByOrganization(final AgentAddress agentAddressesByOrganization)
     {
         this.agentAddressesByOrganization.add(agentAddressesByOrganization);
+        agentAddressesByOrganization.setAgent(this);
     }
 
     public void addAgentAddressesByAgent(final AgentAddress agentAddressesByAgent)
     {
         this.agentAddressesByAgent.add(agentAddressesByAgent);
+        agentAddressesByAgent.setAgent(this);
     }
 
+    /** Not sure I will need these but leaving them there temporarily
     public void addShipment(final Shipment shipment)
     {
         this.shipments.add(shipment);
+        shipment.setAgent(this);
     }
 
     public void addCollector(final Collector collector)
     {
         this.collectors.add(collector);
+        collector.setAgent(this);
     }
 
     public void addExchangeOut(final ExchangeOut exchangeOut)
     {
         this.exchangeOuts.add(exchangeOut);
-    }
-
-    public void addExternalResource(final ExternalResource externalResource)
-    {
-        this.externalResources.add(externalResource);
+        exchangeOut.setAgent(this);
     }
 
     public void addRepositoryAgreement(final RepositoryAgreement repositoryAgreement)
     {
         this.repositoryAgreements.add(repositoryAgreement);
+        repositoryAgreement.setOriginator(this);
+    }*/
+    
+    public void addExternalResource(final ExternalResource externalResource)
+    {
+        this.externalResources.add(externalResource);
+        externalResource.getAgents().add(this);
     }
 
+
+
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeAuthor(final Author author)
+    {
+        this.authors.remove(author);
+        author.setAgent(null);
+    }
+
+    public void removeLoanReturnPhysicalObject(final LoanReturnPhysicalObject loanReturnPhysicalObject)
+    {
+        this.loanReturnPhysicalObjects.remove(loanReturnPhysicalObject);
+        loanReturnPhysicalObject.setAgent(null);
+    }
+
+    public void removeBorrowReturnMaterial(final BorrowReturnMaterial borrowReturnMaterial)
+    {
+        this.borrowReturnMaterials.remove(borrowReturnMaterial);
+        borrowReturnMaterial.setAgent(null);
+    }
+
+    public void removeExchangeIn(final ExchangeIn exchangeIn)
+    {
+        this.exchangeIns.remove(exchangeIn);
+        exchangeIn.setAgent(null);
+    }
+
+    public void removeMember(final Agent member)
+    {
+        this.members.remove(member);
+        member.getMembers().remove(this);
+    }
+
+    public void removeProject(final Project project)
+    {
+        this.projects.remove(project);
+        project.setAgent(null);
+    }
+
+    /** Not sure I will need these but leaving them there temporarily
+    public void removePreparation(final Preparation preparation)
+    {
+        this.preparations.remove(preparation);
+        preparation.setAgent(null);
+    }
+
+    public void removeGroupPersonsByGroup(final GroupPerson groupPersonsByGroup)
+    {
+        this.groupPersonsByGroup.remove(groupPersonsByGroup);
+        groupPersonsByGroup.setAgent(null);
+    }
+
+    public void removeGroupPersonsByMember(final GroupPerson groupPersonsByMember)
+    {
+        this.groupPersonsByMember.remove(groupPersonsByMember);
+        groupPersonsByMember.setAgent(null);
+    }
+
+    public void removeDetermination(final Determination determination)
+    {
+        this.determinations.remove(determination);
+        determination.setAgent(null);
+    }
+
+    public void removeAgentAddressesByOrganization(final AgentAddress agentAddressesByOrganization)
+    {
+        this.agentAddressesByOrganization.remove(agentAddressesByOrganization);
+        agentAddressesByOrganization.setAgent(null);
+    }
+
+    public void removeAgentAddressesByAgent(final AgentAddress agentAddressesByAgent)
+    {
+        this.agentAddressesByAgent.remove(agentAddressesByAgent);
+        agentAddressesByAgent.setAgent(null);
+    }
+
+    public void removeShipment(final Shipment shipment)
+    {
+        this.shipments.remove(shipment);
+        shipment.setAgent(null);
+    }
+
+    public void removeCollector(final Collector collector)
+    {
+        this.collectors.remove(collector);
+        collector.setAgent(null);
+    }
+
+    public void removeExchangeOut(final ExchangeOut exchangeOut)
+    {
+        this.exchangeOuts.remove(exchangeOut);
+        exchangeOut.setAgent(null);
+    }
+    
+    public void removeRepositoryAgreement(final RepositoryAgreement repositoryAgreement)
+    {
+        this.repositoryAgreements.remove(repositoryAgreement);
+        repositoryAgreement.setAgent(null);
+    }
+
+
+    */
+    public void removeExternalResource(final ExternalResource externalResource)
+    {
+        this.externalResources.remove(externalResource);
+        externalResource.getAgents().remove(this);
+    }
+
+     // Delete Add Methods
 }

@@ -16,7 +16,7 @@ public class UserGroup  implements java.io.Serializable {
      protected Integer userGroupId;
      protected String name;
      protected String remarks;
-     protected Set<SpecifyUser> users;
+     protected Set<SpecifyUser> specifyUsers;
 
 
     // Constructors
@@ -39,7 +39,7 @@ public class UserGroup  implements java.io.Serializable {
         userGroupId = null;
         name = null;
         remarks = null;
-        users = new HashSet<SpecifyUser>();
+        specifyUsers = new HashSet<SpecifyUser>();
     }
     // End Initializer
 
@@ -81,23 +81,35 @@ public class UserGroup  implements java.io.Serializable {
     /**
      *
      */
-    public Set<SpecifyUser> getUsers() {
-        return this.users;
+    public Set<SpecifyUser> getSpecifyUsers() {
+        return this.specifyUsers;
     }
 
-    public void setUsers(Set<SpecifyUser> users) {
-        this.users = users;
+    public void setSpecifyUsers(Set<SpecifyUser> specifyUsers) {
+        this.specifyUsers = specifyUsers;
     }
+
 
 
 
 
     // Add Methods
 
-    public void addUser(final SpecifyUser user)
+    public void addSpecifyUser(final SpecifyUser specifyUser)
     {
-        this.users.add(user);
+        this.specifyUsers.add(specifyUser);
+        specifyUser.setUserGroup(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeSpecifyUser(final SpecifyUser specifyUser)
+    {
+        this.specifyUsers.remove(specifyUser);
+        specifyUser.setUserGroup(null);
+    }
+
+    // Delete Add Methods
 }

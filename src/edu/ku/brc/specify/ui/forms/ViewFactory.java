@@ -337,7 +337,8 @@ public class ViewFactory
         ValTextArea textArea = new ValTextArea("", cellField.getRows(), cellField.getCols());
         if (validator != null)
         {
-            validator.hookupComponent(textArea, cellField.getName(), false, UIValidator.Type.Changed, null, true);
+            DataChangeNotifier dcn = validator.hookupComponent(textArea, cellField.getName(), false, UIValidator.Type.Focus, null, true);
+            textArea.addFocusListener(dcn);
         }
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
@@ -386,8 +387,10 @@ public class ViewFactory
         ValListBox valList = initArray == null ? new ValListBox() : new ValListBox(initArray);
         if (validator != null && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
         {
-            validator.hookupComponent(valList, cellField.getName(), cellField.isRequired(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
+            DataChangeNotifier dcn = validator.hookupComponent(valList, cellField.getName(), cellField.isRequired(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
+            valList.getModel().addListDataListener(dcn);
         }
+        valList.setRequired(cellField.isRequired());
         valList.setVisibleRowCount(numRows);
         return valList;
     }
@@ -405,9 +408,11 @@ public class ViewFactory
         if (isNotEmpty(cbxName))
         {
             ValComboBoxFromQuery cbx = ComboBoxFromQueryFactory.getValComboBoxFromQuery(cbxName);
+            cbx.setRequired(cellField.isRequired());
             if (validator != null && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
             {
-                validator.hookupComponent(cbx, cellField.getName(), cellField.isRequired(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
+                DataChangeNotifier dcn = validator.hookupComponent(cbx, cellField.getName(), cellField.isRequired(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
+                cbx.getComboBox().getModel().addListDataListener(dcn);
             }
             return cbx;
 
@@ -438,14 +443,17 @@ public class ViewFactory
         if (isNotEmpty(pickListName))
         {
             cbx = new ValComboBox(new PickListDBAdapter(pickListName, false)); // false means don't auto-create picklist
+            
         } else
         {
             cbx = initArray == null ? new ValComboBox() : new ValComboBox(initArray);
         }
+        cbx.setRequired(cellField.isRequired());
 
         if (validator != null && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
         {
-            validator.hookupComponent(cbx, cellField.getName(), cellField.isRequired(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
+            DataChangeNotifier dcn = validator.hookupComponent(cbx, cellField.getName(), cellField.isRequired(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
+            cbx.getModel().addListDataListener(dcn);
         }
 
         return cbx;
@@ -501,24 +509,15 @@ public class ViewFactory
                     FormCellLabel cellLabel = (FormCellLabel)cell;
 
                     String lblStr = cellLabel.getLabel();
-                    if (false)
-                    {
-                        builder.addLabel(isNotEmpty(lblStr) ? lblStr + ":" : "  ", cc.xywh(colInx, rowInx, colspan, rowspan));
-                        compToAdd      = null;
-                        addToValidator = false;
-                        addControl     = false;
-                        colInx += colspan + 1;
+                     JLabel        lbl       = new JLabel(isNotEmpty(lblStr) ? lblStr + ":" : "  ", JLabel.RIGHT);
+                    //lbl.setFont(boldLabelFont);
+                    labelsForHash.put(cellLabel.getLabelFor(), lbl);
 
-                    } else
-                    {
-                        JLabel        lbl       = new JLabel(isNotEmpty(lblStr) ? lblStr + ":" : "  ", JLabel.RIGHT);
-                        //lbl.setFont(boldLabelFont);
-                        labelsForHash.put(cellLabel.getLabelFor(), lbl);
+                    compToAdd      =  lbl;
+                    addToValidator = false;
+                    addControl     = false;
+                    formViewObj.addLabel(cellLabel, lbl);
 
-                        compToAdd      =  lbl;
-                        addToValidator = false;
-                        addControl     = false;
-                    }
 
                 } else if (cell.getType() == FormCell.CellType.field)
                 {
@@ -739,6 +738,8 @@ public class ViewFactory
                     if (subView != null)
                     {
                         MultiView multiView = new MultiView(parent, subView, parent.getCreateWithMode());
+                        parent.addChild(multiView);
+                        
                         
                         builder.add(multiView, cc.xywh(colInx, rowInx, cellSubView.getColspan(), 1, "fill,fill"));
                         //String classDesc = cellSubView.getClassDesc();

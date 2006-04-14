@@ -46,8 +46,8 @@ public class DataObjectGettableFactory
     
     /**
      * Creates a DataGettable from a class name and caches it
-     * 
-     * @param className the name of the DataGettable implementation class
+     * @param className
+     * @param gettableClassName
      * @return the data gettable object
      */
     public static DataObjectGettable get(final String className, final String gettableClassName)

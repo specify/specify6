@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -46,8 +45,8 @@ public class DeaccessionCollectionObject  implements java.io.Serializable {
         deaccessionCollectionObjectId = null;
         quantity = null;
         remarks = null;
-        timestampModified = null;
-        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = new Date();
+        timestampCreated = new Date();
         lastEditedBy = null;
         collectionObjectCatalog = null;
         deaccession = null;
@@ -159,12 +158,24 @@ public class DeaccessionCollectionObject  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     public void addLoanReturnPhysicalObject(final LoanReturnPhysicalObject loanReturnPhysicalObject)
     {
         this.loanReturnPhysicalObjects.add(loanReturnPhysicalObject);
+        loanReturnPhysicalObject.setDeaccessionCollectionObject(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeLoanReturnPhysicalObject(final LoanReturnPhysicalObject loanReturnPhysicalObject)
+    {
+        this.loanReturnPhysicalObjects.remove(loanReturnPhysicalObject);
+        loanReturnPhysicalObject.setDeaccessionCollectionObject(null);
+    }
+
+    // Delete Add Methods
 }

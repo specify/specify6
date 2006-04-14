@@ -57,8 +57,8 @@ public class ExchangeIn  implements java.io.Serializable {
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampCreated = Calendar.getInstance().getTime();
-        timestampModified = null;
+        timestampCreated = new Date();
+        timestampModified = new Date();
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
@@ -248,7 +248,12 @@ public class ExchangeIn  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     // Done Add Methods
+
+    // Delete Methods
+
+    // Delete Add Methods
 }

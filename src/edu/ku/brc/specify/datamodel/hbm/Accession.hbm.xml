@@ -110,7 +110,7 @@
     </set>
     
     <!-- bi-directional one-to-many association to AccessionAuthorizations -->
-    <set name="accessionAuthorizations" lazy="true" inverse="true" cascade="all">
+    <set name="accessionAuthorizations" lazy="true" inverse="true" cascade="all-delete-orphan">
 	    <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
@@ -120,7 +120,7 @@
     </set>
     
     <!-- bi-directional one-to-many association to AccessionAgent -->
-    <set name="accessionAgents" lazy="true" inverse="true" cascade="delete">
+    <set name="accessionAgents" lazy="true" inverse="true" cascade="all-delete-orphan">
 		<!-- meg change cascade="none" to cascade="delete - above and below -->
         <meta attribute="scope-field">protected</meta> 
         <meta attribute="field-description"></meta>

@@ -59,8 +59,8 @@ public class ExternalResource  implements java.io.Serializable {
         fileCreatedDate = null;
         remarks = null;
         externalLocation = null;
-        timestampCreated = Calendar.getInstance().getTime();
-        timestampModified = null;
+        timestampCreated = new Date();
+        timestampModified = new Date();
         lastEditedBy = null;
         attrs = new HashSet<AttributeIFace>();
         createdByAgent = null;
@@ -289,52 +289,124 @@ public class ExternalResource  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
-    public void addAttr(final AttributeIFace attr)
+    public void addAttr(final ExternalResourceAttr attr)
     {
         this.attrs.add(attr);
+        attr.setExternalResource(this);
     }
 
+    /* These are the other side of the many-to-many so I don't they are needed)
     public void addAgent(final Agent agent)
     {
         this.agents.add(agent);
+        agent.setExternalResource(this);
     }
 
     public void addCollectionObject(final CollectionObject collectionObject)
     {
         this.collectionObjects.add(collectionObject);
+        collectionObject.setExternalResource(this);
     }
 
     public void addCollectinEvent(final CollectingEvent collectinEvent)
     {
         this.collectinEvents.add(collectinEvent);
+        collectinEvent.setExternalResource(this);
     }
 
     public void addLoan(final Loan loan)
     {
         this.loans.add(loan);
+        loan.setExternalResource(this);
     }
 
-    public void addLocalitie(final Locality localitie)
+    public void addLocalities(final Locality localities)
     {
-        this.localities.add(localitie);
+        this.localities.add(localities);
+        localities.setExternalResource(this);
     }
 
     public void addPermit(final Permit permit)
     {
         this.permits.add(permit);
+        permit.setExternalResource(this);
     }
 
     public void addPreparation(final Preparation preparation)
     {
         this.preparations.add(preparation);
+        preparation.setExternalResource(this);
     }
 
     public void addTaxonomy(final Taxon taxonomy)
     {
         this.taxonomy.add(taxonomy);
-    }
+        taxonomy.setExternalResource(this);
+    }*/
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeAttr(final ExternalResourceAttr attr)
+    {
+        this.attrs.remove(attr);
+        attr.setExternalResource(null);
+    }
+
+    /* These are the other side of the many-to-many so I don't they are needed)
+
+    public void removeAgent(final Agent agent)
+    {
+        this.agents.remove(agent);
+        agent.setExternalResource(null);
+    }
+
+    public void removeCollectionObject(final CollectionObject collectionObject)
+    {
+        this.collectionObjects.remove(collectionObject);
+        collectionObject.setExternalResource(null);
+    }
+
+    public void removeCollectinEvent(final CollectingEvent collectinEvent)
+    {
+        this.collectinEvents.remove(collectinEvent);
+        collectinEvent.setExternalResource(null);
+    }
+
+    public void removeLoan(final Loan loan)
+    {
+        this.loans.remove(loan);
+        loan.setExternalResource(null);
+    }
+
+    public void removeLocalities(final Locality localities)
+    {
+        this.localities.remove(localities);
+        localities.setExternalResource(null);
+    }
+
+    public void removePermit(final Permit permit)
+    {
+        this.permits.remove(permit);
+        permit.setExternalResource(null);
+    }
+
+    public void removePreparation(final Preparation preparation)
+    {
+        this.preparations.remove(preparation);
+        preparation.setExternalResource(null);
+    }
+
+    public void removeTaxonomy(final Taxon taxonomy)
+    {
+        this.taxonomy.remove(taxonomy);
+        taxonomy.setExternalResource(null);
+    }
+    */
+
+    // Delete Add Methods
 }

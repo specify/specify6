@@ -19,7 +19,6 @@
  */
 package edu.ku.brc.specify.ui.forms.persist;
 
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 /**
@@ -49,7 +48,7 @@ public class FormCellField extends FormCell
     protected String   initialize     = "";
 
     protected boolean  isTextField    = false;
-    protected boolean  isBothFormatterDefined = false;
+    protected boolean  isDSPTextField = false;
 
     /**
      * Constructor
@@ -100,8 +99,6 @@ public class FormCellField extends FormCell
     {
         this(type, name, colspan, rowspan);
 
-        this.uiType         = uiType;
-        this.dspUIType      = dspUIType;
         this.format         = format;
         this.formatName     = formatName;
         this.uiFieldFormatter = uiFieldFormatter;
@@ -111,16 +108,11 @@ public class FormCellField extends FormCell
         this.validationType = validationType;
         this.isRequired     = isRequired;
         this.isEncrypted    = isEncrypted;
-
-        this.isTextField = isEmpty(uiType) || 
-                           uiType.equals("dsptextfield") || 
-                           uiType.equals("text") || 
-                           uiType.equals("formattedtext") || 
-                           uiType.equals("textarea") || 
-                           uiType.equals("dsptextarea");
         
-        isBothFormatterDefined = isNotEmpty(formatName) && isNotEmpty(uiFieldFormatter);
-
+        // must use setters  because they set booleans as 
+        // to whether they are text controls
+        setUiType(uiType);
+        setDspUIType(dspUIType);
     }
 
     public int getCols()
@@ -141,6 +133,11 @@ public class FormCellField extends FormCell
     public void setDspUIType(String dspUIType)
     {
         this.dspUIType = dspUIType;
+        
+        this.isDSPTextField = isEmpty(dspUIType) || 
+            dspUIType.equals("dsptextfield") || 
+            dspUIType.equals("dsptextarea");
+
     }
 
     public String getFormat()
@@ -193,9 +190,10 @@ public class FormCellField extends FormCell
         this.isRequired = isRequired;
     }
 
-    public boolean isTextField()
+    public boolean isTextField(AltView.CreationMode mode)
     {
-        return isTextField;
+        // A mode of "None" default to "Edit" 
+        return mode == AltView.CreationMode.View ? isDSPTextField : isTextField;
     }
 
     public void setTextField(boolean isTextField)
@@ -251,6 +249,11 @@ public class FormCellField extends FormCell
     public void setUiType(String uiType)
     {
         this.uiType = uiType;
+        
+        this.isTextField = isEmpty(uiType) || 
+            uiType.equals("text") || 
+            uiType.equals("formattedtext") || 
+            uiType.equals("textarea");
     }
 
     public String getValidationRule()
@@ -271,16 +274,6 @@ public class FormCellField extends FormCell
     public void setValidationType(String validationType)
     {
         this.validationType = validationType;
-    }
-
-    public boolean isBothFormatterDefined()
-    {
-        return isBothFormatterDefined;
-    }
-
-    public void setBothFormatterDefined(boolean isBothFormatterDefined)
-    {
-        this.isBothFormatterDefined = isBothFormatterDefined;
     }
 
     public String getUiFieldFormatter()

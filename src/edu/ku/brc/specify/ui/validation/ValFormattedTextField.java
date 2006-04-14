@@ -162,13 +162,17 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     {
         super.paint(g);
 
-        String text = getText();
-        FontMetrics fm = g.getFontMetrics();
-        int w = fm.stringWidth(text);
-        pnt = new Point(inner.left+w, inner.top + fm.getAscent());
+        String      text = getText();
 
-        g.setColor(textColor);
-        g.drawString(bgStr.substring(text.length(), bgStr.length()), pnt.x, pnt.y);
+        if (text.length() < bgStr.length())
+        {
+            FontMetrics fm   = g.getFontMetrics();
+            int          w   = fm.stringWidth(text);
+            pnt = new Point(inner.left+w, inner.top + fm.getAscent());
+            
+            g.setColor(textColor);
+            g.drawString(bgStr.substring(text.length(), bgStr.length()), pnt.x, pnt.y);
+        }
 
 
         if (isInError() && isEnabled())
@@ -199,9 +203,13 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         document.setIgnoreNotify(false);
     }
 
+    /**
+     * Returns true if the no validation errors, false if there are
+     * @return true if the no validation errors, false if there are
+     */
     public boolean isOK()
     {
-        System.out.println("isOK "+(!isInError));
+        System.out.println("******* isOK "+(!isInError));
         return !isInError;
     }
 
@@ -271,13 +279,19 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     {
         String data;
 
-        if (value instanceof String)
+        if (value != null)
         {
-            data = (String)value;
-
+            if (value instanceof String)
+            {
+                data = (String)value;
+    
+            } else
+            {
+                data = value.toString();
+            }
         } else
         {
-            data = value.toString();
+            data = "";
         }
 
         setText(data);
@@ -442,9 +456,13 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
             {
                 if (okToInsertText(str))
                 {
-                    int newLen = Math.min(str.length(), limit);
-                    isInError = offset + newLen < inputLen;
-                    super.insertString(offset, str.substring(0, newLen), attr);
+                    // This way truncates incoming values
+                    //int newLen = Math.min(str.length(), limit);
+                    //isInError = offset + newLen < inputLen;
+                    //super.insertString(offset, str.substring(0, newLen), attr);
+                    
+                    isInError = offset + str.length() < inputLen;
+                    super.insertString(offset, str, attr);
 
                 } else
                 {

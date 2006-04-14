@@ -7,11 +7,16 @@ import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Stack;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -21,13 +26,17 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Hibernate;
 
+import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.prefs.PrefsCache;
-import edu.ku.brc.specify.ui.ColorWrapper;
 import edu.ku.brc.specify.ui.dnd.GhostDataAggregatable;
 import edu.ku.brc.specify.ui.forms.DataObjectGettable;
+import edu.ku.brc.specify.ui.forms.DataObjectSettable;
 import edu.ku.brc.specify.ui.forms.persist.FormCell;
 
 public final class UIHelper
@@ -473,6 +482,10 @@ public final class UIHelper
         return menu;
     }
 
+    //-----------------------------------------------------------------------------------------
+    // DataObject and Data Access Helpers
+    //-----------------------------------------------------------------------------------------
+
 
     /**
      * Returna an array of values given a FormCell definition. Note: The returned array is owned by the utility and
@@ -557,8 +570,116 @@ public final class UIHelper
         return getFieldValues(fieldNames, dataObj, getter);
     }
 
-
-
+    
+    /**
+     * Adds new child object to its parent's set and set the parent point in the new obj
+     * @param parentDataObj the parent object 
+     * @param newDataObj the new object to be added to a Set
+     */
+    public static boolean initAndAddToParent(final Object parentDataObj, final Object newDataObj)
+    {
+        if (parentDataObj != null)
+        {
+            String methodName = "add" + newDataObj.getClass().getSimpleName();
+            log.info("Invoking method["+methodName+"]");
+            try
+            {
+                Method method = newDataObj.getClass().getMethod("initialize", new Class[] {});
+                method.invoke(newDataObj, new Object[] {});
+                
+                method = parentDataObj.getClass().getMethod(methodName, new Class[] {newDataObj.getClass()});
+                method.invoke(parentDataObj, new Object[] {newDataObj});
+                log.info("Adding ["+newDataObj+"] to parent Set["+parentDataObj+"]");
+                return true;
+                
+            } catch (NoSuchMethodException ex)
+            {
+                ex.printStackTrace();
+                
+            } catch (IllegalAccessException ex)
+            {
+                ex.printStackTrace();   
+                
+            } catch (InvocationTargetException ex)
+            {
+                ex.printStackTrace();    
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * @param fieldNames
+     * @param dataObj
+     * @param newData
+     * @param getter
+     * @param setter
+     */
+    public static void setFieldValue(final String fieldNames, 
+                                     final Object dataObj, 
+                                     final Object newData, 
+                                     final DataObjectGettable getter, 
+                                     final DataObjectSettable setter)
+    {
+        int inx = fieldNames.indexOf(".");
+        if (inx > -1)
+        {
+            String[] fileNameArray = StringUtils.split(fieldNames, '.');
+            Object data = dataObj;
+            for (int i=0;i<fileNameArray.length;i++)
+            {
+                String fieldName = fileNameArray[i];
+               if (i < fileNameArray.length-1)
+                {
+                     data = getter.getFieldValue(dataObj, fieldName);
+                    if (data == null)
+                    {
+                        try
+                        {
+                            PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, fieldName.trim());
+                            Class  classObj = descr.getPropertyType();
+                            Object newObj = classObj.newInstance();
+                            log.debug("New Obj ["+newObj+"] being added to ["+dataObj+"]");
+                            if (newObj != null)
+                            {
+                                
+                                Method method = newObj.getClass().getMethod("initialize", new Class[] {});
+                                method.invoke(newObj, new Object[] {});
+                                setter.setFieldValue(dataObj, fieldName, newObj);
+                                data = newObj;
+                                
+                                log.debug("Inserting New Obj ["+newObj+" at top of new DB ObjCache");
+                                
+                            }
+                        } catch (NoSuchMethodException ex)
+                        {
+                            ex.printStackTrace();
+                            
+                        } catch (IllegalAccessException ex)
+                        {
+                            ex.printStackTrace();
+                            
+                        } catch (InvocationTargetException ex)
+                        {
+                            ex.printStackTrace();
+                            
+                        } catch (InstantiationException ex)
+                        {
+                            ex.printStackTrace();
+                        }
+                    }
+                } else
+                {
+                    setter.setFieldValue(data, fieldName, newData);
+                    log.info("Data Obj ["+newData+" being added to ["+data+"]");
+                }
+            }
+        } else
+        {
+            setter.setFieldValue(dataObj, fieldNames, newData);
+            log.info("setter ["+newData+" being added to ["+dataObj+"]");
+        }
+    }
 
     /**
      * Returns a single String value that formats all the value in the array per the format mask
@@ -566,8 +687,8 @@ public final class UIHelper
      * @param format the format mask
      * @return a string with the formatted values
      */
-    public static Object getFormattedValue(Object[] values,
-                                           String format)
+    public static Object getFormattedValue(final Object[] values,
+                                           final String format)
     {
         if (values == null)
         {

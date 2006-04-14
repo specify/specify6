@@ -67,8 +67,8 @@ public class RepositoryAgreement  implements java.io.Serializable {
         number1 = null;
         number2 = null;
         remarks = null;
-        timestampCreated = Calendar.getInstance().getTime();
-        timestampModified = null;
+        timestampCreated = new Date();
+        timestampModified = new Date();
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
@@ -311,26 +311,5 @@ public class RepositoryAgreement  implements java.io.Serializable {
     public void setOriginator(Agent originator) {
         this.originator = originator;
     }
-
-
-
-
-    // Add Methods
-
-    public void addCollectionObject(final CollectionObject collectionObject)
-    {
-        this.collectionObjects.add(collectionObject);
-    }
-
-    public void addRepositoryAgreementAuthorization(final RepositoryAgreement repositoryAgreementAuthorization)
-    {
-        this.repositoryAgreementAuthorizations.add(repositoryAgreementAuthorization);
-    }
-
-    public void addRepositoryAgreementAgent(final RepositoryAgreement repositoryAgreementAgent)
-    {
-        this.repositoryAgreementAgents.add(repositoryAgreementAgent);
-    }
-
-    // Done Add Methods
+    
 }

@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -78,8 +77,8 @@ public class ReferenceWork  implements java.io.Serializable {
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampCreated = Calendar.getInstance().getTime();
-        timestampModified = null;
+        timestampCreated = new Date();
+        timestampModified = new Date();
         lastEditedBy = null;
         published = null;
         yesNo1 = null;
@@ -406,32 +405,72 @@ public class ReferenceWork  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     public void addLocalityCitation(final LocalityCitation localityCitation)
     {
         this.localityCitations.add(localityCitation);
+        localityCitation.setReferenceWork(this);
     }
 
     public void addCollectionObjectCitation(final CollectionObjectCitation collectionObjectCitation)
     {
         this.collectionObjectCitations.add(collectionObjectCitation);
+        collectionObjectCitation.setReferenceWork(this);
     }
 
     public void addTaxonCitation(final TaxonCitation taxonCitation)
     {
         this.taxonCitations.add(taxonCitation);
+        taxonCitation.setReferenceWork(this);
     }
 
     public void addDeterminationCitation(final DeterminationCitation determinationCitation)
     {
         this.determinationCitations.add(determinationCitation);
+        determinationCitation.setReferenceWork(this);
     }
 
     public void addAuthor(final Author author)
     {
         this.authors.add(author);
+        author.setReferenceWork(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeLocalityCitation(final LocalityCitation localityCitation)
+    {
+        this.localityCitations.remove(localityCitation);
+        localityCitation.setReferenceWork(null);
+    }
+
+    public void removeCollectionObjectCitation(final CollectionObjectCitation collectionObjectCitation)
+    {
+        this.collectionObjectCitations.remove(collectionObjectCitation);
+        collectionObjectCitation.setReferenceWork(null);
+    }
+
+    public void removeTaxonCitation(final TaxonCitation taxonCitation)
+    {
+        this.taxonCitations.remove(taxonCitation);
+        taxonCitation.setReferenceWork(null);
+    }
+
+    public void removeDeterminationCitation(final DeterminationCitation determinationCitation)
+    {
+        this.determinationCitations.remove(determinationCitation);
+        determinationCitation.setReferenceWork(null);
+    }
+
+    public void removeAuthor(final Author author)
+    {
+        this.authors.remove(author);
+        author.setReferenceWork(null);
+    }
+
+    // Delete Add Methods
 }

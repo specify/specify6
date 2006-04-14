@@ -79,7 +79,7 @@
     </set>	
         
     <!-- bi-directional one-to-many association to ExternalResourceAttr -->
-    <set name="externalResources" lazy="true" inverse="true" cascade="delete">
+    <set name="externalResourcesAttrs" lazy="true" inverse="true" cascade="delete">
 	<meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>

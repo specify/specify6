@@ -68,8 +68,8 @@ public class Accession  implements java.io.Serializable {
         number1 = null;
         number2 = null;
         remarks = null;
-        timestampCreated = Calendar.getInstance().getTime();
-        timestampModified = null;
+        timestampCreated = new Date();
+        timestampModified = new Date();
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
@@ -315,22 +315,48 @@ public class Accession  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     public void addCollectionObject(final CollectionObject collectionObject)
     {
         this.collectionObjects.add(collectionObject);
+        collectionObject.setAccession(this);
     }
 
     public void addAccessionAuthorizations(final AccessionAuthorizations accessionAuthorizations)
     {
         this.accessionAuthorizations.add(accessionAuthorizations);
+        accessionAuthorizations.setAccession(this);
     }
 
     public void addAccessionAgent(final AccessionAgent accessionAgent)
     {
         this.accessionAgents.add(accessionAgent);
+        accessionAgent.setAccession(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeCollectionObject(final CollectionObject collectionObject)
+    {
+        this.collectionObjects.remove(collectionObject);
+        collectionObject.setAccession(null);
+    }
+
+    public void removeAccessionAuthorizations(final AccessionAuthorizations accessionAuthorizations)
+    {
+        this.accessionAuthorizations.remove(accessionAuthorizations);
+        accessionAuthorizations.setAccession(null);
+    }
+
+    public void removeAccessionAgent(final AccessionAgent accessionAgent)
+    {
+        this.accessionAgents.remove(accessionAgent);
+        accessionAgent.setAccession(null);
+    }
+
+    // Delete Add Methods
 }

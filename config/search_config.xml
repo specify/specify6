@@ -266,37 +266,64 @@
 	</detailView>
   </table>
 
-  <table id="5" name="AgentAddressSearch" title="Agent Search" priority="1" color="30, 144, 255" expresssearch="false">
-    <outofdate/>
-    <index>
-	    <sql/>
-	    <cols/>
-	</index>
-    <detailView icon="">
-	    <sql>
-	        <![CDATA[select agent.AgentID, 
+    <table id="5" name="AgentAddressSearch" title="Agent Search" priority="1" color="30, 144, 255" expresssearch="false">
+        <outofdate/>
+        <index>
+            <sql/>
+            <cols/>
+        </index>
+        <detailView icon="">
+            <sql>
+                <![CDATA[select agent.AgentID, 
 agent.FirstName,  agent.LastName, agent.Name, agentaddress.Email, address.Address, address.City, 
 address.State, address.Postalcode, address.Country From agent  
 Inner Join agentaddress ON agent.AgentID = agentaddress.AgentID 
 Inner Join address ON agentaddress.AddressID = address.AddressID and (%s)]]>
-	    </sql>
-        <captions>
-            <caption col="AgentID" text="AgentID"  visible="false"/>
-            <caption col="FirstName" text="First Name"/>
-            <caption col="LastName" text="Last Name"/>
-            <caption col="Organization" text="Name"/>
-            <caption col="EMail" text="EMail"/>
-            <caption col="Address" text="Address"/>
-            <caption col="City" text="City"/>
-            <caption col="State" text="State"/>
-            <caption col="Postalcode" text="Zip"/>
-            <caption col="Country" text="Country"/>
-        </captions>
-       <recordset tabletype="5" col="0"/>
-	</detailView>
-  </table>
-
-  <table id="10000" usehitscache="true" name="Forms" title="Forms" priority="2" color="95, 158, 160"
+            </sql>
+            <captions>
+                <caption col="AgentID" text="AgentID"  visible="false"/>
+                <caption col="FirstName" text="First Name"/>
+                <caption col="LastName" text="Last Name"/>
+                <caption col="Organization" text="Name"/>
+                <caption col="EMail" text="EMail"/>
+                <caption col="Address" text="Address"/>
+                <caption col="City" text="City"/>
+                <caption col="State" text="State"/>
+                <caption col="Postalcode" text="Zip"/>
+                <caption col="Country" text="Country"/>
+            </captions>
+            <recordset tabletype="5" col="0"/>
+        </detailView>
+    </table>
+    
+    <table id="6" name="PermitSearch" title="Permit" priority="1" color="30, 144, 255" expresssearch="false">
+        <outofdate/>
+        <index>
+            <sql/>
+            <cols/>
+        </index>
+        <detailView icon="">
+            <sql>
+                <![CDATA[ Select permit.PermitID, permit.PermitNumber,agent.LastName,permit.IssuedDate,permit.StartDate,
+permit.EndDate,permit.RenewalDate,permit.Type From permit Inner Join agentaddress ON permit.IssuerID = agentaddress.AgentAddressID 
+Inner Join agent ON agentaddress.AgentID = agent.AgentID and (%s)]]>
+            </sql>
+            <captions>
+                <caption col="PermitID" text="PermitID"  visible="false"/>
+                <caption col="PermitNumber" text="Permit Number"/>
+                <caption col="LastName" text="Issuer LastName"/>
+                <caption col="IssuedDate" text="Issued Date"/>
+                <caption col="StartDate" text="Start Date"/>
+                <caption col="EndDate" text="End Date"/>
+                <caption col="RenewalDate" text="Renewal Date"/>
+                <caption col="Type" text="Type"/>
+            </captions>
+            <recordset tabletype="6" col="0"/>
+        </detailView>
+    </table>
+    
+    
+    <table id="10000" usehitscache="true" name="Forms" title="Forms" priority="2" color="95, 158, 160"
          expresssearch="true">
     <outofdate/>
     <index>

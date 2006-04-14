@@ -67,8 +67,8 @@ public class Permit  implements java.io.Serializable {
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampCreated = Calendar.getInstance().getTime();
-        timestampModified = null;
+        timestampCreated = new Date();
+        timestampModified = new Date();
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
@@ -315,17 +315,24 @@ public class Permit  implements java.io.Serializable {
 
 
 
-    // Add Methods
 
-    public void addAccessionAuthorizations(final AccessionAuthorizations accessionAuthorizations)
-    {
-        this.accessionAuthorizations.add(accessionAuthorizations);
-    }
+    // Add Methods
 
     public void addExternalResource(final ExternalResource externalResource)
     {
         this.externalResources.add(externalResource);
+        externalResource.getPermits().add(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeExternalResource(final ExternalResource externalResource)
+    {
+        this.externalResources.remove(externalResource);
+        externalResource.getPermits().remove(this);
+    }
+
+    // Delete Add Methods
 }

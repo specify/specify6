@@ -38,6 +38,7 @@ import java.util.prefs.PreferenceChangeListener;
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
@@ -46,6 +47,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -104,6 +106,32 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
     protected static ColorWrapper requiredfieldcolor = null;
 
     /**
+     * @param sql the fully specified SQL statement with a "%s" in the string for the substitution for what the user entered
+     * @param className the Class name of the java object that represents the table
+     * @param idName the POJO field name of the ID column
+     * @param keyName the POJO field name of the key column
+     * @param format the format specification (null is OK if displayNames is null)
+     * @param searchDialogName the name to look up to display the search dialog (from the search dialog factory)
+     */
+    public ValComboBoxFromQuery(final String sql,
+                                final String className,
+                                final String idName,
+                                final String keyName,
+                                final String format,
+                                final String searchDialogName)
+    {
+        this.className        = className;
+        this.idName           = idName;
+        this.keyName          = keyName;
+        this.format           = format;
+        this.searchDialogName = searchDialogName;
+        
+        comboBox = new JComboBoxFromQuery(sql, format);
+        
+        init(false);
+    }
+    
+    /**
      *  Constructor
      * @param tableName name of the table to be searched
      * @param idColumn the column name that contains the record ID
@@ -113,6 +141,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
      * @param idName the POJO field name of the ID column
      * @param keyName the POJO field name of the key column
      * @param format the format specification (null is OK if displayNames is null)
+     * @param searchDialogName the name to look up to display the search dialog (from the search dialog factory)
      */
     public ValComboBoxFromQuery(final String tableName,
                                 final String idColumn,
@@ -134,9 +163,41 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
         this.format   = format;
         this.searchDialogName = searchDialogName;
 
+        comboBox = new JComboBoxFromQuery(tableName, idColumn, keyColumn, displayColumn, format);
+
+        init(false);
+    }
+    
+    /* (non-Javadoc)
+     * @see java.awt.Component#requestFocus()
+     */
+    public void requestFocus()
+    {
+        comboBox.requestFocus();
+    }
+    
+    /* (non-Javadoc)
+     * @see java.awt.Component#setEnabled(boolean)
+     */
+    public void setEnabled(boolean enabled)
+    {
+        super.setEnabled(enabled);
+        comboBox.setEnabled(enabled);
+        if (searchBtn != null)
+        {
+            searchBtn.setEnabled(enabled);
+        }
+
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.db.JAutoCompComboBox#init(boolean)
+     */
+    public void init(final boolean makeEditable)
+    {
         fieldNames = split(StringUtils.deleteWhitespace(keyName), ",");
 
-        comboBox = new JComboBoxFromQuery(tableName, idColumn, keyColumn, displayColumn, format);
         try
         {
             classObj = Class.forName(className);
@@ -146,18 +207,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
            log.error(ex);
            throw new RuntimeException(ex);
         }
-        init(false);
-    }
-
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.db.JAutoCompComboBox#init(boolean)
-     */
-    public void init(final boolean makeEditable)
-    {
-        //setLayout(new BorderLayout());
-        //add(comboBox, BorderLayout.CENTER);
-
+        
         PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,1px,p", "c:p"), this);
         CellConstraints cc         = new CellConstraints();
 
@@ -166,6 +216,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
         if (StringUtils.isNotEmpty(searchDialogName))
         {
             searchBtn = new JButton(IconManager.getIcon("Search", IconManager.IconSize.Std16));
+            searchBtn.setFocusable(false);
             searchBtn.setMargin(new Insets(1,1,1,1));
             builder.add(searchBtn, cc.xy(3,1));
         }
@@ -209,6 +260,15 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
         });
 
     }
+    
+    /**
+     * Return the JComboBox for this control
+     * @return the JComboBox for this control
+     */
+    public JComboBox getComboBox()
+    {
+        return comboBox;
+    }
 
     /**
      * Returns the model for the combo box
@@ -236,7 +296,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
     {
         super.paint(g);
 
-        if (isInError() && isEnabled())
+        if (isInError() && comboBox.isEnabled())
         {
             Dimension dim = getSize();
             g.setColor(valtextcolor.getColor());
@@ -309,7 +369,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
     public void contentsChanged(ListDataEvent e)
     {
         isChanged = true;
-        isInError = isRequired && comboBox.getSelectedIndex() != -1;
+        isInError = isRequired && comboBox.getSelectedIndex() == -1;
         repaint();
     }
 
@@ -361,6 +421,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
 
             if (newVal != null)
             {
+                comboBox.getTextField().setCaretPosition(0);
                 list.add(newVal.toString());
                 comboBox.setSelectedIndex(0);
                 isInError = false;
@@ -372,7 +433,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
         } else
         {
             comboBox.setSelectedIndex(-1);
-            isInError = true;
+            isInError = isRequired;
         }
         repaint();
     }
@@ -382,26 +443,30 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
      */
     public Object getValue()
     {
+        Object value = null;
         Integer id = comboBox.getSelectedId();
         if (id != null)
         {
-            Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(classObj);
+            Session session = HibernateUtil.getSessionFactory().openSession();
+            Criteria criteria = session.createCriteria(classObj);
             criteria.add(Expression.eq(idName, id));
             List list = criteria.list();
 
             if (list.size() != 0)
             {
-                return list.get(0);
+                value = list.get(0);
             } else
             {
                 log.error("**** Can't find the Object "+classObj+" with ID: "+id);
             }
+            session.close();
+            
         } else 
         {
             return dataObj; 
         }
 
-        return null;
+        return value;
     }
 
     //-------------------------------------------------
@@ -412,7 +477,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
     {
         if (evt.getKey().equals("requiredfieldcolor"))
         {
-            setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+            comboBox.setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
         }
     }
 

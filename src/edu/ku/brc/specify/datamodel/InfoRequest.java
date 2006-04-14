@@ -52,8 +52,8 @@ public class InfoRequest  implements java.io.Serializable {
         requestDate = null;
         replyDate = null;
         remarks = null;
-        timestampCreated = Calendar.getInstance().getTime();
-        timestampModified = null;
+        timestampCreated = new Date();
+        timestampModified = new Date();
         recordSet = null;
         agent = null;
     }
@@ -196,7 +196,12 @@ public class InfoRequest  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     // Done Add Methods
+
+    // Delete Methods
+
+    // Delete Add Methods
 }

@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
 import java.util.Date;
 
 
@@ -42,8 +41,8 @@ public class CollectingEventAttr  implements AttributeIFace,java.io.Serializable
         attrId = null;
         strValue = null;
         dblValue = null;
-        timestampCreated = Calendar.getInstance().getTime();
-        timestampModified = null;
+        timestampCreated = new Date();
+        timestampModified = new Date();
         collectingEvent = null;
         definition = null;
     }
@@ -131,7 +130,12 @@ public class CollectingEventAttr  implements AttributeIFace,java.io.Serializable
 
 
 
+
     // Add Methods
 
     // Done Add Methods
+
+    // Delete Methods
+
+    // Delete Add Methods
 }

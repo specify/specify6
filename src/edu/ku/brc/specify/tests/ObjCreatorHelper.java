@@ -171,7 +171,7 @@ public class ObjCreatorHelper
         colObjDef.initialize();
         colObjDef.setName(name);
         colObjDef.setDataType(dataType);
-        colObjDef.setUser(user);
+        colObjDef.setSpecifyUser(user);
         colObjDef.setTaxonTreeDef(taxonTreeDef);
 
         taxonTreeDef.setCollObjDef(colObjDef);
@@ -1156,7 +1156,7 @@ public class ObjCreatorHelper
         CollectionObjDef collectionobjdef = new CollectionObjDef();
         collectionobjdef.initialize();
         collectionobjdef.setDataType(dataType);
-        collectionobjdef.setUser(user);
+        collectionobjdef.setSpecifyUser(user);
         collectionobjdef.setGeographyTreeDef(geographyTreeDef);
         collectionobjdef.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);
         collectionobjdef.setLocationTreeDef(locationTreeDef);

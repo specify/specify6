@@ -65,6 +65,7 @@ public class JComboBoxFromQuery extends JComboBox
     protected int                  searchStopLength = Integer.MAX_VALUE;
     protected int                  oldLength        = 0;
     
+    protected String               sql;
     protected String               tableName;
     protected String               displayColumns;
     protected String               idColumn;
@@ -75,7 +76,17 @@ public class JComboBoxFromQuery extends JComboBox
     protected Object[]             values;
 
     /**
-     * Constructor with Adaptor
+     * Constructor 
+     */
+    public JComboBoxFromQuery(final String sql, 
+                              final String format)
+    {
+        this(null, null, null, null, format);
+        this.sql = sql;
+    }
+    
+    /**
+     * Constructor 
      */
     public JComboBoxFromQuery(final String tableName, 
                               final String idColumn, 
@@ -86,7 +97,7 @@ public class JComboBoxFromQuery extends JComboBox
     }
     
     /**
-     * Constructor with Adaptor
+     * Constructor 
      */
     public JComboBoxFromQuery(final String tableName, 
                               final String idColumn, 
@@ -241,7 +252,7 @@ public class JComboBoxFromQuery extends JComboBox
     }
 
     /**
-     * 
+     * Fill the the drop down with the list from the query
      */
     protected void fillBox(final String newEntryStr)
     {
@@ -262,8 +273,15 @@ public class JComboBoxFromQuery extends JComboBox
             }
             entryStr = newEntryStr;
             
-            String queryString = "select distinct " + displayColumns + "," + idColumn  + " from " + tableName + " where lower(" + keyColumn + 
+            String queryString;
+            if (sql == null)
+            {
+                queryString= "select distinct " + displayColumns + "," + idColumn  + " from " + tableName + " where lower(" + keyColumn + 
                                  ") like '"+ entryStr.toLowerCase() +"%' order by " + keyColumn + " asc";
+            } else
+            {
+                queryString = sql.replace("%s", entryStr.toLowerCase());
+            }
             log.info(queryString);
             
             Statement  dbStatement = dbConnection.createStatement();

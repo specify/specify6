@@ -64,11 +64,9 @@ import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
 import edu.ku.brc.specify.datamodel.PrepType;
-import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
-
-import edu.ku.brc.specify.datamodel.TaxonTreeDef;
-
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.TaxonTreeDef;
+import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
@@ -735,9 +733,10 @@ public class GenericDBConversion
         BasicSQLUtils.deleteAllRecordsFromTable("picklist_items");
 
         String[] tables = {
+                "usysaccessionstatus",            "AccessionStatus",
                 "usysaccessiontype",              "AccessionType",
                 "usysborrowagenrole",             "BorrowAgentRole",
-                "usysaccessionarole",             "AccessionaRole",
+                "usysaccessionarole",             "AccessionRole",
                 "usysdeaccessiorole",             "DeaccessionaRole",
                 "usysloanagentsrole",             "LoanAgentsRole",
                 "usysbiologicalsex",              "BiologicalSex",
@@ -1910,7 +1909,7 @@ public class GenericDBConversion
             colObjDef.initialize();
             colObjDef.setName(name);
             colObjDef.setDataType(dataType);
-            colObjDef.setUser(user);
+            colObjDef.setSpecifyUser(user);
 
             colObjDef.setTaxonTreeDef(taxaTreeDef);
 

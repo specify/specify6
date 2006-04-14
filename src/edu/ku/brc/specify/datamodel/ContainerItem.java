@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -40,8 +39,8 @@ public class ContainerItem  implements java.io.Serializable {
     public void initialize()
     {
         containerItemId = null;
-        timestampModified = null;
-        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = new Date();
+        timestampCreated = new Date();
         container = null;
         collectionObjects = new HashSet<CollectionObject>();
     }
@@ -107,12 +106,24 @@ public class ContainerItem  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     public void addCollectionObject(final CollectionObject collectionObject)
     {
         this.collectionObjects.add(collectionObject);
+        collectionObject.setContainerItem(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeCollectionObject(final CollectionObject collectionObject)
+    {
+        this.collectionObjects.remove(collectionObject);
+        collectionObject.setContainerItem(null);
+    }
+
+    // Delete Add Methods
 }

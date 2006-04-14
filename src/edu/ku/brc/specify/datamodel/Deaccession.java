@@ -59,8 +59,8 @@ public class Deaccession  implements java.io.Serializable {
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampModified = null;
-        timestampCreated = Calendar.getInstance().getTime();
+        timestampModified = new Date();
+        timestampCreated = new Date();
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
@@ -250,17 +250,36 @@ public class Deaccession  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     public void addDeaccessionAgent(final DeaccessionAgent deaccessionAgent)
     {
         this.deaccessionAgents.add(deaccessionAgent);
+        deaccessionAgent.setDeaccession(this);
     }
 
     public void addDeaccessionCollectionObject(final DeaccessionCollectionObject deaccessionCollectionObject)
     {
         this.deaccessionCollectionObjects.add(deaccessionCollectionObject);
+        deaccessionCollectionObject.setDeaccession(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeDeaccessionAgent(final DeaccessionAgent deaccessionAgent)
+    {
+        this.deaccessionAgents.remove(deaccessionAgent);
+        deaccessionAgent.setDeaccession(null);
+    }
+
+    public void removeDeaccessionCollectionObject(final DeaccessionCollectionObject deaccessionCollectionObject)
+    {
+        this.deaccessionCollectionObjects.remove(deaccessionCollectionObject);
+        deaccessionCollectionObject.setDeaccession(null);
+    }
+
+    // Delete Add Methods
 }

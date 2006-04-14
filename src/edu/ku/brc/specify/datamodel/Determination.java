@@ -67,8 +67,8 @@ public class Determination  implements java.io.Serializable {
         text2 = null;
         number1 = null;
         number2 = null;
-        timestampCreated = Calendar.getInstance().getTime();
-        timestampModified = null;
+        timestampCreated = new Date();
+        timestampModified = new Date();
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
@@ -315,12 +315,24 @@ public class Determination  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     public void addDeterminationCitation(final DeterminationCitation determinationCitation)
     {
         this.determinationCitations.add(determinationCitation);
+        determinationCitation.setDetermination(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeDeterminationCitation(final DeterminationCitation determinationCitation)
+    {
+        this.determinationCitations.remove(determinationCitation);
+        determinationCitation.setDetermination(null);
+    }
+
+    // Delete Add Methods
 }

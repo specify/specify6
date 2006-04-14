@@ -58,6 +58,7 @@ public class ResultSetController implements ValidationListener
     protected JButton nextBtn  = null;
     protected JButton lastBtn  = null;  
     protected JButton newRecBtn = null;  
+    protected JButton delRecBtn = null;  
     
     protected int     currentInx = 0;
     protected int     lastInx    = 0;
@@ -67,27 +68,27 @@ public class ResultSetController implements ValidationListener
      * Constructor
      * @param len
      */
-    public ResultSetController(final FormValidator formValidator, final boolean addNewBtn, final int len)
+    public ResultSetController(final FormValidator formValidator, final boolean addNewBtn,  final boolean addDelBtn, final int len)
     {
         this.formValidator = formValidator;
         
-       setLength(len);
        
-       if (formValidator != null)
-       {
-           formValidator.addValidationListener(this);
-       }
+        if (formValidator != null)
+        {
+            formValidator.addValidationListener(this);
+        }
        
-       buildRecordNavBar(addNewBtn);
-       updateUI();
+        buildRecordNavBar(addNewBtn, addDelBtn);
+        
+        setLength(len);
     }
     
     /**
      * 
      */
-    protected void buildRecordNavBar(final boolean addNewBtn)
+    protected void buildRecordNavBar(final boolean addNewBtn, final boolean addDelBtn)
     {
-        String colDef = "p,2dlu,p,2dlu,max(50dlu;p):grow,2dlu,p,2dlu,p" + (addNewBtn ? ",2dlu,p" : "");
+        String colDef = "p,2dlu,p,2dlu,max(50dlu;p):grow,2dlu,p,2dlu,p" + (addNewBtn ? ",2dlu,p" : "") + (addDelBtn ? ",2dlu,p" : "");
         Insets insets = new Insets(1,1,1,1);
         DefaultFormBuilder rowBuilder = new DefaultFormBuilder(new FormLayout(colDef, "p"));
         
@@ -114,12 +115,21 @@ public class ResultSetController implements ValidationListener
         rowBuilder.add(recDisp, cc.xy(5,1));
         rowBuilder.add(nextBtn, cc.xy(7,1));
         rowBuilder.add(lastBtn, cc.xy(9,1));
+        int row = 11;
         
         if (addNewBtn)
         {
             newRecBtn = new JButton(IconManager.getImage("NewRec"));
             newRecBtn.setMargin(insets);
-            rowBuilder.add(newRecBtn, cc.xy(11,1));
+            rowBuilder.add(newRecBtn, cc.xy(row,1));
+            row += 2;
+        }
+        if (addDelBtn)
+        {
+            delRecBtn = new JButton(IconManager.getImage("SmallTrash"));
+            delRecBtn.setMargin(insets);
+            rowBuilder.add(delRecBtn, cc.xy(row++,1));
+            row += 2;
         }
         
  
@@ -165,6 +175,17 @@ public class ResultSetController implements ValidationListener
         });
         panel = rowBuilder.getPanel();    
     }
+    
+    /**
+     * Sets whether the record controller should be enabled
+     * @param enabled true enabled, false not enabled
+     */
+    public void setEnabled(boolean enabled)
+    {
+        currentInx = enabled ? 0 : -1;
+        updateUI();
+        recDisp.setEnabled(enabled);
+    }
 
     /**
      * 
@@ -172,7 +193,7 @@ public class ResultSetController implements ValidationListener
      */
     public void setLength(int len)
     {
-        currentInx = 0;
+        currentInx = len > 0 ? 0 : -1;
         numRecords = len;
         lastInx    = numRecords - 1;
         updateUI(); 
@@ -223,22 +244,37 @@ public class ResultSetController implements ValidationListener
     {
         if (panel == null) return;
         
+        System.out.println(currentInx+" "+numRecords);
         firstBtn.setEnabled(currentInx > 0);
         prevBtn.setEnabled(currentInx > 0);
         nextBtn.setEnabled(currentInx < lastInx);
         lastBtn.setEnabled(currentInx < lastInx);
+        
+        if (delRecBtn != null)
+        {
+            delRecBtn.setEnabled(numRecords > 0);
+        }
         
         recDisp.setText((currentInx+1) + " of " + numRecords);
         panel.validate();
     }
     
     /**
-     * Returns the JBUtton that is used to create new records
-     * @return the JBUtton that is used to create new records
+     * Returns the JButton that is used to create new records
+     * @return the JButton that is used to create new records
      */
     public JButton getNewRecBtn()
     {
         return newRecBtn;
+    }
+
+    /**
+     * Returns the JBUtton that is used to create new records
+     * @return the JBUtton that is used to create new records
+     */
+    public JButton getDelRecBtn()
+    {
+        return delRecBtn;
     }
 
     /**
@@ -295,17 +331,27 @@ public class ResultSetController implements ValidationListener
      */
     protected void setUIEnabled(final boolean enabled)
     {
-        firstBtn.setEnabled(enabled);
-        prevBtn.setEnabled(enabled);
-        nextBtn.setEnabled(enabled);
-        lastBtn.setEnabled(enabled);
-        recDisp.setEnabled(enabled);
-        
-        if (newRecBtn != null)
+        if (!enabled)
         {
-            newRecBtn.setEnabled(enabled);
-
+            firstBtn.setEnabled(enabled);
+            prevBtn.setEnabled(enabled);
+            nextBtn.setEnabled(enabled);
+            lastBtn.setEnabled(enabled);
+            recDisp.setEnabled(enabled);
+            
+            if (newRecBtn != null)
+            {
+                newRecBtn.setEnabled(enabled);
+            }
+            if (delRecBtn != null)
+            {
+                delRecBtn.setEnabled(enabled);
+            }
+        } else
+        {
+           updateUI(); 
         }
+        
     }
     
     //-----------------------------------------------------

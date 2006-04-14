@@ -58,8 +58,8 @@ public class Preparation  implements java.io.Serializable {
         storageLocation = null;
         remarks = null;
         preparedDate = null;
-        timestampCreated = Calendar.getInstance().getTime();
-        timestampModified = null;
+        timestampCreated = new Date();
+        timestampModified = new Date();
         lastEditedBy = null;
         loanPhysicalObjects = new HashSet<LoanPhysicalObject>();
         attrs = new HashSet<AttributeIFace>();
@@ -263,22 +263,48 @@ public class Preparation  implements java.io.Serializable {
 
 
 
+
     // Add Methods
 
     public void addLoanPhysicalObject(final LoanPhysicalObject loanPhysicalObject)
     {
         this.loanPhysicalObjects.add(loanPhysicalObject);
+        loanPhysicalObject.setPreparation(this);
     }
 
-    public void addAttr(final AttributeIFace attr)
+    public void addAttr(final PreparationAttr attr)
     {
         this.attrs.add(attr);
+        attr.setPreparation(this);
     }
 
     public void addExternalResource(final ExternalResource externalResource)
     {
         this.externalResources.add(externalResource);
+        externalResource.getPreparations().add(this);
     }
 
     // Done Add Methods
+
+    // Delete Methods
+
+    public void removeLoanPhysicalObject(final LoanPhysicalObject loanPhysicalObject)
+    {
+        this.loanPhysicalObjects.remove(loanPhysicalObject);
+        loanPhysicalObject.setPreparation(null);
+    }
+
+    public void removeAttr(final PreparationAttr attr)
+    {
+        this.attrs.remove(attr);
+        attr.setPreparation(null);
+    }
+
+    public void removeExternalResource(final ExternalResource externalResource)
+    {
+        this.externalResources.remove(externalResource);
+        externalResource.getPreparations().remove(this);
+    }
+
+    // Delete Add Methods
 }

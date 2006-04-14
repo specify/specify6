@@ -261,12 +261,12 @@ public class FormValidator implements ValidationListener, DataChangeListener
      * @param changeListenerOnly indicates whether to create a validator
      * @return the component passed in
      */
-    public JComponent hookupComponent(final JComponent       comp,
-                                      final String           name,
-                                      final boolean          isRequired,
-                                      final UIValidator.Type valType,
-                                      final String           valStr,
-                                      final boolean          changeListenerOnly)
+    public DataChangeNotifier hookupComponent(final JComponent       comp,
+                                              final String           name,
+                                              final boolean          isRequired,
+                                              final UIValidator.Type valType,
+                                              final String           valStr,
+                                              final boolean          changeListenerOnly)
         {
 
         fields.put(name, comp);
@@ -289,7 +289,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
         addRuleObjectMapping(name, comp);
 
-        return comp;
+        return dcn;
     }
 
     /**
@@ -702,6 +702,16 @@ public class FormValidator implements ValidationListener, DataChangeListener
         hasChanged = true;
 
         turnOnOKButton(isFormValid);
-
     }
+
+    /**
+     * Sets whether the data in the form has changed
+     * @param hasChanged whether the data in the form has changed
+     */
+    public void setHasChanged(boolean hasChanged)
+    {
+        this.hasChanged = hasChanged;
+    }
+    
+    
 }
