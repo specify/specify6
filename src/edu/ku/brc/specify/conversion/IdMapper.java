@@ -211,12 +211,13 @@ public class IdMapper
     }
     
     /**
-     * @param oldIndex old index
-     * @return the new index
+     * Returns the New Record Id given the Old Record Id  (Usually primary key)
+     * @param oldId old Id
+     * @return the new record Id (Usually primary key)
      */
-    public Integer getNewIndexFromOld(final Integer oldIndex)
+    public Integer getNewIdFromOldId(final Integer oldId)
     {
-        if (oldIndex == null || oldIndex.intValue() == 0)
+        if (oldId == null || oldId.intValue() == 0)
         {
             return null;
         }
@@ -225,26 +226,26 @@ public class IdMapper
         {
             for (int i=0;i<ids.size();i++)
             {
-                if (oldIndex.intValue() == ids.get(i).intValue())
+                if (oldId.intValue() == ids.get(i).intValue())
                 {
                     return i;
                 }
             }
-            throw new RuntimeException("Couldn't find old index ["+oldIndex+"] for "+mapTableName);
+            throw new RuntimeException("Couldn't find old index ["+oldId+"] for "+mapTableName);
         } else
         {
             try
             {
-                Integer   newIndex = null;
+                Integer   newId = null;
                 Statement stmt     = newConn.createStatement();
-                ResultSet rs       = stmt.executeQuery("select NewID from "+mapTableName+" where OldID = " + oldIndex);
+                ResultSet rs       = stmt.executeQuery("select NewID from "+mapTableName+" where OldID = " + oldId);
                 if (rs.first())
                 {
-                    newIndex = rs.getInt(1);
+                    newId = rs.getInt(1);
 
                 } else
                 {
-                    log.error("********** Couldn't find old index ["+oldIndex+"] for "+mapTableName+" "+idName);
+                    log.error("********** Couldn't find old index ["+oldId+"] for "+mapTableName+" "+idName);
                     rs.close();
                     stmt.close();
                     return null;
@@ -252,13 +253,13 @@ public class IdMapper
                 rs.close();
                 stmt.close();
                 
-                return newIndex;
+                return newId;
                 
             } catch (SQLException ex)
             {
                 ex.printStackTrace();
                 log.error(ex);
-                throw new RuntimeException("Couldn't find old index ["+oldIndex+"] for "+mapTableName);
+                throw new RuntimeException("Couldn't find old index ["+oldId+"] for "+mapTableName);
             }            
         } 
     }
