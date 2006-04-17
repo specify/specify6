@@ -289,11 +289,6 @@ public class GenericDBConversion
             "BorrowReturnMaterial", "BorrowMaterialID", "BorrowMaterial", "BorrowMaterialID",
             "BorrowReturnMaterial", "ReturnedByID", "Agent", "AgentID",
 
-            "TaxonName", "ParentTaxonNameID", "TaxonName", "TaxonNameID",
-            //"TaxonName", "TaxonomyTypeID", "TaxonomyType", "TaxonomyTypeID",
-            "TaxonName", "AcceptedID", "TaxonName", "TaxonNameID",
-            "TaxonName", "TaxonomicUnitTypeID", "TaxonomicUnitType", "TaxonomicUnitTypeID",
-
             //"Preparation", "PhysicalObjectTypeID", "PhysicalObjectType", "PhysicalObjectTypeID",
             "Preparation", "PreparedByID", "Agent", "AgentID",
             "Preparation", "ParasiteTaxonNameID", "TaxonName", "TaxonNameID",
@@ -416,11 +411,6 @@ public class GenericDBConversion
             //"Observation", "BiologicalObjectID", "BiologicalObject", "BiologicalObjectID",
             //"Observation", "ObservationMethodID", "ObservationMethod", "ObservationMethodID",
 
-            //"TaxonomicUnitType", "RankID", "Rank", "RankID",
-            //"TaxonomicUnitType", "DirectParentRankID", "DirectParentRank", "DirectParentRankID",
-            //"TaxonomicUnitType", "RequiredParentRankID", "RequiredParentRank", "RequiredParentRankID",
-            //"TaxonomicUnitType", "TaxonomyTypeID", "TaxonomyType", "TaxonomyTypeID",
-
             "Loan", "ShipmentID", "Shipment", "ShipmentID",
             //"Loan", "CollectionID", "Collection", "CollectionID",
 
@@ -455,8 +445,6 @@ public class GenericDBConversion
             //"BiologicalObjectAttributes", "SexID", "Sex", "SexID",
             //"BiologicalObjectAttributes", "StageID", "Stage", "StageID",
 
-            //"TaxonomyType", "KingdomID", "Kingdom", "KingdomID",
-
             "LoanReturnPhysicalObject", "LoanPhysicalObjectID",        "LoanPhysicalObject", "LoanPhysicalObjectID",
             "LoanReturnPhysicalObject", "ReceivedByID",                "Agent",  "AgentID",
             "LoanReturnPhysicalObject", "DeaccessionPhysicalObjectID", "CollectionObject", "CollectionObjectID",
@@ -484,15 +472,24 @@ public class GenericDBConversion
             //"Accession", "CollectionID", "Collection", "CollectionID",
             //"Accession", "StatusID", "Status", "StatusID",
             //"Accession", "TypeID", "Type", "TypeID",
+
+        	// taxonname ID mappings
+            "TaxonName", "ParentTaxonNameID", "TaxonName", "TaxonNameID",
+            "TaxonName", "TaxonomicUnitTypeID", "TaxonomicUnitType", "TaxonomicUnitTypeID",
+            "TaxonName", "TaxonomyTypeID", "TaxonomyType", "TaxonomyTypeID",
+            "TaxonName", "AcceptedID", "TaxonName", "TaxonNameID",
+
+            // taxonomytype ID mappings
+            // NONE
+            
+            // taxonomicunittype ID mappings
+            "TaxonomicUnitType", "TaxonomyTypeID", "TaxonomyType", "TaxonomyTypeID"
         };
 
         for (int i=0;i<mappings.length;i += 4)
         {
             idMapperMgr.mapForeignKey(mappings[i], mappings[i+1], mappings[i+2], mappings[i+3]);
         }
-
-
-
     }
 
     /**
@@ -2319,11 +2316,11 @@ public class GenericDBConversion
     		String country = rs.getString(3);
     		String state = rs.getString(4);
     		String county = rs.getString(5);
-    		String islandGrp = rs.getString(6);
-    		String island = rs.getString(7);
-    		String waterBody = rs.getString(8);
-    		String drainage = rs.getString(9);
-    		String fullname = rs.getString(10);
+    		String islandGrp = null;
+    		String island = null;
+    		String waterBody = null;
+    		String drainage = null;
+    		String fullname = null;
 
     		GeoFileLine gfl = new GeoFileLine(geoId,0,0,cont,country,state,county,islandGrp,island,waterBody,drainage,fullname);
     		oldStyleLines.add(gfl);
