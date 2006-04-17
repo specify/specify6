@@ -391,6 +391,29 @@ public class BasicSQLUtils
     }
 
     /**
+     * Fills the list with FieldMetaData objects for each field in the table
+     * @param connection the connection
+     * @param tableName the table name
+     * @param fieldList the list to be filled with field/type objects (FieldMetaData)
+     */
+    public static void getFieldMetaDataFromSchema(final ResultSetMetaData rsmd,
+                                                  final List<FieldMetaData> fieldList)
+    {
+        try
+        {
+            for (int i=1;i<=rsmd.getColumnCount();i++)
+            {
+                fieldList.add(basicSQLUtils.new FieldMetaData(rsmd.getTableName(i)+"."+rsmd.getColumnName(i), rsmd.getColumnClassName(i)));
+            }
+
+        } catch (SQLException ex)
+        {
+            log.error(ex);
+            ex.printStackTrace();
+        }
+    }
+
+    /**
      * Converts an integer time in the form of YYYYMMDD to the proper Date
      * @param iDate the int to be converted
      * @return the date object
@@ -528,16 +551,16 @@ public class BasicSQLUtils
                     // to real dates and keep the verbatium date information if it is a partial date
                     for (int i = 1; i <= rsmd.getColumnCount(); i++)
                     {
-                        String  oldColName = rsmd.getColumnName(i);
-                        Integer index      = fromHash.get(oldColName);
+                        String  oldColName  = rsmd.getColumnName(i);
+                        Integer columnIndex = fromHash.get(oldColName);
 
-                        if (index == null)
+                        if (columnIndex == null)
                         {
                             log.error("Couldn't find new column for old column for date for Table[" + fromTableName + "] Col Name[" + colMetaData.get(i).getName() + "]");
                             continue;
                         }
 
-                        String newColName = colMetaData.get(index).getName();
+                        String newColName = colMetaData.get(columnIndex).getName();
 
                         Object dataObj = rs.getObject(i);
                         if (dataObj instanceof Integer && newColName.toLowerCase().indexOf("date") ==  0)
@@ -566,13 +589,13 @@ public class BasicSQLUtils
                     String colName          = fieldMetaData.getName();
                     String oldMappedColName = null;
 
-                    Integer index = fromHash.get(colName);
-                    if (index == null && colNewToOldMap != null)
+                    Integer columnIndex = fromHash.get(colName);
+                    if (columnIndex == null && colNewToOldMap != null)
                     {
                         oldMappedColName = colNewToOldMap.get(colName);
                         if (oldMappedColName != null)
                         {
-                            index = fromHash.get(oldMappedColName);
+                            columnIndex = fromHash.get(oldMappedColName);
 
                         } else if (showMappingError &&
                                    (ignoreMappingFieldNames == null || ignoreMappingFieldNames.get(colName) == null))
@@ -584,20 +607,22 @@ public class BasicSQLUtils
                         oldMappedColName = colName;
                     }
 
-                    if (index != null)
+                    if (columnIndex != null)
                     {
                         if (i > 0) str.append(", ");
-                        Object dataObj = rs.getObject(index);
+                        Object dataObj = rs.getObject(columnIndex);
 
                         if (idMapperMgr != null && oldMappedColName.endsWith("ID"))
                         {
                             IdMapper idMapper = idMapperMgr.get(fromTableName, oldMappedColName);
                             if (idMapper != null)
                             {
-                                dataObj = idMapper.getNewIndexFromOld(rs.getInt(index));
-                                /*if (rs.getObject(index) != null)
+                                int oldPrimaryKeyId = rs.getInt(columnIndex);
+                                dataObj = idMapper.getNewIdFromOldId(oldPrimaryKeyId);
+                                
+                                /*if (rs.getObject(columnIndex) != null)
                                 {
-                                    System.out.println("["+((Integer)dataObj).intValue()+"]["+rs.getInt(index)+"]");
+                                    System.out.println("["+((Integer)dataObj).intValue()+"]["+rs.getInt(columnIndex)+"]");
                                 } else
                                 {
                                     System.out.println(oldMappedColName+" was null");
