@@ -2,9 +2,6 @@ package edu.ku.brc.specify;
 
 import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.deleteAllRecordsFromTable;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -36,7 +33,6 @@ import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.dbsupport.ResultsPager;
-import edu.ku.brc.specify.dbsupport.BasicSQLUtils.FieldMetaData;
 import edu.ku.brc.specify.tests.ObjCreatorHelper;
 
 /**
@@ -172,7 +168,7 @@ public class SpecifyDBConverter
 
         try
         {
-           GenericDBConversion.setShouldCreateMapTables(true);
+        	GenericDBConversion.setShouldCreateMapTables(true);
             GenericDBConversion.setShouldDeleteMapTables(true);
 
             boolean doAll = true; // when converting
@@ -190,7 +186,8 @@ public class SpecifyDBConverter
                     // when mapping IDs
                     BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(new String[] {"MethodID",  "RoleID",  "CollectionID",  "ConfidenceID",
                                                                                 "TypeStatusNameID",  "ObservationMethodID",  "StatusID",
-                                                                                "TypeID",  "ShipmentMethodID", "RankID"});
+                                                                                "TypeID",  "ShipmentMethodID", "RankID", "DirectParentRankID",
+                                                                                "RequiredParentRankID"});
                     conversion.mapIds();
                     BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(null);
                 }
@@ -217,6 +214,13 @@ public class SpecifyDBConverter
                     conversion.createCollectionRecords();
                 }
 
+                boolean doTaxonomy = true;
+                if( doTaxonomy || doAll )
+                {
+                	conversion.copyTaxonTreeDefs();
+                	conversion.copyTaxonTreeDefItems();
+                	conversion.copyTaxonRecords();
+                }
 
                 boolean doTheRest = true;
                 if (doTheRest || doAll)
