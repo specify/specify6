@@ -113,7 +113,7 @@ public class DBSchemaTest extends TestCase
             stmt.close();
 
             int oldInx = -2135666521;
-            newInx = idMapper.getNewIndexFromOld(oldInx);
+            newInx = idMapper.getNewIdFromOldId(oldInx);
             log.info("New Index ["+newInx+"] for old ["+oldInx+"]");
             assertTrue(newInx == 100);
 
@@ -132,7 +132,7 @@ public class DBSchemaTest extends TestCase
             stmt.close();
 
             oldInx = 74;
-            newInx = idMapper.getNewIndexFromOld(oldInx);
+            newInx = idMapper.getNewIdFromOldId(oldInx);
             log.info("New Index ["+newInx+"] for old ["+oldInx+"]");
             assertTrue(newInx == 8);
 
