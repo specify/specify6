@@ -2162,8 +2162,8 @@ public class GenericDBConversion
     	if( !copyTable(oldDB.getConnectionToDB(),
     			DBConnection.getConnection(),
     			sql,
-    			"taxonomicunittype",
-    			"taxontreedefitem",
+    			"taxonname",
+    			"taxon",
     			newToOldColMap,
     			null) )
     	{
