@@ -583,6 +583,8 @@ public class BasicSQLUtils
                 str.append("INSERT INTO " + toTableName + " VALUES (");
 
                 id = rs.getString(1);
+                
+                // for each column in the new DB table...
                 for (int i = 0; i < colMetaData.size(); i++)
                 {
                     FieldMetaData fieldMetaData = colMetaData.get(i);
@@ -617,8 +619,16 @@ public class BasicSQLUtils
                             IdMapper idMapper = idMapperMgr.get(fromTableName, oldMappedColName);
                             if (idMapper != null)
                             {
-                                int oldPrimaryKeyId = rs.getInt(columnIndex);
-                                dataObj = idMapper.getNewIdFromOldId(oldPrimaryKeyId);
+                            	Object oldPrimKeyValue = rs.getObject(columnIndex);
+                            	if( oldPrimKeyValue == null )
+                            	{
+                            		dataObj = null;
+                            	}
+                            	else
+                            	{
+                            		int oldPrimaryKeyId = rs.getInt(columnIndex);
+                            		dataObj = idMapper.getNewIdFromOldId(oldPrimaryKeyId);
+                            	}
                                 
                                 /*if (rs.getObject(columnIndex) != null)
                                 {

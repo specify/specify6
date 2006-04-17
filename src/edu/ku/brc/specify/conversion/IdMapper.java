@@ -217,7 +217,7 @@ public class IdMapper
      */
     public Integer getNewIdFromOldId(final Integer oldId)
     {
-        if (oldId == null || oldId.intValue() == 0)
+        if (oldId == null )
         {
             return null;
         }
