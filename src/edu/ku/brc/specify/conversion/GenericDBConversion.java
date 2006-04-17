@@ -1141,7 +1141,7 @@ public class GenericDBConversion
             IdMapper idMapper =  idMapperMgr.get(fromTableName, oldColName);
             if (idMapper != null)
             {
-                return idMapper.getNewIndexFromOld((Integer)data);
+                return idMapper.getNewIdFromOldId((Integer)data);
             } else
             {
                 //throw new RuntimeException("No Map for ["+fromTableName+"]["+oldMappedColName+"]");
@@ -1552,7 +1552,7 @@ public class GenericDBConversion
                     {
                         if (agentIdMapper != null)
                         {
-                            str.append(getStrValue(agentIdMapper.getNewIndexFromOld(preparedById)));
+                            str.append(getStrValue(agentIdMapper.getNewIdFromOldId(preparedById)));
                         } else
                         {
                             log.error("No Map for PreparedByID["+preparedById+"]");
@@ -1606,7 +1606,7 @@ public class GenericDBConversion
                             IdMapper idMapper =  idMapperMgr.get("collectionobject", mappedName);
                             if (idMapper != null)
                             {
-                                data = idMapper.getNewIndexFromOld(rs.getInt(index));
+                                data = idMapper.getNewIdFromOldId(rs.getInt(index));
                             } else
                             {
                                 System.out.println("No Map for [collectionobject]["+mappedName+"]");
@@ -1771,7 +1771,7 @@ public class GenericDBConversion
                                 IdMapper idMapper =  idMapperMgr.get(tableName, newFieldName);
                                 if (idMapper != null)
                                 {
-                                    data = idMapper.getNewIndexFromOld(rs.getInt(index+1));
+                                    data = idMapper.getNewIdFromOldId(rs.getInt(index+1));
                                 } else
                                 {
                                     log.error("No Map for ["+tableName+"]["+newFieldName+"]");
@@ -2229,7 +2229,7 @@ public class GenericDBConversion
     		int geoId = rs.getInt(1);
             if (idMapper != null)
             {
-                geoId = idMapper.getNewIndexFromOld(geoId);
+                geoId = idMapper.getNewIdFromOldId(geoId);
             }
 
     		String cont = rs.getString(2);
