@@ -2090,6 +2090,89 @@ public class GenericDBConversion
     	return ttd;
     }
     
+    public void copyTaxonTreeDefs()
+    {
+    	String sql = "SELECT * FROM taxonomytype";
+    	
+    	Hashtable<String,String> newToOldColMap = new Hashtable<String,String>();
+    	newToOldColMap.put("TreeDefID", "TaxonomyTypeID");
+    	newToOldColMap.put("Name", "TaxonomyTypeName");
+    	
+    	String[] ignoredFields = {"Remarks"};
+    	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
+    	
+    	log.info("Copying taxonomy tree definitions from 'taxonomytype' table");
+    	if( !copyTable(oldDB.getConnectionToDB(),
+    			DBConnection.getConnection(),
+    			sql,
+    			"taxonomytype",
+    			"taxontreedef",
+    			newToOldColMap,
+    			null) )
+    	{
+    		log.error("Table 'taxonomytype' didn't copy correctly");
+    	}
+    	
+    	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
+    }
+    
+    public void copyTaxonTreeDefItems()
+    {
+    	String sql = "SELECT * FROM taxonomicunittype";
+    	
+    	Hashtable<String,String> newToOldColMap = new Hashtable<String,String>();
+    	newToOldColMap.put("TreeDefItemID", "TaxonomicUnitTypeID");
+    	newToOldColMap.put("Name", "RankName");
+    	newToOldColMap.put("TreeDefID", "TaxonomyTypeID");
+    	
+    	String[] ignoredFields = {"IsEnforced", "ParentItemID"};
+    	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
+    	
+    	log.info("Copying taxonomy tree definition items from 'taxonomicunittype' table");
+    	if( !copyTable(oldDB.getConnectionToDB(),
+    			DBConnection.getConnection(),
+    			sql,
+    			"taxonomicunittype",
+    			"taxontreedefitem",
+    			newToOldColMap,
+    			null) )
+    	{
+    		log.error("Table 'taxonomicunittype' didn't copy correctly");
+    	}
+    	
+    	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
+    }
+    
+    public void copyTaxonRecords()
+    {
+    	String sql = "SELECT * FROM taxonname";
+    	
+    	Hashtable<String,String> newToOldColMap = new Hashtable<String,String>();
+    	newToOldColMap.put("TreeID", "TaxonNameID");
+    	newToOldColMap.put("ParentID", "ParentTaxonNameID");
+    	newToOldColMap.put("TreeDefID", "TaxonomyTypeID");
+    	newToOldColMap.put("TreeDefItemID", "TaxonomicUnitTypeID");
+    	newToOldColMap.put("Name", "TaxonName");
+    	newToOldColMap.put("FullTaxon", "FullTaxonName");
+    	
+    	String[] ignoredFields = {"GUID"};
+    	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
+    	
+    	log.info("Copying taxon records from 'taxonname' table");
+    	if( !copyTable(oldDB.getConnectionToDB(),
+    			DBConnection.getConnection(),
+    			sql,
+    			"taxonomicunittype",
+    			"taxontreedefitem",
+    			newToOldColMap,
+    			null) )
+    	{
+    		log.error("Table 'taxonname' didn't copy correctly");
+    	}
+    	
+    	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
+    }
+    
     public GeographyTreeDef createStandardGeographyDefinitionAndItems()
     {
     	Session session = HibernateUtil.getCurrentSession();
