@@ -619,14 +619,16 @@ public class BasicSQLUtils
                             IdMapper idMapper = idMapperMgr.get(fromTableName, oldMappedColName);
                             if (idMapper != null)
                             {
-                            	Object oldPrimKeyValue = rs.getObject(columnIndex);
-                            	if( oldPrimKeyValue == null )
+                            	int oldPrimaryKeyId = rs.getInt(columnIndex);
+                            	
+                            	// if the value was null, getInt() returns 0
+                            	// use wasNull() to distinguish real 0 from a null return
+                            	if( rs.wasNull() )
                             	{
                             		dataObj = null;
                             	}
                             	else
                             	{
-                            		int oldPrimaryKeyId = rs.getInt(columnIndex);
                             		dataObj = idMapper.getNewIdFromOldId(oldPrimaryKeyId);
                             	}
                                 
