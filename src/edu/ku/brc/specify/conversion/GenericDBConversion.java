@@ -74,6 +74,7 @@ import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.tests.ObjCreatorHelper;
 import edu.ku.brc.specify.ui.db.PickList;
 import edu.ku.brc.specify.ui.db.PickListItem;
+import edu.ku.brc.util.Pair;
 
 /**
  * This class is used for copying over the and creating all the tables that are not specify to any one collection.
@@ -2113,9 +2114,18 @@ public class GenericDBConversion
     	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
     }
     
-    public void copyTaxonTreeDefItems()
+    /**
+     * Converts the old taxonomy records to the new schema.  In general,
+     * the process is...
+     * 	1. Copy all columns that don't require any modification (other than col. name)
+     *  2. Set the proper values in the IsEnforced column
+     *  3. Set the proper values in the ParentItemID column
+     * 
+     * @throws SQLException
+     */
+    public void convertTaxonTreeDefItems() throws SQLException
     {
-    	String sql = "SELECT * FROM taxonomicunittype";
+    	String sqlStr = "SELECT * FROM taxonomicunittype";
     	
     	Hashtable<String,String> newToOldColMap = new Hashtable<String,String>();
     	newToOldColMap.put("TreeDefItemID", "TaxonomicUnitTypeID");
@@ -2125,10 +2135,11 @@ public class GenericDBConversion
     	String[] ignoredFields = {"IsEnforced", "ParentItemID"};
     	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
     	
+    	// Copy over most of the columns in the old table to the new one
     	log.info("Copying taxonomy tree definition items from 'taxonomicunittype' table");
     	if( !copyTable(oldDB.getConnectionToDB(),
     			DBConnection.getConnection(),
-    			sql,
+    			sqlStr,
     			"taxonomicunittype",
     			"taxontreedefitem",
     			newToOldColMap,
@@ -2136,8 +2147,111 @@ public class GenericDBConversion
     	{
     		log.error("Table 'taxonomicunittype' didn't copy correctly");
     	}
-    	
+
     	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
+
+    	// JDBC Statments for use throughout process
+        Statement oldDbStmt = oldDB.getConnectionToDB().createStatement();
+		Statement newDbStmt = DBConnection.getConnection().createStatement();
+
+    	// get each individual TaxonomyTypeID value
+    	sqlStr = "SELECT DISTINCT TaxonomyTypeID from taxonomicunittype";
+		ResultSet rs = oldDbStmt.executeQuery(sqlStr);
+
+    	Vector<Integer> typeIds = new Vector<Integer>();
+    	while(rs.next())
+    	{
+    		Integer typeId = rs.getInt(1);
+    		if( !rs.wasNull() )
+    		{
+        		typeIds.add(typeId);
+    		}
+    	}
+
+    	// will be used to map old TaxonomyTypeID values to TreeDefID values
+		IdMapperMgr idMapperMgr = IdMapperMgr.getInstance();
+		IdMapper typeIdMapper = idMapperMgr.get("taxonomytype", "TaxonomyTypeID");
+    	
+    	// for each value of TaxonomyType...
+    	for( Integer typeId: typeIds )
+    	{
+    		// get all of the values of RequiredParentRankID (the enforced ranks)
+    		sqlStr = "SELECT DISTINCT RequiredParentRankID from taxonomicunittype WHERE TaxonomyTypeID=" + typeId;
+    		rs = oldDbStmt.executeQuery(sqlStr);
+    		
+    		Vector<Integer> enforcedIds = new Vector<Integer>();
+    		while( rs.next() )
+    		{
+    			Integer reqId = rs.getInt(1);
+    			if( !rs.wasNull() )
+    			{
+    				enforcedIds.add(reqId);
+    			}
+    		}
+    		
+    		// now we have a vector of the required/enforced rank IDs
+    		// fix the new DB values accordingly
+    		
+    		// what is the corresponding TreeDefID?
+    		int treeDefId = typeIdMapper.getNewIdFromOldId(typeId);
+    		
+    		StringBuilder sqlUpdate = new StringBuilder("UPDATE TaxonTreeDefItem SET IsEnforced=TRUE WHERE TreeDefID="+treeDefId+" AND RankID IN (");
+    		// add all the enforced ranks
+    		for( int i = 0; i < enforcedIds.size(); ++i )
+    		{
+    			sqlUpdate.append(enforcedIds.get(i));
+    			if( i < enforcedIds.size()-1 )
+    			{
+    				sqlUpdate.append(",");
+    			}
+    		}
+    		sqlUpdate.append(")");
+    		
+    		log.info(sqlUpdate);
+    		
+    		int rowsUpdated = newDbStmt.executeUpdate(sqlUpdate.toString());
+    		log.info(rowsUpdated + " rows updated");
+    	}
+    	
+    	// at this point, we've set all the IsEnforced fields that need to be TRUE
+    	// now we need to set the others to FALSE
+    	String setToFalse = "UPDATE TaxonTreeDefItem SET IsEnforced=FALSE WHERE IsEnforced IS NULL";
+    	int rowsUpdated = newDbStmt.executeUpdate(setToFalse);
+    	log.info("IsEnforced set to FALSE in " + rowsUpdated + " rows");
+    	
+    	// we still need to fix the ParentItemID values to point at each row's parent
+
+    	// we'll work with the items in sets as determined by the TreeDefID
+    	for( Integer typeId: typeIds )
+    	{
+    		int treeDefId = typeIdMapper.getNewIdFromOldId(typeId);
+        	sqlStr = "SELECT TreeDefItemID FROM TaxonTreeDefItem WHERE TreeDefID="+treeDefId+" ORDER BY RankID";
+        	rs = newDbStmt.executeQuery(sqlStr);
+        	
+        	boolean atLeastOneRecord = rs.next();
+        	if( !atLeastOneRecord )
+        	{
+        		continue;
+        	}
+        	int prevTreeDefItemId = rs.getInt(1);
+        	Vector<Pair<Integer,Integer>> idAndParentIdPairs = new Vector<Pair<Integer,Integer>>();
+        	while( rs.next() )
+        	{
+        		int treeDefItemId = rs.getInt(1);
+        		idAndParentIdPairs.add(new Pair<Integer,Integer>(treeDefItemId,prevTreeDefItemId));
+        		prevTreeDefItemId = treeDefItemId;
+        	}
+        	
+        	// now we have all the pairs (ID,ParentID) in a Vector of Pair objects
+        	rowsUpdated = 0;
+        	for( Pair<Integer,Integer> idPair: idAndParentIdPairs )
+        	{
+        		sqlStr = "UPDATE TaxonTreeDefItem SET ParentItemID=" + idPair.second + " WHERE TreeDefItemID=" + idPair.first;
+        		rowsUpdated += newDbStmt.executeUpdate(sqlStr);
+        	}
+        	
+        	log.info("Fixed parent pointers on " + rowsUpdated + " rows");
+    	}
     }
     
     public void copyTaxonRecords()
@@ -2740,39 +2854,6 @@ public class GenericDBConversion
                 return i;
             }
         }
-    }
-
-    /**
-     *
-     */
-    public void convertTaxon()
-    {
-        // Ignore these field names from new table schema when mapping IDs
-        BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(new String[] {"NationalParkName", "GUID", "Current", "TreeDefID", "TreeDefItemID"});
-
-        //boolean showMappingErrors = BasicSQLUtils.isShowMappingError();
-        //BasicSQLUtils.setShowMappingError(false); // turn off notification because of errors with TaxonTreeDefID
-
-        String sql = "select * from taxonname";
-
-        BasicSQLUtils.deleteAllRecordsFromTable("taxon");
-
-        // Map these names from the old DB to the new DB
-        //                                <New Name>,   <Old Name>
-        String[] mappings = new String[] {"TreeID",    "TaxonNameID",
-                                          "ParentID",  "ParentTaxonNameID",
-                                          "Name",      "TaxonName",
-                                          "FullTaxon", "FullTaxonName"};
-
-        if (copyTable(oldDB.getConnectionToDB(), DBConnection.getConnection(), sql, "taxonname", "taxon", createFieldNameMap(mappings), null))
-        {
-            log.info("TaxonName copied ok.");
-        } else
-        {
-            log.error("Copying TaxonName (fields) to new Taxon");
-        }
-        //BasicSQLUtils.setShowMappingError(showMappingErrors);
-        BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
     }
 
     /**

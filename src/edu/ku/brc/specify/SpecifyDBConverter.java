@@ -157,7 +157,7 @@ public class SpecifyDBConverter
      */
     public static void main(String args[]) throws Exception
     {
-        String oldDatabaseName = "demo_fish4";
+        String oldDatabaseName = "demo_fish2";
 
         DBConnection oldDB       = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/"+oldDatabaseName, "rods", "rods");
         IdMapperMgr  idMapperMgr = new IdMapperMgr(oldDB.getConnectionToDB());
@@ -214,18 +214,17 @@ public class SpecifyDBConverter
                     conversion.createCollectionRecords();
                 }
 
-                boolean doTaxonomy = true;
+                boolean doTaxonomy = false;
                 if( doTaxonomy || doAll )
                 {
                 	conversion.copyTaxonTreeDefs();
-                	conversion.copyTaxonTreeDefItems();
+                	conversion.convertTaxonTreeDefItems();
                 	conversion.copyTaxonRecords();
                 }
 
-                boolean doTheRest = true;
+                boolean doTheRest = false;
                 if (doTheRest || doAll)
                 {
-                    conversion.convertTaxon();
                     conversion.convertLocality();
 
                     // convert 'Geography' table
@@ -234,7 +233,6 @@ public class SpecifyDBConverter
                     Vector<GeoFileLine> oldGeoRecords = conversion.extractGeographyFromOldDb("geography");
                     GeographyTreeDef treeDef = conversion.createStandardGeographyDefinitionAndItems();
                     conversion.loadSpecifyGeographicNames("geography", oldGeoRecords, treeDef);
-
                 }
 
                 boolean doFurtherTesting = false;
