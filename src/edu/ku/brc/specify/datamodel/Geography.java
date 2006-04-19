@@ -66,6 +66,7 @@ public class Geography  implements java.io.Serializable,Treeable {
         definition = null;
         definitionItem = null;
         parent = null;
+        children = new HashSet<Geography>();
     }
     // End Initializer 
 

@@ -62,6 +62,7 @@ public class Location  implements java.io.Serializable,Treeable {
         parent = null;
         preparations = new HashSet<Preparation>();
         containers = new HashSet<Container>();
+        children = new HashSet<Location>();
     }
     // End Initializer
 

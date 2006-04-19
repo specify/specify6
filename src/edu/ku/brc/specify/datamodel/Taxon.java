@@ -92,6 +92,7 @@ public class Taxon  implements java.io.Serializable,Treeable {
         definitionItem = null;
         parent = null;
         externalResources = new HashSet<ExternalResource>();
+        children = new HashSet<Taxon>();
     }
     // End Initializer   
 
