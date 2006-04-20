@@ -73,7 +73,8 @@ public class DataSetterForObj implements DataObjectSettable
             }
         } catch (Exception ex)
         {
-            log.error("Trouble setting value field named[" + fieldName.trim()+ "] in data object [" + dataObj.getClass().toString() + "]");
+            log.error("Trouble setting value field named[" + (fieldName != null ? fieldName.trim() : "null")+ 
+                    "] in data object [" + (dataObj != null ? dataObj.getClass().toString() : "null")+ "]");
             log.error(ex);
             ex.printStackTrace();
         }

@@ -31,6 +31,7 @@ import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.specify.ui.db.GenericDisplayFrame;
 import edu.ku.brc.specify.ui.forms.persist.AltView;
 import edu.ku.brc.specify.ui.forms.persist.View;
 import edu.ku.brc.specify.ui.validation.DataChangeListener;
@@ -71,7 +72,12 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected AltView.CreationMode         createWithMode  = AltView.CreationMode.None;
     protected Vector<FormValidator>        formValidators  = new Vector<FormValidator>();
     
+    protected boolean                      createRecordSetController;
+    protected boolean                      createViewSwitcher;
+    
     protected List<MultiView>              kids            = new ArrayList<MultiView>();
+    
+    protected List<GenericDisplayFrame>   displayFrames  = null;
 
     /**
      * Constructor - Note that createWithMode can be null and is passed in from parent ALWAYS.
@@ -79,20 +85,26 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      * @param mvParent parent of this MultiView the root MultiView is null
      * @param view the view to create for
      * @param createWithMode how the form should be created (Noe, Edit or View mode)
+     * @param createViewSwitcher can be used to make sure that the multiview switcher is not created
+     * @param createRecordSetController indicates that a RecordSet Contoller should be created
      */
     public MultiView(final MultiView mvParent, 
-                     final View view, 
-                     final AltView.CreationMode createWithMode)
+                     final View view,
+                     final AltView.CreationMode createWithMode,
+                     final boolean createRecordSetController,
+                     final boolean createViewSwitcher)
     {
         setLayout(cardLayout);
 
         this.mvParent       = mvParent;
         this.view           = view;
         this.createWithMode = createWithMode;
+        this.createRecordSetController = createRecordSetController;
+        this.createViewSwitcher        = createViewSwitcher;
 
         specialEditView = view.isSpecialViewEdit();
-
-        createDefaultViewable();
+        
+        createDefaultViewable(createRecordSetController, createViewSwitcher);
     }
     
     /**
@@ -121,6 +133,15 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
+     * Returns the View (the definition)
+     * @return the View (the definition)
+     */
+    public View getView()
+    {
+        return view;
+    }
+
+    /**
      * Returns all the Multiview children
      * @return all the Multiview children
      */
@@ -132,19 +153,23 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     /**
      *
      */
-    public void aboutToShow()
+    public void aboutToShow(final boolean show)
     {
         if (currentView != null)
         {
-            currentView.aboutToShow();
+            currentView.aboutToShow(show);
         }
+        showDisplayFrames(show);
     }
 
     /**
      * Creates the Default Viewable for this view (it chooses the "default" ViewDef
+     * @param createRecordSetController indicates that a RecordSet Contoller should be created
+    * @param createViewSwitcher can be used to make sure that the multiview switcher is not created
      * @return return the default Viewable (ViewDef)
      */
-    protected Viewable createDefaultViewable()
+    protected Viewable createDefaultViewable(final boolean createRecordSetController,
+                                             final boolean createViewSwitcher)
     {
         AltView  altView;
         if (createWithMode != null)
@@ -158,7 +183,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
         editable = altView.getMode() == AltView.CreationMode.Edit;
 
-        Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this);
+        Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createRecordSetController, createViewSwitcher);
         viewable.setParentDataObj(parentDataObj);
         
         add(viewable, altView.getName());
@@ -239,11 +264,12 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                 View view = ViewMgr.getView(currentView.getView().getViewSetName(), altView.getView().getName());
                 if (view != null)
                 {
+                    currentView.aboutToShow(false);
                     editable       = altView.getMode() == AltView.CreationMode.Edit;
                     createWithMode =  altView.getMode();
-                    viewable = ViewFactory.createFormView(this, view, altView.getName(), data);
+                    viewable = ViewFactory.createFormView(this, view, altView.getName(), data, createRecordSetController, createViewSwitcher);
                     add(viewable, altView.getName());
-                    viewable.aboutToShow();
+                    viewable.aboutToShow(true);
                     cardLayout.show(this, altView.getName());
 
 
@@ -258,7 +284,11 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
         } else
         {
-            viewable.aboutToShow();
+            if (currentView != null)
+            {
+                currentView.aboutToShow(false);
+            }
+            viewable.aboutToShow(true);
             cardLayout.show(this, name);
         }
 
@@ -367,6 +397,48 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         return this.mvParent == null;
     }
     
+  
+    /**
+     * Registers "display" window for display "sub object" information
+     * @param frame the frame to be added 
+     */
+    public void registerDisplayFrame(final GenericDisplayFrame frame)
+    {
+        if (displayFrames == null)
+        {
+            displayFrames  = new ArrayList<GenericDisplayFrame>();
+        }
+        displayFrames.add(frame);
+    }
+    
+    /**
+     * Unregsters a frame from the MultiView list of sub-frames
+     * @param frame the frame to be unregistered (removed)
+     */
+    public void unregisterDisplayFrame(final GenericDisplayFrame frame)
+    {
+        if (displayFrames != null)
+        {
+            displayFrames.remove(frame);
+        }
+        
+    }
+    
+    /**
+     * Shows or hides all the DisplayFrame attached to this MultiView
+     * @param show true - show, false - hide
+     */
+    public void showDisplayFrames(final boolean show)
+    {
+        if (displayFrames != null)
+        {
+            for (GenericDisplayFrame frame : displayFrames)
+            {
+                frame.setVisible(show);
+            }
+        }
+    }
+    
 
     /**
      * Returns the current
@@ -376,6 +448,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         return currentView;
     }
+
     
     //-----------------------------------------------------
     // ValidationListener

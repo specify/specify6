@@ -460,6 +460,10 @@ public class ViewLoader
                             {
                                 dspUIType = getAttr(cellElement, "dspuitype", "list");
 
+                            } else if (uitype.equals("querycbx"))
+                            {
+                                dspUIType = getAttr(cellElement, "dspuitype", "textfieldinfo");
+
                             } else if (uitype.equals("formattedtext"))
                             {
                                 validationRule = getAttr(cellElement, "validation", "formatted");

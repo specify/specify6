@@ -123,7 +123,7 @@ public class QueryTask extends BaseTask
         {
             tbList.add(btn);
         }
-        list.add(new ToolBarItemDesc(btn.getCompleteComp()));
+        list.add(new ToolBarItemDesc(btn));
         
         return list;
         

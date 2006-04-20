@@ -1,0 +1,137 @@
+/* Filename:    $RCSfile: DropDownButtonStateful.java,v $
+ * Author:      $Author: rods $
+ * Revision:    $Revision: 1.1 $
+ * Date:        $Date: 2005/10/19 19:59:54 $
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+package edu.ku.brc.specify.ui;
+
+import java.awt.BorderLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+import javax.swing.border.EmptyBorder;
+
+/**
+ *  
+ * Creates a panel containing an icon and button with a focus "ring" when the mouse is hovering; and it is "stateful"
+ * because the buttons toggles between 2 or more states by clicking on the main button. Or you can switch states by selecting
+ * a "state" from the list.
+ * 
+ * @author Rod Spears
+ *
+ */
+@SuppressWarnings("serial")
+public class DropDownButtonStateful extends DropDownButton
+{
+    protected ImageIcon[]            imgIcons    = null;
+    protected String                 currLabel   = null;
+    protected int                    currInx     = 0;     
+    
+    /**
+     * Constructs a UI component with a label and an icon which can be clicked to execute an action
+     * @param label the text labels for the UI
+     * @param imgIcon the icon for the UI
+     */
+    public DropDownButtonStateful(final String[] labels, final ImageIcon[] imgIcons)
+    {
+       super(imgIcons[0]);
+       
+        setBorder(new EmptyBorder(new Insets(1,1,1,1)));
+        setLayout(new BorderLayout());
+       
+        currInx = 0;
+        this.imgIcons    = imgIcons;
+        
+        ActionListener actionListener = new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                itemSelected(actionEvent.getSource());
+                for (ActionListener al : listeners)
+                {
+                    al.actionPerformed(actionEvent);
+                }
+            }
+        };
+          
+        // menus need to be set up before the the init
+        menus = new ArrayList<JComponent>();
+        for (int i=0;i<imgIcons.length;i++)
+        {
+            JMenuItem menuItem = new JMenuItem(labels[i], imgIcons[i]);
+            menuItem.addActionListener(actionListener);
+            menus.add(menuItem);
+        }
+        
+        init(null, imgIcons[0]);
+        
+        mainBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae)
+            {
+                currInx++;
+                if (currInx >= imgIcons.length)
+                {
+                    currInx = 0;
+                }
+                setCurrentIndex(currInx);
+            }
+        });
+    }
+    
+    /**
+     * Sets Current Index
+     * @param index the new index
+     */
+    public void setCurrentIndex(final int index)
+    {
+        currInx = index;
+        mainBtn.setIcon(imgIcons[currInx]);
+    }
+    
+    /**
+     * Returns the current state index
+     * @return the current state index
+     */
+    public int getCurrentIndex()
+    {
+        return currInx;
+    }
+    
+    /**
+     * Tells the class that an items was selected from the list
+     * @param obj the object that made the state change (a JMenuItem)
+     */
+    protected void itemSelected(final Object obj)
+    {
+        if (obj instanceof JMenuItem)
+        {
+            JMenuItem mi = (JMenuItem)obj;
+            for (int i=0;i<imgIcons.length;i++)
+            {
+                if (imgIcons[i] == mi.getIcon())
+                {
+                    setCurrentIndex(i);
+                    return;
+                }
+            }
+        }
+    }
+   
+}

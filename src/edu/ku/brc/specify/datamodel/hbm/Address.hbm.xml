@@ -9,7 +9,7 @@
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
-
+    
     <property name="address" type="java.lang.String" column="Address" not-null="true" length="255">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Address as it should appear on mailing labels</meta>
@@ -59,17 +59,42 @@
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>
+    
+    <!-- AgentAddress -->
+    
+    <property name="isPrimary" type="boolean" column="IsPrimary">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Is this the agent's primary address and/or phone?</meta>
+    </property>
+    
+    <property name="phone1" type="java.lang.String" column="Phone1" length="50">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>    
+    </property>
+    
+    <property name="phone2" type="java.lang.String" column="Phone2" length="50">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>    
+    </property>
+    
+    <property name="fax" type="java.lang.String" column="Fax" length="50">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>    
+    </property>
+    
+    <property name="roomOrBuilding" type="java.lang.String" column="RoomOrBuilding" length="50">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>    
+    </property>
+    
 
     <!-- Associations -->
   
-    <!-- bi-directional one-to-many association to AgentAddress -->
-    <set name="agentAddresses" lazy="true" inverse="true" cascade="none">
-        <meta attribute="field-description"></meta>
-        <key>
-            <column name="AddressID"/>
-        </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.AgentAddress"/>
-    </set>
+    <!-- bi-directional many-to-one association to Agent -->
+    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true" cascade="none" index="IX_AddressAgentID" unique-key="IX_LoanAgents">
+        <meta attribute="field-description">ID of agent at AgentID</meta>
+        <column name="AgentID"/>
+    </many-to-one>
 
 </class>
 </hibernate-mapping>

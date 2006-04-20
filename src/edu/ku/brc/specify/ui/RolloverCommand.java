@@ -120,6 +120,16 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
      * @param label the text label for the UI
      * @param imgIcon the icon for the UI
      */
+    protected RolloverCommand()
+    {
+    
+    }
+    
+    /**
+     * Constructs a UI component with a label and an icon which can be clicked to execute an action
+     * @param label the text label for the UI
+     * @param imgIcon the icon for the UI
+     */
     public RolloverCommand(final String label, final ImageIcon imgIcon)
     {
        

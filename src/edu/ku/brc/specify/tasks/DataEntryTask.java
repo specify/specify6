@@ -26,19 +26,17 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 
 import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.core.NavBoxIFace;
-import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
-import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
-import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
@@ -53,6 +51,8 @@ import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.TreeTableViewer;
 import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.forms.ViewMgr;
+import edu.ku.brc.specify.ui.forms.persist.View;
 
 /**
  * This task controls the data entry forms
@@ -62,6 +62,8 @@ import edu.ku.brc.specify.ui.UICacheManager;
  */
 public class DataEntryTask extends BaseTask
 {
+    private static Log log = LogFactory.getLog(DataEntryTask.class);
+            
     public static final String DATA_ENTRY = "Data_Entry";
     
     // Data Members
@@ -111,12 +113,53 @@ public class DataEntryTask extends BaseTask
      * Opens a pane with a form
      * @param formName the name of the form to be opened
      */
-    public void openForm(final String formName)
+    public void openView(final String formName)
     {
         DataEntryPane formPane = new DataEntryPane(name, this);
         UICacheManager.getSubPaneMgr().addPane(formPane);
-
     }
+    
+    /**
+     * Opens a pane with a form
+     * @param formName the name of the form to be opened
+     */
+    public void openView(final String viewSetName, final String viewName, final String mode, final Object data)
+    {
+        View view = ViewMgr.getView(viewSetName, viewName);
+        FormPane formPane = new FormPane(view.getName(), this, viewSetName, viewName, data);
+        UICacheManager.getSubPaneMgr().addPane(formPane);
+    }
+    
+    /**
+     * Opens a pane with a form
+     * @param formName the name of the form to be opened
+     */
+    public void openView(final View view, final String mode, final String idStr)
+    {
+        int tableId = DBTableIdMgr.lookupIdByClassName(view.getClassName());
+        
+        Query query = DBTableIdMgr.getQueryForTable(tableId, Integer.parseInt(idStr));
+        try
+        {
+            List data = query.list();
+            if (data != null && data.size() > 0)
+            {
+                FormPane formPane = new FormPane(view.getName(), this, view.getViewSetName(), view.getName(), data.get(0));
+                UICacheManager.getSubPaneMgr().addPane(formPane);
+                
+            } else
+            {
+                // No Data Error
+            }
+        
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            ex.printStackTrace();
+        }
+    }
+    
+
     
     public void openTreeEditor(final Class treeableClass, final String name)
     {
@@ -134,7 +177,7 @@ public class DataEntryTask extends BaseTask
 
         String defaultFormName = DBTableIdMgr.lookupDefaultFormNameById(recordSet.getTableId());
         
-        //FormView formView = ViewMgr.getView("Fish Views", tableId);
+        //FormView formView = ViewMgr.getView("Main Views", tableId);
         
         Query query = DBTableIdMgr.getQueryForTable(recordSet);
         java.util.List list = query.list();
@@ -143,7 +186,7 @@ public class DataEntryTask extends BaseTask
         System.out.println("ResultSet: "+list.size());
         
         // XXX Hard Coded ViewSet Name
-        FormPane form = new FormPane(name, this, "Fish Views", defaultFormName, query.list()); 
+        FormPane form = new FormPane(name, this, "Main Views", defaultFormName, query.list()); 
         addSubPaneToMgr(form);
     }
     
@@ -187,7 +230,7 @@ public class DataEntryTask extends BaseTask
         
         ToolBarDropDownBtn btn = createToolbarButton(DATA_ENTRY,   "dataentry.gif",    "dataentry_hint");
        
-        list.add(new ToolBarItemDesc(btn.getCompleteComp()));
+        list.add(new ToolBarItemDesc(btn));
         
         return list;
     }
@@ -244,6 +287,23 @@ public class DataEntryTask extends BaseTask
                 createFormFor(recordSet);
                 
                 //UICacheManager.addSubPane(new SimpleDescPane(title, this, "This is where we would be editing the "+recordSet.getItems().size()+" records in the RecordSet."));
+            } else if (cmdAction.getData() instanceof Object[])
+            {
+                Object[] dataList = (Object[])cmdAction.getData();
+                View   view = (View)dataList[0];
+                String mode = (String)dataList[1];
+                String idStr = (String)dataList[2];
+                openView(view, mode, idStr);
+            }
+        } if (cmdAction.getAction().equals("ShowView"))
+        {
+            if (cmdAction.getData() instanceof Object[])
+            {
+                Object[] dataList = (Object[])cmdAction.getData();
+                View   view = (View)dataList[0];
+                String mode = (String)dataList[1];
+                String idStr = (String)dataList[2];
+                openView(view, mode, idStr);
             }
         }
     }
@@ -267,7 +327,7 @@ public class DataEntryTask extends BaseTask
         }
         public void actionPerformed(ActionEvent e) 
         {
-            openForm(formName);
+            openView(formName);
         }
     }
     

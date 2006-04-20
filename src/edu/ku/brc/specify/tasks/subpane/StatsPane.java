@@ -201,7 +201,7 @@ public class StatsPane extends BaseSubPane
                             statItem.startUp();
                         }
                     }
-                    log.info(boxElement.attributeValue("title")+" "+x+","+y);
+                    //log.info(boxElement.attributeValue("title")+" "+x+","+y);
                     builder.add(group, cc.xy(x, y));
                     x += 2;
                 }

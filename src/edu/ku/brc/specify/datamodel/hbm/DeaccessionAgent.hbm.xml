@@ -37,10 +37,10 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional many-to-one association to AgentAddress -->
-    <many-to-one name="agentAddress" class="edu.ku.brc.specify.datamodel.AgentAddress" not-null="true" outer-join="true" index="IX_DeaccessionAgentsAgentAddressID" unique-key="IX_DeaccessionAgents">
-        <meta attribute="field-description">AgentAddressID for agent</meta>
-        <column name="AgentAddressID"/>
+    <!-- bi-directional many-to-one association to Agent -->
+    <many-to-one name="Agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true" index="IX_DeaccessionAgentsAgentID" unique-key="IX_DeaccessionAgents">
+        <meta attribute="field-description">AgentID for agent</meta>
+        <column name="AgentID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Deaccession -->

@@ -32,8 +32,8 @@ public class Shipment  implements java.io.Serializable {
      protected String lastEditedBy;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     protected AgentAddress agentAddressByShipper;
-     protected AgentAddress agentAddressByShippedTo;
+     protected Agent agentByShipper;
+     protected Agent agentByShippedTo;
      protected Agent agent;
      protected Set<BorrowShipment> borrowShipments;
      protected Set<Loan> loans;
@@ -74,8 +74,8 @@ public class Shipment  implements java.io.Serializable {
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
-        agentAddressByShipper = null;
-        agentAddressByShippedTo = null;
+        agentByShipper = null;
+        agentByShippedTo = null;
         agent = null;
         borrowShipments = new HashSet<BorrowShipment>();
         loans = new HashSet<Loan>();
@@ -273,25 +273,25 @@ public class Shipment  implements java.io.Serializable {
     }
 
     /**
-     *      * AgentAddressID of agent transporting the material
+     *      * AgentID of agent transporting the material
      */
-    public AgentAddress getAgentAddressByShipper() {
-        return this.agentAddressByShipper;
+    public Agent getAgentByShipper() {
+        return this.agentByShipper;
     }
     
-    public void setAgentAddressByShipper(AgentAddress agentAddressByShipper) {
-        this.agentAddressByShipper = agentAddressByShipper;
+    public void setAgentByShipper(Agent agentByShipper) {
+        this.agentByShipper = agentByShipper;
     }
 
     /**
-     *      * AgentAddressID of agent material is shipped to
+     *      * AgentID of agent material is shipped to
      */
-    public AgentAddress getAgentAddressByShippedTo() {
-        return this.agentAddressByShippedTo;
+    public Agent getAgentByShippedTo() {
+        return this.agentByShippedTo;
     }
     
-    public void setAgentAddressByShippedTo(AgentAddress agentAddressByShippedTo) {
-        this.agentAddressByShippedTo = agentAddressByShippedTo;
+    public void setAgentByShippedTo(Agent agentByShippedTo) {
+        this.agentByShippedTo = agentByShippedTo;
     }
 
     /**

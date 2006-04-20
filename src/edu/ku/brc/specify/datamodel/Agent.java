@@ -14,38 +14,54 @@ public class Agent  implements java.io.Serializable {
 
     // Fields
 
-     protected Integer agentId;
-     protected Byte agentType;
-     protected String firstName;
-     protected String lastName;
-     protected String middleInitial;
-     protected String title;
-     protected String interests;
-     protected String abbreviation;
-     protected String name;
-     protected String remarks;
-     protected Date timestampModified;
-     protected Date timestampCreated;
-     protected String lastEditedBy;
-     protected Set<Author> authors;
-     protected Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects;
-     protected Set<BorrowReturnMaterial> borrowReturnMaterials;
-     protected Set<ExchangeIn> exchangeIns;
-     protected Set<Agent> members;
-     protected Agent organization;
-     protected Set<Project> projects;
-     protected Set<Preparation> preparations;
-     protected Set<GroupPerson> groupPersonsByGroup;
-     protected Set<GroupPerson> groupPersonsByMember;
-     protected Set<Determination> determinations;
-     protected Set<AgentAddress> agentAddressesByOrganization;
-     protected Set<AgentAddress> agentAddressesByAgent;
-     protected Set<Shipment> shipments;
-     protected Set<Collector> collectors;
-     protected Set<ExchangeOut> exchangeOuts;
-     protected Set<ExternalResource> externalResources;
-     protected Set<RepositoryAgreement> repositoryAgreements;
-
+    protected Integer                       agentId;
+    protected Byte                          agentType;
+    protected String                        firstName;
+    protected String                        lastName;
+    protected String                        middleInitial;
+    protected String                        title;
+    protected String                        interests;
+    protected String                        abbreviation;
+    protected String                        name;
+    protected String                        remarks;
+    protected Date                          timestampModified;
+    protected Date                          timestampCreated;
+    protected String                        lastEditedBy;
+    protected Set<Author>                   authors;
+    protected Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects;
+    protected Set<BorrowReturnMaterial>     borrowReturnMaterials;
+    protected Set<ExchangeIn>               exchangeInCatalogedBys;
+    protected Set<Agent>                    members;
+    protected Agent                         organization;
+    protected Set<Project>                  projects;
+    protected Set<Preparation>              preparations;
+    protected Set<GroupPerson>              groupPersonsByGroup;
+    protected Set<GroupPerson>              groupPersonsByMember;
+    protected Set<Determination>            determinations;
+    protected Set<Agent>                    agentsByOrganization;
+    protected Set<Agent>                    agentsByAgent;
+    protected Set<Shipment>                 shipments;
+    protected Set<Collector>                collectors;
+    protected Set<ExchangeOut>              exchangeOutCatalogedBys;
+    protected Set<ExternalResource>         externalResources;
+    protected Set<RepositoryAgreement>      repositoryAgreements;
+     
+    // From AgentAddress
+    protected String                        jobTitle;
+    protected String                        email;
+    protected String                        url;
+     
+    protected Set<Address>                  addresses;
+    protected Set<LoanAgent>                loanAgents;
+    protected Set<Shipment>                 shipmentsByShipper;
+    protected Set<Shipment>                 shipmentsByShippedTo;
+    protected Set<DeaccessionAgent>         deaccessionAgents;
+    protected Set<ExchangeIn>               exchangeInFromOrganizations;
+    protected Set<Permit>                   permitsByIssuee;
+    protected Set<Permit>                   permitsByIssuer;
+    protected Set<BorrowAgent>              borrowAgents;
+    protected Set<AccessionAgent>           accessionAgents;
+    protected Set<ExchangeOut>              exchangeOutSentToOrganizations;
 
     // Constructors
 
@@ -57,9 +73,6 @@ public class Agent  implements java.io.Serializable {
     public Agent(Integer agentId) {
         this.agentId = agentId;
     }
-
-
-
 
     // Initializer
     public void initialize()
@@ -80,7 +93,7 @@ public class Agent  implements java.io.Serializable {
         authors = new HashSet<Author>();
         loanReturnPhysicalObjects = new HashSet<LoanReturnPhysicalObject>();
         borrowReturnMaterials = new HashSet<BorrowReturnMaterial>();
-        exchangeIns = new HashSet<ExchangeIn>();
+        exchangeInCatalogedBys = new HashSet<ExchangeIn>();
         members = new HashSet<Agent>();
         organization = null;
         projects = new HashSet<Project>();
@@ -88,13 +101,34 @@ public class Agent  implements java.io.Serializable {
         groupPersonsByGroup = new HashSet<GroupPerson>();
         groupPersonsByMember = new HashSet<GroupPerson>();
         determinations = new HashSet<Determination>();
-        agentAddressesByOrganization = new HashSet<AgentAddress>();
-        agentAddressesByAgent = new HashSet<AgentAddress>();
+        agentsByOrganization = new HashSet<Agent>();
+        agentsByAgent = new HashSet<Agent>();
         shipments = new HashSet<Shipment>();
         collectors = new HashSet<Collector>();
-        exchangeOuts = new HashSet<ExchangeOut>();
+        exchangeOutCatalogedBys = new HashSet<ExchangeOut>();
         externalResources = new HashSet<ExternalResource>();
         repositoryAgreements = new HashSet<RepositoryAgreement>();
+        
+        // Agent
+        jobTitle = null;
+        email = null;
+        url = null;
+        remarks = null;
+        timestampModified = new Date();
+        timestampCreated = new Date();
+        lastEditedBy = null;
+        addresses = new HashSet<Address>();
+        loanAgents = new HashSet<LoanAgent>();
+        shipmentsByShipper = new HashSet<Shipment>();
+        shipmentsByShippedTo = new HashSet<Shipment>();
+        deaccessionAgents = new HashSet<DeaccessionAgent>();
+        exchangeInFromOrganizations = new HashSet<ExchangeIn>();
+        permitsByIssuee = new HashSet<Permit>();
+        permitsByIssuer = new HashSet<Permit>();
+        borrowAgents = new HashSet<BorrowAgent>();
+        accessionAgents = new HashSet<AccessionAgent>();
+        exchangeOutSentToOrganizations = new HashSet<ExchangeOut>();
+        organization = null;
     }
     // End Initializer
 
@@ -279,12 +313,12 @@ public class Agent  implements java.io.Serializable {
     /**
      *
      */
-    public Set<ExchangeIn> getExchangeIns() {
-        return this.exchangeIns;
+    public Set<ExchangeIn> getExchangeInCatalogedBys() {
+        return this.exchangeInCatalogedBys;
     }
 
-    public void setExchangeIns(Set<ExchangeIn> exchangeIns) {
-        this.exchangeIns = exchangeIns;
+    public void setExchangeInCatalogedBys(Set<ExchangeIn> exchangeInCatalogedBys) {
+        this.exchangeInCatalogedBys = exchangeInCatalogedBys;
     }
 
     /**
@@ -367,23 +401,23 @@ public class Agent  implements java.io.Serializable {
     /**
      *
      */
-    public Set<AgentAddress> getAgentAddressesByOrganization() {
-        return this.agentAddressesByOrganization;
+    public Set<Agent> getAgentesByOrganization() {
+        return this.agentsByOrganization;
     }
 
-    public void setagentAddressesByOrganization(Set<AgentAddress> agentAddressesByOrganization) {
-        this.agentAddressesByOrganization = agentAddressesByOrganization;
+    public void setAgentsByOrganization(Set<Agent> agentsByOrganization) {
+        this.agentsByOrganization = agentsByOrganization;
     }
 
     /**
      *
      */
-    public Set<AgentAddress> getAgentAddressesByAgent() {
-        return this.agentAddressesByAgent;
+    public Set<Agent> getAgentsByAgent() {
+        return this.agentsByAgent;
     }
 
-    public void setAgentAddressesByAgent(Set<AgentAddress> agentAddressesByAgent) {
-        this.agentAddressesByAgent = agentAddressesByAgent;
+    public void setAgentsByAgent(Set<Agent> agentsByAgent) {
+        this.agentsByAgent = agentsByAgent;
     }
 
     /**
@@ -411,12 +445,12 @@ public class Agent  implements java.io.Serializable {
     /**
      *
      */
-    public Set<ExchangeOut> getExchangeOuts() {
-        return this.exchangeOuts;
+    public Set<ExchangeOut> getExchangeOutCatalogedBys() {
+        return this.exchangeOutCatalogedBys;
     }
 
-    public void setExchangeOuts(Set<ExchangeOut> exchangeOuts) {
-        this.exchangeOuts = exchangeOuts;
+    public void setExchangeOutCatalogedBys(Set<ExchangeOut> exchangeOutCatalogedBys) {
+        this.exchangeOutCatalogedBys = exchangeOutCatalogedBys;
     }
 
     /**
@@ -441,8 +475,165 @@ public class Agent  implements java.io.Serializable {
         this.repositoryAgreements = repositoryAgreements;
     }
 
+    //----------------------------------------------------
+    // Agent Address
+    //----------------------------------------------------
+    
+    /**
+     *      * Agent's (person) job title at specified address and organization
+     */
+    public String getJobTitle() {
+        return this.jobTitle;
+    }
+
+    public void setJobTitle(String jobTitle) {
+        this.jobTitle = jobTitle;
+    }
+
+    /**
+     *
+     */
+    public String getEmail() {
+        return this.email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     *
+     */
+    public String getUrl() {
+        return this.url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
 
+    /**
+     *
+     */
+    public Set<LoanAgent> getLoanAgents() {
+        return this.loanAgents;
+    }
+
+    public void setLoanAgents(Set<LoanAgent> loanAgents) {
+        this.loanAgents = loanAgents;
+    }
+
+    /**
+     *
+     */
+    public Set getShipmentsByShipper() {
+        return this.shipmentsByShipper;
+    }
+
+    public void setShipmentsByShipper(Set<Shipment> shipmentsByShipper) {
+        this.shipmentsByShipper = shipmentsByShipper;
+    }
+
+    /**
+     *
+     */
+    public Set<Shipment> getShipmentsByShippedTo() {
+        return this.shipmentsByShippedTo;
+    }
+
+    public void setShipmentsByShippedTo(Set<Shipment> shipmentsByShippedTo) {
+        this.shipmentsByShippedTo = shipmentsByShippedTo;
+    }
+
+    /**
+     *
+     */
+    public Set<DeaccessionAgent> getDeaccessionAgents() {
+        return this.deaccessionAgents;
+    }
+
+    public void setDeaccessionAgents(Set<DeaccessionAgent> deaccessionAgents) {
+        this.deaccessionAgents = deaccessionAgents;
+    }
+
+    /**
+     *
+     */
+    public Set<ExchangeIn> getExchangeInFromOrganizations() {
+        return this.exchangeInFromOrganizations;
+    }
+
+    public void setExchangeInFromOrganizations(Set<ExchangeIn> exchangeInFromOrganizations) {
+        this.exchangeInFromOrganizations = exchangeInFromOrganizations;
+    }
+
+    /**
+     *
+     */
+    public Set<Permit> getPermitsByIssuee() {
+        return this.permitsByIssuee;
+    }
+
+    public void setPermitsByIssuee(Set<Permit> permitsByIssuee) {
+        this.permitsByIssuee = permitsByIssuee;
+    }
+
+    /**
+     *
+     */
+    public Set<Permit> getPermitsByIssuer() {
+        return this.permitsByIssuer;
+    }
+
+    public void setPermitsByIssuer(Set<Permit> permitsByIssuer) {
+        this.permitsByIssuer = permitsByIssuer;
+    }
+
+    /**
+     *
+     */
+    public Set<BorrowAgent> getBorrowAgents() {
+        return this.borrowAgents;
+    }
+
+    public void setBorrowAgents(Set<BorrowAgent> borrowAgents) {
+        this.borrowAgents = borrowAgents;
+    }
+
+    /**
+     *
+     */
+    public Set<AccessionAgent> getAccessionAgents() {
+        return this.accessionAgents;
+    }
+
+    public void setAccessionAgents(Set<AccessionAgent> accessionAgents) {
+        this.accessionAgents = accessionAgents;
+    }
+
+    /**
+     *
+     */
+    public Set<ExchangeOut> getExchangeOutSentToOrganizations() {
+        return this.exchangeOutSentToOrganizations;
+    }
+
+    public void setExchangeOutSentToOrganizations(Set<ExchangeOut> exchangeOutSentToOrganizations) {
+        this.exchangeOutSentToOrganizations = exchangeOutSentToOrganizations;
+    }
+
+    /**
+     *      * Associated record in Address table
+     */
+    public Set<Address> getAddresses() {
+        return this.addresses;
+    }
+
+    public void setAddresses(Set<Address> addresses) {
+        this.addresses = addresses;
+    }
+    
 
 
     // Add Methods
@@ -465,12 +656,6 @@ public class Agent  implements java.io.Serializable {
         borrowReturnMaterial.setAgent(this);
     }
 
-    public void addExchangeIn(final ExchangeIn exchangeIn)
-    {
-        this.exchangeIns.add(exchangeIn);
-        exchangeIn.setAgent(this);
-    }
-
     public void addMember(final Agent member)
     {
         this.members.add(member);
@@ -482,43 +667,6 @@ public class Agent  implements java.io.Serializable {
         this.projects.add(project);
         project.setAgent(this);
     }
-
-    public void addAgentAddressesByOrganization(final AgentAddress agentAddressesByOrganization)
-    {
-        this.agentAddressesByOrganization.add(agentAddressesByOrganization);
-        agentAddressesByOrganization.setAgent(this);
-    }
-
-    public void addAgentAddressesByAgent(final AgentAddress agentAddressesByAgent)
-    {
-        this.agentAddressesByAgent.add(agentAddressesByAgent);
-        agentAddressesByAgent.setAgent(this);
-    }
-
-    /** Not sure I will need these but leaving them there temporarily
-    public void addShipment(final Shipment shipment)
-    {
-        this.shipments.add(shipment);
-        shipment.setAgent(this);
-    }
-
-    public void addCollector(final Collector collector)
-    {
-        this.collectors.add(collector);
-        collector.setAgent(this);
-    }
-
-    public void addExchangeOut(final ExchangeOut exchangeOut)
-    {
-        this.exchangeOuts.add(exchangeOut);
-        exchangeOut.setAgent(this);
-    }
-
-    public void addRepositoryAgreement(final RepositoryAgreement repositoryAgreement)
-    {
-        this.repositoryAgreements.add(repositoryAgreement);
-        repositoryAgreement.setOriginator(this);
-    }*/
     
     public void addExternalResource(final ExternalResource externalResource)
     {
@@ -526,35 +674,17 @@ public class Agent  implements java.io.Serializable {
         externalResource.getAgents().add(this);
     }
 
+    public void addAddress(final Address address)
+    {
+        this.addresses.add(address);
+        address.setAgent(this);
+    }
+
 
 
     // Done Add Methods
 
     // Delete Methods
-
-    public void removeAuthor(final Author author)
-    {
-        this.authors.remove(author);
-        author.setAgent(null);
-    }
-
-    public void removeLoanReturnPhysicalObject(final LoanReturnPhysicalObject loanReturnPhysicalObject)
-    {
-        this.loanReturnPhysicalObjects.remove(loanReturnPhysicalObject);
-        loanReturnPhysicalObject.setAgent(null);
-    }
-
-    public void removeBorrowReturnMaterial(final BorrowReturnMaterial borrowReturnMaterial)
-    {
-        this.borrowReturnMaterials.remove(borrowReturnMaterial);
-        borrowReturnMaterial.setAgent(null);
-    }
-
-    public void removeExchangeIn(final ExchangeIn exchangeIn)
-    {
-        this.exchangeIns.remove(exchangeIn);
-        exchangeIn.setAgent(null);
-    }
 
     public void removeMember(final Agent member)
     {
@@ -568,73 +698,16 @@ public class Agent  implements java.io.Serializable {
         project.setAgent(null);
     }
 
-    /** Not sure I will need these but leaving them there temporarily
-    public void removePreparation(final Preparation preparation)
-    {
-        this.preparations.remove(preparation);
-        preparation.setAgent(null);
-    }
-
-    public void removeGroupPersonsByGroup(final GroupPerson groupPersonsByGroup)
-    {
-        this.groupPersonsByGroup.remove(groupPersonsByGroup);
-        groupPersonsByGroup.setAgent(null);
-    }
-
-    public void removeGroupPersonsByMember(final GroupPerson groupPersonsByMember)
-    {
-        this.groupPersonsByMember.remove(groupPersonsByMember);
-        groupPersonsByMember.setAgent(null);
-    }
-
-    public void removeDetermination(final Determination determination)
-    {
-        this.determinations.remove(determination);
-        determination.setAgent(null);
-    }
-
-    public void removeAgentAddressesByOrganization(final AgentAddress agentAddressesByOrganization)
-    {
-        this.agentAddressesByOrganization.remove(agentAddressesByOrganization);
-        agentAddressesByOrganization.setAgent(null);
-    }
-
-    public void removeAgentAddressesByAgent(final AgentAddress agentAddressesByAgent)
-    {
-        this.agentAddressesByAgent.remove(agentAddressesByAgent);
-        agentAddressesByAgent.setAgent(null);
-    }
-
-    public void removeShipment(final Shipment shipment)
-    {
-        this.shipments.remove(shipment);
-        shipment.setAgent(null);
-    }
-
-    public void removeCollector(final Collector collector)
-    {
-        this.collectors.remove(collector);
-        collector.setAgent(null);
-    }
-
-    public void removeExchangeOut(final ExchangeOut exchangeOut)
-    {
-        this.exchangeOuts.remove(exchangeOut);
-        exchangeOut.setAgent(null);
-    }
-    
-    public void removeRepositoryAgreement(final RepositoryAgreement repositoryAgreement)
-    {
-        this.repositoryAgreements.remove(repositoryAgreement);
-        repositoryAgreement.setAgent(null);
-    }
-
-
-    */
     public void removeExternalResource(final ExternalResource externalResource)
     {
         this.externalResources.remove(externalResource);
         externalResource.getAgents().remove(this);
+    }
+    
+    public void removeAddress(final Address address)
+    {
+        this.addresses.remove(address);
+        address.setAgent(null);
     }
 
      // Delete Add Methods

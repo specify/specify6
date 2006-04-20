@@ -119,8 +119,9 @@ public interface Viewable
     
     /**
      * Tells the object it is abut to be shown
+     * @param show whether it is being shown or hidden
      */
-    public void aboutToShow();
+    public void aboutToShow(boolean show);
     
     /**
      * Returns the View definition for this viewable

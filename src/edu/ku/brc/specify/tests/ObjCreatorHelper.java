@@ -11,7 +11,7 @@ import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.AccessionAuthorizations;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.AgentAddress;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.AttributeIFace;
 import edu.ku.brc.specify.datamodel.Author;
@@ -103,25 +103,6 @@ public class ObjCreatorHelper
         accessionAgent.setTimestampModified(new Date());
         return accessionAgent;
 
-    }
-
-    public static AgentAddress createAgentAddress(final Agent agent,
-                                                  final String phone,
-                                                  final String jobTitle,
-                                                  final Address address)
-    {
-        AgentAddress agentAddress = new AgentAddress();
-        agentAddress.initialize();
-        agentAddress.setAddress(address);
-        agentAddress.setAgent(agent);
-        agentAddress.setIsCurrent(true);
-        agentAddress.setJobTitle(jobTitle);
-        agentAddress.setPhone1(phone);
-        agentAddress.setTypeOfAgentAddressed((short)1);
-        agentAddress.setUrl(null);
-        agentAddress.setTimestampModified(new Date());
-
-        return agentAddress;
     }
 
     public static Agent createAgent(final String title,
@@ -722,7 +703,7 @@ public class ObjCreatorHelper
     }
 
 
-    public static Address createAddress(final AgentAddress agentAddress,
+    public static Address createAddress(final Agent agent,
                                         final String address1,
                                         final String address2,
                                         final String city,
@@ -732,7 +713,7 @@ public class ObjCreatorHelper
     {
         Address address = new Address();
         address.initialize();
-        address.getAgentAddresses().add(agentAddress);
+        address.setAgent(agent);
         address.setTimestampCreated(new Date());
         address.setTimestampModified(new Date());
         address.setAddress(address1);
@@ -742,11 +723,11 @@ public class ObjCreatorHelper
         address.setPostalCode(postalCode);
         address.setState(state);
 
-        agentAddress.setAddress(address);
+        agent.getAddresses().add(address);
         if (session != null)
         {
             session.saveOrUpdate(address);
-            session.saveOrUpdate(agentAddress);
+            session.saveOrUpdate(agent);
         }
         return address;
     }
@@ -804,7 +785,7 @@ public class ObjCreatorHelper
     }
 
     public static AccessionAgent createAccessionAgent(final String role,
-                                                      final AgentAddress agentAddress,
+                                                      final Agent agent,
                                                       final Accession accession,
                                                       final RepositoryAgreement repositoryAgreement)
     {
@@ -815,7 +796,7 @@ public class ObjCreatorHelper
         accessionagent.setAccession(accession);
         accessionagent.setRepositoryAgreement(repositoryAgreement);
         accessionagent.setRole(role);
-        accessionagent.setAgentAddress(agentAddress);
+        accessionagent.setAgent(agent);
         if (session != null)
         {
           session.saveOrUpdate(accessionagent);
@@ -870,53 +851,6 @@ public class ObjCreatorHelper
           session.saveOrUpdate(agent);
         }
         return agent;
-    }
-
-    public static AgentAddress createAgentAddress(final Short typeOfAgentAddressed,
-                                                  final String jobTitle,
-                                                  final String phone1,
-                                                  final String phone2,
-                                                  final String fax,
-                                                  final String roomOrBuilding,
-                                                  final String email,
-                                                  final String url,
-                                                  final Boolean isCurrent,
-                                                  final Agent organization,
-                                                  final Agent agent,
-                                                  final Address address)
-    {
-        AgentAddress agentaddress = new AgentAddress();
-        agentaddress.initialize();
-        agentaddress.setTimestampCreated(new Date());
-        agentaddress.setTimestampModified(new Date());
-        agentaddress.setTypeOfAgentAddressed(typeOfAgentAddressed);
-        agentaddress.setJobTitle(jobTitle);
-        agentaddress.setPhone1(phone1);
-        agentaddress.setPhone2(phone2);
-        agentaddress.setFax(fax);
-        agentaddress.setRoomOrBuilding(roomOrBuilding);
-        agentaddress.setEmail(email);
-        agentaddress.setUrl(url);
-        agentaddress.setIsCurrent(isCurrent);
-        agentaddress.setOrganization(organization);
-        agentaddress.setAgent(agent);
-        agentaddress.setAddress(address);
-
-        if (address != null)
-        {
-            address.getAgentAddresses().add(agentaddress);
-        }
-        agent.getAgentAddressesByAgent().add(agentaddress);
-        if (session != null)
-        {
-            session.saveOrUpdate(agent);
-            session.saveOrUpdate(agentaddress);
-            if (address != null)
-            {
-                session.saveOrUpdate(address);
-            }
-        }
-        return agentaddress;
     }
 
     public static AttributeDef createAttributeDef(final Short tableType,
@@ -982,7 +916,7 @@ public class ObjCreatorHelper
     }
 
     public static BorrowAgent createBorrowAgent(final String role,
-                                                final AgentAddress agentAddress,
+                                                final Agent agent,
                                                 final Borrow borrow)
     {
         BorrowAgent borrowagent = new BorrowAgent();
@@ -990,7 +924,7 @@ public class ObjCreatorHelper
         borrowagent.setTimestampCreated(new Date());
         borrowagent.setTimestampModified(new Date());
         borrowagent.setRole(role);
-        borrowagent.setAgentAddress(agentAddress);
+        borrowagent.setAgent(agent);
         borrowagent.setBorrow(borrow);
         if (session != null)
         {
@@ -1342,7 +1276,7 @@ public class ObjCreatorHelper
     }
 
     public static DeaccessionAgent createDeaccessionAgent(final String role,
-                                                          final AgentAddress agentAddress,
+                                                          final Agent agent,
                                                           final Deaccession deaccession)
     {
         DeaccessionAgent deaccessionagent = new DeaccessionAgent();
@@ -1350,7 +1284,7 @@ public class ObjCreatorHelper
         deaccessionagent.setTimestampCreated(new Date());
         deaccessionagent.setTimestampModified(new Date());
         deaccessionagent.setRole(role);
-        deaccessionagent.setAgentAddress(agentAddress);
+        deaccessionagent.setAgent(agent);
         deaccessionagent.setDeaccession(deaccession);
         if (session != null)
         {
@@ -1423,17 +1357,18 @@ public class ObjCreatorHelper
         return determinationcitation;
     }
 
+    /*
     public static ExchangeIn createExchangeIn(final Calendar exchangeDate,
                                               final Short quantityExchanged,
                                               final String descriptionOfMaterial,
-                                              final AgentAddress agentAddress,
+                                              final Agent agent,
                                               final Agent agent)
     {
         ExchangeIn exchangein = new ExchangeIn();
         exchangein.initialize();
         exchangein.setTimestampCreated(new Date());
         exchangein.setTimestampModified(new Date());
-        exchangein.setAgentAddress(agentAddress);
+        exchangein.setAgent(agent);
         exchangein.setAgent(agent);
         exchangein.setExchangeDate(exchangeDate);
         exchangein.setQuantityExchanged(quantityExchanged);
@@ -1448,7 +1383,7 @@ public class ObjCreatorHelper
     public static ExchangeOut createExchangeOut(final Calendar exchangeDate,
                                                 final Short quantityExchanged,
                                                 final String descriptionOfMaterial,
-                                                final AgentAddress agentAddress,
+                                                final Agent agent,
                                                 final Agent agent,
                                                 final Shipment shipment)
     {
@@ -1456,7 +1391,7 @@ public class ObjCreatorHelper
         exchangeout.initialize();
         exchangeout.setTimestampCreated(new Date());
         exchangeout.setTimestampModified(new Date());
-        exchangeout.setAgentAddress(agentAddress);
+        exchangeout.setAgent(agent);
         exchangeout.setAgent(agent);
         exchangeout.setExchangeDate(exchangeDate);
         exchangeout.setQuantityExchanged(quantityExchanged);
@@ -1467,7 +1402,7 @@ public class ObjCreatorHelper
           session.saveOrUpdate(exchangeout);
         }
         return exchangeout;
-    }
+    }*/
 
     public static ExternalResource createExternalResource(final String mimeType,
                                                           final String fileName,
@@ -1605,14 +1540,14 @@ public class ObjCreatorHelper
 
     public static LoanAgent createLoanAgent(final String role,
                                             final Loan loan,
-                                            final AgentAddress agentAddress)
+                                            final Agent agent)
     {
         LoanAgent loanagent = new LoanAgent();
         loanagent.initialize();
         loanagent.setTimestampCreated(new Date());
         loanagent.setTimestampModified(new Date());
         loanagent.setRole(role);
-        loanagent.setAgentAddress(agentAddress);
+        loanagent.setAgent(agent);
         loanagent.setLoan(loan);
         if (session != null)
         {
@@ -1979,8 +1914,8 @@ public class ObjCreatorHelper
                                           final Short numberOfPackages,
                                           final String weight,
                                           final String insuredForAmount,
-                                          final AgentAddress agentAddressByShipper,
-                                          final AgentAddress agentAddressByShippedTo,
+                                          final Agent agentAddressByShipper,
+                                          final Agent agentAddressByShippedTo,
                                           final Agent agent)
     {
         Shipment shipment = new Shipment();
@@ -1994,8 +1929,8 @@ public class ObjCreatorHelper
         shipment.setNumberOfPackages(numberOfPackages);
         shipment.setWeight(weight);
         shipment.setInsuredForAmount(insuredForAmount);
-        shipment.setAgentAddressByShipper(agentAddressByShipper);
-        shipment.setAgentAddressByShippedTo(agentAddressByShippedTo);
+        shipment.setAgentByShipper(agentAddressByShipper);
+        shipment.setAgentByShippedTo(agentAddressByShippedTo);
         if (session != null)
         {
           session.saveOrUpdate(shipment);

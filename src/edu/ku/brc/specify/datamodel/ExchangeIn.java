@@ -27,8 +27,8 @@ public class ExchangeIn  implements java.io.Serializable {
      protected String lastEditedBy;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     protected AgentAddress agentAddress;
-     protected Agent agent;
+     protected Agent agentReceivedFrom;
+     protected Agent agentCatalogedBy;
 
 
     // Constructors
@@ -62,8 +62,8 @@ public class ExchangeIn  implements java.io.Serializable {
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
-        agentAddress = null;
-        agent = null;
+        agentReceivedFrom = null;
+        agentCatalogedBy = null;
     }
     // End Initializer
 
@@ -224,25 +224,25 @@ public class ExchangeIn  implements java.io.Serializable {
     }
 
     /**
-     *      * AgentAddress ID of organization that sent material
+     *      * Agent ID of organization that sent material
      */
-    public AgentAddress getAgentAddress() {
-        return this.agentAddress;
+    public Agent getAgentReceivedFrom() {
+        return this.agentReceivedFrom;
     }
     
-    public void setAgentAddress(AgentAddress agentAddress) {
-        this.agentAddress = agentAddress;
+    public void setAgentReceivedFrom(Agent agentReceivedFrom) {
+        this.agentReceivedFrom = agentReceivedFrom;
     }
 
     /**
      *      * Agent ID of person recording the exchange
      */
-    public Agent getAgent() {
-        return this.agent;
+    public Agent getAgentCatalogedBy() {
+        return this.agentCatalogedBy;
     }
     
-    public void setAgent(Agent agent) {
-        this.agent = agent;
+    public void setAgentCatalogedBy(Agent agentCatalogedBy) {
+        this.agentCatalogedBy = agentCatalogedBy;
     }
 
 

@@ -15,35 +15,56 @@
         <meta attribute="field-description"></meta>
     </property>
     
+    <property name="jobTitle" type="java.lang.String" column="JobTitle" length="50">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Agent's (person) job title at specified address and organization</meta>
+    </property>
+    
     <property name="firstName" type="java.lang.String" column="FirstName" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">of Person</meta>
     </property>
+    
     <property name="lastName" type="java.lang.String" column="LastName" length="50" index="IX_AgentLastName">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">of Person</meta>
     </property>
+    
     <property name="middleInitial" type="java.lang.String" column="MiddleInitial" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">of Person</meta>
     </property>
+    
     <property name="title" type="java.lang.String" column="Title" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">of Person</meta>
     </property>
+    
     <property name="interests" type="java.lang.String" column="Interests" length="255">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">of Person or Organization</meta>
     </property>
+    
     <property name="abbreviation" type="java.lang.String" column="Abbreviation" length="50" index="IX_AgentAbbreviation">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">of organization</meta>
     </property>
+    
     <property name="name" type="java.lang.String" column="Name" length="120" index="IX_AgentName">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">of organization/group/Folks (and maybe persons)</meta>
     </property>
-
+    
+    <property name="email" type="java.lang.String" column="Email" length="50">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>    
+    </property>
+    
+    <property name="url" type="text" column="URL">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>    
+    </property>
+    
     <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
@@ -94,7 +115,7 @@
     </set>
 
     <!-- bi-directional one-to-many association to ExchangeIn -->
-    <set name="exchangeIns" lazy="true" inverse="true" cascade="none">
+    <set name="exchangeInCatalogedBys" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>
         <key>
             <column name="CatalogedByID"/>
@@ -134,24 +155,6 @@
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.Preparation"/>
     </set>
-
-    <!-- bi-directional one-to-many association to GroupPerson -->
-    <set name="groupPersonsByGroup" lazy="true" inverse="true" cascade="delete">
-        <meta attribute="field-description"></meta>
-        <key>
-            <column name="GroupID"/>
-        </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.GroupPerson"/>
-    </set>
-    
-    <!-- bi-directional one-to-many association to GroupPerson -->
-    <set name="groupPersonsByMember" lazy="true" inverse="true" cascade="none">
-        <meta attribute="field-description"></meta>
-        <key>
-            <column name="MemberID"/>
-        </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.GroupPerson"/>
-    </set>
     
     <!-- bi-directional one-to-many association to Determination -->
     <set name="determinations" lazy="true" inverse="true" cascade="none">
@@ -160,24 +163,6 @@
             <column name="DeterminerID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.Determination"/>
-    </set>
-    
-    <!-- bi-directional one-to-many association to AgentAddress -->
-    <set name="agentAddressesByOrganization" lazy="true" inverse="true" cascade="none">
-        <meta attribute="field-description"></meta>
-        <key>
-            <column name="OrganizationID"/>
-        </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.AgentAddress"/>
-    </set>
-    
-    <!-- bi-directional one-to-many association to AgentAddress -->
-    <set name="agentAddressesByAgent" lazy="true" inverse="true" cascade="delete">
-        <meta attribute="field-description"></meta>
-        <key>
-            <column name="AgentID"/>
-        </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.AgentAddress"/>
     </set>
     
     <!-- bi-directional one-to-many association to Shipment -->
@@ -199,7 +184,7 @@
     </set>
 
     <!-- bi-directional one-to-many association to ExchangeOut -->
-    <set name="exchangeOuts" lazy="true" inverse="true" cascade="none">
+    <set name="exchangeOutCatalogedBys" lazy="true" inverse="true" cascade="none">
         <meta attribute="field-description"></meta>
         <key>
             <column name="CatalogedByID"/>
@@ -224,6 +209,109 @@
         <one-to-many class="edu.ku.brc.specify.datamodel.RepositoryAgreement"/>
     </set>
     
+    <!-- ***************** -->
+    <!-- From AgentAddress -->
+    <!-- ***************** -->
     
+    <!-- bi-directional one-to-many association to Address -->
+    <!-- this used to be a many-to-one -->
+    <set name="addresses" lazy="true" inverse="true" cascade="all-delete-orphan">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="AddressID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.Address"/>
+    </set>
+    
+    <!-- bi-directional one-to-many association to LoanAgent -->
+    <set name="loanAgents" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="AgentID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.LoanAgent"/>
+    </set>
+    
+    <!-- bi-directional one-to-many association to Shipment -->
+    <set name="shipmentsByShipper" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="ShipperID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.Shipment"/>
+    </set>
+    
+    <!-- bi-directional one-to-many association to Shipment -->
+    <set name="shipmentsByShippedTo" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="ShippedToID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.Shipment"/>
+    </set>
+    
+    <!-- bi-directional one-to-many association to DeaccessionAgent -->
+    <set name="deaccessionAgents" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="AgentID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.DeaccessionAgent"/>
+    </set>
+    
+    <!-- bi-directional one-to-many association to ExchangeIn -->
+    <set name="exchangeInFromOrganizations" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="ReceivedFromOrganizationID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.ExchangeIn"/>
+    </set>
+    
+    <!-- bi-directional one-to-many association to Permit -->
+    <set name="permitsByIssuee" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="IssueeID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.Permit"/>
+    </set>
+    
+    <!-- bi-directional one-to-many association to Permit -->
+    <set name="permitsByIssuer" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="IssuerID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.Permit"/>
+    </set>
+    
+    <!-- bi-directional one-to-many association to BorrowAgent -->
+    <set name="borrowAgents" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="AgentID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.BorrowAgent"/>
+    </set>
+    
+    <!-- bi-directional one-to-many association to AccessionAgent -->
+    <set name="accessionAgents" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="AgentID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.AccessionAgent"/>
+    </set>
+    
+    <!-- bi-directional one-to-many association to ExchangeOut -->
+    <set name="exchangeOutSentToOrganizations" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="SentToOrganizationID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.ExchangeOut"/>
+    </set>
+
 </class>
 </hibernate-mapping>

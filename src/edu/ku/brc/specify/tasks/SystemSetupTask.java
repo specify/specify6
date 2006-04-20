@@ -293,7 +293,7 @@ public class SystemSetupTask extends BaseTask
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
         
         //ToolBarDropDownBtn btn = createToolbarButton(SYSTEMSETUPTASK, "information.gif", "inforequest_hint");      
-        //list.add(new ToolBarItemDesc(btn.getCompleteComp()));
+        //list.add(new ToolBarItemDesc(btn));
         
         return list;
     }

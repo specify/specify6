@@ -171,7 +171,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
         });
 
         String viewName = "test";
-        String name = "Fish Views";
+        String name = "Main Views";
 
         formView = ViewMgr.getView(name, viewName);
         if (formView != null)

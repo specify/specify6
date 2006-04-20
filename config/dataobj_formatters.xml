@@ -18,7 +18,7 @@
         format="%.0f"
         >
         <fields>
-            <field>catalogNumber</field>
+            <field type="float">catalogNumber</field>
         </fields>
     </format>
     

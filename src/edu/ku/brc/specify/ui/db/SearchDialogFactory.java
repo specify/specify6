@@ -42,7 +42,7 @@ public class SearchDialogFactory
     {
         // These will eventually be defined in an XML file.
         
-        dialogs.put("AgentSearch", new SearchDialogInfo("Search", "AgentAddressSearch", "AgentAddressSearch", 
+        dialogs.put("AgentSearch", new SearchDialogInfo("Search", "AgentSearch", "AgentSearch", 
                 getResourceString("AgentSearchTitle"), 
                 "edu.ku.brc.specify.datamodel.Agent",
                 "agentId"));

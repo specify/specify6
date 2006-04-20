@@ -134,5 +134,35 @@
       </sql>
     </stat>
     
+    <!-- ********************* -->
+    <!--  Accession Statistics -->
+    <!-- ********************* -->
+      
+      <stat name="Accession" display="Form" viewset="Main Views" view="Accession" mode="view">
+          <title>Permits Expiring This Year</title>
+          <sql type="text">
+              <![CDATA[select * From accession where accession.AccessionID = %s]]>
+          </sql>
+      </stat>
+      
+      <stat name="CITESPermitsExpireThisYear" display="Form" viewset="Main Views" view="PermitForAccessions" mode="view">
+          <title>Permits Expiring This Year</title>
+          <sql type="text">
+              <![CDATA[select permit.PermitID, permit.PermitNumber,permit.IssuedDate,permit.StartDate,
+permit.EndDate,permit.RenewalDate,permit.Type From permit where permit.PermitID = %s]]>
+          </sql>
+      </stat>
+      
+      <stat name="NonCITESPermitsExpireThisYear" display="Form" viewset="Main Views" view="PermitForAccessions" mode="view">
+          <view mode="display">Permit</view>
+          <title>Non-CITES Permits Expiring This Year</title>
+          <sql type="text">
+              <![CDATA[select permit.PermitID, permit.PermitNumber,permit.IssuedDate,permit.StartDate,
+permit.EndDate,permit.RenewalDate,permit.Type From permit where permit.PermitID = %s]]>
+          </sql>
+      </stat>
+      
+      
+    
   </statistics>
   

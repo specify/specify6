@@ -112,7 +112,7 @@ public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListen
                 {
                     data.add(resultSet.getObject(descCol));
                     data.add(resultSet.getObject(valCol));
-                    data.add(resultSet.getObject(colId));
+                    data.add(colId > 0 ? resultSet.getObject(colId) : null);
                     if (rowsDef.length() > 0)
                     {
                         rowsDef.append(",15dlu,");
@@ -123,10 +123,11 @@ public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListen
 
                 for (int i=0;i<data.size();i++)
                 {
-                    String desc  = data.get(i++).toString();
-                    String val   = data.get(i++).toString();
-                    String colId = data.get(i).toString();
-                    StatItem statItem = new StatItem(desc, linkStr == null ? null : (linkStr+",id="+colId), false);
+                    String desc     = data.get(i++).toString();
+                    String val      = data.get(i++).toString();
+                    Object colIdObj = data.get(i);
+                    String colId    = colIdObj != null ? colIdObj.toString() : null;
+                    StatItem statItem = new StatItem(desc, linkStr == null || colId == null ? null : (linkStr+",id="+colId), false);
                     statItem.setValueText(val);
                     addItem(statItem);
                     statItem.refreshUI();
@@ -142,6 +143,7 @@ public class StatGroupFromQuery extends StatGroup  implements SQLExecutionListen
         } catch (Exception ex)
         {
             log.error(ex);
+            ex.printStackTrace();
         }
 
     }

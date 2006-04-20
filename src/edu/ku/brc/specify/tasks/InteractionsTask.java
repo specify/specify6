@@ -107,7 +107,7 @@ public class InteractionsTask extends BaseTask
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
         ToolBarDropDownBtn btn = createToolbarButton(name, "loans.gif", "interactions_hint");
         
-        list.add(new ToolBarItemDesc(btn.getCompleteComp()));
+        list.add(new ToolBarItemDesc(btn));
         
         return list;
     }

@@ -26,16 +26,22 @@ public class RecordSet  implements java.io.Serializable {
     // Constructors
 
     /** default constructor */
-    public RecordSet() {
+    public RecordSet() 
+    {
     }
 
     /** constructor with id */
-    public RecordSet(Long recordSetID) {
+    public RecordSet(Long recordSetID) 
+    {
         this.recordSetID = recordSetID;
     }
 
-
-
+    /** constructor with id */
+    public RecordSet(final String name, final int tableId) 
+    {
+        this.name = name;
+        this.tableId = tableId;
+    }
 
     // Initializer
     public void initialize()

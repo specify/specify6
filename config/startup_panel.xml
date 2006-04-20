@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <panel>
+    <!--
   <row>
       <box title="Task List" descCol="1" valCol="2">    
 		<sql><![CDATA[Select name from tasklist]]></sql>
@@ -26,9 +27,9 @@
 		  <sql><![CDATA[Select distinct loan.LoanNumber as LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName, loan.loanid, loan.OriginalDueDate, loanphysicalobject.Quantity, loanphysicalobject.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country From loan Inner Join loanphysicalobject ON loan.LoanID =  loanphysicalobject.LoanID Inner Join loanagents ON loan.LoanID = loanagents.LoanID Inner Join agentaddress ON loanagents.AgentAddressID = agentaddress.AgentAddressID Inner Join address ON agentaddress.AddressID = address.AddressID Inner Join agent ON agentaddress.AgentID = agent.AgentID where loan.loanid in (select loanid from loan where (not  (currentduedate is null)) and category = 0 and (closed = 0 or closed is null) and datediff(CURDATE(), currentduedate) > 0)  group by LoanNumber]]></sql>
 		  <link colid="6">OverdueLookup</link>
       </box>
-  </row> 
-  <row>
-      <box title="Recent Searches" descCol="1" valCol="2">    
+   </row> 
+    <row>
+        <box title="Recent Searches" descCol="1" valCol="2">    
 		<sql><![CDATA[Select name from searches]]></sql>
       </box>
   
@@ -47,4 +48,37 @@
         </item>
       </box>
   </row>
+  -->
+    <row>
+        <box title="Accessions Entered in the Last 3 Months" descCol="1" valCol="3">
+            <sql><![CDATA[select number, accessionId, TimestampCreated From accession where DATE_SUB(CURDATE(), INTERVAL 3 MONTH) <= TimestampCreated order by TimestampCreated desc]]></sql>
+            <link colid="2">Accession</link>
+        </box>
+        <box title="Accessions Entered in the Last 3 Months" descCol="1" valCol="3">
+            <sql><![CDATA[select number, accessionId, TimestampCreated From accession where DATE_SUB(CURDATE(), INTERVAL 6 MONTH) <= TimestampCreated order by TimestampCreated desc]]></sql>
+            <link colid="2">Accession</link>
+        </box>
+    </row> 
+    
+    <row>
+        <box title="Permits Entered in the Last 3 Months" descCol="1" valCol="3">
+            <sql><![CDATA[select permit.PermitNumber, permit.PermitID, permit.EndDate From permit where DATE_SUB(CURDATE(), INTERVAL 3 MONTH) <= TimestampCreated order by permitNumber asc]]></sql>
+            <link colid="2">CITESPermitsExpireThisYear</link>
+        </box>
+        <box title="Permits Entered in the Last 6 Months" descCol="1" valCol="3">
+            <sql><![CDATA[select permit.PermitNumber, permit.PermitID, permit.EndDate From permit where DATE_SUB(CURDATE(), INTERVAL 6 MONTH) <= TimestampCreated order by permitNumber asc]]></sql>
+            <link colid="2">NonCITESPermitsExpireThisYear</link>
+        </box>
+    </row> 
+    
+    <row>
+        <box title="CITES Permits Expiring This Year" descCol="1" valCol="3">
+            <sql><![CDATA[select permit.PermitNumber, permit.PermitID, permit.EndDate From permit where ( lower(Type) like '%CITES%') and year(CURDATE()) = year(EndDate)]]></sql>
+            <link colid="2">CITESPermitsExpireThisYear</link>
+        </box>
+        <box title="Non-CITES Permits Expiring This Year" descCol="1" valCol="3">
+            <sql><![CDATA[select permit.PermitNumber, permit.PermitID, permit.EndDate From permit where ( lower(Type) not like '%CITES%') and year(CURDATE()) = year(EndDate)]]></sql>
+            <link colid="2">NonCITESPermitsExpireThisYear</link>
+        </box>
+    </row> 
 </panel>

@@ -43,6 +43,7 @@ import java.util.prefs.Preferences;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -62,8 +63,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.prefs.PrefsCache;
@@ -71,6 +70,8 @@ import edu.ku.brc.specify.ui.ColorChooser;
 import edu.ku.brc.specify.ui.ColorWrapper;
 import edu.ku.brc.specify.ui.GetSetValueIFace;
 import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.specify.ui.RolloverCommand;
+import edu.ku.brc.specify.ui.DropDownButtonStateful;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.db.JAutoCompComboBox;
 import edu.ku.brc.specify.ui.db.PickListItem;
@@ -104,6 +105,7 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
     protected FormViewDef                   formViewDef;
     protected Component                     formComp       = null;
     protected List<MultiView>               kids           = new ArrayList<MultiView>();
+    protected Vector<AltView>               altViewsList   = null; 
 
     protected Map<String, FieldInfo>        controls       = new Hashtable<String, FieldInfo>();
     protected Map<String, FieldInfo>        labels         = new Hashtable<String, FieldInfo>();
@@ -118,10 +120,10 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
     protected ControlBarPanel               controlPanel   = null;
     protected ResultSetController           rsController   = null;
     protected java.util.List                list           = null;
-    protected JComboBox                     altViewUI      = null;
     protected boolean                       ignoreSelection = false;
     protected JButton                       saveBtn         = null;
     protected boolean                       wasNull         = false;
+    protected DropDownButtonStateful        altViewUI;
 
     protected PanelBuilder                  mainBuilder;
     protected CellConstraints               cc             = new CellConstraints();
@@ -136,10 +138,14 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
      * @param view the definition of the view
      * @param altView indicates which AltView we will be using
      * @param mvParent the mvParent mulitview
+     * @param createRecordSetController indicates that a RecordSet Contoller should be created
+     * @param createViewSwitcher can be used to make sure that the multiview switcher is not created
      */
     public FormViewObj(final View        view,
                        final AltView     altView,
-                       final MultiView   mvParent)
+                       final MultiView   mvParent,
+                       final boolean     createRecordSetController,
+                       final boolean     createViewSwitcher)
     {
         this.view        = view;
         this.altView     = altView;
@@ -171,11 +177,16 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
             // (This is because they were created that way. It also makes no sense that while in "View" mode
             // you would want to switch an individual subview to a differe "mode" view than the root).
 
-            if (!view.isSpecialViewEdit() || mvParent.getMultiViewParent() == null)
+            if (createViewSwitcher && (!view.isSpecialViewEdit() || mvParent.getMultiViewParent() == null))
             {
+                
+                ImageIcon[] icons  = new ImageIcon[view.getAltViews().size()];
+                String[]    labels = new String[view.getAltViews().size()];
+                
                 // loop thru and add the AltViews to the comboxbox and make sure that the
                 // this form is always at the top of the list.
-                Vector<AltView> altViewsList = new Vector<AltView>();
+                altViewsList = new Vector<AltView>();
+                int inx = 0;
                 for (AltView av : view.getAltViews())
                 {
                     if (av == altView)
@@ -186,13 +197,40 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
                         altViewsList.add(av);
                     }
                 }
-                altViewUI = new JComboBox(altViewsList);
-                addMultiViewListener(altViewUI);
+                
+                for (AltView av : altViewsList)
+                {
+                    labels[inx] = av.getLabel();
+                    
+                    // This is Sort of Temporary until I get it all figured out
+                    if (av.getMode() == AltView.CreationMode.Edit)
+                    {
+                        icons[inx] = IconManager.getImage("EditForm", IconManager.IconSize.Std16);
+                        
+                    } else if (av.getViewDef().getType() == ViewDef.ViewType.table)
+                    {
+                        icons[inx] = IconManager.getImage("Speadsheet", IconManager.IconSize.Std16);
+                        
+                    } else
+                    {
+                        icons[inx] = IconManager.getImage("ViewForm", IconManager.IconSize.Std16);
+                    }
+                    inx++;
+                }
+
+                
+                altViewUI = new DropDownButtonStateful(labels, icons); 
+                altViewUI.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        mvParent.showView(altViewsList.get(altViewUI.getCurrentIndex()));
+                    }
+                });
 
                 List<JComponent> comps = new ArrayList<JComponent>();
                 if (altView.getMode() == AltView.CreationMode.Edit)
                 {
-                    saveBtn = new JButton(IconManager.getIcon("Save", IconManager.IconSize.Std24));
+                    saveBtn = new JButton(IconManager.getImage("Save"));
                     saveBtn.setMargin(new Insets(1,1,1,1));
                     saveBtn.setEnabled(false);
                     saveBtn.addActionListener(new ActionListener() {
@@ -211,19 +249,28 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
 
             }
         }
+        
+        if (createRecordSetController)
+        {
+            addRSController();
+        }
 
     }
 
-    /**
-     * Indicates the form is about to be shown
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.forms.Viewable#aboutToShow(boolean)
      */
-    public void aboutToShow()
+    public void aboutToShow(final boolean show)
     {
         if (altViewUI != null)
         {
             ignoreSelection = true;
-            altViewUI.setSelectedIndex(0);
+            altViewUI.setCurrentIndex(0);
             ignoreSelection = false;
+        }
+        for (MultiView mv : kids)
+        {
+            mv.aboutToShow(show);
         }
     }
 
@@ -607,6 +654,42 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
             }
         }
     }
+    
+    /**
+     * Adds the RecordSetController to the panel 
+     */
+    protected void addRSController()
+    {
+        // If the Control panel doesn't exist, then add it
+        if (rsController == null)
+        {
+            boolean inEditMode = altView.getMode() == AltView.CreationMode.Edit;
+            rsController = new ResultSetController(validator, inEditMode, inEditMode, 0);
+            rsController.addListener(this);
+            controlPanel.add(rsController);
+            
+            if (rsController.getNewRecBtn() != null)
+            {
+                rsController.getNewRecBtn().addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        createNewRecord();
+                        focusFirstFormControl();
+                    }
+                });
+            }
+            
+            if (rsController.getDelRecBtn() != null)
+            {
+                rsController.getDelRecBtn().addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        removeObject();
+                    }
+                });
+            }
+        } 
+    }
 
     /**
      * Cleanup references
@@ -712,37 +795,10 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
                 this.dataObj = null;
             }
 
-            
-            // If the Control panel doesn't exist, then add it
-            if (rsController == null)
+            if (rsController != null)
             {
-                boolean inEditMode = altView.getMode() == AltView.CreationMode.Edit;
-                rsController = new ResultSetController(validator, inEditMode, inEditMode, list.size());
-                rsController.addListener(this);
-                controlPanel.add(rsController);
-                
-                if (rsController.getNewRecBtn() != null)
-                {
-                    rsController.getNewRecBtn().addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            createNewRecord();
-                            focusFirstFormControl();
-                        }
-                    });
-                }
-                
-                if (rsController.getDelRecBtn() != null)
-                {
-                    rsController.getDelRecBtn().addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            removeObject();
-                        }
-                    });
-                }
+                rsController.setLength(list.size());
             }
-            rsController.setLength(list.size());
 
             setDataIntoUI();
 
@@ -872,7 +928,7 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
             
             //System.out.println("["+fieldInfo.getFormCell().getName()+"]["+fieldInfo.getFormCell().getType()+"]");
             //if (fieldInfo.getFormCell().getName().equals("agentAddressByIssuer.agent"))
-            if (fieldInfo.getFormCell().getName().equals("number"))
+            if (fieldInfo.getFormCell().getName().equals("agentAddressByIssuer.agent"))
             {
                 int x = 0;
                 x++;
@@ -988,6 +1044,7 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
                 if (uiData != null)
                 {
                     //ds.setFieldValue(dataObj, name, uiData);
+                    log.info(name);
                     UIHelper.setFieldValue(name, dataObj, uiData, dg, ds);
                 }
             }

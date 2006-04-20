@@ -18,7 +18,7 @@ public class BorrowAgent  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     protected AgentAddress agentAddress;
+     protected Agent agent;
      protected Borrow borrow;
 
 
@@ -45,7 +45,7 @@ public class BorrowAgent  implements java.io.Serializable {
         timestampModified = new Date();
         timestampCreated = new Date();
         lastEditedBy = null;
-        agentAddress = null;
+        agent = null;
         borrow = null;
     }
     // End Initializer
@@ -121,12 +121,12 @@ public class BorrowAgent  implements java.io.Serializable {
     /**
      *      * Address/Organization from which agent participated in the borrow
      */
-    public AgentAddress getAgentAddress() {
-        return this.agentAddress;
+    public Agent getAgent() {
+        return this.agent;
     }
     
-    public void setAgentAddress(AgentAddress agentAddress) {
-        this.agentAddress = agentAddress;
+    public void setAgent(Agent agent) {
+        this.agent = agent;
     }
 
     /**

@@ -1,8 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 
 
@@ -14,19 +12,26 @@ public class Address  implements java.io.Serializable {
 
     // Fields
 
-     protected Integer addressId;
-     protected String address;
-     protected String address2;
-     protected String city;
-     protected String state;
-     protected String country;
-     protected String postalCode;
-     protected String remarks;
-     protected Date timestampModified;
-     protected Date timestampCreated;
-     protected String lastEditedBy;
-     protected Set<AgentAddress> agentAddresses;
+    protected Integer           addressId;
+    protected String            address;
+    protected String            address2;
+    protected String            city;
+    protected String            state;
+    protected String            country;
+    protected String            postalCode;
+    protected String            remarks;
+    protected Date              timestampModified;
+    protected Date              timestampCreated;
+    protected String            lastEditedBy;
+    protected Agent             agent;
 
+    // From Agent
+    protected Boolean           isPrimary;
+    protected String            phone1;
+    protected String            phone2;
+    protected String            fax;
+    protected String            roomOrBuilding;
+     
 
     // Constructors
 
@@ -38,9 +43,6 @@ public class Address  implements java.io.Serializable {
     public Address(Integer addressId) {
         this.addressId = addressId;
     }
-
-
-
 
     // Initializer
     public void initialize()
@@ -56,7 +58,15 @@ public class Address  implements java.io.Serializable {
         timestampModified = new Date();
         timestampCreated = new Date();
         lastEditedBy = null;
-        agentAddresses = new HashSet<AgentAddress>();
+        agent = null;
+        
+        // Agent
+        isPrimary = false;
+        phone1 = null;
+        phone2 = null;
+        fax = null;
+        roomOrBuilding = null;
+        
     }
     // End Initializer
 
@@ -186,35 +196,70 @@ public class Address  implements java.io.Serializable {
     /**
      *
      */
-    public Set<AgentAddress> getAgentAddresses() {
-        return this.agentAddresses;
+    public Agent getAgent() {
+        return this.agent;
     }
 
-    public void setAgentAddresses(Set<AgentAddress> agentAddresses) {
-        this.agentAddresses = agentAddresses;
+    public void setAgent(Agent agent) {
+        this.agent = agent;
     }
 
+    // Agent
 
-
-
-
-    // Add Methods
-
-    public void addAgentAddresses(final AgentAddress agentAddresses)
-    {
-        this.agentAddresses.add(agentAddresses);
-        agentAddresses.setAddress(this);
+    /**
+     *
+     */
+    public String getPhone1() {
+        return this.phone1;
     }
 
-    // Done Add Methods
-
-    // Delete Methods
-
-    public void removeAgentAddresses(final AgentAddress agentAddresses)
-    {
-        this.agentAddresses.remove(agentAddresses);
-        agentAddresses.setAddress(null);
+    public void setPhone1(String phone1) {
+        this.phone1 = phone1;
     }
 
-    // Delete Add Methods
+    /**
+     *
+     */
+    public String getPhone2() {
+        return this.phone2;
+    }
+
+    public void setPhone2(String phone2) {
+        this.phone2 = phone2;
+    }
+
+    /**
+     *
+     */
+    public String getFax() {
+        return this.fax;
+    }
+
+    public void setFax(String fax) {
+        this.fax = fax;
+    }
+
+    /**
+     *
+     */
+    public String getRoomOrBuilding() {
+        return this.roomOrBuilding;
+    }
+
+    public void setRoomOrBuilding(String roomOrBuilding) {
+        this.roomOrBuilding = roomOrBuilding;
+    }
+    
+
+    /**
+     *      * Is the agent currently located at this address?
+     */
+    public Boolean getIsPrimary() {
+        return this.isPrimary;
+    }
+
+    public void setIsPrimary(Boolean isPrimary) {
+        this.isPrimary = isPrimary;
+    }
+
 }

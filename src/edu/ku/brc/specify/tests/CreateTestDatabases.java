@@ -1,12 +1,10 @@
 package edu.ku.brc.specify.tests;
 
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAccessionAgent;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPermit;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAccession;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAccessionAgent;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAccessionAuthorizations;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAddress;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAgent;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAgentAddress;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAttributeDef;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCatalogSeries;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectingEvent;
@@ -27,6 +25,7 @@ import static edu.ku.brc.specify.tests.ObjCreatorHelper.createLocality;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createLocation;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createLocationTreeDef;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createLocationTreeDefItem;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPermit;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPrepType;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPreparation;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPreparationAttr;
@@ -52,7 +51,6 @@ import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.AccessionAuthorizations;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.AgentAddress;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.AttributeIFace;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
@@ -502,12 +500,13 @@ public class CreateTestDatabases
                 "156 Inverness",      "Lawrence",    "KS",   "USA",         "66045",
                 "100 Main Street",    "Topeka",      "KS",   "USA",         "66099",
         };
+        
+        
 
         Address[] addrs = new Address[addresses.length / 5];
-        for (int i = 0; i < addresses.length; i += 5)
+        for (int i = 0; i < agents.length; i += 5)
         {
-            AgentAddress agentAddress = createAgentAddress((short)1, "", "", "", "", "", "", "", true, null, agents[i/5], null);
-            Address addr = createAddress(agentAddress, addresses[i], "", addresses[i+1], addresses[i+2], addresses[i+3], addresses[i+4]);
+            Address addr = createAddress(agents[i], addresses[i], "", addresses[i+1], addresses[i+2], addresses[i+3], addresses[i+4]);
             addrs[i/5] = addr;
         }
         return addrs;
@@ -555,8 +554,7 @@ public class CreateTestDatabases
             Address[] addrs = createAddresses(agents);
 
             // Add an extra address for one of them
-            AgentAddress agentAddress = createAgentAddress((short)2, "", "", "", "", "", "", "", true, null, agents[6], null);
-            Address addr = createAddress(agentAddress, "34 Vintage Drive", "", "San Diego", "CA",   "USA", "92129");
+            //Address addr = createAddress(agents[0], "34 Vintage Drive", "", "San Diego", "CA",   "USA", "92129");
 
             HibernateUtil.commitTransaction();
 
@@ -634,20 +632,15 @@ public class CreateTestDatabases
                                             Calendar.getInstance());
             accessions[i].setText1(division[i]);
 
-            AgentAddress[] agentAddress = new AgentAddress[roles.length];
             for (int j=0;j<roles.length;j++)
             {
-
-                agentAddress[j] = (AgentAddress)agents[agentsInx % agents.length].getAgentAddressesByAgent().iterator().next();
+                AccessionAgent accessionAgent = createAccessionAgent(roles[j],  agents[agentsInx % agents.length], accessions[i], null);
                 agentsInx++;
-                System.out.println(agents[i].getLastName()+" " + agentAddress[j].getAgent().getLastName());
-                //AgentAddress agentAddress = ObjCreatorHelper.createAgentAddress(agents[i], "", "", "");
-                AccessionAgent accessionAgent = createAccessionAgent(roles[j],  agentAddress[j], accessions[i], null);
                 accessions[i].getAccessionAgents().add(accessionAgent);
             }
 
             // Make as many permits as the position of the accession in the array
-            int aaInx = 0;
+            agentsInx = 0;
             for (int j=0;j<i+1;j++)
             {
                 Permit permit = createPermit(permitNumbers[j], permitType[1],
@@ -656,12 +649,10 @@ public class CreateTestDatabases
                         Calendar.getInstance(), // endDate
                         Calendar.getInstance());// renewalDate
 
-                permit.setAgentAddressByIssuee(i == 1 && j == 0 ? null : agentAddress[aaInx % agentAddress.length]);
-                System.out.println( agentAddress[aaInx % agentAddress.length].getAgent().getFirstName()+"  "+aaInx % agentAddress.length);
-                aaInx++;
-                permit.setAgentAddressByIssuer(agentAddress[aaInx % agentAddress.length]);
-                System.out.println( agentAddress[aaInx % agentAddress.length].getAgent().getFirstName()+"  "+aaInx % agentAddress.length);
-                aaInx++;
+                permit.setAgentByIssuee(i == 1 && j == 0 ? null : agents[agentsInx % agents.length]);
+                agentsInx++;
+                permit.setAgentByIssuer(agents[agentsInx % agents.length]);
+                agentsInx++;
 
                 AccessionAuthorizations accessionAuthorizations = createAccessionAuthorizations(permit, accessions[i], null);
                 accessions[i].getAccessionAuthorizations().add(accessionAuthorizations);
@@ -1050,7 +1041,7 @@ public class CreateTestDatabases
                 agents[i] = getAgentByLastName(agentNames[i]);
             }
 
-            Object[] permitInfo = {"101", "Field Work",};
+            Object[] permitInfo = {"101", "Field Work"};
             /*
             final String permitNumber,
             final String type,

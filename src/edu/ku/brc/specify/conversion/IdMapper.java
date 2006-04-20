@@ -73,9 +73,9 @@ public class IdMapper
         
         // XXX DEBUG and Testing
         boolean alreadyCreated = !GenericDBConversion.shouldCreateMapTables();
-        numRecs = 5001; // for all tables
+        numRecs = 2001; // for all tables
         
-        if (numRecs < 5000)
+        if (numRecs < 2000)
         {
             usingMemory = true;
             ids         = new Vector<Integer>();
@@ -98,13 +98,13 @@ public class IdMapper
                     } catch (SQLException ex){};
                 
                     str = "CREATE TABLE `"+mapTableName+"` ("+
-                                        "`NewID` int(11) NOT NULL default '0', "+
                                         "`OldID` int(11) NOT NULL default '0', "+
-                                        " PRIMARY KEY (`NewID`) ) ENGINE=InnoDB DEFAULT CHARSET=latin1";
+                                        "`NewID` int(11) NOT NULL default '0', "+
+                                        " PRIMARY KEY (`OldID`) ) ENGINE=InnoDB DEFAULT CHARSET=latin1";
                     //log.info(str);
                     stmt.executeUpdate(str); 
                     
-                    stmt.executeUpdate("alter table "+mapTableName+" add index INX_"+mapTableName+" (OldID)"); 
+                    stmt.executeUpdate("alter table "+mapTableName+" add index INX_"+mapTableName+" (NewID)"); 
                     
                     stmt.clearBatch();
                     stmt.close();
@@ -149,7 +149,7 @@ public class IdMapper
             try
             {
                 Statement stmt = newConn.createStatement();
-                String str = "INSERT INTO "+mapTableName+" VALUES (" + newIndex + ","+oldIndex+")";
+                String str = "INSERT INTO "+mapTableName+" VALUES (" + oldIndex + "," + newIndex + ")";
                 stmt.executeUpdate(str); 
                 stmt.clearBatch();
                 stmt.close();
@@ -161,7 +161,7 @@ public class IdMapper
             }            
         }
     }
-    
+
     /**
      * Map all the old iDs to new IDs
      */

@@ -33,12 +33,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -47,6 +49,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -70,6 +73,7 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.dbsupport.BasicSQLUtils.FieldMetaData;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.tests.ObjCreatorHelper;
 import edu.ku.brc.specify.ui.db.PickList;
@@ -151,9 +155,9 @@ public class GenericDBConversion
         "Accession",
         "AccessionAgents",
         "AccessionAuthorizations",
-        "Address",
-        "Agent",
-        "AgentAddress",
+        //"Address",
+        //"Agent",
+        //"AgentAddress",
         "Authors",
         "BiologicalObjectAttributes",
         "BiologicalObjectRelation",
@@ -212,57 +216,17 @@ public class GenericDBConversion
         "TaxonomyType"
         };
 
-        /*
-        Hashtable<String, List<String>> hash = new Hashtable<String, List<String>>();
-
-        for (String tableName : tableNames)
-        {
-            //System.out.println("\n\""+tableName+"\", ");
-            List<String> list = new ArrayList<String>();
-            hash.put(tableName, list);
-            try
-            {
-                Statement stmt = idMapperMgr.getOldConnection().createStatement();
-                ResultSet rs   = stmt.executeQuery("describe "+tableName.toLowerCase());
-                while (rs.next())
-                {
-                    String fieldName = rs.getString(1);
-                    if (fieldName.indexOf("ID") > -1)
-                    {
-                        //System.out.println("\""+fieldName+"\",");
-                        list.add(fieldName);
-                    }
-                }
-                rs.close();
-                stmt.close();
-
-            } catch (SQLException ex)
-            {
-                log.error(ex);
-            }
-        }
-
-        for (String tableName : hash.keySet())
-        {
-            List<String> list = hash.get(tableName);
-            int inx = 0;
-            for (String fieldName : list)
-            {
-                if (inx > 0)
-                {
-                    String origTableName = fieldName.substring(0, fieldName.length()-2);
-                    System.out.println("idMapperMgr.mapForeignKey(\""+tableName+"\", \""+fieldName+"\", \""+origTableName+"\", \""+fieldName+"\");");
-                }
-                inx++;
-            }
-        }*/
-
         for (String tableName : tableNames)
         {
             IdMapper idMapper = idMapperMgr.addMapper(tableName, tableName+"ID");
             if (shouldCreateMapTables)
                 idMapper.mapAllIds();
         }
+        
+        // Create the mappers here, but fill them in during the AgentAddress Process
+        IdMapper agentIDMapper     = idMapperMgr.addMapper("agent", "AgentID");
+        IdMapper addrIDMapper      = idMapperMgr.addMapper("address", "AddressID");
+        IdMapper agentAddrIDMapper = idMapperMgr.addMapper("agentaddress", "AgentAddressID");
 
         // Map all the Logical IDs
         IdMapper idMapper  = idMapperMgr.addMapper("collectionobject", "CollectionObjectID");
@@ -334,8 +298,8 @@ public class GenericDBConversion
             //"SoundEventStorage", "SoundEventID", "SoundEvent", "SoundEventID",
             //"SoundEventStorage", "SoundRecordingID", "SoundRecording", "SoundRecordingID",
 
-            "Shipment", "ShipperID", "Agent", "AgentID",
-            "Shipment", "ShippedToID", "Agent", "AgentID",
+            "Shipment", "ShipperID", "AgentAddress", "AgentAddressID",
+            "Shipment", "ShippedToID", "AgentAddress", "AgentAddressID",
             "Shipment", "ShippedByID", "Agent", "AgentID",
             //"Shipment", "ShipmentMethodID", "ShipmentMethod", "ShipmentMethodID",
 
@@ -508,12 +472,12 @@ public class GenericDBConversion
 
 
         String[] tablesToMoveOver = {
-                                    "Accession",
                                     "AccessionAgents",
+                                    "Accession",
                                     "AccessionAuthorizations",
-                                    "Address",
-                                    "Agent",
-                                    "AgentAddress",
+                                    //"Address",
+                                    //"Agent",
+                                    //"AgentAddress",
                                     "Authors",
                                     "Borrow",
                                     "BorrowAgents",
@@ -558,6 +522,12 @@ public class GenericDBConversion
        tableMaps.put("referencework", createFieldNameMap(new String[] {"WorkDate", "Date1"}));
        tableMaps.put("stratigraphy", createFieldNameMap(new String[] {"LithoGroup", "Group1"}));
        tableMaps.put("taxoncitation", createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
+       
+       tableMaps.put("accessionagents", createFieldNameMap(new String[] {"AgentID", "AgentAddressID"}));
+       tableMaps.put("borrowagent", createFieldNameMap(new String[] {"AgentID", "AgentAddressID"}));
+       tableMaps.put("deaccessionagent", createFieldNameMap(new String[] {"AgentID", "AgentAddressID"}));
+       tableMaps.put("loanagent", createFieldNameMap(new String[] {"AgentID", "AgentAddressID"}));
+
 
        Map<String, Map<String, String>> tableDateMaps = new Hashtable<String, Map<String, String>>();
        tableDateMaps.put("collectingevent", createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
@@ -2881,6 +2851,565 @@ public class GenericDBConversion
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
         //BasicSQLUtils.setShowMappingError(showMappingErrors);
     }
+   
+   /**
+   *
+   */
+  public boolean convertAgents()
+  {
+       Connection connection = oldDB.getConnectionToDB();
+       Connection newDBConn = DBConnection.getConnection();
+       
+       BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "agent");
+       BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "address");
+       
+       
+       String sql = "Select agentaddress.*, agent.*, address.* From agent Inner Join agentaddress ON agentaddress.AgentID = agent.AgentID Inner Join address ON agentaddress.AddressID = address.AddressID Order By agentaddress.AgentAddressID Asc";
+       
+       String[] agentColumns = {"agent.AgentID",
+               "agent.AgentType",
+               "agentaddress.JobTitle",
+               "agent.FirstName",
+               "agent.LastName",
+               "agent.MiddleInitial",
+               "agent.Title",
+               "agent.Interests",
+               "agent.Abbreviation",
+               "agent.Name",
+               "agentaddress.Email",
+               "agentaddress.URL",
+               "agent.Remarks",
+               "agent.TimestampModified",
+               "agent.TimestampCreated",
+               "agent.LastEditedBy",
+               "agent.ParentOrganizationID"};
+       
+       String[] addressColumns = {"address.AddressID",
+                                    "address.Address",
+                                    "address.Address2",
+                                    "address.City",
+                                    "address.State",
+                                    "address.Country",
+                                    "address.Postalcode",
+                                    "address.Remarks",
+                                    "address.TimestampModified",
+                                    "address.TimestampCreated",
+                                    "address.LastEditedBy",
+                                    "agentaddress.IsCurrent",
+                                    "agentaddress.Phone1",
+                                    "agentaddress.Phone2",
+                                    "agentaddress.Fax",
+                                    "agentaddress.RoomOrBuilding",
+                                    "address.AgentID"};
+       
+       Hashtable<Integer, Integer> agentTracker = new Hashtable<Integer, Integer>();
+       Hashtable<Integer, Integer> addressTracker = new Hashtable<Integer, Integer>();
+       Hashtable<Integer, Integer> oldAddrIds = new Hashtable<Integer, Integer>();
+       Hashtable<Integer, Integer> oldAgentIds = new Hashtable<Integer, Integer>();
+       
+       try
+       {
+           Statement stmtX = connection.createStatement();
+           ResultSet rsX   = stmtX.executeQuery("select AddressID from address order by AddressID");
+           while (rsX.next())
+           {
+               int addrId = rsX.getInt(1);
+               oldAddrIds.put(addrId, 0);
+           }
+           rsX.close();
+           stmtX.close();
+           
+           stmtX = connection.createStatement();
+           rsX   = stmtX.executeQuery("select AgentID from agent order by AgentID");
+           while (rsX.next())
+           {
+               int agentId = rsX.getInt(1);
+               oldAgentIds.put(agentId, 0);
+           }
+           rsX.close();
+           stmtX.close();
+           
+           //////////////////////////////////////////////////////////////////////////////////
+           // This does the part of AgentAddress where it has both an Address AND an Agent
+           //////////////////////////////////////////////////////////////////////////////////
+           
+           Statement         stmt = connection.createStatement();
+           ResultSet         rs   = stmt.executeQuery(sql);
+           ResultSetMetaData rsmd = rs.getMetaData();
+           List<FieldMetaData> fieldList = new ArrayList<FieldMetaData>();
+           Hashtable<String, Integer> indexFromNameMap = new Hashtable<String, Integer>();
+           
+           BasicSQLUtils.getFieldMetaDataFromSchema(rsmd, fieldList);
+           int inx = 1;
+           for (FieldMetaData fmd : fieldList)
+           {
+               //System.out.println("["+fmd.getName()+"]  "+fmd.getType());
+               indexFromNameMap.put(fmd.getName(), inx++);
+           }
+           
+           IdMapper agentIDMapper     = idMapperMgr.get("agent", "AgentID");
+           IdMapper addrIDMapper      = idMapperMgr.get("address", "AddressID");
+           IdMapper agentAddrIDMapper = idMapperMgr.get("agentaddress", "AgentAddressID");
+           
+           int agentIdInx = indexFromNameMap.get("agent.AgentID");
+           int addrIdInx  = indexFromNameMap.get("address.AddressID");
+           
+           int newAgentId = 1;
+           int newAddrId  = 1;
+           
+           int recordCnt = 0;
+           while (rs.next())
+           {
+               int agentAddressId = rs.getInt(1);
+               int agentId = rs.getInt(agentIdInx);
+               int addrId  = rs.getInt(addrIdInx);
+               if (addrId == -1505739717)
+               {
+                   int x = 0;
+                   x++;
+               }
+  
+               recordCnt++;
+
+               boolean alreadyInserted = agentTracker.get(agentId) != null;
+               if (!alreadyInserted)
+               {
+                   // Create Agent
+                    StringBuilder strBuf = new StringBuilder("INSERT INTO agent VALUES (");
+                    for (int i=0;i<agentColumns.length;i++)
+                    {
+                        if (i > 0) strBuf.append(",");
+                        //System.out.println(agentColumns[i]);
+                        if (i == 0)
+                        {
+                            strBuf.append(newAgentId);
+                            
+                        } else
+                        {
+                            inx = indexFromNameMap.get(agentColumns[i]);
+                            strBuf.append(BasicSQLUtils.getStrValue(rs.getObject(inx)));
+                        }
+                    }
+                    strBuf.append(")");
+                    
+                    try
+                    {
+                        Statement updateStatement = newDBConn.createStatement();
+                        updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+                        if (false)
+                        {
+                            System.out.println(strBuf.toString());
+                        }
+                        updateStatement.executeUpdate(strBuf.toString());
+                        updateStatement.clearBatch();
+                        updateStatement.close();
+                        updateStatement = null;
+                        
+                        agentTracker.put(agentId, newAgentId);
+                        oldAgentIds.put(agentId, 1);
+                        agentIDMapper.addIndex(newAgentId, agentId);
+                        
+                        agentAddrIDMapper.addIndex(newAgentId, agentAddressId);
+                        
+                        newAgentId++;
+                        
+                    } catch (SQLException e)
+                    {
+                        log.error(strBuf.toString());
+                        log.error("Count: "+recordCnt);
+                        e.printStackTrace();
+                        log.error(e);
+                        connection.close();
+                        newDBConn.close();
+
+                        return false;
+                    }
+                    
+               } else
+               {
+                   log.info("Agent already Used ["+BasicSQLUtils.getStrValue(rs.getObject(indexFromNameMap.get("agent.LastName")))+"]");
+                   
+                   int newAID = agentTracker.get(agentId);
+                   agentAddrIDMapper.addIndex(newAID, agentAddressId);
+               }
+               
+               // Create Address
+               boolean alreadyInsertedAddr = addressTracker.get(addrId) != null;
+               if (!alreadyInsertedAddr)
+               {
+                   StringBuilder strBuf = new StringBuilder("INSERT INTO address VALUES (");
+                   for (int i=0;i<addressColumns.length;i++)
+                   {
+                       if (i > 0) strBuf.append(",");
+                       if (i == addressColumns.length-1)
+                       {
+                           strBuf.append(newAgentId);
+                           
+                       } else
+                       {
+                           
+                           Integer inxInt = indexFromNameMap.get(addressColumns[i]);
+                           String value;
+                           if (i == 0)
+                           {
+                               value = Integer.toString(newAddrId);
+                               
+                           } else if (inxInt == null && addressColumns[i].equals("address.Address2"))
+                           {
+                               //System.out.println(addressColumns[i]);
+                               value = "''";
+                           } else if (addressColumns[i].equals("address.Address"))
+                           {
+                               value = BasicSQLUtils.getStrValue(StringEscapeUtils.escapeJava(rs.getString(inxInt)));
+                               
+                           } else
+                           {
+                               //System.out.println(addressColumns[i]);
+                               value = BasicSQLUtils.getStrValue(rs.getObject(inxInt));
+                           }
+                           strBuf.append(value);
+                       }
+                   }
+                   strBuf.append(")");
+                   
+                   try
+                   {
+                       Statement updateStatement = newDBConn.createStatement();
+                       updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+                       if (false)
+                       {
+                           System.out.println(strBuf.toString());
+                       }
+                       updateStatement.executeUpdate(strBuf.toString());
+                       updateStatement.clearBatch();
+                       updateStatement.close();
+                       updateStatement = null;
+                       
+                       addressTracker.put(addrId, newAddrId);
+                       oldAddrIds.put(addrId, 1);
+                       
+                       addrIDMapper.addIndex(newAddrId, addrId);
+                       newAddrId++;
+                       
+                   } catch (SQLException e)
+                   {
+                       log.error(strBuf.toString());
+                       log.error("Count: "+recordCnt);
+                       e.printStackTrace();
+                       log.error(e);
+                       connection.close();
+                       newDBConn.close();
+    
+                       return false;
+                   }
+               }
+
+               if (recordCnt % 250 == 0)
+               {
+                   log.info("AgentAddress Records: "+ recordCnt);
+               }
+           } // while 
+           log.info("AgentAddress Records: "+ recordCnt);
+           rs.close();
+           stmt.close();
+
+           
+           //////////////////////////////////////////////////////////////////////////////////
+           // This does the part of AgentAddress where it has JUST an Address
+           //////////////////////////////////////////////////////////////////////////////////
+           log.info("******** Doing AgentAddress JUST Address");
+           sql = "Select agentaddress.*, address.* From address Inner Join agentaddress ON agentaddress.AddressID = address.AddressID Order By agentaddress.AgentAddressID Asc";
+
+           stmt = connection.createStatement();
+           rs   = stmt.executeQuery(sql);
+           rsmd = rs.getMetaData();
+           fieldList.clear();
+           indexFromNameMap.clear();
+           
+           BasicSQLUtils.getFieldMetaDataFromSchema(rsmd, fieldList);
+            inx = 1;
+           for (FieldMetaData fmd : fieldList)
+           {
+               indexFromNameMap.put(fmd.getName(), inx++);
+           }
+           
+           addrIdInx  = indexFromNameMap.get("address.AddressID");
+           
+           int newRecordsAdded = 0;
+           recordCnt = 0;
+           while (rs.next())
+           {
+               //int agentAddressId = rs.getInt(1);
+               int addrId         = rs.getInt(addrIdInx);
+ 
+               recordCnt++;
+
+               // Create Address
+               boolean alreadyInsertedAddr = addressTracker.get(addrId) != null;
+               if (!alreadyInsertedAddr)
+               {
+                   StringBuilder strBuf = new StringBuilder("INSERT INTO address VALUES (");
+                   for (int i=0;i<addressColumns.length;i++)
+                   {
+                       if (i > 0) strBuf.append(",");
+                       if (i == addressColumns.length-1)
+                       {
+                           strBuf.append("NULL");
+                           
+                       } else
+                       {
+                           
+                           Integer inxInt = indexFromNameMap.get(addressColumns[i]);
+                           String value;
+                           if (i == 0)
+                           {
+                               value = Integer.toString(newAddrId);
+                               
+                           } else if (inxInt == null && addressColumns[i].equals("address.Address2"))
+                           {
+                               value = "''";
+                               
+                           } else if (addressColumns[i].equals("address.Address"))
+                           {
+                               value = BasicSQLUtils.getStrValue(StringEscapeUtils.escapeJava(rs.getString(inxInt)));
+                                                              
+                           } else
+                           {
+                               //System.out.println(addressColumns[i]);
+                               value = BasicSQLUtils.getStrValue(rs.getObject(inxInt));
+                           }
+                           strBuf.append(value);
+                       }
+                   }
+                   strBuf.append(")");
+                   
+                   try
+                   {
+                       Statement updateStatement = newDBConn.createStatement();
+                       updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+                       if (false)
+                       {
+                           System.out.println(strBuf.toString());
+                       }
+                       updateStatement.executeUpdate(strBuf.toString());
+                       updateStatement.clearBatch();
+                       updateStatement.close();
+                       updateStatement = null;
+                       
+                       addressTracker.put(addrId, newAddrId);
+                       oldAddrIds.put(addrId, 1);
+                       
+                       addrIDMapper.addIndex(newAddrId, addrId);
+                       newAddrId++;
+                       
+                       newRecordsAdded++;
+                       
+                   } catch (SQLException e)
+                   {
+                       log.error(strBuf.toString());
+                       log.error("Count: "+recordCnt);
+                       e.printStackTrace();
+                       log.error(e);
+                       connection.close();
+                       newDBConn.close();
+    
+                       return false;
+                   }
+               }
+
+               if (recordCnt % 250 == 0)
+               {
+                   log.info("AgentAddress (Address Only) Records: "+ recordCnt+"  newRecordsAdded "+newRecordsAdded);
+               }
+           } // while 
+           log.info("AgentAddress (Address Only) Records: "+ recordCnt);
+           rs.close();
+           stmt.close();
+          
+           //////////////////////////////////////////////////////////////////////////////////
+           // This does the part of AgentAddress where it has JUST Agent
+           //////////////////////////////////////////////////////////////////////////////////
+           log.info("******** Doing AgentAddress JUST Agent");
+
+           newRecordsAdded = 0;
+           
+           sql = "Select agentaddress.*, agent.* From agent Inner Join agentaddress ON agentaddress.AgentID = agent.AgentID Order By agentaddress.AgentAddressID Asc";
+           
+           stmt = connection.createStatement();
+           rs   = stmt.executeQuery(sql);
+           rsmd = rs.getMetaData();
+           fieldList.clear();
+           indexFromNameMap.clear();
+           
+           BasicSQLUtils.getFieldMetaDataFromSchema(rsmd, fieldList);
+           inx = 1;
+           for (FieldMetaData fmd : fieldList)
+           {
+               indexFromNameMap.put(fmd.getName(), inx++);
+           }
+           
+           agentIdInx = indexFromNameMap.get("agent.AgentID");
+           
+           recordCnt = 0;
+           while (rs.next())
+           {
+               int agentAddressId = rs.getInt(1);
+               int agentId = rs.getInt(agentIdInx);
+  
+               recordCnt++;
+
+               boolean alreadyInserted = agentTracker.get(agentId) != null;
+               if (!alreadyInserted)
+               {
+                   // Create Agent
+                    StringBuilder strBuf = new StringBuilder("INSERT INTO agent VALUES (");
+                    for (int i=0;i<agentColumns.length;i++)
+                    {
+                        if (i > 0) strBuf.append(",");
+                        if (i == 0)
+                        {
+                            strBuf.append(newAgentId);
+                            
+                            
+                        } else
+                        {
+                            inx = indexFromNameMap.get(agentColumns[i]);
+                            strBuf.append(BasicSQLUtils.getStrValue(rs.getObject(inx)));
+                        }
+                    }
+                    strBuf.append(")");
+                    
+                    try
+                    {
+                        Statement updateStatement = newDBConn.createStatement();
+                        updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+                        if (false)
+                        {
+                            System.out.println(strBuf.toString());
+                        }
+                        updateStatement.executeUpdate(strBuf.toString());
+                        updateStatement.clearBatch();
+                        updateStatement.close();
+                        updateStatement = null;
+                        
+                        agentTracker.put(agentId, newAgentId);
+                        oldAgentIds.put(agentId, 1);
+                        agentIDMapper.addIndex(newAgentId, agentId);
+                        
+                        agentAddrIDMapper.addIndex(newAgentId, agentAddressId);
+                        
+                        newAgentId++;
+                        
+                        newRecordsAdded++;
+                        
+                    } catch (SQLException e)
+                    {
+                        log.error(strBuf.toString());
+                        log.error("Count: "+recordCnt);
+                        e.printStackTrace();
+                        log.error(e);
+                        connection.close();
+                        newDBConn.close();
+
+                        return false;
+                    }
+                    
+               }
+               
+               if (recordCnt % 250 == 0)
+               {
+                   log.info("AgentAddress (Agent Only) Records: "+ recordCnt);
+               }
+           } // while 
+           log.info("AgentAddress (Agent Only) Records: "+ recordCnt+"  newRecordsAdded "+newRecordsAdded);
+
+           rs.close();
+           stmt.close();
+
+           
+           if (oldAddrIds.size() > 0)
+           {
+               //System.out.println("Address Record IDs not used by AgentAddress:");
+               
+               StringBuilder sqlStr = new StringBuilder("select ");
+               List<String> names = new ArrayList<String>();
+               getFieldNamesFromSchema(connection, "address", names);
+               sqlStr.append(buildSelectFieldList(names, "address"));
+               sqlStr.append(" from address where AddressId in (");
+               
+               int cnt = 0;
+               for (Enumeration<Integer> e=oldAddrIds.keys();e.hasMoreElements();)
+               {
+                   
+                   Integer id = e.nextElement();
+                   Integer val = oldAddrIds.get(id);
+                   if (val == 0)
+                   {
+                       addrIDMapper.addIndex(newAddrId, id);
+                       newAddrId++;
+
+                       if (cnt > 0) sqlStr.append(",");
+                       sqlStr.append(id);
+                       cnt++;
+                   }
+               }
+               sqlStr.append(")");
+               
+               copyTable(connection, newDBConn, sqlStr.toString(), "address", "address", null, null); // closes the connection automatically
+           }
+           
+           if (oldAgentIds.size() > 0)
+           {
+               connection = oldDB.getConnectionToDB();
+               newDBConn  = DBConnection.getConnection();
+
+               StringBuilder sqlStr = new StringBuilder("select ");
+               List<String> names = new ArrayList<String>();
+               getFieldNamesFromSchema(connection, "agent", names);
+               sqlStr.append(buildSelectFieldList(names, "agent"));
+               sqlStr.append(" from agent where AgentId in (");
+               
+               int cnt = 0;
+               for (Enumeration<Integer> e=oldAgentIds.keys();e.hasMoreElements();)
+               {
+                   
+                   Integer id = e.nextElement();
+                   Integer val = oldAgentIds.get(id);
+                   if (val == 0)
+                   {
+                       agentIDMapper.addIndex(newAgentId, id);
+                       newAgentId++;
+
+                       if (cnt > 0) sqlStr.append(",");
+                       sqlStr.append(id);
+                       cnt++;
+                   }
+               }
+               sqlStr.append(")");
+               
+               copyTable(connection, newDBConn, sqlStr.toString(), "agent", "agent", null, null);
+               
+
+           }
+           
+           
+           log.info("Agent Address SQL recordCnt "+recordCnt);
+           
+           connection.close();
+           newDBConn.close();
+           
+           return true;
+
+       } catch (SQLException ex)
+       {
+           log.error(ex);
+       }
+       
+       return false;
+
+   }
+
+
 
     //--------------------------------------------------------------------
     //-- Static Methods

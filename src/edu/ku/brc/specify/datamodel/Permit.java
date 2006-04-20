@@ -33,8 +33,8 @@ public class Permit  implements java.io.Serializable {
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      protected Set<AccessionAuthorizations> accessionAuthorizations;
-     protected AgentAddress agentAddressByIssuee;
-     protected AgentAddress agentAddressByIssuer;
+     protected Agent agentByIssuee;
+     protected Agent agentByIssuer;
      protected Set<ExternalResource> externalResources;
 
 
@@ -73,8 +73,8 @@ public class Permit  implements java.io.Serializable {
         yesNo1 = null;
         yesNo2 = null;
         accessionAuthorizations = new HashSet<AccessionAuthorizations>();
-        agentAddressByIssuee = null;
-        agentAddressByIssuer = null;
+        agentByIssuee = null;
+        agentByIssuer = null;
         externalResources = new HashSet<ExternalResource>();
     }
     // End Initializer
@@ -280,25 +280,25 @@ public class Permit  implements java.io.Serializable {
     }
 
     /**
-     *      * AgentAddressID of Issuee
+     *      * AgentID of Issuee
      */
-    public AgentAddress getAgentAddressByIssuee() {
-        return this.agentAddressByIssuee;
+    public Agent getAgentByIssuee() {
+        return this.agentByIssuee;
     }
 
-    public void setAgentAddressByIssuee(AgentAddress agentAddressByIssuee) {
-        this.agentAddressByIssuee = agentAddressByIssuee;
+    public void setAgentByIssuee(Agent agentByIssuee) {
+        this.agentByIssuee = agentByIssuee;
     }
 
     /**
-     *      * AgentAddressID of Issuer
+     *      * AgentID of Issuer
      */
-    public AgentAddress getAgentAddressByIssuer() {
-        return this.agentAddressByIssuer;
+    public Agent getAgentByIssuer() {
+        return this.agentByIssuer;
     }
 
-    public void setAgentAddressByIssuer(AgentAddress agentAddressByIssuer) {
-        this.agentAddressByIssuer = agentAddressByIssuer;
+    public void setAgentByIssuer(Agent agentByIssuer) {
+        this.agentByIssuer = agentByIssuer;
     }
 
     /**

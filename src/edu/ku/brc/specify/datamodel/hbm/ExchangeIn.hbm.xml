@@ -79,14 +79,14 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional many-to-one association to AgentAddress -->
-    <many-to-one name="agentAddress" class="edu.ku.brc.specify.datamodel.AgentAddress" not-null="true" outer-join="true">
-        <meta attribute="field-description">AgentAddress ID of organization that sent material</meta>
+    <!-- bi-directional many-to-one association to Agent -->
+    <many-to-one name="agentReceivedFrom" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
+        <meta attribute="field-description">Agent ID of organization that sent material</meta>
         <column name="ReceivedFromOrganizationID"/>
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
+    <many-to-one name="agentCatalogedBy" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
         <meta attribute="field-description">Agent ID of person recording the exchange</meta>
         <column name="CatalogedByID"/>
     </many-to-one>

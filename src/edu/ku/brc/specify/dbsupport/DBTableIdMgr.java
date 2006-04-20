@@ -65,8 +65,14 @@ public class DBTableIdMgr
         {
             //hash.put(1, new TableInfo(1, "edu.ku.brc.specify.datamodel.CollectionObj", "collectionobj", "collectionObjectId"));
             instance.hash.put(1,   new TableInfo(1, "edu.ku.brc.specify.datamodel.CollectionObject", "collectionobject", "collectionObjectId", "CollectionObject"));
+            instance.hash.put(5,   new TableInfo(4, "edu.ku.brc.specify.datamodel.Taxon", "taxon", "taxonId", "Taxon"));
             instance.hash.put(5,   new TableInfo(5, "edu.ku.brc.specify.datamodel.Agent", "agent", "agentId", "Agent"));
             instance.hash.put(6,   new TableInfo(6, "edu.ku.brc.specify.datamodel.Permit", "permit", "permitId", "Permit"));
+            instance.hash.put(7,   new TableInfo(7, "edu.ku.brc.specify.datamodel.Accession", "accession", "accessionId", "Accession"));
+            instance.hash.put(8,   new TableInfo(8, "edu.ku.brc.specify.datamodel.Address", "address", "addressId", "Address"));
+            instance.hash.put(9,   new TableInfo(9, "edu.ku.brc.specify.datamodel.Determination", "determination", "determinationId", "Determination"));
+            instance.hash.put(10,   new TableInfo(10, "edu.ku.brc.specify.datamodel.CollectingEvent", "collectingevent", "collectingEventId", "CollectingEvent"));
+            
             instance.hash.put(80,  new TableInfo(80, "edu.ku.brc.specify.datamodel.InfoRequest", "inforequest", "infoRequestID", "InfoRequest"));
             instance.hash.put(500, new TableInfo(500, "edu.ku.brc.specify.ui.db.PickList", "picklist", "picklist_id", "PickList"));
 
@@ -115,6 +121,23 @@ public class DBTableIdMgr
     }
 
     /**
+     * This looks it up by fully specified class name the look up is case sensitive
+     * @param className the full class name
+     * @return the id of the table
+     */
+    public static int lookupIdByClassName(final String className)
+    {
+        for (TableInfo tableInfo : instance.hash.values())
+        {
+            if (tableInfo.getClassName().equalsIgnoreCase(className))
+            {
+                return tableInfo.getTableId();
+            }
+        }
+        throw new RuntimeException("Couldn't find table id for table name["+className+"]");
+    }
+
+    /**
      * Creates a Query object for a table from a recordset, it uses an "in" clause
      * @param recordSet the recordset containing the record ids
      * @return a query object
@@ -137,6 +160,33 @@ public class DBTableIdMgr
             log.info(strBuf.toString());
             //query = HibernateUtil.getCurrentSession().createQuery("from catalogobj in class CollectionObj where catalogobj.collectionObjectId in ('30972.0','30080.0','27794.0','30582.0')");
             query = HibernateUtil.getCurrentSession().createQuery(strBuf.toString());
+        }
+        return query;
+    }
+
+    /**
+     * Creates a Query object for a table from a single Record ID
+     * @param recordId a single Record Id
+     * @return a query object
+     */
+    public static Query getQueryForTable(final int tableId, final int recordId)
+    {
+        Query     query     = null;
+        TableInfo tableInfo = instance.hash.get(tableId);
+        if (tableInfo != null)
+        {
+            StringBuffer strBuf = new StringBuffer("from ");
+            strBuf.append(tableInfo.getTableName());
+            strBuf.append(" in class ");
+            strBuf.append(tableInfo.getShortClassName());
+            strBuf.append(" where ");
+            strBuf.append(tableInfo.getTableName());
+            strBuf.append('.');
+            strBuf.append(tableInfo.getPrimaryKeyName());
+            strBuf.append(" = "+recordId);
+            log.info(strBuf.toString());
+            //query = HibernateUtil.getCurrentSession().createQuery("from catalogobj in class CollectionObj where catalogobj.collectionObjectId in ('30972.0','30080.0','27794.0','30582.0')");
+            query = HibernateUtil.getSessionFactory().openSession().createQuery(strBuf.toString());
         }
         return query;
     }

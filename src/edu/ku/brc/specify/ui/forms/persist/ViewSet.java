@@ -40,11 +40,11 @@ public class ViewSet
 {
     private final static Logger  log = Logger.getLogger(ViewSet.class);
 
-    private String           name     = null;
-    private String           fileName = null;
-    
-    private Hashtable<String, View>    views    = null;
-    private Hashtable<String, ViewDef> viewDefs = new Hashtable<String, ViewDef>();
+    protected String           name     = null;
+    protected String           fileName = null;
+    protected boolean          isCore   = false;
+    protected Hashtable<String, View>    views    = null;
+    protected Hashtable<String, ViewDef> viewDefs = new Hashtable<String, ViewDef>();
     
     /**
      * Default Constructor
@@ -59,11 +59,14 @@ public class ViewSet
      * Constructor 
      * @param name name of view set
      * @param fileName the filename it came from
+     * @param isCore indicates that is contains the core set of forms that 
+     *          can be referred in other places with specifying the viewset name
      */
-    public ViewSet(final String name, final String fileName)
+    public ViewSet(final String name, final String fileName, boolean isCore)
     {
         this.name     = name;
         this.fileName = fileName;
+        this.isCore   = isCore;
     }
 
     /**
@@ -81,16 +84,6 @@ public class ViewSet
             views = null; // will force it to be reloaded.
         }
     }
-    
-    /**
-     * Added a form to the view set
-     * @param view the view to be added
-     */
-    /*public void addView(final View view)
-    {
-        loadViews();
-        views.put(view);
-    }*/
     
     /**
      * Loads the view from the file
@@ -170,6 +163,15 @@ public class ViewSet
     public void setName(final String name)
     {
         this.name = name;
+    }
+
+    /**
+     * Indicates that is contains the core set of forms that can be referred in other places with specifying the viewset name
+     * @return that is contains the core set of forms that can be referred in other places with specifying the viewset name
+     */
+    public boolean isCore()
+    {
+        return isCore;
     }
 
     /**

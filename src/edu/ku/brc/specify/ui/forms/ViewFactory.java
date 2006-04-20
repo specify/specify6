@@ -64,6 +64,7 @@ import edu.ku.brc.specify.ui.CommandAction;
 import edu.ku.brc.specify.ui.CommandActionWrapper;
 import edu.ku.brc.specify.ui.ImageDisplay;
 import edu.ku.brc.specify.ui.db.PickListDBAdapter;
+import edu.ku.brc.specify.ui.db.TextFieldWithInfo;
 import edu.ku.brc.specify.ui.forms.persist.AltView;
 import edu.ku.brc.specify.ui.forms.persist.FormCell;
 import edu.ku.brc.specify.ui.forms.persist.FormCellCommand;
@@ -166,9 +167,15 @@ public class ViewFactory
      * @param view the view definition
      * @param altView which AltView to build
      * @param parentView the MultiViw that this view/form will be parented to
+     * @param createRecordSetController indicates that a RecordSet Contoller should be created
+     * @param createViewSwitcher can be used to make sure that the multiview switc her is not created
      * @return a Viewable Obj with the form UI built
      */
-    public Viewable buildViewable(final View view, final AltView altView, final MultiView parentView)
+    public Viewable buildViewable(final View      view, 
+                                  final AltView   altView, 
+                                  final MultiView parentView, 
+                                  final boolean   createRecordSetController,
+                                  final boolean   createViewSwitcher)
     {
         if (scrDateFormat == null)
         {
@@ -187,7 +194,7 @@ public class ViewFactory
 
         if (viewDef.getType() == ViewDef.ViewType.form)
         {
-            Viewable viewable = buildFormViewable(view, altView, parentView);
+            Viewable viewable = buildFormViewable(view, altView, parentView, createRecordSetController, createViewSwitcher);
             this.rootMultiView =  null;
             return viewable;
 
@@ -458,6 +465,22 @@ public class ViewFactory
 
         return cbx;
     }
+    
+    /**
+     * Makes adjusts to the border and the colors to make it "flat" for diaply mode
+     * @param textField the text field to be flattened
+     */
+    protected void changeTextFieldUIForDisplay(final JTextField textField)
+    {
+        Insets insets = textField.getBorder().getBorderInsets(textField);
+        textField.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.bottom));
+        textField.setForeground(Color.BLACK);
+        textField.setEditable(false);
+        if (viewFieldColor != null)
+        {
+            textField.setBackground(viewFieldColor.getColor());
+        }
+    }
 
     /**
      * @param parent MultiView parent
@@ -533,19 +556,6 @@ public class ViewFactory
                     if (mode == AltView.CreationMode.View)
                     {
                         uiType = cellField.getDspUIType();
-
-                        /*if (uiType.equals("text"))
-                        {
-                            uiType = "dsptextfield";
-
-                        } else if (uiType.equals("textarea"))
-                        {
-                            uiType = "dsptextarea";
-
-                        } else if (!uiType.equals("label") && !uiType.equals("checkbox"))
-                        {
-                            uiType = "dsptextfield";
-                        }*/
                     }
 
                     if (uiType.equals("text"))
@@ -566,16 +576,29 @@ public class ViewFactory
                     } else if (uiType.equals("dsptextfield"))
                     {
                         JTextField text = new JTextField(cellField.getCols());
-                        //text.setBorder(BorderFactory.createLineBorder(new Color(170,170,170)));
-                        Insets insets = text.getBorder().getBorderInsets(text);
-                        text.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.bottom));
-                        text.setForeground(Color.BLACK);
-                        text.setEditable(false);
-                        if (viewFieldColor != null)
-                        {
-                            text.setBackground(viewFieldColor.getColor());
-                        }
+                        changeTextFieldUIForDisplay(text);
                         compToAdd = text;
+
+
+                    } else if (uiType.equals("textfieldinfo"))
+                    {
+                        TextFieldWithInfo textFieldInfo;
+                        String            txtName = cellField.getInitialize();
+                        if (isNotEmpty(txtName))
+                        {
+                            textFieldInfo = ComboBoxFromQueryFactory.getTextFieldWithInfo(txtName);
+                            textFieldInfo.setMultiView(parent);
+                            
+                        } else
+                        {
+                            throw new RuntimeException("textfieldinfo Name for textFieldWithInfo ["+txtName+"] is empty!");
+                        }
+
+                        JTextField text = textFieldInfo.getTextField();
+                        text.setColumns(cellField.getCols());
+                        changeTextFieldUIForDisplay(text);
+                        compToAdd = textFieldInfo;
+
 
                     } else if (uiType.equals("image"))
                     {
@@ -737,22 +760,28 @@ public class ViewFactory
                     View subView = ViewMgr.getView(cellSubView.getViewSetName(), subViewName);
                     if (subView != null)
                     {
-                        MultiView multiView = new MultiView(parent, subView, parent.getCreateWithMode());
-                        parent.addChild(multiView);
-                        
-                        
-                        builder.add(multiView, cc.xywh(colInx, rowInx, cellSubView.getColspan(), 1, "fill,fill"));
-                        //String classDesc = cellSubView.getClassDesc();
-                        //if (cell.isIgnoreSetGet() || (classDesc != null && classDesc.length() > 0))
-                        //{
-                            formViewObj.addSubView(cell, multiView);
+                        if (parent != null)
+                        {
+                            MultiView multiView = new MultiView(parent, subView, parent.getCreateWithMode(), !cellSubView.isSingleValueFromSet(), true);
+                            parent.addChild(multiView);
                             
-                        //}
-                        curMaxRow = rowInx;
+                            
+                            builder.add(multiView, cc.xywh(colInx, rowInx, cellSubView.getColspan(), 1, "fill,fill"));
+                            //String classDesc = cellSubView.getClassDesc();
+                            //if (cell.isIgnoreSetGet() || (classDesc != null && classDesc.length() > 0))
+                            //{
+                                formViewObj.addSubView(cell, multiView);
+                                
+                            //}
+                            curMaxRow = rowInx;
+                        } else
+                        {
+                            log.error("buildFormView - parent is NULL for subview ["+subViewName+"]");
+                        }
 
                     } else
                     {
-                        System.err.println("buildFormView - Could find subview's with ViewSet["+cellSubView.getViewSetName()+"] ViewName["+subViewName+"]");
+                        log.error("buildFormView - Could find subview's with ViewSet["+cellSubView.getViewSetName()+"] ViewName["+subViewName+"]");
                     }
                     compToAdd = null;
                     colInx += 2;
@@ -863,11 +892,15 @@ public class ViewFactory
      * @param view view the view definition
      * @param altView the altView to use (if null, then it uses the default ViewDef)
      * @param parentView the MultiView parent (this may be null)
+     * @param createRecordSetController indicates that a RecordSet Contoller should be created
+     * @param createViewSwitcher can be used to make sure that the multiview switc her is not created
      * @return the form
      */
     public FormViewObj buildFormViewable(final View        view,
                                          final AltView     altView,
-                                         final MultiView   parentView)
+                                         final MultiView   parentView,
+                                         final boolean     createRecordSetController,
+                                         final boolean     createViewSwitcher)
     {
         try
         {
@@ -875,7 +908,7 @@ public class ViewFactory
 
             Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
 
-            FormViewObj     formViewObj    = new FormViewObj(view, altView, parentView);
+            FormViewObj     formViewObj    = new FormViewObj(view, altView, parentView, createRecordSetController, createViewSwitcher);
             ValidatedJPanel validatedPanel = null;
             FormValidator   validator      = null;
 
@@ -949,6 +982,16 @@ public class ViewFactory
         }
         return null;
     }
+    
+    protected boolean isRecordSetNeeded(final MultiView multiView)
+    {
+        if (multiView != null)
+        {
+            //multiView.getViewDef();
+        }
+        return false;
+    }
+    
 
     /**
      * Creates a FormViewObj
@@ -958,7 +1001,30 @@ public class ViewFactory
      * @param data the data to be set into the form
      * @return a new FormViewObj
      */
-    public static FormViewObj createFormView(final MultiView multiView, final View view, final String altName, final Object data)
+    public static FormViewObj createFormView(final MultiView multiView, 
+                                             final View view, 
+                                             final String altName, 
+                                             final Object data)
+    {
+        return createFormView(multiView, view, altName, data, false, true);
+    }
+    
+
+    /**
+     * Creates a FormViewObj
+     * @param multiView the parent multiView
+     * @param view the definition of the form view to be created
+     * @param altName the name of the altView to be used (can be null - then it defaults to the default AltView)
+     * @param data the data to be set into the form
+     * @param createViewSwitcher can be used to make sure that the multiview switcher is not created
+     * @return a new FormViewObj
+     */
+    public static FormViewObj createFormView(final MultiView multiView, 
+                                             final View view, 
+                                             final String altName, 
+                                             final Object data,
+                                             final boolean createRecordSetContoller,
+                                             final boolean createViewSwitcher)
     {
         if (scrDateFormat == null)
         {
@@ -975,7 +1041,7 @@ public class ViewFactory
         {
             if (altView.getViewDef().getType() == ViewDef.ViewType.form)
             {
-                FormViewObj form = (FormViewObj)instance.buildViewable(view, altView, multiView);
+                FormViewObj form = (FormViewObj)instance.buildViewable(view, altView, multiView, createRecordSetContoller, createViewSwitcher);
                 if (data != null)
                 {
                     form.setDataObj(data);

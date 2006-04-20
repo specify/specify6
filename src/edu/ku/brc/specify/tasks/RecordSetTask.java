@@ -216,7 +216,7 @@ public class RecordSetTask extends BaseTask
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
         
         //ToolBarDropDownBtn btn = createToolbarButton(RECORD_SET,   "dataentry.gif",    "dataentry_hint");
-        //list.add(new ToolBarItemDesc(btn.getCompleteComp()));
+        //list.add(new ToolBarItemDesc(btn));
         
         return list;
     }

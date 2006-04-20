@@ -3,7 +3,7 @@
 
     <views>
         <view 
-            name="AgentAddressSearch"
+            name="AgentSearch"
             class="edu.ku.brc.specify.datamodel.Agent"
             resourcelabels="false">
             <desc><![CDATA[The Agent Search Form]]></desc>
@@ -91,11 +91,11 @@
                 </row>
                 
                 <row>
-                    <cell type="label" labelfor="agent.LastName" label="Issued By (Last Name)"/>
-                    <cell type="field" name="agent.LastName" uitype="text"/>
+                    <cell type="label" labelfor="LastName" label="Issued By (Last Name)"/>
+                    <cell type="field" name="LastName" uitype="text"/>
                     
-                    <cell type="label" labelfor="agentAddressByIssuee.agent" label="Issued To  (Last Name)"/>
-                    <cell type="field" name="agentAddressByIssuee.agent" uitype="text"/>
+                    <cell type="label" labelfor="agentAddressByIssuee" label="Issued To  (Last Name)"/>
+                    <cell type="field" name="agentAddressByIssuee" uitype="text"/>
                 </row>
                 
                 <row>

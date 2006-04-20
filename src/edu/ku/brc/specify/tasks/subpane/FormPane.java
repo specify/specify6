@@ -3,14 +3,18 @@ package edu.ku.brc.specify.tasks.subpane;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
+import java.util.List;
+import java.util.Set;
 
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.dnd.GhostActionable;
+import edu.ku.brc.specify.ui.forms.MultiView;
 import edu.ku.brc.specify.ui.forms.Viewable;
 import edu.ku.brc.specify.ui.forms.ViewFactory;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
+import edu.ku.brc.specify.ui.forms.persist.AltView;
 import edu.ku.brc.specify.ui.forms.persist.View;
 
 /**
@@ -27,7 +31,8 @@ public class FormPane extends DroppableTaskPane
     protected String        viewName      = null;
     protected Object        data          = null;
     
-    protected Viewable  Viewable  = null;
+    protected MultiView     multiView     = null;
+    protected Viewable      viewable      = null;
     protected FormProcessor formProcessor = null;
     
     protected String        cacheDesc   = null;
@@ -60,7 +65,7 @@ public class FormPane extends DroppableTaskPane
         this(name, task, null);
         
         this.viewSetName = viewSetName;
-        this.viewName      = viewName;
+        this.viewName    = viewName;
         this.data        = data;
         
         createForm(viewSetName, viewName, data);
@@ -117,33 +122,40 @@ public class FormPane extends DroppableTaskPane
                            final String viewName,
                            final Object data)
     {
-        Viewable = createFormView(viewSetName, viewName, data);
-        if (Viewable != null)
+        View view = ViewMgr.getView(viewSetName, viewName);
+        if (view != null)
         {
-            this.viewSetName = viewSetName;
-            this.viewName      = viewName;
-            this.data        = data;
-            
-            this.removeAll();
-            
-            Viewable.getUIComponent().invalidate(); 
-            add(Viewable.getUIComponent(), BorderLayout.CENTER);
-            
-            if (data != null)
+            boolean isList = data != null && (data instanceof List || data instanceof Set);
+            AltView.CreationMode mode = AltView.CreationMode.View;//data != null && (data instanceof List || data instanceof Set) ? AltView.CreationMode.View : AltView.CreationMode.Edit;
+            multiView = new MultiView(null, view, mode, isList, true);
+            //viewable = multiView.get
+            if (multiView != null)
             {
-                Viewable.setDataObj(data);
+                this.viewSetName = viewSetName;
+                this.viewName    = viewName;
+                this.data        = data;
+                
+                this.removeAll();
+                
+                multiView.invalidate(); 
+                add(multiView, BorderLayout.CENTER);
+                
+                if (data != null)
+                {
+                    multiView.setData(data);
+                }
+                
+                if (multiView.getCurrentView().getValidator() != null)
+                {
+                    multiView.getCurrentView().getValidator().validateForm();
+                }
+                
+                cacheDesc = desc;
+                desc      = null;
+                doLayout();
+                UICacheManager.forceTopFrameRepaint();
+                
             }
-            
-            if (Viewable.getValidator() != null)
-            {
-                Viewable.getValidator().validateForm();
-            }
-            
-            cacheDesc = desc;
-            desc      = null;
-            doLayout();
-            UICacheManager.forceTopFrameRepaint();
-            
         }
     }
     
@@ -226,7 +238,7 @@ public class FormPane extends DroppableTaskPane
      */
     public Viewable getViewable()
     {
-        return Viewable;
+        return multiView.getCurrentView();
     }
 
     

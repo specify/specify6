@@ -39,14 +39,14 @@
   
     <!-- bi-directional many-to-one association to Loan -->
     <many-to-one name="loan" class="edu.ku.brc.specify.datamodel.Loan" not-null="true" outer-join="true" cascade="none" index="IX_LoanAgentsLoanID" unique-key="IX_LoanAgents">
-        <meta attribute="field-description">ID of loan agent at AgentAddressID played a role in</meta>
+        <meta attribute="field-description">ID of loan agent at AgentID played a role in</meta>
         <column name="LoanID"/>
     </many-to-one>
     
-    <!-- bi-directional many-to-one association to AgentAddress -->
-    <many-to-one name="agentAddress" class="edu.ku.brc.specify.datamodel.AgentAddress" not-null="true" outer-join="true" index="IX_LoanAgentsAgentAddressID" unique-key="IX_LoanAgents">
-        <meta attribute="field-description">Address of agent</meta>
-        <column name="AgentAddressID"/>
+    <!-- bi-directional many-to-one association to Agent -->
+    <many-to-one name="Agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true" index="IX_LoanAgentsAgentID" unique-key="IX_LoanAgents">
+        <meta attribute="field-description">Agent</meta>
+        <column name="AgentID"/>
     </many-to-one>
 
 </class>

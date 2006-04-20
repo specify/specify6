@@ -79,7 +79,7 @@ public class ReportsTask extends BaseTask
         ToolBarDropDownBtn btn = createToolbarButton(name, "reports.gif", "reports_hint");      
 
         
-        list.add(new ToolBarItemDesc(btn.getCompleteComp()));
+        list.add(new ToolBarItemDesc(btn));
         return list;
     }
     

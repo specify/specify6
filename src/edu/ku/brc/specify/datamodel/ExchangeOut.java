@@ -27,8 +27,8 @@ public class ExchangeOut  implements java.io.Serializable {
      protected String lastEditedBy;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     protected AgentAddress agentAddress;
-     protected Agent agent;
+     protected Agent agentSentTo;
+     protected Agent agentCatalogedBy;
      protected Shipment shipment;
 
 
@@ -63,8 +63,8 @@ public class ExchangeOut  implements java.io.Serializable {
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
-        agentAddress = null;
-        agent = null;
+        agentSentTo = null;
+        agentCatalogedBy = null;
         shipment = null;
     }
     // End Initializer
@@ -226,25 +226,25 @@ public class ExchangeOut  implements java.io.Serializable {
     }
 
     /**
-     *      * AgentAddress ID of organization material was sent to
+     *      * Agent ID of organization material was sent to
      */
-    public AgentAddress getAgentAddress() {
-        return this.agentAddress;
+    public Agent getAgentSentTo() {
+        return this.agentSentTo;
     }
     
-    public void setAgentAddress(AgentAddress agentAddress) {
-        this.agentAddress = agentAddress;
+    public void setAgentSentTo(Agent agentSentTo) {
+        this.agentSentTo = agentSentTo;
     }
 
     /**
      *      * Agent ID of person who recorded  the exchange
      */
-    public Agent getAgent() {
-        return this.agent;
+    public Agent getAgentCatalogedBy() {
+        return this.agentCatalogedBy;
     }
     
-    public void setAgent(Agent agent) {
-        this.agent = agent;
+    public void setAgentCatalogedBy(Agent agentCatalogedBy) {
+        this.agentCatalogedBy = agentCatalogedBy;
     }
 
     /**

@@ -46,7 +46,6 @@
 	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AccessionAgent.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/AccessionAuthorizations.hbm.xml"/>
 	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Address.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/AgentAddress.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Agent.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/AttributeDef.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Author.hbm.xml"/>

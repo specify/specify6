@@ -224,9 +224,9 @@ public class TableViewObj implements Viewable
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.forms.Viewable#aboutToShow()
+     * @see edu.ku.brc.specify.ui.forms.Viewable#aboutToShow(boolean)
      */
-    public void aboutToShow()
+    public void aboutToShow(boolean show)
     {
         
     }

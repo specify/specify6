@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<viewset name="Fish Views" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<viewset name="Main Views" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <views>
         <view name="Collection Object"
@@ -82,6 +82,16 @@
             <altviews>
                 <altview name="AccessionAuthorizations View" viewdef="AccessionAuthorizations" label="View" mode="view" validated="false" default="true"/>
                 <altview name="AccessionAuthorizations Edit" viewdef="AccessionAuthorizations" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
+        <view name="Address"
+            class="edu.ku.brc.specify.datamodel.Address"
+            resourcelabels="false">
+            <desc><![CDATA[Address subform within the Accession form.]]></desc>
+            <altviews>
+                <altview name="Address View" viewdef="Address" label="View" mode="view" validated="false" default="true"/>
+                <altview name="Address Edit" viewdef="Address" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
     </views>
@@ -369,8 +379,8 @@
 
             <rows>
                 <row>
-                    <cell type="label" labelfor="agentAddress" label="Agent"/>
-                    <cell type="field" name="agentAddress" uitype="querycbx" initialize="AgentAddress" formatname="AgentAddress" isrequired="true"/>
+                    <cell type="label" labelfor="agent" label="Agent"/>
+                    <cell type="field" name="agent" uitype="querycbx" initialize="Agent" formatname="Agent" isrequired="true"/>
 
                     <cell type="label" labelfor="role" label="Role"/>
                     <cell type="field" name="role" uitype="combobox" picklist="AccessionRole" isrequired="true"/>
@@ -391,17 +401,43 @@
             settable="edu.ku.brc.specify.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Agent subform for Acessions.]]></desc>
-            <columnDef>80px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p:g,2dlu</rowDef>
-            <enableRules/>
-
+            <columnDef>p,3dlu,p,3dlu,p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10px,p:g</rowDef>
+            
             <rows>
                 <row>
-                    <cell type="label" labelfor="agent" label="Agent"/>
-                    <cell type="field" name="taxon.name" uitype="text" label="Taxon" colspan="5"/>
-
-                    <cell type="label" labelfor="isCurrent" label=""/>
-                    <cell type="field" name="isCurrent" uitype="checkbox" label="Is Current"/>
+                    <cell type="separator" label="Agent Info" colspan="7"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="title" label="Title"/>
+                    <cell type="field" name="title" uitype="combobox" picklistx="AgentTitle" initialize="Mr., Mrs., Ms., Dr."/>
+                    <cell type="label" labelfor="jobTitle" label="Title"/>
+                    <cell type="field" name="jobTitle" uitype="text" cols="20"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="lastName" label="Last Name"/>
+                    <cell type="field" name="lastName" uitype="text" cols="20"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="middleInitial" label="Middle Initial"/>
+                    <cell type="field" name="middleInitial" uitype="text" cols="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="firstName" label="First Name"/>
+                    <cell type="field" name="firstName" uitype="text" cols="20"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="name" label="Organization"/>
+                    <cell type="field" name="name" uitype="text" cols="30" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="abbreviation" label="Abbreviation"/>
+                    <cell type="field" name="abbreviation" uitype="text" cols="10"/>
+                    <cell type="label" labelfor="interests" label="Interests"/>
+                    <cell type="field" name="interests" uitype="text" cols="30"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="Address" name="addresses" colspan="7"/>
                 </row>
             </rows>
         </viewdef>
@@ -428,11 +464,11 @@
                     <cell type="field" name="type" uitype="combobox" initialize="N/A, State, Federal, International"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="agentAddressByIssuer.agent" label="Issued By"/>
-                    <cell type="field" name="agentAddressByIssuer.agent" uitype="querycbx" initialize="Agent" formatname="Agent" isrequired="true"/>
+                    <cell type="label" labelfor="agentByIssuer" label="Issued By"/>
+                    <cell type="field" name="agentByIssuer" uitype="querycbx" initialize="Agent" formatname="Agent" isrequired="true"/>
 
-                    <cell type="label" labelfor="agentAddressByIssuee.agent" label="Issued To"/>
-                    <cell type="field" name="agentAddressByIssuee.agent" uitype="querycbx" initialize="Agent" formatname="Agent" isrequired="true"/>
+                    <cell type="label" labelfor="agentByIssuee" label="Issued To"/>
+                    <cell type="field" name="agentByIssuee" uitype="querycbx" initialize="Agent" formatname="Agent" isrequired="true"/>
                 </row>
 
                 <row>
@@ -471,13 +507,6 @@
             
             <columnDef>80px,2px,p,2px,p:g</columnDef>
             <rowDef>p,2px,p</rowDef>
-            <!-- 
-            <rows>
-                <row>
-                    <cell type="subview" viewname="PermitForAccessions" name="permit"/>
-                </row>                
-            </rows>
-            -->
             <rows>
                 <row>
                     <cell type="label" labelfor="permit" label="Permit"/>
@@ -488,6 +517,62 @@
                     <cell type="field" name="remarks" uitype="textarea" colspan="3" />
                 </row>
                 
+            </rows>
+        </viewdef>
+        
+        
+        
+        <viewdef
+            type="form"
+            name="Address"
+            class="edu.ku.brc.specify.datamodel.Address"
+            gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.specify.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Address subform for Acessions.]]></desc>
+            <columnDef>p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Address Information" colspan="11"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="isPrimary" label=""/>
+                    <cell type="field" name="isPrimary" uitype="checkbox" label="Is Primary Address"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="address" label="Address"/>
+                    <cell type="field" name="address" uitype="text" cols="50" colspan="9"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="address2" label="Address"/>
+                    <cell type="field" name="address2" uitype="text" cols="50" colspan="9"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="city" label="City"/>
+                    <cell type="field" name="city" uitype="text" cols="20"/>
+                    <cell type="label" labelfor="state" label="State"/>
+                    <cell type="field" name="state" uitype="text" cols="15"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="postalCode" label="Postal Code"/>
+                    <cell type="field" name="postalCode" uitype="text" cols="11"/>
+                    <cell type="label" labelfor="country" label="Country"/>
+                    <cell type="field" name="country" uitype="text" cols="20"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="phone1" label="Phone (Work)"/>
+                    <cell type="field" name="phone1" uitype="text" cols="15"/>
+                    <cell type="label" labelfor="phone2" label="Phone (Cell)"/>
+                    <cell type="field" name="phone2" uitype="text" cols="15"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="fax" label="FAX"/>
+                    <cell type="field" name="fax" uitype="text" cols="15"/>
+                    <cell type="label" labelfor="roomOrBuilding" label="Room/Building"/>
+                    <cell type="field" name="roomOrBuilding" uitype="text" cols="30"/>
+                </row>
             </rows>
         </viewdef>
         

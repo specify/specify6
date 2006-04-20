@@ -293,7 +293,7 @@ public class Accession  implements java.io.Serializable {
     /**
      *
      */
-    public Set getAccessionAuthorizations() {
+    public Set<AccessionAuthorizations> getAccessionAuthorizations() {
         return this.accessionAuthorizations;
     }
 

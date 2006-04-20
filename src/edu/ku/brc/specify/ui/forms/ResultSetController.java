@@ -244,7 +244,6 @@ public class ResultSetController implements ValidationListener
     {
         if (panel == null) return;
         
-        System.out.println(currentInx+" "+numRecords);
         firstBtn.setEnabled(currentInx > 0);
         prevBtn.setEnabled(currentInx > 0);
         nextBtn.setEnabled(currentInx < lastInx);

@@ -19,7 +19,7 @@ public class LoanAgent  implements java.io.Serializable {
      protected Date timestampModified;
      protected String lastEditedBy;
      protected Loan loan;
-     protected AgentAddress agentAddress;
+     protected Agent agent;
 
 
     // Constructors
@@ -46,7 +46,7 @@ public class LoanAgent  implements java.io.Serializable {
         timestampModified = new Date();
         lastEditedBy = null;
         loan = null;
-        agentAddress = null;
+        agent = null;
     }
     // End Initializer
 
@@ -119,7 +119,7 @@ public class LoanAgent  implements java.io.Serializable {
     }
 
     /**
-     *      * ID of loan agent at AgentAddressID played a role in
+     *      * ID of loan agent at AgentID played a role in
      */
     public Loan getLoan() {
         return this.loan;
@@ -132,12 +132,12 @@ public class LoanAgent  implements java.io.Serializable {
     /**
      *      * Address of agent
      */
-    public AgentAddress getAgentAddress() {
-        return this.agentAddress;
+    public Agent getAgent() {
+        return this.agent;
     }
     
-    public void setAgentAddress(AgentAddress agentAddress) {
-        this.agentAddress = agentAddress;
+    public void setAgent(Agent agent) {
+        this.agent = agent;
     }
 
 

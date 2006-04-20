@@ -94,15 +94,15 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional many-to-one association to AgentAddress -->
-    <many-to-one name="agentAddressByShipper" class="edu.ku.brc.specify.datamodel.AgentAddress" not-null="true" outer-join="true">
-        <meta attribute="field-description">AgentAddressID of agent transporting the material</meta>
+    <!-- bi-directional many-to-one association to Agent -->
+    <many-to-one name="AgentByShipper" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
+        <meta attribute="field-description">AgentID of agent transporting the material</meta>
         <column name="ShipperID"/>
     </many-to-one>
     
-    <!-- bi-directional many-to-one association to AgentAddress -->
-    <many-to-one name="agentAddressByShippedTo" class="edu.ku.brc.specify.datamodel.AgentAddress" not-null="true" outer-join="true">
-        <meta attribute="field-description">AgentAddressID of agent material is shipped to</meta>
+    <!-- bi-directional many-to-one association to Agent -->
+    <many-to-one name="AgentByShippedTo" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true">
+        <meta attribute="field-description">AgentID of agent material is shipped to</meta>
         <column name="ShippedToID"/>
     </many-to-one>
     

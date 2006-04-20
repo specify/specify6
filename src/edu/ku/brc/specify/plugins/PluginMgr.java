@@ -207,7 +207,7 @@ public class PluginMgr
         {
             if (mi instanceof AbstractButton)
             {
-                System.out.println("["+((AbstractButton)mi).getText()+"]["+name+"]");
+                //System.out.println("["+((AbstractButton)mi).getText()+"]["+name+"]");
                 if (((AbstractButton)mi).getText().equals(name))
                 {
                     return mi;

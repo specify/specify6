@@ -335,7 +335,7 @@ public class FormEditor
      */
     protected Viewable createView(View view)
     {
-        multiView   = new MultiView(null, view, AltView.CreationMode.Edit);
+        multiView   = new MultiView(null, view, AltView.CreationMode.Edit, true, true);
         contentPane.removeAll();
         builder.add(multiView, cc.xy(1,1));
         
@@ -414,7 +414,7 @@ public class FormEditor
             } else 
             */
             
-            if (currViewSetName.equals("Fish Views") && currViewName.equals("Accession"))
+            if (currViewSetName.equals("Main Views") && currViewName.equals("Accession"))
             {
                 boolean doDB = true;
                 if (doDB)
@@ -423,10 +423,9 @@ public class FormEditor
                     //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setFetchMode(Accession.class.getName(), FetchMode.DEFAULT).setMaxResults(300);
                     java.util.List list = criteria.list();//session.find("from collev");
                     dataObj = list;
+                    
                 } else
                 {
-                    
-                    
                     Accession[] accessions = CreateTestDatabases.createAccessionsInMemory();
                     Vector<Object> list = new Vector<Object>();
                     for (Accession accession : accessions)
@@ -439,7 +438,7 @@ public class FormEditor
             }
 
 
-            if (currViewSetName.equals("Fish Views") && currViewName.equals("Collection Object"))
+            if (currViewSetName.equals("Main Views") && currViewName.equals("Collection Object"))
             {
 
 
@@ -642,7 +641,7 @@ public class FormEditor
 
         //currViewName      = "Collection Object";
         currViewName      = "Accession";
-        currViewSetName =   "Fish Views";
+        currViewSetName =   "Main Views";
 
 
         View view = ViewMgr.getView(currViewSetName, currViewName);

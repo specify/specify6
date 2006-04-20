@@ -20,18 +20,15 @@
 package edu.ku.brc.specify.ui;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.LayoutManager;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -42,7 +39,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
-import javax.swing.JToolBar;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.event.ChangeEvent;
@@ -51,7 +47,9 @@ import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
-import edu.ku.brc.specify.helpers.XMLHelper;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 
 /**
@@ -65,20 +63,25 @@ import edu.ku.brc.specify.helpers.XMLHelper;
  *
  */
 @SuppressWarnings("serial")
-public abstract class DropDownButton extends JButton implements ChangeListener, PopupMenuListener,
+public abstract class DropDownButton extends JPanel implements ChangeListener, PopupMenuListener,
                                                                 ActionListener, PropertyChangeListener
 {
-    protected final JButton mainBtn           = this;
+    
+    protected EmptyBorder     emptyBorder;
+    protected SoftBevelBorder raisedBorder;
+
+    protected JButton       mainBtn;
     protected JButton       arrowBtn          = null;
     protected boolean       popupVisible      = false;
     protected String        statusBarHintText = null;
     
-    protected List<JComponent> menus = null;
+    protected List<JComponent>     menus    = null;
+    protected List<ActionListener> listeners = new ArrayList<ActionListener>();
     
     protected static ImageIcon dropDownArrow;
     
     static {
-        dropDownArrow = new ImageIcon(XMLHelper.getConfigDirPath("dropdownarrow.gif"));
+        dropDownArrow = IconManager.getImage("DropDownArrow");
     }
     
     // this class needs a mouse tracker to pop down the menu when the mouse isn't over it or the button
@@ -89,7 +92,7 @@ public abstract class DropDownButton extends JButton implements ChangeListener, 
     public DropDownButton()
     {
         super();
-        init();
+        init(null, null);
     }
 
     /**
@@ -100,10 +103,9 @@ public abstract class DropDownButton extends JButton implements ChangeListener, 
      */
     public DropDownButton(String label, Icon icon, int textPosition)
     {
-        super(label, icon);
-        init();
-        setVerticalTextPosition(textPosition);
-        setHorizontalTextPosition(JButton.CENTER);
+        init(label, icon);
+        mainBtn.setVerticalTextPosition(textPosition);
+        mainBtn.setHorizontalTextPosition(JButton.CENTER);
     }
 
     /**
@@ -112,8 +114,7 @@ public abstract class DropDownButton extends JButton implements ChangeListener, 
      */
     public DropDownButton(Icon icon)
     {
-        super(icon);
-        init();
+        init(null, icon);
     }
 
     /**
@@ -126,41 +127,94 @@ public abstract class DropDownButton extends JButton implements ChangeListener, 
      */
     public DropDownButton(final String label, final Icon icon, final int textPosition, final List<JComponent> menus)
     {
-        super(label, icon);      
         this.menus = menus;
-        init();
-        setVerticalTextPosition(textPosition);
-        setHorizontalTextPosition(JButton.CENTER);
+        init(label, icon);
+        mainBtn.setVerticalTextPosition(textPosition);
+        mainBtn.setHorizontalTextPosition(JButton.CENTER);
     }
 
     /**
      * INitializes the internal UI
      */
-    protected void init()
+    protected void init(final String label, final Icon icon)
     {
-
+        mainBtn   = new JButton(label, icon);
         arrowBtn  = new JButton(dropDownArrow);
         
-        Insets insets = new Insets(4,4,4,4);
-        mainBtn.setBorder(new EmptyBorder(insets));
-        arrowBtn.setBorder(new EmptyBorder(4,4,4,4));
+        mainBtn.setBorder(new EmptyBorder(4,4,4, getPopMenuSize() > 0 ? 2 : 4));
         mainBtn.setIconTextGap(1); 
         mainBtn.setMargin(new Insets(0,0,0,0));
-
-        
         mainBtn.getModel().addChangeListener(this);
         mainBtn.addPropertyChangeListener("enabled", this); // NO I18N
         
+        arrowBtn.setBorder(new EmptyBorder(4,4,4,4));
         arrowBtn.getModel().addChangeListener(this);
         arrowBtn.addActionListener(this);
         arrowBtn.setMargin(new Insets(3, 3, 3, 3));
         arrowBtn.setFocusPainted(false); 
         arrowBtn.setFocusable(false);            
-        //arrowBtn.setEnabled(false);     
         arrowBtn.setVisible(getPopMenuSize() > 0);
+        
+        
+        PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p:g", "p:g"), this);
+        CellConstraints cc  = new CellConstraints();
+        
+        builder.add(mainBtn, cc.xy(1,1));
+        builder.add(arrowBtn, cc.xy(3,1));
+        
+        raisedBorder = new SoftBevelBorder(SoftBevelBorder.RAISED);
+        emptyBorder  = new EmptyBorder(raisedBorder.getBorderInsets(this));
+        setBorder(emptyBorder);
+        
+        MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() 
+        {
+            public void mouseEntered(MouseEvent e) 
+            {
+                setBorder(raisedBorder);
+                if (statusBarHintText != null)
+                    UICacheManager.displayStatusBarText(statusBarHintText);
+                
+                arrowBtn.setEnabled(getPopMenuSize() > 0);
+                repaint();
+            }
+            public void mouseExited(MouseEvent e) 
+            {
+                setBorder(emptyBorder);
+                UICacheManager.displayStatusBarText(null);
+                repaint();
+                
+                if (popupVisible)
+                {
+                    popupVisible = false;
 
+                    mainBtn.getModel().setRollover(false);
+                    arrowBtn.getModel().setSelected(false);
+                }
+
+                
+            }
+          };
+          addMouseListener(mouseInputAdapter);
+          addMouseMotionListener(mouseInputAdapter);
+          
+          mainBtn.addMouseListener(mouseInputAdapter);
+          mainBtn.addMouseMotionListener(mouseInputAdapter);
+          arrowBtn.addMouseListener(mouseInputAdapter);
+          arrowBtn.addMouseMotionListener(mouseInputAdapter);
+
+          mainBtn.addActionListener(this);
     }
     
+    public void addActionListener(ActionListener al)
+    {
+        listeners.add(al);
+    }
+    
+    public void removeActionListener(ActionListener al)
+    {
+        listeners.remove(al);
+    }
+
 
     /*------------------------------[ PropertyChangeListener ]---------------------------------------------------*/
 
@@ -214,9 +268,19 @@ public abstract class DropDownButton extends JButton implements ChangeListener, 
      */
     public void actionPerformed(ActionEvent ae)
     {
-        JPopupMenu popup = getPopupMenu();
-        popup.addPopupMenuListener(this);
-        popup.show(mainBtn, 0, mainBtn.getHeight());
+        if (ae.getSource() == arrowBtn)
+        {
+            JPopupMenu popup = getPopupMenu();
+            popup.addPopupMenuListener(this);
+            popup.show(mainBtn, 0, mainBtn.getHeight());
+            
+        } else
+        {
+            for (ActionListener al : listeners)
+            {
+                al.actionPerformed(ae);
+            }
+        }
     }
 
     /*------------------------------[ PopupMenuListener ]---------------------------------------------------*/
@@ -289,160 +353,41 @@ public abstract class DropDownButton extends JButton implements ChangeListener, 
     {
         return menus == null ? 0 : menus.size();
     }
-
-    /**
-     * Returns the "complete" component  
-     * @return Returns the "complete" component  
+    
+    /* (non-Javadoc)
+     * @see java.awt.Component#paint(java.awt.Graphics)
      */
-    public JPanel getCompleteComp()
+    public void paint(Graphics g) 
     {
-        GridBagLayout      gridbag = new GridBagLayout();
-        GridBagConstraints c       = new GridBagConstraints();
+        mainBtn.setMargin(new Insets(0,0,0,0));
         
-        JPanel panel = new BtnPanel(gridbag, mainBtn, arrowBtn);
-        c.fill = GridBagConstraints.VERTICAL;
-        gridbag.setConstraints(mainBtn, c);
-        panel.add(mainBtn);
+        super.paint(g);
         
-        gridbag.setConstraints(arrowBtn, c);
-        panel.add(arrowBtn);
-        return panel;       
+        if (getBorder() == raisedBorder && arrowBtn.isVisible())
+        {
+
+            Color highlight = raisedBorder.getHighlightInnerColor(mainBtn);
+            Color shadow    = raisedBorder.getShadowInnerColor(mainBtn);
+            
+            g.setColor(shadow);
+            Rectangle r = mainBtn.getBounds();
+
+            int x = r.x + r.width;
+            int shrink = 0;
+            int y1 = r.y+shrink;
+            int y2 = r.y+r.height-(shrink*2);
+            g.drawLine(x-1, y1,   x,   y1+1);
+            g.drawLine(x,   y1+1, x,   y2-1);
+            g.drawLine(x,   y2-1, x-1, y2);
+            x++;
+            g.setColor(highlight);
+            g.drawLine(x-1, y1,   x,   y1+1);
+            g.drawLine(x,   y1+1, x,   y2-1);
+            g.drawLine(x,   y2-1, x-1, y2);
+         }
     }
     
-    /**
-     * Herlp so this can add itself to the toolbar properly
-     * @param toolbar
-     * @return the main button of the control 
-     */
-    public JButton addToToolBar(JToolBar toolbar)
-    {   
-        toolbar.add(getCompleteComp());
-        return mainBtn;
-    }
-    
-    /**
-     * 
-     * @author rods
-     *
-     */
-    class BtnPanel extends JPanel
-    {
-        protected EmptyBorder     emptyBorder;
-        protected SoftBevelBorder raisedBorder;
-        
-        protected JButton mainBtn;
-        protected JButton arrowBtn;
-        
-        public BtnPanel(LayoutManager aLM, JButton aMainBtn, JButton aArrowBtn)
-        {
-            super(aLM);
-            
-            mainBtn     = aMainBtn;
-            arrowBtn = aArrowBtn;
-            
-            raisedBorder = new SoftBevelBorder(SoftBevelBorder.RAISED);
-            emptyBorder  = new EmptyBorder(raisedBorder.getBorderInsets(this));
-            setBorder(emptyBorder);
-            
-            MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() 
-            {
-                public void mouseEntered(MouseEvent e) 
-                {
-                    setBorder(raisedBorder);
-                    if (statusBarHintText != null)
-                        UICacheManager.displayStatusBarText(statusBarHintText);
-                    
-                    arrowBtn.setEnabled(getPopMenuSize() > 0);
-                    repaint();
-                }
-                public void mouseExited(MouseEvent e) 
-                {
-                    setBorder(emptyBorder);
-                    UICacheManager.displayStatusBarText(null);
-                    repaint();
-                    
-                    if (popupVisible)
-                    {
-                        popupVisible = false;
-    
-                        mainBtn.getModel().setRollover(false);
-                        arrowBtn.getModel().setSelected(false);
-                    }
-
-                    
-                }
-              };
-              addMouseListener(mouseInputAdapter);
-              addMouseMotionListener(mouseInputAdapter);
-              
-              aMainBtn.addMouseListener(mouseInputAdapter);
-              aMainBtn.addMouseMotionListener(mouseInputAdapter);
-              aArrowBtn.addMouseListener(mouseInputAdapter);
-              aArrowBtn.addMouseMotionListener(mouseInputAdapter);
-        }
-                
-        public int getPreferredWidth()
-        {
-            return getPreferredSize().width;
-        }
-        
-        public void setSize(Dimension aDim)
-        {
-            aDim.width = getPreferredWidth();
-            super.setSize(aDim);
-        }
-        
-        public void setSize(int aX, int aY)
-        {
-            aX = getPreferredWidth();
-            super.setSize(aX, aY);
-        }
-        
-        public void setBounds(int x, int y, int width, int height)
-        {
-            width = getPreferredWidth();
-            super.setBounds(x, y, width, height);
-        }
-        
-        public void setBounds(Rectangle r)       
-        {
-            r.width = getPreferredWidth();
-            super.setBounds(r);
-        }
-        
-
-        public void paint(Graphics g) 
-        {
-            mainBtn.setMargin(new Insets(0,0,0,0));
-            
-            super.paint(g);
-            
-            if (getBorder() == raisedBorder && arrowBtn.isVisible())
-            {
-
-                Color highlight = raisedBorder.getHighlightInnerColor(mainBtn);
-                Color shadow    = raisedBorder.getShadowInnerColor(mainBtn);
-                
-                g.setColor(shadow);
-                Rectangle r = mainBtn.getBounds();
-
-                int x = r.x + r.width ;
-                int shrink = 0;
-                int y1 = r.y+shrink;
-                int y2 = r.y+r.height-(shrink*2);
-                g.drawLine(x-1, y1,   x,   y1+1);
-                g.drawLine(x,   y1+1, x,   y2-1);
-                g.drawLine(x,   y2-1, x-1, y2);
-                x++;
-                g.setColor(highlight);
-                g.drawLine(x-1, y1,   x,   y1+1);
-                g.drawLine(x,   y1+1, x,   y2-1);
-                g.drawLine(x,   y2-1, x-1, y2);
-             }
-        }
-    }
-
-    /**
+     /**
      * @return Returns the statusBarHintText.
      */
     public String getStatusBarHintText()

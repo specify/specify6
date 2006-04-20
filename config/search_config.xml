@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tables>
-  <table id="1" usehitscache="true" name="CollObject" title="Collection Object" priority="1" color="30, 144, 255"
-         expresssearch="true">
+    
+    <!-- ************************************** -->
+    <!--      These are for Express Search      -->
+    <!-- ************************************** -->
+    
+  <table id="1" usehitscache="true" name="CollObject" title="Collection Object" priority="1" color="30, 144, 255" expresssearch="true">
     <outofdate>
         <table name="collectionobject" title="Collection Object"/>
         <table name="determination" title="Determination"/>
@@ -30,8 +34,7 @@
 	</detailView>
   </table>
 
-  <table id="2" name="locality" title="Locality" priority="1" color="30, 144, 255"
-         expresssearch="true">
+  <table id="2" name="locality" title="Locality" priority="1" color="30, 144, 255" expresssearch="true">
     <outofdate>
         <table name="locality" title="Locality"/>
     </outofdate>
@@ -124,36 +127,98 @@
 	</detailView>
   </table>
 
-  <table id="5" name="Agent" title="Agent" priority="1" color="30, 144, 255"
-         expresssearch="true">
-    <outofdate>
-        <table name="agent" title="Agent"/>
-    </outofdate>
-    <index>
-	    <sql>
-	        <![CDATA[select AgentID,FirstName,LastName from agent;]]>
-	    </sql>
-	    <cols>
-	        <col>1</col>
-	        <col key="firstname">2</col>
-	        <col key="lastname">3</col>
-	    </cols>
-	</index>
-    <detailView icon="Agent">
-	    <sql>
-	        <![CDATA[select FirstName,LastName,AgentID from agent where AgentID in (%s)]]>
-	    </sql>
-        <captions>
-            <caption col="FirstName" text="First Name"/>
-            <caption col="LastName" text="Last Name"/>
-            <caption col="AgentID" text="AgentID" visible="false"/>
-        </captions>
-        <recordset tabletype="5" col="2"/>
-	</detailView>
-  </table>
-
-  <table id="6" name="Address" title="Address" priority="1" color="30, 144, 255"
-         expresssearch="true">
+    <table id="5" name="Agent" title="Agent" priority="1" color="30, 144, 255" expresssearch="true">
+        <outofdate>
+            <table name="agent" title="Agent"/>
+        </outofdate>
+        <index>
+            <sql>
+                <![CDATA[select AgentID,FirstName,LastName from agent]]>
+            </sql>
+            <cols>
+                <col>1</col>
+                <col key="firstname">2</col>
+                <col key="lastname">3</col>
+            </cols>
+        </index>
+        <detailView icon="Agent">
+            <sql>
+                <![CDATA[select FirstName,LastName,AgentID from agent where AgentID in (%s)]]>
+            </sql>
+            <captions>
+                <caption col="FirstName" text="First Name"/>
+                <caption col="LastName" text="Last Name"/>
+                <caption col="AgentID" text="AgentID" visible="false"/>
+            </captions>
+            <recordset tabletype="5" col="2"/>
+        </detailView>
+    </table>
+   
+    <table id="6" name="Permit" title="Permits" priority="1" color="30, 144, 255" expresssearch="true">
+        <outofdate>
+            <table name="permit" title="Permits"/>
+        </outofdate>
+        <index>
+            <sql>
+                <![CDATA[select PermitID,PermitNumber,Type,IssuedDate,StartDate from permit]]>
+            </sql>
+            <cols>
+                <col>1</col>
+                <col>2</col>
+                <col>3</col>
+                <col>4</col>
+                <col>5</col>
+            </cols>
+        </index>
+        <detailView icon="Permit">
+            <sql>
+                <![CDATA[select PermitNumber,Type,IssuedDate,StartDate,PermitID from permit where PermitID in (%s)]]>
+            </sql>
+            <captions>
+                <caption col="PermitNumber" text="Permit Number"/>
+                <caption col="Type" text="Type"/>
+                <caption col="IssuedDate" text="Issued Date"/>
+                <caption col="StartDate" text="StartDate"/>
+                <caption col="PermitID" text="PermitID" visible="false"/>
+            </captions>
+            <recordset tabletype="6" col="4"/>
+        </detailView>
+    </table>
+    
+    <table id="7" name="Accession" title="Accession" priority="1" color="30, 144, 255" expresssearch="true">
+        <outofdate>
+            <table name="accession" title="Accessions"/>
+        </outofdate>
+        <index>
+            <sql>
+                <![CDATA[select AccessionID,Number,DateAccessioned,Status,Type,Text1 from accession]]>
+            </sql>
+            <cols>
+                <col>1</col>
+                <col>2</col>
+                <col>3</col>
+                <col>4</col>
+                <col>5</col>
+                <col>6</col>
+            </cols>
+        </index>
+        <detailView icon="Accession">
+            <sql>
+                <![CDATA[select AccessionID,Number,DateAccessioned,Status,Type,Text1 from accession where AccessionID in (%s)]]>
+            </sql>
+            <captions>
+                <caption col="AccessionID" text="AccessionID" visible="false"/>
+                <caption col="Number" text="Number"/>
+                <caption col="DateAccessioned" text="Date Accessioned"/>
+                <caption col="Status" text="Status"/>
+                <caption col="Type" text="Type"/>
+                <caption col="Text1" text="Division"/>
+            </captions>
+            <recordset tabletype="7" col="0"/>
+        </detailView>
+    </table>
+    
+    <table id="8" name="Address" title="Address" priority="1" color="30, 144, 255" expresssearch="true">
     <outofdate>
         <table name="address" title="Address"/>
     </outofdate>
@@ -184,8 +249,7 @@
 	</detailView>
   </table>
 
-  <table id="7" usehitscache="true" name="CollObjToDeterminer" title="Determiner" priority="1" color="30, 144, 255"
-         expresssearch="true">
+  <table id="9" usehitscache="true" name="CollObjToDeterminer" title="Determiner" priority="1" color="30, 144, 255" expresssearch="true">
     <outofdate>
         <table name="determination" title="Determination"/>
     </outofdate>
@@ -237,7 +301,7 @@
 	</detailView>
   </table>
 
-  <table id="8" name="CollObToLocality" title="Localities in Collecting Events" priority="1" color="30, 144, 255"
+  <table id="10" name="CollObToLocality" title="Localities in Collecting Events" priority="1" color="30, 144, 255"
          expresssearch="true">
     <outofdate>
         <table name="collectingevent" title="Collecting Event"/>
@@ -265,8 +329,13 @@
        <recordset tabletype="8" col="1"/>
 	</detailView>
   </table>
+  
+    <!-- ************************************************* -->
+    <!--  These are for Other Non Express Search Searches  -->
+    <!-- ************************************************* -->
+    
 
-    <table id="5" name="AgentAddressSearch" title="Agent Search" priority="1" color="30, 144, 255" expresssearch="false">
+    <table id="5" name="AgentSearch" title="Agent Search" priority="1" color="30, 144, 255" expresssearch="false">
         <outofdate/>
         <index>
             <sql/>
@@ -274,11 +343,9 @@
         </index>
         <detailView icon="">
             <sql>
-                <![CDATA[select agent.AgentID, 
-agent.FirstName,  agent.LastName, agent.Name, agentaddress.Email, address.Address, address.City, 
-address.State, address.Postalcode, address.Country From agent  
-Inner Join agentaddress ON agent.AgentID = agentaddress.AgentID 
-Inner Join address ON agentaddress.AddressID = address.AddressID and (%s)]]>
+                <![CDATA[select * from (select agent.AgentID, 
+agent.FirstName,  agent.LastName, agent.Name, agent.Email, address.Address, address.City, 
+address.State, address.PostalCode, address.Country From agent  Left Join address ON agent.AgentID = address.AgentID) as newTable where (%s)]]>
             </sql>
             <captions>
                 <caption col="AgentID" text="AgentID"  visible="false"/>
@@ -304,9 +371,8 @@ Inner Join address ON agentaddress.AddressID = address.AddressID and (%s)]]>
         </index>
         <detailView icon="">
             <sql>
-                <![CDATA[ Select permit.PermitID, permit.PermitNumber,agent.LastName,permit.IssuedDate,permit.StartDate,
-permit.EndDate,permit.RenewalDate,permit.Type From permit Inner Join agentaddress ON permit.IssuerID = agentaddress.AgentAddressID 
-Inner Join agent ON agentaddress.AgentID = agent.AgentID and (%s)]]>
+                <![CDATA[Select * from (select permit.PermitID, permit.PermitNumber,agent.LastName,permit.IssuedDate,permit.StartDate,
+permit.EndDate,permit.RenewalDate,permit.Type From permit left Join agent ON permit.IssuerID = agent.AgentID) as newTable where (%s)]]>
             </sql>
             <captions>
                 <caption col="PermitID" text="PermitID"  visible="false"/>
@@ -321,7 +387,6 @@ Inner Join agent ON agentaddress.AgentID = agent.AgentID and (%s)]]>
             <recordset tabletype="6" col="0"/>
         </detailView>
     </table>
-    
     
     <table id="10000" usehitscache="true" name="Forms" title="Forms" priority="2" color="95, 158, 160"
          expresssearch="true">

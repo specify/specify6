@@ -21,6 +21,8 @@ package edu.ku.brc.specify.ui.validation;
 
 import java.util.Hashtable;
 
+import edu.ku.brc.specify.ui.db.TextFieldWithInfo;
+
 /**
  * This factory knows how to create AutoComplete Comboboxes that get their data from a query.
  *
@@ -49,18 +51,7 @@ public class ComboBoxFromQueryFactory
                 "lastName,firstName",
                 "%s, %s",
                 "AgentSearch",
-                null));
-
-        comboBoxes.put("AgentAddress", new ComboBoxFromQueryInfo(
-                "select agent.LastName, agent.FirstName, agentaddress.AgentID From agentaddress Inner Join agent ON agentaddress.AgentID = agent.AgentID " +
-                "where lower(agent.LastName) like '%s%' order by agent.LastName asc",
-                null, null, null, null,
-                "edu.ku.brc.specify.datamodel.AgentAddress",
-                "agentAddressId",
-                "agent.lastName,agent.firstName",
-                "%s, %s",
-                "AgentAddressSearch",
-                null));
+                "AgentDisplay"));
 
         comboBoxes.put("Taxon", new ComboBoxFromQueryInfo(null, "taxon",
                 "TreeID",
@@ -82,7 +73,30 @@ public class ComboBoxFromQueryFactory
                 "permitNumber",
                 "%s",
                 "PermitSearch",
-                "PermitCreate"));
+                "PermitDisplay"));
+    }
+
+    /**
+     * Creates a new ValComboBoxFromQuery by name
+     * @param name the name of the ValComboBoxFromQuery to return
+     * @return a ValComboBoxFromQuery by name
+     */
+    public static TextFieldWithInfo getTextFieldWithInfo(final String name)
+    {
+        ComboBoxFromQueryInfo info =  instance.comboBoxes.get(name);
+        if (info != null)
+        {
+            if (info.getSQL() == null)
+            {
+                return new TextFieldWithInfo(info.getClassName(),
+                                                 info.getIdName(),
+                                                 info.getKeyName(),
+                                                 info.getFormat(),
+                                                 info.getCreateDialogName()
+                                                 );
+            }
+        }
+        return null;
     }
 
     /**
@@ -165,6 +179,7 @@ public class ComboBoxFromQueryFactory
             this.format = format;
             this.searchDialogName = searchDialogName;
             this.createDialogName = createDialogName;
+            //this.displayDialogName = displayDialogName;
         }
 
         public String getSQL()
@@ -221,6 +236,11 @@ public class ComboBoxFromQueryFactory
         {
             return createDialogName;
         }
+
+        /*public String getDisplayDialogName()
+        {
+            return createDialogName;
+        }*/
 
     }
 

@@ -18,7 +18,7 @@ public class DeaccessionAgent  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     protected AgentAddress agentAddress;
+     protected Agent agent;
      protected Deaccession deaccession;
 
 
@@ -45,7 +45,7 @@ public class DeaccessionAgent  implements java.io.Serializable {
         timestampModified = new Date();
         timestampCreated = new Date();
         lastEditedBy = null;
-        agentAddress = null;
+        agent = null;
         deaccession = null;
     }
     // End Initializer
@@ -119,14 +119,14 @@ public class DeaccessionAgent  implements java.io.Serializable {
     }
 
     /**
-     *      * AgentAddressID for agent
+     *      * AgentID for agent
      */
-    public AgentAddress getAgentAddress() {
-        return this.agentAddress;
+    public Agent getAgent() {
+        return this.agent;
     }
     
-    public void setAgentAddress(AgentAddress agentAddress) {
-        this.agentAddress = agentAddress;
+    public void setAgent(Agent agent) {
+        this.agent = agent;
     }
 
     /**

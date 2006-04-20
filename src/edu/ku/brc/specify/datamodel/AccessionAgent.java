@@ -18,7 +18,7 @@ public class AccessionAgent  implements java.io.Serializable {
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     protected AgentAddress agentAddress;
+     protected Agent agent;
      protected Accession accession;
      protected RepositoryAgreement repositoryAgreement;
 
@@ -46,7 +46,7 @@ public class AccessionAgent  implements java.io.Serializable {
         timestampModified = new Date();
         timestampCreated = new Date();
         lastEditedBy = null;
-        agentAddress = null;
+        agent = null;
         accession = null;
         repositoryAgreement = null;
     }
@@ -123,12 +123,12 @@ public class AccessionAgent  implements java.io.Serializable {
     /**
      *      * AgentAdress of agent playing role in Accession
      */
-    public AgentAddress getAgentAddress() {
-        return this.agentAddress;
+    public Agent getAgent() {
+        return this.agent;
     }
     
-    public void setAgentAddress(AgentAddress agentAddress) {
-        this.agentAddress = agentAddress;
+    public void setAgent(Agent agent) {
+        this.agent = agent;
     }
 
     /**

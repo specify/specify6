@@ -80,7 +80,7 @@ public class StartUpTask extends BaseTask
         {
             tbList.add(btn);
         }
-        list.add(new ToolBarItemDesc(btn.getCompleteComp()));
+        list.add(new ToolBarItemDesc(btn));
         */
         return list;
         

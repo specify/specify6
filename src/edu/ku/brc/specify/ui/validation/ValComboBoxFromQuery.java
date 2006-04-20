@@ -61,9 +61,9 @@ import edu.ku.brc.specify.ui.ColorWrapper;
 import edu.ku.brc.specify.ui.GetSetValueIFace;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.db.DialogFactory;
 import edu.ku.brc.specify.ui.db.GenericSearchDialog;
 import edu.ku.brc.specify.ui.db.JComboBoxFromQuery;
-import edu.ku.brc.specify.ui.db.SearchDialogFactory;
 import edu.ku.brc.specify.ui.forms.DataGetterForObj;
 
 
@@ -249,7 +249,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
         {
             public void actionPerformed(ActionEvent e)
             {
-                GenericSearchDialog dlg = SearchDialogFactory.createDialog(searchDialogName);
+                GenericSearchDialog dlg = DialogFactory.createSearchDialog(searchDialogName);
                 dlg.setVisible(true);
                 if (!dlg.isCancelled())
                 {

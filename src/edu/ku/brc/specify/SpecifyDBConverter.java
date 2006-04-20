@@ -178,7 +178,6 @@ public class SpecifyDBConverter
             {
                 GenericDBConversion conversion = new GenericDBConversion("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/"+oldDatabaseName, "rods", "rods");
 
-
                 boolean mapTables = true;
                 if (mapTables || doAll)
                 {
@@ -192,11 +191,22 @@ public class SpecifyDBConverter
                     BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(null);
                 }
 
+                // This MUST be done before any of the table copies because it 
+                // creates the IdMappers for Agent, Address and mor eimportantly AgentAddress
+                // NOTE: AgentAddress is actually mapping from the old AgentAddress table to the new Agent table
+                boolean copyAgentAddressTables = false;
+                if (copyAgentAddressTables || doAll)
+                {
+                    conversion.convertAgents();
+                }
+                
                 boolean copyUSYSTables = false;
                 if (copyUSYSTables || doAll)
                 {
                     conversion.convertUSYSTables();
                 }
+                
+
 
                 boolean copyTables = false;
                 if (copyTables || doAll)

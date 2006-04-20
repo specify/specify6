@@ -37,6 +37,12 @@ import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.ui.forms.persist.View;
 import edu.ku.brc.specify.ui.forms.persist.ViewSet;
 
+/**
+ * Reads the Form Registry. The forms are loaded when needed and onlu one ViewSet can be the "core" ViewSet which is where most of the forms
+ * reside. This could also be thought of as the "default" set of forms.
+ * @author rods
+ *
+ */
 public class ViewMgr
 {
     // Statics
@@ -52,7 +58,8 @@ public class ViewMgr
     
     
     // Data Members
-    private Hashtable<String, ViewSet>  viewsHash = new Hashtable<String, ViewSet>();
+    protected Hashtable<String, ViewSet> viewsHash   = new Hashtable<String, ViewSet>();
+    protected ViewSet                    coreViewSet = null;
     
     /**
      * protected Constructor
@@ -63,7 +70,8 @@ public class ViewMgr
     }
     
     /**
-     * 
+     * Reads the Form Registry. The forms are loaded when needed and onlu one ViewSet can be the "core" ViewSet which is where most of the forms
+     * reside. This could also be thought of as the "default" set of forms.
      */
     protected void init()
     {
@@ -79,7 +87,18 @@ public class ViewMgr
                     String  name        = getAttr(fileElement, "name", null);
                     if (!isViewSetNameInUse(name))
                     {
-                        ViewSet viewSet = new ViewSet(name, getAttr(fileElement, "file", null));
+                        boolean  isCore = getAttr(fileElement, "core", false);
+                        if (coreViewSet != null && isCore)
+                        {
+                            log.error("Ignoring 'core' attribute for view ["+name+"] because there is already one set to true.");
+                            isCore = false;
+                        }
+                        
+                        ViewSet viewSet = new ViewSet(name, getAttr(fileElement, "file", null), isCore);
+                        if (isCore)
+                        {
+                            coreViewSet = viewSet;
+                        }
                         viewsHash.put(viewSet.getName(), viewSet);
                         
                     } else
@@ -179,7 +198,23 @@ public class ViewMgr
      */
     public static View getView(final String viewSetName, final String viewName)
     {
-        ViewSet viewSet = instance.viewsHash.get(viewSetName);
+        ViewSet viewSet;
+        
+        if (viewSetName == null)
+        {
+            if (instance.coreViewSet != null)
+            {
+                viewSet = instance.coreViewSet;
+            } else
+            {
+                log.error("Asking for 'core' ViewSet and one has not been defined!");
+                viewSet = instance.viewsHash.get(viewSetName);
+            }
+        } else
+        {
+            viewSet = instance.viewsHash.get(viewSetName);
+        }
+        
         if (viewSet != null)
         {
             return viewSet.getView(viewName);

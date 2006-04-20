@@ -42,13 +42,20 @@ public class DataObjFieldFormatMgr
 
     protected Hashtable<String, DataFieldFormat> hash = new Hashtable<String, DataFieldFormat>();
     protected Object[]                           args = new Object[2]; // start with two slots
-
+    protected Hashtable<String, Class>           typeHash = new Hashtable<String, Class>();
     /**
      * Protected Constructor
      */
     protected DataObjFieldFormatMgr()
     {
+        Object[] initTypeData = {"string", String.class, "int", Integer.class, "float", Float.class, "double", Double.class, "boolean", Boolean.class};
+        for (int i=0;i<initTypeData.length;i++)
+        {
+            typeHash.put((String)initTypeData[i], (Class)initTypeData[i+1]);
+            i++;
+        }
         load();
+        
     }
 
     /**
@@ -74,15 +81,25 @@ public class DataObjFieldFormatMgr
 
                     List fields = formatElement.selectNodes("fields/field");
                     String[] fieldNames = new String[fields.size()];
+                    Class[]  dataTypes  = new Class[fields.size()];
                     int inx = 0;
                     for (Object fieldObj : fields)
                     {
-                        fieldNames[inx++] = ((Element)fieldObj).getTextTrim();
+                        Element fieldElement = (Element)fieldObj;
+                        String  dataTypeStr  = XMLHelper.getAttr(fieldElement, "type", "string");
+                        Class   classObj     = typeHash.get(dataTypeStr);
+                        if (classObj == null)
+                        {
+                            log.error("Couldn't map standard type["+dataTypeStr+"]");
+                        }
+                        fieldNames[inx] = fieldElement.getTextTrim();
+                        dataTypes[inx] = classObj;
+                        inx++;
                     }
 
                     if (hash.get(name) == null)
                     {
-                        hash.put(name, new DataFieldFormat(name, className, format, fieldNames));
+                        hash.put(name, new DataFieldFormat(name, className, format, fieldNames, dataTypes));
 
                     } else
                     {
@@ -116,24 +133,50 @@ public class DataObjFieldFormatMgr
             if (getter != null)
             {
                 String[] fieldsNames = format.getFieldNames();
+                Class[]  dataTypes   = format.getDataTypes();
                 if (fieldsNames.length > args.length)
                 {
                     args = new Object[fieldsNames.length];
                 }
+                int nullCount = 0;
                 int inx = 0;
                 for (String fieldName : fieldsNames)
                 {
-                    args[inx++] = getter.getFieldValue(dataObj, fieldName);
+                    Object value = getter.getFieldValue(dataObj, fieldName);
+                    if (value != null && value.getClass() != dataTypes[inx])
+                    {
+                        log.error("Mismatch of types data retrieved as class["+value.getClass().getSimpleName()+"] and the format requires ["+dataTypes[inx].getSimpleName()+"]");
+                    }
+                    if (value == null)
+                    {
+                        try
+                        {
+                            value = dataTypes[inx].newInstance();
+                            nullCount++;
+                        } catch (Exception ex)
+                        {
+                            value = "";
+                        }
+                    }
+                    args[inx++] = value;
                 }
-                Formatter formatter = new Formatter();
-                formatter.format(format.getFormat(), args);
+                String retVal;
+                if (nullCount != fieldsNames.length)
+                {
+                    Formatter formatter = new Formatter();
+                    formatter.format(format.getFormat(), args);
+                    retVal = formatter.toString();
+                } else
+                {
+                    retVal = "";
+                }
 
                 // clear any references to data
                 for (int i=0;i<fieldsNames.length;i++)
                 {
                     args[i] = null;
                 }
-                return formatter.toString();
+                return retVal;
             }
         }
         return "";
@@ -161,14 +204,16 @@ public class DataObjFieldFormatMgr
         protected String   className;
         protected String   format;
         protected String[] fieldNames;
+        protected Class[] dataTypes;
         protected Class    classObj;
 
-        public DataFieldFormat(String name, String className, String format, String[] fieldNames)
+        public DataFieldFormat(String name, String className, String format, String[] fieldNames, Class[] dataTypes)
         {
-            this.name = name;
-            this.className = className;
-            this.format = format;
+            this.name       = name;
+            this.className  = className;
+            this.format     = format;
             this.fieldNames = fieldNames;
+            this.dataTypes  = dataTypes;
 
             try
             {
@@ -205,7 +250,10 @@ public class DataObjFieldFormatMgr
             return classObj;
         }
 
-
+        public Class[] getDataTypes()
+        {
+            return dataTypes;
+        }
 
     }
 

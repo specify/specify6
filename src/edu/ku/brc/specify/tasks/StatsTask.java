@@ -51,10 +51,14 @@ import edu.ku.brc.specify.tasks.subpane.ChartPane;
 import edu.ku.brc.specify.tasks.subpane.PieChartPane;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.specify.tasks.subpane.StatsPane;
+import edu.ku.brc.specify.ui.CommandAction;
+import edu.ku.brc.specify.ui.CommandDispatcher;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.forms.ViewMgr;
+import edu.ku.brc.specify.ui.forms.persist.View;
 /**
  * The StatsTask is responsible gettng and displaying all various idfferent kinds of stats
  * 
@@ -72,6 +76,7 @@ public class StatsTask extends BaseTask
     protected static final String BAR_CHART = "bar chart";
     protected static final String PIE_CHART = "pie chart";
     protected static final String TABLE     = "table";
+    protected static final String FORM      = "form";
     
     
     // Data Members
@@ -102,13 +107,13 @@ public class StatsTask extends BaseTask
         List boxes = panelDOM.selectNodes("/boxes/box");
         for ( Iterator iter = boxes.iterator(); iter.hasNext(); ) 
         {
-            org.dom4j.Element box = (org.dom4j.Element) iter.next();
+            Element box = (Element) iter.next();
             NavBox navBox = new NavBox(box.attributeValue("title"));
             
             List items = box.selectNodes("item");
             for ( Iterator iter2 = items.iterator(); iter2.hasNext(); ) 
             {
-                org.dom4j.Element item = (org.dom4j.Element) iter2.next();
+                Element item = (Element) iter2.next();
                 String boxName  = item.attributeValue("name");
                 String boxTitle = item.attributeValue("title");
                 String type     = item.attributeValue("type");
@@ -145,9 +150,9 @@ public class StatsTask extends BaseTask
      * @param name the name of the child element that needs to be looked up to get its value
      * @return returns the string value for the info element or an empty string
      */
-    protected String getChartInfo(final org.dom4j.Element element, final String name)
+    protected String getChartInfo(final Element element, final String name)
     {
-        org.dom4j.Element el = (org.dom4j.Element)element.selectSingleNode("chartinfo/"+name);
+        Element el = (Element)element.selectSingleNode("chartinfo/"+name);
         if (el != null)
         {
             return el.getText();
@@ -159,7 +164,7 @@ public class StatsTask extends BaseTask
      * Fills the ChartPane with any extra desxcription information
      * @param chartPane the chart pane to be augmented
      */
-    protected void fillWithChartInfo(final org.dom4j.Element element, final ChartPane chartPane)
+    protected void fillWithChartInfo(final Element element, final ChartPane chartPane)
     {
         chartPane.setTitle(getChartInfo(element, "title"));
         chartPane.setXAxis(getChartInfo(element, "xaxis"));
@@ -208,7 +213,7 @@ public class StatsTask extends BaseTask
             }
             
             // It better have some SQL
-            org.dom4j.Element sqlElement = (org.dom4j.Element)element.selectSingleNode("sql");
+            Element sqlElement = (Element)element.selectSingleNode("sql");
             if (sqlElement == null)
             {
                 throw new RuntimeException("sql element is null!");
@@ -230,7 +235,7 @@ public class StatsTask extends BaseTask
                 String displayType = element.attributeValue("display");               
                 List parts = element.selectNodes(displayType.equals("Pie Chart") ? "slice" : "bar");
                 for ( Iterator iter = parts.iterator(); iter.hasNext(); ) {
-                    org.dom4j.Element slice = (org.dom4j.Element) iter.next();
+                    Element slice = (Element) iter.next();
                     int descRow  = Integer.parseInt(slice.valueOf( "desc/@row" ));
                     int descCol  = Integer.parseInt(slice.valueOf( "desc/@col" ));
                     int valueRow = Integer.parseInt(slice.valueOf( "value/@row" ));
@@ -288,32 +293,42 @@ public class StatsTask extends BaseTask
             nameStr = statName.substring(0,inx);
             idStr   = statName.substring(inx+4, statName.length());
         }
-        org.dom4j.Element element = (org.dom4j.Element)statDOM.selectSingleNode("/statistics/stat[@name='"+nameStr+"']");
+        
+        Element element = (Element)statDOM.selectSingleNode("/statistics/stat[@name='"+nameStr+"']");
         if (element != null)
         {
             String displayType = element.attributeValue(DISPLAY).toLowerCase();
             
 
-            if (displayType.equals(BAR_CHART))
+            if (displayType.equalsIgnoreCase(BAR_CHART))
             {
                 BarChartPane barChart = new BarChartPane("Bar Chart", this);
                 createChart(element, barChart, barChart, barChart);
 
                 
-            } else if (displayType.equals(PIE_CHART))
+            } else if (displayType.equalsIgnoreCase(PIE_CHART))
             {
                 PieChartPane pieChart = new PieChartPane("Pie Chart", this);
                 createChart(element, pieChart, pieChart, pieChart);
                 
+            } else if (displayType.equalsIgnoreCase(PIE_CHART))
+            {
+                PieChartPane pieChart = new PieChartPane("Pie Chart", this);
+                createChart(element, pieChart, pieChart, pieChart);
+                
+            } else if (displayType.equalsIgnoreCase(FORM))
+            {
+                createView(element, idStr);
+                
             } else if (displayType.equals(TABLE))
             {
-                org.dom4j.Element sqlElement = (org.dom4j.Element)element.selectSingleNode("sql");
+                Element sqlElement = (Element)element.selectSingleNode("sql");
                 if (sqlElement == null)
                 {
                     throw new RuntimeException("sql element is null!");
                 }
                 
-                org.dom4j.Element titleElement = (org.dom4j.Element)element.selectSingleNode("title");
+                Element titleElement = (Element)element.selectSingleNode("title");
                 if (sqlElement == null)
                 {
                     throw new RuntimeException("sql element is null!");
@@ -323,7 +338,16 @@ public class StatsTask extends BaseTask
                 String sqlStr = sqlElement.getTextTrim();
                 if (idStr != null)
                 {
-                    sqlStr = String.format(sqlStr, new Object[] {idStr});
+                    int substInx = sqlStr.lastIndexOf("%s");
+                    if (substInx > -1)
+                    {
+                        sqlStr = sqlStr.substring(0, substInx-1) + idStr + sqlStr.substring(substInx+2, sqlStr.length());
+                    } else
+                    {
+                        log.error("Couldn't find the substitue string \"%s\" in ["+sqlStr+"]");
+                    }
+                    
+                    //sqlStr = String.format(sqlStr, new Object[] {idStr});
                 }
                 //System.out.println(sqlStr);
                 queryPane.setSQLStr(sqlStr);
@@ -333,12 +357,32 @@ public class StatsTask extends BaseTask
             } else 
             {
                 // error
+                log.error("Wrong type of display ["+displayType+"] this type is not supported!");
             }
-                
-            
         }
+    }
+    
+    /**
+     * Dispatches a request to show a Form
+     * @param domElement the DOM element that contains the info we need to display the form
+     */
+    protected void createView(final Element domElement, final String idStr)
+    {
+        String viewSetName = domElement.attributeValue("viewset");
+        String viewName    = domElement.attributeValue("view");
+        String mode    = domElement.attributeValue("mode");
         
-         
+        View view = ViewMgr.getView(viewSetName, viewName);
+        
+        /*int tableId = DBTableIdMgr.lookupIdByClassName(view.getClassName());
+        
+        RecordSet rs = new RecordSet("ViewRecord", tableId);
+        RecordSetItem rsi = new RecordSetItem();
+        rsi.setRecordId(idStr);
+        rs.getItems().add(rsi);
+        */
+
+        CommandDispatcher.dispatch(new CommandAction("Data_Entry", "ShowView", new Object[] {view, mode, idStr}));
     }
     
     /**
@@ -365,7 +409,7 @@ public class StatsTask extends BaseTask
         ToolBarDropDownBtn      btn  = createToolbarButton(name, "stats.gif", "stats_hint");      
 
         
-        list.add(new ToolBarItemDesc(btn.getCompleteComp()));
+        list.add(new ToolBarItemDesc(btn));
         return list;
     }
     
