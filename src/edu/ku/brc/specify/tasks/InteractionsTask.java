@@ -21,14 +21,16 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.core.NavBoxIFace;
+import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
@@ -47,6 +49,8 @@ import edu.ku.brc.specify.ui.forms.persist.View;
  */
 public class InteractionsTask extends BaseTask
 {
+    private static Log log = LogFactory.getLog(InteractionsTask.class);
+    
     public static final String INTERACTIONS = "Interactions";
 
     // Data Members
@@ -62,7 +66,8 @@ public class InteractionsTask extends BaseTask
 
         // Temporary
         NavBox navBox = new NavBox(getResourceString("Actions"));
-        navBox.add(NavBox.createBtn(getResourceString("Accession"),  "Interactions", IconManager.IconSize.Std16));
+        navBox.add(NavBox.createBtn(getResourceString("Accession"),  "Interactions", IconManager.IconSize.Std16, 
+                new CreateViewAction(this, "Main Views", "Accession", "Edit", Accession.class)));
         navBox.add(NavBox.createBtn(getResourceString("New_Loan"),  name, IconManager.IconSize.Std16));
         navBox.add(NavBox.createBtn(getResourceString("New_Gifts"), name, IconManager.IconSize.Std16));
         navBox.add(NavBox.createBtn(getResourceString("New_Exchange"), name, IconManager.IconSize.Std16));
@@ -135,55 +140,36 @@ public class InteractionsTask extends BaseTask
 
     public void doCommand(CommandAction cmdAction)
     {
-        if (cmdAction.getAction().equals("Edit"))
+        if (cmdAction.getAction().equals("NewInteraction"))
         {
             if (cmdAction.getData() instanceof RecordSet)
             {
-                RecordSet recordSet = (RecordSet)cmdAction.getData();
-                //createFormFor(recordSet);
-
-                //UICacheManager.addSubPane(new SimpleDescPane(title, this, "This is where we would be editing the "+recordSet.getItems().size()+" records in the RecordSet."));
+                addSubPaneToMgr(DataEntryTask.createFormFor(this, name, (RecordSet)cmdAction.getData()));
+                
             } else if (cmdAction.getData() instanceof Object[])
             {
                 Object[] dataList = (Object[])cmdAction.getData();
-                View   view = (View)dataList[0];
-                String mode = (String)dataList[1];
-                String idStr = (String)dataList[2];
-                //openView(view, mode, idStr);
-            }
-        } if (cmdAction.getAction().equals("ShowView"))
-        {
-            if (cmdAction.getData() instanceof Object[])
+                if (dataList.length != 3)
+                {
+                    View   view = (View)dataList[0];
+                    String mode = (String)dataList[1];
+                    String idStr = (String)dataList[2];
+                    DataEntryTask.openView(this, view, mode, idStr);
+                    
+                } else
+                {
+                    log.error("The Edit Command was sent with an object Array that was not 3 components!");
+                }
+            } else
             {
-                Object[] dataList = (Object[])cmdAction.getData();
-                View   view = (View)dataList[0];
-                String mode = (String)dataList[1];
-                String idStr = (String)dataList[2];
-                //openView(view, mode, idStr);
+                log.error("The Edit Command was sent that didn't have data that was a RecordSet or an Object Array");
             }
-        }
+        } 
     }
 
     //--------------------------------------------------------------
     // Inner Classes
     //--------------------------------------------------------------
 
-    /**
-     *
-     * @author rods
-     *
-     */
-    class DataEntryAction implements ActionListener
-    {
-        private String viewName;
 
-        public DataEntryAction(final String viewName)
-        {
-            this.viewName = viewName;
-        }
-        public void actionPerformed(ActionEvent e)
-        {
-            //openView(viewName);
-        }
-    }
 }

@@ -163,7 +163,7 @@ public class SystemSetupTask extends BaseTask
                     PickList pickList = new PickList();
                     pickList.setCreated(null); // this tells us later that it is a new object
                     pickList.setItems(new HashSet());
-                    formPane = createFormPanel(dfo.getViewSetName(), DBTableIdMgr.lookupDefaultFormNameById(dfo.getFormId()), pickList);
+                    formPane = createFormPanel(dfo.getViewSetName(), DBTableIdMgr.lookupDefaultFormNameById(dfo.getFormId()), null, pickList);
 
                 } else
                 {

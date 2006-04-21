@@ -21,6 +21,8 @@ package edu.ku.brc.specify.ui.forms.persist;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
+import java.util.Hashtable;
+
 /**
  * This represents all the information about a cell in the form.
  * @author rods
@@ -49,6 +51,8 @@ public class FormCellField extends FormCell
 
     protected boolean  isTextField    = false;
     protected boolean  isDSPTextField = false;
+    
+    protected Hashtable<String, String> properties = null;
 
     /**
      * Constructor
@@ -113,6 +117,29 @@ public class FormCellField extends FormCell
         // to whether they are text controls
         setUiType(uiType);
         setDspUIType(dspUIType);
+    }
+    
+    public void setProperties(final Hashtable<String, String> properties)
+    {
+        this.properties = properties;
+    }
+    
+    public void addProperty(final String name, final String value)
+    {
+        if (properties == null)
+        {
+            properties = new Hashtable<String, String>();
+        }
+        properties.put(name, value);
+    }
+    
+    public String getProperty(final String name)
+    {
+        if (properties != null)
+        {
+            return properties.get(name);
+        }
+        return null;
     }
 
     public int getCols()

@@ -77,19 +77,20 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
     protected Color              bgColor    = null;
 
     protected JTextField         textField;
-    protected JButton            infoBtn  = null;
+    protected JButton            infoBtn     = null;
     protected String             className;
     protected String             idName;
     protected String             keyName;
     protected String             format;
-    protected Class              classObj = null;
-    protected DataGetterForObj   getter   = null;
+    protected Class              classObj    = null;
+    protected DataGetterForObj   getter      = null;
     protected String             displayInfoDialogName;
     protected String[]           fieldNames;
-    protected Object             dataObj  = null;
+    protected Object             dataObj     = null;
+    protected String             frameTitle = null;
     
-    protected GenericDisplayFrame frame = null;
-    protected MultiView            multiView = null;
+    protected GenericDisplayFrame frame      = null;
+    protected MultiView           multiView  = null;
 
  
     /**
@@ -118,6 +119,15 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
     }
     
     /**
+     * Sets the string that is preappended to the title
+     * @param frameTitle the string arg
+     */
+    public void setFrameTitle(final String frameTitle)
+    {
+        this.frameTitle = frameTitle;
+    }
+    
+    /**
      * Sets the MultiView parent into the control
      * @param multiView parent multiview
      */
@@ -141,7 +151,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
      */
     protected void createInfoFrame()
     {
-        frame = DialogFactory.createDisplayDialog(displayInfoDialogName);
+        frame = DialogFactory.createDisplayDialog(displayInfoDialogName, frameTitle);
         frame.setCloseListener(this);
         frame.setData(dataObj);
         frame.setVisible(true);

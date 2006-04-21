@@ -570,6 +570,8 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
         {
             HibernateUtil.beginTransaction();
             
+            this.getDataFromUI();
+            
             traverseToGetDataFromForms(mvParent);
             
             /*Accession a = (Accession)dataObj;
@@ -1029,14 +1031,14 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
                     continue;
                 }
                 String name = fieldInfo.getFormCell().getName();
-                if (name.toLowerCase().equals("type"))
+                if (name.equals("dateReceived") || name.equals("lastEditedBy"))
                 {
                     int x = 0;
                     x++;
                 }
                 //System.out.println("["+name+"]");
                 Object uiData = getDataFromUIComp(name);
-                if (name.equals("type"))
+                if (name.equals("dateReceived") || name.equals("lastEditedBy"))
                 {
                     int x = 0;
                     x++;
@@ -1313,6 +1315,9 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
         }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.forms.ResultSetControllerListener#indexAboutToChange(int, int)
+     */
     public boolean indexAboutToChange(int oldIndex, int newIndex)
     {
         if (validator != null && validator.hasChanged())

@@ -384,6 +384,38 @@ public class ViewLoader
     {
         return getResourceLabel(getAttr(cellElement, LABEL, ""));
     }
+    
+    
+    /**
+     * Processes the initilize string as a set of named value pairs where each pair is separated by `;`
+     * @param initStr the initialize string to be processed
+     * @return the hash of values
+     */
+    protected static Hashtable<String, String> processInitializeString(final String initStr)
+    {
+        if (isNotEmpty(initStr))
+        {
+            Hashtable<String, String> hash = new Hashtable<String, String>();
+            
+            for (String pair : StringUtils.split(initStr, ";"))
+            {
+                String[] args = StringUtils.split(pair, "=");
+                if (args.length % 2 != 0)
+                {
+                    log.error("Initialize string["+initStr+"] is an a set of named value pairs separated by `;`");
+                } else
+                {
+                    for (int i=0;i<args.length;i++)
+                    {
+                        hash.put(args[i], args[i+1]);
+                        i++;
+                    }
+                }
+            }
+            return hash.size() > 0 ? hash : null;
+        }
+        return null;
+    }
 
     /**
      * Processes all the rows
@@ -447,6 +479,8 @@ public class ViewLoader
                                 x++;
                             }
 
+                            Hashtable<String, String> properties = null;
+                            
                             String dspUIType;
                             if (uitype.equals("checkbox"))
                             {
@@ -463,6 +497,9 @@ public class ViewLoader
                             } else if (uitype.equals("querycbx"))
                             {
                                 dspUIType = getAttr(cellElement, "dspuitype", "textfieldinfo");
+                                
+                                properties = processInitializeString(initialize);
+                                
 
                             } else if (uitype.equals("formattedtext"))
                             {
@@ -506,6 +543,7 @@ public class ViewLoader
                             field.setPickListName(getAttr(cellElement, "picklist", ""));
                             field.setChangeListenerOnly(getAttr(cellElement, "changesonly", true) && !isRequired);
                             field.setInitialize(initialize);
+                            field.setProperties(properties);
 
                             cell = formRow.addCell(field);
                         } break;

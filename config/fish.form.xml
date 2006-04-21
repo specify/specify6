@@ -126,7 +126,7 @@
     				<cell type="field" name="accession" uitype="formattedtext" uifieldformatter="AccessionNumber"/>
 
                  <cell type="label" labelfor="cataloger" label="Cataloger"/>
-    				<cell type="field" name="cataloger" uitype="querycbx" initialize="Agent" formatname="Agent" isrequired="true"/>
+    				<cell type="field" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent" formatname="Agent" isrequired="true"/>
 
                     <cell type="label" labelfor="catalogedDate" label="Date"/>
     			    <cell type="field" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date"/>
@@ -194,7 +194,7 @@
     			<row>
 
                  <cell type="label" labelfor="determiner.lastName,determiner.firstName" label="Determiner"/>
-    				<cell type="field" name="determiner" uitype="querycbx" initialize="Agent" formatname="Agent" isrequired="true"/>
+    				<cell type="field" name="determiner" uitype="querycbx" initialize="name=Agent;title=Determiner Agent" formatname="Agent" isrequired="true"/>
 
                     <cell type="label" labelfor="confidence" label="Confidence"/>
     				<cell type="field" name="confidence"/>
@@ -240,7 +240,7 @@
     				<cell type="field" name="preparedDate" format=""/>
 
     			    <cell type="label" labelfor="preparedByAgent" label="Prepared By"/>
-    			    <cell type="field" name="preparedByAgent" uitype="querycbx" initialize="Agent" formatname="Agent" isrequired="true"/>
+    			    <cell type="field" name="preparedByAgent" uitype="querycbx" initialize="name=Agent;title=Prepared By Agent" formatname="Agent" isrequired="true"/>
     			</row>
     			<row>
                     <cell type="label" labelfor="count" label="Count"/>
@@ -380,7 +380,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="agent" label="Agent"/>
-                    <cell type="field" name="agent" uitype="querycbx" initialize="Agent" formatname="Agent" isrequired="true"/>
+                    <cell type="field" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent" formatname="Agent" isrequired="true"/>
 
                     <cell type="label" labelfor="role" label="Role"/>
                     <cell type="field" name="role" uitype="combobox" picklist="AccessionRole" isrequired="true"/>
@@ -461,14 +461,14 @@
                     <cell type="field" name="permitNumber" uitype="text" isrequired="true"/>
 
                     <cell type="label" labelfor="type" label="Type"/>
-                    <cell type="field" name="type" uitype="combobox" initialize="N/A, State, Federal, International"/>
+                    <cell type="field" name="type" uitype="combobox" initialize="N/A, CITES, State, Federal, International"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="agentByIssuer" label="Issued By"/>
-                    <cell type="field" name="agentByIssuer" uitype="querycbx" initialize="Agent" formatname="Agent" isrequired="true"/>
+                    <cell type="field" name="agentByIssuer" uitype="querycbx" initialize="name=Agent;title=Issuer Agent" formatname="Agent" isrequired="true"/>
 
                     <cell type="label" labelfor="agentByIssuee" label="Issued To"/>
-                    <cell type="field" name="agentByIssuee" uitype="querycbx" initialize="Agent" formatname="Agent" isrequired="true"/>
+                    <cell type="field" name="agentByIssuee" uitype="querycbx" initialize="name=Agent;title=Issuee Agent" formatname="Agent" isrequired="true"/>
                 </row>
 
                 <row>
@@ -510,7 +510,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="permit" label="Permit"/>
-                    <cell type="field" name="permit" uitype="querycbx" initialize="Permit" formatname="Permit" isrequired="true"/>
+                    <cell type="field" name="permit" uitype="querycbx" initialize="name=Permit;title=Permit" formatname="Permit" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="remarks" label="Remarks"/>

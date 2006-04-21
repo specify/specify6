@@ -47,7 +47,6 @@ import javax.swing.JTextField;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.ParseException;
@@ -82,7 +81,7 @@ public class ExpressSearchTask extends BaseTask
     public static final String EXPRESSSEARCH = "Express_Search";
 
     // Data Members
-    protected Analyzer                     analyzer       = new StandardAnalyzer();//WhitespaceAnalyzer();
+    protected Analyzer                     analyzer       = new StandardAnalyzer();
     protected File                         lucenePath     = null;
     protected JTextField                   searchText;
     protected JButton                      searchBtn;

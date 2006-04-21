@@ -28,6 +28,10 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
@@ -39,6 +43,8 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.ColorWrapper;
@@ -60,6 +66,8 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                                                                  DocumentListener,
                                                                  PreferenceChangeListener
 {
+    private static Log log  = LogFactory.getLog(ValFormattedTextField.class);
+            
     protected boolean  isInError  = false;
     protected boolean  isRequired = false;
     protected boolean  isChanged  = false;
@@ -306,7 +314,30 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
      */
     public Object getValue()
     {
-        return "";//getText();
+        if (formatter.getName().equals("Date"))
+        {
+            String value = getText();
+            if (StringUtils.isNotEmpty(value))
+            {
+                SimpleDateFormat simpleDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+                try
+                {
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(simpleDateFormat.parse(value));
+                    return cal;
+                    
+                } catch (ParseException ex)
+                {
+                    log.error("Date is in error for parsing["+value+"]");   
+                }
+            } 
+            return null;
+
+        } else
+        {
+            return getText();     
+        }
+       
     }
 
 

@@ -411,7 +411,8 @@ public class ViewFactory
     protected ValComboBoxFromQuery createQueryComboBox(final FormValidator validator,
                                                        final FormCellField cellField)
     {
-        String cbxName = cellField.getInitialize();
+        //String cbxName = cellField.getInitialize();
+        String cbxName = cellField.getProperty("name");
         if (isNotEmpty(cbxName))
         {
             ValComboBoxFromQuery cbx = ComboBoxFromQueryFactory.getValComboBoxFromQuery(cbxName);
@@ -583,11 +584,12 @@ public class ViewFactory
                     } else if (uiType.equals("textfieldinfo"))
                     {
                         TextFieldWithInfo textFieldInfo;
-                        String            txtName = cellField.getInitialize();
+                        String            txtName = cellField.getProperty("name");
                         if (isNotEmpty(txtName))
                         {
                             textFieldInfo = ComboBoxFromQueryFactory.getTextFieldWithInfo(txtName);
                             textFieldInfo.setMultiView(parent);
+                            textFieldInfo.setFrameTitle(cellField.getProperty("title"));
                             
                         } else
                         {
@@ -596,7 +598,10 @@ public class ViewFactory
 
                         JTextField text = textFieldInfo.getTextField();
                         text.setColumns(cellField.getCols());
+
+                        
                         changeTextFieldUIForDisplay(text);
+                        
                         compToAdd = textFieldInfo;
 
 

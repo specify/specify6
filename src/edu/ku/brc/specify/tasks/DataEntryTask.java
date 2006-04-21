@@ -33,6 +33,7 @@ import org.hibernate.Query;
 import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.core.NavBoxIFace;
+import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
@@ -41,7 +42,6 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
-import edu.ku.brc.specify.tasks.subpane.DataEntryPane;
 import edu.ku.brc.specify.tasks.subpane.FormPane;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.specify.ui.CommandAction;
@@ -92,7 +92,7 @@ public class DataEntryTask extends BaseTask
 
             // Temporary
             NavBox navBox = new NavBox(getResourceString("Actions"));
-            navBox.add(NavBox.createBtn(getResourceString("Series_Processing"), name, IconManager.IconSize.Std16, new DataEntryAction("")));
+            navBox.add(NavBox.createBtn(getResourceString("Series_Processing"), name, IconManager.IconSize.Std16));
             navBoxes.addElement(navBox);
 
             navBox = new NavBox(getResourceString("CreateAndUpdate"));
@@ -110,31 +110,30 @@ public class DataEntryTask extends BaseTask
     }
 
     /**
-     * Opens a pane with a form
-     * @param viewName the name of the form to be opened
+     * Opens a pane with a view to data
+     * @param task the owning Task
+     * @param viewSetName the ViewSet Name
+     * @param viewName the view's name 
+     * @param mode the creation mode (View, Edit)
+     * @param data the data to fill in 
      */
-    public void openView(final String viewName)
-    {
-        DataEntryPane formPane = new DataEntryPane(name, this);
-        UICacheManager.getSubPaneMgr().addPane(formPane);
-    }
-
-    /**
-     * Opens a pane with a form
-     * @param viewName the name of the form to be opened
-     */
-    public void openView(final String viewSetName, final String viewName, final String mode, final Object data)
+    public static void openView(final Taskable task, 
+                                final String   viewSetName, 
+                                final String   viewName, 
+                                final String   mode, 
+                                final Object   data)
     {
         View view = ViewMgr.getView(viewSetName, viewName);
-        FormPane formPane = new FormPane(view.getName(), this, viewSetName, viewName, data);
+        FormPane formPane = new FormPane(view.getName(), task, viewSetName, viewName, mode, data);
         UICacheManager.getSubPaneMgr().addPane(formPane);
     }
 
     /**
-     * Opens a pane with a form
-     * @param viewName the name of the form to be opened
+     * Opens a View and fills it with a single data object
+     * @param mode the mode of how it is to be opened (View, Edit) 
+     * @param idStr a string that contains the Integer Id (Primary Key) of the object to be shown
      */
-    public void openView(final View view, final String mode, final String idStr)
+    public static void openView(final Taskable task, final View view, final String mode, final String idStr)
     {
         int tableId = DBTableIdMgr.lookupIdByClassName(view.getClassName());
 
@@ -144,7 +143,7 @@ public class DataEntryTask extends BaseTask
             List data = query.list();
             if (data != null && data.size() > 0)
             {
-                FormPane formPane = new FormPane(view.getName(), this, view.getViewSetName(), view.getName(), data.get(0));
+                FormPane formPane = new FormPane(view.getName(), task, view.getViewSetName(), view.getName(), mode, data.get(0));
                 UICacheManager.getSubPaneMgr().addPane(formPane);
 
             } else
@@ -161,6 +160,11 @@ public class DataEntryTask extends BaseTask
 
 
 
+    /**
+     * Opens tree Editor with the class of of the tree (type)
+     * @param treeableClass class of tree to be editted
+     * @param name the name of the tree
+     */
     public void openTreeEditor(final Class treeableClass, final String name)
     {
     	TreeTableViewer ttv = new TreeTableViewer(treeableClass,name,this);
@@ -171,7 +175,7 @@ public class DataEntryTask extends BaseTask
      * Create a form for a recordset
      * @param recordSet the record to create a form for
      */
-    protected void createFormFor(final RecordSet recordSet)
+    protected static FormPane createFormFor(final Taskable task, final String name, final RecordSet recordSet)
     {
         DBTableIdMgr.getInClause(recordSet);
 
@@ -186,8 +190,8 @@ public class DataEntryTask extends BaseTask
         System.out.println("ResultSet: "+list.size());
 
         // XXX Hard Coded ViewSet Name
-        FormPane form = new FormPane(name, this, "Main Views", defaultFormName, query.list());
-        addSubPaneToMgr(form);
+        return new FormPane(name, task, "Main Views", defaultFormName, null, query.list());
+
     }
 
     /*
@@ -283,18 +287,27 @@ public class DataEntryTask extends BaseTask
         {
             if (cmdAction.getData() instanceof RecordSet)
             {
-                RecordSet recordSet = (RecordSet)cmdAction.getData();
-                createFormFor(recordSet);
-
-                //UICacheManager.addSubPane(new SimpleDescPane(title, this, "This is where we would be editing the "+recordSet.getItems().size()+" records in the RecordSet."));
+                addSubPaneToMgr(createFormFor(this, name, (RecordSet)cmdAction.getData()));
+                
             } else if (cmdAction.getData() instanceof Object[])
             {
                 Object[] dataList = (Object[])cmdAction.getData();
-                View   view = (View)dataList[0];
-                String mode = (String)dataList[1];
-                String idStr = (String)dataList[2];
-                openView(view, mode, idStr);
+                if (dataList.length != 3)
+                {
+                    View   view = (View)dataList[0];
+                    String mode = (String)dataList[1];
+                    String idStr = (String)dataList[2];
+                    openView(this, view, mode, idStr);
+                    
+                } else
+                {
+                    log.error("The Edit Command was sent with an object Array that was not 3 components!");
+                }
+            } else
+            {
+                log.error("The Edit Command was sent that didn't have data that was a RecordSet or an Object Array");
             }
+            
         } if (cmdAction.getAction().equals("ShowView"))
         {
             if (cmdAction.getData() instanceof Object[])
@@ -303,7 +316,7 @@ public class DataEntryTask extends BaseTask
                 View   view = (View)dataList[0];
                 String mode = (String)dataList[1];
                 String idStr = (String)dataList[2];
-                openView(view, mode, idStr);
+                openView(this, view, mode, idStr);
             }
         }
     }
@@ -311,25 +324,6 @@ public class DataEntryTask extends BaseTask
     //--------------------------------------------------------------
     // Inner Classes
     //--------------------------------------------------------------
-
-    /**
-     *
-     * @author rods
-     *
-     */
-    class DataEntryAction implements ActionListener
-    {
-        private String viewName;
-
-        public DataEntryAction(final String viewName)
-        {
-            this.viewName = viewName;
-        }
-        public void actionPerformed(ActionEvent e)
-        {
-            openView(viewName);
-        }
-    }
 
     /**
      * @author jds

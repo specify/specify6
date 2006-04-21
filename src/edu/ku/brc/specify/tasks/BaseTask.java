@@ -295,20 +295,20 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     protected FormPane createFormPanel(RolloverCommand roc)
     {
         DroppableFormObject dfo = (DroppableFormObject)roc.getData();
-        return createFormPanel(dfo.getViewSetName(), DBTableIdMgr.lookupDefaultFormNameById(dfo.getFormId()), dfo.getData());
+        return createFormPanel(dfo.getViewSetName(), DBTableIdMgr.lookupDefaultFormNameById(dfo.getFormId()), null, dfo.getData());
     }
     
     /**
      * Looks to see if a form already exists for this request and shows it
      * otherwise it creates a form and add it to the SubPaneMgr
      */
-    protected FormPane createFormPanel(final String viewsetName, final String viewName, final Object data)
+    protected FormPane createFormPanel(final String viewsetName, final String viewName, final String mode, final Object data)
     {
         FormPane fp = null;
         
         if (recentFormPane != null && recentFormPane.getComponentCount() == 0)
         {
-            recentFormPane.createForm(viewsetName, viewName, data);
+            recentFormPane.createForm(viewsetName, viewName, null, data);
             fp = recentFormPane;
             
         } else
@@ -320,7 +320,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
                 
             } else
             {
-                recentFormPane = new FormPane(name, this, viewsetName, viewName, data);            
+                recentFormPane = new FormPane(name, this, viewsetName, viewName, mode, data);            
                 addSubPaneToMgr(recentFormPane);
                 fp = recentFormPane; 
             }

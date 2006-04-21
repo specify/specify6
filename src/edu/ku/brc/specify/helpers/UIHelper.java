@@ -609,6 +609,48 @@ public final class UIHelper
     }
     
     /**
+      * Creates a new data object and initializes it
+      * @param newDataClass class of new Object to be created and initialized
+     */
+    public static Object createAndNewDataObj(final Class newDataClass)
+    {
+        try
+        {
+            Object dataObj = newDataClass.newInstance();
+            if (newDataClass != null)
+            {
+                Method method = newDataClass.getMethod("initialize", new Class[] {});
+                method.invoke(dataObj, new Object[] {});
+
+                return dataObj;
+                
+            } else
+            {
+                log.error("Couldn't create new Data Object for Class["+newDataClass.getSimpleName()+"]");
+            }
+            
+        } catch (NoSuchMethodException ex)
+        {
+            ex.printStackTrace();
+            
+        } catch (IllegalAccessException ex)
+        {
+            ex.printStackTrace();   
+            
+        } catch (InvocationTargetException ex)
+        {
+            ex.printStackTrace();  
+            
+        } catch (InstantiationException ex)
+        {
+            ex.printStackTrace();   
+            
+        }
+
+        return null;
+    }
+    
+    /**
      * @param fieldNames
      * @param dataObj
      * @param newData
@@ -670,14 +712,14 @@ public final class UIHelper
                     }
                 } else
                 {
-                    setter.setFieldValue(data, fieldName, newData);
                     log.info("Data Obj ["+newData+" being added to ["+data+"]");
+                    setter.setFieldValue(data, fieldName, newData);
                 }
             }
         } else
         {
             setter.setFieldValue(dataObj, fieldNames, newData);
-            log.info("setter ["+newData+" being added to ["+dataObj+"]");
+            log.info("setter ["+newData+"] being added to ["+dataObj+"]");
         }
     }
 

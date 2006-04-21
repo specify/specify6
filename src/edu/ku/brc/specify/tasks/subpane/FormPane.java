@@ -60,6 +60,7 @@ public class FormPane extends DroppableTaskPane
                     final Taskable task,
                     final String   viewSetName,
                     final String   viewName,
+                    final String   mode,
                     final Object   data)
     {
         this(name, task, null);
@@ -67,8 +68,9 @@ public class FormPane extends DroppableTaskPane
         this.viewSetName = viewSetName;
         this.viewName    = viewName;
         this.data        = data;
-
-        createForm(viewSetName, viewName, data);
+        
+        AltView.CreationMode modeType = mode == null || !mode.equalsIgnoreCase("edit") ? AltView.CreationMode.View : AltView.CreationMode.Edit;
+        createForm(viewSetName, viewName, modeType, data);
     }
 
     /**
@@ -107,7 +109,7 @@ public class FormPane extends DroppableTaskPane
             if (data != null && data instanceof DroppableFormObject)
             {
                 DroppableFormObject dfo = (DroppableFormObject)data;
-                createForm(dfo.getViewSetName(), DBTableIdMgr.lookupDefaultFormNameById(dfo.getFormId()), dfo.getData());
+                createForm(dfo.getViewSetName(), DBTableIdMgr.lookupDefaultFormNameById(dfo.getFormId()), AltView.CreationMode.View, dfo.getData());
              }
         }
     }
@@ -116,17 +118,18 @@ public class FormPane extends DroppableTaskPane
      * Creates a form from the viewSet name and id and sets the data in
      * @param viewSetName the name of the view set to use
      * @param viewName the ID of the form to be created from within the ViewSet
+     * @param mode the creation mode
      * @param data the data to fill the form
      */
     public void createForm(final String viewSetName,
                            final String viewName,
+                           final AltView.CreationMode mode,
                            final Object data)
     {
         View view = ViewMgr.getView(viewSetName, viewName);
         if (view != null)
         {
             boolean isList = data != null && (data instanceof List || data instanceof Set);
-            AltView.CreationMode mode = AltView.CreationMode.View;//data != null && (data instanceof List || data instanceof Set) ? AltView.CreationMode.View : AltView.CreationMode.Edit;
             multiView = new MultiView(null, view, mode, isList, true);
             //viewable = multiView.get
             if (multiView != null)
