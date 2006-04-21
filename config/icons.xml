@@ -55,7 +55,7 @@
     <icon name="EditIcon" file="edit_icon.gif"  sizes="NonStd"/>
     <icon name="EditForm" file="editicon2_16.png" sizes="16"/>
     <icon name="Spreadsheet" file="spreadsheet.gif" sizes="all"/>
-    <icon name="InfoIcon" file="info2.png"       sizes="NonStd"/>
+    <icon name="InfoIcon" file="info.png"       sizes="NonStd"/>
     <icon name="Reload"   file="view-refresh16.png" sizes="16"/>
     <icon name="ViewForm" file="viewform16.gif" sizes="16"/>
     <icon name="ViewForm" file="viewform.gif" sizes="32"/>
