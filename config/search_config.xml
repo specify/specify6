@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tables>
-    
+
     <!-- ************************************** -->
     <!--      These are for Express Search      -->
     <!-- ************************************** -->
-    
+
   <table id="1" usehitscache="true" name="CollObject" title="Collection Object" priority="1" color="30, 144, 255" expresssearch="true">
     <outofdate>
         <table name="collectionobject" title="Collection Object"/>
@@ -99,6 +99,7 @@
   </table>
   -->
 
+<!--
   <table id="4" name="taxon" title="Taxon" priority="1" color="30, 144, 255"
          expresssearch="true">
     <outofdate>
@@ -153,7 +154,7 @@
             <recordset tabletype="5" col="2"/>
         </detailView>
     </table>
-   
+
     <table id="6" name="Permit" title="Permits" priority="1" color="30, 144, 255" expresssearch="true">
         <outofdate>
             <table name="permit" title="Permits"/>
@@ -184,7 +185,7 @@
             <recordset tabletype="6" col="4"/>
         </detailView>
     </table>
-    
+-->
     <table id="7" name="Accession" title="Accession" priority="1" color="30, 144, 255" expresssearch="true">
         <outofdate>
             <table name="accession" title="Accessions"/>
@@ -196,7 +197,7 @@
             <cols>
                 <col>1</col>
                 <col>2</col>
-                <col>3</col>
+                <col key="Accessioned">3</col>
                 <col>4</col>
                 <col>5</col>
                 <col>6</col>
@@ -217,7 +218,7 @@
             <recordset tabletype="7" col="0"/>
         </detailView>
     </table>
-    
+<!--
     <table id="8" name="Address" title="Address" priority="1" color="30, 144, 255" expresssearch="true">
     <outofdate>
         <table name="address" title="Address"/>
@@ -329,11 +330,11 @@
        <recordset tabletype="8" col="1"/>
 	</detailView>
   </table>
-  
+-->
     <!-- ************************************************* -->
     <!--  These are for Other Non Express Search Searches  -->
     <!-- ************************************************* -->
-    
+
 
     <table id="5" name="AgentSearch" title="Agent Search" priority="1" color="30, 144, 255" expresssearch="false">
         <outofdate/>
@@ -343,8 +344,8 @@
         </index>
         <detailView icon="">
             <sql>
-                <![CDATA[select * from (select agent.AgentID, 
-agent.FirstName,  agent.LastName, agent.Name, agent.Email, address.Address, address.City, 
+                <![CDATA[select * from (select agent.AgentID,
+agent.FirstName,  agent.LastName, agent.Name, agent.Email, address.Address, address.City,
 address.State, address.PostalCode, address.Country From agent  Left Join address ON agent.AgentID = address.AgentID) as newTable where (%s)]]>
             </sql>
             <captions>
@@ -362,7 +363,7 @@ address.State, address.PostalCode, address.Country From agent  Left Join address
             <recordset tabletype="5" col="0"/>
         </detailView>
     </table>
-    
+
     <table id="6" name="PermitSearch" title="Permit" priority="1" color="30, 144, 255" expresssearch="false">
         <outofdate/>
         <index>
@@ -387,7 +388,7 @@ permit.EndDate,permit.RenewalDate,permit.Type From permit left Join agent ON per
             <recordset tabletype="6" col="0"/>
         </detailView>
     </table>
-    
+
     <table id="10000" usehitscache="true" name="Forms" title="Forms" priority="2" color="95, 158, 160"
          expresssearch="true">
     <outofdate/>

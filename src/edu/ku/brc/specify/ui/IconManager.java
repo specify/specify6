@@ -41,14 +41,14 @@ import edu.ku.brc.specify.helpers.XMLHelper;
 
 /**
  * Caches icon in three sizes (32, 24, 16)
- * 
+ *
  * @author Rod Spears
  *
  */
 public class IconManager
 {
     private static Log log = LogFactory.getLog(IconManager.class);
-    
+
     // Icon Size Enumerations
     public enum IconSize {
         Std32(32, false, false),
@@ -57,8 +57,8 @@ public class IconManager
         Std8(8, false, false),
         Std32Fade(32, true, false),
         Std24Fade(24, true, false),
-        Std16Fade(16, true, false),     
-        Std8Fade(8, true, false),     
+        Std16Fade(16, true, false),
+        Std8Fade(8, true, false),
         Std32BW(32, false, true),
         Std24BW(24, false, true),
         Std16BW(16, false, true),
@@ -68,18 +68,18 @@ public class IconManager
         Std16FadeBW(16, true, true),
         Std8FadeBW(8, true, true),
         NonStd(-1, false, false);
-        
+
         IconSize(final int size, final boolean faded, final boolean blackWhite)
-        { 
+        {
             this.size = size;
             this.faded = faded;
             this.blackWhite = blackWhite;
         }
-        
+
         private int     size;
         private boolean faded;
         private boolean blackWhite;
-        
+
         public Integer size()         { return size; }
         public boolean faded()        { return faded; }
         public boolean blackWhite()   { return blackWhite; }
@@ -87,23 +87,23 @@ public class IconManager
         public void setSize(int size) { this.size = size; }
         public void setFaded(boolean faded) { this.faded = faded; }
         public void setBlackWhite(boolean bw) { blackWhite = bw; }
-        
+
     };
-    
+
     protected static final String      relativePath = "images/";
     protected static final IconManager instance     = new IconManager();
-    
+
     protected Class                        appClass = null;
     protected Hashtable<String, IconEntry> entries = new Hashtable<String, IconEntry>();
-    
+
     /**
-     * 
+     *
      *
      */
     protected IconManager()
     {
     }
-    
+
     /**
      * This sets the application class so the IconManager knows where the icon images are stored
      * which is ALWAYS in the "images" directory relative to the application class, this is REQUIRED before
@@ -113,13 +113,13 @@ public class IconManager
     public static void setApplicationClass(Class appClass)
     {
         instance.appClass = appClass;
-        
+
         if (instance.entries.size() == 0)
         {
             IconManager.loadIcons();
         }
     }
-    
+
     /**
      * Registers an icon (group or category), it creates an icon of "id" size and stores it
      * @param iconName the group name of icons of various sizes
@@ -130,16 +130,19 @@ public class IconManager
     public static IconEntry register(final String iconName, final String fileName, final IconSize id)
     {
         URL url = getImagePath(fileName);
-        
-        assert url != null : "Couldn't find URL for resource path: ["+(relativePath+" "+fileName)+"]";
+
+        if (url == null)
+        {
+            log.error("Couldn't find URL for resource path: ["+(relativePath+fileName)+"]");
+        }
 
         ImageIcon icon = new ImageIcon(url);
-        
+
         if (icon != null)
         {
             return register(iconName, icon, id);
         }
-        
+
         return null;
     }
 
@@ -157,7 +160,7 @@ public class IconManager
             entry.add(id, icon);
             instance.entries.put(iconName, entry);
             return entry;
-            
+
         } else
         {
             throw new RuntimeException("Can't register null icon name["+iconName+"] Size:"+id.toString());
@@ -179,7 +182,7 @@ public class IconManager
                 case 24 : return IconSize.Std24BW;
                 case 16 : return IconSize.Std16BW;
             }
-        } else if (faded) 
+        } else if (faded)
         {
             switch (size)
             {
@@ -208,7 +211,7 @@ public class IconManager
      */
     public static ImageIcon getScaledIcon(final ImageIcon icon, final IconSize iconSize, final IconSize scaledIconSize)
     {
-        
+
         if (icon != null)
         {
             ImageIcon scaledIcon = new ImageIcon(icon.getImage().getScaledInstance(scaledIconSize.size(), scaledIconSize.size(), Image.SCALE_SMOOTH));
@@ -219,7 +222,7 @@ public class IconManager
             {
                 log.error("Can't scale icon ["+iconSize+"] to ["+scaledIconSize+"]");
             }
-            
+
         } else
         {
             log.error("Couldn't find icon ["+iconSize+"] to scale to ["+scaledIconSize+"]");
@@ -240,7 +243,7 @@ public class IconManager
         {
             throw new NullPointerException("icon name should not be null!");
         }
-        
+
         IconEntry entry = instance.entries.get(iconName);
         if (entry != null)
         {
@@ -272,7 +275,7 @@ public class IconManager
         }
         return null;
     }
-    
+
     /**
      * Returns the IconSize enum for an integer
      * @param size the integer size
@@ -289,39 +292,39 @@ public class IconManager
         }
         throw new ConfigurationException("Desired Icon size doesn't exist! ["+size+"]");
     }
-    
+
     /**
      * Loads icons from config file
      *
      */
     public static void loadIcons()
     {
-        
+
         try
         {
             Element root  = XMLHelper.readDOMFromConfigDir("icons.xml");
             if (root != null)
             {
                 List boxes = root.selectNodes("/icons/icon");
-                for ( Iterator iter = boxes.iterator(); iter.hasNext(); ) 
+                for ( Iterator iter = boxes.iterator(); iter.hasNext(); )
                 {
                     org.dom4j.Element iconElement = (org.dom4j.Element) iter.next();
-                    
+
                     String name  = iconElement.attributeValue("name");
                     String sizes = iconElement.attributeValue("sizes");
                     String file  = iconElement.attributeValue("file");
                     if (sizes == null || sizes.length() == 0 || sizes.toLowerCase().equals("all"))
                     {
-                        
+
                         IconEntry entry = register(name, file, IconManager.IconSize.Std32);
-                        
+
                         entry.addScaled(IconSize.Std32, IconSize.Std24);
                         entry.addScaled(IconSize.Std32, IconSize.Std16);
-                                            
+
                     } else if (sizes.toLowerCase().equals("nonstd"))
                     {
                         register(name, file, IconSize.NonStd);
-                        
+
                     } else
                     {
                        StringTokenizer st = new StringTokenizer(sizes, ",");
@@ -342,13 +345,13 @@ public class IconManager
             log.error(ex);
         }
     }
-    
+
     /**
      * Creates a Black and White image from the color
      * @param img the image to be converted
-     * @return new B&W image 
+     * @return new B&W image
      */
-    public static ImageIcon createBWImage(final ImageIcon img) 
+    public static ImageIcon createBWImage(final ImageIcon img)
     {
         BufferedImage bi = new BufferedImage(img.getIconWidth(), img.getIconHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics g = bi.createGraphics();
@@ -391,5 +394,5 @@ public class IconManager
         return getIcon(imageName, id);
     }
 
-    
+
 }

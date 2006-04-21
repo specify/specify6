@@ -49,8 +49,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -141,7 +144,7 @@ public class FormEditor
     protected Viewable      fvo;
     protected DataType          dataType;
     protected MultiView         multiView;
-    
+
     protected PanelBuilder    builder    = null;
     protected CellConstraints cc         = new CellConstraints();
 
@@ -338,10 +341,10 @@ public class FormEditor
         multiView   = new MultiView(null, view, AltView.CreationMode.Edit, true, true);
         contentPane.removeAll();
         builder.add(multiView, cc.xy(1,1));
-        
+
         //contentPane.setBackground(Color.BLUE);
         //contentPane.setOpaque(true);
-        
+
         //Viewable form = ViewFactory.createView(view, null, null);
         //fvo = multiView.get;
 
@@ -349,7 +352,7 @@ public class FormEditor
         //if (comp != null)
        // {
             //comp.invalidate();
-           
+
             //contentPane.add(new CatalogSeriesWizard(null), BorderLayout.CENTER);
 
 
@@ -411,9 +414,9 @@ public class FormEditor
                 fvo.getValidator().registerOKButton((JButton)form.getComp("savePL"));
                 fvo.getValidator().validateForm();
 
-            } else 
+            } else
             */
-            
+
             if (currViewSetName.equals("Main Views") && currViewName.equals("Accession"))
             {
                 boolean doDB = true;
@@ -423,7 +426,7 @@ public class FormEditor
                     //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setFetchMode(Accession.class.getName(), FetchMode.DEFAULT).setMaxResults(300);
                     java.util.List list = criteria.list();//session.find("from collev");
                     dataObj = list;
-                    
+
                 } else
                 {
                     Accession[] accessions = CreateTestDatabases.createAccessionsInMemory();
@@ -505,7 +508,7 @@ public class FormEditor
                 //multiView.setDataIntoUI();
 
             }
-                    
+
 
         //}
 
@@ -529,7 +532,7 @@ public class FormEditor
     protected void selectForm()
     {
         /*
-    
+
         List<FormView>    fullFormsList = new ArrayList<FormView>();
 
         for (ViewSet viewSet : ViewMgr.getViewSets())
@@ -618,7 +621,7 @@ public class FormEditor
         mainFrame = new JFrame("Specify Form Editor");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setContentPane(contentPane);
-        
+
         builder = new PanelBuilder(new FormLayout("p", "p"), contentPane);
 
         UICacheManager.register(UICacheManager.TOPFRAME, mainFrame);
@@ -828,12 +831,24 @@ public class FormEditor
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
-                FormEditor formEditor = new FormEditor();
-                formEditor.initialize();
+                //FormEditor formEditor = new FormEditor();
+                //formEditor.initialize();
+                try
+                {
+                    String dataStr = "1890-01-03";
+                    Calendar cal = Calendar.getInstance();
 
+                    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = formatter.parse(dataStr);
+                    System.out.println(date);
+
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
                 /*
-                GenericSearchDialog dlg = new GenericSearchDialog("Search", 555, "AgentAddressSearch", 
-                                                                  getResourceString("AgentSearchTitle"), 
+                GenericSearchDialog dlg = new GenericSearchDialog("Search", 555, "AgentAddressSearch",
+                                                                  getResourceString("AgentSearchTitle"),
                                                                   "edu.ku.brc.specify.datamodel.Agent",
                                                                   "agentId");
                 dlg.setVisible(true);

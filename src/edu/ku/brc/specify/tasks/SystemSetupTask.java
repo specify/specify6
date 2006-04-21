@@ -54,7 +54,6 @@ import edu.ku.brc.specify.ui.CommandAction;
 import edu.ku.brc.specify.ui.CommandDispatcher;
 import edu.ku.brc.specify.ui.RolloverCommand;
 import edu.ku.brc.specify.ui.SubPaneIFace;
-import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.Trash;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.db.PickList;
@@ -62,8 +61,8 @@ import edu.ku.brc.specify.ui.db.PickList;
 
 
 /**
- * 
- * 
+ *
+ *
  * @author rods
  *
  */
@@ -71,17 +70,17 @@ public class SystemSetupTask extends BaseTask
 {
     // Static Data Members
     private static Log log  = LogFactory.getLog(SystemSetupTask.class);
-    
+
     public static final String     SYSTEMSETUPTASK        = "SystemSetup";
     public static final DataFlavor SYSTEMSETUPTASK_FLAVOR = new DataFlavor(SystemSetupTask.class, SYSTEMSETUPTASK);
-    
+
     public static final String INFO_REQ_MESSAGE = "Specify Info Request";
-    
+
     List<String> pickListNames = new ArrayList<String>();
-    
+
     // Data Members
     protected NavBox navBox = null;
-    
+
     /**
      * Default Constructor
      *
@@ -91,7 +90,7 @@ public class SystemSetupTask extends BaseTask
         super(SYSTEMSETUPTASK, getResourceString(SYSTEMSETUPTASK));
         CommandDispatcher.register(SYSTEMSETUPTASK, this);
     }
-    
+
     /**
      * Returns a title for the PickList
      * @param pickList the pickList to construct a title for
@@ -111,35 +110,35 @@ public class SystemSetupTask extends BaseTask
         if (!isInitialized)
         {
             super.initialize(); // sets isInitialized to false
-            
+
             Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(PickList.class);
             List pickLists = criteria.list();
-              
+
             navBox = new NavBox(getResourceString("picklists"));
-            
+
             addPickList(getResourceString("newpicklist"), null, null, 0);
-            
+
             // Get all the pickList names
             for (Iterator iter=pickLists.iterator();iter.hasNext();)
             {
                 PickList pickList = (PickList)iter.next();
                 pickListNames.add(pickList.getName());
-                
-            }      
-                      
-     
+
+            }
+
+
             for (Iterator iter=pickLists.iterator();iter.hasNext();)
             {
                 PickList pickList = (PickList)iter.next();
                 addPickList(getTitle(pickList), pickList, "DeletePickList", navBox.getItems().size()-1);
-                
-            }      
-            
+
+            }
+
             navBoxes.addElement(navBox);
             HibernateUtil.closeSession();
         }
     }
-    
+
     /**
      * Add an PickList Item to the box
      * @param pickList the pickList to be added
@@ -157,7 +156,7 @@ public class SystemSetupTask extends BaseTask
             {
                 RolloverCommand     roc = (RolloverCommand)ae.getSource();
                 DroppableFormObject dfo = (DroppableFormObject)roc.getData();
-                
+
                 FormPane formPane;
                 if (dfo.getData() == null) // null means we add a new one
                 {
@@ -165,12 +164,12 @@ public class SystemSetupTask extends BaseTask
                     pickList.setCreated(null); // this tells us later that it is a new object
                     pickList.setItems(new HashSet());
                     formPane = createFormPanel(dfo.getViewSetName(), DBTableIdMgr.lookupDefaultFormNameById(dfo.getFormId()), pickList);
-                    
+
                 } else
                 {
                     formPane = createFormPanel(roc);
                 }
-                
+
                 if (formPane != null && formPane.getFormProcessor() == null)
                 {
                     formPane.setFormProcessor(new PickListProcessor(pickListNames));
@@ -179,7 +178,7 @@ public class SystemSetupTask extends BaseTask
         });
         addDraggableDataFlavors(roc);
     }
-    
+
     /**
      * Adds the appropriate flavors to make it draggable
      * @param nbi the item to be made draggable
@@ -189,7 +188,7 @@ public class SystemSetupTask extends BaseTask
         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
         roc.addDragDataFlavor(DroppableTaskPane.DROPPABLE_PANE_FLAVOR);
     }
-    
+
     /**
      * Save a info request
      * @param pickList the ir to be saved
@@ -200,9 +199,9 @@ public class SystemSetupTask extends BaseTask
       */
     public void savePickList(final PickList pickList)
     {
-        
+
         //pickList.setTimestampModified(Calendar.getInstance().getTime());
-        
+
         // save to database
         HibernateUtil.getCurrentSession();
         HibernateUtil.beginTransaction();
@@ -211,7 +210,7 @@ public class SystemSetupTask extends BaseTask
         HibernateUtil.closeSession();
 
     }
-    
+
     /**
      * Delete a record set
      * @param rs the recordSet to be deleted
@@ -224,9 +223,9 @@ public class SystemSetupTask extends BaseTask
         HibernateUtil.getCurrentSession().delete(pickList);
         HibernateUtil.commitTransaction();
         HibernateUtil.closeSession();
-         
+
     }
-    
+
     /**
      * Return a NavBoxItem by name
      * @param boxName the name of the NavBoxItem
@@ -243,9 +242,9 @@ public class SystemSetupTask extends BaseTask
         }
         return null;
     }
-    
+
     /**
-     * Delete the RecordSet from the UI, which really means remove the NavBoxItemIFace. 
+     * Delete the RecordSet from the UI, which really means remove the NavBoxItemIFace.
      * This method first checks to see if the boxItem is not null and uses that, i
      * f it is null then it looks the box up by name ans used that
      * @param boxItem the box item to be deleted
@@ -253,12 +252,12 @@ public class SystemSetupTask extends BaseTask
      */
     protected void deletePickListFromUI(final NavBoxItemIFace boxItem, final PickList pickList)
     {
-        
+
         NavBoxItemIFace nb = boxItem != null ? boxItem : getBoxByName(getTitle(pickList));
         if (nb != null)
         {
             navBox.remove(nb);
-            
+
             // XXX this is pathetic and needs to be generized
             navBox.invalidate();
             navBox.setSize(navBox.getPreferredSize());
@@ -270,7 +269,7 @@ public class SystemSetupTask extends BaseTask
             UICacheManager.forceTopFrameRepaint();
         }
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
@@ -279,11 +278,11 @@ public class SystemSetupTask extends BaseTask
         recentFormPane = new FormPane(name, this, "Drop Me");
         return recentFormPane;
     }
-    
+
     //-------------------------------------------------------
     // Plugin Interface
     //-------------------------------------------------------
-    
+
      /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getToolBarItems()
@@ -291,13 +290,13 @@ public class SystemSetupTask extends BaseTask
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        
-        //ToolBarDropDownBtn btn = createToolbarButton(SYSTEMSETUPTASK, "information.gif", "inforequest_hint");      
+
+        //ToolBarDropDownBtn btn = createToolbarButton(SYSTEMSETUPTASK, "information.gif", "inforequest_hint");
         //list.add(new ToolBarItemDesc(btn));
-        
+
         return list;
     }
-    
+
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getMenuItems()
@@ -305,13 +304,13 @@ public class SystemSetupTask extends BaseTask
     public List<MenuItemDesc> getMenuItems()
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
-        
+
         JMenuItem mi = UIHelper.createMenuItem(null, getResourceString("PickListsMenu"), getResourceString("PickListsMenu"), "", true, null);
         list.add(new MenuItemDesc(mi, "AdvMenu/SystemMenu"));
         return list;
-        
+
     }
-    
+
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
@@ -321,9 +320,9 @@ public class SystemSetupTask extends BaseTask
      */
     public void doCommand(CommandAction cmdAction)
     {
-        
+
         Object data = cmdAction.getData() instanceof DroppableFormObject ? ((DroppableFormObject)cmdAction.getData()).getData() : cmdAction.getData();
-        
+
         if (data instanceof PickList)
         {
             PickList pickList = (PickList)data;
@@ -333,7 +332,7 @@ public class SystemSetupTask extends BaseTask
                 {
                     pickList.setCreated(new Date());
                     addPickList(getTitle(pickList), pickList, "DeletePickList", navBox.getItems().size()-1);
-                    
+
                     navBox.invalidate();
                     navBox.setSize(navBox.getPreferredSize());
                     navBox.doLayout();
@@ -346,21 +345,21 @@ public class SystemSetupTask extends BaseTask
                 }
 
                 savePickList(pickList);
-                
+
                 String viewName = DBTableIdMgr.lookupDefaultFormNameById(DBTableIdMgr.lookupIdByShortName("picklist"));
                 removePanelForData(SYSTEMSETUPTASK, viewName, pickList);
-                                
+
             } else if (cmdAction.getAction().equals("DeletePickList"))
             {
                 deletePickList(pickList);
                 deletePickListFromUI(null, pickList);
-                
+
                 if (recentFormPane != null && recentFormPane.getData() != null)
                 {
                     String viewName = DBTableIdMgr.lookupDefaultFormNameById(DBTableIdMgr.lookupIdByShortName("picklist"));
                     removePanelForData(SYSTEMSETUPTASK, viewName, pickList);
                 }
-                
+
                 int inx = Collections.binarySearch(pickListNames, pickList.getName());
                 if (inx > -1)
                 {
@@ -370,5 +369,5 @@ public class SystemSetupTask extends BaseTask
             }
         }
     }
-   
+
 }

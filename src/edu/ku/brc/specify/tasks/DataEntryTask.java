@@ -56,20 +56,20 @@ import edu.ku.brc.specify.ui.forms.persist.View;
 
 /**
  * This task controls the data entry forms
- * 
+ *
  * @author rods
- * 
+ *
  */
 public class DataEntryTask extends BaseTask
 {
     private static Log log = LogFactory.getLog(DataEntryTask.class);
-            
-    public static final String DATA_ENTRY = "Data_Entry";
-    
-    // Data Members
-    protected Vector<NavBoxIFace> extendedNavBoxes = new Vector<NavBoxIFace>(); 
 
-    
+    public static final String DATA_ENTRY = "Data_Entry";
+
+    // Data Members
+    protected Vector<NavBoxIFace> extendedNavBoxes = new Vector<NavBoxIFace>();
+
+
     /**
      * Default Constructor
      *
@@ -78,7 +78,7 @@ public class DataEntryTask extends BaseTask
     {
         super(DATA_ENTRY, getResourceString(DATA_ENTRY));
         CommandDispatcher.register(DATA_ENTRY, this);
-        
+
     }
 
     /* (non-Javadoc)
@@ -89,12 +89,12 @@ public class DataEntryTask extends BaseTask
         if (!isInitialized)
         {
             super.initialize(); // sets isInitialized to false
-            
+
             // Temporary
             NavBox navBox = new NavBox(getResourceString("Actions"));
             navBox.add(NavBox.createBtn(getResourceString("Series_Processing"), name, IconManager.IconSize.Std16, new DataEntryAction("")));
             navBoxes.addElement(navBox);
-            
+
             navBox = new NavBox(getResourceString("CreateAndUpdate"));
             //navBox.add(NavBox.createBtn(title, name, IconManager.IconSize.Std16));
             navBox.add(NavBox.createBtn("Specimen", "ColObj", IconManager.IconSize.Std16));
@@ -108,20 +108,20 @@ public class DataEntryTask extends BaseTask
             navBoxes.addElement(navBox);
         }
     }
-   
+
     /**
      * Opens a pane with a form
-     * @param formName the name of the form to be opened
+     * @param viewName the name of the form to be opened
      */
-    public void openView(final String formName)
+    public void openView(final String viewName)
     {
         DataEntryPane formPane = new DataEntryPane(name, this);
         UICacheManager.getSubPaneMgr().addPane(formPane);
     }
-    
+
     /**
      * Opens a pane with a form
-     * @param formName the name of the form to be opened
+     * @param viewName the name of the form to be opened
      */
     public void openView(final String viewSetName, final String viewName, final String mode, final Object data)
     {
@@ -129,15 +129,15 @@ public class DataEntryTask extends BaseTask
         FormPane formPane = new FormPane(view.getName(), this, viewSetName, viewName, data);
         UICacheManager.getSubPaneMgr().addPane(formPane);
     }
-    
+
     /**
      * Opens a pane with a form
-     * @param formName the name of the form to be opened
+     * @param viewName the name of the form to be opened
      */
     public void openView(final View view, final String mode, final String idStr)
     {
         int tableId = DBTableIdMgr.lookupIdByClassName(view.getClassName());
-        
+
         Query query = DBTableIdMgr.getQueryForTable(tableId, Integer.parseInt(idStr));
         try
         {
@@ -146,27 +146,27 @@ public class DataEntryTask extends BaseTask
             {
                 FormPane formPane = new FormPane(view.getName(), this, view.getViewSetName(), view.getName(), data.get(0));
                 UICacheManager.getSubPaneMgr().addPane(formPane);
-                
+
             } else
             {
                 // No Data Error
             }
-        
+
         } catch (Exception ex)
         {
             log.error(ex);
             ex.printStackTrace();
         }
     }
-    
 
-    
+
+
     public void openTreeEditor(final Class treeableClass, final String name)
     {
     	TreeTableViewer ttv = new TreeTableViewer(treeableClass,name,this);
     	UICacheManager.getSubPaneMgr().addPane(ttv);
     }
-    
+
     /**
      * Create a form for a recordset
      * @param recordSet the record to create a form for
@@ -176,20 +176,20 @@ public class DataEntryTask extends BaseTask
         DBTableIdMgr.getInClause(recordSet);
 
         String defaultFormName = DBTableIdMgr.lookupDefaultFormNameById(recordSet.getTableId());
-        
+
         //FormView formView = ViewMgr.getView("Main Views", tableId);
-        
+
         Query query = DBTableIdMgr.getQueryForTable(recordSet);
         java.util.List list = query.list();
-        
+
         System.out.println(query.toString());
         System.out.println("ResultSet: "+list.size());
-        
+
         // XXX Hard Coded ViewSet Name
-        FormPane form = new FormPane(name, this, "Main Views", defaultFormName, query.list()); 
+        FormPane form = new FormPane(name, this, "Main Views", defaultFormName, query.list());
         addSubPaneToMgr(form);
     }
-    
+
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#getNavBoxes()
@@ -197,17 +197,17 @@ public class DataEntryTask extends BaseTask
     public java.util.List<NavBoxIFace> getNavBoxes()
     {
         initialize();
-        
+
         extendedNavBoxes.clear();
         extendedNavBoxes.addAll(navBoxes);
-        
+
         RecordSetTask rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
-        
+
         extendedNavBoxes.addAll(rsTask.getNavBoxes());
-        
+
         return extendedNavBoxes;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
@@ -215,11 +215,11 @@ public class DataEntryTask extends BaseTask
     {
         return new SimpleDescPane(title, this, "This is the Data Entry Pane");
     }
-    
+
     //-------------------------------------------------------
     // Plugin Interface
     //-------------------------------------------------------
-    
+
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getToolBarItems()
@@ -227,14 +227,14 @@ public class DataEntryTask extends BaseTask
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        
+
         ToolBarDropDownBtn btn = createToolbarButton(DATA_ENTRY,   "dataentry.gif",    "dataentry_hint");
-       
+
         list.add(new ToolBarItemDesc(btn));
-        
+
         return list;
     }
-    
+
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getMenuItems()
@@ -243,21 +243,21 @@ public class DataEntryTask extends BaseTask
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
         return list;
-        
+
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#installPrefs()
      */
     public void installPrefs()
     {
        /*Preferences appPrefs = UICacheManager.getAppPrefs();
-       
+
        String sectionName = appendChildPrefName("UserInterface", "Formatting", "name");
        String sectionName = appPrefs.get("", null);
        if (sectionName == null)
        {
-           
+
        }
 
 
@@ -269,10 +269,10 @@ public class DataEntryTask extends BaseTask
      */
     public void removePrefs()
     {
-        
+
     }
 
-    
+
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
@@ -285,7 +285,7 @@ public class DataEntryTask extends BaseTask
             {
                 RecordSet recordSet = (RecordSet)cmdAction.getData();
                 createFormFor(recordSet);
-                
+
                 //UICacheManager.addSubPane(new SimpleDescPane(title, this, "This is where we would be editing the "+recordSet.getItems().size()+" records in the RecordSet."));
             } else if (cmdAction.getData() instanceof Object[])
             {
@@ -307,30 +307,30 @@ public class DataEntryTask extends BaseTask
             }
         }
     }
-    
+
     //--------------------------------------------------------------
     // Inner Classes
     //--------------------------------------------------------------
-    
+
     /**
-     * 
+     *
      * @author rods
      *
      */
-    class DataEntryAction implements ActionListener 
+    class DataEntryAction implements ActionListener
     {
-        private String formName;
-        
-        public DataEntryAction(final String formName)
+        private String viewName;
+
+        public DataEntryAction(final String viewName)
         {
-            this.formName = formName;
+            this.viewName = viewName;
         }
-        public void actionPerformed(ActionEvent e) 
+        public void actionPerformed(ActionEvent e)
         {
-            openView(formName);
+            openView(viewName);
         }
     }
-    
+
     /**
      * @author jds
      */
@@ -338,7 +338,7 @@ public class DataEntryTask extends BaseTask
     {
     	protected Class treeableClass;
     	protected String name;
-    	
+
     	public ShowTreeTableEditorAction(final Class treeableClass, final String name)
     	{
     		this.treeableClass = treeableClass;

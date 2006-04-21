@@ -261,7 +261,7 @@ public class UICacheManager
 
     /**
      * Displays a message in the status bar
-     * @param text
+     * @param text the text to be displayed
      */
     public static void displayStatusBarText(final String text)
     {

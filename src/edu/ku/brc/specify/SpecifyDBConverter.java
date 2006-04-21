@@ -52,7 +52,7 @@ public class SpecifyDBConverter
     {
 
     }
-    
+
     protected void testPaging()
     {
         boolean testPaging = false;
@@ -157,7 +157,7 @@ public class SpecifyDBConverter
      */
     public static void main(String args[]) throws Exception
     {
-        String oldDatabaseName = "demo_fish2";
+        String oldDatabaseName = "demo_fish4";
 
         DBConnection oldDB       = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/"+oldDatabaseName, "rods", "rods");
         IdMapperMgr  idMapperMgr = new IdMapperMgr(oldDB.getConnectionToDB());
@@ -191,7 +191,7 @@ public class SpecifyDBConverter
                     BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(null);
                 }
 
-                // This MUST be done before any of the table copies because it 
+                // This MUST be done before any of the table copies because it
                 // creates the IdMappers for Agent, Address and mor eimportantly AgentAddress
                 // NOTE: AgentAddress is actually mapping from the old AgentAddress table to the new Agent table
                 boolean copyAgentAddressTables = false;
@@ -199,13 +199,13 @@ public class SpecifyDBConverter
                 {
                     conversion.convertAgents();
                 }
-                
+
                 boolean copyUSYSTables = false;
                 if (copyUSYSTables || doAll)
                 {
                     conversion.convertUSYSTables();
                 }
-                
+
 
 
                 boolean copyTables = false;

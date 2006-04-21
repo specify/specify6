@@ -35,6 +35,10 @@ import javax.swing.JTextField;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.ColorWrapper;
 import edu.ku.brc.specify.ui.GetSetValueIFace;
@@ -54,11 +58,11 @@ import edu.ku.brc.specify.ui.db.PickListItem;
 public class ValComboBox extends JPanel implements UIValidatable, ListDataListener, GetSetValueIFace, PreferenceChangeListener
 {
     protected static Color defaultTextBGColor = null;
-    
+
     protected boolean isInError  = false;
     protected boolean isRequired = false;
     protected boolean isChanged  = false;
-    
+
     protected JAutoCompComboBox comboBox;
 
     protected static ColorWrapper valtextcolor       = null;
@@ -122,12 +126,16 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         {
             defaultTextBGColor = (new JTextField()).getBackground();
         }
-        
-        setLayout(new BorderLayout());
-        add(comboBox, BorderLayout.CENTER);
-        
+
+        //setLayout(new BorderLayout());
+        //add(comboBox, BorderLayout.CENTER);
+
         setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
-        
+
+        PanelBuilder    builder    = new PanelBuilder(new FormLayout("p:g", "p:g"), this);
+        CellConstraints cc         = new CellConstraints();
+        builder.add(comboBox, cc.xy(1,1));
+
         comboBox.getModel().addListDataListener(this);
 
         if (valtextcolor == null || requiredfieldcolor == null)
@@ -137,9 +145,9 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         }
         UICacheManager.getAppPrefs().node("ui/formatting").addPreferenceChangeListener(this);
 
-        
+
     }
-    
+
     /**
      * Returns the model for the combo box
      * @return the model for the combo box
@@ -148,7 +156,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     {
         return comboBox.getModel();
     }
-    
+
 
     /* (non-Javadoc)
      * @see javax.swing.JComboBox#setModel(javax.swing.ComboBoxModel)
@@ -257,7 +265,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     public void intervalRemoved(ListDataEvent e)
     {
     }
-    
+
 
     //--------------------------------------------------------
     // GetSetValueIFace
@@ -269,11 +277,11 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     public void setValue(Object value)
     {
         boolean fnd = false;
-        
+
         if (value != null)
         {
             ComboBoxModel  model = comboBox.getModel();
-            
+
             if (comboBox.hasAdapter())
             {
                 for (int i=0;i<comboBox.getItemCount();i++)
@@ -285,9 +293,9 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
                         fnd = true;
                         break;
                     }
-                }   
-                
-            
+                }
+
+
             } else
             {
                 for (int i=0;i<comboBox.getItemCount();i++)
@@ -296,33 +304,33 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
                     if (item instanceof String)
                     {
                         if (((String)item).equals(value))
-                        {       
+                        {
                             comboBox.setSelectedIndex(i);
                             fnd = true;
                             break;
-                        } 
+                        }
                     } else if (item.equals(value))
                     {
                         comboBox.setSelectedIndex(i);
                         fnd = true;
                         break;
                     }
-                } 
-            } 
+                }
+            }
         }
-        
+
         if (!fnd)
         {
             comboBox.setSelectedIndex(-1);
             this.isInError = (comboBox.hasAdapter() && isRequired) || isRequired;
-            
+
         } else
         {
             this.isInError = false;
         }
         repaint();
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.GetSetValueIFace#getValue()
      */
@@ -341,7 +349,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         }
         return selectedObj;
     }
-    
+
     //-------------------------------------------------
     // PreferenceChangeListener
     //-------------------------------------------------

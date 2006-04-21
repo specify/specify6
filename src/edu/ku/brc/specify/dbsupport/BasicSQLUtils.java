@@ -540,6 +540,28 @@ public class BasicSQLUtils
             Hashtable<String, String>  vertbatimDateMap = new Hashtable<String, String>();
             Hashtable<String, Date>    dateMap          = new Hashtable<String, Date>();
 
+            // Get the columns that have dates in case we get a TimestampCreated date that is null
+            // and then we can go looking for an older date to try to figure it out
+            Integer timestampModified = fromHash.get("TimestampCreated");
+            /*List<Integer> dateIds = new ArrayList<Integer>();
+            List<Class>   dateIdsClass = new ArrayList<Class>();
+            for (int i=1;i<rsmd.getColumnCount();i++)
+            {
+                try
+                {
+                    Class colClass = Class.forName(rsmd.getColumnClassName(i));
+                    if (colClass == Date.class || colClass == Calendar.class)
+                    {
+                        dateIds.add(i);
+                        dateIdsClass.add(colClass);
+                    }
+                } catch (Exception ex)
+                {
+
+                }
+            }*/
+
+
             StringBuilder verbatimDateStr = new StringBuilder();
             StringBuffer  str             = new StringBuffer();
             int           count           = 0;
@@ -583,7 +605,7 @@ public class BasicSQLUtils
                 str.append("INSERT INTO " + toTableName + " VALUES (");
 
                 id = rs.getString(1);
-                
+
                 // for each column in the new DB table...
                 for (int i = 0; i < colMetaData.size(); i++)
                 {
@@ -620,7 +642,7 @@ public class BasicSQLUtils
                             if (idMapper != null)
                             {
                             	int oldPrimaryKeyId = rs.getInt(columnIndex);
-                            	
+
                             	// if the value was null, getInt() returns 0
                             	// use wasNull() to distinguish real 0 from a null return
                             	if( rs.wasNull() )
@@ -631,7 +653,7 @@ public class BasicSQLUtils
                             	{
                             		dataObj = idMapper.getNewIdFromOldId(oldPrimaryKeyId);
                             	}
-                                
+
                                 /*if (rs.getObject(columnIndex) != null)
                                 {
                                     System.out.println("["+((Integer)dataObj).intValue()+"]["+rs.getInt(columnIndex)+"]");
@@ -664,7 +686,27 @@ public class BasicSQLUtils
 
                         } else if (dataObj == null && fieldMetaData.getName().equals("TimestampCreated"))
                         {
-                            str.append(getStrValue(Calendar.getInstance().getTime(), fieldMetaData.getType()));
+                            if (timestampModified != null)
+                            {
+                                Date modifiedDate = rs.getDate(timestampModified);
+                                if (modifiedDate != null)
+                                {
+                                    str.append(getStrValue(modifiedDate));
+                                } else
+                                {
+                                    if (fromTableName.equals("accession"))
+                                    {
+                                        str.append(getStrValue(UIHelper.convertIntToDate((Integer)rs.getInt(fromHash.get("DateAccessioned")))));
+                                        
+                                    } else
+                                    {
+                                        str.append(getStrValue(Calendar.getInstance().getTime(), fieldMetaData.getType()));
+                                    }
+                                }
+                            } else
+                            {
+                                str.append(getStrValue(Calendar.getInstance().getTime(), fieldMetaData.getType()));
+                            }
 
                         } else
                         {

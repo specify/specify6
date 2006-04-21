@@ -38,7 +38,7 @@ import edu.ku.brc.specify.ui.SubPaneIFace;
 /**
  * Class that implements the SubPanelIFace interface which enables derived classes to participate in the main pane.
  * It also adds the progress indicator and it provide.
- * 
+ *
  * @author rods
  *
  */
@@ -49,44 +49,44 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
 
     protected String            name;
     protected Taskable          task;
-    
+
     protected JProgressBar      progressBar;
     protected JLabel            progressLabel;
-    
+
     /**
      * Constructsa base class that implements the SubPanelIFace interface
      * which enables derived classes to participate in the main pane.
-     * It also adds the progress indicator and it provide 
+     * It also adds the progress indicator and it provide
      *
      */
-    public BaseSubPane(final String name, 
+    public BaseSubPane(final String name,
                        final Taskable task)
     {
         this.name = name;
         this.task = task;
-        
+
         setLayout(new BorderLayout());
-        
+
         progressBar = new JProgressBar();
         progressBar.setIndeterminate(true);
         FormLayout      formLayout = new FormLayout("f:max(100px;p):g", "center:p:g, p, center:p:g");
         PanelBuilder    builder    = new PanelBuilder(formLayout);
         CellConstraints cc         = new CellConstraints();
-       
+
         builder.add(progressBar,                  cc.xy(1,1));
         builder.add(progressLabel = new JLabel("", JLabel.CENTER), cc.xy(1,3));
-        
+
         PanelBuilder    builder2    = new PanelBuilder(new FormLayout("center:p:g", "center:p:g"));
         builder2.add(builder.getPanel(), cc.xy(1,1));
-   
+
         add(builder2.getPanel(), BorderLayout.CENTER);
-        
+
     }
-    
+
     //----------------------------------
     // SubPaneIFace
     //----------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.SubPaneIFace#getTitle()
      */
@@ -94,7 +94,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     {
         return name;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.SubPaneIFace#getIcon()
      */
@@ -102,7 +102,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     {
         return task.getIcon();
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.Component#getName()
      */
@@ -110,7 +110,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     {
         return name;
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.Component#setName(java.lang.String)
      */
@@ -118,7 +118,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     {
         this.name = name;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.SubPaneIFace#getUIComponent()
      */
@@ -126,7 +126,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     {
         return this;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.SubPaneIFace#getTask()
      */
@@ -134,7 +134,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     {
         return task;
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.Component#showingPane(boolean)
      */
@@ -143,5 +143,5 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
         //log.info("showingPane "+name+"  "+show);
     }
 
-    
+
 }

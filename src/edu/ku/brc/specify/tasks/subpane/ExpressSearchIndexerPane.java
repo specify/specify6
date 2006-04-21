@@ -35,9 +35,12 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -310,14 +313,98 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     }
 
     /**
+     * @param rs
+     * @param secondaryKey
+     * @param objClass
+     */
+    public String indexValue(final Document doc,
+                              final ResultSet rs,
+                              final int index,
+                              final String fieldName,
+                              final String secondaryKey,
+                              final Class objClass,
+                              final DateFormat formatter) throws SQLException
+    {
+        String value = null;
+
+        if (fieldName.equals("DateAccessioned"))
+        {
+            int x = 0;
+            x++;
+        }
+        // There may be a better way to express this,
+        // but this is very explicit as to whether it is indexed as a Keyword or not
+        if (secondaryKey == null)
+        {
+            if (objClass == java.sql.Date.class)
+            {
+                Date date = rs.getDate(index);
+                if (date != null)
+                {
+                    value = formatter.format(date);
+                    if (fieldName == null)
+                    {
+                        doc.add(Field.Keyword(fieldName, value));
+                    } else
+                    {
+                        doc.add(Field.UnStored("contents", value));
+                    }
+                    //log.info("["+fieldName+"]["+secondaryKey+"]["+value+"]");
+                }
+
+            } else
+            {
+                String str = rs.getString(index);
+                if (isNotEmpty(str))
+                {
+                    value = str;
+                    doc.add(Field.UnStored("contents", str));
+                }
+            }
+
+        } else
+        {
+            if (objClass == java.sql.Date.class)
+            {
+                Date date = rs.getDate(index);
+                if (date != null)
+                {
+                    value = formatter.format(date);
+                    if (fieldName == null)
+                    {
+                        doc.add(Field.Keyword(fieldName, value));
+                    } else
+                    {
+                        doc.add(Field.UnStored("contents", value));
+                    }
+                    //log.info("["+fieldName+"]["+secondaryKey+"]["+value+"]");
+                }
+
+            } else
+            {
+                String str = rs.getString(index);
+                if (isNotEmpty(str))
+                {
+                    value = str;
+                    doc.add(Field.Keyword(secondaryKey, str));
+                }
+            }
+        }
+        //log.info("["+fieldName+"]["+secondaryKey+"]["+value+"]");
+        return value;
+    }
+
+    /**
      * Performs a query and then indexes all the results for each orw and column
      * @param writer the lucene writer
      * @param tableInfo info describing the table (hold the table ID)
      */
     public long indexQuery(final IndexWriter writer, ExpressResultsTableInfo tableInfo)
     {
+        DateFormat formatter    = new SimpleDateFormat("yyyyMMdd");
+
         Connection dbConnection = DBConnection.getConnection();
-        Statement  dbStatement = null;
+        Statement  dbStatement  = null;
 
         int      tableId       = Integer.parseInt(tableInfo.getTableId());
         int[]    fields        = tableInfo.getCols();
@@ -363,6 +450,21 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
                 if (rs.first())
                 {
+                    // First we create an array of Class so we know what each column's Object class is
+                    ResultSetMetaData rsmd = rs.getMetaData();
+                    Class[]  classes = new Class[rsmd.getColumnCount()+1];
+                    classes[0] = null; // we do this so the "1" based columns match up with the list
+                    for (int i=1;i<rsmd.getColumnCount();i++)
+                    {
+                        try
+                        {
+                            classes[i] = Class.forName(rsmd.getColumnClassName(i));
+                            //log.info(rsmd.getColumnName(i)+"  "+classes[i].getSimpleName());
+                        } catch (Exception ex) {  }
+                    }
+
+                    String tableIdStr = Integer.toString(tableId);
+
                     int rowCnt = 1;
                     do
                     {
@@ -372,11 +474,12 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                             progressBar.setString((int)(((double)rowCnt / numRows) * 100.0)+"%");
                             step = 0;
                         }
+
                         step++;
                         rowCnt++;
                         Document doc = new Document();
-                        doc.add(Field.Keyword("id", rs.getObject(fields[0]).toString()));
-                        doc.add(Field.UnIndexed("table", Integer.toString(tableId)));
+                        doc.add(Field.UnIndexed("id", rs.getString(fields[0])));
+                        doc.add(Field.UnIndexed("table", tableIdStr));
 
                         int cnt = 0;
                         if (useHitsCache)
@@ -387,25 +490,30 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                                 Object valObj = rs.getObject(fields[i]);
                                 if (valObj != null)
                                 {
-                                    String valStr = valObj.toString();
-                                    if (valStr.length() > 0)
+                                    if (i > 0)
                                     {
-                                        termsIndexed++;
-                                        cnt++;
-                                        if (i > 0)
+                                        int inx = fields[i];
+                                        String value = indexValue(doc, rs, inx,
+                                                                  rsmd.getColumnName(inx),
+                                                                  secondaryKeys[i],
+                                                                  classes[inx],
+                                                                  formatter);
+                                        if (value != null)
                                         {
-                                            doc.add(Field.UnStored("contents", valStr));
-                                            if (secondaryKeys[i] != null)
-                                            {
-                                                doc.add(Field.UnStored(secondaryKeys[i], valStr));
-                                                //System.out.println("indexing["+secondaryKeys[i]+"]["+valStr+"]");
-                                            }
+                                            cnt++;
+                                            termsIndexed++;
+                                            strBuf.append(value);
+                                            strBuf.append('\t');
+
+                                        } else
+                                        {
+                                            strBuf.append(" \t");
                                         }
-                                        strBuf.append(valStr);
-                                        strBuf.append('\t');
 
                                         if (isCancelled)
                                         {
+                                            dbStatement.close();
+                                            dbConnection.close();
                                             return 0;
                                         }
                                     } else
@@ -424,28 +532,23 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                         {
                             for (int i=1;i<fields.length;i++)
                             {
-                                Object valObj = rs.getObject(fields[i]);
+                                int inx = fields[i];
+                                Object valObj = rs.getObject(inx);
                                 if (valObj != null)
                                 {
-                                    String valStr =  valObj.toString();
-                                    if (valStr.length() > 0)
+                                    if (indexValue(doc, rs, inx, rsmd.getColumnName(inx), secondaryKeys[i],
+                                               classes[inx], formatter) != null)
                                     {
-                                        termsIndexed++;
                                         cnt++;
-                                        doc.add(Field.UnStored("contents", valStr));
-                                        if (secondaryKeys[i] != null)
-                                        {
-                                            doc.add(Field.UnStored(secondaryKeys[i], valStr));
-                                            System.out.println("indexing["+secondaryKeys[i]+"]["+valStr+"]");
-                                        }
+                                        termsIndexed++;
+                                    }
 
-                                        if (isCancelled)
-                                        {
-                                            dbStatement.close();
-                                            dbConnection.close();
-                                            return 0;
-                                        }
-                                   }
+                                    if (isCancelled)
+                                    {
+                                        dbStatement.close();
+                                        dbConnection.close();
+                                        return 0;
+                                    }
                                 }
                             }
                         }
