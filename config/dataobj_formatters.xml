@@ -1,35 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <formatters xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    
-    <format 
+
+    <format
         name="Agent"
         class="edu.ku.brc.specify.datamodel.Agent"
-        format="%s, %s"
         >
         <fields>
             <field>lastName</field>
-            <field>firstName</field>
+            <field sep=", " >firstName</field>
+            <field>name</field>
         </fields>
     </format>
-    
-    <format 
+
+    <format
         name="CollectionObject"
         class="edu.ku.brc.specify.datamodel.CollectionObject"
-        format="%.0f"
         >
         <fields>
-            <field type="float">catalogNumber</field>
+            <field format="%.0f" type="float">catalogNumber</field>
         </fields>
     </format>
-    
-    <format 
+
+    <format
         name="Permit"
         class="edu.ku.brc.specify.datamodel.Permit"
-        format="%s"
         >
         <fields>
             <field>permitNumber</field>
         </fields>
     </format>
-    
+
 </formatters>

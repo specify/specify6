@@ -70,6 +70,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import org.apache.commons.jexl.ExpressionFactory;
+import org.apache.commons.jexl.JexlContext;
+import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -835,12 +838,16 @@ public class FormEditor
                 //formEditor.initialize();
                 try
                 {
-                    String dataStr = "1890-01-03";
-                    Calendar cal = Calendar.getInstance();
-
-                    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-                    Date date = formatter.parse(dataStr);
-                    System.out.println(date);
+                    Agent agent = new Agent();
+                    agent.setAgentType((byte)0);
+                    agent.setFirstName("Joe");
+                    agent.setLastName("Cool");
+                    agent.setName("Org Name");
+                    JexlContext    jc  = JexlHelper.createContext();
+                    jc.getVars().put("obj", agent);
+                    org.apache.commons.jexl.Expression expression = ExpressionFactory.createExpression( "if (obj.getAgentType() == 0)  obj.getLastName() else agent.getName()" );
+                    Object result = expression.evaluate(jc);
+                    System.out.println(result);
 
                 } catch (Exception ex)
                 {

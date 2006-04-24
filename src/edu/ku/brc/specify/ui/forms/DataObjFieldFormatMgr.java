@@ -40,9 +40,11 @@ public class DataObjFieldFormatMgr
     protected static DataObjFieldFormatMgr  instance = new DataObjFieldFormatMgr();
 
 
-    protected Hashtable<String, DataFieldFormat> hash = new Hashtable<String, DataFieldFormat>();
-    protected Object[]                           args = new Object[2]; // start with two slots
+    protected Hashtable<String, DataFieldFormat> hash     = new Hashtable<String, DataFieldFormat>();
+    protected Object[]                           args     = new Object[2]; // start with two slots
     protected Hashtable<String, Class>           typeHash = new Hashtable<String, Class>();
+
+    protected StringBuilder                      strBuf   = new StringBuilder();
     /**
      * Protected Constructor
      */
@@ -55,7 +57,7 @@ public class DataObjFieldFormatMgr
             i++;
         }
         load();
-        
+
     }
 
     /**
@@ -79,27 +81,28 @@ public class DataObjFieldFormatMgr
                     String className = formatElement.attributeValue("class");
                     String format    = formatElement.attributeValue("format");
 
-                    List fields = formatElement.selectNodes("fields/field");
-                    String[] fieldNames = new String[fields.size()];
-                    Class[]  dataTypes  = new Class[fields.size()];
+                    List fieldsElements = formatElement.selectNodes("fields/field");
+                    DataField[] fields = new DataField[fieldsElements.size()];
                     int inx = 0;
-                    for (Object fieldObj : fields)
+                    for (Object fieldObj : fieldsElements)
                     {
                         Element fieldElement = (Element)fieldObj;
+                        String  fieldName    = fieldElement.getTextTrim();
                         String  dataTypeStr  = XMLHelper.getAttr(fieldElement, "type", "string");
+                        String  formatStr    = XMLHelper.getAttr(fieldElement, "format", null);
+                        String  sepStr       = XMLHelper.getAttr(fieldElement, "sep", null);
                         Class   classObj     = typeHash.get(dataTypeStr);
                         if (classObj == null)
                         {
                             log.error("Couldn't map standard type["+dataTypeStr+"]");
                         }
-                        fieldNames[inx] = fieldElement.getTextTrim();
-                        dataTypes[inx] = classObj;
+                        fields[inx] = new DataField(fieldName, classObj, formatStr, sepStr);
                         inx++;
                     }
 
                     if (hash.get(name) == null)
                     {
-                        hash.put(name, new DataFieldFormat(name, className, format, fieldNames, dataTypes));
+                        hash.put(name, new DataFieldFormat(name, className, format, fields));
 
                     } else
                     {
@@ -132,51 +135,38 @@ public class DataObjFieldFormatMgr
             DataObjectGettable getter = DataObjectGettableFactory.get(format.getClassName(), "edu.ku.brc.specify.ui.forms.DataGetterForObj");
             if (getter != null)
             {
-                String[] fieldsNames = format.getFieldNames();
-                Class[]  dataTypes   = format.getDataTypes();
-                if (fieldsNames.length > args.length)
+                strBuf.setLength(0);
+                for (DataField field : format.getFields())
                 {
-                    args = new Object[fieldsNames.length];
-                }
-                int nullCount = 0;
-                int inx = 0;
-                for (String fieldName : fieldsNames)
-                {
-                    Object value = getter.getFieldValue(dataObj, fieldName);
-                    if (value != null && value.getClass() != dataTypes[inx])
+                    Object value = getter.getFieldValue(dataObj, field.getName());
+                    if (value != null)
                     {
-                        log.error("Mismatch of types data retrieved as class["+value.getClass().getSimpleName()+"] and the format requires ["+dataTypes[inx].getSimpleName()+"]");
-                    }
-                    if (value == null)
-                    {
-                        try
+                        if (value.getClass() == field.getType())
                         {
-                            value = dataTypes[inx].newInstance();
-                            nullCount++;
-                        } catch (Exception ex)
+                            // When format is null then it is a string
+                            if (field.getType() == String.class &&
+                                (field.getFormat() == null || format.equals("%s")))
+                            {
+                                if (field.getSep() != null)
+                                {
+                                    strBuf.append(field.getSep());
+                                }
+                                strBuf.append(value.toString());
+                            } else
+                            {
+                                args[0] = value;
+                                Formatter formatter = new Formatter();
+                                formatter.format(format.getFormat(), args);
+                                strBuf.append(formatter.toString());
+                                args[0] = null;
+                            }
+                        } else
                         {
-                            value = "";
+                            log.error("Mismatch of types data retrieved as class["+value.getClass().getSimpleName()+"] and the format requires ["+field.getType().getSimpleName()+"]");
                         }
                     }
-                    args[inx++] = value;
                 }
-                String retVal;
-                if (nullCount != fieldsNames.length)
-                {
-                    Formatter formatter = new Formatter();
-                    formatter.format(format.getFormat(), args);
-                    retVal = formatter.toString();
-                } else
-                {
-                    retVal = "";
-                }
-
-                // clear any references to data
-                for (int i=0;i<fieldsNames.length;i++)
-                {
-                    args[i] = null;
-                }
-                return retVal;
+                return strBuf.toString();
             }
         }
         return "";
@@ -203,17 +193,15 @@ public class DataObjFieldFormatMgr
         protected String   name;
         protected String   className;
         protected String   format;
-        protected String[] fieldNames;
-        protected Class[] dataTypes;
+        protected DataField[] fields;
         protected Class    classObj;
 
-        public DataFieldFormat(String name, String className, String format, String[] fieldNames, Class[] dataTypes)
+        public DataFieldFormat(String name, String className, String format, DataField[] fields)
         {
             this.name       = name;
             this.className  = className;
             this.format     = format;
-            this.fieldNames = fieldNames;
-            this.dataTypes  = dataTypes;
+            this.fields     = fields;
 
             try
             {
@@ -230,9 +218,9 @@ public class DataObjFieldFormatMgr
             return className;
         }
 
-        public String[] getFieldNames()
+        public DataField[] getFields()
         {
-            return fieldNames;
+            return fields;
         }
 
         public String getFormat()
@@ -249,12 +237,41 @@ public class DataObjFieldFormatMgr
         {
             return classObj;
         }
+    }
 
-        public Class[] getDataTypes()
+    protected class DataField
+    {
+        protected String name;
+        protected Class  type;
+        protected String format;
+        protected String sep;
+        public DataField(String name, Class type, String format, String sep)
         {
-            return dataTypes;
+            super();
+            // TODO Auto-generated constructor stub
+            this.name = name;
+            this.type = type;
+            this.format = format;
+            this.sep = sep;
+        }
+        public String getFormat()
+        {
+            return format;
+        }
+        public String getName()
+        {
+            return name;
+        }
+        public String getSep()
+        {
+            return sep;
+        }
+        public Class getType()
+        {
+            return type;
         }
 
     }
+
 
 }

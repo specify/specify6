@@ -944,7 +944,7 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
 
                 boolean isTextFieldPerMode = cellField.isTextField(altView.getMode());
                 
-               boolean useFormatName = isTextFieldPerMode && isNotEmpty(formatName);
+                boolean useFormatName = isTextFieldPerMode && isNotEmpty(formatName);
                 //System.out.println("["+cellField.getName()+"] "+useFormatName+"  "+comp.getClass().getSimpleName());
 
                 if (useFormatName)

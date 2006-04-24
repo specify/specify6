@@ -51,7 +51,7 @@ public class FormCellField extends FormCell
 
     protected boolean  isTextField    = false;
     protected boolean  isDSPTextField = false;
-    
+
     protected Hashtable<String, String> properties = null;
 
     /**
@@ -112,18 +112,18 @@ public class FormCellField extends FormCell
         this.validationType = validationType;
         this.isRequired     = isRequired;
         this.isEncrypted    = isEncrypted;
-        
-        // must use setters  because they set booleans as 
+
+        // must use setters  because they set booleans as
         // to whether they are text controls
         setUiType(uiType);
         setDspUIType(dspUIType);
     }
-    
+
     public void setProperties(final Hashtable<String, String> properties)
     {
         this.properties = properties;
     }
-    
+
     public void addProperty(final String name, final String value)
     {
         if (properties == null)
@@ -132,7 +132,7 @@ public class FormCellField extends FormCell
         }
         properties.put(name, value);
     }
-    
+
     public String getProperty(final String name)
     {
         if (properties != null)
@@ -160,9 +160,9 @@ public class FormCellField extends FormCell
     public void setDspUIType(String dspUIType)
     {
         this.dspUIType = dspUIType;
-        
-        this.isDSPTextField = isEmpty(dspUIType) || 
-            dspUIType.equals("dsptextfield") || 
+
+        this.isDSPTextField = isEmpty(dspUIType) ||
+            dspUIType.equals("dsptextfield") ||
             dspUIType.equals("dsptextarea");
 
     }
@@ -219,7 +219,7 @@ public class FormCellField extends FormCell
 
     public boolean isTextField(AltView.CreationMode mode)
     {
-        // A mode of "None" default to "Edit" 
+        // A mode of "None" default to "Edit"
         return mode == AltView.CreationMode.View ? isDSPTextField : isTextField;
     }
 
@@ -276,10 +276,10 @@ public class FormCellField extends FormCell
     public void setUiType(String uiType)
     {
         this.uiType = uiType;
-        
-        this.isTextField = isEmpty(uiType) || 
-            uiType.equals("text") || 
-            uiType.equals("formattedtext") || 
+
+        this.isTextField = isEmpty(uiType) ||
+            uiType.equals("text") ||
+            uiType.equals("formattedtext") ||
             uiType.equals("textarea");
     }
 
