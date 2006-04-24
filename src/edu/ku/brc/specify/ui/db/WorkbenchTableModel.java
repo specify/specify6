@@ -1,5 +1,5 @@
 package edu.ku.brc.specify.ui.db;
-import javax.swing.table.*;
+import javax.swing.table.AbstractTableModel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

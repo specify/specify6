@@ -302,8 +302,6 @@ public class ViewFactory
     protected JTextField createFormattedTextField(final FormValidator validator,
                                                   final FormCellField cellField)
     {
-        String validationRule = cellField.getValidationRule();
-
         log.info(cellField.getName()+"  "+cellField.getUIFieldFormatter());
         ValFormattedTextField textField;// = new ValFormattedTextField(cellField.getUIFieldFormatter());
 
@@ -315,8 +313,6 @@ public class ViewFactory
 
             textField = new ValFormattedTextField(cellField.getUIFieldFormatter());
             textField.setRequired(cellField.isRequired());
-
-            //validator.hookupComponent(textField, cellField.getName(), cellField.isRequired(), UIValidator.Type.Changed, null, false);
 
             validator.hookupTextField((JTextField)textField,
                                       cellField.getName(),
@@ -446,8 +442,8 @@ public class ViewFactory
             initArray[i] = initArray[i].trim();
         }
 
-        String pickListName = cellField.getPickListName();
-        ValComboBox cbx = null;
+        String      pickListName = cellField.getPickListName();
+        ValComboBox cbx          = null;
         if (isNotEmpty(pickListName))
         {
             cbx = new ValComboBox(new PickListDBAdapter(pickListName, false)); // false means don't auto-create picklist

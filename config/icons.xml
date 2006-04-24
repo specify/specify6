@@ -60,8 +60,9 @@
     <icon name="ViewForm" file="viewform16.gif" sizes="16"/>
     <icon name="ViewForm" file="viewform.gif" sizes="32"/>
 
-
-
+    <icon name="BGImage"  file="splash.jpg" sizes="NonStd"/>
+    <!-- <icon name="BGImage"  file="frogs_bg.gif" sizes="NonStd"/> -->
+    
     <icon name="Green Arrow Down" file="green_arrow_down.gif" sizes="16"/>
     <icon name="Green Arrow Up" file="green_arrow_up.gif" sizes="16"/>
 

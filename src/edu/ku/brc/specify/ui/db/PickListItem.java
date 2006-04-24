@@ -1,6 +1,6 @@
  package edu.ku.brc.specify.ui.db;
 
-import java.util.*;
+import java.util.Date;
 
 
 /**

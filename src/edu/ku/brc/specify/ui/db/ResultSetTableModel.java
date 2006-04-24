@@ -137,6 +137,7 @@ public class ResultSetTableModel extends AbstractTableModel
      * @param column the column in question
      * @return the Class of the column
      */
+    @SuppressWarnings("unchecked")
     public Class getColumnClass(int column)
     {
         return classNames.size() == 0 ? (Class)String.class : (Class)classNames.elementAt(column);

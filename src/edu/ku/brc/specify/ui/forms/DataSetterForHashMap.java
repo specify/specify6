@@ -44,6 +44,7 @@ public class DataSetterForHashMap implements DataObjectSettable
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.DataObjectSettable#setFieldValue(java.lang.Object, java.lang.String, java.lang.Object)
      */
+    @SuppressWarnings("unchecked")
     public void setFieldValue(Object dataObj, String fieldName, Object data)
     {
         if (dataObj != null)

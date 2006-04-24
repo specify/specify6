@@ -20,10 +20,11 @@
 
 package edu.ku.brc.specify.ui.validation;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.util.Vector;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
@@ -62,6 +63,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     protected boolean isInError  = false;
     protected boolean isRequired = false;
     protected boolean isChanged  = false;
+    protected boolean isNew      = false;
 
     protected JAutoCompComboBox comboBox;
 
@@ -145,7 +147,21 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         }
         UICacheManager.getAppPrefs().node("ui/formatting").addPreferenceChangeListener(this);
 
-
+        FocusAdapter focusAdapter = new FocusAdapter() {
+            public void focusLost(FocusEvent e)
+            {
+                //isInError = isRequired && comboBox.getSelectedIndex() == -1;
+                isNew = false;
+                repaint();
+            }
+        };
+        if (comboBox.getTextField() != null)
+        {
+            comboBox.getTextField().addFocusListener(focusAdapter);
+        } else
+        {
+            comboBox.addFocusListener(focusAdapter);
+        }
     }
 
     /**
@@ -174,7 +190,8 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     {
         super.paint(g);
 
-        if (isInError() && isEnabled())
+        System.err.println(this.getLocation().x+","+this.getLocation().y+" "+comboBox.getSelectedIndex()+" ["+isNew+"]["+isInError()+"]["+isEnabled()+"]");
+        if (!isNew && isInError() && isEnabled())
         {
             Dimension dim = getSize();
             g.setColor(valtextcolor.getColor());
@@ -236,6 +253,20 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     public void setChanged(boolean isChanged)
     {
         this.isChanged = isChanged;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.validation.UIValidatable#setAsNew(boolean)
+     */
+    public void setAsNew(boolean isNew)
+    {
+        if (isRequired)
+        {
+            this.isNew = isNew;
+        } else
+        {
+            this.isNew = false; // this shouldn't need to be done, but doing it just to be sure
+        }
     }
 
     //--------------------------------------------------------
@@ -317,6 +348,9 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
                     }
                 }
             }
+        } else
+        {
+            isInError = isRequired && comboBox.getSelectedIndex() == -1;
         }
 
         if (!fnd)

@@ -21,8 +21,11 @@
 package edu.ku.brc.specify.tasks.subpane;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Graphics;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -33,6 +36,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.core.Taskable;
+import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 
 /**
@@ -81,6 +85,23 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
 
         add(builder2.getPanel(), BorderLayout.CENTER);
 
+    }
+    
+
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#paintChildren(java.awt.Graphics)
+     */
+    public void paintChildren(Graphics g)
+    {
+        
+        ImageIcon imgIcon = IconManager.getImage("BGImage");
+        if (imgIcon != null)
+        {
+            Dimension size = getSize();
+            g.drawImage(imgIcon.getImage(), (size.width - imgIcon.getIconWidth())/2, (size.height - imgIcon.getIconHeight())/2, imgIcon.getIconWidth(), imgIcon.getIconHeight(), null);
+        }
+        super.paintChildren(g);
+        
     }
 
     //----------------------------------

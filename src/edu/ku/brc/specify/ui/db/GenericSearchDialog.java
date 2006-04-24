@@ -21,7 +21,6 @@
 package edu.ku.brc.specify.ui.db;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

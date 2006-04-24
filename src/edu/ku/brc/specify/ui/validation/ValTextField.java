@@ -23,6 +23,8 @@ package edu.ku.brc.specify.ui.validation;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
@@ -53,6 +55,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     protected boolean isInError  = false;
     protected boolean isRequired = false;
     protected boolean isChanged  = false;
+    protected boolean isNew      = false;
     protected Color   bgColor    = null;
     
     protected static ColorWrapper valtextcolor       = null;
@@ -126,6 +129,14 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
             requiredfieldcolor = PrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
         UICacheManager.getAppPrefs().node("ui/formatting").addPreferenceChangeListener(this);
+        
+        addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e)
+            {
+                isNew = false;
+                repaint();
+            }
+        });
     }
     
     /**
@@ -144,7 +155,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     {
         super.paint(g);
         
-        if (isInError() && isEnabled())
+        if (!isNew && isInError() && isEnabled())
         {
             Dimension dim = getSize();
             g.setColor(valtextcolor.getColor());
@@ -228,6 +239,20 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
         this.isChanged = isChanged;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.validation.UIValidatable#setAsNew(boolean)
+     */
+    public void setAsNew(boolean isNew)
+    {
+        if (isRequired)
+        {
+            this.isNew = isNew;
+        } else
+        {
+            this.isNew = false; // this shouldn't need to be done, but doing it just to be sure
+        }
+    }
+   
     //--------------------------------------------------------
     // GetSetValueIFace
     //--------------------------------------------------------

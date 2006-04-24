@@ -21,6 +21,7 @@
 package edu.ku.brc.specify.tasks.subpane;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -47,6 +48,8 @@ public class SimpleDescPane extends BaseSubPane
                           final String desc)
     {
         super(name, task);
+        
+        setBackground(Color.WHITE);
         
         JLabel label = new JLabel(desc, SwingConstants.CENTER);
         add(label, BorderLayout.CENTER);

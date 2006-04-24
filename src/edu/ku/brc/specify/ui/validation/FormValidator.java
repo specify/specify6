@@ -145,8 +145,22 @@ public class FormValidator implements ValidationListener, DataChangeListener
         formRules.add(rule);
     }
 
+
+
     /**
-     * Evaludate all the enable/disable rules and set the control and label
+     * Tells all the validators that are required not to validate
+     */
+    public void setAllUIValidatorsToNew(boolean isNew)
+    {         
+        for (UIValidator uiv : validators)
+        {
+            uiv.setAsNew(isNew);
+        }   
+    }
+
+
+    /**
+     * Evaluate all the enable/disable rules and set the control and label
      */
     public boolean processFormRules()
     {
@@ -267,7 +281,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
                                               final UIValidator.Type valType,
                                               final String           valStr,
                                               final boolean          changeListenerOnly)
-        {
+    {
 
         fields.put(name, comp);
 
@@ -363,6 +377,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      * @param name the name of the component
      * @param comp the component
      */
+    @SuppressWarnings("unchecked")
     public void addRuleObjectMapping(final String name, final Object comp)
     {
         if (isNotEmpty(name) && comp != null)

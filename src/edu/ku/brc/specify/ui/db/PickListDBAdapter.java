@@ -27,7 +27,6 @@ import java.util.Vector;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
@@ -145,6 +144,7 @@ public class PickListDBAdapter
      * @param value although currently no supported we may want to display one text string but save a different one
      * @return returns the new PickListItem
      */
+    @SuppressWarnings("unchecked")
     public PickListItem addItem(final String title, final String value)
     {
         // this should never happen!

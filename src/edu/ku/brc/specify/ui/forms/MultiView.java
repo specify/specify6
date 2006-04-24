@@ -161,6 +161,24 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         }
         showDisplayFrames(show);
     }
+    
+    /**
+     * Tells all the Viewables that have validators that the form is new or old.
+     * NOTE New Forms means that it is an empty form and that the controls should 
+     * not show validation errors until they have had focus if they are a validator that changes on input
+     * and not by the OK button or by focus.
+     */
+    public void setIsNewForm(final boolean isNewForm)
+    {
+        for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
+        {
+            Viewable viewable = e.nextElement();
+            if (viewable.getValidator() != null)
+            {
+                viewable.getValidator().setAllUIValidatorsToNew(isNewForm);
+            }
+        }
+    }
 
     /**
      * Creates the Default Viewable for this view (it chooses the "default" ViewDef

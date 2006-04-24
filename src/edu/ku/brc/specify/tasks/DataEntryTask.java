@@ -116,15 +116,17 @@ public class DataEntryTask extends BaseTask
      * @param viewName the view's name 
      * @param mode the creation mode (View, Edit)
      * @param data the data to fill in 
+     * @param isNewForm indicates that it is a "new" form for entering in new data
      */
     public static void openView(final Taskable task, 
                                 final String   viewSetName, 
                                 final String   viewName, 
                                 final String   mode, 
-                                final Object   data)
+                                final Object   data,
+                                final boolean isNewForm)
     {
         View view = ViewMgr.getView(viewSetName, viewName);
-        FormPane formPane = new FormPane(view.getName(), task, viewSetName, viewName, mode, data);
+        FormPane formPane = new FormPane(view.getName(), task, viewSetName, viewName, mode, data, isNewForm);
         UICacheManager.getSubPaneMgr().addPane(formPane);
     }
 
@@ -143,7 +145,7 @@ public class DataEntryTask extends BaseTask
             List data = query.list();
             if (data != null && data.size() > 0)
             {
-                FormPane formPane = new FormPane(view.getName(), task, view.getViewSetName(), view.getName(), mode, data.get(0));
+                FormPane formPane = new FormPane(view.getName(), task, view.getViewSetName(), view.getName(), mode, data.get(0), false);
                 UICacheManager.getSubPaneMgr().addPane(formPane);
 
             } else
@@ -190,7 +192,7 @@ public class DataEntryTask extends BaseTask
         System.out.println("ResultSet: "+list.size());
 
         // XXX Hard Coded ViewSet Name
-        return new FormPane(name, task, "Main Views", defaultFormName, null, query.list());
+        return new FormPane(name, task, "Main Views", defaultFormName, null, query.list(), false);
 
     }
 

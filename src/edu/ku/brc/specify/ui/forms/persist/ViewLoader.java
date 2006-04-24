@@ -173,7 +173,6 @@ public class ViewLoader
         ViewDef.ViewType type;
         try
         {
-            String t = element.attributeValue(TYPE);
             type = ViewDef.ViewType.valueOf(element.attributeValue(TYPE));
 
         } catch (Exception ex)

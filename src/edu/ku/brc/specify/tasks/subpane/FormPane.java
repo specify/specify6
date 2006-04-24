@@ -55,13 +55,15 @@ public class FormPane extends DroppableTaskPane
      * @param viewSetName the name of the view set to use
      * @param viewName the ID of the form to be created from within the ViewSet
      * @param data the data to fill the form
+     * @param isNewForm indicates that it is a "new" form for entering in new data
      */
     public FormPane(final String   name,
                     final Taskable task,
                     final String   viewSetName,
                     final String   viewName,
                     final String   mode,
-                    final Object   data)
+                    final Object   data,
+                    final boolean  isNewForm)
     {
         this(name, task, null);
 
@@ -70,7 +72,7 @@ public class FormPane extends DroppableTaskPane
         this.data        = data;
         
         AltView.CreationMode modeType = mode == null || !mode.equalsIgnoreCase("edit") ? AltView.CreationMode.View : AltView.CreationMode.Edit;
-        createForm(viewSetName, viewName, modeType, data);
+        createForm(viewSetName, viewName, modeType, data, isNewForm);
     }
 
     /**
@@ -109,7 +111,7 @@ public class FormPane extends DroppableTaskPane
             if (data != null && data instanceof DroppableFormObject)
             {
                 DroppableFormObject dfo = (DroppableFormObject)data;
-                createForm(dfo.getViewSetName(), DBTableIdMgr.lookupDefaultFormNameById(dfo.getFormId()), AltView.CreationMode.View, dfo.getData());
+                createForm(dfo.getViewSetName(), DBTableIdMgr.lookupDefaultFormNameById(dfo.getFormId()), AltView.CreationMode.View, dfo.getData(), false);
              }
         }
     }
@@ -120,11 +122,13 @@ public class FormPane extends DroppableTaskPane
      * @param viewName the ID of the form to be created from within the ViewSet
      * @param mode the creation mode
      * @param data the data to fill the form
+     * @param isNewForm indicates that it is a "new" form for entering in new data
      */
-    public void createForm(final String viewSetName,
-                           final String viewName,
+    public void createForm(final String  viewSetName,
+                           final String  viewName,
                            final AltView.CreationMode mode,
-                           final Object data)
+                           final Object  data,
+                           final boolean isNewForm)
     {
         View view = ViewMgr.getView(viewSetName, viewName);
         if (view != null)
@@ -148,6 +152,13 @@ public class FormPane extends DroppableTaskPane
                     multiView.setData(data);
                 }
 
+                // Tells it is is a new form and all the validator painting should be supressed 
+                // on required fields until the user inputs something
+                if (isNewForm)
+                {
+                    multiView.setIsNewForm(true);
+                }
+                
                 if (multiView.getCurrentView().getValidator() != null)
                 {
                     multiView.getCurrentView().getValidator().validateForm();

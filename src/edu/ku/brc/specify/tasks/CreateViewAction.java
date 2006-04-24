@@ -52,6 +52,6 @@ public class CreateViewAction implements ActionListener
     public void actionPerformed(ActionEvent e)
     {
         
-        DataEntryTask.openView(task, viewSetName, viewName, mode, UIHelper.createAndNewDataObj(newDataObjClass));
+        DataEntryTask.openView(task, viewSetName, viewName, mode, UIHelper.createAndNewDataObj(newDataObjClass), true);
     }
 }

@@ -29,8 +29,8 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
@@ -88,6 +88,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
     protected boolean            isInError  = false;
     protected boolean            isRequired = false;
     protected boolean            isChanged  = false;
+    protected boolean            isNew      = false;
     protected Color              bgColor    = null;
 
     protected JComboBoxFromQuery comboBox;
@@ -234,15 +235,14 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
         UICacheManager.getAppPrefs().node("ui/formatting").addPreferenceChangeListener(this);
 
 
-        comboBox.getTextField().addFocusListener(new FocusListener()
+        comboBox.getTextField().addFocusListener(new FocusAdapter()
                 {
-                    public void focusGained(FocusEvent e) {}
                     public void focusLost(FocusEvent e)
                     {
+                        isNew = false;
                         isInError = comboBox.getSelectedIndex() == -1;
                         repaint();
                     }
-
                 });
 
         searchBtn.addActionListener(new ActionListener()
@@ -296,7 +296,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
     {
         super.paint(g);
 
-        if (isInError() && comboBox.isEnabled())
+        if (!isNew && isInError() && comboBox.isEnabled())
         {
             Dimension dim = getSize();
             g.setColor(valtextcolor.getColor());
@@ -357,6 +357,20 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
     public void setChanged(boolean isChanged)
     {
         this.isChanged = isChanged;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.validation.UIValidatable#setAsNew(boolean)
+     */
+    public void setAsNew(boolean isNew)
+    {
+        if (isRequired)
+        {
+            this.isNew = isNew;
+        } else
+        {
+            this.isNew = false; // this shouldn't need to be done, but doing it just to be sure
+        }
     }
 
     //--------------------------------------------------------

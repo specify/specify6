@@ -25,7 +25,6 @@ import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.HeadlessException;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
@@ -33,7 +32,6 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -45,7 +43,6 @@ import com.jgoodies.forms.builder.ButtonBarBuilder;
 import edu.ku.brc.specify.core.NavBoxLayoutManager;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.forms.MultiView;
-import edu.ku.brc.specify.ui.forms.ViewFactory;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
 import edu.ku.brc.specify.ui.forms.Viewable;
 import edu.ku.brc.specify.ui.forms.persist.AltView;

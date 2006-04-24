@@ -208,18 +208,23 @@ public class StatsPane extends BaseSubPane
                 y += 2;
             }
 
+            setBackground(bgColor);
+            
             JPanel statPanel = builder.getPanel();
-            statPanel.setBackground(bgColor);
-
+            //statPanel.setBackground(bgColor);
+            statPanel.setOpaque(false);
+            
             builder    = new PanelBuilder(new FormLayout("C:P:G", "p"));
             builder.add(statPanel, cc.xy(1,1));
+            JPanel centerPanel = builder.getPanel();
 
-            builder.getPanel().setBackground(Color.WHITE);
-            builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+            //centerPanel.setBackground(Color.WHITE);
+            centerPanel.setOpaque(false);
+            centerPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-            add(builder.getPanel(), BorderLayout.CENTER);
+            add(centerPanel, BorderLayout.CENTER);
 
-            builder.getPanel().invalidate();
+            centerPanel.invalidate();
             doLayout();
 
         } catch (Exception ex)

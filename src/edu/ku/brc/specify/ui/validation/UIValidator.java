@@ -99,7 +99,7 @@ public class UIValidator implements FocusListener, KeyListener, PropertyChangeLi
 
             } catch (Exception e)
             {
-                log.info("Exp["+expression+"]");
+                log.debug("Exp["+expression+"]");
                 // XXX FIXME
                 e.printStackTrace();
             }
@@ -109,6 +109,19 @@ public class UIValidator implements FocusListener, KeyListener, PropertyChangeLi
         }
 
     }
+    
+    /**
+     * Tells the UI Control that the form is "new" and to not show validation errors until it has focus.
+     * @param isNew true if it is a new form, false if not
+     */
+    public void setAsNew(boolean isNew)
+    {
+        System.out.println(">>>>" + (type != Type.OK ? "NOT OK" : "OK")+"  "+this.comp);
+        if (uiv != null && type != Type.OK)
+        {
+            uiv.setAsNew(isNew);
+        }
+    }
 
     /**
      * Parse string for Type and return None if there is a parse error
@@ -117,10 +130,17 @@ public class UIValidator implements FocusListener, KeyListener, PropertyChangeLi
      */
     public static Type parseValidationType(final String type)
     {
-        try
+        if (isNotEmpty(type))
         {
-            return Type.valueOf(type);
-        } catch (Exception ex)
+            try
+            {
+                return Type.valueOf(type);
+                
+            } catch (Exception ex)
+            {
+                return Type.OK;
+            }
+        } else
         {
             return Type.OK;
         }

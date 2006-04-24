@@ -31,7 +31,6 @@ import java.awt.event.FocusEvent;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
@@ -71,6 +70,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     protected boolean  isInError  = false;
     protected boolean  isRequired = false;
     protected boolean  isChanged  = false;
+    protected boolean  isNew      = false;
     protected Color    bgColor    = null;
 
     protected int      inputLen   = 0;
@@ -127,6 +127,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
 
                     public void focusLost(FocusEvent e)
                     {
+                        isNew = false;
                         JTextField tf = (JTextField)e.getSource();
                         String data = tf.getText();
 
@@ -183,7 +184,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         }
 
 
-        if (isInError() && isEnabled())
+        if (!isNew && isInError() && isEnabled())
         {
             Dimension dim = getSize();
             g.setColor(valtextcolor.getColor());
@@ -274,6 +275,20 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     public void setChanged(boolean isChanged)
     {
         this.isChanged = isChanged;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.validation.UIValidatable#setAsNew(boolean)
+     */
+    public void setAsNew(boolean isNew)
+    {
+        if (isRequired)
+        {
+            this.isNew = isNew;
+        } else
+        {
+            this.isNew = false; // this shouldn't need to be done, but doing it just to be sure
+        }
     }
 
     //--------------------------------------------------------

@@ -315,25 +315,25 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="number" label="Number"/>
-                    <cell type="field" name="number" isrequired="true" uitype="formattedtext" uifieldformatter="AccessionNumber"/>
+                    <cell type="field" name="number" isrequired="true" uitype="formattedtext" uifieldformatter="AccessionNumber" valtype="Focus"/>
 
                     <cell type="label" labelfor="status" label="Status"/>
-                    <cell type="field" name="status"  uitype="combobox" picklist="AccessionStatus" isrequired="true"/>
+                    <cell type="field" name="status"  uitype="combobox" picklist="AccessionStatus" isrequired="true" valtype="Focus"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="type" label="Type"/>
-                    <cell type="field" name="type" uitype="combobox" picklist="AccessionType" isrequired="true"/>
+                    <cell type="field" name="type" uitype="combobox" picklist="AccessionType" isrequired="true" valtype="Focus"/>
 
                     <cell type="label" labelfor="text1" label="Division"/>
-                    <cell type="field" name="text1" uitype="combobox" initialize="Botany,Entomology,Herpetology,Ichthyology,Invertebrate Paleo,Invertebrate Zoology,Mammalogy,Ornithology,Paleobotany,Vertebrate Paleo" isrequired="true"/>
+                    <cell type="field" name="text1" uitype="combobox" initialize="Botany,Entomology,Herpetology,Ichthyology,Invertebrate Paleo,Invertebrate Zoology,Mammalogy,Ornithology,Paleobotany,Vertebrate Paleo" isrequired="true" valtype="Focus"/>
 
                 </row>
                 <row>
                     <cell type="label" labelfor="dateAccessioned" label="Accessioned"/>
-                    <cell type="field" name="dateAccessioned" isrequired="true" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="field" name="dateAccessioned" isrequired="true" uitype="formattedtext" uifieldformatter="Date" valtype="Focus"/>
 
                     <cell type="label" labelfor="dateReceived" label="Received"/>
-                    <cell type="field" name="dateReceived" isrequired="true" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="field" name="dateReceived" isrequired="true" uitype="formattedtext" uifieldformatter="Date" valtype="Focus"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="text2" label="Description"/>
@@ -380,10 +380,10 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="agent" label="Agent"/>
-                    <cell type="field" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent" formatname="Agent" isrequired="true"/>
+                    <cell type="field" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent" formatname="Agent" isrequired="true" valtype="Focus"/>
 
                     <cell type="label" labelfor="role" label="Role"/>
-                    <cell type="field" name="role" uitype="combobox" picklist="AccessionRole" isrequired="true"/>
+                    <cell type="field" name="role" uitype="combobox" picklist="AccessionRole" isrequired="true" valtype="Focus"/>
                 </row>
 
                 <row>
@@ -410,7 +410,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="title" label="Title"/>
-                    <cell type="field" name="title" uitype="combobox" picklistx="AgentTitle" initialize="Mr., Mrs., Ms., Dr."/>
+                    <cell type="field" name="title" uitype="combobox" picklistx="AgentTitle" initialize="Mr., Mrs., Ms., Dr." valtype="Focus"/>
                     <cell type="label" labelfor="jobTitle" label="Title"/>
                     <cell type="field" name="jobTitle" uitype="text" cols="20"/>
                 </row>

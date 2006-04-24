@@ -21,18 +21,15 @@ package edu.ku.brc.specify.ui.db;
 
 import static edu.ku.brc.specify.helpers.XMLHelper.getAttr;
 import static edu.ku.brc.specify.helpers.XMLHelper.readFileToDOM4J;
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.io.FileInputStream;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.specify.exceptions.ConfigurationException;
-import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.helpers.XMLHelper;
 /**
  * This factory knows how to create GenericSearchDialogs by name.

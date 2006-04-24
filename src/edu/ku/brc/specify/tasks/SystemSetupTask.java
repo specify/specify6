@@ -34,8 +34,6 @@ import java.util.Vector;
 
 import javax.swing.JMenuItem;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 
 import edu.ku.brc.specify.core.NavBox;
@@ -69,7 +67,7 @@ import edu.ku.brc.specify.ui.db.PickList;
 public class SystemSetupTask extends BaseTask
 {
     // Static Data Members
-    private static Log log  = LogFactory.getLog(SystemSetupTask.class);
+    //private static Log log  = LogFactory.getLog(SystemSetupTask.class);
 
     public static final String     SYSTEMSETUPTASK        = "SystemSetup";
     public static final DataFlavor SYSTEMSETUPTASK_FLAVOR = new DataFlavor(SystemSetupTask.class, SYSTEMSETUPTASK);

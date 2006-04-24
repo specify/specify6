@@ -23,6 +23,8 @@ package edu.ku.brc.specify.ui.validation;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
@@ -52,6 +54,7 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
     protected boolean isInError  = false;
     protected boolean isRequired = false;
     protected boolean isChanged  = false;
+    protected boolean isNew      = false;
     protected Color   bgColor    = null;
 
     protected static ColorWrapper valtextcolor       = null;
@@ -97,7 +100,14 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
             requiredfieldcolor = PrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
         UICacheManager.getAppPrefs().node("ui/formatting").addPreferenceChangeListener(this);
-
+        
+        addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e)
+            {
+                isNew = false;
+                repaint();
+            }
+        });
     }
 
     /* (non-Javadoc)
@@ -107,7 +117,7 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
     {
         super.paint(g);
 
-        if (isInError() && isEnabled())
+        if (!isNew && isInError() && isEnabled())
         {
             Dimension dim = getSize();
             g.setColor(valtextcolor.getColor());
@@ -178,6 +188,20 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
         isChanged = true;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.validation.UIValidatable#setAsNew(boolean)
+     */
+    public void setAsNew(boolean isNew)
+    {
+        if (isRequired)
+        {
+            this.isNew = isNew;
+        } else
+        {
+            this.isNew = false; // this shouldn't need to be done, but doing it just to be sure
+        }
+    }
+
     //--------------------------------------------------------
     // GetSetValueIFace
     //--------------------------------------------------------

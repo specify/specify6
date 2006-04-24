@@ -63,4 +63,11 @@ public interface UIValidatable
      * @param isChanged whether it has changed.
      */
     public void setChanged(boolean isChanged);
+    
+    /**
+     * Tells a control that it is new and not to validate until
+     * it has received focus
+     * @param isNew true it's new, false it is not
+     */
+    public void setAsNew(boolean isNew);
 }

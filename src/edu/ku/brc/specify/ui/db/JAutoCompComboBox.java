@@ -119,6 +119,15 @@ public class JAutoCompComboBox extends JComboBox
     }
     
     /**
+     * Returns the text field when it is editable
+     * @return the text field when it is editable
+     */
+    public JTextField getTextField()
+    {
+        return tf;
+    }
+    
+    /**
      * Sets whether new items can be added
      * @param enableAdditions indicates items can be added
      */

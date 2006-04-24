@@ -68,10 +68,9 @@ import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.ColorChooser;
 import edu.ku.brc.specify.ui.ColorWrapper;
+import edu.ku.brc.specify.ui.DropDownButtonStateful;
 import edu.ku.brc.specify.ui.GetSetValueIFace;
 import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.RolloverCommand;
-import edu.ku.brc.specify.ui.DropDownButtonStateful;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.db.JAutoCompComboBox;
 import edu.ku.brc.specify.ui.db.PickListItem;
@@ -99,6 +98,7 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
     protected static Object[]               formattedValues = new Object[2];
 
     protected boolean                       isEditting     = false;
+    protected boolean                       formIsInNewDataMode = false; // when this is true it means the form was cleared and new data is expected
     protected MultiView                     mvParent       = null;
     protected View                          view;
     protected AltView                       altView;
@@ -516,7 +516,7 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
     
     /**
      * Walks the MultiView hierarchy and has them transfer their data from the UI to the DB Object
-     * @param parentMV
+     * @param parentMV the parent MultiView
      */
     protected void traverseToGetDataFromForms(final MultiView parentMV)
     {
@@ -528,14 +528,30 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
     }
     
     /**
+     * Walks the MultiView hierarchy and ctells all the Viewables in each MultiView
+     * that the form is new
+     * @param parentMV the parent MultiView
+     * @param isNewForm wheather the form is now in "new data input" mode
+     */
+    protected void traverseToToSetAsNew(final MultiView parentMV, final boolean isNewForm)
+    {
+        parentMV.setIsNewForm(isNewForm);
+        for (MultiView mv : parentMV.getKids())
+        {
+            mv.setIsNewForm(isNewForm);
+        }
+    }
+    
+    /**
      * Creates a new Record and adds it to the List and dataSet if necessary
      */
+    @SuppressWarnings("unchecked")
     protected void createNewRecord()
     {
         try
         {
-            Class classObj = Class.forName(view.getClassName());
-            Object obj = classObj.newInstance();
+            Class  classObj = Class.forName(view.getClassName());
+            Object obj      = classObj.newInstance();
             dataObj = obj;
             if (list != null)
             {
@@ -544,7 +560,9 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
                 rsController.setIndex(list.size()-1);
                 UIHelper.initAndAddToParent(parentDataObj, obj);
             }
+            setAsNewForm(true);
             this.setDataIntoUI();
+
             
         } catch (ClassNotFoundException ex)
         {
@@ -574,20 +592,12 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
             
             traverseToGetDataFromForms(mvParent);
             
-            /*Accession a = (Accession)dataObj;
-            Set<AccessionAgent> set = a.getAccessionAgents();
-            for (Iterator<AccessionAgent> e=set.iterator();e.hasNext();)
-            {
-                AccessionAgent aa = e.next();
-                if (aa.getAccessionAgentsId() == null)
-                {
-                    HibernateUtil.getCurrentSession().saveOrUpdate(aa);
-                }
-            }*/
-            
-            
             HibernateUtil.getCurrentSession().saveOrUpdate(dataObj);
             HibernateUtil.commitTransaction();
+            
+            formIsInNewDataMode = false;
+            traverseToToSetAsNew(mvParent, false);
+
             
         } catch (Exception e)
         {
@@ -632,6 +642,16 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
             e.printStackTrace();
             HibernateUtil.rollbackTransaction();
         }
+    }
+    
+    /**
+     * Tells this form and all of it's children that it is a "new" form for data entry
+     * @param isNewForm true is new, false is not
+     */
+    public void setAsNewForm(final boolean isNewForm)
+    {
+        formIsInNewDataMode = isNewForm;
+        traverseToToSetAsNew(mvParent, isNewForm);
     }
 
     /**
@@ -770,8 +790,17 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#setDataObj(java.lang.Object)
      */
+    @SuppressWarnings("unchecked")
     public void setDataObj(final Object dataObj)
     {
+        // We really shouldn't get here.
+        // This condition is true only if a new Object (record) was being entered and some how the user was 
+        // able to go to a previous or next record before saving or discarding the new info
+        if (formIsInNewDataMode)
+        {
+            setAsNewForm(false);
+            throw new RuntimeException("Shouldn't have gotten here! Why wasn't the object saved or discarded?");
+        }
         
         Object data = dataObj;
         if (data instanceof java.util.Set)

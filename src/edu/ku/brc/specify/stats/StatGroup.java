@@ -65,7 +65,7 @@ public class StatGroup extends JPanel
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(15, 2, 2, 2));
         setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
-        setOpaque(false);
+        setBackground(Color.WHITE);
     } 
     
     /**
@@ -78,12 +78,12 @@ public class StatGroup extends JPanel
         this.name = name;
         
         setLayout(new BorderLayout());
-        setOpaque(false);
+        setBackground(Color.WHITE);
         
         content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
-        content.setOpaque(false);
-        
+        content.setBackground(Color.WHITE);
+
         if (useSeparator)
         {
             setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));

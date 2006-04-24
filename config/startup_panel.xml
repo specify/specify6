@@ -54,20 +54,9 @@
             <sql><![CDATA[select number, accessionId, TimestampCreated From accession where DATE_SUB(CURDATE(), INTERVAL 3 MONTH) <= TimestampCreated order by TimestampCreated desc]]></sql>
             <link colid="2">Accession</link>
         </box>
-        <box title="Accessions Entered in the Last 3 Months" descCol="1" valCol="3">
-            <sql><![CDATA[select number, accessionId, TimestampCreated From accession where DATE_SUB(CURDATE(), INTERVAL 6 MONTH) <= TimestampCreated order by TimestampCreated desc]]></sql>
-            <link colid="2">Accession</link>
-        </box>
-    </row> 
-    
-    <row>
         <box title="Permits Entered in the Last 3 Months" descCol="1" valCol="3">
             <sql><![CDATA[select permit.PermitNumber, permit.PermitID, permit.EndDate From permit where DATE_SUB(CURDATE(), INTERVAL 3 MONTH) <= TimestampCreated order by permitNumber asc]]></sql>
             <link colid="2">CITESPermitsExpireThisYear</link>
-        </box>
-        <box title="Permits Entered in the Last 6 Months" descCol="1" valCol="3">
-            <sql><![CDATA[select permit.PermitNumber, permit.PermitID, permit.EndDate From permit where DATE_SUB(CURDATE(), INTERVAL 6 MONTH) <= TimestampCreated order by permitNumber asc]]></sql>
-            <link colid="2">NonCITESPermitsExpireThisYear</link>
         </box>
     </row> 
     

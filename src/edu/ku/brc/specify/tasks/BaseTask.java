@@ -308,7 +308,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
         
         if (recentFormPane != null && recentFormPane.getComponentCount() == 0)
         {
-            recentFormPane.createForm(viewsetName, viewName, null, data);
+            recentFormPane.createForm(viewsetName, viewName, null, data, false);
             fp = recentFormPane;
             
         } else
@@ -320,7 +320,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
                 
             } else
             {
-                recentFormPane = new FormPane(name, this, viewsetName, viewName, mode, data);            
+                recentFormPane = new FormPane(name, this, viewsetName, viewName, mode, data, false);            
                 addSubPaneToMgr(recentFormPane);
                 fp = recentFormPane; 
             }
