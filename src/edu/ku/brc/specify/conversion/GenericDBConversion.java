@@ -2165,7 +2165,7 @@ public class GenericDBConversion
     		// what is the corresponding TreeDefID?
     		int treeDefId = typeIdMapper.getNewIdFromOldId(typeId);
     		
-    		StringBuilder sqlUpdate = new StringBuilder("UPDATE TaxonTreeDefItem SET IsEnforced=TRUE WHERE TreeDefID="+treeDefId+" AND RankID IN (");
+    		StringBuilder sqlUpdate = new StringBuilder("UPDATE taxontreedefitem SET IsEnforced=TRUE WHERE TreeDefID="+treeDefId+" AND RankID IN (");
     		// add all the enforced ranks
     		for( int i = 0; i < enforcedIds.size(); ++i )
     		{
