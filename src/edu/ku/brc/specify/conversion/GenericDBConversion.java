@@ -2383,6 +2383,7 @@ public class GenericDBConversion
     			"ORDER BY ContinentOrOcean,Country,State,County");
 
         IdMapper idMapper =  idMapperMgr.get("geography", "GeographyID");
+        int counter = 0;
     	while( rs.next() )
     	{
     		int geoId = rs.getInt(1);
@@ -2403,6 +2404,11 @@ public class GenericDBConversion
 
     		GeoFileLine gfl = new GeoFileLine(geoId,0,0,cont,country,state,county,islandGrp,island,waterBody,drainage,fullname);
     		oldStyleLines.add(gfl);
+    		++counter;
+    		if( counter % 500 == 0 )
+    		{
+    			log.info("Extracted " + counter + "old geography records");
+    		}
     	}
 
     	return oldStyleLines;
@@ -2496,6 +2502,7 @@ public class GenericDBConversion
         // process them all into the new tree structure
         // on the first pass, we're simply going to create all of the nodes and
         // setup the parent pointers
+        int counter = 0;
         for( GeoFileLine geo: oldGeoRecords )
         {
             boolean hasCont = !(geo.getContOrOcean() == null);
@@ -2766,6 +2773,12 @@ public class GenericDBConversion
                     newTableRows.add(newCounty);
                 }
             }
+            
+            ++counter;
+            if( counter % 500 == 0 )
+            {
+            	log.info("Created " + counter + " geography records for the new DB");
+            }
         }// end of "for( GeoFileLine geo: oldGeoRecords )"
     	} //end of weird code block inserted for debugging purposes
 
@@ -2794,6 +2807,7 @@ public class GenericDBConversion
             }
         }
 
+        log.info("Saving the geography records to the DB");
         HibernateUtil.beginTransaction();
         for( Geography geo: newTableRows )
         {
@@ -2801,6 +2815,7 @@ public class GenericDBConversion
         }
         HibernateUtil.commitTransaction();
         HibernateUtil.closeSession();
+        log.info("Done converting geography data");
     }
 
     /**
