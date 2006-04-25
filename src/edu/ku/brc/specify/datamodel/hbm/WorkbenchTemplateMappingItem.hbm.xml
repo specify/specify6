@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
+
+<class name="edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem" table="workbenchtemplatemappingitem" lazy="true">
+    <meta attribute="class-description" inherit="false"/>
+
+    <id name="workbenchTemplateMappingItemID" type="java.lang.Integer" column="WorkbenchTemplateMappingItemID">
+      <meta attribute="scope-set">public</meta>
+      <meta attribute="scope-field">protected</meta>
+      <generator class="native"/>
+    </id>
+
+    <property name="tablename" type="java.lang.String" column="TableName" length="64">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>    
+    </property>
+    
+    <property name="tableid" type="java.lang.Integer" column="TableId" length="64">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>    
+    </property>
+        
+    <property name="fieldname" type="java.lang.String" column="FieldName">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>    
+    </property>
+        
+    <property name="caption" type="java.lang.String" column="Caption" length="64">
+        <meta attribute="field-description"></meta>    
+    </property>
+    
+    <property name="vieworder" type="java.lang.Integer" column="ViewOrder" >
+        <meta attribute="field-description"></meta>    
+    </property>    
+    
+    <property name="datatype" type="java.lang.String" column="DataType" length="64">
+        <meta attribute="field-description"></meta>    
+    </property>        
+              
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
+        <meta attribute="field-description"></meta>    
+    </property>
+    
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
+        <meta attribute="field-description"></meta>    
+    </property>     
+       
+    <!-- bi-directional many-to-one association to WorkbenchTemplate -->
+    <many-to-one name="workbenchTemplates" class="edu.ku.brc.specify.datamodel.WorkbenchTemplate" not-null="true">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+        <column name="WorkbenchTemplateID"/>
+    </many-to-one>    
+    
+</class>
+</hibernate-mapping>

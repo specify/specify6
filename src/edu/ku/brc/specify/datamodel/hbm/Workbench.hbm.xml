@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
+
+<class name="edu.ku.brc.specify.datamodel.Workbench" table="workbench" lazy="false">
+
+	<!-- Common id property. -->
+	<id name="workbenchID" type="java.lang.Integer" column="WorkbenchID" unsaved-value="null">
+		<generator class="native"/>
+	</id>
+
+	<property name="name" column="Name" update="true" type="java.lang.String" length="64">
+		<meta attribute="field-description">Name of workbench</meta>
+	</property>
+
+	<property name="tableId" column="TableID" update="true" type="int">
+	</property>
+
+    <property name="remarks" type="text" column="Remarks">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+    </property>
+      
+    <property name="formid" type="java.lang.Integer" column="FormId">
+      <meta attribute="scope-field">protected</meta>
+    </property>   
+      
+    <property name="exportinstitutionname" type="java.lang.String" column="ExportInstitution" length="120">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description">Name of Institution being exported from</meta>
+    </property>  
+      
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
+        <meta attribute="field-description"></meta>    
+    </property>
+    
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
+        <meta attribute="field-description"></meta>    
+    </property>
+    <!-- Associations -->
+
+    
+    <!-- bi-directional many-to-one association to WorkbenchTemplate -->
+    <many-to-one name="workbenchTemplates" class="edu.ku.brc.specify.datamodel.WorkbenchTemplate" not-null="true" outer-join="true" >
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+        <column name="WorkbenchTemplateID"/>
+    </many-to-one>    
+    
+    <!-- bi-directional one-to-many association to WorkbenchDataItem -->
+    <set name="workbenchItems" lazy="true" inverse="true" cascade="all">
+	    <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="WorkbenchID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.WorkbenchDataItem"/>
+    </set>
+    
+</class>
+</hibernate-mapping>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
+
+<class name="edu.ku.brc.specify.datamodel.WorkbenchTemplate" table="workbenchtemplate" lazy="true">
+    <meta attribute="class-description" inherit="false"/>
+
+    <id name="workbenchTemplateID" type="java.lang.Integer" column="WorkbenchTemplateID">
+      <meta attribute="scope-set">public</meta>
+      <meta attribute="scope-field">protected</meta>
+      <generator class="native"/>
+    </id>
+    
+    <property name="name" type="java.lang.String" column="Name" length="64">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>    
+    </property>
+    
+    <property name="remarks" type="text" column="Remarks">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>    
+    </property>
+
+            
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
+        <meta attribute="field-description"></meta>    
+    </property>
+    
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
+        <meta attribute="field-description"></meta>    
+    </property>
+        
+    <!-- bi-directional one-to-many association to Workbench -->
+    <set name="workbenches" lazy="true" inverse="true" cascade="none">
+	    <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="WorkbenchTemplateID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.Workbench"/>
+    </set>
+    
+    <!-- bi-directional one-to-many association to WorkbenchTemplateMappingItem -->
+    <set name="workbenchtemplatemappingitems" lazy="true" inverse="true" cascade="all-delete-orphan">
+	    <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="WorkbenchTemplateID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem"/>
+    </set>    
+</class>
+</hibernate-mapping>

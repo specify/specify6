@@ -77,6 +77,10 @@ import edu.ku.brc.specify.datamodel.TaxonCitation;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.UserGroup;
+import edu.ku.brc.specify.datamodel.Workbench;
+import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
+import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
+import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 
 public class ObjCreatorHelper
 {
@@ -2016,4 +2020,93 @@ public class ObjCreatorHelper
     		session.saveOrUpdate(transientObject);
     	}
     }
+    
+    
+    public static Workbench createWorkbench(
+    		final String name,
+    		final String remarks,
+    		final String exportInstName,
+    		final Integer formId,
+    		final WorkbenchTemplate workbenchTemplate)
+    {
+    	Workbench workbench = new Workbench();
+    	workbench.setName(name);
+    	workbench.setRemarks(remarks);
+    	workbench.setExportinstitutionname(exportInstName);
+    	//workbench.setFormid(formId);
+    	workbench.setTimestampCreated(new Date());
+    	workbench.setTimestampModified(new Date());
+    	workbench.setWorkbenchItems(new HashSet<Object>());
+    	workbench.setWorkbenchTemplates(workbenchTemplate);
+    	
+        if (session != null)
+        {
+          session.saveOrUpdate(workbench);
+        }
+        return workbench;
+    }    
+    
+    public static WorkbenchDataItem createWorkbenchDataItem(
+    		final String rowNumber, final String columnNumber, final String cellData, final Workbench workbench)
+    {
+    	WorkbenchDataItem workbenchdataitem = new WorkbenchDataItem();
+    	workbenchdataitem.setRowNumber(rowNumber);
+    	workbenchdataitem.setColumnNumber(columnNumber);
+    	//workbenchdataitem.setRowOfData(rowData);
+    	workbenchdataitem.setCellData(cellData);
+    	workbenchdataitem.setOwner(workbench);
+    	workbenchdataitem.setTimestampModified(new Date());
+    	workbenchdataitem.setTimestampCreated(new Date());    	
+        if (session != null);
+        {
+          session.saveOrUpdate(workbenchdataitem);
+        }
+        return workbenchdataitem;
+    }
+    
+    public static WorkbenchTemplate createWorkbenchTemplate(
+    		final String name,
+    		final String remarks)
+    {
+    	WorkbenchTemplate workbenchtemplate = new WorkbenchTemplate();
+    	workbenchtemplate.setName(name);
+    	workbenchtemplate.setRemarks(remarks);
+    	workbenchtemplate.setWorkbenches(new HashSet<Object>());
+    	workbenchtemplate.setWorkbenchtemplatemappingitems(new HashSet<Object>());
+    	workbenchtemplate.setTimestampModified(new Date());
+    	workbenchtemplate.setTimestampCreated(new Date());
+
+        if (session != null)
+        {
+          session.saveOrUpdate(workbenchtemplate);
+        }
+        return workbenchtemplate;
+    }
+    
+    public static WorkbenchTemplateMappingItem createMappingItem(
+			final String tableName,
+			final Integer tableId,
+			final String fieldName,
+			final String caption, 
+			final String dataType,
+			final Integer viewOrder, 
+			final WorkbenchTemplate template) {
+		WorkbenchTemplateMappingItem workbenchtemplatemappingitem = new WorkbenchTemplateMappingItem();
+		workbenchtemplatemappingitem.setTimestampModified(new Date());
+		workbenchtemplatemappingitem.setCaption(caption);
+		workbenchtemplatemappingitem.setDatatype(dataType);
+		workbenchtemplatemappingitem.setFieldname(fieldName);
+		workbenchtemplatemappingitem.setTablename(tableName);
+		workbenchtemplatemappingitem.setTimestampCreated(new Date());
+		workbenchtemplatemappingitem.setTimestampModified(new Date());
+		workbenchtemplatemappingitem.setVieworder(viewOrder);
+		workbenchtemplatemappingitem.setWorkbenchTemplates(template);
+		//workbenchtemplatemappingitem.setTableid(tableId);
+		workbenchtemplatemappingitem.setTableid(tableId);
+		
+		if (session != null) {
+			session.saveOrUpdate(workbenchtemplatemappingitem);
+		}
+		return workbenchtemplatemappingitem;
+	}  
 }

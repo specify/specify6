@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
+
+	
+<class name="edu.ku.brc.specify.datamodel.WorkbenchDataItem" table="workbenchdataitem" lazy="false">
+
+	<!-- Common id property. -->
+	<id name="workbenchDataItemID" type="java.lang.Integer" column="WorkbenchDataItemID" unsaved-value="null">
+		<generator class="native"/>
+	</id>
+
+    <property name="cellData" type="text" column="CellData" length="23">
+        <meta attribute="field-description"></meta>    
+    </property>
+    
+    
+    <property name="rowNumber" type="text" column="RowNumber" length="23">
+        <meta attribute="field-description"></meta>    
+    </property>    
+    
+    <property name="columnNumber" type="text" column="ColumnNumber" length="23">
+        <meta attribute="field-description"></meta>    
+    </property> 
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
+        <meta attribute="field-description"></meta>    
+    </property>
+    
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
+        <meta attribute="field-description"></meta>    
+    </property>
+
+
+    <!-- Associations -->
+
+    <!-- many-to-one association to Workbench -->
+    <many-to-one name="owner" class="edu.ku.brc.specify.datamodel.Workbench" not-null="true" outer-join="true" cascade="none">
+	<meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+        <column name="WorkbenchID"/>
+    </many-to-one>   
+    
+</class>
+</hibernate-mapping>

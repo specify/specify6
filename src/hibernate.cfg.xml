@@ -109,6 +109,12 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/TaxonTreeDefItem.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/UserGroup.hbm.xml"/>
 		
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Workbench.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/WorkbenchDataItem.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/WorkbenchTemplate.hbm.xml"/>
+		<mapping resource="edu/ku/brc/specify/datamodel/hbm/WorkbenchTemplateMappingItem.hbm.xml"/>
+		
+		
 		
 
         <!-- Settings for the second-level cache -->
