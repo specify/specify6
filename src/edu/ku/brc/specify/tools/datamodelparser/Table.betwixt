@@ -3,6 +3,7 @@
 <element name="Table">
 <attribute name="classname" property="name"/>
 <attribute name="table" property="table"/>
+<attribute name="tableid" property="tableId"/>
 <addDefaults/>
 </element>
 </info>

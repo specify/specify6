@@ -5,6 +5,7 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Iterator;
 
 import org.apache.commons.betwixt.XMLIntrospector;
@@ -14,9 +15,23 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+//import edu.ku.brc.specify.dbsupport.DBTableIdMgr.TableInfo;
+//import edu.ku.brc.specify.dbsupport.DBTableIdMgr.TableInfo;
 import edu.ku.brc.specify.tools.datamodelparser.Field;
 import edu.ku.brc.specify.tools.datamodelparser.Relationship;
 import edu.ku.brc.specify.tools.datamodelparser.Table;
+//hash.put(1, new TableInfo(1, "edu.ku.brc.specify.datamodel.CollectionObj", "collectionobj", "collectionObjectId"));
+//instance.hash.put(1,   new TableInfo(1, "edu.ku.brc.specify.datamodel.CollectionObject", "collectionobject", "collectionObjectId", "CollectionObject"));
+//instance.hash.put(5,   new TableInfo(4, "edu.ku.brc.specify.datamodel.Taxon", "taxon", "taxonId", "Taxon"));
+//instance.hash.put(5,   new TableInfo(5, "edu.ku.brc.specify.datamodel.Agent", "agent", "agentId", "Agent"));
+//instance.hash.put(6,   new TableInfo(6, "edu.ku.brc.specify.datamodel.Permit", "permit", "permitId", "Permit"));
+//instance.hash.put(7,   new TableInfo(7, "edu.ku.brc.specify.datamodel.Accession", "accession", "accessionId", "Accession"));
+//instance.hash.put(8,   new TableInfo(8, "edu.ku.brc.specify.datamodel.Address", "address", "addressId", "Address"));
+//instance.hash.put(9,   new TableInfo(9, "edu.ku.brc.specify.datamodel.Determination", "determination", "determinationId", "Determination"));
+//instance.hash.put(10,   new TableInfo(10, "edu.ku.brc.specify.datamodel.CollectingEvent", "collectingevent", "collectingEventId", "CollectingEvent"));
+//
+//instance.hash.put(80,  new TableInfo(80, "edu.ku.brc.specify.datamodel.InfoRequest", "inforequest", "infoRequestID", "InfoRequest"));
+//instance.hash.put(500, new TableInfo(500, "edu.ku.brc.specify.ui.db.PickList", "picklist", "picklist_id", "PickList"));
 
 /**
  * @author megkumin
@@ -26,7 +41,39 @@ public class DatamodelWriter {
 	private static Log log = LogFactory.getLog(DatamodelWriter.class);
 	private java.util.List<Table> classesList = new ArrayList<Table>();
 	private String fileName = "SpecifyDataModel.xml";
+int classCounter = 1000;
+	Hashtable<String, Integer> hash = new Hashtable<String, Integer>();
+	
+	public void populateTableIds() {
+//        hash.put(1,    "edu.ku.brc.specify.datamodel.CollectionObject");
+//        hash.put(4,  "edu.ku.brc.specify.datamodel.Taxon");
+//        hash.put(5,  "edu.ku.brc.specify.datamodel.Agent");
+//        hash.put(6,  "edu.ku.brc.specify.datamodel.Permit");
+//        hash.put(7, "edu.ku.brc.specify.datamodel.Accession");
+//        hash.put(8,  "edu.ku.brc.specify.datamodel.Address");
+//        hash.put(9,  "edu.ku.brc.specify.datamodel.Determination");
+//        hash.put(10,  "edu.ku.brc.specify.datamodel.CollectingEvent");
+//        
+//        hash.put(80, "edu.ku.brc.specify.datamodel.InfoRequest");
+//        hash.put(500,"edu.ku.brc.specify.ui.db.PickList");
+		//hash.p
+  hash.put("edu.ku.brc.specify.datamodel.CollectionObject",1);
+        hash.put("edu.ku.brc.specify.datamodel.Taxon", 4);
+        hash.put("edu.ku.brc.specify.datamodel.Agent",5);
+        hash.put("edu.ku.brc.specify.datamodel.Permit",6);
+        hash.put("edu.ku.brc.specify.datamodel.Accession",7);
+        hash.put("edu.ku.brc.specify.datamodel.Address",8);
+        hash.put("edu.ku.brc.specify.datamodel.Determination",9);
+        hash.put("edu.ku.brc.specify.datamodel.CollectingEvent",10);
+        
+        hash.put("edu.ku.brc.specify.datamodel.InfoRequest",80);
+        hash.put("edu.ku.brc.specify.ui.db.PickList",500);
+		
+        //Integer i = hash.get( "edu.ku.brc.specify.datamodel.CollectionsdObject");
+        //.out.println(i.toString());
 
+	}	
+	
 	/**
 	 * Given and XML node, returns a Field object, by grabbing the appropriate attribute values
 	 * @param aElement the XML node
@@ -47,9 +94,10 @@ public class DatamodelWriter {
 	 */
 	private Table createClass(Element aElement) {
 		log.info("createClass");
+		classCounter++;
 		return new Table(aElement.attributeValue("name"), 
 				aElement.attributeValue("table"), 
-				aElement.attributeValue("lazy"));
+				aElement.attributeValue("lazy"), hash, classCounter);
 	}
 
 	/**
@@ -280,8 +328,10 @@ public class DatamodelWriter {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		DatamodelWriter DatamodelWriter = new DatamodelWriter();
-		DatamodelWriter.makeTree();
+		//classesListsss.
+		DatamodelWriter datamodelWriter = new DatamodelWriter();
+		datamodelWriter.populateTableIds();
+		datamodelWriter.makeTree();
 	}
 
 }
