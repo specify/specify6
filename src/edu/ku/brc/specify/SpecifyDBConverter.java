@@ -157,7 +157,7 @@ public class SpecifyDBConverter
      */
     public static void main(String args[]) throws Exception
     {
-        String oldDatabaseName = "demo_fish4";
+        String oldDatabaseName = "demo_fish2";
 
         DBConnection oldDB       = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/"+oldDatabaseName, "rods", "rods");
         IdMapperMgr  idMapperMgr = new IdMapperMgr(oldDB.getConnectionToDB());

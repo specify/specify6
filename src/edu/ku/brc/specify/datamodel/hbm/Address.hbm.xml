@@ -9,89 +9,89 @@
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
-    
+
     <property name="address" type="java.lang.String" column="Address" not-null="true" length="255">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Address as it should appear on mailing labels</meta>
     </property>
-    
+
     <property name="address2" type="java.lang.String" column="Address2" not-null="false" length="255">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
+
     <property name="city" type="java.lang.String" column="City" length="64">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
+
     <property name="state" type="java.lang.String" column="State" length="64">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
+
     <property name="country" type="java.lang.String" column="Country" length="64">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
+
     <property name="postalCode" type="java.lang.String" column="PostalCode" length="32">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
+
     <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
+
     <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
+
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
+
     <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
+
     <!-- AgentAddress -->
-    
+
     <property name="isPrimary" type="boolean" column="IsPrimary">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Is this the agent's primary address and/or phone?</meta>
     </property>
-    
+
     <property name="phone1" type="java.lang.String" column="Phone1" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
+
     <property name="phone2" type="java.lang.String" column="Phone2" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
+
     <property name="fax" type="java.lang.String" column="Fax" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
+
     <property name="roomOrBuilding" type="java.lang.String" column="RoomOrBuilding" length="50">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description"></meta>
     </property>
-    
+
 
     <!-- Associations -->
-  
+
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true" cascade="none" index="IX_AddressAgentID" unique-key="IX_LoanAgents">
+    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true" cascade="none">
         <meta attribute="field-description">ID of agent at AgentID</meta>
         <column name="AgentID"/>
     </many-to-one>

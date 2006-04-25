@@ -35,7 +35,7 @@ import edu.ku.brc.specify.dbsupport.DBConnection;
 
 /**
  * Manages the mapping of old primary key ID to new sequenial ones
- * 
+ *
  * @author rods
  *
  */
@@ -45,14 +45,13 @@ public class IdMapper
 
     protected String          tableName;
     protected String          idName;
-    protected Connection      oldConn;
     protected Connection      newConn;
-    
+
     protected Vector<Integer> ids           = null;
     protected String          mapTableName = null;
-    protected boolean         usingMemory   = false;  
+    protected boolean         usingMemory   = false;
     protected int             lastIdAdded   = -1;
-    
+
 
     /**
      * @param oldConn
@@ -61,33 +60,32 @@ public class IdMapper
      */
     public IdMapper(final Connection oldConn, final String tableName, final String idName)
     {
-        this.oldConn   = oldConn;
         this.tableName = tableName.toLowerCase();
         this.idName    = idName;
-        
+
         newConn = DBConnection.getConnection();
-        
+
         mapTableName = tableName + "_" + idName;
         int numRecs = BasicSQLUtils.getNumRecords(oldConn, tableName);
         log.info(numRecs+" Records in "+tableName);
-        
+
         // XXX DEBUG and Testing
         boolean alreadyCreated = !GenericDBConversion.shouldCreateMapTables();
         numRecs = 2001; // for all tables
-        
+
         if (numRecs < 2000)
         {
             usingMemory = true;
             ids         = new Vector<Integer>();
-            
+
             ids.add(0);
             lastIdAdded = 0;
-             
+
         } else if (!alreadyCreated)
         {
             try
             {
-                
+
                 if (GenericDBConversion.shouldCreateMapTables())
                 {
                     Statement stmt = newConn.createStatement();
@@ -96,20 +94,20 @@ public class IdMapper
                     {
                         stmt.executeUpdate(str);
                     } catch (SQLException ex){};
-                
+
                     str = "CREATE TABLE `"+mapTableName+"` ("+
                                         "`OldID` int(11) NOT NULL default '0', "+
                                         "`NewID` int(11) NOT NULL default '0', "+
                                         " PRIMARY KEY (`OldID`) ) ENGINE=InnoDB DEFAULT CHARSET=latin1";
                     //log.info(str);
-                    stmt.executeUpdate(str); 
-                    
-                    stmt.executeUpdate("alter table "+mapTableName+" add index INX_"+mapTableName+" (NewID)"); 
-                    
+                    stmt.executeUpdate(str);
+
+                    stmt.executeUpdate("alter table "+mapTableName+" add index INX_"+mapTableName+" (NewID)");
+
                     stmt.clearBatch();
                     stmt.close();
                 }
-                
+
             } catch (SQLException ex)
             {
                 ex.printStackTrace();
@@ -117,7 +115,7 @@ public class IdMapper
             }
         }
     }
-    
+
     /**
      * Returns unique name
      * @return Returns unique name
@@ -150,30 +148,30 @@ public class IdMapper
             {
                 Statement stmt = newConn.createStatement();
                 String str = "INSERT INTO "+mapTableName+" VALUES (" + oldIndex + "," + newIndex + ")";
-                stmt.executeUpdate(str); 
+                stmt.executeUpdate(str);
                 stmt.clearBatch();
                 stmt.close();
-                
+
             } catch (SQLException ex)
             {
                 ex.printStackTrace();
                 log.error(ex);
-            }            
+            }
         }
     }
 
     /**
      * Map all the old iDs to new IDs
      */
-    public void mapAllIds()
+    public void mapAllIds(final Connection oldConn)
     {
-        mapAllIds("select "+idName+" from "+tableName+" order by "+idName);
+        mapAllIds(oldConn, "select "+idName+" from "+tableName+" order by "+idName);
     }
-    
+
     /**
      * Map all the old iDs to new IDs
      */
-    public void mapAllIds(final String sql)
+    public void mapAllIds(final Connection oldConn, final String sql)
     {
         BasicSQLUtils.deleteAllRecordsFromTable(mapTableName);
         try
@@ -191,25 +189,26 @@ public class IdMapper
                     {
                         log.info("Mapped "+newIndex+" records from "+tableName);
                     }
-                    
+
                 } while (rs.next());
                 log.info("Mapped "+newIndex+" records from "+tableName);
-                
+
             } else
             {
                 log.info("No records to map in "+tableName);
             }
             rs.close();
             stmt.close();
-            
+            oldConn.close();
+
         } catch (SQLException ex)
         {
             ex.printStackTrace();
             log.error(ex);
             throw new RuntimeException(ex);
-        }             
+        }
     }
-    
+
     /**
      * Returns the New Record Id given the Old Record Id  (Usually primary key)
      * @param oldId old Id
@@ -221,7 +220,7 @@ public class IdMapper
         {
             return null;
         }
-        
+
         if (usingMemory)
         {
             for (int i=0;i<ids.size();i++)
@@ -252,18 +251,18 @@ public class IdMapper
                 }
                 rs.close();
                 stmt.close();
-                
+
                 return newId;
-                
+
             } catch (SQLException ex)
             {
                 ex.printStackTrace();
                 log.error(ex);
                 throw new RuntimeException("Couldn't find old index ["+oldId+"] for "+mapTableName);
-            }            
-        } 
+            }
+        }
     }
-    
+
     /**
      * Cleans up temporary data
      */
@@ -275,20 +274,20 @@ public class IdMapper
             {
                 ids.clear();
                 ids = null;
-                
+
             } else
             {
                 try
                 {
                     Statement stmt = newConn.createStatement();
-                    stmt.executeUpdate("DROP TABLE `"+mapTableName+"`"); 
+                    stmt.executeUpdate("DROP TABLE `"+mapTableName+"`");
                     stmt.close();
-                    
+
                 } catch (SQLException ex)
                 {
                     ex.printStackTrace();
                     log.error(ex);
-                }           
+                }
             }
             mapTableName = null;
         }
