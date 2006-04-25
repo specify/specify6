@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+@SuppressWarnings("serial")
 public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
 
     // Fields    
@@ -337,13 +338,25 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
 		setChildren(children);
 	}
 
-	public void addChildNode(Treeable child)
+	public void addChild( Treeable child )
 	{
 		if( !(child instanceof GeologicTimePeriod) )
 		{
-			throw new IllegalArgumentException("Argument must be an instance of GeologicTimePeriod");
+			throw new IllegalArgumentException("New child must be an instance of " + getClass().getName());
 		}
+		
 		children.add((GeologicTimePeriod)child);
+		child.setParentNode(this);
 	}
+	
+	public void removeChild( Treeable child )
+	{
+		if( !(child instanceof GeologicTimePeriod) )
+		{
+			throw new IllegalArgumentException("Child must be an instance of " + getClass().getName());
+		}
 
+		children.remove(child);
+		child.setParentNode(null);
+	}
 }

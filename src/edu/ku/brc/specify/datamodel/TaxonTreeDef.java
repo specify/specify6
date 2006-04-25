@@ -3,6 +3,7 @@ package edu.ku.brc.specify.datamodel;
 import java.util.HashSet;
 import java.util.Set;
 
+@SuppressWarnings("serial")
 public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
 
     // Fields    

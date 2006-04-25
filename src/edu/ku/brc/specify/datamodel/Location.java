@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+@SuppressWarnings("serial")
 public class Location  implements java.io.Serializable,Treeable {
 
     // Fields    
@@ -377,13 +378,26 @@ public class Location  implements java.io.Serializable,Treeable {
 		setChildren(children);
 	}
 
-	public void addChildNode(Treeable child)
+	public void addChild( Treeable child )
 	{
 		if( !(child instanceof Location) )
 		{
-			throw new IllegalArgumentException("Argument must be an instance of Location");
+			throw new IllegalArgumentException("New child must be an instance of " + getClass().getName());
 		}
-		children.add((Location)child);
+		
+		this.children.add((Location)child);
+		child.setParentNode(this);
+	}
+	
+	public void removeChild( Treeable child )
+	{
+		if( !(child instanceof Location) )
+		{
+			throw new IllegalArgumentException("Child must be an instance of " + getClass().getName());
+		}
+
+		children.remove(child);
+		child.setParentNode(null);
 	}
 
     // Add Methods

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+@SuppressWarnings("serial")
 public class Geography  implements java.io.Serializable,Treeable {
 
     // Fields    
@@ -403,15 +404,28 @@ public class Geography  implements java.io.Serializable,Treeable {
 		setChildren(children);
 	}
 
-	public void addChildNode(Treeable child)
+	public void addChild( Treeable child )
 	{
 		if( !(child instanceof Geography) )
 		{
-			throw new IllegalArgumentException("Argument must be an instance of Geography");
+			throw new IllegalArgumentException("New child must be an instance of " + getClass().getName());
 		}
-		children.add((Geography)child);
+		
+		this.children.add((Geography)child);
+		child.setParentNode(this);
 	}
+	
+	public void removeChild( Treeable child )
+	{
+		if( !(child instanceof Geography) )
+		{
+			throw new IllegalArgumentException("Child must be an instance of " + getClass().getName());
+		}
 
+		children.remove(child);
+		child.setParentNode(null);
+	}
+	
     // Add Methods
 
     public void addLocalities(final Locality localities)

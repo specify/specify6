@@ -57,8 +57,9 @@ public interface Treeable
 	
 	public void setChildNodes( Set<Treeable> children );
 	
-	public void addChildNode( Treeable child );
-	
+	public void addChild( Treeable child );
+
+	public void removeChild( Treeable child );
 	/**
 	 * @return the node number as determined by a depth-first traversal of the containing tree
 	 */
