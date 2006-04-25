@@ -50,6 +50,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -73,7 +74,6 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.dbsupport.BasicSQLUtils.FieldMetaData;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.tests.ObjCreatorHelper;
 import edu.ku.brc.specify.ui.db.PickList;
@@ -222,11 +222,6 @@ public class GenericDBConversion
             if (shouldCreateMapTables)
                 idMapper.mapAllIds(oldDB.getConnectionToDB());
         }
-
-        // Create the mappers here, but fill them in during the AgentAddress Process
-        IdMapper agentIDMapper     = idMapperMgr.addMapper("agent", "AgentID");
-        IdMapper addrIDMapper      = idMapperMgr.addMapper("address", "AddressID");
-        IdMapper agentAddrIDMapper = idMapperMgr.addMapper("agentaddress", "AgentAddressID");
 
         // Map all the Logical IDs
         IdMapper idMapper  = idMapperMgr.addMapper("collectionobject", "CollectionObjectID");
@@ -2185,7 +2180,7 @@ public class GenericDBConversion
 
     	// at this point, we've set all the IsEnforced fields that need to be TRUE
     	// now we need to set the others to FALSE
-    	String setToFalse = "UPDATE TaxonTreeDefItem SET IsEnforced=FALSE WHERE IsEnforced IS NULL";
+    	String setToFalse = "UPDATE taxontreedefitem SET IsEnforced=FALSE WHERE IsEnforced IS NULL";
     	int rowsUpdated = newDbStmt.executeUpdate(setToFalse);
     	log.info("IsEnforced set to FALSE in " + rowsUpdated + " rows");
 
@@ -2195,7 +2190,7 @@ public class GenericDBConversion
     	for( Integer typeId: typeIds )
     	{
     		int treeDefId = typeIdMapper.getNewIdFromOldId(typeId);
-        	sqlStr = "SELECT TreeDefItemID FROM TaxonTreeDefItem WHERE TreeDefID="+treeDefId+" ORDER BY RankID";
+        	sqlStr = "SELECT TreeDefItemID FROM taxontreedefitem WHERE TreeDefID="+treeDefId+" ORDER BY RankID";
         	rs = newDbStmt.executeQuery(sqlStr);
 
         	boolean atLeastOneRecord = rs.next();
@@ -2216,7 +2211,7 @@ public class GenericDBConversion
         	rowsUpdated = 0;
         	for( Pair<Integer,Integer> idPair: idAndParentIdPairs )
         	{
-        		sqlStr = "UPDATE TaxonTreeDefItem SET ParentItemID=" + idPair.second + " WHERE TreeDefItemID=" + idPair.first;
+        		sqlStr = "UPDATE taxontreedefitem SET ParentItemID=" + idPair.second + " WHERE TreeDefItemID=" + idPair.first;
         		rowsUpdated += newDbStmt.executeUpdate(sqlStr);
         	}
 
@@ -2836,7 +2831,7 @@ public class GenericDBConversion
 
         BasicSQLUtils.deleteAllRecordsFromTable("locality");
 
-        boolean showMappingErrors = BasicSQLUtils.isShowMappingError();
+        //boolean showMappingErrors = BasicSQLUtils.isShowMappingError();
         BasicSQLUtils.setShowMappingError(false); // turn off notification because of errors with National Parks
 
         String sql = "select locality.*, geography.* from locality,geography where locality.GeographyID = geography.GeographyID";
@@ -2850,25 +2845,174 @@ public class GenericDBConversion
         }
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
         //BasicSQLUtils.setShowMappingError(showMappingErrors);
+   }
+    
+    /**
+     * Copies the filed names to the list and prepend the table name 
+     * @param list the destination list
+     * @param fieldNames the list of field names
+     * @param tableName the table name
+     */
+    protected void addNamesWithTableName(final List<String> list, final List<String> fieldNames, final String tableName)
+    {
+        for (String fldName : fieldNames)
+        {
+            list.add(tableName+"."+fldName);
+        }
+    }
+    
+    /**
+     * @param rsmd
+     * @param map
+     * @param tableNames
+     * @throws SQLException
+     */
+    protected void buildIndexMapFromMetaData(final ResultSetMetaData rsmd, 
+                                             final Hashtable<String, Integer> map,
+                                             final String[] tableNames) throws SQLException
+    {
+        map.clear();
+        
+        // Find the missing table name by figuring our which one isn't used.
+        Hashtable<String, Boolean> existsMap = new  Hashtable<String, Boolean>();
+        for (String tblName : tableNames)
+        {
+            existsMap.put(tblName, true);
+            System.out.println("["+tblName+"]");
+        }
+        for (int i=1;i<=rsmd.getColumnCount();i++)
+        {
+            String tableName = rsmd.getTableName(i);
+//          log.info("["+tableName+"]");
+            if (StringUtils.isNotEmpty(tableName))
+            {
+                if (existsMap.get(tableName) != null)
+                {
+                    existsMap.remove(tableName);
+                    log.info("Removing Table Name["+tableName+"]");
+                }
+            }
+        }
+        
+        String missingTableName = null;
+        if (existsMap.size() == 1)
+        {
+            missingTableName = existsMap.keys().nextElement();
+            log.info("Missing Table Name["+missingTableName+"]");
+            
+        } else if (existsMap.size() > 1)
+        {
+            throw new RuntimeException("ExistsMap cannot have more than one name in it!"); 
+        } else
+        {
+            log.info("No Missing Table Names.");
+        }
+        
+       
+        
+        for (int i=1;i<=rsmd.getColumnCount();i++)
+        {
+            StringBuilder strBuf = new StringBuilder();
+            String tableName = rsmd.getTableName(i);
+            strBuf.append(StringUtils.isNotEmpty(tableName) ? tableName : missingTableName);
+            strBuf.append(".");
+            strBuf.append(rsmd.getColumnName(i));
+//          log.info("["+strBuf.toString()+"] "+i);
+            map.put(strBuf.toString(), i);
+        }
     }
 
-   /**
-   *
+    /**
+     * @param rsmd
+     * @param map
+     * @param tableNames
+     * @throws SQLException
+     */
+    protected void buildIndexMapFromMetaData(final ResultSetMetaData rsmd, 
+                                             final List<String>      origList,
+                                             final Hashtable<String, Integer> map) throws SQLException
+    {
+        map.clear();
+        
+        for (int i=1;i<=rsmd.getColumnCount();i++)
+        {
+            StringBuilder strBuf = new StringBuilder();
+            
+            String tableName = rsmd.getTableName(i);
+            String fieldName = rsmd.getColumnName(i);
+            
+            if (StringUtils.isNotEmpty(tableName))
+            {
+                strBuf.append(tableName);
+            } else
+            {
+                for (String fullName : origList)
+                {
+                    String[] parts = StringUtils.split(fullName, ".");
+                    if (parts[1].equals(fieldName))
+                    {
+                        strBuf.append(parts[0]);
+                        break;
+                    }
+                }
+            }
+            strBuf.append(".");
+            strBuf.append(fieldName);
+            //log.info("["+strBuf.toString()+"] "+i);
+            map.put(strBuf.toString(), i);
+        }
+    }
+
+  /**
+   * This conversion method is a little wacky in that we must convert it in three parts. And instead of factoring out
+   * a way to do the 3 parts, I just duplicated the code.
    */
   public boolean convertAgents()
   {
-       Connection connection = oldDB.getConnectionToDB();
+      
+      // Create the mappers here, but fill them in during the AgentAddress Process
+      IdMapper agentIDMapper     = idMapperMgr.addMapper("agent", "AgentID");
+      IdMapper addrIDMapper      = idMapperMgr.addMapper("address", "AddressID");
+      IdMapper agentAddrIDMapper = idMapperMgr.addMapper("agentaddress", "AgentAddressID");
+
+
+       Connection oldConn = oldDB.getConnectionToDB();
        Connection newDBConn = DBConnection.getConnection();
 
        BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "agent");
        BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "address");
 
+       // Just like in the conversion of the CollectionObjects we
+       // need to build up our own select clause because the MetaData of columns names returned from
+       // a query doesn't include the table names for all columns, this is far more predictable
+       List<String> oldFieldNames = new ArrayList<String>();
+       
+       StringBuilder sql = new StringBuilder("select ");
+       List<String> agentAddrFieldNames = new ArrayList<String>();
+       getFieldNamesFromSchema(oldConn, "agentaddress", agentAddrFieldNames);
+       sql.append(buildSelectFieldList(agentAddrFieldNames, "agentaddress"));
+       sql.append(", ");
+       addNamesWithTableName(oldFieldNames, agentAddrFieldNames, "agentaddress");
+       
+       List<String> agentFieldNames = new ArrayList<String>();
+       getFieldNamesFromSchema(oldConn, "agent", agentFieldNames);
+       sql.append(buildSelectFieldList(agentFieldNames, "agent"));
+       sql.append(", ");
+       addNamesWithTableName(oldFieldNames, agentFieldNames, "agent");
 
-       String sql = "Select agentaddress.*, agent.*, address.* From agent Inner Join agentaddress ON agentaddress.AgentID = agent.AgentID Inner Join address ON agentaddress.AddressID = address.AddressID Order By agentaddress.AgentAddressID Asc";
+       List<String> addrFieldNames = new ArrayList<String>();
+       getFieldNamesFromSchema(oldConn, "address", addrFieldNames);
+       sql.append(buildSelectFieldList(addrFieldNames, "address"));
+       addNamesWithTableName(oldFieldNames, addrFieldNames, "address");
+
+       // Create a Map from the full table/fieldname to the index in the resultset (start at 1 not zero)
+       Hashtable<String, Integer> indexFromNameMap = new Hashtable<String, Integer>();
+       
+       sql.append(" From agent Inner Join agentaddress ON agentaddress.AgentID = agent.AgentID Inner Join address ON agentaddress.AddressID = address.AddressID Order By agentaddress.AgentAddressID Asc");
 
        // These represent the New columns of Agent Table
        // So the order of the names are for the new table
-       // the names refernce the old tab;e
+       // the names reference the old table
        String[] agentColumns = {"agent.AgentID",
                "agent.AgentType",
                "agentaddress.JobTitle",
@@ -2913,7 +3057,7 @@ public class GenericDBConversion
 
        try
        {
-           Statement stmtX = connection.createStatement();
+           Statement stmtX = oldConn.createStatement();
            ResultSet rsX   = stmtX.executeQuery("select AddressID from address order by AddressID");
            while (rsX.next())
            {
@@ -2923,7 +3067,7 @@ public class GenericDBConversion
            rsX.close();
            stmtX.close();
 
-           stmtX = connection.createStatement();
+           stmtX = oldConn.createStatement();
            rsX   = stmtX.executeQuery("select AgentID from agent order by AgentID");
            while (rsX.next())
            {
@@ -2937,26 +3081,31 @@ public class GenericDBConversion
            // This does the part of AgentAddress where it has both an Address AND an Agent
            //////////////////////////////////////////////////////////////////////////////////
 
-           Statement         stmt = connection.createStatement();
-           ResultSet         rs   = stmt.executeQuery(sql);
-           ResultSetMetaData rsmd = rs.getMetaData();
-           List<FieldMetaData> fieldList = new ArrayList<FieldMetaData>();
-           Hashtable<String, Integer> indexFromNameMap = new Hashtable<String, Integer>();
-
-           BasicSQLUtils.getFieldMetaDataFromSchema(rsmd, fieldList);
+           log.info(sql.toString());
+           
+           Statement           stmt      = oldConn.createStatement();
+           ResultSet           rs        = stmt.executeQuery(sql.toString());
+           ResultSetMetaData   rsmd      = rs.getMetaData();
+           //List<FieldMetaData> fieldList = new ArrayList<FieldMetaData>();
+           
+           
+           //buildIndexMapFromMetaData(rsmd, oldFieldNames, indexFromNameMap);
            int inx = 1;
-           for (FieldMetaData fmd : fieldList)
+           for (String fldName : oldFieldNames)
            {
-               //System.out.println("["+fmd.getName()+"]  "+fmd.getType());
-               indexFromNameMap.put(fmd.getName(), inx++);
+               //log.info("["+fldName+"] "+inx+" ["+rsmd.getColumnName(inx)+"]");
+               indexFromNameMap.put(fldName, inx++);
            }
 
-           IdMapper agentIDMapper     = idMapperMgr.get("agent", "AgentID");
-           IdMapper addrIDMapper      = idMapperMgr.get("address", "AddressID");
-           IdMapper agentAddrIDMapper = idMapperMgr.get("agentaddress", "AgentAddressID");
+
+           //IdMapper agentIDMapper     = idMapperMgr.get("agent", "AgentID");
+           //IdMapper addrIDMapper      = idMapperMgr.get("address", "AddressID");
+           //IdMapper agentAddrIDMapper = idMapperMgr.get("agentaddress", "AgentAddressID");
 
            int agentIdInx = indexFromNameMap.get("agent.AgentID");
            int addrIdInx  = indexFromNameMap.get("address.AddressID");
+           
+           int agentTypeInx  = indexFromNameMap.get("agent.AgentType");
 
            int newAgentId = 1;
            int newAddrId  = 1;
@@ -2964,14 +3113,10 @@ public class GenericDBConversion
            int recordCnt = 0;
            while (rs.next())
            {
+               byte agentType     = rs.getByte(agentTypeInx);
                int agentAddressId = rs.getInt(1);
-               int agentId = rs.getInt(agentIdInx);
-               int addrId  = rs.getInt(addrIdInx);
-               if (addrId == -1505739717)
-               {
-                   int x = 0;
-                   x++;
-               }
+               int agentId        = rs.getInt(agentIdInx);
+               int addrId         = rs.getInt(addrIdInx);
 
                recordCnt++;
 
@@ -2982,11 +3127,24 @@ public class GenericDBConversion
                     StringBuilder strBuf = new StringBuilder("INSERT INTO agent VALUES (");
                     for (int i=0;i<agentColumns.length;i++)
                     {
+                        //log.info(agentColumns[i]);
+                        
                         if (i > 0) strBuf.append(",");
-                        //System.out.println(agentColumns[i]);
+                        //log.info(agentColumns[i]);
                         if (i == 0)
                         {
                             strBuf.append(newAgentId);
+                            
+                        } else if (agentColumns[i].equals("agent.Name"))
+                        {
+                            if (agentType == 1) // when it is an individual, clear the name field
+                            {
+                                strBuf.append("null");
+                            } else
+                            {
+                                inx = indexFromNameMap.get(agentColumns[i]);
+                                strBuf.append(BasicSQLUtils.getStrValue(rs.getObject(inx)));
+                            }
 
                         } else
                         {
@@ -3002,7 +3160,7 @@ public class GenericDBConversion
                         updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
                         if (false)
                         {
-                            System.out.println(strBuf.toString());
+                            log.info(strBuf.toString());
                         }
                         updateStatement.executeUpdate(strBuf.toString());
                         updateStatement.clearBatch();
@@ -3024,7 +3182,7 @@ public class GenericDBConversion
                         e.printStackTrace();
                         log.error(e);
 
-                        //connection.close();
+                        //oldConn.close();
                         //newDBConn.close();
 
                         //return false;
@@ -3072,7 +3230,7 @@ public class GenericDBConversion
 
                            } else
                            {
-                               //System.out.println(addressColumns[i]);
+                               //log.info(addressColumns[i]);
                                value = BasicSQLUtils.getStrValue(rs.getObject(inxInt));
                            }
                            strBuf.append(value);
@@ -3086,7 +3244,7 @@ public class GenericDBConversion
                        updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
                        if (false)
                        {
-                           System.out.println(strBuf.toString());
+                           log.info(strBuf.toString());
                        }
                        updateStatement.executeUpdate(strBuf.toString());
                        updateStatement.clearBatch();
@@ -3105,7 +3263,7 @@ public class GenericDBConversion
                        log.error("Count: "+recordCnt);
                        e.printStackTrace();
                        log.error(e);
-                       //connection.close();
+                       //oldConn.close();
                        //newDBConn.close();
 
                        //return false;
@@ -3126,19 +3284,35 @@ public class GenericDBConversion
            // This does the part of AgentAddress where it has JUST an Address
            //////////////////////////////////////////////////////////////////////////////////
            log.info("******** Doing AgentAddress JUST Address");
-           sql = "Select agentaddress.*, address.* From address Inner Join agentaddress ON agentaddress.AddressID = address.AddressID Order By agentaddress.AgentAddressID Asc";
+           
+           sql.setLength(0);
+           sql.append("select ");
+           sql.append(buildSelectFieldList(agentAddrFieldNames, "agentaddress"));
+           sql.append(", ");
+           
+           getFieldNamesFromSchema(oldConn, "address", addrFieldNames);
+           sql.append(buildSelectFieldList(addrFieldNames, "address"));
 
-           stmt = connection.createStatement();
-           rs   = stmt.executeQuery(sql);
+           sql.append(" From address Inner Join agentaddress ON agentaddress.AddressID = address.AddressID Order By agentaddress.AgentAddressID Asc");
+
+           stmt = oldConn.createStatement();
+           rs   = stmt.executeQuery(sql.toString());
            rsmd = rs.getMetaData();
-           fieldList.clear();
-           indexFromNameMap.clear();
+           
+           //fieldList.clear();
+           //BasicSQLUtils.getFieldMetaDataFromSchema(rsmd, fieldList);
+           //buildIndexMapFromMetaData(rsmd, oldFieldNames, indexFromNameMap);
+           
+           oldFieldNames.clear();
+           addNamesWithTableName(oldFieldNames, agentAddrFieldNames, "agentaddress");
+           addNamesWithTableName(oldFieldNames, addrFieldNames, "address");
 
-           BasicSQLUtils.getFieldMetaDataFromSchema(rsmd, fieldList);
-            inx = 1;
-           for (FieldMetaData fmd : fieldList)
+           indexFromNameMap.clear();
+           inx = 1;
+           for (String fldName : oldFieldNames)
            {
-               indexFromNameMap.put(fmd.getName(), inx++);
+               //log.info("["+fldName+"] "+inx+" ["+rsmd.getColumnName(inx)+"]");
+               indexFromNameMap.put(fldName, inx++);
            }
 
            addrIdInx  = indexFromNameMap.get("address.AddressID");
@@ -3187,7 +3361,7 @@ public class GenericDBConversion
 
                            } else
                            {
-                               //System.out.println(addressColumns[i]);
+                               //log.info(addressColumns[i]);
                                value = BasicSQLUtils.getStrValue(rs.getObject(inxInt));
                            }
                            strBuf.append(value);
@@ -3201,7 +3375,7 @@ public class GenericDBConversion
                        updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
                        if (false)
                        {
-                           System.out.println(strBuf.toString());
+                           log.info(strBuf.toString());
                        }
                        updateStatement.executeUpdate(strBuf.toString());
                        updateStatement.clearBatch();
@@ -3222,7 +3396,7 @@ public class GenericDBConversion
                        log.error("Count: "+recordCnt);
                        e.printStackTrace();
                        log.error(e);
-                       connection.close();
+                       oldConn.close();
                        newDBConn.close();
 
                        return false;
@@ -3245,19 +3419,33 @@ public class GenericDBConversion
 
            newRecordsAdded = 0;
 
-           sql = "Select agentaddress.*, agent.* From agent Inner Join agentaddress ON agentaddress.AgentID = agent.AgentID Order By agentaddress.AgentAddressID Asc";
+           sql.setLength(0);
+           sql.append("select ");
+           sql.append(buildSelectFieldList(agentAddrFieldNames, "agentaddress"));
+           sql.append(", ");
+           
+           getFieldNamesFromSchema(oldConn, "agent", agentFieldNames);
+           sql.append(buildSelectFieldList(agentFieldNames, "agent"));
 
-           stmt = connection.createStatement();
-           rs   = stmt.executeQuery(sql);
+           sql.append(" From agent Inner Join agentaddress ON agentaddress.AgentID = agent.AgentID Order By agentaddress.AgentAddressID Asc");
+
+           stmt = oldConn.createStatement();
+           rs   = stmt.executeQuery(sql.toString());
            rsmd = rs.getMetaData();
-           fieldList.clear();
+           
+           //fieldList.clear();
+           //BasicSQLUtils.getFieldMetaDataFromSchema(rsmd, fieldList);
+           //buildIndexMapFromMetaData(rsmd, oldFieldNames, indexFromNameMap);
+           oldFieldNames.clear();
+           addNamesWithTableName(oldFieldNames, agentAddrFieldNames, "agentaddress");
+           addNamesWithTableName(oldFieldNames, agentFieldNames, "agent");
+           
            indexFromNameMap.clear();
-
-           BasicSQLUtils.getFieldMetaDataFromSchema(rsmd, fieldList);
            inx = 1;
-           for (FieldMetaData fmd : fieldList)
+           for (String fldName : oldFieldNames)
            {
-               indexFromNameMap.put(fmd.getName(), inx++);
+               //log.info("["+fldName+"] "+inx+" ["+rsmd.getColumnName(inx)+"]");
+               indexFromNameMap.put(fldName, inx++);
            }
 
            agentIdInx = indexFromNameMap.get("agent.AgentID");
@@ -3297,7 +3485,7 @@ public class GenericDBConversion
                         updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
                         if (false)
                         {
-                            System.out.println(strBuf.toString());
+                            log.info(strBuf.toString());
                         }
                         updateStatement.executeUpdate(strBuf.toString());
                         updateStatement.clearBatch();
@@ -3320,7 +3508,7 @@ public class GenericDBConversion
                         log.error("Count: "+recordCnt);
                         e.printStackTrace();
                         log.error(e);
-                        connection.close();
+                        oldConn.close();
                         newDBConn.close();
 
                         return false;
@@ -3341,11 +3529,11 @@ public class GenericDBConversion
 
            if (oldAddrIds.size() > 0)
            {
-               //System.out.println("Address Record IDs not used by AgentAddress:");
+               //log.info("Address Record IDs not used by AgentAddress:");
 
                StringBuilder sqlStr = new StringBuilder("select ");
                List<String> names = new ArrayList<String>();
-               getFieldNamesFromSchema(connection, "address", names);
+               getFieldNamesFromSchema(oldConn, "address", names);
                sqlStr.append(buildSelectFieldList(names, "address"));
                sqlStr.append(" from address where AddressId in (");
 
@@ -3371,18 +3559,18 @@ public class GenericDBConversion
                map.put("PostalCode", "Postalcode");
                String[] ignoredFields = {"IsPrimary", "Address2", "Phone1", "Phone2", "Fax", "RoomOrBuilding"};
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
-               copyTable(connection, newDBConn, sqlStr.toString(), "address", "address", map, null); // closes the connection automatically
+               copyTable(oldConn, newDBConn, sqlStr.toString(), "address", "address", map, null); // closes the oldConn automatically
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames( null);
            }
 
            if (oldAgentIds.size() > 0)
            {
-               connection = oldDB.getConnectionToDB();
+               oldConn = oldDB.getConnectionToDB();
                newDBConn  = DBConnection.getConnection();
 
                StringBuilder sqlStr = new StringBuilder("select ");
                List<String> names = new ArrayList<String>();
-               getFieldNamesFromSchema(connection, "agent", names);
+               getFieldNamesFromSchema(oldConn, "agent", names);
                sqlStr.append(buildSelectFieldList(names, "agent"));
                sqlStr.append(" from agent where AgentId in (");
 
@@ -3406,7 +3594,7 @@ public class GenericDBConversion
 
                String[] ignoredFields = {"JobTitle", "Email", "URL"};
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
-               copyTable(connection, newDBConn, sqlStr.toString(), "agent", "agent", null, null);
+               copyTable(oldConn, newDBConn, sqlStr.toString(), "agent", "agent", null, null);
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
 
 
@@ -3415,7 +3603,7 @@ public class GenericDBConversion
 
            log.info("Agent Address SQL recordCnt "+recordCnt);
 
-           connection.close();
+           oldConn.close();
            newDBConn.close();
 
            return true;
@@ -3423,6 +3611,7 @@ public class GenericDBConversion
        } catch (SQLException ex)
        {
            log.error(ex);
+           ex.printStackTrace();
        }
 
        return false;
