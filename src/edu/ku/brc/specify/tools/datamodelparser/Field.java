@@ -8,21 +8,20 @@ public class Field
     private String column;
     private String notNull;
     private String length;
+    private String isprimarykey;
     
-    public Field()
-    {
-        
-    }
     
     public Field(String aName, 
                     String aType, 
                     String aColumn,
-                    String aLen)
+                    String aLen, 
+                    String isPrimaryKey)
     {
         name = aName;
         type = aType;
         column = aColumn;
         length = aLen;
+        isprimarykey = isPrimaryKey;
     }
     
 
@@ -85,9 +84,17 @@ public class Field
         this.type = type;
     }
 
-
     public String toString()
     {
         return name;
     }
+
+
+	public void setIsprimarykey(String isprimarykey) {
+		this.isprimarykey = isprimarykey;
+	}
+	
+	public String getIsprimarykey() {
+		return this.isprimarykey;
+	}	
 }

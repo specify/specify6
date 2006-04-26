@@ -120,12 +120,13 @@ public class DatamodelWriter {
 	 * @param aElement the XML node
 	 * @return Field object
 	 */
-	private Field createField(Element aElement) {
+	private Field createField(Element aElement, String isPrimaryKey) {
 		//aElement.addAttribute()
 		return new Field(aElement.attributeValue("name"), 
 				aElement.attributeValue("type"), 
 				aElement.attributeValue("column"),
-				aElement.attributeValue("length"));
+				aElement.attributeValue("length"),
+				isPrimaryKey);
 	}
 
 	/**
@@ -229,14 +230,14 @@ public class DatamodelWriter {
 						for (Iterator i = classNode.elementIterator("property"); i
 								.hasNext();) {
 							Element element = (Element) i.next();
-							cls.addField(createField((Element) element));
+							cls.addField(createField((Element) element, "false"));
 						}
 
 						// iterate through child elements of id node
 						for (Iterator i = classNode.elementIterator("id"); i
 								.hasNext();) {
 							Element element = (Element) i.next();
-							cls.addField(createField((Element) element));
+							cls.addField(createField((Element) element, "true"));
 						}
 						// iterate through child elements of set node 
 						for (Iterator i = classNode.elementIterator("set"); i

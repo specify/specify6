@@ -2,8 +2,10 @@
 <info primitiveTypes="element">
 <element name="Field">
 <attribute name="column" property="column"/>
+<attribute name="name" property="name"/>
 <attribute name="type" property="type"/>
 <attribute name="length" property="length"/>
+<attribute name="isprimarykey" property="isprimarykey"/>
 </element>
 </info>
 
