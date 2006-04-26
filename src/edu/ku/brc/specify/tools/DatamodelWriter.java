@@ -365,103 +365,54 @@ public class DatamodelWriter {
 		}
 
 	}
-
-//    private void readInClassnameAndIds() {
-//    	
-//    	
-//    	log.info("readInClassnameAndIds");
-//    	try {
-//
-//    		File file = new File(DatamodelWriter.class.getResource(
-//    		"../../../../../../SpecifyDataModel.xml").getFile());
-//    		FileInputStream fileInputStream = new FileInputStream(file);
-//    		SAXReader reader = new SAXReader();
-//    		reader.setValidation(false);
-//    		
-//    		org.dom4j.Document doc = reader.read(fileInputStream);
-//    		
-//    			
-//    			Element root = doc.getRootElement();
-//    			Element dbNode = (Element) root.selectSingleNode("Database");
-//    			
-//    			if (dbNode != null) {
-//    				//Table cls = createClass((Element) classNode);
-//    				//classesList.add(cls);
-//    				
-//    				
-//    				//(int tableId, String className, String tableName, String primaryKeyName, String defaultFormName)
-//    				// iterate through child elements of propery ndoe 
-//    				for (Iterator i = classNode.elementIterator("table"); i.hasNext();) {
-//    					Element element = (Element) i.next();
-//    					String className = element.attributeValue("class");
-//    					String tableName = element.attributeValue("table");
-//    					////cls.addField(createField((Element) element));
-//    				}
-//    				
-//    				// iterate through child elements of id node
-//    				for (Iterator i = classNode.elementIterator("id"); i
-//    				.hasNext();) {
-//    					Element element = (Element) i.next();
-//    					cls.addField(createField((Element) element));
-//    				}
-//    				// iterate through child elements of set node 
-//    				for (Iterator i = classNode.elementIterator("set"); i
-//    				.hasNext();) {
-//    					Relationship rel = null;
-//    					Element setSubNode = (Element) i.next();
-//    					
-//    					rel = processRelationship("one-to-many", setSubNode);
-//    					if (rel != null) cls.addRelationship(rel);
-//    					
-//    					rel = processRelationship("many-to-one", setSubNode);
-//    					if (rel != null) cls.addRelationship(rel);
-//    					
-//    					rel = processRelationship("one-to-one", setSubNode);
-//    					if (rel != null)cls.addRelationship(rel);
-//    					
-//    					rel = processRelationship("many-to-many",setSubNode);
-//    					if (rel != null)cls.addRelationship(rel);
-//    					
-//    				}
-//    				
-//    				// iterate through child elements of root
-//    				for (Iterator i = classNode.elementIterator("many-to-one"); i.hasNext();) {
-//    					Element element = (Element) i.next();							
-//    					String relClassName = getRelatedClassName(element);
-//    					String relShortName = getRelatedClassShortName(element);
-//    					String relationshipName = getName(element);
-//    					String columnName = getColumnName(element);
-//    					cls.addRelationship(new Relationship("many-to-one",
-//    							relClassName, columnName,relationshipName));
-//    				}
-//    				
-//    				// iterate through child elements of root
-//    				for (Iterator i = classNode.elementIterator("one-to-one"); i.hasNext();) {
-//    					Element element = (Element) i.next();
-//    					String relClassName = getRelatedClassName(element);
-//    					String relShortName = getRelatedClassShortName(element);
-//    					String relationshipName = getName(element);
-//    					cls.addRelationship(new Relationship("one-to-one",
-//    							relClassName, "", relationshipName));
-//    				}
-//    			}
-//    			
-//    			count++;
-//    			if (count > 1000) {
-//    				break;
-//    			}
-//    			writeTree(classesList);
-//    			
-//    		}
-//    		fileInputStream.close();
-//    		//}
-//    		
-//    	} catch (Exception ex) {
-//    		ex.printStackTrace();
-//    		log.fatal(ex);
-//    	}
-//    	
-//    }	
+	
+	private void readInClassnameAndIds() {
+		
+		
+		log.info("readInClassnameAndIds");
+		try {
+			String filename = "../../../../../../SpecifyDataModel.xml";
+			File file = new File(filename);
+			FileInputStream fileInputStream = new FileInputStream(file);
+			SAXReader reader = new SAXReader();
+			reader.setValidation(false);
+			
+			org.dom4j.Document doc = reader.read(fileInputStream);    			
+			Element root = doc.getRootElement();
+			Element dbNode = (Element) root.selectSingleNode("Database");
+			
+			if (dbNode != null) {
+				
+				
+				//(int tableId, String className, String tableName, String primaryKeyName, String defaultFormName)
+				// iterate through child elements of propery ndoe 
+				for (Iterator i = dbNode.elementIterator("table"); i.hasNext();) {
+					Element element = (Element) i.next();
+					String className = element.attributeValue("classname");
+					String tableName = element.attributeValue("table");
+					String tableId = element.attributeValue("tableid");
+					////cls.addField(createField((Element) element));
+					for (Iterator i2 = dbNode.elementIterator("field"); i2.hasNext();) {
+						System.out.println("sldkfjlsdjfljsdlfjlsdjfljsdljf#######");
+						//Element element = (Element) i2.next();
+						//String className = element.attributeValue("classname");
+						//String tableName = element.attributeValue("table");
+						//String tableId = element.attributeValue("tableid");
+						////cls.addField(createField((Element) element));
+					}   					
+				}    				
+			}
+			
+			writeTree(classesList);
+			fileInputStream.close();
+			//}
+			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			log.fatal(ex);
+		}
+		
+	}	
 	/**
 	 * @param args
 	 */
@@ -471,6 +422,7 @@ public class DatamodelWriter {
 		DatamodelWriter datamodelWriter = new DatamodelWriter();
 		datamodelWriter.populateTableIds();
 		datamodelWriter.makeTree();
+		//datamodelWriter.readInClassnameAndIds();
 	}
 
 }
