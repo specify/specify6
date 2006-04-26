@@ -2407,10 +2407,11 @@ public class GenericDBConversion
     		++counter;
     		if( counter % 500 == 0 )
     		{
-    			log.info("Extracted " + counter + "old geography records");
+    			log.info("Extracted " + counter + " old geography records");
     		}
     	}
-
+    	log.info("Extracted " + counter + " old geography records");
+    	
     	return oldStyleLines;
     }
 
@@ -2488,8 +2489,6 @@ public class GenericDBConversion
         Geography geoRoot = buildGeography(def,geoRootId,"Earth",GEO_ROOT_RANK,nextNodeNumber++,null);
         newTableRows.add(geoRoot);
 
-        { // new code block for the sake of getting these vars out of scope to make debugging easier
-        	// this should not remain in final versions
         String prevCont = null;
         String prevCountry = null;
         String prevState = null;
@@ -2777,10 +2776,10 @@ public class GenericDBConversion
             ++counter;
             if( counter % 500 == 0 )
             {
-            	log.info("Created " + counter + " geography records for the new DB");
+            	log.info("Converted " + counter + " geography records");
             }
         }// end of "for( GeoFileLine geo: oldGeoRecords )"
-    	} //end of weird code block inserted for debugging purposes
+    	log.info("Converted " + counter + " geography records");
 
         // now we have a Vector of Geography's that contains all the data
         // we simply need to fixup all the highChildNodeNumber fields
