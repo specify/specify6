@@ -3,7 +3,7 @@
 
 <import class="RecordSetItem"/>
 	
-<class name="RecordSet" table="recordset" lazy="false">
+<class name="edu.ku.brc.specify.datamodel.RecordSet" table="recordset" lazy="false">
 
 	<!-- Common id property. -->
 	<id name="recordSetID" type="long" column="RecordSetID" unsaved-value="null">
