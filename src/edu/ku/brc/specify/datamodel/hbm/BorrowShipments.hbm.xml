@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 
-<class name="edu.ku.brc.specify.datamodel.DeaccessionAgent" table="deaccessionagents" lazy="true">
+<class name="edu.ku.brc.specify.datamodel.BorrowShipments" table="borrowshipments" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="deaccessionAgentsId" type="java.lang.Integer" column="DeaccessionAgentsID">
+    <id name="borrowShipmentsId" type="java.lang.Integer" column="BorrowShipmentsID">
         <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
-
-    <property name="role" type="java.lang.String" column="Role" not-null="true" length="32" unique-key="IX_DeaccessionAgents">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Role agent played in deaccession</meta>
-    </property>
     
     <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
@@ -36,17 +31,17 @@
     </property>
 
     <!-- Associations -->
-  
-    <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="Agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true" index="IX_DeaccessionAgentsAgentID" unique-key="IX_DeaccessionAgents">
-        <meta attribute="field-description">AgentID for agent</meta>
-        <column name="AgentID"/>
+		<!-- this was missing but existing in original mapping file - now replaced -->
+    <!-- bi-directional many-to-one association to Shipment -->
+    <many-to-one name="shipment" class="edu.ku.brc.specify.datamodel.Shipment" not-null="true" index="IX_BorrowShipmentsShipmentID" unique-key="IX_BorrowShipments">
+        <meta attribute="field-description">The shipment</meta>
+        <column name="ShipmentID"/>
     </many-to-one>
-    
-    <!-- bi-directional many-to-one association to Deaccession -->
-    <many-to-one name="deaccession" class="edu.ku.brc.specify.datamodel.Deaccession" not-null="true" outer-join="true" cascade="none" index="IX_DeaccessionAgentsDeaccessionID" unique-key="IX_DeaccessionAgents">
-        <meta attribute="field-description">Deaccession agent played role in</meta>
-        <column name="DeaccessionID"/>
+	
+    <!-- bi-directional many-to-one association to Borrow -->
+    <many-to-one name="borrow" class="edu.ku.brc.specify.datamodel.Borrow" not-null="true" outer-join="true" cascade="none" index="IX_BorrowShipmentsBorrowID" unique-key="IX_BorrowShipments">
+        <meta attribute="field-description">The borrow being shipped (returned)</meta>
+        <column name="BorrowID"/>
     </many-to-one>
 
 </class>

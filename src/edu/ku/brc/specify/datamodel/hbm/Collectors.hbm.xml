@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 
-<class name="edu.ku.brc.specify.datamodel.BorrowShipment" table="borrowshipments" lazy="true">
+<class name="edu.ku.brc.specify.datamodel.Collectors" table="collectors">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="borrowShipmentsId" type="java.lang.Integer" column="BorrowShipmentsID">
+    <id name="collectorsId" type="java.lang.Integer" column="CollectorsID">
         <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
+
+    <property name="orderNumber" type="int" column="OrderNumber" not-null="true" length="10" unique-key="IX_CollectorsCEOrder">
+        <meta attribute="field-description"></meta>    
+    </property>
     
     <property name="remarks" type="text" column="Remarks">
         <meta attribute="scope-field">protected</meta>
@@ -16,32 +20,29 @@
     </property>
     
     <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
-        <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>
     
     <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
-        <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>
     
     <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
-        <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>
 
     <!-- Associations -->
-		<!-- this was missing but existing in original mapping file - now replaced -->
-    <!-- bi-directional many-to-one association to Shipment -->
-    <many-to-one name="shipment" class="edu.ku.brc.specify.datamodel.Shipment" not-null="true" index="IX_BorrowShipmentsShipmentID" unique-key="IX_BorrowShipments">
-        <meta attribute="field-description">The shipment</meta>
-        <column name="ShipmentID"/>
+  
+    <!-- bi-directional many-to-one association to CollectingEvent -->
+    <many-to-one name="collectingEvent" class="edu.ku.brc.specify.datamodel.CollectingEvent" not-null="true" cascade="none" index="IX_CollectorsCollectingEventID" unique-key="IX_CollectorsCEOrder">
+        <meta attribute="field-description">The CollectingEvent the agent participated in</meta>
+        <column name="CollectingEventID"/>
     </many-to-one>
-	
-    <!-- bi-directional many-to-one association to Borrow -->
-    <many-to-one name="borrow" class="edu.ku.brc.specify.datamodel.Borrow" not-null="true" outer-join="true" cascade="none" index="IX_BorrowShipmentsBorrowID" unique-key="IX_BorrowShipments">
-        <meta attribute="field-description">The borrow being shipped (returned)</meta>
-        <column name="BorrowID"/>
+    
+    <!-- bi-directional many-to-one association to Agent -->
+    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" index="IX_CollectorsAgentID">
+        <meta attribute="field-description">Link to Collector's record in Agent table</meta>
+        <column name="AgentID"/>
     </many-to-one>
 
 </class>

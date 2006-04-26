@@ -108,7 +108,7 @@ public class InitializeData
         config.addClass(TaxonName.class);
         config.addClass(Locality.class);
         config.addClass(CollectionObjectCatalog.class);
-        config.addClass(AccessionAgent.class);
+        config.addClass(AccessionAgents.class);
         config.addClass(AccessionAuthorizations.class);
         config.addClass(Address.class);
         config.addClass(Agent.class);
@@ -117,10 +117,10 @@ public class InitializeData
         config.addClass(BiologicalObjectRelation.class);
         config.addClass(BiologicalObjectRelationType.class);
         config.addClass(Borrow.class);
-        config.addClass(BorrowAgent.class);
+        config.addClass(BorrowAgents.class);
         config.addClass(BorrowMaterial.class);
         config.addClass(BorrowReturnMaterial.class);
-        config.addClass(BorrowShipment.class);
+        config.addClass(BorrowShipments.class);
         config.addClass(CatalogSeriesDefinition.class);
         config.addClass(CatalogSeries.class);
         //config.addClass(CollectingEvent.class);
@@ -131,7 +131,7 @@ public class InitializeData
         config.addClass(CollectionObjectType.class);
         config.addClass(CollectionTaxonomyType.class);
         config.addClass(Deaccession.class);
-        config.addClass(DeaccessionAgent.class);
+        config.addClass(DeaccessionAgents.class);
         config.addClass(DeaccessionCollectionObject.class);
         config.addClass(Determination.class);
         config.addClass(DeterminationCitation.class);
@@ -147,7 +147,7 @@ public class InitializeData
         config.addClass(ImageLocality.class);
         config.addClass(Journal.class);
         config.addClass(Loan.class);
-        config.addClass(LoanAgent.class);
+        config.addClass(LoanAgents.class);
         config.addClass(LoanPhysicalObject.class);
         config.addClass(LoanReturnPhysicalObject.class);
         //config.addClass(Locality.class);
@@ -176,9 +176,9 @@ public class InitializeData
         config.addClass(HabitatAttrs.class);
         config.addClass(BioAttrs.class);
         config.addClass(AttrributeDef.class);
-        config.addClass(Collector.class);
-        config.addClass(Author.class);
-        config.addClass(GroupPerson.class);
+        config.addClass(Collectors.class);
+        config.addClass(Authors.class);
+        config.addClass(GroupPersons.class);
         config.addClass(Stratigraphy.class);
         
         */

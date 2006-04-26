@@ -7,19 +7,19 @@ import java.util.HashSet;
 import org.hibernate.Session;
 
 import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.AccessionAgent;
+import edu.ku.brc.specify.datamodel.AccessionAgents;
 import edu.ku.brc.specify.datamodel.AccessionAuthorizations;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.AttributeIFace;
-import edu.ku.brc.specify.datamodel.Author;
+import edu.ku.brc.specify.datamodel.Authors;
 import edu.ku.brc.specify.datamodel.Borrow;
-import edu.ku.brc.specify.datamodel.BorrowAgent;
+import edu.ku.brc.specify.datamodel.BorrowAgents;
 import edu.ku.brc.specify.datamodel.BorrowMaterial;
 import edu.ku.brc.specify.datamodel.BorrowReturnMaterial;
-import edu.ku.brc.specify.datamodel.BorrowShipment;
+import edu.ku.brc.specify.datamodel.BorrowShipments;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttr;
@@ -27,12 +27,12 @@ import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.CollectionObjectCitation;
-import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.datamodel.Collectors;
 import edu.ku.brc.specify.datamodel.Container;
 import edu.ku.brc.specify.datamodel.ContainerItem;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Deaccession;
-import edu.ku.brc.specify.datamodel.DeaccessionAgent;
+import edu.ku.brc.specify.datamodel.DeaccessionAgents;
 import edu.ku.brc.specify.datamodel.DeaccessionCollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationCitation;
@@ -46,11 +46,11 @@ import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
-import edu.ku.brc.specify.datamodel.GroupPerson;
+import edu.ku.brc.specify.datamodel.GroupPersons;
 import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.Journal;
 import edu.ku.brc.specify.datamodel.Loan;
-import edu.ku.brc.specify.datamodel.LoanAgent;
+import edu.ku.brc.specify.datamodel.LoanAgents;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
 import edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject;
 import edu.ku.brc.specify.datamodel.Locality;
@@ -99,9 +99,9 @@ public class ObjCreatorHelper
         ObjCreatorHelper.session = session;
     }
 
-    public static AccessionAgent createAccessionAgent()
+    public static AccessionAgents createAccessionAgent()
     {
-        AccessionAgent accessionAgent = new AccessionAgent();
+        AccessionAgents accessionAgent = new AccessionAgents();
 
         accessionAgent.setTimestampCreated(new Date());
         accessionAgent.setTimestampModified(new Date());
@@ -187,7 +187,7 @@ public class ObjCreatorHelper
     }
 
     public static CollectingEvent createCollectingEvent(final Locality locality,
-                                                        final Collector[] collectors)
+                                                        final Collectors[] collectors)
     {
         CollectingEvent colEv = new CollectingEvent();
         colEv.initialize();
@@ -201,10 +201,10 @@ public class ObjCreatorHelper
         colEv.setEndDate(startCal);
 
 
-        HashSet<Collector> collectorsSet = new HashSet<Collector>();
+        HashSet<Collectors> collectorsSet = new HashSet<Collectors>();
         if (collectors != null)
         {
-            for (Collector c : collectors)
+            for (Collectors c : collectors)
             {
                 collectorsSet.add(c);
                 c.setCollectingEvent(colEv);
@@ -285,9 +285,9 @@ public class ObjCreatorHelper
         return colObjAttr;
     }
 
-    public static Collector createCollector(final Agent agent, int orderNum)
+    public static Collectors createCollector(final Agent agent, int orderNum)
     {
-        Collector collector = new Collector();
+        Collectors collector = new Collectors();
         collector.initialize();
 
         collector.setAgent(agent);
@@ -788,12 +788,12 @@ public class ObjCreatorHelper
         return accession;
     }
 
-    public static AccessionAgent createAccessionAgent(final String role,
+    public static AccessionAgents createAccessionAgent(final String role,
                                                       final Agent agent,
                                                       final Accession accession,
                                                       final RepositoryAgreement repositoryAgreement)
     {
-        AccessionAgent accessionagent = new AccessionAgent();
+        AccessionAgents accessionagent = new AccessionAgents();
         accessionagent.initialize();
         accessionagent.setTimestampCreated(new Date());
         accessionagent.setTimestampModified(new Date());
@@ -877,11 +877,11 @@ public class ObjCreatorHelper
         return attributedef;
     }
 
-    public static Author createAuthor(final Short orderNumber,
+    public static Authors createAuthor(final Short orderNumber,
                                       final ReferenceWork referenceWork,
                                       final Agent agent)
     {
-        Author author = new Author();
+        Authors author = new Authors();
         author.initialize();
         author.setTimestampCreated(new Date());
         author.setTimestampModified(new Date());
@@ -919,11 +919,11 @@ public class ObjCreatorHelper
         return borrow;
     }
 
-    public static BorrowAgent createBorrowAgent(final String role,
+    public static BorrowAgents createBorrowAgent(final String role,
                                                 final Agent agent,
                                                 final Borrow borrow)
     {
-        BorrowAgent borrowagent = new BorrowAgent();
+        BorrowAgents borrowagent = new BorrowAgents();
         borrowagent.initialize();
         borrowagent.setTimestampCreated(new Date());
         borrowagent.setTimestampModified(new Date());
@@ -985,10 +985,10 @@ public class ObjCreatorHelper
         return borrowreturnmaterial;
     }
 
-    public static BorrowShipment createBorrowShipment(final Shipment shipment,
+    public static BorrowShipments createBorrowShipment(final Shipment shipment,
                                                       final Borrow borrow)
     {
-        BorrowShipment borrowshipment = new BorrowShipment();
+        BorrowShipments borrowshipment = new BorrowShipments();
         borrowshipment.initialize();
         borrowshipment.setTimestampCreated(new Date());
         borrowshipment.setTimestampModified(new Date());
@@ -1193,11 +1193,11 @@ public class ObjCreatorHelper
         return collectionobjectcitation;
     }
 
-    public static Collector createCollector(final Integer orderNumber,
+    public static Collectors createCollector(final Integer orderNumber,
                                             final CollectingEvent collectingEvent,
                                             final Agent agent)
     {
-        Collector collector = new Collector();
+        Collectors collector = new Collectors();
         collector.initialize();
         collector.setTimestampCreated(new Date());
         collector.setTimestampModified(new Date());
@@ -1279,11 +1279,11 @@ public class ObjCreatorHelper
         return deaccession;
     }
 
-    public static DeaccessionAgent createDeaccessionAgent(final String role,
+    public static DeaccessionAgents createDeaccessionAgent(final String role,
                                                           final Agent agent,
                                                           final Deaccession deaccession)
     {
-        DeaccessionAgent deaccessionagent = new DeaccessionAgent();
+        DeaccessionAgents deaccessionagent = new DeaccessionAgents();
         deaccessionagent.initialize();
         deaccessionagent.setTimestampCreated(new Date());
         deaccessionagent.setTimestampModified(new Date());
@@ -1450,11 +1450,11 @@ public class ObjCreatorHelper
         return externalresourceattr;
     }
 
-    public static GroupPerson createGroupPerson(final Short orderNumber,
+    public static GroupPersons createGroupPerson(final Short orderNumber,
                                                 final Agent agentByGroup,
                                                 final Agent agentByMember)
     {
-        GroupPerson groupperson = new GroupPerson();
+        GroupPersons groupperson = new GroupPersons();
         groupperson.initialize();
         groupperson.setTimestampCreated(new Date());
         groupperson.setTimestampModified(new Date());
@@ -1542,11 +1542,11 @@ public class ObjCreatorHelper
         return loan;
     }
 
-    public static LoanAgent createLoanAgent(final String role,
+    public static LoanAgents createLoanAgent(final String role,
                                             final Loan loan,
                                             final Agent agent)
     {
-        LoanAgent loanagent = new LoanAgent();
+        LoanAgents loanagent = new LoanAgents();
         loanagent.initialize();
         loanagent.setTimestampCreated(new Date());
         loanagent.setTimestampModified(new Date());

@@ -47,7 +47,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 
 import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.AccessionAgent;
+import edu.ku.brc.specify.datamodel.AccessionAgents;
 import edu.ku.brc.specify.datamodel.AccessionAuthorizations;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
@@ -59,7 +59,7 @@ import edu.ku.brc.specify.datamodel.CollectingEventAttr;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
-import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.datamodel.Collectors;
 import edu.ku.brc.specify.datamodel.Container;
 import edu.ku.brc.specify.datamodel.ContainerItem;
 import edu.ku.brc.specify.datamodel.DataType;
@@ -634,7 +634,7 @@ public class CreateTestDatabases
 
             for (int j=0;j<roles.length;j++)
             {
-                AccessionAgent accessionAgent = createAccessionAgent(roles[j],  agents[agentsInx % agents.length], accessions[i], null);
+                AccessionAgents accessionAgent = createAccessionAgent(roles[j],  agents[agentsInx % agents.length], accessions[i], null);
                 agentsInx++;
                 accessions[i].getAccessionAgents().add(accessionAgent);
             }
@@ -748,7 +748,7 @@ public class CreateTestDatabases
 
             // Create Collecting Event
             CollectingEvent colEv = createCollectingEvent(locality,
-                    new Collector[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
+                    new Collectors[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
 
             // Create AttributeDef for Collecting Event
             AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", null);
@@ -933,7 +933,7 @@ public class CreateTestDatabases
 
             // Create Collecting Event
             CollectingEvent colEv = createCollectingEvent(locality,
-                    new Collector[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
+                    new Collectors[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
 
             // Create AttributeDef for Collecting Event
             AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", null);
@@ -1113,7 +1113,7 @@ public class CreateTestDatabases
 
             // Create Collecting Event
             CollectingEvent colEv = createCollectingEvent(locality,
-                    new Collector[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
+                    new Collectors[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
 
             // Create AttributeDef for Collecting Event
             AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", null);

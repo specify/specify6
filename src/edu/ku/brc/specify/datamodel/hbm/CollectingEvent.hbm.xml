@@ -107,13 +107,13 @@
         <one-to-many class="edu.ku.brc.specify.datamodel.CollectionObject"/>
     </set>
 	
-    <!-- bi-directional one-to-many association to Collector -->
+    <!-- bi-directional one-to-many association to Collectors -->
     <set name="collectors" lazy="true" inverse="true" cascade="delete">
         <meta attribute="field-description"></meta>
         <key>
             <column name="CollectingEventID"/>
         </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.Collector"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.Collectors"/>
     </set>
     
    <!-- bi-directional many-to-one association to Locality -->

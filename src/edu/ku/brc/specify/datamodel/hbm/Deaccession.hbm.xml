@@ -78,13 +78,13 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional one-to-many association to DeaccessionAgent -->
+    <!-- bi-directional one-to-many association to DeaccessionAgents -->
     <set name="deaccessionAgents" lazy="true" inverse="true" cascade="delete">
         <meta attribute="field-description"></meta>
         <key>
             <column name="DeaccessionID"/>
         </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.DeaccessionAgent"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.DeaccessionAgents"/>
     </set>
     
     <!-- bi-directional one-to-many association to DeaccessionCollectionObject -->

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 
-<class name="edu.ku.brc.specify.datamodel.LoanAgent" table="loanagents" lazy="true">
+<class name="edu.ku.brc.specify.datamodel.Authors" table="authors">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="loanAgentsId" type="java.lang.Integer" column="LoanAgentsID">
+    <id name="authorsId" type="java.lang.Integer" column="AuthorsID">
         <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
 
-    <property name="role" type="java.lang.String" column="Role" not-null="true" length="32" unique-key="IX_LoanAgents">
+    <property name="orderNumber" type="short" column="OrderNumber" not-null="true" unique-key="IX_AuthorsRefOrder">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">Role the agent played in the loan</meta>
+        <meta attribute="field-description"></meta>    
     </property>
     
     <property name="remarks" type="text" column="Remarks">
@@ -20,12 +20,12 @@
         <meta attribute="field-description"></meta>    
     </property>
     
-    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
+    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>
     
-    <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
+    <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>    
     </property>
@@ -37,15 +37,15 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional many-to-one association to Loan -->
-    <many-to-one name="loan" class="edu.ku.brc.specify.datamodel.Loan" not-null="true" outer-join="true" cascade="none" index="IX_LoanAgentsLoanID" unique-key="IX_LoanAgents">
-        <meta attribute="field-description">ID of loan agent at AgentID played a role in</meta>
-        <column name="LoanID"/>
+    <!-- bi-directional many-to-one association to ReferenceWork -->
+    <many-to-one name="referenceWork" class="edu.ku.brc.specify.datamodel.ReferenceWork" not-null="true" cascade="none" index="IX_AuthorsReferenceWorkID" unique-key="IX_AuthorsRefOrder">
+        <meta attribute="field-description">Reference record the Agent authored</meta>
+        <column name="ReferenceWorkID"/>
     </many-to-one>
-    
+
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="Agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true" index="IX_LoanAgentsAgentID" unique-key="IX_LoanAgents">
-        <meta attribute="field-description">Agent</meta>
+    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" index="IX_AuthorsAgentID">
+        <meta attribute="field-description">Agent record representing the Author</meta>
         <column name="AgentID"/>
     </many-to-one>
 

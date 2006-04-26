@@ -41,7 +41,7 @@ public class ReferenceWork  implements java.io.Serializable {
      protected Set<TaxonCitation> taxonCitations;
      protected Set<DeterminationCitation> determinationCitations;
      protected Journal journal;
-     protected Set<Author> authors;
+     protected Set<Authors> authors;
 
 
     // Constructors
@@ -88,7 +88,7 @@ public class ReferenceWork  implements java.io.Serializable {
         taxonCitations = new HashSet<TaxonCitation>();
         determinationCitations = new HashSet<DeterminationCitation>();
         journal = null;
-        authors = new HashSet<Author>();
+        authors = new HashSet<Authors>();
     }
     // End Initializer
 
@@ -394,11 +394,11 @@ public class ReferenceWork  implements java.io.Serializable {
     /**
      * 
      */
-    public Set<Author> getAuthors() {
+    public Set<Authors> getAuthors() {
         return this.authors;
     }
     
-    public void setAuthors(Set<Author> authors) {
+    public void setAuthors(Set<Authors> authors) {
         this.authors = authors;
     }
 
@@ -432,7 +432,7 @@ public class ReferenceWork  implements java.io.Serializable {
         determinationCitation.setReferenceWork(this);
     }
 
-    public void addAuthor(final Author author)
+    public void addAuthor(final Authors author)
     {
         this.authors.add(author);
         author.setReferenceWork(this);
@@ -466,7 +466,7 @@ public class ReferenceWork  implements java.io.Serializable {
         determinationCitation.setReferenceWork(null);
     }
 
-    public void removeAuthor(final Author author)
+    public void removeAuthor(final Authors author)
     {
         this.authors.remove(author);
         author.setReferenceWork(null);

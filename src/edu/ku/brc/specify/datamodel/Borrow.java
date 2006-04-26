@@ -32,8 +32,8 @@ public class Borrow  implements java.io.Serializable {
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      protected Calendar currentDueDate;
-     protected Set<BorrowShipment> borrowShipments;
-     protected Set<BorrowAgent> borrowAgents;
+     protected Set<BorrowShipments> borrowShipments;
+     protected Set<BorrowAgents> borrowAgents;
      protected Set<BorrowMaterial> borrowMaterials;
 
 
@@ -71,8 +71,8 @@ public class Borrow  implements java.io.Serializable {
         yesNo1 = null;
         yesNo2 = null;
         currentDueDate = null;
-        borrowShipments = new HashSet<BorrowShipment>();
-        borrowAgents = new HashSet<BorrowAgent>();
+        borrowShipments = new HashSet<BorrowShipments>();
+        borrowAgents = new HashSet<BorrowAgents>();
         borrowMaterials = new HashSet<BorrowMaterial>();
     }
     // End Initializer
@@ -269,22 +269,22 @@ public class Borrow  implements java.io.Serializable {
     /**
      * 
      */
-    public Set<BorrowShipment> getBorrowShipments() {
+    public Set<BorrowShipments> getBorrowShipments() {
         return this.borrowShipments;
     }
     
-    public void setBorrowShipments(Set<BorrowShipment> borrowShipments) {
+    public void setBorrowShipments(Set<BorrowShipments> borrowShipments) {
         this.borrowShipments = borrowShipments;
     }
 
     /**
      * 
      */
-    public Set<BorrowAgent> getBorrowAgents() {
+    public Set<BorrowAgents> getBorrowAgents() {
         return this.borrowAgents;
     }
     
-    public void setBorrowAgents(Set<BorrowAgent> borrowAgents) {
+    public void setBorrowAgents(Set<BorrowAgents> borrowAgents) {
         this.borrowAgents = borrowAgents;
     }
 
@@ -305,13 +305,13 @@ public class Borrow  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addBorrowShipment(final BorrowShipment borrowShipment)
+    public void addBorrowShipment(final BorrowShipments borrowShipment)
     {
         this.borrowShipments.add(borrowShipment);
         borrowShipment.setBorrow(this);
     }
 
-    public void addBorrowAgent(final BorrowAgent borrowAgent)
+    public void addBorrowAgent(final BorrowAgents borrowAgent)
     {
         this.borrowAgents.add(borrowAgent);
         borrowAgent.setBorrow(this);
@@ -327,13 +327,13 @@ public class Borrow  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeBorrowShipment(final BorrowShipment borrowShipment)
+    public void removeBorrowShipment(final BorrowShipments borrowShipment)
     {
         this.borrowShipments.remove(borrowShipment);
         borrowShipment.setBorrow(null);
     }
 
-    public void removeBorrowAgent(final BorrowAgent borrowAgent)
+    public void removeBorrowAgent(final BorrowAgents borrowAgent)
     {
         this.borrowAgents.remove(borrowAgent);
         borrowAgent.setBorrow(null);

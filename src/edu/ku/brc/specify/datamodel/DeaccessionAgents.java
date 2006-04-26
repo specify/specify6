@@ -8,7 +8,7 @@ import java.util.Date;
 /**
 
  */
-public class DeaccessionAgent  implements java.io.Serializable {
+public class DeaccessionAgents  implements java.io.Serializable {
 
     // Fields    
 
@@ -25,11 +25,11 @@ public class DeaccessionAgent  implements java.io.Serializable {
     // Constructors
 
     /** default constructor */
-    public DeaccessionAgent() {
+    public DeaccessionAgents() {
     }
     
     /** constructor with id */
-    public DeaccessionAgent(Integer deaccessionAgentsId) {
+    public DeaccessionAgents(Integer deaccessionAgentsId) {
         this.deaccessionAgentsId = deaccessionAgentsId;
     }
    

@@ -97,7 +97,7 @@ import edu.ku.brc.specify.datamodel.CollectingEventAttr;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
-import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.datamodel.Collectors;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
@@ -198,7 +198,7 @@ public class FormEditor
 
         // Create Collecting Event
         CollectingEvent colEv = createCollectingEvent(localities[0],
-                new Collector[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
+                new Collectors[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
 
         // Create AttributeDef for Collecting Event
         AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", null);

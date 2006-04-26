@@ -230,7 +230,7 @@
       </row>
       <row>
         <cell type="subview" id="12" name="accessionAgents"
-          class="edu.ku.brc.specify.datamodel.AccessionAgent"/>
+          class="edu.ku.brc.specify.datamodel.AccessionAgents"/>
       </row>
       <row>
         <cell type="subview" id="13" name="collectionObjectCatalogs"
@@ -431,7 +431,7 @@
     </rows>
   </view>
   
-  <view id="12" name="Accession Agent" class="edu.ku.brc.specify.datamodel.AccessionAgent" type="form">
+  <view id="12" name="Accession Agent" class="edu.ku.brc.specify.datamodel.AccessionAgents" type="form">
    	<desc><![CDATA[The main Accession Agent form]]></desc>
     <columnDef> right:max(50dlu;p), 1dlu, 75dlu:g, 7dlu, right:p, 1dlu, 75dlu:g</columnDef>
     <rowDef> p, 2dlu, p, 2dlu, p, 2dlu, p, 7dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 7dlu, p, 2dlu, p, 2dlu, p</rowDef>

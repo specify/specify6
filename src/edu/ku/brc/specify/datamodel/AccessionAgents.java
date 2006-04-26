@@ -8,28 +8,30 @@ import java.util.Date;
 /**
 
  */
-public class BorrowShipment  implements java.io.Serializable {
+public class AccessionAgents  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer borrowShipmentsId;
+     protected Integer accessionAgentsId;
+     protected String role;
      protected String remarks;
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     protected Shipment shipment;
-     protected Borrow borrow;
+     protected Agent agent;
+     protected Accession accession;
+     protected RepositoryAgreement repositoryAgreement;
 
 
     // Constructors
 
     /** default constructor */
-    public BorrowShipment() {
+    public AccessionAgents() {
     }
     
     /** constructor with id */
-    public BorrowShipment(Integer borrowShipmentsId) {
-        this.borrowShipmentsId = borrowShipmentsId;
+    public AccessionAgents(Integer accessionAgentsId) {
+        this.accessionAgentsId = accessionAgentsId;
     }
    
     
@@ -38,13 +40,15 @@ public class BorrowShipment  implements java.io.Serializable {
     // Initializer
     public void initialize()
     {
-        borrowShipmentsId = null;
+        accessionAgentsId = null;
+        role = null;
         remarks = null;
         timestampModified = new Date();
         timestampCreated = new Date();
         lastEditedBy = null;
-        shipment = null;
-        borrow = null;
+        agent = null;
+        accession = null;
+        repositoryAgreement = null;
     }
     // End Initializer
 
@@ -53,12 +57,23 @@ public class BorrowShipment  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getBorrowShipmentsId() {
-        return this.borrowShipmentsId;
+    public Integer getAccessionAgentsId() {
+        return this.accessionAgentsId;
     }
     
-    public void setBorrowShipmentsId(Integer borrowShipmentsId) {
-        this.borrowShipmentsId = borrowShipmentsId;
+    public void setAccessionAgentsId(Integer accessionAgentsId) {
+        this.accessionAgentsId = accessionAgentsId;
+    }
+
+    /**
+     *      * Role the agent played in the accession process
+     */
+    public String getRole() {
+        return this.role;
+    }
+    
+    public void setRole(String role) {
+        this.role = role;
     }
 
     /**
@@ -106,25 +121,36 @@ public class BorrowShipment  implements java.io.Serializable {
     }
 
     /**
-     *      * The shipment
+     *      * AgentAdress of agent playing role in Accession
      */
-    public Shipment getShipment() {
-        return this.shipment;
+    public Agent getAgent() {
+        return this.agent;
     }
     
-    public void setShipment(Shipment shipment) {
-        this.shipment = shipment;
+    public void setAgent(Agent agent) {
+        this.agent = agent;
     }
 
     /**
-     *      * The borrow being shipped (returned)
+     *      * Accession in which the Agent played a role
      */
-    public Borrow getBorrow() {
-        return this.borrow;
+    public Accession getAccession() {
+        return this.accession;
     }
     
-    public void setBorrow(Borrow borrow) {
-        this.borrow = borrow;
+    public void setAccession(Accession accession) {
+        this.accession = accession;
+    }
+
+    /**
+     * 
+     */
+    public RepositoryAgreement getRepositoryAgreement() {
+        return this.repositoryAgreement;
+    }
+    
+    public void setRepositoryAgreement(RepositoryAgreement repositoryAgreement) {
+        this.repositoryAgreement = repositoryAgreement;
     }
 
 

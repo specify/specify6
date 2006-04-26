@@ -35,7 +35,7 @@ public class Shipment  implements java.io.Serializable {
      protected Agent agentByShipper;
      protected Agent agentByShippedTo;
      protected Agent agent;
-     protected Set<BorrowShipment> borrowShipments;
+     protected Set<BorrowShipments> borrowShipments;
      protected Set<Loan> loans;
      protected Set<ExchangeOut> exchangeOuts;
 
@@ -77,7 +77,7 @@ public class Shipment  implements java.io.Serializable {
         agentByShipper = null;
         agentByShippedTo = null;
         agent = null;
-        borrowShipments = new HashSet<BorrowShipment>();
+        borrowShipments = new HashSet<BorrowShipments>();
         loans = new HashSet<Loan>();
         exchangeOuts = new HashSet<ExchangeOut>();
     }
@@ -308,11 +308,11 @@ public class Shipment  implements java.io.Serializable {
     /**
      * 
      */
-    public Set<BorrowShipment> getBorrowShipments() {
+    public Set<BorrowShipments> getBorrowShipments() {
         return this.borrowShipments;
     }
     
-    public void setBorrowShipments(Set<BorrowShipment> borrowShipments) {
+    public void setBorrowShipments(Set<BorrowShipments> borrowShipments) {
         this.borrowShipments = borrowShipments;
     }
 
@@ -344,7 +344,7 @@ public class Shipment  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addBorrowShipment(final BorrowShipment borrowShipment)
+    public void addBorrowShipment(final BorrowShipments borrowShipment)
     {
         this.borrowShipments.add(borrowShipment);
         borrowShipment.setShipment(this);
@@ -366,7 +366,7 @@ public class Shipment  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeBorrowShipment(final BorrowShipment borrowShipment)
+    public void removeBorrowShipment(final BorrowShipments borrowShipment)
     {
         this.borrowShipments.remove(borrowShipment);
         borrowShipment.setShipment(null);

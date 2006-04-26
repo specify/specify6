@@ -8,29 +8,29 @@ import java.util.Date;
 /**
 
  */
-public class GroupPerson  implements java.io.Serializable {
+public class Authors  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer groupPersonsId;
+     protected Integer authorsId;
      protected Short orderNumber;
      protected String remarks;
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     protected Agent agentByGroup;
-     protected Agent agentByMember;
+     protected ReferenceWork referenceWork;
+     protected Agent agent;
 
 
     // Constructors
 
     /** default constructor */
-    public GroupPerson() {
+    public Authors() {
     }
     
     /** constructor with id */
-    public GroupPerson(Integer groupPersonsId) {
-        this.groupPersonsId = groupPersonsId;
+    public Authors(Integer authorsId) {
+        this.authorsId = authorsId;
     }
    
     
@@ -39,14 +39,14 @@ public class GroupPerson  implements java.io.Serializable {
     // Initializer
     public void initialize()
     {
-        groupPersonsId = null;
+        authorsId = null;
         orderNumber = null;
         remarks = null;
         timestampModified = new Date();
         timestampCreated = new Date();
         lastEditedBy = null;
-        agentByGroup = null;
-        agentByMember = null;
+        referenceWork = null;
+        agent = null;
     }
     // End Initializer
 
@@ -55,12 +55,12 @@ public class GroupPerson  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getGroupPersonsId() {
-        return this.groupPersonsId;
+    public Integer getAuthorsId() {
+        return this.authorsId;
     }
     
-    public void setGroupPersonsId(Integer groupPersonsId) {
-        this.groupPersonsId = groupPersonsId;
+    public void setAuthorsId(Integer authorsId) {
+        this.authorsId = authorsId;
     }
 
     /**
@@ -119,25 +119,25 @@ public class GroupPerson  implements java.io.Serializable {
     }
 
     /**
-     *      * AgentID of group
+     *      * Reference record the Agent authored
      */
-    public Agent getAgentByGroup() {
-        return this.agentByGroup;
+    public ReferenceWork getReferenceWork() {
+        return this.referenceWork;
     }
     
-    public void setAgentByGroup(Agent agentByGroup) {
-        this.agentByGroup = agentByGroup;
+    public void setReferenceWork(ReferenceWork referenceWork) {
+        this.referenceWork = referenceWork;
     }
 
     /**
-     *      * AgentID of member (member must be of type Person)
+     *      * Agent record representing the Authors
      */
-    public Agent getAgentByMember() {
-        return this.agentByMember;
+    public Agent getAgent() {
+        return this.agent;
     }
     
-    public void setAgentByMember(Agent agentByMember) {
-        this.agentByMember = agentByMember;
+    public void setAgent(Agent agent) {
+        this.agent = agent;
     }
 
 

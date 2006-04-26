@@ -35,7 +35,7 @@ public class Accession  implements java.io.Serializable {
      protected Boolean yesNo2;
      protected Set<CollectionObject> collectionObjects;
      protected Set<AccessionAuthorizations> accessionAuthorizations;
-     protected Set<AccessionAgent> accessionAgents;
+     protected Set<AccessionAgents> accessionAgents;
 
 
     // Constructors
@@ -75,7 +75,7 @@ public class Accession  implements java.io.Serializable {
         yesNo2 = null;
         collectionObjects = new HashSet<CollectionObject>();
         accessionAuthorizations = new HashSet<AccessionAuthorizations>();
-        accessionAgents = new HashSet<AccessionAgent>();
+        accessionAgents = new HashSet<AccessionAgents>();
     }
     // End Initializer
 
@@ -304,11 +304,11 @@ public class Accession  implements java.io.Serializable {
     /**
      *
      */
-    public Set<AccessionAgent> getAccessionAgents() {
+    public Set<AccessionAgents> getAccessionAgents() {
         return this.accessionAgents;
     }
 
-    public void setAccessionAgents(Set<AccessionAgent> accessionAgents) {
+    public void setAccessionAgents(Set<AccessionAgents> accessionAgents) {
         this.accessionAgents = accessionAgents;
     }
 
@@ -330,7 +330,7 @@ public class Accession  implements java.io.Serializable {
         accessionAuthorizations.setAccession(this);
     }
 
-    public void addAccessionAgent(final AccessionAgent accessionAgent)
+    public void addAccessionAgent(final AccessionAgents accessionAgent)
     {
         this.accessionAgents.add(accessionAgent);
         accessionAgent.setAccession(this);
@@ -352,7 +352,7 @@ public class Accession  implements java.io.Serializable {
         accessionAuthorizations.setAccession(null);
     }
 
-    public void removeAccessionAgent(final AccessionAgent accessionAgent)
+    public void removeAccessionAgent(final AccessionAgents accessionAgent)
     {
         this.accessionAgents.remove(accessionAgent);
         accessionAgent.setAccession(null);

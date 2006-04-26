@@ -8,29 +8,29 @@ import java.util.Date;
 /**
 
  */
-public class Author  implements java.io.Serializable {
+public class Collectors  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer authorsId;
-     protected Short orderNumber;
+     protected Integer collectorsId;
+     protected Integer orderNumber;
      protected String remarks;
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     protected ReferenceWork referenceWork;
+     protected CollectingEvent collectingEvent;
      protected Agent agent;
 
 
     // Constructors
 
     /** default constructor */
-    public Author() {
+    public Collectors() {
     }
     
     /** constructor with id */
-    public Author(Integer authorsId) {
-        this.authorsId = authorsId;
+    public Collectors(Integer collectorsId) {
+        this.collectorsId = collectorsId;
     }
    
     
@@ -39,13 +39,13 @@ public class Author  implements java.io.Serializable {
     // Initializer
     public void initialize()
     {
-        authorsId = null;
+        collectorsId = null;
         orderNumber = null;
         remarks = null;
         timestampModified = new Date();
         timestampCreated = new Date();
         lastEditedBy = null;
-        referenceWork = null;
+        collectingEvent = null;
         agent = null;
     }
     // End Initializer
@@ -55,22 +55,22 @@ public class Author  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getAuthorsId() {
-        return this.authorsId;
+    public Integer getCollectorsId() {
+        return this.collectorsId;
     }
     
-    public void setAuthorsId(Integer authorsId) {
-        this.authorsId = authorsId;
+    public void setCollectorsId(Integer collectorsId) {
+        this.collectorsId = collectorsId;
     }
 
     /**
      * 
      */
-    public Short getOrderNumber() {
+    public Integer getOrderNumber() {
         return this.orderNumber;
     }
     
-    public void setOrderNumber(Short orderNumber) {
+    public void setOrderNumber(Integer orderNumber) {
         this.orderNumber = orderNumber;
     }
 
@@ -119,18 +119,18 @@ public class Author  implements java.io.Serializable {
     }
 
     /**
-     *      * Reference record the Agent authored
+     *      * The CollectingEvent the agent participated in
      */
-    public ReferenceWork getReferenceWork() {
-        return this.referenceWork;
+    public CollectingEvent getCollectingEvent() {
+        return this.collectingEvent;
     }
     
-    public void setReferenceWork(ReferenceWork referenceWork) {
-        this.referenceWork = referenceWork;
+    public void setCollectingEvent(CollectingEvent collectingEvent) {
+        this.collectingEvent = collectingEvent;
     }
 
     /**
-     *      * Agent record representing the Author
+     *      * Link to Collectors's record in Agent table
      */
     public Agent getAgent() {
         return this.agent;

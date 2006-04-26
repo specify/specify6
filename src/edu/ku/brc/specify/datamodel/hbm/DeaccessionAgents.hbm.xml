@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
 
-<class name="edu.ku.brc.specify.datamodel.Author" table="authors">
+<class name="edu.ku.brc.specify.datamodel.DeaccessionAgents" table="deaccessionagents" lazy="true">
     <meta attribute="class-description" inherit="false"/>
 
-    <id name="authorsId" type="java.lang.Integer" column="AuthorsID">
+    <id name="deaccessionAgentsId" type="java.lang.Integer" column="DeaccessionAgentsID">
         <meta attribute="field-description"></meta>
         <meta attribute="scope-field">protected</meta>
         <generator class="native"/>
     </id>
 
-    <property name="orderNumber" type="short" column="OrderNumber" not-null="true" unique-key="IX_AuthorsRefOrder">
+    <property name="role" type="java.lang.String" column="Role" not-null="true" length="32" unique-key="IX_DeaccessionAgents">
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
+        <meta attribute="field-description">Role agent played in deaccession</meta>
     </property>
     
     <property name="remarks" type="text" column="Remarks">
@@ -37,16 +37,16 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional many-to-one association to ReferenceWork -->
-    <many-to-one name="referenceWork" class="edu.ku.brc.specify.datamodel.ReferenceWork" not-null="true" cascade="none" index="IX_AuthorsReferenceWorkID" unique-key="IX_AuthorsRefOrder">
-        <meta attribute="field-description">Reference record the Agent authored</meta>
-        <column name="ReferenceWorkID"/>
-    </many-to-one>
-
     <!-- bi-directional many-to-one association to Agent -->
-    <many-to-one name="agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" index="IX_AuthorsAgentID">
-        <meta attribute="field-description">Agent record representing the Author</meta>
+    <many-to-one name="Agent" class="edu.ku.brc.specify.datamodel.Agent" not-null="true" outer-join="true" index="IX_DeaccessionAgentsAgentID" unique-key="IX_DeaccessionAgents">
+        <meta attribute="field-description">AgentID for agent</meta>
         <column name="AgentID"/>
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Deaccession -->
+    <many-to-one name="deaccession" class="edu.ku.brc.specify.datamodel.Deaccession" not-null="true" outer-join="true" cascade="none" index="IX_DeaccessionAgentsDeaccessionID" unique-key="IX_DeaccessionAgents">
+        <meta attribute="field-description">Deaccession agent played role in</meta>
+        <column name="DeaccessionID"/>
     </many-to-one>
 
 </class>

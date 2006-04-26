@@ -27,7 +27,7 @@ public class Agent  implements java.io.Serializable {
     protected Date                          timestampModified;
     protected Date                          timestampCreated;
     protected String                        lastEditedBy;
-    protected Set<Author>                   authors;
+    protected Set<Authors>                   authors;
     protected Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects;
     protected Set<BorrowReturnMaterial>     borrowReturnMaterials;
     protected Set<ExchangeIn>               exchangeInCatalogedBys;
@@ -35,13 +35,13 @@ public class Agent  implements java.io.Serializable {
     protected Agent                         organization;
     protected Set<Project>                  projects;
     protected Set<Preparation>              preparations;
-    protected Set<GroupPerson>              groupPersonsByGroup;
-    protected Set<GroupPerson>              groupPersonsByMember;
+    protected Set<GroupPersons>              groupPersonsByGroup;
+    protected Set<GroupPersons>              groupPersonsByMember;
     protected Set<Determination>            determinations;
     protected Set<Agent>                    agentsByOrganization;
     protected Set<Agent>                    agentsByAgent;
     protected Set<Shipment>                 shipments;
-    protected Set<Collector>                collectors;
+    protected Set<Collectors>                collectors;
     protected Set<ExchangeOut>              exchangeOutCatalogedBys;
     protected Set<ExternalResource>         externalResources;
     protected Set<RepositoryAgreement>      repositoryAgreements;
@@ -52,15 +52,15 @@ public class Agent  implements java.io.Serializable {
     protected String                        url;
      
     protected Set<Address>                  addresses;
-    protected Set<LoanAgent>                loanAgents;
+    protected Set<LoanAgents>                loanAgents;
     protected Set<Shipment>                 shipmentsByShipper;
     protected Set<Shipment>                 shipmentsByShippedTo;
-    protected Set<DeaccessionAgent>         deaccessionAgents;
+    protected Set<DeaccessionAgents>         deaccessionAgents;
     protected Set<ExchangeIn>               exchangeInFromOrganizations;
     protected Set<Permit>                   permitsByIssuee;
     protected Set<Permit>                   permitsByIssuer;
-    protected Set<BorrowAgent>              borrowAgents;
-    protected Set<AccessionAgent>           accessionAgents;
+    protected Set<BorrowAgents>              borrowAgents;
+    protected Set<AccessionAgents>           accessionAgents;
     protected Set<ExchangeOut>              exchangeOutSentToOrganizations;
 
     // Constructors
@@ -90,7 +90,7 @@ public class Agent  implements java.io.Serializable {
         timestampModified = new Date();
         timestampCreated = new Date();
         lastEditedBy = null;
-        authors = new HashSet<Author>();
+        authors = new HashSet<Authors>();
         loanReturnPhysicalObjects = new HashSet<LoanReturnPhysicalObject>();
         borrowReturnMaterials = new HashSet<BorrowReturnMaterial>();
         exchangeInCatalogedBys = new HashSet<ExchangeIn>();
@@ -98,13 +98,13 @@ public class Agent  implements java.io.Serializable {
         organization = null;
         projects = new HashSet<Project>();
         preparations = new HashSet<Preparation>();
-        groupPersonsByGroup = new HashSet<GroupPerson>();
-        groupPersonsByMember = new HashSet<GroupPerson>();
+        groupPersonsByGroup = new HashSet<GroupPersons>();
+        groupPersonsByMember = new HashSet<GroupPersons>();
         determinations = new HashSet<Determination>();
         agentsByOrganization = new HashSet<Agent>();
         agentsByAgent = new HashSet<Agent>();
         shipments = new HashSet<Shipment>();
-        collectors = new HashSet<Collector>();
+        collectors = new HashSet<Collectors>();
         exchangeOutCatalogedBys = new HashSet<ExchangeOut>();
         externalResources = new HashSet<ExternalResource>();
         repositoryAgreements = new HashSet<RepositoryAgreement>();
@@ -118,15 +118,15 @@ public class Agent  implements java.io.Serializable {
         timestampCreated = new Date();
         lastEditedBy = null;
         addresses = new HashSet<Address>();
-        loanAgents = new HashSet<LoanAgent>();
+        loanAgents = new HashSet<LoanAgents>();
         shipmentsByShipper = new HashSet<Shipment>();
         shipmentsByShippedTo = new HashSet<Shipment>();
-        deaccessionAgents = new HashSet<DeaccessionAgent>();
+        deaccessionAgents = new HashSet<DeaccessionAgents>();
         exchangeInFromOrganizations = new HashSet<ExchangeIn>();
         permitsByIssuee = new HashSet<Permit>();
         permitsByIssuer = new HashSet<Permit>();
-        borrowAgents = new HashSet<BorrowAgent>();
-        accessionAgents = new HashSet<AccessionAgent>();
+        borrowAgents = new HashSet<BorrowAgents>();
+        accessionAgents = new HashSet<AccessionAgents>();
         exchangeOutSentToOrganizations = new HashSet<ExchangeOut>();
         organization = null;
     }
@@ -280,11 +280,11 @@ public class Agent  implements java.io.Serializable {
     /**
      *
      */
-    public Set<Author> getAuthors() {
+    public Set<Authors> getAuthors() {
         return this.authors;
     }
 
-    public void setAuthors(Set<Author> authors) {
+    public void setAuthors(Set<Authors> authors) {
         this.authors = authors;
     }
 
@@ -372,18 +372,18 @@ public class Agent  implements java.io.Serializable {
         return this.groupPersonsByGroup;
     }
 
-    public void setGroupPersonsByGroup(Set<GroupPerson> groupPersonsByGroup) {
+    public void setGroupPersonsByGroup(Set<GroupPersons> groupPersonsByGroup) {
         this.groupPersonsByGroup = groupPersonsByGroup;
     }
 
     /**
      *
      */
-    public Set<GroupPerson> getGroupPersonsByMember() {
+    public Set<GroupPersons> getGroupPersonsByMember() {
         return this.groupPersonsByMember;
     }
 
-    public void setGroupPersonsByMember(Set<GroupPerson> groupPersonsByMember) {
+    public void setGroupPersonsByMember(Set<GroupPersons> groupPersonsByMember) {
         this.groupPersonsByMember = groupPersonsByMember;
     }
 
@@ -434,11 +434,11 @@ public class Agent  implements java.io.Serializable {
     /**
      *
      */
-    public Set<Collector> getCollectors() {
+    public Set<Collectors> getCollectors() {
         return this.collectors;
     }
 
-    public void setCollectors(Set<Collector> collectors) {
+    public void setCollectors(Set<Collectors> collectors) {
         this.collectors = collectors;
     }
 
@@ -516,11 +516,11 @@ public class Agent  implements java.io.Serializable {
     /**
      *
      */
-    public Set<LoanAgent> getLoanAgents() {
+    public Set<LoanAgents> getLoanAgents() {
         return this.loanAgents;
     }
 
-    public void setLoanAgents(Set<LoanAgent> loanAgents) {
+    public void setLoanAgents(Set<LoanAgents> loanAgents) {
         this.loanAgents = loanAgents;
     }
 
@@ -549,11 +549,11 @@ public class Agent  implements java.io.Serializable {
     /**
      *
      */
-    public Set<DeaccessionAgent> getDeaccessionAgents() {
+    public Set<DeaccessionAgents> getDeaccessionAgents() {
         return this.deaccessionAgents;
     }
 
-    public void setDeaccessionAgents(Set<DeaccessionAgent> deaccessionAgents) {
+    public void setDeaccessionAgents(Set<DeaccessionAgents> deaccessionAgents) {
         this.deaccessionAgents = deaccessionAgents;
     }
 
@@ -593,22 +593,22 @@ public class Agent  implements java.io.Serializable {
     /**
      *
      */
-    public Set<BorrowAgent> getBorrowAgents() {
+    public Set<BorrowAgents> getBorrowAgents() {
         return this.borrowAgents;
     }
 
-    public void setBorrowAgents(Set<BorrowAgent> borrowAgents) {
+    public void setBorrowAgents(Set<BorrowAgents> borrowAgents) {
         this.borrowAgents = borrowAgents;
     }
 
     /**
      *
      */
-    public Set<AccessionAgent> getAccessionAgents() {
+    public Set<AccessionAgents> getAccessionAgents() {
         return this.accessionAgents;
     }
 
-    public void setAccessionAgents(Set<AccessionAgent> accessionAgents) {
+    public void setAccessionAgents(Set<AccessionAgents> accessionAgents) {
         this.accessionAgents = accessionAgents;
     }
 
@@ -638,7 +638,7 @@ public class Agent  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addAuthor(final Author author)
+    public void addAuthor(final Authors author)
     {
         this.authors.add(author);
         author.setAgent(this);

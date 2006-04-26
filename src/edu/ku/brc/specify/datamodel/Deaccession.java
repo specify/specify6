@@ -29,7 +29,7 @@ public class Deaccession  implements java.io.Serializable {
      protected String lastEditedBy;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     protected Set<DeaccessionAgent> deaccessionAgents;
+     protected Set<DeaccessionAgents> deaccessionAgents;
      protected Set<DeaccessionCollectionObject> deaccessionCollectionObjects;
 
 
@@ -64,7 +64,7 @@ public class Deaccession  implements java.io.Serializable {
         lastEditedBy = null;
         yesNo1 = null;
         yesNo2 = null;
-        deaccessionAgents = new HashSet<DeaccessionAgent>();
+        deaccessionAgents = new HashSet<DeaccessionAgents>();
         deaccessionCollectionObjects = new HashSet<DeaccessionCollectionObject>();
     }
     // End Initializer
@@ -228,11 +228,11 @@ public class Deaccession  implements java.io.Serializable {
     /**
      * 
      */
-    public Set<DeaccessionAgent> getDeaccessionAgents() {
+    public Set<DeaccessionAgents> getDeaccessionAgents() {
         return this.deaccessionAgents;
     }
     
-    public void setDeaccessionAgents(Set<DeaccessionAgent> deaccessionAgents) {
+    public void setDeaccessionAgents(Set<DeaccessionAgents> deaccessionAgents) {
         this.deaccessionAgents = deaccessionAgents;
     }
 
@@ -253,7 +253,7 @@ public class Deaccession  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addDeaccessionAgent(final DeaccessionAgent deaccessionAgent)
+    public void addDeaccessionAgent(final DeaccessionAgents deaccessionAgent)
     {
         this.deaccessionAgents.add(deaccessionAgent);
         deaccessionAgent.setDeaccession(this);
@@ -269,7 +269,7 @@ public class Deaccession  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeDeaccessionAgent(final DeaccessionAgent deaccessionAgent)
+    public void removeDeaccessionAgent(final DeaccessionAgents deaccessionAgent)
     {
         this.deaccessionAgents.remove(deaccessionAgent);
         deaccessionAgent.setDeaccession(null);

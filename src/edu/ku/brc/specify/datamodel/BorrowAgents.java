@@ -8,29 +8,29 @@ import java.util.Date;
 /**
 
  */
-public class LoanAgent  implements java.io.Serializable {
+public class BorrowAgents  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer loanAgentsId;
+     protected Integer borrowAgentsId;
      protected String role;
      protected String remarks;
-     protected Date timestampCreated;
      protected Date timestampModified;
+     protected Date timestampCreated;
      protected String lastEditedBy;
-     protected Loan loan;
      protected Agent agent;
+     protected Borrow borrow;
 
 
     // Constructors
 
     /** default constructor */
-    public LoanAgent() {
+    public BorrowAgents() {
     }
     
     /** constructor with id */
-    public LoanAgent(Integer loanAgentsId) {
-        this.loanAgentsId = loanAgentsId;
+    public BorrowAgents(Integer borrowAgentsId) {
+        this.borrowAgentsId = borrowAgentsId;
     }
    
     
@@ -39,14 +39,14 @@ public class LoanAgent  implements java.io.Serializable {
     // Initializer
     public void initialize()
     {
-        loanAgentsId = null;
+        borrowAgentsId = null;
         role = null;
         remarks = null;
-        timestampCreated = new Date();
         timestampModified = new Date();
+        timestampCreated = new Date();
         lastEditedBy = null;
-        loan = null;
         agent = null;
+        borrow = null;
     }
     // End Initializer
 
@@ -55,16 +55,16 @@ public class LoanAgent  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getLoanAgentsId() {
-        return this.loanAgentsId;
+    public Integer getBorrowAgentsId() {
+        return this.borrowAgentsId;
     }
     
-    public void setLoanAgentsId(Integer loanAgentsId) {
-        this.loanAgentsId = loanAgentsId;
+    public void setBorrowAgentsId(Integer borrowAgentsId) {
+        this.borrowAgentsId = borrowAgentsId;
     }
 
     /**
-     *      * Role the agent played in the loan
+     *      * Role played by agent in borrow
      */
     public String getRole() {
         return this.role;
@@ -88,23 +88,23 @@ public class LoanAgent  implements java.io.Serializable {
     /**
      * 
      */
-    public Date getTimestampCreated() {
-        return this.timestampCreated;
-    }
-    
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
-
-    /**
-     * 
-     */
     public Date getTimestampModified() {
         return this.timestampModified;
     }
     
     public void setTimestampModified(Date timestampModified) {
         this.timestampModified = timestampModified;
+    }
+
+    /**
+     * 
+     */
+    public Date getTimestampCreated() {
+        return this.timestampCreated;
+    }
+    
+    public void setTimestampCreated(Date timestampCreated) {
+        this.timestampCreated = timestampCreated;
     }
 
     /**
@@ -119,18 +119,7 @@ public class LoanAgent  implements java.io.Serializable {
     }
 
     /**
-     *      * ID of loan agent at AgentID played a role in
-     */
-    public Loan getLoan() {
-        return this.loan;
-    }
-    
-    public void setLoan(Loan loan) {
-        this.loan = loan;
-    }
-
-    /**
-     *      * Address of agent
+     *      * Address/Organization from which agent participated in the borrow
      */
     public Agent getAgent() {
         return this.agent;
@@ -138,6 +127,17 @@ public class LoanAgent  implements java.io.Serializable {
     
     public void setAgent(Agent agent) {
         this.agent = agent;
+    }
+
+    /**
+     *      * ID of borrow in which Agent played role
+     */
+    public Borrow getBorrow() {
+        return this.borrow;
+    }
+    
+    public void setBorrow(Borrow borrow) {
+        this.borrow = borrow;
     }
 
 

@@ -8,30 +8,29 @@ import java.util.Date;
 /**
 
  */
-public class AccessionAgent  implements java.io.Serializable {
+public class GroupPersons  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer accessionAgentsId;
-     protected String role;
+     protected Integer groupPersonsId;
+     protected Short orderNumber;
      protected String remarks;
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     protected Agent agent;
-     protected Accession accession;
-     protected RepositoryAgreement repositoryAgreement;
+     protected Agent agentByGroup;
+     protected Agent agentByMember;
 
 
     // Constructors
 
     /** default constructor */
-    public AccessionAgent() {
+    public GroupPersons() {
     }
     
     /** constructor with id */
-    public AccessionAgent(Integer accessionAgentsId) {
-        this.accessionAgentsId = accessionAgentsId;
+    public GroupPersons(Integer groupPersonsId) {
+        this.groupPersonsId = groupPersonsId;
     }
    
     
@@ -40,15 +39,14 @@ public class AccessionAgent  implements java.io.Serializable {
     // Initializer
     public void initialize()
     {
-        accessionAgentsId = null;
-        role = null;
+        groupPersonsId = null;
+        orderNumber = null;
         remarks = null;
         timestampModified = new Date();
         timestampCreated = new Date();
         lastEditedBy = null;
-        agent = null;
-        accession = null;
-        repositoryAgreement = null;
+        agentByGroup = null;
+        agentByMember = null;
     }
     // End Initializer
 
@@ -57,23 +55,23 @@ public class AccessionAgent  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getAccessionAgentsId() {
-        return this.accessionAgentsId;
+    public Integer getGroupPersonsId() {
+        return this.groupPersonsId;
     }
     
-    public void setAccessionAgentsId(Integer accessionAgentsId) {
-        this.accessionAgentsId = accessionAgentsId;
+    public void setGroupPersonsId(Integer groupPersonsId) {
+        this.groupPersonsId = groupPersonsId;
     }
 
     /**
-     *      * Role the agent played in the accession process
+     * 
      */
-    public String getRole() {
-        return this.role;
+    public Short getOrderNumber() {
+        return this.orderNumber;
     }
     
-    public void setRole(String role) {
-        this.role = role;
+    public void setOrderNumber(Short orderNumber) {
+        this.orderNumber = orderNumber;
     }
 
     /**
@@ -121,36 +119,25 @@ public class AccessionAgent  implements java.io.Serializable {
     }
 
     /**
-     *      * AgentAdress of agent playing role in Accession
+     *      * AgentID of group
      */
-    public Agent getAgent() {
-        return this.agent;
+    public Agent getAgentByGroup() {
+        return this.agentByGroup;
     }
     
-    public void setAgent(Agent agent) {
-        this.agent = agent;
+    public void setAgentByGroup(Agent agentByGroup) {
+        this.agentByGroup = agentByGroup;
     }
 
     /**
-     *      * Accession in which the Agent played a role
+     *      * AgentID of member (member must be of type Person)
      */
-    public Accession getAccession() {
-        return this.accession;
+    public Agent getAgentByMember() {
+        return this.agentByMember;
     }
     
-    public void setAccession(Accession accession) {
-        this.accession = accession;
-    }
-
-    /**
-     * 
-     */
-    public RepositoryAgreement getRepositoryAgreement() {
-        return this.repositoryAgreement;
-    }
-    
-    public void setRepositoryAgreement(RepositoryAgreement repositoryAgreement) {
-        this.repositoryAgreement = repositoryAgreement;
+    public void setAgentByMember(Agent agentByMember) {
+        this.agentByMember = agentByMember;
     }
 
 

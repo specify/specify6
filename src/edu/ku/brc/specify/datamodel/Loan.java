@@ -33,7 +33,7 @@ public class Loan  implements java.io.Serializable {
      protected Short closed;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     protected Set<LoanAgent> loanAgents;
+     protected Set<LoanAgents> loanAgents;
      protected Set<LoanPhysicalObject> loanPhysicalObjects;
      protected Shipment shipment;
      protected Set<ExternalResource> externalResources;
@@ -74,7 +74,7 @@ public class Loan  implements java.io.Serializable {
         closed = null;
         yesNo1 = null;
         yesNo2 = null;
-        loanAgents = new HashSet<LoanAgent>();
+        loanAgents = new HashSet<LoanAgents>();
         loanPhysicalObjects = new HashSet<LoanPhysicalObject>();
         shipment = null;
         externalResources = new HashSet<ExternalResource>();
@@ -284,11 +284,11 @@ public class Loan  implements java.io.Serializable {
     /**
      * 
      */
-    public Set<LoanAgent> getLoanAgents() {
+    public Set<LoanAgents> getLoanAgents() {
         return this.loanAgents;
     }
     
-    public void setLoanAgents(Set<LoanAgent> loanAgents) {
+    public void setLoanAgents(Set<LoanAgents> loanAgents) {
         this.loanAgents = loanAgents;
     }
 
@@ -331,7 +331,7 @@ public class Loan  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addLoanAgent(final LoanAgent loanAgent)
+    public void addLoanAgent(final LoanAgents loanAgent)
     {
         this.loanAgents.add(loanAgent);
         loanAgent.setLoan(this);
@@ -353,7 +353,7 @@ public class Loan  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeLoanAgent(final LoanAgent loanAgent)
+    public void removeLoanAgent(final LoanAgents loanAgent)
     {
         this.loanAgents.remove(loanAgent);
         loanAgent.setLoan(null);

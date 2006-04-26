@@ -8,29 +8,28 @@ import java.util.Date;
 /**
 
  */
-public class Collector  implements java.io.Serializable {
+public class BorrowShipments  implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer collectorsId;
-     protected Integer orderNumber;
+     protected Integer borrowShipmentsId;
      protected String remarks;
      protected Date timestampModified;
      protected Date timestampCreated;
      protected String lastEditedBy;
-     protected CollectingEvent collectingEvent;
-     protected Agent agent;
+     protected Shipment shipment;
+     protected Borrow borrow;
 
 
     // Constructors
 
     /** default constructor */
-    public Collector() {
+    public BorrowShipments() {
     }
     
     /** constructor with id */
-    public Collector(Integer collectorsId) {
-        this.collectorsId = collectorsId;
+    public BorrowShipments(Integer borrowShipmentsId) {
+        this.borrowShipmentsId = borrowShipmentsId;
     }
    
     
@@ -39,14 +38,13 @@ public class Collector  implements java.io.Serializable {
     // Initializer
     public void initialize()
     {
-        collectorsId = null;
-        orderNumber = null;
+        borrowShipmentsId = null;
         remarks = null;
         timestampModified = new Date();
         timestampCreated = new Date();
         lastEditedBy = null;
-        collectingEvent = null;
-        agent = null;
+        shipment = null;
+        borrow = null;
     }
     // End Initializer
 
@@ -55,23 +53,12 @@ public class Collector  implements java.io.Serializable {
     /**
      * 
      */
-    public Integer getCollectorsId() {
-        return this.collectorsId;
+    public Integer getBorrowShipmentsId() {
+        return this.borrowShipmentsId;
     }
     
-    public void setCollectorsId(Integer collectorsId) {
-        this.collectorsId = collectorsId;
-    }
-
-    /**
-     * 
-     */
-    public Integer getOrderNumber() {
-        return this.orderNumber;
-    }
-    
-    public void setOrderNumber(Integer orderNumber) {
-        this.orderNumber = orderNumber;
+    public void setBorrowShipmentsId(Integer borrowShipmentsId) {
+        this.borrowShipmentsId = borrowShipmentsId;
     }
 
     /**
@@ -119,25 +106,25 @@ public class Collector  implements java.io.Serializable {
     }
 
     /**
-     *      * The CollectingEvent the agent participated in
+     *      * The shipment
      */
-    public CollectingEvent getCollectingEvent() {
-        return this.collectingEvent;
+    public Shipment getShipment() {
+        return this.shipment;
     }
     
-    public void setCollectingEvent(CollectingEvent collectingEvent) {
-        this.collectingEvent = collectingEvent;
+    public void setShipment(Shipment shipment) {
+        this.shipment = shipment;
     }
 
     /**
-     *      * Link to Collector's record in Agent table
+     *      * The borrow being shipped (returned)
      */
-    public Agent getAgent() {
-        return this.agent;
+    public Borrow getBorrow() {
+        return this.borrow;
     }
     
-    public void setAgent(Agent agent) {
-        this.agent = agent;
+    public void setBorrow(Borrow borrow) {
+        this.borrow = borrow;
     }
 
 

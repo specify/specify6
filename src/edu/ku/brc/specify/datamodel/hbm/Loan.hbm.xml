@@ -99,13 +99,13 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional one-to-many association to LoanAgent -->
+    <!-- bi-directional one-to-many association to LoanAgents -->
     <set name="loanAgents" lazy="true" inverse="true" cascade="delete">
         <meta attribute="field-description"></meta>
         <key>
             <column name="LoanID"/>
         </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.LoanAgent"/>
+        <one-to-many class="edu.ku.brc.specify.datamodel.LoanAgents"/>
     </set>
     
     <!-- bi-directional one-to-many association to LoanPhysicalObject -->

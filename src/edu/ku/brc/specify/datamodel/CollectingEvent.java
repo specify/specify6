@@ -34,7 +34,7 @@ public class CollectingEvent  implements java.io.Serializable {
      protected Date timestampCreated;
      protected String lastEditedBy;
      protected Set<CollectionObject> collectionObjects;
-     protected Set<Collector> collectors;
+     protected Set<Collectors> collectors;
      protected Locality locality;
      protected Stratigraphy stratigraphy;
      protected Set<AttributeIFace> attrs;
@@ -77,7 +77,7 @@ public class CollectingEvent  implements java.io.Serializable {
         timestampCreated = new Date();
         lastEditedBy = null;
         collectionObjects = new HashSet<CollectionObject>();
-        collectors = new HashSet<Collector>();
+        collectors = new HashSet<Collectors>();
         locality = null;
         stratigraphy = null;
         attrs = new HashSet<AttributeIFace>();
@@ -220,7 +220,7 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     /**
-     *      * Original statement (literal quotation) of the location of the CollectingEvent as given by the Collector.
+     *      * Original statement (literal quotation) of the location of the CollectingEvent as given by the Collectors.
      */
     public String getVerbatimLocality() {
         return this.verbatimLocality;
@@ -299,11 +299,11 @@ public class CollectingEvent  implements java.io.Serializable {
     /**
      * 
      */
-    public Set<Collector> getCollectors() {
+    public Set<Collectors> getCollectors() {
         return this.collectors;
     }
     
-    public void setCollectors(Set<Collector> collectors) {
+    public void setCollectors(Set<Collectors> collectors) {
         this.collectors = collectors;
     }
 
@@ -363,7 +363,7 @@ public class CollectingEvent  implements java.io.Serializable {
         collectionObject.setCollectingEvent(this);
     }
 
-    public void addCollector(final Collector collector)
+    public void addCollector(final Collectors collector)
     {
         this.collectors.add(collector);
         collector.setCollectingEvent(this);
@@ -391,7 +391,7 @@ public class CollectingEvent  implements java.io.Serializable {
         collectionObject.setCollectingEvent(null);
     }
 
-    public void removeCollector(final Collector collector)
+    public void removeCollector(final Collectors collector)
     {
         this.collectors.remove(collector);
         collector.setCollectingEvent(null);
