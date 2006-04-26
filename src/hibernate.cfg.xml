@@ -13,7 +13,7 @@
         <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
 		<property name="hibernate.connection.url">jdbc:mysql://localhost/demo_fish3</property>
 		<property name="hibernate.connection.username">rods</property>
-		<property name="hibernate.connection.password">rods</property>
+		<property name="hibernate.connection.password">rods</property> 
 
 	    <property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
 	    
