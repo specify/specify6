@@ -20,18 +20,6 @@ import org.dom4j.io.SAXReader;
 import edu.ku.brc.specify.tools.datamodelparser.Field;
 import edu.ku.brc.specify.tools.datamodelparser.Relationship;
 import edu.ku.brc.specify.tools.datamodelparser.Table;
-//hash.put(1, new TableInfo(1, "edu.ku.brc.specify.datamodel.CollectionObj", "collectionobj", "collectionObjectId"));
-//instance.hash.put(1,   new TableInfo(1, "edu.ku.brc.specify.datamodel.CollectionObject", "collectionobject", "collectionObjectId", "CollectionObject"));
-//instance.hash.put(5,   new TableInfo(4, "edu.ku.brc.specify.datamodel.Taxon", "taxon", "taxonId", "Taxon"));
-//instance.hash.put(5,   new TableInfo(5, "edu.ku.brc.specify.datamodel.Agent", "agent", "agentId", "Agent"));
-//instance.hash.put(6,   new TableInfo(6, "edu.ku.brc.specify.datamodel.Permit", "permit", "permitId", "Permit"));
-//instance.hash.put(7,   new TableInfo(7, "edu.ku.brc.specify.datamodel.Accession", "accession", "accessionId", "Accession"));
-//instance.hash.put(8,   new TableInfo(8, "edu.ku.brc.specify.datamodel.Address", "address", "addressId", "Address"));
-//instance.hash.put(9,   new TableInfo(9, "edu.ku.brc.specify.datamodel.Determination", "determination", "determinationId", "Determination"));
-//instance.hash.put(10,   new TableInfo(10, "edu.ku.brc.specify.datamodel.CollectingEvent", "collectingevent", "collectingEventId", "CollectingEvent"));
-//
-//instance.hash.put(80,  new TableInfo(80, "edu.ku.brc.specify.datamodel.InfoRequest", "inforequest", "infoRequestID", "InfoRequest"));
-//instance.hash.put(500, new TableInfo(500, "edu.ku.brc.specify.ui.db.PickList", "picklist", "picklist_id", "PickList"));
 
 /**
  * @author megkumin
@@ -41,32 +29,85 @@ public class DatamodelWriter {
 	private static Log log = LogFactory.getLog(DatamodelWriter.class);
 	private java.util.List<Table> classesList = new ArrayList<Table>();
 	private String fileName = "SpecifyDataModel.xml";
-int classCounter = 1000;
+	int classCounter = 10;
 	Hashtable<String, Integer> hash = new Hashtable<String, Integer>();
 	
 	public void populateTableIds() {
-//        hash.put(1,    "edu.ku.brc.specify.datamodel.CollectionObject");
-//        hash.put(4,  "edu.ku.brc.specify.datamodel.Taxon");
-//        hash.put(5,  "edu.ku.brc.specify.datamodel.Agent");
-//        hash.put(6,  "edu.ku.brc.specify.datamodel.Permit");
-//        hash.put(7, "edu.ku.brc.specify.datamodel.Accession");
-//        hash.put(8,  "edu.ku.brc.specify.datamodel.Address");
-//        hash.put(9,  "edu.ku.brc.specify.datamodel.Determination");
-//        hash.put(10,  "edu.ku.brc.specify.datamodel.CollectingEvent");
-//        
-//        hash.put(80, "edu.ku.brc.specify.datamodel.InfoRequest");
-//        hash.put(500,"edu.ku.brc.specify.ui.db.PickList");
-		//hash.p
-  hash.put("edu.ku.brc.specify.datamodel.CollectionObject",1);
-        hash.put("edu.ku.brc.specify.datamodel.Taxon", 4);
-        hash.put("edu.ku.brc.specify.datamodel.Agent",5);
-        hash.put("edu.ku.brc.specify.datamodel.Permit",6);
-        hash.put("edu.ku.brc.specify.datamodel.Accession",7);
-        hash.put("edu.ku.brc.specify.datamodel.Address",8);
-        hash.put("edu.ku.brc.specify.datamodel.Determination",9);
-        hash.put("edu.ku.brc.specify.datamodel.CollectingEvent",10);
+
+		hash.put("edu.ku.brc.specify.datamodel.Accession", 7);
+		hash.put("edu.ku.brc.specify.datamodel.AccessionAgent", 12);
+		hash.put("edu.ku.brc.specify.datamodel.AccessionAuthorizations", 13);
+		hash.put("edu.ku.brc.specify.datamodel.Address", 8);
+		hash.put("edu.ku.brc.specify.datamodel.Agent", 5);
+		hash.put("edu.ku.brc.specify.datamodel.AttributeDef", 16);
+		hash.put("edu.ku.brc.specify.datamodel.Author", 17);
+		hash.put("edu.ku.brc.specify.datamodel.Borrow", 18);
+		hash.put("edu.ku.brc.specify.datamodel.BorrowAgent", 19);
+		hash.put("edu.ku.brc.specify.datamodel.BorrowMaterial", 20);
+		hash.put("edu.ku.brc.specify.datamodel.BorrowReturnMaterial", 21);
+		hash.put("edu.ku.brc.specify.datamodel.BorrowShipment", 22);
+		hash.put("edu.ku.brc.specify.datamodel.CatalogSeries", 23);
+		hash.put("edu.ku.brc.specify.datamodel.CollectingEvent", 10);
+		hash.put("edu.ku.brc.specify.datamodel.CollectingEventAttr", 25);
+		hash.put("edu.ku.brc.specify.datamodel.CollectionObjDef", 26);
+		hash.put("edu.ku.brc.specify.datamodel.CollectionObject", 1);
+		hash.put("edu.ku.brc.specify.datamodel.CollectionObjectAttr", 28);
+		hash.put("edu.ku.brc.specify.datamodel.CollectionObjectCitation", 29);
+		hash.put("edu.ku.brc.specify.datamodel.Collector", 30);
+		hash.put("edu.ku.brc.specify.datamodel.Container", 31);
+		hash.put("edu.ku.brc.specify.datamodel.ContainerItem", 32);
+		hash.put("edu.ku.brc.specify.datamodel.DataType", 33);
+		hash.put("edu.ku.brc.specify.datamodel.Deaccession", 34);
+		hash.put("edu.ku.brc.specify.datamodel.DeaccessionAgent", 35);
+		hash.put("edu.ku.brc.specify.datamodel.DeaccessionCollectionObject", 36);
+		hash.put("edu.ku.brc.specify.datamodel.Determination", 9);
+		hash.put("edu.ku.brc.specify.datamodel.DeterminationCitation", 38);
+		hash.put("edu.ku.brc.specify.datamodel.ExchangeIn", 39);
+		hash.put("edu.ku.brc.specify.datamodel.ExchangeOut", 40);
+		hash.put("edu.ku.brc.specify.datamodel.ExternalResource", 41);
+		hash.put("edu.ku.brc.specify.datamodel.ExternalResourceAttr", 42);
+		hash.put("edu.ku.brc.specify.datamodel.Geography", 3);
+		hash.put("edu.ku.brc.specify.datamodel.GeographyTreeDef", 44);
+		hash.put("edu.ku.brc.specify.datamodel.GeographyTreeDefItem", 45);
+		hash.put("edu.ku.brc.specify.datamodel.GeologicTimePeriod", 46);
+		hash.put("edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef", 47);
+		hash.put("edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem", 48);
+		hash.put("edu.ku.brc.specify.datamodel.GroupPerson", 49);
+		hash.put("edu.ku.brc.specify.datamodel.InfoRequest", 50);
+		hash.put("edu.ku.brc.specify.datamodel.Journal", 51);
+		hash.put("edu.ku.brc.specify.datamodel.Loan", 52);
+		hash.put("edu.ku.brc.specify.datamodel.LoanAgent", 53);
+		hash.put("edu.ku.brc.specify.datamodel.LoanPhysicalObject", 54);
+		hash.put("edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject", 55);
+		hash.put("edu.ku.brc.specify.datamodel.Locality", 2);
+		hash.put("edu.ku.brc.specify.datamodel.LocalityCitation", 57);
+		hash.put("edu.ku.brc.specify.datamodel.Location", 58);
+		hash.put("edu.ku.brc.specify.datamodel.LocationTreeDef", 59);
+		hash.put("edu.ku.brc.specify.datamodel.LocationTreeDefItem", 60);
+		hash.put("edu.ku.brc.specify.datamodel.OtherIdentifier", 61);
+		hash.put("edu.ku.brc.specify.datamodel.Permit", 6);
+		hash.put("edu.ku.brc.specify.datamodel.Preparation", 63);
+		hash.put("edu.ku.brc.specify.datamodel.PreparationAttr", 64);
+		hash.put("edu.ku.brc.specify.datamodel.PrepType", 65);
+		hash.put("edu.ku.brc.specify.datamodel.Project", 66);
+		hash.put("edu.ku.brc.specify.datamodel.ProjectCollectionObject", 67);
+		hash.put("edu.ku.brc.specify.datamodel.RecordSet", 68);
+		hash.put("edu.ku.brc.specify.datamodel.ReferenceWork", 69);
+		hash.put("edu.ku.brc.specify.datamodel.RepositoryAgreement", 70);
+		hash.put("edu.ku.brc.specify.datamodel.Shipment", 71);
+		hash.put("edu.ku.brc.specify.datamodel.SpecifyUser", 72);
+		hash.put("edu.ku.brc.specify.datamodel.Stratigraphy", 73);
+		hash.put("edu.ku.brc.specify.datamodel.Taxon", 4);
+		hash.put("edu.ku.brc.specify.datamodel.TaxonCitation", 75);
+		hash.put("edu.ku.brc.specify.datamodel.TaxonTreeDef", 76);
+		hash.put("edu.ku.brc.specify.datamodel.TaxonTreeDefItem", 77);
+		hash.put("edu.ku.brc.specify.datamodel.UserGroup", 78);
+		hash.put("edu.ku.brc.specify.datamodel.Workbench", 79);
+		hash.put("edu.ku.brc.specify.datamodel.WorkbenchDataItem", 80);
+		hash.put("edu.ku.brc.specify.datamodel.WorkbenchTemplate", 81);
+		hash.put("edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem", 82);
         
-        hash.put("edu.ku.brc.specify.datamodel.InfoRequest",80);
+        //hash.put("edu.ku.brc.specify.datamodel.InfoRequest",80);
         hash.put("edu.ku.brc.specify.ui.db.PickList",500);
 		
         //Integer i = hash.get( "edu.ku.brc.specify.datamodel.CollectionsdObject");
@@ -94,10 +135,11 @@ int classCounter = 1000;
 	 */
 	private Table createClass(Element aElement) {
 		log.info("createClass");
-		classCounter++;
+		//classCounter++;
 		return new Table(aElement.attributeValue("name"), 
 				aElement.attributeValue("table"), 
-				aElement.attributeValue("lazy"), hash, classCounter);
+				aElement.attributeValue("lazy"), hash);//, classCounter);
+		
 	}
 
 	/**

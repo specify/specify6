@@ -19,23 +19,21 @@ public class Table
         
     }
 
-    public Table(String aName, String aTable, String aLazy, Hashtable<String, Integer> hash, int altClassId )
+    public Table(String aName, String aTable, String aLazy, Hashtable<String, Integer> hash )
     {
         name  = aName;
         table = aTable;
         lazy  = aLazy;
         hash = hash;
-        //hash.
-        //if(hash.containsKey(name)) {
-        
-       // hash.get(aLazy)
-        	Integer i = hash.get(name);
+
+        Integer i = hash.get(name);
         	if(i!=null) {
         	tableId = i.toString();
         }
-        else {
-          tableId = ""+ altClassId + "";
-        }
+        //else {
+        //  tableId = ""+ altClassId + "";
+        //}
+        //	System.out.println("hash.put(\"" + aName +"\", "+tableId+");");
     }
 
     public String getLazy() 
