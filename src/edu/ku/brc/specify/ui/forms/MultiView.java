@@ -204,8 +204,10 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createRecordSetController, createViewSwitcher);
         viewable.setParentDataObj(parentDataObj);
         
-        add(viewable, altView.getName());
-        showView(altView.getName());
+        if (add(viewable, altView.getName()))
+        {
+            showView(altView.getName());
+        }
 
         return viewable;
     }
@@ -221,13 +223,24 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
-     * @param viewable
+     * Adds a viewable to the MultiView
+     * @param viewable the viewablew to be added
+     * @return true if it was added, false if name conflicts
      */
-    protected void add(final Viewable viewable, final String name)
+    protected boolean add(final Viewable viewable, final String name)
     {
         //System.out.println("******** ["+name+"]");
-        viewMapByName.put(name, viewable);
-        add(viewable.getUIComponent(), name);
+        if (viewMapByName.get(name) != null)
+        {
+            log.error("Adding a Viewable by a name that is already used["+name+"]");
+            return false;
+            
+        } else
+        {
+            viewMapByName.put(name, viewable);
+            add(viewable.getUIComponent(), name);
+            return true;
+        }
     }
 
     /**
@@ -282,14 +295,31 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                 View view = ViewMgr.getView(currentView.getView().getViewSetName(), altView.getView().getName());
                 if (view != null)
                 {
+                    log.info("--------------------------");
+                    for (int i=0;i<getComponentCount();i++)
+                    {
+                        Component comp = getComponent(i);
+                        if (comp instanceof Viewable)
+                        {
+                            log.info(((Viewable)comp).getName());
+                        } else
+                        {
+                            log.info(comp);
+                        }
+                    }
+                    log.info("--------------------------");
+                    
+                    String altViewName = altView.getName();
                     currentView.aboutToShow(false);
                     editable       = altView.getMode() == AltView.CreationMode.Edit;
                     createWithMode =  altView.getMode();
-                    viewable = ViewFactory.createFormView(this, view, altView.getName(), data, createRecordSetController, createViewSwitcher);
-                    add(viewable, altView.getName());
-                    viewable.aboutToShow(true);
-                    cardLayout.show(this, altView.getName());
-
+                    viewable = ViewFactory.createFormView(this, view, altViewName, data, createRecordSetController, createViewSwitcher);
+                    if (add(viewable, altViewName))
+                    {
+                        viewable.aboutToShow(true);
+                        cardLayout.show(this, altViewName);
+                        log.info("Added Viewable["+altViewName+"]");
+                    }
 
                 } else
                 {

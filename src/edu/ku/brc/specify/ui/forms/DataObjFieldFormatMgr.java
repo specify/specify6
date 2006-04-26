@@ -178,9 +178,80 @@ public class DataObjFieldFormatMgr
      * @param formatName the name of the formatter to use
      * @return the string result of the format
      */
+    protected String formatInternal(final Object[] dataObjs, final String formatName)
+    {
+        DataFieldFormat format = hash.get(formatName);
+        if (format != null)
+        {
+            // XXX FIXME this shouldn't be hard coded here
+            DataObjectGettable getter = DataObjectGettableFactory.get(format.getClassName(), "edu.ku.brc.specify.ui.forms.DataGetterForObj");
+            if (getter != null)
+            {
+                if (dataObjs.length == format.getFields().length)
+                {
+                    strBuf.setLength(0);
+                    int inx = 0;
+                    for (DataField field : format.getFields())
+                    {
+                        Object value = dataObjs[inx++];
+                        if (value != null)
+                        {
+                            if (value.getClass() == field.getType())
+                            {
+                                // When format is null then it is a string
+                                if (field.getType() == String.class &&
+                                    (field.getFormat() == null || format.equals("%s")))
+                                {
+                                    if (field.getSep() != null)
+                                    {
+                                        strBuf.append(field.getSep());
+                                    }
+                                    strBuf.append(value.toString());
+                                } else
+                                {
+                                    args[0] = value;
+                                    Formatter formatter = new Formatter();
+                                    formatter.format(format.getFormat(), args);
+                                    strBuf.append(formatter.toString());
+                                    args[0] = null;
+                                }
+                            } else
+                            {
+                                log.error("Mismatch of types data retrieved as class["+value.getClass().getSimpleName()+"] and the format requires ["+field.getType().getSimpleName()+"]");
+                            }
+                        }
+                    }
+                } else
+                {
+                    log.error("Data Array sent to formatter is not the same length ["+dataObjs.length+"] as the formatter ["+format.getFields().length+"]");
+                }
+                return strBuf.toString();
+            }
+        }
+        return "";
+    }
+
+
+    /**
+     * Format a data object using a named formatter
+     * @param dataObj the data object for which fields will be formatted for it
+     * @param formatName the name of the formatter to use
+     * @return the string result of the format
+     */
     public static String format(final Object dataObj, final String formatName)
     {
         return instance.formatInternal(dataObj, formatName);
+    }
+
+    /**
+     * Format a data object using a named formatter
+     * @param dataObj the data object for which fields will be formatted for it
+     * @param formatName the name of the formatter to use
+     * @return the string result of the format
+     */
+    public static String format(final Object[] dataObjs, final String formatName)
+    {
+        return instance.formatInternal(dataObjs, formatName);
     }
 
 

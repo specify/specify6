@@ -91,7 +91,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     /* (non-Javadoc)
      * @see javax.swing.JComponent#paintChildren(java.awt.Graphics)
      */
-    public void paintChildren(Graphics g)
+    /*public void paintChildren(Graphics g)
     {
         
         ImageIcon imgIcon = IconManager.getImage("BGImage");
@@ -102,7 +102,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
         }
         super.paintChildren(g);
         
-    }
+    }*/
 
     //----------------------------------
     // SubPaneIFace

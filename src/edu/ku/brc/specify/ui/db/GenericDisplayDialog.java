@@ -122,9 +122,9 @@ public class GenericDisplayDialog extends JDialog implements ActionListener
         formView = ViewMgr.getView(viewSetName, viewName);
         if (formView != null)
         {
-            multiView   = new MultiView(null, formView, AltView.CreationMode.Edit, false, false);
+            multiView   = new MultiView(null, formView, AltView.CreationMode.Edit, false, true);
             form = multiView.getCurrentView();//ViewFactory.createFormView(null, formView, null, null);
-            add(form.getUIComponent(), BorderLayout.CENTER);
+            //add(form.getUIComponent(), BorderLayout.CENTER);
 
         } else
         {
@@ -134,7 +134,7 @@ public class GenericDisplayDialog extends JDialog implements ActionListener
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
 
-        panel.add(form.getUIComponent(), BorderLayout.NORTH);
+        panel.add(multiView, BorderLayout.NORTH);
         contentPanel = new JPanel(new NavBoxLayoutManager(0,2));
 
         okBtn = new JButton(getResourceString("Close"));

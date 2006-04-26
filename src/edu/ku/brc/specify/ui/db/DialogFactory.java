@@ -139,7 +139,9 @@ public class DialogFactory
      * @param name the name of the GenericSearchDialog to return
      * @return a GenericSearchDialog by name
      */
-    public static GenericDisplayFrame createDisplayDialog(final String name, final String frameTitle)
+    public static GenericDisplayFrame createDisplayDialog(final String name, 
+                                                          final String frameTitle,
+                                                          final boolean isEdit)
     {
         DialogInfo info =  instance.dialogs.get(name);
         if (info != null)
@@ -149,8 +151,8 @@ public class DialogFactory
                                             info.getDialogName(),
                                             frameTitle,
                                             info.getClassName(),
-                                            info.getIdFieldName()
-                                            );
+                                            info.getIdFieldName(),
+                                            isEdit);
         } else
         {
             throw new RuntimeException("Couldn't create GenericDisplayFrame by name["+name+"]");

@@ -411,7 +411,7 @@ public class ViewFactory
         String cbxName = cellField.getProperty("name");
         if (isNotEmpty(cbxName))
         {
-            ValComboBoxFromQuery cbx = ComboBoxFromQueryFactory.getValComboBoxFromQuery(cbxName);
+            ValComboBoxFromQuery cbx = ComboBoxFromQueryFactory.createValComboBoxFromQuery(cbxName);
             cbx.setRequired(cellField.isRequired());
             if (validator != null && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
             {
@@ -699,7 +699,11 @@ public class ViewFactory
 
                     } else if (uiType.equals("querycbx"))
                     {
-                        compToAdd      = createQueryComboBox(validator, cellField);
+                        ValComboBoxFromQuery cbx = createQueryComboBox(validator, cellField);
+                        cbx.setMultiView(parent);
+                        cbx.setFrameTitle(cellField.getProperty("title"));
+                        
+                        compToAdd = cbx;
                         addToValidator = validator == null; // might already added to validator
 
                     } else if (uiType.equals("list"))

@@ -29,6 +29,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -45,9 +46,13 @@ import edu.ku.brc.specify.ui.validation.ValidationListener;
  */
 public class ResultSetController implements ValidationListener
 {
+    protected static Border enabledBorder = BorderFactory.createLineBorder(Color.BLACK);
+    protected static Border disabledBorder = BorderFactory.createLineBorder(Color.GRAY);
+    
     protected List<ResultSetControllerListener> listeners = new ArrayList<ResultSetControllerListener>();
     
     protected FormValidator formValidator = null;
+    
     
     protected JPanel  panel    = null;
     protected JButton firstBtn = null;
@@ -56,7 +61,7 @@ public class ResultSetController implements ValidationListener
     protected JButton nextBtn  = null;
     protected JButton lastBtn  = null;  
     protected JButton newRecBtn = null;  
-    protected JButton delRecBtn = null;  
+    protected JButton delRecBtn = null;
     
     protected int     currentInx = 0;
     protected int     lastInx    = 0;
@@ -97,7 +102,7 @@ public class ResultSetController implements ValidationListener
         recDisp.setHorizontalAlignment(JLabel.CENTER);
         recDisp.setOpaque(true);
         recDisp.setBackground(Color.WHITE);
-        recDisp.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        recDisp.setBorder(enabledBorder);
         
         nextBtn  = new JButton(IconManager.getImage("NextRec"));
         lastBtn  = new JButton(IconManager.getImage("LastRec"));
@@ -183,6 +188,8 @@ public class ResultSetController implements ValidationListener
         currentInx = enabled ? 0 : -1;
         updateUI();
         recDisp.setEnabled(enabled);
+        recDisp.setBorder(enabled ? enabledBorder : disabledBorder);
+
     }
 
     /**

@@ -22,7 +22,6 @@ package edu.ku.brc.specify.stats;
 
 import static edu.ku.brc.specify.helpers.UIHelper.getInt;
 import static edu.ku.brc.specify.helpers.UIHelper.getString;
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -37,7 +36,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.dbsupport.QueryResultsContainer;
 import edu.ku.brc.specify.dbsupport.QueryResultsGetter;
 import edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace;
@@ -136,49 +134,9 @@ public class PieChartPanel extends ChartPanel implements QueryResultsListener, Q
                 false // URLs?
             );
 
-        /*JPanel outerPanel = new JPanel()
-        {
-            Dimension dim = new Dimension(400,400);
-            public Rectangle getBounds()
-            {
-              return new Rectangle(getLocation().x, getLocation().y, dim.width, dim.height);
-            }
-            public void setBounds(Rectangle r)
-            {
-                setBounds(r.x, r.y, r.width, r.height);
-            }
-            public void setBounds(int x, int y, int width, int height)
-            {
-                if (width <= 400)
-                    dim.width = width;
-                else
-                    dim.width = 400;
-                if (height <= 400)
-                    dim.height = height;
-                else
-                    dim.height = 400;
-                super.setBounds(x, y, width, height);
-            }
-            public Rectangle getBounds(Rectangle rv)
-            {
-                rv.setBounds(getLocation().x, getLocation().y, dim.width, dim.height);
-                return rv;
-            }
-            public Dimension getSize()
-            {
-                return new Dimension(dim);
-            }
-            public Dimension getSize(Dimension rv)
-            {
-                rv.setSize(dim);
-                return rv;
-            }
-        };*/
         // create and display a frame...
         SquareChartPanel panel = new SquareChartPanel(chart, true, true, true, true, true);
         setBackground(Color.BLUE);
-        //outerPanel.setLayout(new BorderLayout());
-        //outerPanel.add(panel);
 
         removeAll(); // remove progress bar
 

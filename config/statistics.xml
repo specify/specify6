@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
   <statistics>
+      
     <stat name="Top Five Species" display="Pie Chart">
       <chartinfo>
         <title>Top Five Species</title>
@@ -137,6 +138,35 @@
     <!-- ********************* -->
     <!--  Accession Statistics -->
     <!-- ********************* -->
+      <stat name="AccessionByDivision" display="Bar Chart">
+          <chartinfo>
+              <title>Top 5 Accessions By Division</title>
+          </chartinfo>
+          <sql type="text">
+              <![CDATA[select Text1, count(AccessionId) AS DivCount from accession where Text1 is not null group by Text1 order by DivCount desc]]>
+          </sql>
+          <bar>
+              <desc row="1" col="1"/>
+              <value row="1" col="2"/>
+          </bar>
+          <bar>
+              <desc row="2" col="1"/>
+              <value row="2" col="2"/>
+          </bar>
+          <bar>
+              <desc row="3" col="1"/>
+              <value row="3" col="2"/>
+          </bar>
+          <bar>
+              <desc row="4" col="1"/>
+              <value row="4" col="2"/>
+          </bar>
+          <bar>
+              <desc row="5" col="1"/>
+              <value row="5" col="2"/>
+          </bar>
+      </stat>
+      
       
       <stat name="Accession" display="Form" viewset="Main Views" view="Accession" mode="view">
           <title>Permits Expiring This Year</title>

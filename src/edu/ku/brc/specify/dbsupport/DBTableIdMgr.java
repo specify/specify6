@@ -198,25 +198,31 @@ public class DBTableIdMgr
      */
     public static String getInClause(final RecordSet recordSet)
     {
-        StringBuffer strBuf = new StringBuffer(" in (");
-        Set set = recordSet.getItems();
-        if (set == null)
+        if (recordSet != null)
         {
-            throw new RuntimeException("RecordSet items is null!");
-        }
-        int i = 0;
-        for (Iterator iter=set.iterator();iter.hasNext();)
-        {
-            RecordSetItem rsi = (RecordSetItem)iter.next();
-            if (i > 0)
+            StringBuffer strBuf = new StringBuffer(" in (");
+            Set set = recordSet.getItems();
+            if (set == null)
             {
-                strBuf.append(",");
+                throw new RuntimeException("RecordSet items is null!");
             }
-            strBuf.append(rsi.getRecordId());
-            i++;
+            int i = 0;
+            for (Iterator iter=set.iterator();iter.hasNext();)
+            {
+                RecordSetItem rsi = (RecordSetItem)iter.next();
+                if (i > 0)
+                {
+                    strBuf.append(",");
+                }
+                strBuf.append(rsi.getRecordId());
+                i++;
+            }
+            strBuf.append(")");
+            return strBuf.toString();
+        } else
+        {
+            return "";
         }
-        strBuf.append(")");
-        return strBuf.toString();
     }
 
     //------------------------------------------------------

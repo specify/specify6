@@ -190,7 +190,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     {
         super.paint(g);
 
-        System.err.println(this.getLocation().x+","+this.getLocation().y+" "+comboBox.getSelectedIndex()+" ["+isNew+"]["+isInError()+"]["+isEnabled()+"]");
+        //System.err.println(this.getLocation().x+","+this.getLocation().y+" "+comboBox.getSelectedIndex()+" ["+isNew+"]["+isInError()+"]["+isEnabled()+"]");
         if (!isNew && isInError() && isEnabled())
         {
             Dimension dim = getSize();

@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -401,9 +402,18 @@ public class BasicSQLUtils
     {
         try
         {
+            StringBuilder strBuf = new StringBuilder();
             for (int i=1;i<=rsmd.getColumnCount();i++)
             {
-                fieldList.add(basicSQLUtils.new FieldMetaData(rsmd.getTableName(i)+"."+rsmd.getColumnName(i), rsmd.getColumnClassName(i)));
+                strBuf.setLength(0);
+                String tableName = rsmd.getTableName(i);
+                if (StringUtils.isNotEmpty(tableName))
+                {
+                    strBuf.append(tableName);
+                    strBuf.append(".");
+                }
+                strBuf.append(rsmd.getColumnName(i));
+                fieldList.add(basicSQLUtils.new FieldMetaData(strBuf.toString(), rsmd.getColumnClassName(i)));
             }
 
         } catch (SQLException ex)

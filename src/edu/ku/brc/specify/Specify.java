@@ -113,8 +113,8 @@ public class Specify extends JPanel
     private static Log log = LogFactory.getLog(Specify.class);
 
     // The preferred size of the demo
-    private static final int    PREFERRED_WIDTH  = 800;
-    private static final int    PREFERRED_HEIGHT = 750;
+    private static final int    PREFERRED_WIDTH  = 900;
+    private static final int    PREFERRED_HEIGHT = 800;
 
     // Status Bar
     private JTextField          statusField        = null;

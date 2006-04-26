@@ -20,7 +20,6 @@
 package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,37 +27,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JPanel;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import edu.ku.brc.specify.core.NavBox;
-import edu.ku.brc.specify.dbsupport.CustomQuery;
-import edu.ku.brc.specify.dbsupport.CustomQueryFactory;
-import edu.ku.brc.specify.dbsupport.PairsMultipleQueryResultsHandler;
-import edu.ku.brc.specify.dbsupport.PairsSingleQueryResultsHandler;
-import edu.ku.brc.specify.dbsupport.QueryResultsContainer;
-import edu.ku.brc.specify.dbsupport.QueryResultsDataObj;
-import edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace;
-import edu.ku.brc.specify.dbsupport.QueryResultsListener;
-import edu.ku.brc.specify.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
-import edu.ku.brc.specify.tasks.subpane.BarChartPane;
-import edu.ku.brc.specify.tasks.subpane.BaseSubPane;
-import edu.ku.brc.specify.tasks.subpane.ChartPane;
-import edu.ku.brc.specify.tasks.subpane.PieChartPane;
-import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
+import edu.ku.brc.specify.stats.ChartPanel;
+import edu.ku.brc.specify.stats.StatsMgr;
+import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.specify.tasks.subpane.StatsPane;
-import edu.ku.brc.specify.ui.CommandAction;
-import edu.ku.brc.specify.ui.CommandDispatcher;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.forms.ViewMgr;
-import edu.ku.brc.specify.ui.forms.persist.View;
 /**
  * The StatsTask is responsible gettng and displaying all various idfferent kinds of stats
  * 
@@ -80,8 +65,7 @@ public class StatsTask extends BaseTask
     
     
     // Data Members
-    protected Element statDOM;
-    protected Element panelDOM;
+     protected Element panelDOM;
 
     /**
      * Creates a Statistics Tasks
@@ -93,7 +77,6 @@ public class StatsTask extends BaseTask
         
         try
         {
-            statDOM  = XMLHelper.readDOMFromConfigDir("statistics.xml");         // Describes each Statistic, its SQL and how it is to be displayed
             panelDOM = XMLHelper.readDOMFromConfigDir("statistics_panel.xml");   // contains a description of the NavBoxes
             
         } catch (Exception ex)
@@ -144,256 +127,25 @@ public class StatsTask extends BaseTask
     }
     
     /**
-     * Reads the Chart INfo from the DOM and sets it into a Chartable object. The info are string used to decorate the chart,
-     * like title, X Axis Title, Y Axis Title etc.
-     * @param element the 'chartinfo' element ot be processed
-     * @param name the name of the child element that needs to be looked up to get its value
-     * @return returns the string value for the info element or an empty string
-     */
-    protected String getChartInfo(final Element element, final String name)
-    {
-        Element el = (Element)element.selectSingleNode("chartinfo/"+name);
-        if (el != null)
-        {
-            return el.getText();
-        }
-        return "";
-    }
-    
-    /**
-     * Fills the ChartPanel with any extra desxcription information
-     * @param chartPane the chart pane to be augmented
-     */
-    protected void fillWithChartInfo(final Element element, final ChartPane chartPane)
-    {
-        chartPane.setTitle(getChartInfo(element, "title"));
-        chartPane.setXAxis(getChartInfo(element, "xaxis"));
-        chartPane.setYAxis(getChartInfo(element, "yaxis"));
-        
-        String vert = getChartInfo(element, "vertical");
-        if (isNotEmpty(vert))
-        {
-            chartPane.setVertical(vert.toLowerCase().equals("true"));
-        }
-    }
-
-    /**
-     * Helper method for adding row/col desc and values to a container
-     * @param qrc the QueryResultsContainer that will be added to
-     * @param descRow the textual description's row position
-     * @param descCol the textual description's column position
-     * @param valueRow the value's row position
-     * @param valueCol the value's column position
-     */
-    public void add(final QueryResultsContainer qrc, final int descRow, final int descCol, final int valueRow, final int valueCol)
-    {
-        qrc.add(new QueryResultsDataObj(descRow, descCol));
-        qrc.add(new QueryResultsDataObj(valueRow, valueCol));
-    }
-
-    /**
-     * Creates a chart from an XML definition. The query may be defined in the XML for it could be a custom query
-     * that comes from an instance of a class.
-     * @param element the DOM element of the chart
-     * @param qrProcessable the processor to take care of the results
-     * @param subPane the sub pane to be added to the UI
-     * @param listener the listener who nneds to know when the query is done and all the results are available
-     */
-    public void createChart(final Element                 element, 
-                            final QueryResultsProcessable qrProcessable,
-                            final BaseSubPane             subPane, 
-                            final QueryResultsListener    listener)
-    {
-        if (element != null)
-        {
-            // Fill the chart with extra descirption and decoration info
-            if (subPane instanceof ChartPane)
-            {
-                fillWithChartInfo(element, (ChartPane)subPane);
-            }
-            
-            // It better have some SQL
-            Element sqlElement = (Element)element.selectSingleNode("sql");
-            if (sqlElement == null)
-            {
-                throw new RuntimeException("sql element is null!");
-            }
-
-            // The SQL can be of two types "text" or "builtin"
-            // Text is just a text string of SQL that will be executed
-            // Builtin is a class that will provide SQL
-            String sqlType = sqlElement.attributeValue("type");
-            if (sqlType.equals("text"))
-            {
-                
-                QueryResultsContainer    container   = new QueryResultsContainer();
-                QueryResultsHandlerIFace singlePairs = new PairsSingleQueryResultsHandler();
-                qrProcessable.setHandler(singlePairs);
-                
-                container.setSql(sqlElement.getText().trim());
-                
-                String displayType = element.attributeValue("display");               
-                List parts = element.selectNodes(displayType.equals("Pie Chart") ? "slice" : "bar");
-                for ( Iterator iter = parts.iterator(); iter.hasNext(); ) {
-                    Element slice = (Element) iter.next();
-                    int descRow  = Integer.parseInt(slice.valueOf( "desc/@row" ));
-                    int descCol  = Integer.parseInt(slice.valueOf( "desc/@col" ));
-                    int valueRow = Integer.parseInt(slice.valueOf( "value/@row" ));
-                    int valueCol = Integer.parseInt(slice.valueOf( "value/@col" ));
-                    add(container, descRow, descCol, valueRow, valueCol);
-                }
-                singlePairs.init(listener, container);
-                singlePairs.startUp();
-               
-            } else if (sqlType.equals("builtin"))
-            {
-                try
-                {
-                    CustomQuery                      customQuery   = CustomQueryFactory.createCustomQuery(sqlElement.attributeValue("className"));
-                    PairsMultipleQueryResultsHandler multiplePairs = new PairsMultipleQueryResultsHandler();
-                    qrProcessable.setHandler(multiplePairs);
-                    
-                    multiplePairs.init(listener, customQuery.getQueryDefinition());
-                    multiplePairs.startUp();
-                    
-                } catch (ClassNotFoundException ex)
-                {
-                    log.error(ex); // XXX what should we do here?
-                } catch (IllegalAccessException ex)
-                {
-                    log.error(ex); // XXX what should we do here?
-                } catch (InstantiationException ex)
-                {
-                    log.error(ex); // XXX what should we do here?
-                }
-                
-            } else
-            {
-                throw new RuntimeException("unrecognizable type for sql element["+sqlType+"]");
-            }
-            
-            UICacheManager.addSubPane(subPane);
-        }
-    }
-    
-    /**
      * Looks up statName and creates the appropriate SubPane 
      * @param statName the name of the stat to be displayed
      */
     public void createStatPane(final String statName)
     {
-        String nameStr;
-        String idStr = null;
-        int inx = statName.indexOf(',');
-        if (inx == -1)
+        // Create stat pane return a non-null panel for charts and null for non-charts
+        // Of coarse, it could pass back nul if a chart was missed named
+        // but error would be shown inside the StatsMgr for that case
+        JPanel panel = StatsMgr.createStatPane(statName);
+        if (panel != null)
         {
-            nameStr = statName;
-        } else
-        {
-            nameStr = statName.substring(0,inx);
-            idStr   = statName.substring(inx+4, statName.length());
+            SimpleDescPane pane = new SimpleDescPane(name, this, panel);
+            addSubPaneToMgr(pane);
         }
-        
-        Element element = (Element)statDOM.selectSingleNode("/statistics/stat[@name='"+nameStr+"']");
-        if (element != null)
-        {
-            String displayType = element.attributeValue(DISPLAY).toLowerCase();
-            
 
-            if (displayType.equalsIgnoreCase(BAR_CHART))
-            {
-                BarChartPane barChart = new BarChartPane("Bar Chart", this);
-                createChart(element, barChart, barChart, barChart);
+        
 
-                
-            } else if (displayType.equalsIgnoreCase(PIE_CHART))
-            {
-                PieChartPane pieChart = new PieChartPane("Pie Chart", this);
-                createChart(element, pieChart, pieChart, pieChart);
-                
-            } else if (displayType.equalsIgnoreCase(PIE_CHART))
-            {
-                PieChartPane pieChart = new PieChartPane("Pie Chart", this);
-                createChart(element, pieChart, pieChart, pieChart);
-                
-            } else if (displayType.equalsIgnoreCase(FORM))
-            {
-                createView(element, idStr);
-                
-            } else if (displayType.equals(TABLE))
-            {
-                Element sqlElement = (Element)element.selectSingleNode("sql");
-                if (sqlElement == null)
-                {
-                    throw new RuntimeException("sql element is null!");
-                }
-                
-                Element titleElement = (Element)element.selectSingleNode("title");
-                if (sqlElement == null)
-                {
-                    throw new RuntimeException("sql element is null!");
-                }
-                
-                SQLQueryPane queryPane = new SQLQueryPane(titleElement.getTextTrim(), this, true, true);
-                String sqlStr = sqlElement.getTextTrim();
-                if (idStr != null)
-                {
-                    int substInx = sqlStr.lastIndexOf("%s");
-                    if (substInx > -1)
-                    {
-                        sqlStr = sqlStr.substring(0, substInx-1) + idStr + sqlStr.substring(substInx+2, sqlStr.length());
-                    } else
-                    {
-                        log.error("Couldn't find the substitue string \"%s\" in ["+sqlStr+"]");
-                    }
-                    
-                    //sqlStr = String.format(sqlStr, new Object[] {idStr});
-                }
-                //System.out.println(sqlStr);
-                queryPane.setSQLStr(sqlStr);
-                queryPane.doQuery();
-                UICacheManager.addSubPane(queryPane);
-                
-            } else 
-            {
-                // error
-                log.error("Wrong type of display ["+displayType+"] this type is not supported!");
-            }
-        }
     }
-    
-    /**
-     * Dispatches a request to show a Form
-     * @param domElement the DOM element that contains the info we need to display the form
-     */
-    protected void createView(final Element domElement, final String idStr)
-    {
-        String viewSetName = domElement.attributeValue("viewset");
-        String viewName    = domElement.attributeValue("view");
-        String mode        = domElement.attributeValue("mode");
-        
-        View view = ViewMgr.getView(viewSetName, viewName);
-        
-        /*int tableId = DBTableIdMgr.lookupIdByClassName(view.getClassName());
-        
-        RecordSet rs = new RecordSet("ViewRecord", tableId);
-        RecordSetItem rsi = new RecordSetItem();
-        rsi.setRecordId(idStr);
-        rs.getItems().add(rsi);
-        */
 
-        CommandDispatcher.dispatch(new CommandAction("Data_Entry", "ShowView", new Object[] {view, mode, idStr}));
-    }
-    
-    /**
-     * Creates a pane using the SQL statement defined by 'link'
-     * @param link the sql statement to use to generate page
-     */
-    public void executeLink(final String link)
-    {
-        
-        //UICacheManager.addSubPane(subPane);        
-    }
     
     //-------------------------------------------------------
     // Plugin Interface

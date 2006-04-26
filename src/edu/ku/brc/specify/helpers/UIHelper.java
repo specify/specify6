@@ -15,8 +15,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Stack;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -30,9 +28,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Hibernate;
 
-import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.dnd.GhostDataAggregatable;
 import edu.ku.brc.specify.ui.forms.DataObjectGettable;

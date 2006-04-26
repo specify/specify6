@@ -126,7 +126,7 @@
     				<cell type="field" name="accession" uitype="formattedtext" uifieldformatter="AccessionNumber"/>
 
                  <cell type="label" labelfor="cataloger" label="Cataloger"/>
-    				<cell type="field" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent" formatname="Agent" isrequired="true"/>
+    				<cell type="field" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent" isrequired="true"/>
 
                     <cell type="label" labelfor="catalogedDate" label="Date"/>
     			    <cell type="field" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date"/>
@@ -194,7 +194,7 @@
     			<row>
 
                  <cell type="label" labelfor="determiner.lastName,determiner.firstName" label="Determiner"/>
-    				<cell type="field" name="determiner" uitype="querycbx" initialize="name=Agent;title=Determiner Agent" formatname="Agent" isrequired="true"/>
+    				<cell type="field" name="determiner" uitype="querycbx" initialize="name=Agent;title=Determiner Agent" isrequired="true"/>
 
                     <cell type="label" labelfor="confidence" label="Confidence"/>
     				<cell type="field" name="confidence"/>
@@ -240,7 +240,7 @@
     				<cell type="field" name="preparedDate" format=""/>
 
     			    <cell type="label" labelfor="preparedByAgent" label="Prepared By"/>
-    			    <cell type="field" name="preparedByAgent" uitype="querycbx" initialize="name=Agent;title=Prepared By Agent" formatname="Agent" isrequired="true"/>
+    			    <cell type="field" name="preparedByAgent" uitype="querycbx" initialize="name=Agent;title=Prepared By Agent" isrequired="true"/>
     			</row>
     			<row>
                     <cell type="label" labelfor="count" label="Count"/>
@@ -380,7 +380,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="agent" label="Agent"/>
-                    <cell type="field" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent" formatname="Agent" isrequired="true" valtype="Focus"/>
+                    <cell type="field" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true" valtype="Focus"/>
 
                     <cell type="label" labelfor="role" label="Role"/>
                     <cell type="field" name="role" uitype="combobox" picklist="AccessionRole" isrequired="true" valtype="Focus"/>
@@ -410,7 +410,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="title" label="Title"/>
-                    <cell type="field" name="title" uitype="combobox" picklistx="AgentTitle" initialize="Mr., Mrs., Ms., Dr." valtype="Focus"/>
+                    <cell type="field" name="title" uitype="combobox" picklistx="AgentTitle" initialize="Asst. Director, Curator, Mr., Mrs., Ms., Dr." valtype="Focus"/> <!-- Needs to be a PickList -->
                     <cell type="label" labelfor="jobTitle" label="Title"/>
                     <cell type="field" name="jobTitle" uitype="text" cols="20"/>
                 </row>
@@ -465,10 +465,10 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="agentByIssuer" label="Issued By"/>
-                    <cell type="field" name="agentByIssuer" uitype="querycbx" initialize="name=Agent;title=Issuer Agent" formatname="Agent" isrequired="true"/>
+                    <cell type="field" name="agentByIssuer" uitype="querycbx" initialize="name=Agent;title=Issuer Agent" isrequired="true"/>
 
                     <cell type="label" labelfor="agentByIssuee" label="Issued To"/>
-                    <cell type="field" name="agentByIssuee" uitype="querycbx" initialize="name=Agent;title=Issuee Agent" formatname="Agent" isrequired="true"/>
+                    <cell type="field" name="agentByIssuee" uitype="querycbx" initialize="name=Agent;title=Issuee Agent" isrequired="true"/>
                 </row>
 
                 <row>
@@ -510,7 +510,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="permit" label="Permit"/>
-                    <cell type="field" name="permit" uitype="querycbx" initialize="name=Permit;title=Permit" formatname="Permit" isrequired="true"/>
+                    <cell type="field" name="permit" uitype="querycbx" initialize="name=Permit;title=Permit" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="remarks" label="Remarks"/>

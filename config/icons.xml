@@ -48,7 +48,9 @@
     <icon name="LastRec"  file="go-last.png"  sizes="NonStd"/>
     <icon name="NewRec"   file="document-new16.png"  sizes="NonStd"/>
     -->
-
+    
+    <icon name="CreateObj"   file="document-new32.png"  sizes="all"/>
+    
     <icon name="NewRec"   file="newrec.gif"  sizes="NonStd"/>
     <icon name="Save"     file="document-save16.png"  sizes="NonStd"/>
 

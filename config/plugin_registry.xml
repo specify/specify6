@@ -8,6 +8,7 @@
 	    </plugin>
 	    <plugin class="edu.ku.brc.specify.tasks.LabelsTask">
 	    	<service command="DoLabels" tableid="1" tooltip="CreateLabelTT"/>
+	        <service command="DoLabels" tableid="7" tooltip="CreateLabelTT"/>
 	    </plugin>
 	    <plugin class="edu.ku.brc.specify.tasks.ReportsTask"/>
 	    <plugin class="edu.ku.brc.specify.tasks.InteractionsTask"/>
@@ -15,7 +16,8 @@
 	    <plugin class="edu.ku.brc.specify.tasks.QueryTask"/>
         <plugin class="edu.ku.brc.specify.tasks.RecordSetTask">
 	    	<service command="Save" tableid="1" tooltip="CreateRecordSetTT"/>
-	    </plugin>
+            <service command="Save" tableid="7" tooltip="CreateRecordSetTT"/>
+        </plugin>
         <plugin class="edu.ku.brc.specify.tasks.InfoRequestTask">
 	    	<service command="Save" tableid="1" tooltip="CreateInfoRequestTT"/>
 	    </plugin>

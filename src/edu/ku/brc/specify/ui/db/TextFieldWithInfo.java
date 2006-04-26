@@ -21,6 +21,7 @@
 package edu.ku.brc.specify.ui.db;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.split;
 
 import java.awt.Color;
@@ -54,6 +55,7 @@ import edu.ku.brc.specify.ui.GetSetValueIFace;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.forms.DataGetterForObj;
+import edu.ku.brc.specify.ui.forms.DataObjFieldFormatMgr;
 import edu.ku.brc.specify.ui.forms.MultiView;
 
 
@@ -82,6 +84,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
     protected String             idName;
     protected String             keyName;
     protected String             format;
+    protected String             formatName;
     protected Class              classObj    = null;
     protected DataGetterForObj   getter      = null;
     protected String             displayInfoDialogName;
@@ -105,12 +108,14 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
                              final String idName,
                              final String keyName,
                              final String format,
+                             final String formatName,
                              final String displayInfoDialogName)
     {
         this.className        = className;
         this.idName           = idName;
         this.keyName          = keyName;
         this.format           = format;
+        this.formatName       = formatName;
         this.displayInfoDialogName = displayInfoDialogName;
         
         textField = new JTextField();
@@ -151,7 +156,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
      */
     protected void createInfoFrame()
     {
-        frame = DialogFactory.createDisplayDialog(displayInfoDialogName, frameTitle);
+        frame = DialogFactory.createDisplayDialog(displayInfoDialogName, frameTitle, false); // false means View mode
         frame.setCloseListener(this);
         frame.setData(dataObj);
         frame.setVisible(true);
@@ -281,18 +286,28 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
             {
                 getter = new DataGetterForObj();
             }
-
+            
+            // NOTE: If there was a formatName defined for this then the value coming 
+            // in will already be correctly formatted.
+            // So just set the cvalue if there is a format name.
             Object newVal = value;
-            Object[] val = UIHelper.getFieldValues(fieldNames, value, getter);
-            if (isNotEmpty(format))
+            if (isEmpty(formatName))
             {
-                newVal = UIHelper.getFormattedValue(val, format);
+                Object[] val = UIHelper.getFieldValues(fieldNames, value, getter);
+                if (isNotEmpty(format))
+                {
+                    newVal = UIHelper.getFormattedValue(val, format);
+                } else
+                {
+                    newVal = value;
+                }
             } else
             {
-                newVal = value;
+                newVal = DataObjFieldFormatMgr.format(value, formatName);
             }
 
             textField.setText(newVal.toString());
+            
         } else
         {
             textField.setText("");

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <panel>
+    <!--
   <row>
       <box title="Specimen">
         <item title="Number of Specimens">
@@ -157,16 +158,17 @@
             <sql><statement><![CDATA[select count(*) from taxon where taxon.rankid = 220]]></statement></sql>
         </item>
     </box>
-    <box title="Taxa Type Counts" descCol="1" valCol="2">
+    <box title="Taxa Type Counts" desccol="1" valcol="2">
 		<sql><![CDATA[select TypeStatusName, count(determinationid) AS DeterminationCount from determination where TypeStatusName is not null group by TypeStatusName]]></sql>
     </box>
   </row>
   <row>
-      <box title="Taxa Type Counts" descCol="1" valCol="2">
+      <box title="Taxa Type Counts" desccol="1" valcol="2">
             <sql><![CDATA[select CollectionObjectTypeName, ObjectCount from (select CollectionObjectTypeID AS ObjectType, Count(CollectionObjectID) AS ObjectCount from collectionobject Group By CollectionObjectTypeID) AS T2, collectionobjecttype where T2.ObjectType = collectionobjecttype.CollectionObjectTypeID]]></sql>
       </box>
-      <box title="CITES Permits Expiring" descCol="1" valCol="2">
+      <box title="CITES Permits Expiring" desccol="1" valcol="2">
             <sql><![CDATA[select permit.PermitNumber, permit.PermitID, permit.IssuedDate,permit.StartDate, permit.EndDate,permit.RenewalDate,permit.Type From permit where ( lower(Type) like '%CITES%') and year(CURDATE()) = year(EndDate)]]></sql>
       </box>
   </row>
+  -->
 </panel>

@@ -44,7 +44,6 @@ import edu.ku.brc.specify.core.NavBoxLayoutManager;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.forms.MultiView;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
-import edu.ku.brc.specify.ui.forms.Viewable;
 import edu.ku.brc.specify.ui.forms.persist.AltView;
 import edu.ku.brc.specify.ui.forms.persist.View;
 
@@ -64,7 +63,6 @@ public class GenericDisplayFrame extends JFrame implements ActionListener
     // Form Stuff
     protected MultiView      multiView;
     protected View           formView;
-    protected Viewable       form;
     protected List<String>   fieldNames;
     
     protected PropertyChangeListener propertyChangeListener = null;
@@ -95,7 +93,8 @@ public class GenericDisplayFrame extends JFrame implements ActionListener
                                 final String displayName,
                                 final String title,
                                 final String className,
-                                final String idFieldName) throws HeadlessException
+                                final String idFieldName,
+                                final boolean isEdit) throws HeadlessException
     {
         //super((Frame)UICacheManager.get(UICacheManager.FRAME), title, true);
         this.setTitle(title);
@@ -104,7 +103,7 @@ public class GenericDisplayFrame extends JFrame implements ActionListener
         this.idFieldName = idFieldName;
         this.displayName  = displayName;
 
-        createUI(viewSetName, viewName, title);
+        createUI(viewSetName, viewName, title, isEdit ? AltView.CreationMode.Edit : AltView.CreationMode.View);
 
         setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -117,14 +116,15 @@ public class GenericDisplayFrame extends JFrame implements ActionListener
      */
     protected void createUI(final String viewSetName,
                             final String viewName,
-                            final String title)
+                            final String title,
+                            final AltView.CreationMode mode)
     {
+        boolean isEdit = mode == AltView.CreationMode.Edit;
+        
         formView = ViewMgr.getView(viewSetName, viewName);
         if (formView != null)
         {
-            multiView   = new MultiView(null, formView, AltView.CreationMode.View, false, false);
-            form = multiView.getCurrentView();//ViewFactory.createFormView(null, formView, null, null);
-            add(form.getUIComponent(), BorderLayout.CENTER);
+            multiView   = new MultiView(null, formView, mode, false, !isEdit);
 
         } else
         {
@@ -134,10 +134,10 @@ public class GenericDisplayFrame extends JFrame implements ActionListener
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
 
-        panel.add(form.getUIComponent(), BorderLayout.NORTH);
+        panel.add(multiView, BorderLayout.NORTH);
         contentPanel = new JPanel(new NavBoxLayoutManager(0,2));
 
-        okBtn = new JButton(getResourceString("Close"));
+        okBtn = new JButton(getResourceString(isEdit ? "Save" : "Close"));
         okBtn.addActionListener(this);
         getRootPane().setDefaultButton(okBtn);
 
@@ -166,11 +166,7 @@ public class GenericDisplayFrame extends JFrame implements ActionListener
      */
     public void setData(final Object dataObj)
     {
-        //if (dataObj != null)
-        //{
-            form.setDataObj(dataObj);
-            form.setDataIntoUI();
-        //}
+        multiView.setData(dataObj);
     }
 
 

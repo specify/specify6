@@ -42,6 +42,7 @@ import org.dom4j.Element;
 import edu.ku.brc.specify.exceptions.ConfigurationException;
 import edu.ku.brc.specify.ui.forms.UIFieldFormatterMgr;
 import edu.ku.brc.specify.ui.forms.UIFieldFormatterMgr.Formatter;
+import edu.ku.brc.specify.ui.validation.ComboBoxFromQueryFactory;
 
 /**
  * Factory that creates Views from ViewSet files. This class uses the singleton ViewMgr to verify the View Set Name is unique.
@@ -498,7 +499,11 @@ public class ViewLoader
                                 dspUIType = getAttr(cellElement, "dspuitype", "textfieldinfo");
                                 
                                 properties = processInitializeString(initialize);
-                                
+                                String fmtName = ComboBoxFromQueryFactory.getFormatName(properties.get("name"));
+                                if (isNotEmpty(fmtName))
+                                {
+                                    formatName = fmtName;
+                                }
 
                             } else if (uitype.equals("formattedtext"))
                             {

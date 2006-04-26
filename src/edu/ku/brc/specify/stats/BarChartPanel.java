@@ -25,7 +25,9 @@ import static edu.ku.brc.specify.helpers.UIHelper.getString;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -36,6 +38,10 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.dbsupport.QueryResultsContainer;
 import edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace;
@@ -57,8 +63,9 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
     //private static Log log = LogFactory.getLog(BarChartPanel.class);
 
     // Data Members
-    private QueryResultsHandlerIFace handler = null;
-
+    private QueryResultsHandlerIFace   handler = null;
+    private org.jfree.chart.ChartPanel chart   = null;
+    private Dimension                  maxChartSize = null;
 
     /**
      * Creates a BarChart pane with a name and a reference to the taskable that started it
@@ -67,7 +74,7 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
      */
     public BarChartPanel()
     {
-
+        setBorder(null);
     }
 
     /*
@@ -112,7 +119,12 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
     {
         removeAll(); // remove progress bar
         add(comp, BorderLayout.CENTER);
-
+        /*
+        CellConstraints cc      = new CellConstraints();
+        //PanelBuilder builder    = new PanelBuilder(new FormLayout("F:P:G", "F:P:G"), this);
+        PanelBuilder builder    = new PanelBuilder(new FormLayout("p", "p"), this);
+        builder.add(comp, cc.xy(1,1));
+*/
         if (handler != null)
         {
             handler.cleanUp();
@@ -121,9 +133,6 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
 
         doLayout();
         repaint();
-
-
-
     }
 
     /*
@@ -146,7 +155,7 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
         list.clear();
 
         // create the chart...
-        JFreeChart chart = ChartFactory.createBarChart3D(
+        JFreeChart jgChart = ChartFactory.createBarChart3D(
                 title,      // chart title
                 xAxisTitle, // domain axis label
                 yAxisTitle, // range axis label
@@ -157,12 +166,30 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
                 false       // URLs?
             );
         // create and display a frame...
-        org.jfree.chart.ChartPanel panel = new org.jfree.chart.ChartPanel(chart, true, true, true, true, true);
-        panel.setMaximumSize(new Dimension(100,100));
-        panel.setPreferredSize(new Dimension(100,100));
+        chart = new org.jfree.chart.ChartPanel(jgChart, true, true, true, true, true);
+        chart.setBackground(Color.WHITE);
+        if (maxChartSize != null)
+        {
+            chart.setMaximumSize(maxChartSize);
+            chart.setPreferredSize(maxChartSize);
+        }
+        addCompletedComp(chart);
 
-        addCompletedComp(panel);
+    }
+    
+    public void setMaxChartSize(int width, int height)
+    {
+        if (maxChartSize == null)
+        {
+            maxChartSize = new Dimension();
+        } 
+        maxChartSize.setSize(width, height-5);
 
+        if (chart != null)
+        {
+            chart.setMaximumSize(maxChartSize);
+            chart.setPreferredSize(maxChartSize);
+        }
     }
 
     /* (non-Javadoc)
@@ -175,5 +202,25 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
         addCompletedComp(new JLabel(getResourceString("ERROR_CREATNG_BARCHART"), JLabel.CENTER));
     }
 
+    public void setBounds(Rectangle r)
+    {
+        setBounds(r.x, r.y, r.width, r.height);
+        if (chart != null)
+        {
+            setMaxChartSize(r.width, r.height);
+        }
+        System.out.println(r);
+    }
 
+    public void setBounds(int x, int y, int width, int height)
+    {
+        //System.out.print(x+" "+y+" "+width+" "+height);
+        //System.out.println("  "+maxChartSize.width+" "+maxChartSize.height);
+
+        super.setBounds(x, y, width, height);
+        if (chart != null)
+        {
+            setMaxChartSize(width, height);
+        }
+    }
 }

@@ -38,7 +38,7 @@ public class ComboBoxFromQueryFactory
     /**
      * Protected Constructor
      */
-    protected  ComboBoxFromQueryFactory()
+    protected ComboBoxFromQueryFactory()
     {
         // These will eventually be defined in an XML file.
 
@@ -49,7 +49,8 @@ public class ComboBoxFromQueryFactory
                 "edu.ku.brc.specify.datamodel.Agent",
                 "agentId",
                 "lastName,firstName",
-                "%s, %s",
+                "%s,%s",
+                "Agent", // format Name
                 "AgentSearch",
                 "AgentDisplay"));
 
@@ -62,6 +63,7 @@ public class ComboBoxFromQueryFactory
                 "name",
                 null,
                 null,
+                null,
                 null));
         
         comboBoxes.put("Permit", new ComboBoxFromQueryInfo(null, "permit",
@@ -72,6 +74,7 @@ public class ComboBoxFromQueryFactory
                 "permitId",
                 "permitNumber",
                 "%s",
+                null,
                 "PermitSearch",
                 "PermitDisplay"));
     }
@@ -92,9 +95,25 @@ public class ComboBoxFromQueryFactory
                                                  info.getIdName(),
                                                  info.getKeyName(),
                                                  info.getFormat(),
+                                                 info.getFormatName(),
                                                  info.getCreateDialogName()
                                                  );
             }
+        }
+        return null;
+    }
+    
+    /**
+     * For a given Formatter it returns the formatName
+     * @param formatterName the name of the formatter to use
+     * @return the name of the formatter
+     */
+    public static String getFormatName(final String formatterName)
+    {
+        ComboBoxFromQueryInfo info =  instance.comboBoxes.get(formatterName);
+        if (info != null)
+        {
+            return info.getFormatName();
         }
         return null;
     }
@@ -104,7 +123,7 @@ public class ComboBoxFromQueryFactory
      * @param name the name of the ValComboBoxFromQuery to return
      * @return a ValComboBoxFromQuery by name
      */
-    public static ValComboBoxFromQuery getValComboBoxFromQuery(final String name)
+    public static ValComboBoxFromQuery createValComboBoxFromQuery(final String name)
     {
         ComboBoxFromQueryInfo info =  instance.comboBoxes.get(name);
         if (info != null)
@@ -119,8 +138,9 @@ public class ComboBoxFromQueryFactory
                                                  info.getIdName(),
                                                  info.getKeyName(),
                                                  info.getFormat(),
-                                                 info.getSearchDialogName()//,
-                                                 //info.getCreateDialogName()
+                                                 info.getFormatName(),
+                                                 info.getSearchDialogName(),
+                                                 info.getCreateDialogName()
                                                  );
             } else
             {
@@ -129,8 +149,9 @@ public class ComboBoxFromQueryFactory
                                                 info.getIdName(),
                                                 info.getKeyName(),
                                                 info.getFormat(),
-                                                info.getSearchDialogName()//,
-                                                //info.getCreateDialogName()
+                                                info.getFormatName(),
+                                                info.getSearchDialogName(),
+                                                info.getCreateDialogName()
                                                 );
             }
         } else
@@ -153,6 +174,7 @@ public class ComboBoxFromQueryFactory
         protected String idName;
         protected String keyName;
         protected String format;
+        protected String formatName;
         protected String searchDialogName;
         protected String createDialogName;
 
@@ -165,6 +187,7 @@ public class ComboBoxFromQueryFactory
                                      String idName,
                                      String keyName,
                                      String format,
+                                     String formatName,
                                      String searchDialogName,
                                      String createDialogName)
         {
@@ -177,6 +200,7 @@ public class ComboBoxFromQueryFactory
             this.idName = idName;
             this.keyName = keyName;
             this.format = format;
+            this.formatName = formatName;
             this.searchDialogName = searchDialogName;
             this.createDialogName = createDialogName;
             //this.displayDialogName = displayDialogName;
@@ -200,6 +224,11 @@ public class ComboBoxFromQueryFactory
         public String getFormat()
         {
             return format;
+        }
+
+        public String getFormatName()
+        {
+            return formatName;
         }
 
         public String getIdColumn()

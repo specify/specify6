@@ -20,14 +20,9 @@ import edu.ku.brc.specify.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.specify.dbsupport.QueryResultsListener;
 import edu.ku.brc.specify.dbsupport.QueryResultsProcessable;
-import edu.ku.brc.specify.tasks.subpane.BarChartPane;
-import edu.ku.brc.specify.tasks.subpane.BaseSubPane;
-import edu.ku.brc.specify.tasks.subpane.ChartPane;
-import edu.ku.brc.specify.tasks.subpane.PieChartPane;
-import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
+import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.ui.CommandAction;
 import edu.ku.brc.specify.ui.CommandDispatcher;
-import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
 import edu.ku.brc.specify.ui.forms.persist.View;
 
@@ -44,14 +39,43 @@ public class StatsMgr
 
 
     // Data Members
-    protected Element statDOM;
-    protected Element panelDOM;
+    protected static StatsMgr instance = new StatsMgr();
+    protected static Element  statDOM;
 
 
-    public StatsMgr()
+    /**
+     * 
+     */
+    protected StatsMgr()
     {
-        super();
-        // TODO Auto-generated constructor stub
+        
+        try
+        {
+            statDOM  = XMLHelper.readDOMFromConfigDir("statistics.xml"); // Describes each Statistic, its SQL and how it is to be displayed
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            statDOM  = null;
+        }
+    }
+    
+    /**
+     * Returns the DOM element for a named Statistic
+     * @param name the name of the statistic
+     * @return DOM Element or null if not found
+     */
+    public static Element getStatisticDOMElement(final String name)
+    {
+        if (statDOM != null)
+        {
+            return (Element)statDOM.selectSingleNode("/statistics/stat[@name='"+name+"']");
+            
+        } else
+        {
+            log.error("Stat DOM has not been loaded or was loaded in error!");
+        }
+        return null;
     }
 
     /**
@@ -195,23 +219,20 @@ public class StatsMgr
         String mode        = domElement.attributeValue("mode");
 
         View view = ViewMgr.getView(viewSetName, viewName);
-
-        /*int tableId = DBTableIdMgr.lookupIdByClassName(view.getClassName());
-
-        RecordSet rs = new RecordSet("ViewRecord", tableId);
-        RecordSetItem rsi = new RecordSetItem();
-        rsi.setRecordId(idStr);
-        rs.getItems().add(rsi);
-        */
-
-        CommandDispatcher.dispatch(new CommandAction("Data_Entry", "ShowView", new Object[] {view, mode, idStr}));
+        if (view != null)
+        {
+            CommandDispatcher.dispatch(new CommandAction("Data_Entry", "ShowView", new Object[] {view, mode, idStr}));
+        } else
+        {
+            log.error("Couldn't dispatch request for new View because the view wasn't found: ViewSet["+viewSetName+"] View["+viewName+"]");
+        }
     }
 
     /**
      * Looks up statName and creates the appropriate SubPane
      * @param statName the name of the stat to be displayed
      */
-    public JPanel createStatPane(final String statName)
+    protected JPanel createStatPaneInternal(final String statName)
     {
         String nameStr;
         String idStr = null;
@@ -235,24 +256,21 @@ public class StatsMgr
             {
                 BarChartPanel barChart = new BarChartPanel();
                 createChart(element, barChart, barChart, barChart);
-
-
-            } else if (displayType.equalsIgnoreCase(PIE_CHART))
-            {
-                PieChartPanel pieChart = new PieChartPanel();
-                createChart(element, pieChart, pieChart, pieChart);
+                return barChart;
 
             } else if (displayType.equalsIgnoreCase(PIE_CHART))
             {
                 PieChartPanel pieChart = new PieChartPanel();
                 createChart(element, pieChart, pieChart, pieChart);
+                return pieChart;
+
 
             } else if (displayType.equalsIgnoreCase(FORM))
             {
                 createView(element, idStr);
 
             } else if (displayType.equals(TABLE))
-            {
+            {/*
                 Element sqlElement = (Element)element.selectSingleNode("sql");
                 if (sqlElement == null)
                 {
@@ -264,7 +282,7 @@ public class StatsMgr
                 {
                     throw new RuntimeException("sql element is null!");
                 }
-/*
+
                 SQLQueryPane queryPane = new SQLQueryPane(titleElement.getTextTrim(), this, true, true);
                 String sqlStr = sqlElement.getTextTrim();
                 if (idStr != null)
@@ -293,5 +311,15 @@ public class StatsMgr
         }
         return null;
     }
+    
+    /**
+     * Looks up statName and creates the appropriate SubPane
+     * @param statName the name of the stat to be displayed
+     */
+    public static JPanel createStatPane(final String statName)
+    {
+        return instance.createStatPaneInternal(statName);
+    }
+
 
 }

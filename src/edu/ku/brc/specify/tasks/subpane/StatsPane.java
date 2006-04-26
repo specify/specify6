@@ -22,9 +22,11 @@ package edu.ku.brc.specify.tasks.subpane;
 
 import static edu.ku.brc.specify.helpers.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.specify.helpers.XMLHelper.getAttr;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -40,9 +42,11 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.helpers.XMLHelper;
+import edu.ku.brc.specify.stats.BarChartPanel;
 import edu.ku.brc.specify.stats.StatGroup;
 import edu.ku.brc.specify.stats.StatGroupFromQuery;
 import edu.ku.brc.specify.stats.StatItem;
+import edu.ku.brc.specify.stats.StatsMgr;
 
 /**
  * A class that loads a page of statistics from an XML description
@@ -69,11 +73,11 @@ public class StatsPane extends BaseSubPane
      * @param useSeparatorTitles indicates the group panels should use separator titles instead of boxes
      * @param bgColor the background color
     */
-    public StatsPane(final String name,
+    public StatsPane(final String   name,
                      final Taskable task,
-                     final String fileName,
-                     final boolean useSeparatorTitles,
-                     final Color bgColor)
+                     final String   fileName,
+                     final boolean  useSeparatorTitles,
+                     final Color    bgColor)
     {
         super(name, task);
 
@@ -110,7 +114,7 @@ public class StatsPane extends BaseSubPane
             for (Object obj : rows)
             {
                 Element rowElement = (Element)obj;
-                List boxes = rowElement.selectNodes("box");
+                List    boxes      = rowElement.selectNodes("box");
                 maxCols = Math.max(maxCols, boxes.size());
                 if (rowsDef.length() > 0)
                 {
@@ -119,7 +123,10 @@ public class StatsPane extends BaseSubPane
                 rowsDef.append("top:p");
             }
 
-            FormLayout      formLayout = new FormLayout(createDuplicateJGoodiesDef("f:max(250px;p)", "35dlu", maxCols), rowsDef.toString());
+            int preferredWidth = 260;
+            int spacing        = 35;
+            FormLayout      formLayout = new FormLayout(createDuplicateJGoodiesDef("f:min("+preferredWidth+"px;p)", spacing+"px", maxCols), rowsDef.toString());
+            //FormLayout      formLayout = new FormLayout(createDuplicateJGoodiesDef("f:min("+preferredWidth+"px;p):g", "p:g", maxCols), rowsDef.toString());
             PanelBuilder    builder    = new PanelBuilder(formLayout);
             CellConstraints cc         = new CellConstraints();
 
@@ -134,77 +141,113 @@ public class StatsPane extends BaseSubPane
                 {
                     Element boxElement = (Element)bo;
 
-                    int descCol = getAttr(boxElement, "descCol", -1);
-                    int valCol  = getAttr(boxElement, "valCol", -1);
-                    Element sqlElement = (Element)boxElement.selectSingleNode("sql");
-
-                    StatGroup group = null;
-                    if (descCol > -1 && valCol > -1 && sqlElement != null)
+                    String type = getAttr(boxElement, "type", "box");
+                    int colSpan = getAttr(boxElement, "colspan", 1);
+                    
+                    Component comp = null;
+                    if (type.equalsIgnoreCase("bar chart"))
                     {
-                        String linkStr = null;
-                        int colId      = -1;
-                        Element link = (Element)boxElement.selectSingleNode("link");
-                        if (link != null)
+                        String statName = getAttr(boxElement, "name", null);
+                        if (isNotEmpty(statName))
                         {
-                            linkStr = link.getTextTrim();
-                            colId   = Integer.parseInt(link.attributeValue("colid"));
+                            BarChartPanel bcp = (BarChartPanel)StatsMgr.createStatPane(statName);
+                            int width = colSpan > 1 ? ((maxCols * preferredWidth) + ((maxCols-1) * spacing)) : preferredWidth;
+                            bcp.setMaxChartSize(width, preferredWidth);
+                            comp = bcp;
+                            //comp.setSize(new Dimension(preferredWidth, preferredWidth));
+                            //comp.setPreferredSize(new Dimension(preferredWidth, preferredWidth));
+                            //comp.invalidate();
+                            //comp.doLayout();
+                            //System.out.println(comp.getSize());
+                            
                         }
-                        group = new StatGroupFromQuery(boxElement.attributeValue("title"),
-                                                       sqlElement.getText(),
-                                                       descCol,
-                                                       valCol,
-                                                       useSeparatorTitles);
-                        ((StatGroupFromQuery)group).setLinkInfo(linkStr, colId);
-
-                    } else
+                        
+                    } else // The default is "Box"
                     {
-                        group = new StatGroup(boxElement.attributeValue("title"), useSeparatorTitles);
-
-                        List items = boxElement.selectNodes("item");
-                        for (Object io : items)
+                        int descCol = getAttr(boxElement, "desccol", -1);
+                        int valCol  = getAttr(boxElement, "valcol", -1);
+                        
+                        Element sqlElement = (Element)boxElement.selectSingleNode("sql");
+    
+                        StatGroup group = null;
+                        if (descCol > -1 && valCol > -1 && sqlElement != null)
                         {
-                            Element itemElement = (Element)io;
-
-                            Element link = (Element)itemElement.selectSingleNode("link");
                             String linkStr = null;
+                            int colId      = -1;
+                            Element link = (Element)boxElement.selectSingleNode("link");
                             if (link != null)
                             {
                                 linkStr = link.getTextTrim();
+                                colId   = Integer.parseInt(link.attributeValue("colid"));
                             }
-
-                            StatItem statItem   = new StatItem(itemElement.attributeValue("title"), linkStr, getAttr(itemElement, "useprogress", false));
-                            List     statements = itemElement.selectNodes("sql/statement");
-
-                             if (statements.size() == 1)
+                            group = new StatGroupFromQuery(boxElement.attributeValue("title"),
+                                                           sqlElement.getText(),
+                                                           descCol,
+                                                           valCol,
+                                                           useSeparatorTitles);
+                            ((StatGroupFromQuery)group).setLinkInfo(linkStr, colId);
+    
+                        } else
+                        {
+                            group = new StatGroup(boxElement.attributeValue("title"), useSeparatorTitles);
+    
+                            List items = boxElement.selectNodes("item");
+                            for (Object io : items)
                             {
-                                statItem.add(((Element)statements.get(0)).getText(), 1, 1, StatItem.VALUE_TYPE.Value);
-
-                            } else if (statements.size() > 0)
-                            {
-                                int cnt = 0;
-                                for (Object stObj : statements)
+                                Element itemElement = (Element)io;
+    
+                                Element link = (Element)itemElement.selectSingleNode("link");
+                                String linkStr = null;
+                                if (link != null)
                                 {
-                                    Element stElement = (Element)stObj;
-                                    int vRowInx = getAttr(stElement, "row", -1);
-                                    int vColInx = getAttr(stElement, "col", -1);
-                                    if (vRowInx == -1 || vColInx == -1)
-                                    {
-                                        statItem.add(stElement.getText()); // ignore return object
-                                    } else
-                                    {
-                                        statItem.add(stElement.getText(), vRowInx, vColInx, StatItem.VALUE_TYPE.Value); // ignore return object
-                                    }
-                                    cnt++;
+                                    linkStr = link.getTextTrim();
                                 }
+    
+                                StatItem statItem   = new StatItem(itemElement.attributeValue("title"), linkStr, getAttr(itemElement, "useprogress", false));
+                                List     statements = itemElement.selectNodes("sql/statement");
+    
+                                 if (statements.size() == 1)
+                                {
+                                    statItem.add(((Element)statements.get(0)).getText(), 1, 1, StatItem.VALUE_TYPE.Value);
+    
+                                } else if (statements.size() > 0)
+                                {
+                                    int cnt = 0;
+                                    for (Object stObj : statements)
+                                    {
+                                        Element stElement = (Element)stObj;
+                                        int vRowInx = getAttr(stElement, "row", -1);
+                                        int vColInx = getAttr(stElement, "col", -1);
+                                        if (vRowInx == -1 || vColInx == -1)
+                                        {
+                                            statItem.add(stElement.getText()); // ignore return object
+                                        } else
+                                        {
+                                            statItem.add(stElement.getText(), vRowInx, vColInx, StatItem.VALUE_TYPE.Value); // ignore return object
+                                        }
+                                        cnt++;
+                                    }
+                                }
+                                group.add(statItem);
+                                statItem.startUp();
                             }
-                            group.add(statItem);
-                            statItem.startUp();
                         }
+                        comp = group;
                     }
-                    //log.info(boxElement.attributeValue("title")+" "+x+","+y);
-                    builder.add(group, cc.xy(x, y));
-                    x += 2;
-                }
+                    
+                    if (comp != null)
+                    {
+                        if (colSpan == 1)
+                        {
+                            builder.add(comp, cc.xy(x, y));
+                            
+                        } else
+                        {
+                            builder.add(comp, cc.xywh(x, y, colSpan, 1));
+                        }
+                        x += 2;
+                    }
+                } // boxes
                 y += 2;
             }
 

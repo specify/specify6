@@ -23,7 +23,9 @@ package edu.ku.brc.specify.tasks.subpane;
 import java.awt.BorderLayout;
 import java.awt.Color;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import edu.ku.brc.specify.core.Taskable;
@@ -55,5 +57,27 @@ public class SimpleDescPane extends BaseSubPane
         add(label, BorderLayout.CENTER);
        
     }
+    
+    /**
+     * 
+     *
+     */
+    public SimpleDescPane(final String name, 
+                          final Taskable task,
+                          final JPanel panel)
+    {
+        super(name, task);
+        
+        /*
+        CellConstraints cc      = new CellConstraints();
+        PanelBuilder builder    = new PanelBuilder(new FormLayout("F:P:G", "F:P:G"), this);
+        builder.add(panel, cc.xy(1,1));
+*/
+        setBackground(Color.WHITE);
+        add(panel, BorderLayout.CENTER);
+       
+    }
+    
+    
     
 }

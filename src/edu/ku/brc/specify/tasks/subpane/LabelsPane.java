@@ -142,6 +142,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                 // 28594
                 String itemnum = "";
                 
+                /* TEMPOARY 
                 if ( recordSet == null)
                 {
                     itemnum = JOptionPane.showInputDialog(this, getResourceString("AskCatalogNum"));
@@ -154,7 +155,8 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                 {
                     itemnum = DBTableIdMgr.getInClause(recordSet);
                 }
-                
+                */
+                itemnum = DBTableIdMgr.getInClause(recordSet);
                 JasperReport jasperReport = (JasperReport)JRLoader.loadObject(compiledFile.getAbsoluteFile());
                 if (jasperReport != null)
                 {
