@@ -22,6 +22,7 @@
 package edu.ku.brc.specify.conversion;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -36,28 +37,39 @@ import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
  */
 public class IdMapperMgr
 {
-    protected static IdMapperMgr          idMapperMgr = null;
+    protected static IdMapperMgr          idMapperMgr = new IdMapperMgr();
     
-    protected Connection                  oldConn;
+    protected Connection                  oldConn = null;
+    protected Connection                  newConn = null;
     protected Hashtable<String, IdMapper> idMappers = new Hashtable<String, IdMapper>();
     
     /**
      * Needs to be created manually before calling getInstance
      * @param oldConn the connection to the old database
      */
-    public IdMapperMgr(final Connection oldConn)
+    public IdMapperMgr()
+    {
+    }
+    
+    public void setDBs(final Connection oldConn, final Connection newConn)
     {
         this.oldConn = oldConn;
-        idMapperMgr = this;
+        this.newConn = newConn;
     }
 
     /**
      * @param tableName
      * @param idName
+     * @param sql
      * @return the IdMapper object
      */
-    public IdMapper addMapper(final String tableName, final String idName)
+    public IdMapper addMapper(final String tableName, final String idName, final String sql) throws SQLException
     {
+        if (oldConn == null || newConn == null)
+        {
+            throw new RuntimeException("setDBs MUST be called on IdMapperMgr before using it!");
+            
+        }
         String name = tableName.toLowerCase();
         
         List<String> fieldNames = new ArrayList<String>();
@@ -67,9 +79,19 @@ public class IdMapperMgr
             throw new RuntimeException("Table["+name+"] doesn't have first column id["+idName+"]");
         }
 
-        IdMapper idMapper = new IdMapper(oldConn, name, idName);
+        IdMapper idMapper = new IdMapper(name, idName, sql);
         idMappers.put(idMapper.getName(), idMapper);
         return idMapper;
+    }
+    
+    /**
+     * @param tableName
+     * @param idName
+     * @return the IdMapper object
+     */
+    public IdMapper addMapper(final String tableName, final String idName)  throws SQLException
+    {
+        return addMapper(tableName, idName, null);
     }
     
     /**
@@ -78,6 +100,14 @@ public class IdMapperMgr
     public Connection getOldConnection()
     {
         return oldConn;
+    }
+
+    /**
+     * @return the new connection
+     */
+    public Connection getNewConnection()
+    {
+        return newConn;
     }
 
     /**
@@ -116,7 +146,7 @@ public class IdMapperMgr
     /**
      * 
      */
-    public void cleanup()
+    public void cleanup() throws SQLException
     {
         for (IdMapper mapper : idMappers.values())
         {

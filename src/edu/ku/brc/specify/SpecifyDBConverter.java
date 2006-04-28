@@ -17,7 +17,6 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 
-
 import edu.ku.brc.specify.conversion.GenericDBConversion;
 import edu.ku.brc.specify.conversion.GeoFileLine;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
@@ -157,15 +156,13 @@ public class SpecifyDBConverter
      */
     public static void main(String args[]) throws Exception
     {
-        String oldDatabaseName = "demo_fish4";
-
-        DBConnection oldDB       = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/"+oldDatabaseName, "rods", "rods");
-        IdMapperMgr  idMapperMgr = new IdMapperMgr(oldDB.getConnectionToDB());
-
+        String oldDatabaseName = "demo_fish5";
+        
         DBConnection.setUsernamePassword("rods", "rods");
         DBConnection.setDriver("com.mysql.jdbc.Driver");
         DBConnection.setDBName("jdbc:mysql://localhost/demo_fish3");
-
+        
+        IdMapperMgr idMapperMgr = null;
         try
         {
         	GenericDBConversion.setShouldCreateMapTables(true);
@@ -177,15 +174,27 @@ public class SpecifyDBConverter
             if (doConvert)
             {
                 GenericDBConversion conversion = new GenericDBConversion("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/"+oldDatabaseName, "rods", "rods");
-
+                
+                idMapperMgr = IdMapperMgr.getInstance();
+                idMapperMgr.setDBs(conversion.getOldDBConnection(), conversion.getNewDBConnection());
+                
+                // NOTE: Within BasicSQLUtils the connection is for removing tables and records
+                BasicSQLUtils.setDBConnection(conversion.getNewDBConnection());
                 
                 // This MUST be done before any of the table copies because it
                 // creates the IdMappers for Agent, Address and mor eimportantly AgentAddress
                 // NOTE: AgentAddress is actually mapping from the old AgentAddress table to the new Agent table
                 boolean copyAgentAddressTables = false;
                 if (copyAgentAddressTables || doAll)
+                //if (copyAgentAddressTables)
                 {
                     conversion.convertAgents();
+                    
+                } else
+                {
+                    idMapperMgr.addMapper("agent", "AgentID");
+                    idMapperMgr.addMapper("address", "AddressID");
+                    idMapperMgr.addMapper("agentaddress", "AgentAddressID");
                 }
 
 
@@ -202,13 +211,24 @@ public class SpecifyDBConverter
                     BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(null);
                 }
 
+                boolean convertCatalogSeriesDef = false;
+                if (convertCatalogSeriesDef || doAll)
+                {
+                    int specifyUserId = conversion.createDefaultUser("admin");
+                    conversion.convertCollectionObjectDefs(specifyUserId);
+                    
+                } else
+                {
+                    idMapperMgr.addMapper("CatalogSeriesDefinition", "CatalogSeriesDefinitionID");
+                    idMapperMgr.addMapper("CollectionObjectType", "CollectionObjectTypeID");
+                }
+                
+
                 boolean copyUSYSTables = false;
                 if (copyUSYSTables || doAll)
                 {
-                    conversion.convertUSYSTables();
+                    //conversion.convertUSYSTables();
                 }
-
-
 
                 boolean copyTables = false;
                 if (copyTables || doAll)
@@ -376,14 +396,16 @@ public class SpecifyDBConverter
 
 
             log.info("Done.");
+            
         } catch (Exception ex)
         {
-            if (GenericDBConversion.shouldDeleteMapTables())
+            ex.printStackTrace();
+            
+            if (idMapperMgr != null && GenericDBConversion.shouldDeleteMapTables())
             {
                 idMapperMgr.cleanup();
             }
 
-            ex.printStackTrace();
         }
     }
 }

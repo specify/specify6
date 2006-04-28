@@ -61,12 +61,23 @@ public class BasicSQLUtils
 
     protected static Hashtable<String, String> ignoreMappingFieldNames = null;
     protected static Hashtable<String, String> ignoreMappingFieldIDs   = null;
+    
+    protected static Connection dbConn = null;  // (it may be shared so don't close)
 
     /**
      * Singleton
      */
     protected  BasicSQLUtils()
     {
+    }
+    
+    /**
+     * Sets the SQL connection
+     * @param connection the SQL Connection
+     */
+    public static void setDBConnection(final Connection connection)
+    {
+        dbConn = connection;
     }
 
     /**
@@ -170,7 +181,25 @@ public class BasicSQLUtils
      */
     public static int deleteAllRecordsFromTable(final String tableName)
     {
-        return deleteAllRecordsFromTable(DBConnection.getConnection(), tableName);
+        int count = 0;
+
+        try
+        {
+            Connection connection = dbConn != null ? dbConn : DBConnection.getConnection();
+    
+            count = deleteAllRecordsFromTable(DBConnection.getConnection(), tableName);
+            
+            if (dbConn == null)
+            {
+                connection.close();
+            }
+            
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
+        
+        return count;
     }
 
     /**
@@ -205,8 +234,8 @@ public class BasicSQLUtils
 
         } catch (SQLException ex)
         {
-            //e.printStackTrace();
             log.error(ex);
+            ex.printStackTrace();
 
         }
         return -1;
@@ -219,11 +248,14 @@ public class BasicSQLUtils
     {
         try
         {
-            Connection connection = DBConnection.getConnection();
+            Connection connection = dbConn != null ? dbConn : DBConnection.getConnection();
 
             cleanAllTables(connection);
 
-            connection.close();
+            if (dbConn == null)
+            {
+                connection.close();
+            }
 
         } catch (SQLException ex)
         {
@@ -433,10 +465,10 @@ public class BasicSQLUtils
     {
         calendar.clear();
 
-        int year  = iDate / 10000;
+        int year  = iDate / 20000;
         if (year > 1600)
         {
-            int tmp   = (iDate - (year * 10000));
+            int tmp   = (iDate - (year * 20000));
             int month = tmp / 100;
             int day   = (tmp - (month * 100));
 
@@ -732,28 +764,22 @@ public class BasicSQLUtils
                         }
                         if (i > 0) str.append(", ");
                         str.append("NULL");
-
-                        //rs.close();
-                        //stmt.clearBatch();
-                        //stmt.close();
-                        //return false;
                     }
 
                 }
                 str.append(")");
-                if (count % 1000 == 0) log.info(toTableName + " processed: " + count);
+                if (count % 2000 == 0) log.info(toTableName + " processed: " + count);
                 Statement updateStatement = toConn.createStatement();
                 exeUpdateCmd(updateStatement, "SET FOREIGN_KEY_CHECKS = 0");
                 int retVal = exeUpdateCmd(updateStatement, str.toString());
                 updateStatement.clearBatch();
                 updateStatement.close();
+                
                 if (retVal == -1)
                 {
                     rs.close();
                     stmt.clearBatch();
                     stmt.close();
-                    fromConn.close();
-                    toConn.close();
                     return false;
                 }
                 count++;
@@ -764,8 +790,6 @@ public class BasicSQLUtils
             rs.close();
             stmt.clearBatch();
             stmt.close();
-            fromConn.close();
-            toConn.close();
 
         } catch (SQLException ex)
         {
@@ -861,6 +885,39 @@ public class BasicSQLUtils
             cntStmt.close();
 
             return count;
+
+        } catch (SQLException ex)
+        {
+            log.error(ex);
+        }
+        return -1;
+    }
+
+    /**
+     * Returns the last ID that was inserted into the database
+     * @param connection db connection
+     * @param tableName the name of the table
+     * @param idColName primary key column name
+     * @return the last ID that was inserted into the database
+     */
+    public static int getHighestId(final Connection connection, final String idColName, final String tableName)
+    {
+        try
+        {
+            Statement cntStmt = connection.createStatement();
+            ResultSet rs      = cntStmt.executeQuery("select "+idColName+" from "+tableName+" order by "+idColName+" asc");
+            int id = 0;
+            if (rs.last())
+            {
+                id = rs.getInt(1);
+            } else
+            {
+                id = 1;
+            }
+            rs.close();
+            cntStmt.close();
+
+            return id;
 
         } catch (SQLException ex)
         {

@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -43,27 +44,35 @@ public class IdMapper
 {
     protected static Log log = LogFactory.getLog(IdMapper.class);
 
+    protected String          sql           = null;
     protected String          tableName;
     protected String          idName;
     protected Connection      newConn;
+    protected Connection      oldConn;
+    protected Statement       stmtOld;
+    protected Statement       stmtNew;
 
     protected Vector<Integer> ids           = null;
-    protected String          mapTableName = null;
+    protected String          mapTableName  = null;
     protected boolean         usingMemory   = false;
     protected int             lastIdAdded   = -1;
-
 
     /**
      * @param oldConn
      * @param tableName
      * @param idName
      */
-    public IdMapper(final Connection oldConn, final String tableName, final String idName)
+    public IdMapper(final String tableName, final String idName) throws SQLException
     {
+        oldConn = IdMapperMgr.getInstance().getOldConnection();
+        
+        newConn = IdMapperMgr.getInstance().getNewConnection();
+        
+        stmtOld = oldConn.createStatement();
+        stmtNew = newConn.createStatement();
+        
         this.tableName = tableName.toLowerCase();
         this.idName    = idName;
-
-        newConn = DBConnection.getConnection();
 
         mapTableName = tableName + "_" + idName;
         int numRecs = BasicSQLUtils.getNumRecords(oldConn, tableName);
@@ -88,11 +97,10 @@ public class IdMapper
 
                 if (GenericDBConversion.shouldCreateMapTables())
                 {
-                    Statement stmt = newConn.createStatement();
-                    String    str  = "DROP TABLE `"+mapTableName+"`";
+                    String str  = "DROP TABLE `"+mapTableName+"`";
                     try
                     {
-                        stmt.executeUpdate(str);
+                        stmtNew.executeUpdate(str);
                     } catch (SQLException ex){};
 
                     str = "CREATE TABLE `"+mapTableName+"` ("+
@@ -100,12 +108,11 @@ public class IdMapper
                                         "`NewID` int(11) NOT NULL default '0', "+
                                         " PRIMARY KEY (`OldID`) ) ENGINE=InnoDB DEFAULT CHARSET=latin1";
                     //log.info(str);
-                    stmt.executeUpdate(str);
+                    stmtNew.executeUpdate(str);
 
-                    stmt.executeUpdate("alter table "+mapTableName+" add index INX_"+mapTableName+" (NewID)");
+                    stmtNew.executeUpdate("alter table "+mapTableName+" add index INX_"+mapTableName+" (NewID)");
 
-                    stmt.clearBatch();
-                    stmt.close();
+                    stmtNew.clearBatch();
                 }
 
             } catch (SQLException ex)
@@ -114,6 +121,17 @@ public class IdMapper
                 log.error(ex);
             }
         }
+    }
+    
+    /**
+     * @param oldConn
+     * @param tableName
+     * @param idName
+     */
+    public IdMapper(final String tableName, final String idName, final String sql) throws SQLException
+    {
+        this(tableName, idName);
+        this.sql = sql;
     }
 
     /**
@@ -146,11 +164,9 @@ public class IdMapper
         {
             try
             {
-                Statement stmt = newConn.createStatement();
                 String str = "INSERT INTO "+mapTableName+" VALUES (" + oldIndex + "," + newIndex + ")";
-                stmt.executeUpdate(str);
-                stmt.clearBatch();
-                stmt.close();
+                stmtNew.executeUpdate(str);
+                stmtNew.clearBatch();
 
             } catch (SQLException ex)
             {
@@ -163,21 +179,23 @@ public class IdMapper
     /**
      * Map all the old iDs to new IDs
      */
-    public void mapAllIds(final Connection oldConn)
+    public void mapAllIds()
     {
-        mapAllIds(oldConn, "select "+idName+" from "+tableName+" order by "+idName);
+        sql = "select "+idName+" from "+tableName+" order by "+idName;
+        mapAllIds(sql);
     }
 
     /**
      * Map all the old iDs to new IDs
      */
-    public void mapAllIds(final Connection oldConn, final String sql)
+    public void mapAllIds(final String sql)
     {
+        this.sql = sql;
+        
         BasicSQLUtils.deleteAllRecordsFromTable(mapTableName);
         try
         {
-            Statement stmt = oldConn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = stmtOld.executeQuery(sql);
             if (rs.first())
             {
                 int newIndex = 1;
@@ -185,7 +203,7 @@ public class IdMapper
                 {
                     int oldIndex = rs.getInt(1);
                     addIndex(newIndex++, oldIndex);
-                    if (newIndex % 1000 == 0)
+                    if (newIndex % 2000 == 0)
                     {
                         log.info("Mapped "+newIndex+" records from "+tableName);
                     }
@@ -198,14 +216,27 @@ public class IdMapper
                 log.info("No records to map in "+tableName);
             }
             rs.close();
-            stmt.close();
-            oldConn.close();
 
         } catch (SQLException ex)
         {
             ex.printStackTrace();
             log.error(ex);
             throw new RuntimeException(ex);
+        }
+    }
+    
+    /**
+     * Map all the old iDs to new IDs
+     */
+    public void mapAllIdsWithSQL()
+    {
+        if (StringUtils.isNotEmpty(sql))
+        {
+            mapAllIds(sql);
+            
+        } else
+        {
+            throw new RuntimeException("The SQL strng is empty in idmapper. "+tableName);
         }
     }
 
@@ -236,8 +267,7 @@ public class IdMapper
             try
             {
                 Integer   newId = null;
-                Statement stmt     = newConn.createStatement();
-                ResultSet rs       = stmt.executeQuery("select NewID from "+mapTableName+" where OldID = " + oldId);
+                ResultSet rs       = stmtNew.executeQuery("select NewID from "+mapTableName+" where OldID = " + oldId);
                 if (rs.first())
                 {
                     newId = rs.getInt(1);
@@ -246,11 +276,9 @@ public class IdMapper
                 {
                     log.error("********** Couldn't find old index ["+oldId+"] for "+mapTableName+" "+idName);
                     rs.close();
-                    stmt.close();
                     return null;
                 }
                 rs.close();
-                stmt.close();
 
                 return newId;
 
@@ -262,12 +290,20 @@ public class IdMapper
             }
         }
     }
+    
+    public String getSql()
+    {
+        return sql;
+    }
 
     /**
      * Cleans up temporary data
      */
-    public void cleanup()
+    public void cleanup() throws SQLException
     {
+        oldConn = null;
+        newConn = null;
+        
         if (mapTableName != null)
         {
             if (usingMemory)
@@ -279,9 +315,7 @@ public class IdMapper
             {
                 try
                 {
-                    Statement stmt = newConn.createStatement();
-                    stmt.executeUpdate("DROP TABLE `"+mapTableName+"`");
-                    stmt.close();
+                    stmtNew.executeUpdate("DROP TABLE `"+mapTableName+"`");
 
                 } catch (SQLException ex)
                 {
@@ -291,6 +325,9 @@ public class IdMapper
             }
             mapTableName = null;
         }
+        
+        stmtNew.close();
+        stmtOld.close();
 
     }
 

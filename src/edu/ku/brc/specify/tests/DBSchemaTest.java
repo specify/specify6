@@ -32,7 +32,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 
-import edu.ku.brc.specify.conversion.GenericDBConversion;
 import edu.ku.brc.specify.conversion.IdMapper;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AttributeDef;
@@ -101,7 +100,7 @@ public class DBSchemaTest extends TestCase
 
         try
         {
-            IdMapper  idMapper = new IdMapper(oldDB.getConnectionToDB(), "collectionobject", "CollectionObjectID");
+            IdMapper  idMapper = new IdMapper("collectionobject", "CollectionObjectID");
             Statement stmt     = oldDB.getConnectionToDB().createStatement();
             ResultSet rs       = stmt.executeQuery("select CollectionObjectID from collectionobject limit 0,100");
             int       newInx   = 1;
@@ -120,7 +119,7 @@ public class DBSchemaTest extends TestCase
             idMapper.cleanup();
 
             // Now Test Memory Approach
-            idMapper = new IdMapper(oldDB.getConnectionToDB(), "accession", "AccessionID");
+            idMapper = new IdMapper("accession", "AccessionID");
             stmt     = oldDB.getConnectionToDB().createStatement();
             rs       = stmt.executeQuery("select AccessionID from accession limit 0,100");
             newInx   = 1;
@@ -161,9 +160,9 @@ public class DBSchemaTest extends TestCase
     public void testCreateDataType()
     {
         log.info("Create Data Type");
-        GenericDBConversion conversion = new GenericDBConversion();
-        DataType            dataType  = conversion.createDataTypes("Animal");
-        assertNotNull(dataType);
+        //GenericDBConversion conversion = new GenericDBConversion();
+        //DataType            dataType  = conversion.createDataTypes("Animal");
+        //assertNotNull(dataType);
     }
 
     /**
