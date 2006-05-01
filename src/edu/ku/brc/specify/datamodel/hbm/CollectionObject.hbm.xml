@@ -115,7 +115,7 @@
         <meta attribute="field-description"></meta>
     </property>
 
-    <property name="catalogNumber" unique="true" index="IX_CatalogNumber" type="java.lang.Float" column="CatalogNumber">
+    <property name="catalogNumber" unique="false" index="IX_CatalogNumber" type="java.lang.Float" column="CatalogNumber">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
     </property>

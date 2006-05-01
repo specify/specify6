@@ -2,13 +2,14 @@
 <panel>
 
   <row>
-      <box title="Task List" desccol="1" valcol="2">    
+      <box title="Task List" desccol="1" valcol="2">
 		<sql><![CDATA[Select name from tasklist]]></sql>
       </box>
-      <box title="Pre-Catalog Works Benches" desccol="1" valcol="2">    
+      <box title="Pre-Catalog Works Benches" desccol="1" valcol="2">
 		<sql><![CDATA[Select name from workbench]]></sql>
       </box>
   </row>
+  -->
    <row>
       <box title="Loans">
         <item title="Items On Loan">
@@ -23,16 +24,16 @@
             <link>ListOnLoan</link>
         </item>
       </box>
-      <box title="Overdue Loans" desccol="1" valcol="5">    
+      <box title="Overdue Loans" desccol="1" valcol="5">
         <sql><![CDATA[Select distinct loan.LoanNumber as LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName, loan.loanid, loan.OriginalDueDate, loanphysicalobject.Quantity, loanphysicalobject.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country From loan Inner Join loanphysicalobject ON loan.LoanID =  loanphysicalobject.LoanID Inner Join loanagents ON loan.LoanID = loanagents.LoanID Inner Join agent ON loanagents.AgentID = agent.AgentID Inner Join address ON agent.AgentID = address.AgentID where loan.loanid in (select loanid from loan where (not  (currentduedate is null)) and category = 0 and (closed = 0 or closed is null) and datediff(CURDATE(), currentduedate) > 0)  group by LoanNumber]]></sql>
 		  <link colid="6">OverdueLookup</link>
       </box>
-   </row> 
+   </row>
     <row>
-        <box title="Recent Searches" desccol="1" valcol="2">    
+        <box title="Recent Searches" desccol="1" valcol="2">
 		<sql><![CDATA[Select name from searches]]></sql>
       </box>
-  
+
       <box title="Data Entry">
         <item title="Cataloged in Last 7 Days">
             <sql><statement><![CDATA[select count(*) from collectionobject where DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= TimestampCreated]]></statement></sql>
@@ -58,8 +59,8 @@
             <sql><![CDATA[select permit.PermitNumber, permit.PermitID, permit.EndDate From permit where DATE_SUB(CURDATE(), INTERVAL 3 MONTH) <= TimestampCreated order by permitNumber asc]]></sql>
             <link colid="2">CITESPermitsExpireThisYear</link>
         </box>
-    </row> 
-    
+    </row>
+
     <row>
         <box title="CITES Permits Expiring This Year" desccol="1" valcol="3">
             <sql><![CDATA[select permit.PermitNumber, permit.PermitID, permit.EndDate From permit where ( lower(Type) like '%CITES%') and year(CURDATE()) = year(EndDate)]]></sql>
@@ -70,9 +71,9 @@
             <link colid="2">NonCITESPermitsExpireThisYear</link>
         </box>
     </row>
-    
+
     <row>
         <box type="Bar Chart" name="AccessionByDivision" colspan="3"/>
-    </row> 
+    </row>
     -->
 </panel>

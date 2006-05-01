@@ -32,7 +32,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
-import edu.ku.brc.specify.dbsupport.DBConnection;
 
 /**
  * Manages the mapping of old primary key ID to new sequenial ones
@@ -65,12 +64,12 @@ public class IdMapper
     public IdMapper(final String tableName, final String idName) throws SQLException
     {
         oldConn = IdMapperMgr.getInstance().getOldConnection();
-        
+
         newConn = IdMapperMgr.getInstance().getNewConnection();
-        
+
         stmtOld = oldConn.createStatement();
         stmtNew = newConn.createStatement();
-        
+
         this.tableName = tableName.toLowerCase();
         this.idName    = idName;
 
@@ -122,7 +121,7 @@ public class IdMapper
             }
         }
     }
-    
+
     /**
      * @param oldConn
      * @param tableName
@@ -188,10 +187,51 @@ public class IdMapper
     /**
      * Map all the old iDs to new IDs
      */
+    public void mapAllFirstTwoColumns(final String sql)
+    {
+        this.sql = sql;
+        BasicSQLUtils.deleteAllRecordsFromTable(mapTableName);
+        try
+        {
+            ResultSet rs = stmtOld.executeQuery(sql);
+            if (rs.first())
+            {
+                int count = 0;
+                do
+                {
+                    int oldIndex = rs.getInt(1);
+                    int newIndex = rs.getInt(2);
+                    addIndex(newIndex, oldIndex);
+                    if (count % 2000 == 0)
+                    {
+                        log.info("Mapped "+newIndex+" records from "+tableName);
+                    }
+                    count++;
+                } while (rs.next());
+                log.info("Mapped "+count+" records from "+tableName);
+
+            } else
+            {
+                log.info("No records to map in "+tableName);
+            }
+            rs.close();
+
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+            log.error(ex);
+            throw new RuntimeException(ex);
+        }
+
+    }
+
+    /**
+     * Map all the old iDs to new IDs
+     */
     public void mapAllIds(final String sql)
     {
         this.sql = sql;
-        
+
         BasicSQLUtils.deleteAllRecordsFromTable(mapTableName);
         try
         {
@@ -224,7 +264,7 @@ public class IdMapper
             throw new RuntimeException(ex);
         }
     }
-    
+
     /**
      * Map all the old iDs to new IDs
      */
@@ -233,7 +273,7 @@ public class IdMapper
         if (StringUtils.isNotEmpty(sql))
         {
             mapAllIds(sql);
-            
+
         } else
         {
             throw new RuntimeException("The SQL strng is empty in idmapper. "+tableName);
@@ -290,7 +330,7 @@ public class IdMapper
             }
         }
     }
-    
+
     public String getSql()
     {
         return sql;
@@ -303,7 +343,7 @@ public class IdMapper
     {
         oldConn = null;
         newConn = null;
-        
+
         if (mapTableName != null)
         {
             if (usingMemory)
@@ -325,7 +365,7 @@ public class IdMapper
             }
             mapTableName = null;
         }
-        
+
         stmtNew.close();
         stmtOld.close();
 
