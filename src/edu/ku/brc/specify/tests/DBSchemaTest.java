@@ -32,7 +32,8 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 
-import edu.ku.brc.specify.conversion.IdMapper;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.conversion.IdTableMapper;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.AttributeIFace;
@@ -56,7 +57,6 @@ import edu.ku.brc.specify.datamodel.PreparationAttr;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.UserGroup;
-import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 
@@ -94,44 +94,44 @@ public class DBSchemaTest extends TestCase
      */
     public void XtestIdMapper()
     {
-        log.info("Testing IdMapper");
+        log.info("Testing IdTableMapper");
 
         DBConnection oldDB     = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/demo_fish2", "rods", "rods");
 
         try
         {
-            IdMapper  idMapper = new IdMapper("collectionobject", "CollectionObjectID");
+            IdTableMapper  idMapper = new IdTableMapper("collectionobject", "CollectionObjectID");
             Statement stmt     = oldDB.getConnectionToDB().createStatement();
             ResultSet rs       = stmt.executeQuery("select CollectionObjectID from collectionobject limit 0,100");
             int       newInx   = 1;
             while (rs.next())
             {
-                idMapper.addIndex(newInx++, rs.getInt(1));
+                idMapper.put(rs.getInt(1), newInx++);
             }
             rs.close();
             stmt.close();
 
             int oldInx = -2135666521;
-            newInx = idMapper.getNewIdFromOldId(oldInx);
+            newInx = idMapper.get(oldInx);
             log.info("New Index ["+newInx+"] for old ["+oldInx+"]");
             assertTrue(newInx == 100);
 
             idMapper.cleanup();
 
             // Now Test Memory Approach
-            idMapper = new IdMapper("accession", "AccessionID");
+            idMapper = new IdTableMapper("accession", "AccessionID");
             stmt     = oldDB.getConnectionToDB().createStatement();
             rs       = stmt.executeQuery("select AccessionID from accession limit 0,100");
             newInx   = 1;
             while (rs.next())
             {
-                idMapper.addIndex(newInx++, rs.getInt(1));
+                idMapper.put(rs.getInt(1), newInx++);
             }
             rs.close();
             stmt.close();
 
             oldInx = 74;
-            newInx = idMapper.getNewIdFromOldId(oldInx);
+            newInx = idMapper.get(oldInx);
             log.info("New Index ["+newInx+"] for old ["+oldInx+"]");
             assertTrue(newInx == 8);
 

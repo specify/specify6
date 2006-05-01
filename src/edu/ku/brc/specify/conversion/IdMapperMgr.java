@@ -27,30 +27,35 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 
 /**
- * Manages all IdMappers and provides a way to provide foreign key mappnigs for columns in other tables
+ * Manages all IdMappers and provides a way to provide foreign key mappinggs for columns in other tables. 
+ * The Class requires a connection to the "Old" database which is where the "from" IDs will come from and a 
+ * connection to the "new" database which is where all the tables will be created.
  * 
  * @author rods
  *
  */
 public class IdMapperMgr
 {
-    protected static IdMapperMgr          idMapperMgr = new IdMapperMgr();
+    protected static IdMapperMgr              idMapperMgr = new IdMapperMgr();
     
-    protected Connection                  oldConn = null;
-    protected Connection                  newConn = null;
-    protected Hashtable<String, IdMapper> idMappers = new Hashtable<String, IdMapper>();
+    protected Connection                      oldConn = null;
+    protected Connection                      newConn = null;
+    protected Hashtable<String, IdHashMapper> idMappers = new Hashtable<String, IdHashMapper>();
     
     /**
-     * Needs to be created manually before calling getInstance
-     * @param oldConn the connection to the old database
+     * Constructor
      */
     public IdMapperMgr()
     {
     }
     
+    /**
+     * Sets up the DBConnection for all the mappers (This is a Required Step before using it)
+     * @param oldConn the old connection
+     * @param newConn the new connection
+     */
     public void setDBs(final Connection oldConn, final Connection newConn)
     {
         this.oldConn = oldConn;
@@ -58,12 +63,13 @@ public class IdMapperMgr
     }
 
     /**
+     * Create a Table Mapper
      * @param tableName
      * @param idName
      * @param sql
-     * @return the IdMapper object
+     * @return the IdHashMapper object
      */
-    public IdMapper addMapper(final String tableName, final String idName, final String sql) throws SQLException
+    public IdTableMapper addTableMapper(final String tableName, final String idName, final String sql) throws SQLException
     {
         if (oldConn == null || newConn == null)
         {
@@ -79,7 +85,7 @@ public class IdMapperMgr
             throw new RuntimeException("Table["+name+"] doesn't have first column id["+idName+"]");
         }
 
-        IdMapper idMapper = new IdMapper(name, idName, sql);
+        IdTableMapper idMapper = new IdTableMapper(name.toLowerCase(), idName, sql);
         idMappers.put(idMapper.getName(), idMapper);
         return idMapper;
     }
@@ -87,11 +93,40 @@ public class IdMapperMgr
     /**
      * @param tableName
      * @param idName
-     * @return the IdMapper object
+     * @return the IdHashMapper object
      */
-    public IdMapper addMapper(final String tableName, final String idName)  throws SQLException
+    public IdTableMapper addTableMapper(final String tableName, final String idName)  throws SQLException
     {
-        return addMapper(tableName, idName, null);
+        return addTableMapper(tableName, idName, null);
+    }
+    
+    /**
+     * Creates a Hash mapper with pre-installed SQL
+     * @param name
+     * @param sql
+     * @return the IdHashMapper object
+     */
+    public IdHashMapper addHashMapper(final String name, final String sql) throws SQLException
+    {
+        if (oldConn == null || newConn == null)
+        {
+            throw new RuntimeException("setDBs MUST be called on IdMapperMgr before using it!");
+            
+        }
+        
+        IdHashMapper idMapper = new IdHashMapper(name.toLowerCase(), sql);
+        idMappers.put(idMapper.getName(), idMapper);
+        return idMapper;
+    }
+    
+    /**
+     * Creates a Hash mapper
+     * @param name
+     * @return the IdHashMapper object
+     */
+    public IdHashMapper addHashMapper(final String name) throws SQLException
+    {
+        return addHashMapper(name, null);
     }
     
     /**
@@ -113,11 +148,21 @@ public class IdMapperMgr
     /**
      * @param tableName
      * @param idName
-     * @return the IdMapper object
+     * @return the IdHashMapper object
      */
     public IdMapper get(final String tableName, final String idName)
     {
         return idMappers.get(tableName.toLowerCase()+"_"+idName);
+    }
+    
+    /**
+     * @param name
+     * @param idName
+     * @return the IdHashMapper object
+     */
+    public IdMapper get(final String name)
+    {
+        return idMappers.get(name.toLowerCase());
     }
     
     /**
@@ -131,7 +176,7 @@ public class IdMapperMgr
                               final String tableName, 
                               final String idName)
     {
-        IdMapper idMapper = idMappers.get(tableName.toLowerCase()+"_"+idName);
+        IdHashMapper idMapper = idMappers.get(tableName.toLowerCase()+"_"+idName);
         if (idMapper != null)
         {
             idMappers.put(idMapper.getName(), idMapper);
@@ -148,7 +193,7 @@ public class IdMapperMgr
      */
     public void cleanup() throws SQLException
     {
-        for (IdMapper mapper : idMappers.values())
+        for (IdHashMapper mapper : idMappers.values())
         {
             mapper.cleanup();
         }

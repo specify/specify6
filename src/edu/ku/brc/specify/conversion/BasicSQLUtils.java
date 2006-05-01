@@ -19,7 +19,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.specify.dbsupport;
+package edu.ku.brc.specify.conversion;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -40,8 +40,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.ku.brc.specify.conversion.IdMapper;
-import edu.ku.brc.specify.conversion.IdMapperMgr;
+import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.helpers.UIHelper;
 
 /**
@@ -693,7 +692,7 @@ public class BasicSQLUtils
                             	}
                             	else
                             	{
-                            		dataObj = idMapper.getNewIdFromOldId(oldPrimaryKeyId);
+                            		dataObj = idMapper.get(oldPrimaryKeyId);
                             	}
 
                                 /*if (rs.getObject(columnIndex) != null)

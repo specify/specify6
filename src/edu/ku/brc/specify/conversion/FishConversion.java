@@ -20,7 +20,7 @@
  */
 package edu.ku.brc.specify.conversion;
 
-import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.deleteAllRecordsFromTable;
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.deleteAllRecordsFromTable;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -38,7 +38,6 @@ import org.apache.commons.logging.LogFactory;
 import edu.ku.brc.specify.datamodel.AttributeIFace;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.PrepType;
-import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 
 /**
  * Used for Converting a Fish Database

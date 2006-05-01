@@ -1,6 +1,6 @@
 package edu.ku.brc.specify;
 
-import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.deleteAllRecordsFromTable;
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.deleteAllRecordsFromTable;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -17,6 +17,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.GenericDBConversion;
 import edu.ku.brc.specify.conversion.GeoFileLine;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
@@ -28,7 +29,6 @@ import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.UserGroup;
-import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.dbsupport.ResultsPager;
@@ -192,9 +192,9 @@ public class SpecifyDBConverter
                     
                 } else
                 {
-                    idMapperMgr.addMapper("agent", "AgentID");
-                    idMapperMgr.addMapper("address", "AddressID");
-                    idMapperMgr.addMapper("agentaddress", "AgentAddressID");
+                    idMapperMgr.addTableMapper("agent", "AgentID");
+                    idMapperMgr.addTableMapper("address", "AddressID");
+                    idMapperMgr.addTableMapper("agentaddress", "AgentAddressID");
                 }
 
 
@@ -219,15 +219,15 @@ public class SpecifyDBConverter
                     
                 } else
                 {
-                    idMapperMgr.addMapper("CatalogSeriesDefinition", "CatalogSeriesDefinitionID");
-                    idMapperMgr.addMapper("CollectionObjectType", "CollectionObjectTypeID");
+                    idMapperMgr.addTableMapper("CatalogSeriesDefinition", "CatalogSeriesDefinitionID");
+                    idMapperMgr.addTableMapper("CollectionObjectType", "CollectionObjectTypeID");
                 }
                 
 
                 boolean copyUSYSTables = false;
                 if (copyUSYSTables || doAll)
                 {
-                    //conversion.convertUSYSTables();
+                    conversion.convertUSYSTables();
                 }
 
                 boolean copyTables = false;
@@ -236,13 +236,15 @@ public class SpecifyDBConverter
                     conversion.copyTables();
                 }
 
-                boolean doCollectionObjects = false;
+                boolean doCollectionObjects = true;
                 if (doCollectionObjects || doAll)
                 {
-                    Map<String, PrepType> prepTypeMap = conversion.createPreparationTypesFromUSys();
-                    prepTypeMap.put("n/a", prepTypeMap.get("misc"));
-
-                    conversion.createPreparationRecords(prepTypeMap);
+                    if (true)
+                    {
+                        Map<String, PrepType> prepTypeMap = conversion.createPreparationTypesFromUSys();
+                        prepTypeMap.put("n/a", prepTypeMap.get("misc"));
+                        conversion.createPreparationRecords(prepTypeMap);
+                    }
                     conversion.createCollectionRecords();
                 }
 

@@ -20,7 +20,7 @@
  */
 package edu.ku.brc.specify.conversion;
 
-import static edu.ku.brc.specify.dbsupport.BasicSQLUtils.getStrValue;
+import static edu.ku.brc.specify.conversion.BasicSQLUtils.getStrValue;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,7 +36,6 @@ import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttr;
-import edu.ku.brc.specify.dbsupport.BasicSQLUtils;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 
 /**
