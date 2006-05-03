@@ -122,12 +122,14 @@ public class StatGroup extends JPanel
     {
         if (content.getComponentCount() > 10 && scrollPane == null)
         {
+            
             Dimension size = content.getPreferredSize();
             remove(content);
             //content.setPreferredSize(size);
             scrollPane = new JScrollPane(content, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             Dimension spSize = scrollPane.getPreferredSize();
-            scrollPane.setPreferredSize(new Dimension(spSize.width, size.height));
+            scrollPane.setPreferredSize(new Dimension(spSize.width+25, size.height));
+            System.out.println(scrollPane.getPreferredSize());
             scrollPane.setBackground(Color.WHITE);//getParent().getBackground());
             content.setBackground(Color.WHITE);
             content.setOpaque(true);

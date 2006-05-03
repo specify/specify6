@@ -96,28 +96,28 @@
     <stat name="ListOnLoan" display="Table">
       <title>Items on Loan</title>
       <sql type="text">
-        <![CDATA[Select distinct loan.LoanNumber as LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName,loan.OriginalDueDate, loanphysicalobject.Quantity, loanphysicalobject.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country From loan Inner Join loanphysicalobject ON loan.LoanID =  loanphysicalobject.LoanID Inner Join loanagents ON loan.LoanID = loanagents.LoanID Inner Join agentaddress ON loanagents.AgentAddressID = agentaddress.AgentAddressID Inner Join address ON agentaddress.AddressID = address.AddressID Inner Join agent ON agentaddress.AgentID = agent.AgentID where loan.loanid in (select loanid from loan where category = 0 and (closed = 0 or closed is null)) group by LoanNumber]]>
+          <![CDATA[Select distinct loan.LoanNumber as LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName,loan.OriginalDueDate, loanphysicalobject.Quantity, loanphysicalobject.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country From loan Inner Join loanphysicalobject ON loan.LoanID =  loanphysicalobject.LoanID Inner Join loanagents ON loan.LoanID = loanagents.LoanID Inner Join agent ON loanagents.AgentID = agent.AgentID Inner Join address ON agent.AgentID = address.AgentID where loan.loanid in (select loanid from loan where category = 0 and (closed = 0 or closed is null)) group by LoanNumber]]>
       </sql>
     </stat>
     
     <stat name="OverdueLoansList" display="Table">
       <title>Overdue Loans</title>
       <sql type="text">
-        <![CDATA[Select distinct loan.LoanNumber as LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName,loan.OriginalDueDate, loanphysicalobject.Quantity, loanphysicalobject.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country From loan Inner Join loanphysicalobject ON loan.LoanID =  loanphysicalobject.LoanID Inner Join loanagents ON loan.LoanID = loanagents.LoanID Inner Join agentaddress ON loanagents.AgentAddressID = agentaddress.AgentAddressID Inner Join address ON agentaddress.AddressID = address.AddressID Inner Join agent ON agentaddress.AgentID = agent.AgentID where loan.loanid in (select loanid from loan where (not  (currentduedate is null)) and category = 0 and (closed = 0 or closed is null) and datediff(CURDATE(), currentduedate) > 0)  group by LoanNumber]]>
+          <![CDATA[Select distinct loan.LoanNumber as LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName, loan.loanid, loan.OriginalDueDate, loanphysicalobject.Quantity, loanphysicalobject.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country From loan Inner Join loanphysicalobject ON loan.LoanID =  loanphysicalobject.LoanID Inner Join loanagents ON loan.LoanID = loanagents.LoanID Inner Join agent ON loanagents.AgentID = agent.AgentID Inner Join address ON agent.AgentID = address.AgentID where loan.loanid in (select loanid from loan where (not  (currentduedate is null)) and category = 0 and (closed = 0 or closed is null) and datediff(CURDATE(), currentduedate) > 0)  group by LoanNumber]]>
       </sql>
     </stat>
     
     <stat name="CatalogedLast7DaysDetail" display="Table">
       <title>Cataloged Last 7 Days</title>
       <sql type="text">
-        <![CDATA[Select collectionobject.CatalogNumber,taxon.Name,collectionobject.TimestampCreated From collectionobject Inner Join determination ON collectionobject.CollectionObjectCatalogID = determination.BiologicalObjectID Inner Join taxon ON determination.TaxonID = taxon.TaxonID where DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= collectionobject.TimestampCreated;]]>
+          <![CDATA[Select collectionobject.CatalogNumber,taxon.Name,collectionobject.TimestampCreated From collectionobject Inner Join determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID Inner Join taxon ON determination.TaxonID = taxon.TreeID where DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= collectionobject.TimestampCreated]]>
       </sql>
     </stat>
     
     <stat name="CatalogedLastMonth" display="Table">
       <title>Cataloged Last Month</title>
       <sql type="text">
-        <![CDATA[Select collectionobject.CatalogNumber,taxon.Name,collectionobject.TimestampCreated From collectionobject Inner Join determination ON collectionobject.CollectionObjectCatalogID = determination.BiologicalObjectID Inner Join taxon ON determination.TaxonID = taxon.TaxonID where DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= collectionobject.TimestampCreated;]]>
+          <![CDATA[Select collectionobject.CatalogNumber,taxon.Name,collectionobject.TimestampCreated From collectionobject Inner Join determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID Inner Join taxon ON determination.TaxonID = taxon.TreeID where DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= collectionobject.TimestampCreated]]>
       </sql>
     </stat>
     
@@ -131,7 +131,7 @@
     <stat name="OverdueLookup" display="Table">
       <title>Loan Overdue</title>
       <sql type="text">
-        <![CDATA[Select distinct loan.LoanNumber as LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName,loan.OriginalDueDate, loanphysicalobject.Quantity, loanphysicalobject.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country From loan Inner Join loanphysicalobject ON loan.LoanID =  loanphysicalobject.LoanID Inner Join loanagents ON loan.LoanID = loanagents.LoanID Inner Join agentaddress ON loanagents.AgentAddressID = agentaddress.AgentAddressID Inner Join address ON agentaddress.AddressID = address.AddressID Inner Join agent ON agentaddress.AgentID = agent.AgentID where loan.loanid = %s;]]>
+          <![CDATA[Select distinct loan.LoanNumber as LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName,loan.OriginalDueDate, loanphysicalobject.Quantity, loanphysicalobject.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country From loan Inner Join loanphysicalobject ON loan.LoanID =  loanphysicalobject.LoanID Inner Join loanagents ON loan.LoanID = loanagents.LoanID Inner Join agent ON loanagents.AgentID = agent.AgentID Inner Join address ON agent.AgentID = address.AgentID where loan.loanid = %s]]>
       </sql>
     </stat>
     

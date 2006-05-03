@@ -819,16 +819,21 @@ public class Specify extends JPanel
   //-----------------------------------------------------------------------------
 
   /**
-   * PPApp Main. Called only if we're an application, not an applet.
+   * 
    */
   public static void main(String[] args)
   {
 
 
       // Create Specify Application
+      SwingUtilities.invokeLater(new Runnable() {
+          public void run() 
+          {
+              Specify specify = new Specify(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration());
+          }
+    });
+
       
-      Specify specify = new Specify(GraphicsEnvironment.getLocalGraphicsEnvironment()
-        .getDefaultScreenDevice().getDefaultConfiguration());
   }
 
 }

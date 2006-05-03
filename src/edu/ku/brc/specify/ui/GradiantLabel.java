@@ -28,6 +28,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
 
+import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
 
@@ -83,21 +84,50 @@ public class GradiantLabel extends JLabel
         w += (int)(scale*1.4f);
         int h = fm.getHeight();
         h += (int)(scale*.3f);
+        
+        Icon icon = getIcon();
+        if (icon != null)
+        {
+            h = Math.max(icon.getIconHeight(), h);
+            w += icon.getIconWidth() + this.getIconTextGap();
+        }
         return new Dimension(w, h);
     }
     
+    /* (non-Javadoc)
+     * @see java.awt.Component#paint(java.awt.Graphics)
+     */
     public void paint(Graphics g) 
-    {        
+    {
         Graphics2D g2 = (Graphics2D)g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setColor(this.getBackground());
+        
+        String text      = getText();
+        int    textWidth = g2.getFontMetrics().stringWidth(text);
         
         int w = this.getWidth();
         int h = this.getHeight();
         g2.fillRect(0,0, w,h);
  
         drawLabelBody(w,h, getForeground(), g2);
-        drawText(w,h, getText(), g2);
+
+        Icon icon = getIcon();
+        if (icon == null)
+        {
+            drawText(w, h, text, textWidth, g2);
+            
+        } else if (this.getHorizontalTextPosition() == JLabel.LEFT)
+        {
+            int offsetX = drawText(w, h, text, textWidth, g2);
+            icon.paintIcon(this, g2, offsetX+textWidth+this.getIconTextGap(), h > icon.getIconHeight() ? (h - icon.getIconHeight())/2 : 0);
+            
+        } else
+        {
+            icon.paintIcon(this, g2, 0, h > icon.getIconHeight() ? (h - icon.getIconHeight())/2 : 0);
+            drawText(this.getIconTextGap()+icon.getIconWidth(), w, h, text, textWidth, g2);
+            
+        }
     }
     
     protected void drawLabelBody(int w, int h, Color base, Graphics2D g2) 
@@ -112,20 +142,25 @@ public class GradiantLabel extends JLabel
         
     }
     
-    protected void drawText(int w, int h, String text, Graphics2D g2) 
+    protected int drawText(int w, int h, String text, int textWidth, Graphics2D g2) 
     {
         // calculate the width and height
-        int fw = g2.getFontMetrics().stringWidth(text);
+        int textx = this.getHorizontalAlignment() == JLabel.LEFT ? Math.max(getInsets().left, 2) : (w-textWidth)/2;
+        drawText(textx, w, h, text, textWidth, g2);
+        return textx;
+    }
+    
+    protected void drawText(int x, int w, int h, String text, int textWidth, Graphics2D g2) 
+    {
+        // calculate the width and height
         int fh = g2.getFontMetrics().getAscent() - g2.getFontMetrics().getDescent();
-        
-        int textx = this.getHorizontalAlignment() == JLabel.LEFT ? Math.max(getInsets().left, 2) : (w-fw)/2;
         int texty = h/2 + fh/2;
         
         // draw the text
         g2.setColor(textColorShadow);
-        g2.drawString(text,textx, texty);
+        g2.drawString(text, x, texty);
         g2.setColor(textColor);
-        g2.drawString(text, textx, texty);
+        g2.drawString(text, x, texty);
 
     }
     

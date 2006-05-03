@@ -136,7 +136,7 @@
             <sql><statement><![CDATA[select count(*) from (select DISTINCT g.TreeID from geography as g inner join locality as l on l.geographyid = g.TreeID inner join collectingevent as ce on ce.localityid = l.localityid inner join collectionobject as co on co.collectingeventid = ce.collectingeventid where RankId = 200) as countries]]></statement></sql>
         </item>
         <item title="Percent Geo Referenced">
-            <sql><statement><![CDATA[]]>select CASE WHEN (select count(*) from locality) = 0 THEN 0 ELSE ((count(localityid) * 1.0) / ((select count(*) from locality) * 1.0)) * 100.0 END AS PercentGeoReferencedLocalities from locality where not latitude1 is null;</statement></sql>
+            <sql><statement><![CDATA[select CASE WHEN (select count(*) from locality) = 0 THEN 0 ELSE ((count(localityid) * 1.0) / ((select count(*) from locality) * 1.0)) * 100.0 END AS PercentGeoReferencedLocalities from locality where not latitude1 is null]]></statement></sql>
         </item>
     </box>
   </row>
@@ -158,17 +158,19 @@
             <sql><statement><![CDATA[select count(*) from taxon where taxon.rankid = 220]]></statement></sql>
         </item>
     </box>
-    <box title="Taxa Type Counts" desccol="1" valcol="2">
+      <box title="Taxa Type Counts" desccol="1" valcol="2" desctitle="Taxon" valtitle="Count" noresults="No Type Specimens">
 		<sql><![CDATA[select TypeStatusName, count(determinationid) AS DeterminationCount from determination where TypeStatusName is not null group by TypeStatusName]]></sql>
     </box>
   </row>
+  <!--
   <row>
       <box title="Taxa Type Counts" desccol="1" valcol="2">
-            <sql><![CDATA[select Name, ObjectCount from (select CollectionObjDefID AS ObjectType, Count(CollectionObjectID) AS ObjectCount from collectionobject Group By CollectionObjDefID) AS T2, collectionobjdef where T2.ObjectType = collectionobjdef. CollectionObjDefID]]></sql>
+          <sql><![CDATA[select Name, ObjectCount from (select CollectionObjDefID AS ObjectType, Count(CollectionObjectID) AS ObjectCount from collectionobject Group By CollectionObjDefID) AS T2, collectionobjdef where T2.ObjectType = collectionobjdef. CollectionObjDefID order by ObjectCount desc]]></sql>
       </box>
       <box title="CITES Permits Expiring" desccol="1" valcol="2">
             <sql><![CDATA[select permit.PermitNumber, permit.PermitID, permit.IssuedDate,permit.StartDate, permit.EndDate,permit.RenewalDate,permit.Type From permit where ( lower(Type) like '%CITES%') and year(CURDATE()) = year(EndDate)]]></sql>
       </box>
   </row>
+  -->
 
 </panel>

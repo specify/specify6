@@ -23,6 +23,7 @@ package edu.ku.brc.specify.tasks.subpane;
 import static edu.ku.brc.specify.helpers.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.specify.helpers.XMLHelper.getAttr;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -43,9 +44,9 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.stats.BarChartPanel;
-import edu.ku.brc.specify.stats.StatGroup;
-import edu.ku.brc.specify.stats.StatGroupFromQuery;
-import edu.ku.brc.specify.stats.StatItem;
+import edu.ku.brc.specify.stats.StatDataItem;
+import edu.ku.brc.specify.stats.StatGroupTable;
+import edu.ku.brc.specify.stats.StatGroupTableFromQuery;
 import edu.ku.brc.specify.stats.StatsMgr;
 
 /**
@@ -148,6 +149,7 @@ public class StatsPane extends BaseSubPane
                     if (type.equalsIgnoreCase("bar chart"))
                     {
                         String statName = getAttr(boxElement, "name", null);
+                        
                         if (isNotEmpty(statName))
                         {
                             BarChartPanel bcp = (BarChartPanel)StatsMgr.createStatPane(statName);
@@ -168,8 +170,7 @@ public class StatsPane extends BaseSubPane
                         int valCol  = getAttr(boxElement, "valcol", -1);
                         
                         Element sqlElement = (Element)boxElement.selectSingleNode("sql");
-    
-                        StatGroup group = null;
+
                         if (descCol > -1 && valCol > -1 && sqlElement != null)
                         {
                             String linkStr = null;
@@ -180,35 +181,48 @@ public class StatsPane extends BaseSubPane
                                 linkStr = link.getTextTrim();
                                 colId   = Integer.parseInt(link.attributeValue("colid"));
                             }
-                            group = new StatGroupFromQuery(boxElement.attributeValue("title"),
-                                                           sqlElement.getText(),
-                                                           descCol,
-                                                           valCol,
-                                                           useSeparatorTitles);
-                            ((StatGroupFromQuery)group).setLinkInfo(linkStr, colId);
-    
+                            StatGroupTableFromQuery group = new StatGroupTableFromQuery(boxElement.attributeValue("title"), 
+                                                                                        new String[] {getAttr(boxElement, "desctitle", " "),getAttr(boxElement, "valtitle", " ")}, 
+                                                                                        sqlElement.getText(),
+                                                                                        descCol,
+                                                                                        valCol,
+                                                                                        useSeparatorTitles, 
+                                                                                        getAttr(boxElement, "noresults", null));
+                            group.setLinkInfo(linkStr, colId);
+                            comp = group;
+
+                            group.relayout();
+                            log.info("After Relayout: "+group.getPreferredSize()+" "+group.getComponentCount());
+
                         } else
                         {
-                            group = new StatGroup(boxElement.attributeValue("title"), useSeparatorTitles);
-    
+                            //StatGroupTableModel model      = new StatGroupTableModel((StatGroupTable)null);
+                            //JTable table      = new JTable(model);
+                            //JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                            
                             List items = boxElement.selectNodes("item");
+                            StatGroupTable groupTable = new StatGroupTable(boxElement.attributeValue("title"), 
+                                                                           new String[] {getAttr(boxElement, "desctitle", " "),getAttr(boxElement, "valtitle", " ")}, 
+                                                                           useSeparatorTitles, items.size());
                             for (Object io : items)
                             {
                                 Element itemElement = (Element)io;
+                                
+                                log.info("STAT["+getAttr(itemElement, "title", "N/A")+"]");
     
-                                Element link = (Element)itemElement.selectSingleNode("link");
-                                String linkStr = null;
+                                Element link    = (Element)itemElement.selectSingleNode("link");
+                                String  linkStr = null;
                                 if (link != null)
                                 {
                                     linkStr = link.getTextTrim();
                                 }
     
-                                StatItem statItem   = new StatItem(itemElement.attributeValue("title"), linkStr, getAttr(itemElement, "useprogress", false));
-                                List     statements = itemElement.selectNodes("sql/statement");
+                                StatDataItem statItem   = new StatDataItem(itemElement.attributeValue("title"), linkStr, getAttr(itemElement, "useprogress", false));
+                                List         statements = itemElement.selectNodes("sql/statement");
     
-                                 if (statements.size() == 1)
+                                if (statements.size() == 1)
                                 {
-                                    statItem.add(((Element)statements.get(0)).getText(), 1, 1, StatItem.VALUE_TYPE.Value);
+                                    statItem.add(((Element)statements.get(0)).getText(), 1, 1, StatDataItem.VALUE_TYPE.Value);
     
                                 } else if (statements.size() > 0)
                                 {
@@ -223,16 +237,22 @@ public class StatsPane extends BaseSubPane
                                             statItem.add(stElement.getText()); // ignore return object
                                         } else
                                         {
-                                            statItem.add(stElement.getText(), vRowInx, vColInx, StatItem.VALUE_TYPE.Value); // ignore return object
+                                            statItem.add(stElement.getText(), vRowInx, vColInx, StatDataItem.VALUE_TYPE.Value); // ignore return object
                                         }
                                         cnt++;
                                     }
                                 }
-                                group.add(statItem);
+                                groupTable.addDataItem(statItem);
+                                //model.addDataItem(statItem);
                                 statItem.startUp();
+                                
                             }
+                            groupTable.relayout();
+                            log.info(groupTable.getPreferredSize());
+                            comp = groupTable;
+                            //comp = scrollPane;
                         }
-                        comp = group;
+                        
                     }
                     
                     if (comp != null)

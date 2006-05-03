@@ -34,7 +34,11 @@
     <icon name="UserInterface" file="form.gif" sizes="all"/>
 
     <icon name="DropDownArrow" file="dropdownarrow.gif" sizes="NonStd"/>
-
+    <icon name="UpArrow"       file="up.png"            sizes="16"/>
+    <icon name="DownArrow"     file="down.png"          sizes="16"/>
+    <icon name="BlankIcon"     file="blank16x16.png"    sizes="16"/>
+    
+    
     <icon name="FirstRec" file="first.gif" sizes="NonStd"/>
     <icon name="PrevRec"  file="prev.gif"  sizes="NonStd"/>
     <icon name="NextRec"  file="next.gif"  sizes="NonStd"/>

@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
+import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.dbsupport.CustomQuery;
 import edu.ku.brc.specify.dbsupport.CustomQueryFactory;
 import edu.ku.brc.specify.dbsupport.PairsMultipleQueryResultsHandler;
@@ -21,8 +22,11 @@ import edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.specify.dbsupport.QueryResultsListener;
 import edu.ku.brc.specify.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.specify.helpers.XMLHelper;
+import edu.ku.brc.specify.tasks.StatsTask;
+import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.specify.ui.CommandAction;
 import edu.ku.brc.specify.ui.CommandDispatcher;
+import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
 import edu.ku.brc.specify.ui.forms.persist.View;
 
@@ -270,7 +274,7 @@ public class StatsMgr
                 createView(element, idStr);
 
             } else if (displayType.equals(TABLE))
-            {/*
+            {
                 Element sqlElement = (Element)element.selectSingleNode("sql");
                 if (sqlElement == null)
                 {
@@ -283,7 +287,8 @@ public class StatsMgr
                     throw new RuntimeException("sql element is null!");
                 }
 
-                SQLQueryPane queryPane = new SQLQueryPane(titleElement.getTextTrim(), this, true, true);
+                StatsTask statTask = (StatsTask)ContextMgr.getTaskByName(StatsTask.STATISTICS);
+                SQLQueryPane queryPane = new SQLQueryPane(titleElement.getTextTrim(), statTask, true, true);
                 String sqlStr = sqlElement.getTextTrim();
                 if (idStr != null)
                 {
@@ -301,7 +306,7 @@ public class StatsMgr
                 //System.out.println(sqlStr);
                 queryPane.setSQLStr(sqlStr);
                 queryPane.doQuery();
-                UICacheManager.addSubPane(queryPane);*/
+                UICacheManager.addSubPane(queryPane);
 
             } else
             {
