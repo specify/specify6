@@ -54,7 +54,7 @@ public class IdTableMapper extends IdHashMapper
         this.tableName = tableName;
         this.idName    = idName;
 
-        mapTableName = tableName + "_" + idName;
+        this.mapTableName = tableName + "_" + idName;
         
         init(true);
     }

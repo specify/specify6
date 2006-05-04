@@ -66,9 +66,8 @@ public class IdHashMapper implements IdMapper
      */
     public IdHashMapper(final String tableName) throws SQLException
     {
-        this.tableName = tableName.toLowerCase();
-
-        mapTableName = tableName;
+        this.tableName    = tableName.toLowerCase();
+        this.mapTableName = tableName;
         
         init(false);
     }
@@ -282,22 +281,22 @@ public class IdHashMapper implements IdMapper
      */
     public void cleanup() throws SQLException
     {
-        try
-        {
-            Statement stmtNew = newConn.createStatement();
-            stmtNew.executeUpdate("DROP TABLE `"+mapTableName+"`");
-            stmtNew.close();
-            
-        } catch (SQLException ex)
-        {
-            ex.printStackTrace();
-            log.error(ex);
-        }
-        
-        oldConn = null;
-        newConn = null;
-
-        mapTableName = null;
+    	if (mapTableName != null)
+    	{
+	        try
+	        {
+	            Statement stmtNew = newConn.createStatement();
+	            stmtNew.executeUpdate("DROP TABLE `"+mapTableName+"`");
+	            stmtNew.close();
+	            
+	        } catch (SQLException ex)
+	        {
+	            ex.printStackTrace();
+	            log.error(ex);
+	        }
+	
+	        mapTableName = null;
+    	}
 
     }
 
