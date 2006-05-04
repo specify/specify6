@@ -6,7 +6,7 @@
         <title>Top Five Species</title>
       </chartinfo>
       <sql type="text">
-        <![CDATA[select tn,count(tx) as namecnt from (select determination.TaxonId, taxon.TaxonID as tx, taxon.Name as tn from taxon,determination where determination.TaxonId = taxon.taxonid) as newTable group by tx order by namecnt DESC;]]>
+          <![CDATA[select tn,count(tx) as namecnt from (select determination.TaxonId, taxon.TreeID as tx, taxon.Name as tn from taxon,determination where determination.TaxonId = taxon.TreeID) as newTable group by tx order by namecnt DESC]]>
       </sql>
       <slice>
         <desc row="1" col="1"/>
@@ -61,7 +61,7 @@
         <title>Top 7 Number of Specimens by Country</title>
       </chartinfo>
       <sql type="text">
-        <![CDATA[select Country, count(CollectionObjectID) AS SpecimenCount from collectionobject as CO inner join collectingevent as CE on CE.CollectingEventID = CO.CollectingEventID inner join locality as L on L.LocalityID = CE.LocalityID inner join geography as G on G.GeographyID = L.GeographyID group by Country order by SpecimenCount DESC]]>
+          <![CDATA[select g.Name as Country, count(g.Name) AS SpecimenCount from (select CollectionObjectID, CE.LocalityID, LOC.GeographyID, GEO.NodeNumber  from collectionobject as CO inner join collectingevent as CE on CE.CollectingEventID = CO.CollectingEventID inner join locality LOC on CE.LocalityID = LOC.LocalityID inner join geography as GEO on GEO.TreeID = LOC.GeographyID) as COLGEO, geography as g where g.rankid = 200 and COLGEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber group by g.Name order by SpecimenCount DESC]]>
       </sql>
       <bar>
         <desc row="1" col="1"/>
@@ -124,7 +124,7 @@
     <stat name="CatalogedLastYear" display="Table">
       <title>Cataloged Last Year</title>
       <sql type="text">
-        <![CDATA[Select collectionobject.CatalogNumber,taxon.Name,collectionobject.TimestampCreated From collectionobject Inner Join determination ON collectionobject.CollectionObjectCatalogID = determination.BiologicalObjectID Inner Join taxon ON determination.TaxonID = taxon.TaxonID where DATE_SUB(CURDATE(), INTERVAL 1 YEAR) <= collectionobject.TimestampCreated;]]>
+          <![CDATA[Select collectionobject.CatalogNumber,taxon.Name,collectionobject.TimestampCreated From collectionobject Inner Join determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID Inner Join taxon ON determination.TaxonID = taxon.TreeID where DATE_SUB(CURDATE(), INTERVAL 1 YEAR) <= collectionobject.TimestampCreated]]>
       </sql>
     </stat>
     

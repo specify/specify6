@@ -23,7 +23,6 @@ package edu.ku.brc.specify.tasks.subpane;
 import static edu.ku.brc.specify.helpers.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.specify.helpers.XMLHelper.getAttr;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -192,14 +191,10 @@ public class StatsPane extends BaseSubPane
                             comp = group;
 
                             group.relayout();
-                            log.info("After Relayout: "+group.getPreferredSize()+" "+group.getComponentCount());
+                            //log.info("After Relayout: "+group.getPreferredSize()+" "+group.getSize()+" "+group.getComponentCount());
 
                         } else
                         {
-                            //StatGroupTableModel model      = new StatGroupTableModel((StatGroupTable)null);
-                            //JTable table      = new JTable(model);
-                            //JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-                            
                             List items = boxElement.selectNodes("item");
                             StatGroupTable groupTable = new StatGroupTable(boxElement.attributeValue("title"), 
                                                                            new String[] {getAttr(boxElement, "desctitle", " "),getAttr(boxElement, "valtitle", " ")}, 
@@ -208,7 +203,7 @@ public class StatsPane extends BaseSubPane
                             {
                                 Element itemElement = (Element)io;
                                 
-                                log.info("STAT["+getAttr(itemElement, "title", "N/A")+"]");
+                                //log.info("STAT["+getAttr(itemElement, "title", "N/A")+"]");
     
                                 Element link    = (Element)itemElement.selectSingleNode("link");
                                 String  linkStr = null;
@@ -243,12 +238,11 @@ public class StatsPane extends BaseSubPane
                                     }
                                 }
                                 groupTable.addDataItem(statItem);
-                                //model.addDataItem(statItem);
                                 statItem.startUp();
                                 
                             }
                             groupTable.relayout();
-                            log.info(groupTable.getPreferredSize());
+                            //log.info(groupTable.getPreferredSize());
                             comp = groupTable;
                             //comp = scrollPane;
                         }

@@ -19,7 +19,15 @@
  */
 package edu.ku.brc.specify.stats;
 
+import java.awt.BorderLayout;
+
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * This base class implements the Chartable interface
@@ -35,13 +43,32 @@ public class ChartPanel extends JPanel implements Chartable
     //private static Log log = LogFactory.getLog(ChartPanel.class);
 
     // Data Members
+    protected org.jfree.chart.ChartPanel chartPanel;
     protected String  title       = "";
     protected String  xAxisTitle  = "";
     protected String  yAxisTitle  = "";
     protected boolean isVertical  = true;
+    
+    protected JProgressBar      progressBar;
+    protected JLabel            progressLabel;
 
-    public ChartPanel()
+    /**
+     * @param startUpMsg
+     */
+    public ChartPanel(final String startUpMsg)
     {
+        progressBar = new JProgressBar();
+        progressBar.setIndeterminate(true);
+        PanelBuilder    builder    = new PanelBuilder(new FormLayout("f:max(100px;p):g", "center:p:g, p, center:p:g"));
+        CellConstraints cc         = new CellConstraints();
+
+        builder.add(progressBar,                  cc.xy(1,1));
+        builder.add(progressLabel = new JLabel(startUpMsg, JLabel.CENTER), cc.xy(1,3));
+
+        PanelBuilder    builder2    = new PanelBuilder(new FormLayout("p:g,p,p:g", "f:p:g"));
+        builder2.add(builder.getPanel(), cc.xy(3,1));
+
+        add(builder2.getPanel(), BorderLayout.CENTER);
     }
 
     /* (non-Javadoc)

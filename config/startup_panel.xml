@@ -79,4 +79,8 @@
         <box type="Bar Chart" name="AccessionByDivision" colspan="3"/>
     </row>
     -->
+    <row>
+        <box type="Bar Chart" name="Specimens by Country" colspan="3"/>
+    </row>
+    
 </panel>

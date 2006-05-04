@@ -84,11 +84,22 @@ public class StatGroupTableModel extends AbstractTableModel
             statGroupTable.fireNewData();
         }
     }
-
-
+    
     /**
-     * Returns the number of columns
-     * @return Number of columns
+     * Clears the model 
+     */
+    public void clear()
+    {
+        for (StatDataItem sdi : data)
+        {
+            sdi.clear();
+        }
+        data.clear();
+    }
+
+
+    /* (non-Javadoc)
+     * @see javax.swing.table.TableModel#getColumnCount()
      */
     public int getColumnCount()
     {

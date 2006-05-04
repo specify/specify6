@@ -37,7 +37,6 @@ import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
-import edu.ku.brc.specify.stats.ChartPanel;
 import edu.ku.brc.specify.stats.StatsMgr;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.specify.tasks.subpane.StatsPane;

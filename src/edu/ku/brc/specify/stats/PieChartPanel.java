@@ -22,19 +22,15 @@ package edu.ku.brc.specify.stats;
 
 import static edu.ku.brc.specify.helpers.UIHelper.getInt;
 import static edu.ku.brc.specify.helpers.UIHelper.getString;
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 
 import javax.swing.Icon;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.dbsupport.QueryResultsContainer;
 import edu.ku.brc.specify.dbsupport.QueryResultsGetter;
@@ -67,6 +63,8 @@ public class PieChartPanel extends ChartPanel implements QueryResultsListener, Q
      */
     public PieChartPanel()
     {
+        super(getResourceString("BuildingPieChart"));
+
         getter      = new QueryResultsGetter(this);
         qrContainer = new QueryResultsContainer("Pie Chart");
     }
@@ -135,15 +133,18 @@ public class PieChartPanel extends ChartPanel implements QueryResultsListener, Q
             );
 
         // create and display a frame...
-        SquareChartPanel panel = new SquareChartPanel(chart, true, true, true, true, true);
-        setBackground(Color.BLUE);
+        chartPanel = new org.jfree.chart.ChartPanel(chart, true, true, true, true, true);
+        //setBackground(Color.BLUE);
 
         removeAll(); // remove progress bar
 
+        /*
         PanelBuilder    builder    = new PanelBuilder(new FormLayout("p:g,p,p:g", "f:p:g"));
         CellConstraints cc         = new CellConstraints();
         builder.add(panel, cc.xy(3,1));
         add(builder.getPanel(), BorderLayout.CENTER);
+        */
+        add(chartPanel, BorderLayout.CENTER);
 
         doLayout();
         repaint();

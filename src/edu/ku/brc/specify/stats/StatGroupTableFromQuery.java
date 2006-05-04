@@ -3,6 +3,7 @@ package edu.ku.brc.specify.stats;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.List;
 import java.util.Vector;
 
@@ -41,6 +42,7 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
     protected String linkStr = null;
     protected int    colId   = -1;
     protected String noResultsMsg;
+    protected boolean hasData = false;
 
     /**
      * Constructor that describes where we get everything from
@@ -61,6 +63,9 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
         this.descCol = descCol;
         this.valCol  = valCol;
         this.noResultsMsg = noResultsMsg;
+
+        StatDataItem statItem = new StatDataItem("RetrievingData", null , false);
+        model.addDataItem(statItem);
 
         sqle = new SQLExecutionProcessor(this, sql);
         sqle.start();
@@ -87,11 +92,31 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
         this.descCol = descCol;
         this.valCol  = valCol;
         this.noResultsMsg = noResultsMsg;
+        
+        StatDataItem statItem = new StatDataItem("RetrievingData", null , false);
+        model.addDataItem(statItem);
 
         sqle = new SQLExecutionProcessor(this, sql);
         sqle.start();
     }
-
+    
+    /**
+     * Requests that all the data be reloaded (Not implemented yet) 
+     */
+    public void reloadData()
+    {
+        
+    }
+    
+    /* (non-Javadoc)
+     * @see java.awt.Component#getPreferredSize()
+     */
+    public Dimension getPreferredSize()
+    {
+        // this is needed to the box isn't huge before it has data
+        return hasData ? super.getPreferredSize() : new Dimension(100,100);
+    }
+    
     /**
      * Sets info need to make links
      * @param linkStr the name of the static link
@@ -103,8 +128,9 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
         this.colId   = colId;
     }
     
-    /**
+     /**
      * Removes the table and adds the None Available message
+     * @param msg the message to be displayed
      */
     protected void addNoneAvailableMsg(final String msg)
     {
@@ -131,7 +157,9 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
      */
     public synchronized void exectionDone(final SQLExecutionProcessor processor, final java.sql.ResultSet resultSet)
     {
-
+        model.clear();
+        hasData = true;
+        
         List<Object> data = new Vector<Object>();
         try
         {

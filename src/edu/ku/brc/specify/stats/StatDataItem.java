@@ -97,6 +97,21 @@ public class StatDataItem implements QueryResultsListener
         startUp();
     }
     
+    
+    /**
+     * Clear the internal data and relationships 
+     */
+    public void clear()
+    {
+        qrcs.clear();
+        qrcs = null;
+        
+        valuesType.clear();
+        valuesType = null;
+        
+        model = null;
+    }
+    
     /**
      * Sets the TableModel into the item so it can notifiy it when the data has arrived
      * @param model the table model to be notified
@@ -130,6 +145,7 @@ public class StatDataItem implements QueryResultsListener
      * @param sql the SQL to be executed
      * @param row the QueryResultsDataObj row in the resultset
      * @param col the QueryResultsDataObj column in the resultset
+     * @param valType whether to ignore the value or indicate it is the description or value
      * @return Returns a QueryResultsContainer with a single QueryResultsDataObj initialized to row,col
      */
     public QueryResultsContainer add(final String sql, final int row, final int col, final VALUE_TYPE valType)

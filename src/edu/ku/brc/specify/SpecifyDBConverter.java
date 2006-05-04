@@ -156,11 +156,11 @@ public class SpecifyDBConverter
      */
     public static void main(String args[]) throws Exception
     {
-        String oldDatabaseName = "demo_fish5";
+        String oldDatabaseName = "demo_fish2";
         
         DBConnection.setUsernamePassword("rods", "rods");
         DBConnection.setDriver("com.mysql.jdbc.Driver");
-        DBConnection.setDBName("jdbc:mysql://localhost/demo_fish3");
+        DBConnection.setDBName("jdbc:mysql://localhost/fish");
         
         IdMapperMgr idMapperMgr = null;
         try

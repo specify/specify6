@@ -99,7 +99,9 @@ public class SortableJTable extends JTable
         SortableTableModel              sortableModel = getSortableTableModel();
         SortableTableHeaderCellRenderer cellRenderer  = sortableModel.new SortableTableHeaderCellRenderer();
         cellRenderer.setTextColor(Color.WHITE);
-        cellRenderer.setForeground(new Color(30, 144, 255));
+        
+        //cellRenderer.setForeground(new Color(30, 144, 255));  // XXX PREF ??? Blue
+        cellRenderer.setForeground(new Color(102, 153, 153));  // XXX PREF ??? Cadet Blue
         
         TableColumnModel colModel = getColumnModel();
         for (int i=0;i<colModel.getColumnCount();i++)

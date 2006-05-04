@@ -84,6 +84,7 @@ import edu.ku.brc.specify.tasks.DataEntryTask;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.InteractionsTask;
 import edu.ku.brc.specify.tasks.LabelsTask;
+import edu.ku.brc.specify.tasks.LocalityMapperTask;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.specify.tasks.ReportsTask;
@@ -686,6 +687,18 @@ public class Specify extends JPanel
                     {
                         ExpressSearchTask expressSearchTask = (ExpressSearchTask)ContextMgr.getTaskByName(ExpressSearchTask.EXPRESSSEARCH);
                         expressSearchTask.showIndexerPane();
+                    }
+                }); 
+        //**********************************
+        // DEMO ONLY
+        //**********************************
+        mi = UIHelper.createMenuItem(menu, "Locality Mapper", "L", "Locality Mapper", false, null);
+        mi.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        LocalityMapperTask localityMapperTask = (LocalityMapperTask)ContextMgr.getTaskByName(LocalityMapperTask.LOCALITYMAPPER);
+                        localityMapperTask.doMapperDemo();
                     }
                 }); 
         

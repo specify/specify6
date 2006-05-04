@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <panel>
- 
+ <!--
   <row>
       <box title="Specimen">
         <item title="Number of Specimens">
@@ -133,7 +133,7 @@
             <sql><statement><![CDATA[select count(*) from geography]]></statement></sql>
         </item>
         <item title="Number of Countries" useprogress="true">
-            <sql><statement><![CDATA[select count(*) from (select DISTINCT g.TreeID from geography as g inner join locality as l on l.geographyid = g.TreeID inner join collectingevent as ce on ce.localityid = l.localityid inner join collectionobject as co on co.collectingeventid = ce.collectingeventid where RankId = 200) as countries]]></statement></sql>
+            <sql><statement><![CDATA[select count(Name) from (select DISTINCT Name from (select g.TreeId,g.nodenumber from locality as l inner join geography as g on l.GeographyID = g.TreeId) as GEO, geography as g where g.rankid = 200 and GEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber) As GEO2]]></statement></sql>
         </item>
         <item title="Percent Geo Referenced">
             <sql><statement><![CDATA[select CASE WHEN (select count(*) from locality) = 0 THEN 0 ELSE ((count(localityid) * 1.0) / ((select count(*) from locality) * 1.0)) * 100.0 END AS PercentGeoReferencedLocalities from locality where not latitude1 is null]]></statement></sql>
@@ -162,6 +162,7 @@
 		<sql><![CDATA[select TypeStatusName, count(determinationid) AS DeterminationCount from determination where TypeStatusName is not null group by TypeStatusName]]></sql>
     </box>
   </row>
+  -->
   <!--
   <row>
       <box title="Taxa Type Counts" desccol="1" valcol="2">
@@ -174,3 +175,10 @@
   -->
 
 </panel>
+
+<!--
+    This is the Total Number of Countries Used by all the Localities
+    select count(Name) from (select DISTINCT Name from (select g.TreeId,g.nodenumber from locality as l inner join geography as g on l.GeographyID = g.TreeId) as GEO, geography as g where g.rankid = 200 and GEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber) As GEO2
+    
+    
+-->

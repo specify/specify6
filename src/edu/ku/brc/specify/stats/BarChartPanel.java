@@ -34,14 +34,9 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 import org.jfree.chart.ChartFactory;
-//import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.dbsupport.QueryResultsContainer;
 import edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace;
@@ -64,7 +59,6 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
 
     // Data Members
     private QueryResultsHandlerIFace   handler = null;
-    private org.jfree.chart.ChartPanel chart   = null;
     private Dimension                  maxChartSize = null;
 
     /**
@@ -74,6 +68,7 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
      */
     public BarChartPanel()
     {
+        super(getResourceString("BuildingBarChart"));
         setBorder(null);
     }
 
@@ -131,6 +126,7 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
             handler = null;
         }
 
+        validate();
         doLayout();
         repaint();
     }
@@ -166,19 +162,20 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
                 false       // URLs?
             );
         // create and display a frame...
-        chart = new org.jfree.chart.ChartPanel(jgChart, true, true, true, true, true);
-        chart.setBackground(Color.WHITE);
+        chartPanel = new org.jfree.chart.ChartPanel(jgChart, true, true, true, true, true);
+        chartPanel.setBackground(Color.WHITE);
+        
         if (maxChartSize != null)
         {
-            chart.setMaximumSize(maxChartSize);
-            chart.setPreferredSize(maxChartSize);
+            chartPanel.setMaximumSize(maxChartSize);
+            chartPanel.setPreferredSize(maxChartSize);
         }
-        addCompletedComp(chart);
+        addCompletedComp(chartPanel);
 
     }
     
     public void setMaxChartSize(int width, int height)
-    {
+    {/*
         if (maxChartSize == null)
         {
             maxChartSize = new Dimension();
@@ -190,6 +187,7 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
             chart.setMaximumSize(maxChartSize);
             chart.setPreferredSize(maxChartSize);
         }
+        */
     }
 
     /* (non-Javadoc)
@@ -202,10 +200,11 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
         addCompletedComp(new JLabel(getResourceString("ERROR_CREATNG_BARCHART"), JLabel.CENTER));
     }
 
+    /*
     public void setBounds(Rectangle r)
     {
         setBounds(r.x, r.y, r.width, r.height);
-        if (chart != null)
+        if (chartPanel != null)
         {
             setMaxChartSize(r.width, r.height);
         }
@@ -218,9 +217,10 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
         //System.out.println("  "+maxChartSize.width+" "+maxChartSize.height);
 
         super.setBounds(x, y, width, height);
-        if (chart != null)
+        if (chartPanel != null)
         {
             setMaxChartSize(width, height);
         }
     }
+    */
 }

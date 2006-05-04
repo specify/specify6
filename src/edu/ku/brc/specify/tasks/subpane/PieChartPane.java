@@ -189,7 +189,7 @@ public class PieChartPane extends ChartPane implements QueryResultsListener, Que
 
         PanelBuilder    builder    = new PanelBuilder(new FormLayout("p:g,p,p:g", "f:p:g"));
         CellConstraints cc         = new CellConstraints();
-        builder.add(panel, cc.xy(3,1));
+        builder.add(panel, cc.xy(2,1));
         add(builder.getPanel(), BorderLayout.CENTER);
 
         doLayout();

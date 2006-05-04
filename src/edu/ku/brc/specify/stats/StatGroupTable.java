@@ -19,6 +19,8 @@
  */
 package edu.ku.brc.specify.stats;
 
+import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -68,18 +70,18 @@ import edu.ku.brc.specify.ui.SortableTableModel;
 @SuppressWarnings("serial")
 public class StatGroupTable extends JPanel
 {
-    protected static final int SCROLLPANE_THRESOLD = 10;
+    protected static final int    SCROLLPANE_THRESOLD = 10;
+    protected static final Cursor handCursor   = new Cursor(Cursor.HAND_CURSOR);
+    protected static final Cursor defCursor    = new Cursor(Cursor.DEFAULT_CURSOR);
+    protected static ImageIcon    progressIcon = null;
     
     protected String              name;
-    protected PanelBuilder        builder = new PanelBuilder(new FormLayout("p:g", "p,p:g"));
+    protected PanelBuilder        builder      = new PanelBuilder(new FormLayout("p:g", "p,p:g"));
     protected JTable              table;
     protected StatGroupTableModel model;
-    protected JScrollPane         scrollPane = null;
+    protected JScrollPane         scrollPane   = null;
     protected boolean             useSeparator = true;
 
-    protected static final Cursor handCursor = new Cursor(Cursor.HAND_CURSOR);
-    protected static final Cursor defCursor  = new Cursor(Cursor.DEFAULT_CURSOR);
-    protected static ImageIcon progressIcon = null;
 
     /**
      * Constructor with the localized name of the Group
@@ -114,7 +116,6 @@ public class StatGroupTable extends JPanel
         {
             progressIcon = IconManager.getIcon("Progress", IconManager.IconSize.Std16);
         }
-
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
         
@@ -161,6 +162,14 @@ public class StatGroupTable extends JPanel
             
             add(scrollPane != null ? scrollPane : table, BorderLayout.CENTER);
          }
+    }
+    
+    /**
+     * Requests that all the data be reloaded (Not implemented yet) 
+     */
+    public void reloadData()
+    {
+        
     }
     
     /**
@@ -463,7 +472,7 @@ public class StatGroupTable extends JPanel
                 
             } else
             {
-                setText("N/A"); // XXX I18N
+                setText(getResourceString("NoneAvail"));
             }
             // Since the renderer is a component, return itself
             return this;
