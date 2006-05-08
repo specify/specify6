@@ -70,14 +70,13 @@ import edu.ku.brc.specify.ui.forms.persist.View;
  *
  */
 @SuppressWarnings("serial")
-public class LocalityMapperSubPane extends BaseSubPane
+public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper.MapperListener
 {
     //private static Log log = LogFactory.getLog(SimpleDescPane.class);
     protected SimpleDateFormat scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
 
     protected LocalityMapper                  localityMapper = new LocalityMapper();
     protected JLabel                          imageLabel     = new JLabel("Loading Image...");
-    protected MapGetter                       mapGetter;
     protected MultiView                       multiView;
     
     protected List<Object>                    collectingEvents;
@@ -221,9 +220,6 @@ public class LocalityMapperSubPane extends BaseSubPane
             }});
         
         setLayout(new LocalityMapperLayoutManager(this, imageLabel, multiView));
-
-        mapGetter = new MapGetter(localityMapper);
-        mapGetter.start();
         
         addMouseMotionListener(new MouseMotionListener()
 			{
@@ -234,7 +230,8 @@ public class LocalityMapperSubPane extends BaseSubPane
 					checkMouseLocation(e.getPoint());
 				}
 			});
-       
+
+        localityMapper.getMap(this);
     }
     
     protected void setLabel(final Icon imageIcon)
@@ -337,58 +334,15 @@ public class LocalityMapperSubPane extends BaseSubPane
         }
     }
     
-    /**
-     * 
-     *
-     */
-    public class MapGetter implements Runnable
-    {
-        protected Thread thread;
-        protected LocalityMapper localityMapper;
-        
-        /**
-         * Constructs a an object to execute an SQL staement and then notify the listener
-         * @param listener the listener
-         * @param sqlStr the SQL statement to be executed.
-         */
-        public MapGetter(final LocalityMapper localityMapper)
-        {
-            this.localityMapper = localityMapper;
-        }
-        
-        public void start()
-        {
-            thread = new Thread(this);
-            thread.start();
-        }
+	public void mapReceived(Icon map)
+	{
+		setLabel(map);
+	}
 
-        /**
-         * Stops the thread making the call
-         *
-         */
-        public synchronized void stop()
-        {
-            if (thread != null)
-            {
-                thread.interrupt();
-            }
-            thread = null;
-            notifyAll();
-        }
-        
-        public void run()
-        {
-            try
-            {
-                setLabel(localityMapper.getMap());
-                
-            } catch (Exception ex)
-            {
-            	setLabel("Was unable to get the Map.");
-            }
-            
-        }
-    }
+	public void exceptionOccurred(Exception e)
+	{
+		setLabel("Was unable to get the map.");
+	}
     
     /**
      * The layout manager for laying out NavBoxes in a vertical fashion (only)

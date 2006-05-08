@@ -458,7 +458,29 @@ public class LocalityMapper
 		return new Pair<Double,Double>(lat,lon);
 	}
 	
-	public Icon getMap() throws HttpException, IOException
+	public void getMap( final MapperListener callback )
+	{
+		Thread mapGrabberThread = new Thread("Mapper Grabber")
+			{
+				public void run()
+				{
+					try
+					{
+						Icon map = grabNewMap();
+						callback.mapReceived(map);
+					}
+					catch( Exception e )
+					{
+						callback.exceptionOccurred(e);
+					}
+				}
+			};
+			mapGrabberThread.setDaemon(true);
+			
+		mapGrabberThread.start();
+	}
+	
+	protected Icon grabNewMap() throws HttpException, IOException
 	{
 		if( !cacheValid )
 		{
@@ -519,7 +541,7 @@ public class LocalityMapper
 						int y2 = y + markerLoc.y;
 						Color origColor = g.getColor();
 						g.setColor(arrowColor);
-						GraphicsUtils.drawArrow((Graphics2D)g, x1, y1, x2, y2, 2);
+						GraphicsUtils.drawArrow((Graphics2D)g, x1, y1, x2, y2, 2, 2);
 						g.setColor(origColor);
 					}
 					
@@ -555,7 +577,12 @@ public class LocalityMapper
 			}
 		};
 		
-		// put the decorations on it
 		return icon;
+	}
+	
+	public interface MapperListener
+	{
+		public void mapReceived( Icon map );
+		public void exceptionOccurred(Exception e);
 	}
 }

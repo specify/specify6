@@ -107,6 +107,34 @@ public class TreeTableUtils
 		return null;
 	}
 	
+	public static Integer getHighestAllowableParentRank( Treeable t )
+	{
+		// if this item represents the tree root level, return null
+		if( t.getDefItem().getParentItem() == null )
+		{
+			return null;
+		}
+		
+		TreeDefinitionItemIface defItem = t.getDefItem().getParentItem();
+		while(true)
+		{
+			if( defItem.getIsEnforced().booleanValue() || defItem.getParentItem() == null )
+			{
+				return defItem.getRankId();
+			}
+		}
+	}
+	
+	public static boolean isReparentAllowed( Treeable node, Treeable newParent )
+	{
+		if( newParent.getRankId().intValue() < node.getHighestChildNodeNumber().intValue() )
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
 	/**
 	 * Determines if the given Treeable can be deleted.  This method checks wether or not
 	 * the given Treeable is referenced by any foreign key contraints.  If no FKs are

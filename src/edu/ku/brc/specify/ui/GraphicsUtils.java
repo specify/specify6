@@ -70,7 +70,7 @@ public class GraphicsUtils
 	 * @param y
 	 * @param stroke
 	 */
-	public static void drawArrow(Graphics g, int xCenter, int yCenter, int x, int y, float stroke)
+	public static void drawArrow(Graphics g, int xCenter, int yCenter, int x, int y, int headSize, float stroke)
 	{
 		Graphics2D g2d = (Graphics2D)g;
 		g2d.addRenderingHints(hints);
@@ -80,8 +80,8 @@ public class GraphicsUtils
 		g2d.setStroke(new BasicStroke(stroke)); // make the arrow head solid even if dash pattern has been specified
 		g2d.drawLine(x, y, xCenter, yCenter);
 		Polygon tmpPoly = new Polygon();
-		int i1 = 12 + (int) (stroke * 2);
-		int i2 = 6 + (int) stroke; // make the arrow head the same size regardless of the length length
+		int i1 = 2*headSize + (int) stroke; //(stroke * 2);
+		int i2 = headSize + (int) stroke; // make the arrow head the same size regardless of the length length
 		tmpPoly.addPoint(x, y); // arrow tip
 		tmpPoly.addPoint(x + xCor(i1, aDir + .5), y + yCor(i1, aDir + .5));
 		tmpPoly.addPoint(x + xCor(i2, aDir), y + yCor(i2, aDir));
