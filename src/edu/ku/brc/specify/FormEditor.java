@@ -28,10 +28,8 @@ import static edu.ku.brc.specify.tests.CreateTestDatabases.createTaxonomy;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAttributeDef;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCatalogSeries;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectingEvent;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectingEventAttr;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectionObjDef;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectionObject;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectionObjectAttr;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollector;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDataType;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDetermination;
@@ -49,11 +47,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -70,9 +65,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import org.apache.commons.jexl.ExpressionFactory;
-import org.apache.commons.jexl.JexlContext;
-import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -94,10 +86,8 @@ import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.AttributeIFace;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.CollectingEventAttr;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.Collectors;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Geography;
@@ -201,10 +191,10 @@ public class FormEditor
                 new Collectors[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
 
         // Create AttributeDef for Collecting Event
-        AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", null);
+        //AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", null);
 
         // Create CollectingEventAttr
-        CollectingEventAttr cevAttr = createCollectingEventAttr(colEv, cevAttrDef, "Clinton Park", null);
+        //CollectingEventAttr cevAttr = createCollectingEventAttr(colEv, cevAttrDef, "Clinton Park", null);
 
         // Create Collection Object
         Object[]  values = {1001010.1f, "RCS101", agents[0], 5,
@@ -229,10 +219,10 @@ public class FormEditor
         }
 
         // Create AttributeDef for Collection Object
-        AttributeDef colObjAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "MoonPhase", null);
+        //AttributeDef colObjAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "MoonPhase", null);
 
         // Create CollectionObjectAttr
-        CollectionObjectAttr colObjAttr = createCollectionObjectAttr(colObjs[0], colObjAttrDef, "Full", null);
+        //CollectionObjectAttr colObjAttr = createCollectionObjectAttr(colObjs[0], colObjAttrDef, "Full", null);
 
         int agentInx = 0;
         int taxonInx = 0;
@@ -252,7 +242,7 @@ public class FormEditor
 
         // Create Preparation Type
         PrepType prepType = createPrepType("Skeleton");
-        PrepType prepType2 = createPrepType("C&S");
+        //PrepType prepType2 = createPrepType("C&S");
 
         // Create Preparation for each CollectionObject
         agentInx = 3; // arbitrary
@@ -482,7 +472,7 @@ public class FormEditor
                 {
                     CollectionObject[] colObjs = createSingleDiscipline("Fish");
 
-                    Set set = new HashSet<CollectionObject>();
+                    Set<CollectionObject> set = new HashSet<CollectionObject>();
                     for (int i=0;i<colObjs.length;i++)
                     {
                         set.add(colObjs[i]);
@@ -834,34 +824,9 @@ public class FormEditor
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
-                //FormEditor formEditor = new FormEditor();
-                //formEditor.initialize();
-                try
-                {
-                    Agent agent = new Agent();
-                    agent.setAgentType((byte)0);
-                    agent.setFirstName("Joe");
-                    agent.setLastName("Cool");
-                    agent.setName("Org Name");
-                    JexlContext    jc  = JexlHelper.createContext();
-                    jc.getVars().put("obj", agent);
-                    org.apache.commons.jexl.Expression expression = ExpressionFactory.createExpression( "if (obj.getAgentType() == 0)  obj.getLastName() else agent.getName()" );
-                    Object result = expression.evaluate(jc);
-                    System.out.println(result);
+                FormEditor formEditor = new FormEditor();
+                formEditor.initialize();
 
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                }
-                /*
-                GenericSearchDialog dlg = new GenericSearchDialog("Search", 555, "AgentAddressSearch",
-                                                                  getResourceString("AgentSearchTitle"),
-                                                                  "edu.ku.brc.specify.datamodel.Agent",
-                                                                  "agentId");
-                dlg.setVisible(true);
-                System.out.println(dlg.getSelectedObject());
-                */
-                //HibernateUtil.getCurrentSession(); // loads the HBM files
             }
         });
 

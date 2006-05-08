@@ -2011,7 +2011,7 @@ public class GenericDBConversion
         
         log.info("colObjTaxonMapper: "+colObjTaxonMapper.size());
 
-        Hashtable<Integer, Integer> colObjTypeMap = new Hashtable<Integer, Integer>();
+        //Hashtable<Integer, Integer> colObjTypeMap = new Hashtable<Integer, Integer>();
 
         deleteAllRecordsFromTable(newDBConn, "collectionobject"); // automatically closes the connection
         try
@@ -2909,7 +2909,7 @@ public class GenericDBConversion
         Geography prevContGeo = null;
         Geography prevCountryGeo = null;
         Geography prevStateGeo = null;
-        Geography prevCountyGeo = null;
+        //Geography prevCountyGeo = null;
 
         // process them all into the new tree structure
         // on the first pass, we're simply going to create all of the nodes and
@@ -2974,7 +2974,7 @@ public class GenericDBConversion
                     geoName = geo.getCounty();
                     Geography newCounty = buildGeography(def,countyGeoId,geoName,COUNTY_RANK,nextNodeNumber++,newState);
                     prevCounty = geoName;
-                    prevCountyGeo = newCounty;
+                    //prevCountyGeo = newCounty;
 
                     newTableRows.add(newCont);
                     newTableRows.add(newCountry);
@@ -3079,7 +3079,7 @@ public class GenericDBConversion
                     geoName = geo.getCounty();
                     Geography newCounty = buildGeography(def,countyGeoId,geoName,COUNTY_RANK,nextNodeNumber++,prevStateGeo);
                     prevCounty = geoName;
-                    prevCountyGeo = newCounty;
+                    //prevCountyGeo = newCounty;
 
                     newTableRows.add(newCountry);
                     newTableRows.add(newState);
@@ -3147,7 +3147,7 @@ public class GenericDBConversion
                     geoName = geo.getCounty();
                     Geography newCounty = buildGeography(def,countyGeoId,geoName,COUNTY_RANK,nextNodeNumber++,prevStateGeo);
                     prevCounty = geoName;
-                    prevCountyGeo = newCounty;
+                    //prevCountyGeo = newCounty;
 
                     newTableRows.add(newState);
                     newTableRows.add(newCounty);
@@ -3180,7 +3180,7 @@ public class GenericDBConversion
                     geoName = geo.getCounty();
                     Geography newCounty = buildGeography(def,countyGeoId,geoName,COUNTY_RANK,nextNodeNumber++,prevStateGeo);
                     prevCounty = geoName;
-                    prevCountyGeo = newCounty;
+                    //prevCountyGeo = newCounty;
 
                     newTableRows.add(newCounty);
                 }

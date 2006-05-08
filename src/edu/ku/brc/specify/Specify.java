@@ -23,7 +23,6 @@ package edu.ku.brc.specify;
 
 import static edu.ku.brc.specify.helpers.UIHelper.centerAndShow;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
-import static edu.ku.brc.specify.ui.UICacheManager.appendChildPrefName;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -33,18 +32,10 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.prefs.Preferences;
-import java.net.URL;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;import static edu.ku.brc.specify.ui.UICacheManager.appendChildPrefName;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
@@ -61,9 +52,9 @@ import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Element;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -79,30 +70,14 @@ import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.plugins.PluginMgr;
 import edu.ku.brc.specify.prefs.PrefMainPanel;
-import edu.ku.brc.specify.prefs.PrefsCache;
-import edu.ku.brc.specify.tasks.DataEntryTask;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
-import edu.ku.brc.specify.tasks.InteractionsTask;
-import edu.ku.brc.specify.tasks.LabelsTask;
 import edu.ku.brc.specify.tasks.LocalityMapperTask;
-import edu.ku.brc.specify.tasks.QueryTask;
-import edu.ku.brc.specify.tasks.RecordSetTask;
-import edu.ku.brc.specify.tasks.ReportsTask;
 import edu.ku.brc.specify.tasks.StartUpTask;
-import edu.ku.brc.specify.tasks.StatsTask;
-import edu.ku.brc.specify.ui.ColorWrapper;
-import edu.ku.brc.specify.ui.GenericFrame;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.MainPanel;
-import edu.ku.brc.specify.ui.PropertyViewer;
 import edu.ku.brc.specify.ui.ToolbarLayoutManager;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
-import edu.ku.brc.specify.ui.forms.ViewMgr;
-import edu.ku.brc.specify.helpers.XMLHelper;
-import edu.ku.brc.specify.helpers.UIHelper;
-
-import org.dom4j.*;
 /**
  * Specify Main Application Class
  *
@@ -146,13 +121,14 @@ public class Specify extends JPanel
     private String hostName ="";
     private boolean useLogonDialog = false;
     */  
-    private GraphicsConfiguration grc;
+    //private GraphicsConfiguration grc;
     
     // Global Prefs Registered into the Cache
 
     
 
   
+    @SuppressWarnings("unused")
     private SpecifyConfig config;
      
     private static Specify  specifyApp       = null;
@@ -218,7 +194,6 @@ public class Specify extends JPanel
             log.error("Can't change L&F: ", e); 
         }    
       
-        grc = gc;
         initialize(gc);
       
         frame = new JFrame(gc);
@@ -332,7 +307,6 @@ public class Specify extends JPanel
             List sections = root.selectNodes("/prefs/section");
             for ( Iterator iter = sections.iterator(); iter.hasNext(); ) 
             {
-                boolean isNew = false;
                 org.dom4j.Element section = (org.dom4j.Element)iter.next();
                 
                 String      title       = section.attributeValue("title");
@@ -341,7 +315,6 @@ public class Specify extends JPanel
                 {
                     sectionNode.put("title", title);
                     sectionNode.putBoolean("isApp", true);
-                    isNew = true;
                 }
                 
                 List prefs = section.selectNodes("pref");

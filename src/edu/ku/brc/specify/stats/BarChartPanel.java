@@ -27,7 +27,6 @@ import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Rectangle;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;

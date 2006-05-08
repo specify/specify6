@@ -133,6 +133,7 @@ public class CreateTestDatabases
         return geos;
     }
 
+    @SuppressWarnings("unchecked")
     public static boolean createSimpleGeography(final CollectionObjDef colObjDef, final String treeDefName)
     {
         log.info("createSimpleGeography " + treeDefName);
@@ -158,6 +159,7 @@ public class CreateTestDatabases
             // That seems like a big task for 5 lines of code.
             Geography earth        = createGeography(geoTreeDef, null, "Earth", planet.getRankId());
             Geography northAmerica = createGeography(geoTreeDef, earth, "North America", cont.getRankId());
+            @SuppressWarnings("unused") 
             Geography us           = createGeography(geoTreeDef, northAmerica, "United States", country.getRankId());
 
             Geography[] states = addGeographyKids(geoTreeDef, northAmerica, new String[] {"Kansas", "Iowa", "Nebraska"}, state.getRankId());
@@ -191,6 +193,7 @@ public class CreateTestDatabases
      * @param treeDefName treeDefName
      * @return array
      */
+    @SuppressWarnings("unchecked")
     public static Geography[] createGeographies(final CollectionObjDef colObjDef, final String treeDefName)
     {
         log.info("createGeographies " + treeDefName);
@@ -212,7 +215,7 @@ public class CreateTestDatabases
         // That seems like a big task for 5 lines of code.
         Geography earth        = createGeography(geoTreeDef, null, "Earth", planet.getRankId());
         Geography northAmerica = createGeography(geoTreeDef, earth, "North America", cont.getRankId());
-        Geography us           = createGeography(geoTreeDef, northAmerica, "United States", country.getRankId());
+        @SuppressWarnings("unused") Geography us           = createGeography(geoTreeDef, northAmerica, "United States", country.getRankId());
 
         Geography[] states = addGeographyKids(geoTreeDef, northAmerica, new String[] {"Kansas", "Iowa", "Nebraska"}, state.getRankId());
 
@@ -232,6 +235,7 @@ public class CreateTestDatabases
      * @param treeDefName treeDefName
      * @return true on success
      */
+    @SuppressWarnings("unchecked")
     public static boolean createGeologicTimePeriod(final CollectionObjDef colObjDef, final String treeDefName)
     {
         try
@@ -255,7 +259,7 @@ public class CreateTestDatabases
             GeologicTimePeriod level1 = ObjCreatorHelper.createGeologicTimePeriod(treeDef, level0, "Some Really Big Time Period", defItemLevel0.getRankId());
             GeologicTimePeriod level2 = ObjCreatorHelper.createGeologicTimePeriod(treeDef, level1, "A Slightly Smaller Time Period", defItemLevel0.getRankId());
             GeologicTimePeriod level3 = ObjCreatorHelper.createGeologicTimePeriod(treeDef, level2, "Yesterday", defItemLevel0.getRankId());
-
+            
             colObjDef.setGeologicTimePeriodTreeDef(treeDef);
             session.saveOrUpdate(colObjDef);
 

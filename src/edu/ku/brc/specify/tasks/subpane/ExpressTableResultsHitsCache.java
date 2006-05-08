@@ -158,6 +158,7 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
          * @param column the column in question
          * @return the Class of the column
          */
+        @SuppressWarnings("unchecked")
         public Class getColumnClass(int column)
         {
             return String.class;
@@ -305,9 +306,6 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
 
                         if (data != null)
                         {
-                            String str = data.replace('\t', '|');
-                            //System.out.println(str);
-
                             StringTokenizer st = new StringTokenizer(data, "\t");
                             RecordSetItem rsi = new RecordSetItem();
                             for (int col=0;col<st.countTokens();col++)

@@ -58,7 +58,9 @@ public class PieChartPane extends ChartPane implements QueryResultsListener, Que
     //private static Log log = LogFactory.getLog(BarChartPane.class);
 
     // Data Members
+    @SuppressWarnings("unused")
     private QueryResultsGetter       getter;
+    @SuppressWarnings("unused")
     private QueryResultsContainer    qrContainer;
     private QueryResultsHandlerIFace handler = null;
 

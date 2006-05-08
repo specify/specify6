@@ -3,23 +3,8 @@ package edu.ku.brc.specify;
 import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.datamodel.*;
-
-
-
-import org.hibernate.*;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.*;
-//import org.hibernate.hql;
-import org.hibernate.FetchMode;
-import org.hibernate.cache.*;
 /**
  * This is a helper class that is used for initializing data for testing 
  *
@@ -96,7 +81,7 @@ public class InitializeData
     public static void testHibernate() {
         // Create a configuration based on the properties file we've put
         // in the standard place.
-        Configuration config = new Configuration();
+        //Configuration config = new Configuration();
 
         // Tell it about the classes we want mapped, taking advantage of
         // the way we've named their mapping documents.
@@ -183,10 +168,10 @@ public class InitializeData
         
         */
         // Get the session factory we can use for persistence
-        SessionFactory sessionFactory = config.buildSessionFactory();
+        //SessionFactory sessionFactory = config.buildSessionFactory();
 
         // Ask for a session using the JDBC information we've configured
-        Session session = sessionFactory.openSession();
+        //Session session = sessionFactory.openSession();
         
         //String tableName = "edu.ku.brc.specify.datamodel.Locality";
         //String queryString = "SELECT count(*) from " + tableName;
@@ -196,7 +181,7 @@ public class InitializeData
         //java.util.List c = q.list();
         //log.info("Found ### of records " + c.get(0) +" from " + tableName);            
         // Clean up after ourselves
-        sessionFactory.close();
+        //sessionFactory.close();
         log.info("Done.");  	
     	
     }

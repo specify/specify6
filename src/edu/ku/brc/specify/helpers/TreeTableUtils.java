@@ -93,7 +93,8 @@ public class TreeTableUtils
 		}
 	}
 
-	public static TreeDefinitionItemIface getDefItemByRank( TreeDefinitionIface treeDef, Integer rank )
+	@SuppressWarnings("unchecked")
+    public static TreeDefinitionItemIface getDefItemByRank( TreeDefinitionIface treeDef, Integer rank )
 	{
 		Set<TreeDefinitionItemIface> defItems = (Set<TreeDefinitionItemIface>)treeDef.getTreeDefItems();
 		for( TreeDefinitionItemIface item: defItems )

@@ -8,9 +8,6 @@ import java.util.Vector;
 
 import javax.swing.JComponent;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
@@ -22,7 +19,7 @@ import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 
 
 public class WorkbenchTask extends BaseTask {
-	private static Log log = LogFactory.getLog(WorkbenchTask.class);
+	//private static Log log = LogFactory.getLog(WorkbenchTask.class);
 	public static final DataFlavor WORKBENCH_FLAVOR = new DataFlavor(WorkbenchTask.class, "Workbench");
 	public static final String WORKBENCH = "Workbench";
 
