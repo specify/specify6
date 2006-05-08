@@ -38,6 +38,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -65,6 +68,8 @@ import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
  */
 public abstract class ExpressTableResultsBase extends JPanel
 {
+	private static Log log = LogFactory.getLog(ExpressTableResultsBase.class);
+			
     protected static final Cursor handCursor    = new Cursor(Cursor.HAND_CURSOR);
     protected static final Cursor defCursor     = new Cursor(Cursor.DEFAULT_CURSOR);
 
@@ -342,10 +347,10 @@ public abstract class ExpressTableResultsBase extends JPanel
      */
     public RecordSet getRecordSet(final boolean returnAll)
     {
-        System.out.println("Indexes: "+table.getSelectedRows().length);
+        log.debug("Indexes: "+table.getSelectedRows().length+" Index["+tableInfo.getTableId()+"]");
         for (int v : table.getSelectedRows())
         {
-            System.out.println("["+v+"]");
+        	log.debug("["+v+"]");
         }
         RecordSet rs = getRecordSet(table.getSelectedRows(), tableInfo.getRecordSetColumnInx(), returnAll);
         rs.setTableId(Integer.parseInt(tableInfo.getTableId()));

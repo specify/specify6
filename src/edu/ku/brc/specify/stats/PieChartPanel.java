@@ -24,8 +24,6 @@ import static edu.ku.brc.specify.helpers.UIHelper.getInt;
 import static edu.ku.brc.specify.helpers.UIHelper.getString;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
-import java.awt.BorderLayout;
-
 import javax.swing.Icon;
 
 import org.jfree.chart.ChartFactory;
@@ -146,8 +144,13 @@ public class PieChartPanel extends ChartPanel implements QueryResultsListener, Q
         builder.add(panel, cc.xy(3,1));
         add(builder.getPanel(), BorderLayout.CENTER);
         */
-        add(chartPanel, BorderLayout.CENTER);
+        //add(chartPanel, BorderLayout.CENTER);
+        
+        setLayout(new ChartLayoutManager(this));
+        
+        add(chartPanel);
 
+        validate();
         doLayout();
         repaint();
 

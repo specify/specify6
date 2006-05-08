@@ -25,8 +25,6 @@ import static edu.ku.brc.specify.helpers.UIHelper.getString;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -58,7 +56,6 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
 
     // Data Members
     private QueryResultsHandlerIFace   handler = null;
-    private Dimension                  maxChartSize = null;
 
     /**
      * Creates a BarChart pane with a name and a reference to the taskable that started it
@@ -162,6 +159,7 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
             );
         // create and display a frame...
         chartPanel = new org.jfree.chart.ChartPanel(jgChart, true, true, true, true, true);
+        /*
         chartPanel.setBackground(Color.WHITE);
         
         if (maxChartSize != null)
@@ -170,24 +168,18 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
             chartPanel.setPreferredSize(maxChartSize);
         }
         addCompletedComp(chartPanel);
-
-    }
-    
-    public void setMaxChartSize(int width, int height)
-    {/*
-        if (maxChartSize == null)
-        {
-            maxChartSize = new Dimension();
-        } 
-        maxChartSize.setSize(width, height-5);
-
-        if (chart != null)
-        {
-            chart.setMaximumSize(maxChartSize);
-            chart.setPreferredSize(maxChartSize);
-        }
         */
+        removeAll();
+        setLayout(new ChartLayoutManager(this));
+        
+        add(chartPanel);
+        
+        validate();
+        doLayout();
+        repaint();
+
     }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.QueryResultsListener#resultsInError(edu.ku.brc.specify.dbsupport.QueryResultsContainer)

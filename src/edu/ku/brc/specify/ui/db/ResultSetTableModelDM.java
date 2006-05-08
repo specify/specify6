@@ -232,7 +232,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
                     do
                     {                   
                         RecordSetItem rsi = new RecordSetItem();
-                        rsi.setRecordId(resultSet.getObject(column+1).toString());
+                        rsi.setRecordId(resultSet.getObject(column).toString());
                         items.add(rsi);
                     } while (resultSet.next());
                 }    
@@ -247,7 +247,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
                     if (resultSet.absolute(rowInx+1))
                     {
                         RecordSetItem rsi = new RecordSetItem();
-                        rsi.setRecordId(resultSet.getObject(column+1).toString());
+                        rsi.setRecordId(resultSet.getObject(column).toString());
                         items.add(rsi);
                     }
                 }

@@ -71,7 +71,6 @@ import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.plugins.PluginMgr;
 import edu.ku.brc.specify.prefs.PrefMainPanel;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
-import edu.ku.brc.specify.tasks.LocalityMapperTask;
 import edu.ku.brc.specify.tasks.StartUpTask;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.MainPanel;
@@ -173,7 +172,7 @@ public class Specify extends JPanel
         
         DBConnection.setUsernamePassword("rods", "rods");
         DBConnection.setDriver("com.mysql.jdbc.Driver");
-        DBConnection.setDBName("jdbc:mysql://localhost/demo_fish3");
+        DBConnection.setDBName("jdbc:mysql://localhost/fish");
 
         try 
         { 
@@ -660,18 +659,6 @@ public class Specify extends JPanel
                     {
                         ExpressSearchTask expressSearchTask = (ExpressSearchTask)ContextMgr.getTaskByName(ExpressSearchTask.EXPRESSSEARCH);
                         expressSearchTask.showIndexerPane();
-                    }
-                }); 
-        //**********************************
-        // DEMO ONLY
-        //**********************************
-        mi = UIHelper.createMenuItem(menu, "Locality Mapper", "L", "Locality Mapper", false, null);
-        mi.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        LocalityMapperTask localityMapperTask = (LocalityMapperTask)ContextMgr.getTaskByName(LocalityMapperTask.LOCALITYMAPPER);
-                        localityMapperTask.doMapperDemo();
                     }
                 }); 
         

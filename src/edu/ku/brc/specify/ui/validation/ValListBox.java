@@ -215,6 +215,11 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
         if (value == null)
         {
             setSelectedIndex(-1);
+            if (getModel() instanceof DefaultListModel)
+            {
+            	DefaultListModel defModel = (DefaultListModel)getModel();
+            	defModel.clear();
+            }
             return;
         }
         

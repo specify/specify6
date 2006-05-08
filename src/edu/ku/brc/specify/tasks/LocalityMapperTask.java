@@ -21,34 +21,37 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Query;
 
+import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.dbsupport.SQLExecutionListener;
 import edu.ku.brc.specify.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
+import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.tasks.subpane.LocalityMapperSubPane;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.specify.ui.CommandAction;
+import edu.ku.brc.specify.ui.CommandDispatcher;
 import edu.ku.brc.specify.ui.SubPaneIFace;
-import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
 /**
  * The LocalityMapperTask is responsible gettng and displaying all various idfferent kinds of stats
  * 
  * @author rods
  *
  */
-public class LocalityMapperTask extends BaseTask implements SQLExecutionListener
+public class LocalityMapperTask extends BaseTask
 {
     // Static Data Members
     public static final String LOCALITYMAPPER = "LocalityMapper";
@@ -56,8 +59,7 @@ public class LocalityMapperTask extends BaseTask implements SQLExecutionListener
     private static Log log = LogFactory.getLog(LocalityMapperTask.class);
     
     // Data Members
-    protected SQLExecutionProcessor sqlExecutor;
-    protected java.sql.ResultSet resultSet;
+    protected java.sql.ResultSet    resultSet;
     
     // Data Members
     /**
@@ -67,7 +69,7 @@ public class LocalityMapperTask extends BaseTask implements SQLExecutionListener
     public LocalityMapperTask()
     {
         super(LOCALITYMAPPER, getResourceString(LOCALITYMAPPER));
-  
+        CommandDispatcher.register(LOCALITYMAPPER, this);
     }
     
     /* (non-Javadoc)
@@ -79,26 +81,17 @@ public class LocalityMapperTask extends BaseTask implements SQLExecutionListener
     }
     
     /**
-     * Looks up statName and creates the appropriate SubPane 
-     * @param statName the name of the stat to be displayed
+     * @param recordSet
      */
-    public void createMapperPane(final List<Locality> localityList)
+    public void createMappingInfoFromRecordSet(final RecordSet recordSet)
     {
-        // Create stat pane return a non-null panel for charts and null for non-charts
-        // Of coarse, it could pass back nul if a chart was missed named
-        // but error would be shown inside the StatsMgr for that case
-        LocalityMapperSubPane panel = new LocalityMapperSubPane(name, this, localityList);
+        Query query = DBTableIdMgr.getQueryForTable(recordSet);
+        
+        List list = query.list();
+        
+        LocalityMapperSubPane panel = new LocalityMapperSubPane(name, this, list);
         addSubPaneToMgr(panel);
 
-    }
-    
-    public void doMapperDemo()
-    {
-        String sql = "Select collectingevent.StartDate, collectingevent.EndDate, locality.Latitude1, locality.Longitude1 From collectingevent Inner Join locality ON collectingevent.LocalityID = locality.LocalityID Where collectingevent.StartDate Is Not Null AND collectingevent.StartDate >= '19510701' AND collectingevent.StartDate <= '19510731' AND locality.Latitude1 Is Not Null AND locality.Longitude1 Is Not Null Order By collectingevent.StartDate Asc";
-        sqlExecutor = new SQLExecutionProcessor(this, sql);
-        sqlExecutor.setAutoCloseConnection(false);
-        sqlExecutor.start();
-        
     }
 
     
@@ -113,10 +106,8 @@ public class LocalityMapperTask extends BaseTask implements SQLExecutionListener
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        ToolBarDropDownBtn      btn  = createToolbarButton(name, "locality.gif", "stats_hint");      
-
-        
-        list.add(new ToolBarItemDesc(btn));
+        //ToolBarDropDownBtn      btn  = createToolbarButton(name, "locality.gif", "stats_hint");
+        //list.add(new ToolBarItemDesc(btn));
         return list;
     }
     
@@ -131,50 +122,22 @@ public class LocalityMapperTask extends BaseTask implements SQLExecutionListener
         return list;
         
     }
-    
-    
-    //-----------------------------------------------------
-    //-- SQLExecutionListener
-    //-----------------------------------------------------
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.SQLExecutionListener#exectionDone(edu.ku.brc.specify.dbsupport.SQLExecutionProcessor, java.sql.ResultSet)
-     */
-    public void exectionDone(final SQLExecutionProcessor process, final java.sql.ResultSet resultSet)
+    //-------------------------------------------------------
+    // CommandListener Interface
+    //-------------------------------------------------------
+
+    public void doCommand(CommandAction cmdAction)
     {
-        this.resultSet = resultSet;
-        
-        try
+        if (cmdAction.getAction().equals("DoLocalityMap"))
         {
-            StringBuilder strBuf = new StringBuilder();
-            if (resultSet.first())
+            if (cmdAction.getData() instanceof RecordSet)
             {
-                while (resultSet.next())
-                {
-                    
-                }
+                RecordSet recordSet = (RecordSet)cmdAction.getData();
+                createMappingInfoFromRecordSet(recordSet);
             }
-        } catch (SQLException ex)
-        {
-            ex.printStackTrace();
         }
-
-        ResultSetTableModelDM rsm = new ResultSetTableModelDM(resultSet);
-
-        sqlExecutor = null;
-
-
     }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.SQLExecutionListener#executionError(edu.ku.brc.specify.dbsupport.SQLExecutionProcessor, java.lang.Exception)
-     */
-    public void executionError(final SQLExecutionProcessor process, final Exception ex)
-    {
-        sqlExecutor = null;
-    }
-
-
     
     //--------------------------------------------------------------
     // Inner Classes

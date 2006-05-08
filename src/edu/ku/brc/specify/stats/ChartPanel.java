@@ -19,7 +19,11 @@
  */
 package edu.ku.brc.specify.stats;
 
-import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.LayoutManager;
+import java.awt.LayoutManager2;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -49,8 +53,9 @@ public class ChartPanel extends JPanel implements Chartable
     protected String  yAxisTitle  = "";
     protected boolean isVertical  = true;
     
-    protected JProgressBar      progressBar;
-    protected JLabel            progressLabel;
+    protected JProgressBar progressBar;
+    protected JLabel       progressLabel;
+    private Dimension      maxChartSize = new Dimension(100,100);
 
     /**
      * @param startUpMsg
@@ -59,16 +64,14 @@ public class ChartPanel extends JPanel implements Chartable
     {
         progressBar = new JProgressBar();
         progressBar.setIndeterminate(true);
-        PanelBuilder    builder    = new PanelBuilder(new FormLayout("f:max(100px;p):g", "center:p:g, p, center:p:g"));
+        PanelBuilder    builder    = new PanelBuilder(new FormLayout("max(100px;p):g", "center:p:g, center:p:g"));
         CellConstraints cc         = new CellConstraints();
 
         builder.add(progressBar,                  cc.xy(1,1));
-        builder.add(progressLabel = new JLabel(startUpMsg, JLabel.CENTER), cc.xy(1,3));
+        builder.add(progressLabel = new JLabel(startUpMsg, JLabel.CENTER), cc.xy(1,2));
 
-        PanelBuilder    builder2    = new PanelBuilder(new FormLayout("p:g,p,p:g", "f:p:g"));
-        builder2.add(builder.getPanel(), cc.xy(3,1));
-
-        add(builder2.getPanel(), BorderLayout.CENTER);
+        PanelBuilder builder2  = new PanelBuilder(new FormLayout("p:g,p,p:g", "p:g,p,p:g"), this);
+        builder2.add(builder.getPanel(), cc.xy(2,2));
     }
 
     /* (non-Javadoc)
@@ -101,6 +104,124 @@ public class ChartPanel extends JPanel implements Chartable
     public void setVertical(boolean isVertical)
     {
         this.isVertical = isVertical;
+    }
+    
+    
+    public void setPreferredChartSize(int width, int height)
+    {
+    	System.out.println("setPreferredChartSize "+width+"  "+height);
+        maxChartSize.setSize(width, height);
+    }
+
+
+    /**
+     * The layout manager for laying out NavBoxes in a vertical fashion (only)
+     *
+     * @author rods
+     *
+     */
+    public class ChartLayoutManager implements LayoutManager, LayoutManager2
+    {
+    	protected ChartPanel                 parentChartPanel;
+    	protected org.jfree.chart.ChartPanel chartPanel;
+    	protected Dimension                  preferredSize = new Dimension(100,100);
+    	
+        /**
+         * Contructs a layout manager for layting out NavBoxes. It lays out all the NavBoxes vertically
+         * and uses the 'ySeparator' as the spacing in between the boxes. It uses borderPadding as a 'margin'
+         * aroound all the boxes
+         * @param borderPadding the margin around the boxes
+         * @param ySeparation the vertical separation inbetween the boxes.
+         */
+        public ChartLayoutManager(ChartPanel parentChartPanel)
+        {
+        	this.parentChartPanel = parentChartPanel;
+        }
+
+        /* (non-Javadoc)
+         * @see java.awt.LayoutManager#addLayoutComponent(java.lang.String, java.awt.Component)
+         */
+        public void addLayoutComponent(String arg0, Component arg1)
+        {
+            if (arg1 == null || !(arg1 instanceof org.jfree.chart.ChartPanel))
+            {
+                throw new NullPointerException("Null component in addLayoutComponent");
+            }
+            chartPanel = (org.jfree.chart.ChartPanel)arg1;
+
+        }
+
+        /* (non-Javadoc)
+         * @see java.awt.LayoutManager#removeLayoutComponent(java.awt.Component)
+         */
+        public void removeLayoutComponent(Component arg0)
+        {
+            if (arg0 == null || !(arg0 instanceof org.jfree.chart.ChartPanel))
+            {
+                throw new NullPointerException("Null component in addLayoutComponent");
+            }
+            //chartPanel = (org.jfree.chart.ChartPanel)arg0;
+        }
+
+        /* (non-Javadoc)
+         * @see java.awt.LayoutManager#preferredLayoutSize(java.awt.Container)
+         */
+        public Dimension preferredLayoutSize(Container arg0)
+        {
+        	System.out.println("preferredLayoutSize "+parentChartPanel.maxChartSize);
+        	return parentChartPanel.maxChartSize;
+            //return new Dimension(preferredSize);
+        }
+
+        /* (non-Javadoc)
+         * @see java.awt.LayoutManager#minimumLayoutSize(java.awt.Container)
+         */
+        public Dimension minimumLayoutSize(Container arg0)
+        {
+        	System.out.println("minimumLayoutSize "+parentChartPanel.maxChartSize);
+        	return parentChartPanel.maxChartSize;
+             //return new Dimension(preferredSize);
+        }
+
+        /* (non-Javadoc)
+         * @see java.awt.LayoutManager#layoutContainer(java.awt.Container)
+         */
+        public void layoutContainer(Container arg0)
+        {
+            Dimension parentSize =  arg0.getSize();
+        	System.out.println("parentSize "+parentSize);
+
+            //preferredSize.setSize(parentSize.width, parentSize.height-5);
+            chartPanel.setBounds(0,0,parentSize.width, parentSize.height-5);
+        }
+
+
+        // LayoutManager2
+        public void  addLayoutComponent(Component comp, Object constraints)
+        {
+            if (comp == null || !(comp instanceof org.jfree.chart.ChartPanel))
+            {
+                throw new NullPointerException("Null component in addLayoutComponent");
+            }
+            chartPanel = (org.jfree.chart.ChartPanel)comp;
+        }
+        public float   getLayoutAlignmentX(Container target)
+        {
+            return (float)0.0;
+        }
+        public float   getLayoutAlignmentY(Container target)
+        {
+            return (float)0.0;
+        }
+        public void invalidateLayout(Container target)
+        {
+            preferredSize.setSize(100, 100);
+        }
+        public Dimension maximumLayoutSize(Container target)
+        {
+            return new Dimension(preferredSize);
+        }
+
     }
 
 }

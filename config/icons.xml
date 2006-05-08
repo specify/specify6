@@ -27,7 +27,8 @@
     <icon name="ColEvent"   file="collevent.gif" sizes="all"/>
     <icon name="InfoRequest" file="information.gif" sizes="all"/>
     <icon name="SystemSetup" file="information.gif" sizes="all"/>
-    <icon name="Search"      file="search.gif" sizes="all"/>
+    <icon name="Search"      file="search.gif" sizes="all"/>    
+    <icon name="LocalityMapper" file="map.png" sizes="all"/>
 
     <icon name="Blue Dot"    file="blue_dot.png" sizes="all"/>
 

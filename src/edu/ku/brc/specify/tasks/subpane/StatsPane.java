@@ -153,13 +153,19 @@ public class StatsPane extends BaseSubPane
                         {
                             BarChartPanel bcp = (BarChartPanel)StatsMgr.createStatPane(statName);
                             int width = colSpan > 1 ? ((maxCols * preferredWidth) + ((maxCols-1) * spacing)) : preferredWidth;
-                            bcp.setMaxChartSize(width, preferredWidth);
+                            // We start by assuming the chart will be square which is why we use 
+                            // preferredWidth as the height, and then we calculate the new width
+                            bcp.setPreferredChartSize(width, preferredWidth);
                             comp = bcp;
                             //comp.setSize(new Dimension(preferredWidth, preferredWidth));
                             //comp.setPreferredSize(new Dimension(preferredWidth, preferredWidth));
                             //comp.invalidate();
                             //comp.doLayout();
                             //System.out.println(comp.getSize());
+                            validate();
+                            doLayout();
+                            repaint();
+                            
                             
                         }
                         

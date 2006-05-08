@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- tableid means it is making it's service available for any tables with 
+     that ID --> 
 <plugins>
 	<core>
 	    <plugin class="edu.ku.brc.specify.tasks.StartUpTask"/>
@@ -11,6 +13,10 @@
 	        <service command="DoLabels" tableid="7" tooltip="CreateLabelTT"/>
 	    </plugin>
 	    <plugin class="edu.ku.brc.specify.tasks.ReportsTask"/>
+	    <plugin class="edu.ku.brc.specify.tasks.LocalityMapperTask">
+	        <service command="DoLocalityMap" tableid="10" tooltip="CreateLocalityMapTT"/>
+	        <service command="DoLocalityMap" tableid="11" tooltip="CreateLocalityMapTT"/>
+	    </plugin>
 	    <plugin class="edu.ku.brc.specify.tasks.InteractionsTask"/>
 	    <plugin class="edu.ku.brc.specify.tasks.StatsTask"/>
 	    <plugin class="edu.ku.brc.specify.tasks.QueryTask"/>

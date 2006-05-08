@@ -520,6 +520,10 @@ public class ViewLoader
                                     }
                                 }
 
+                            } else if (uitype.equals("image"))
+                            {
+                                dspUIType = getAttr(cellElement, "dspuitype", "image");
+
                             } else
                             {
                                 dspUIType = getAttr(cellElement, "dspuitype", "dsptextfield");

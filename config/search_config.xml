@@ -30,7 +30,7 @@
             <caption col="CatalogNumber" text="Catalog Number"/>
             <caption col="Taxon" text="Taxon Name"/>
         </captions>
-        <recordset tabletype="1" col="0"/>
+        <recordset tabletype="1" col="1"/>
 	</detailView>
   </table>
 
@@ -57,7 +57,7 @@
             <caption col="Longitude1" text="Longitude"/>
             <caption col="LocalityID" text="ID" visible="false"/>
         </captions>
-        <recordset tabletype="2" col="3"/>
+        <recordset tabletype="2" col="4"/>
 	</detailView>
   </table>
 
@@ -94,12 +94,11 @@
             <caption col="Country" text="Country"/>
             <caption col="GeographyID" text="ID" visible="false"/>
         </captions>
-        <recordset tabletype="3" col="3"/>
+        <recordset tabletype="3" col="4"/>
 	</detailView>
   </table>
   -->
 
-<!--
   <table id="4" name="taxon" title="Taxon" priority="1" color="30, 144, 255"
          expresssearch="true">
     <outofdate>
@@ -124,7 +123,7 @@
             <caption col="CommonName" text="Common Name"/>
             <caption col="TreeID" text="Taxon ID" visible="false"/>
         </captions>
-        <recordset tabletype="4" col="2"/>
+        <recordset tabletype="4" col="3"/>
 	</detailView>
   </table>
 
@@ -138,8 +137,8 @@
             </sql>
             <cols>
                 <col>1</col>
-                <col key="firstname">2</col>
-                <col key="lastname">3</col>
+                <col>2</col>
+                <col>3</col>
             </cols>
         </index>
         <detailView icon="Agent">
@@ -151,7 +150,7 @@
                 <caption col="LastName" text="Last Name"/>
                 <caption col="AgentID" text="AgentID" visible="false"/>
             </captions>
-            <recordset tabletype="5" col="2"/>
+            <recordset tabletype="5" col="3"/>
         </detailView>
     </table>
 
@@ -182,10 +181,10 @@
                 <caption col="StartDate" text="StartDate"/>
                 <caption col="PermitID" text="PermitID" visible="false"/>
             </captions>
-            <recordset tabletype="6" col="4"/>
+            <recordset tabletype="6" col="5"/>
         </detailView>
     </table>
--->
+
     <table id="7" name="Accession" title="Accession" priority="1" color="30, 144, 255" expresssearch="true">
         <outofdate>
             <table name="accession" title="Accessions"/>
@@ -215,10 +214,10 @@
                 <caption col="Type" text="Type"/>
                 <caption col="Text1" text="Division"/>
             </captions>
-            <recordset tabletype="7" col="0"/>
+            <recordset tabletype="7" col="1"/>
         </detailView>
     </table>
-<!--
+
     <table id="8" name="Address" title="Address" priority="1" color="30, 144, 255" expresssearch="true">
     <outofdate>
         <table name="address" title="Address"/>
@@ -246,7 +245,7 @@
             <caption col="state" text="State"/>
             <caption col="AddressID" text="ID" visible="false"/>
         </captions>
-        <recordset tabletype="6" col="3"/>
+        <recordset tabletype="6" col="4"/>
 	</detailView>
   </table>
 
@@ -272,8 +271,8 @@
 	        <col>1</col>
 	        <col>2</col>
 	        <col>3</col>
-	        <col key="lastname">4</col>
-	        <col key="firstname">5</col>
+	        <col>4</col>
+	        <col>5</col>
 	    </cols>
 	</index>
     <detailView icon="Agent">
@@ -298,7 +297,7 @@
             <caption col="LastName" text="Last Name"/>
             <caption col="FirstName" text="First Name"/>
        </captions>
-       <recordset tabletype="7" col="0"/>
+       <recordset tabletype="7" col="1"/>
 	</detailView>
   </table>
 
@@ -309,28 +308,67 @@
     </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[Select collectingevent.CollectingEventID, locality.NamedPlace, locality.LocalityName, locality.Township, locality.Section  From collectingevent Inner Join locality ON collectingevent.LocalityID = locality.LocalityID]]>
+	        <![CDATA[Select collectingevent.CollectingEventID, StartDate, EndDate, locality.NamedPlace, locality.LocalityName, locality.Township, locality.Section From collectingevent Inner Join locality ON collectingevent.LocalityID = locality.LocalityID]]>
 	    </sql>
 	    <cols>
 	       <col>1</col>
-	       <col>2</col>
-	       <col>3</col>
+	       <col key="startdate">2</col>
+	       <col key="enddate">3</col>
+	       <col>4</col>
+	       <col>5</col>
+	       <col>6</col>
+	       <col>7</col>
+	    </cols>
+	</index>
+    <detailView icon="ColEvent">
+	    <sql>
+	        <![CDATA[Select locality.LocalityName, collectingevent.StartDate, collectingevent.EndDate, locality.Latitude1, locality.Longitude1, collectingevent.CollectingEventID  From collectingevent Inner Join locality ON collectingevent.LocalityID = locality.LocalityID where collectingevent.CollectingEventID in (%s) order by StartDate]]>
+	    </sql>
+        <captions>
+            <caption col="LocalityName" text="Locality Name"/>
+            <caption col="StartDate" text="Start Date"/>
+            <caption col="EndDate" text="End Date"/>
+            <caption col="Latitude1" text="Latitude1"/>
+            <caption col="Longitude1" text="Longitude1"/>
+            <caption col="CollectingEventID" text="CollectingEventID" visible="false"/>
+        </captions>
+       <recordset tabletype="8" col="6"/>
+	</detailView>
+  </table>
+
+  
+  <table id="11" name="Collecting Event" title="Collecting Events" priority="1" color="30, 144, 255"
+         expresssearch="true">
+    <outofdate>
+        <table name="collectingevent" title="Collecting Event"/>
+    </outofdate>
+    <index>
+	    <sql>
+	        <![CDATA[Select CollectingEventID, StartDate, EndDate, Method, StationFieldNumber From collectingevent]]>
+	    </sql>
+	    <cols>
+	       <col>1</col>
+	       <col key="startdate">2</col>
+	       <col key="enddate">3</col>
 	       <col>4</col>
 	       <col>5</col>
 	    </cols>
 	</index>
     <detailView icon="ColEvent">
 	    <sql>
-	        <![CDATA[Select locality.LocalityName, collectingevent.CollectingEventID  From collectingevent Inner Join locality ON collectingevent.LocalityID = locality.LocalityID where collectingevent.CollectingEventID in (%s)]]>
+	        <![CDATA[Select CollectingEventID, StartDate, EndDate, Method, StationFieldNumber From collectingevent where collectingevent.CollectingEventID in (%s)]]>
 	    </sql>
         <captions>
-            <caption col="LocalityName" text="Locality Name"/>
-            <caption col="CollectingEventID" text="CE ID"/>
+            <caption col="CollectingEventID" text="CollectingEventID"   visible="false"/>
+            <caption col="StartDate" text="Start Date"/>
+            <caption col="EndDate" text="End Date"/>
+            <caption col="Method" text="Method"/>
+            <caption col="StationFieldNumber" text="Station Field Number"/>
         </captions>
        <recordset tabletype="8" col="1"/>
 	</detailView>
   </table>
--->
+
     <!-- ************************************************* -->
     <!--  These are for Other Non Express Search Searches  -->
     <!-- ************************************************* -->
@@ -360,7 +398,7 @@ address.State, address.PostalCode, address.Country From agent  Left Join address
                 <caption col="Postalcode" text="Zip"/>
                 <caption col="Country" text="Country"/>
             </captions>
-            <recordset tabletype="5" col="0"/>
+            <recordset tabletype="5" col="1"/>
         </detailView>
     </table>
 
@@ -385,7 +423,7 @@ permit.EndDate,permit.RenewalDate,permit.Type From permit left Join agent ON per
                 <caption col="RenewalDate" text="Renewal Date"/>
                 <caption col="Type" text="Type"/>
             </captions>
-            <recordset tabletype="6" col="0"/>
+            <recordset tabletype="6" col="1"/>
         </detailView>
     </table>
 
@@ -404,7 +442,7 @@ permit.EndDate,permit.RenewalDate,permit.Type From permit left Join agent ON per
             <caption col="field" text="Label Name"/>
             <caption col="desc" text="Where Used"/>
         </captions>
-       <recordset tabletype="10000" col="1"/>
+       <recordset tabletype="10000" col="2"/>
 	</detailView>
   </table>
 
@@ -423,7 +461,7 @@ permit.EndDate,permit.RenewalDate,permit.Type From permit left Join agent ON per
             <caption col="type" text="Type"/>
             <caption col="label" text="Label"/>
         </captions>
-       <recordset tabletype="20000" col="1"/>
+       <recordset tabletype="20000" col="2"/>
 	</detailView>
   </table>
 

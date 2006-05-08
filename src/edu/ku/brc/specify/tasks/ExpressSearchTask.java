@@ -152,6 +152,7 @@ public class ExpressSearchTask extends BaseTask
                 if (tables.get(tableInfo.getName()) == null)
                 {
                     tables.put(tableInfo.getName(), tableInfo);
+                    
                 } else
                 {
                     log.error("Duplicate express Search name["+tableInfo.getName()+"]");
@@ -322,7 +323,21 @@ public class ExpressSearchTask extends BaseTask
                 }
                 return false;
             }
+            
+            // "tables" maps by name so create a hash for mapping by ID
+            Hashtable<String, ExpressResultsTableInfo> idToTableInfoMap = new Hashtable<String, ExpressResultsTableInfo>();
+            
+            for (Enumeration<ExpressResultsTableInfo> e=tables.elements();e.hasMoreElements();)
+            {
+                ExpressResultsTableInfo ti = e.nextElement();
+                if (ti.isExpressSearch())
+                {
+                	idToTableInfoMap.put(ti.getTableId(), ti);
+                }
+            }
 
+            log.info(hits.length()+" Hits for ["+searchTerm+"]["+query.toString()+"]");
+            
             boolean useFloat = false;
 
             int cntUseHitsCache = 0;
@@ -331,17 +346,7 @@ public class ExpressSearchTask extends BaseTask
             {
                 Document  doc       = hits.doc(i);
                 String    idStr     = doc.get("table");
-                ExpressResultsTableInfo tableInfo = null;
-                for (Enumeration<String> e=tables.keys();e.hasMoreElements();)
-                {
-                    String key = e.nextElement();
-                    ExpressResultsTableInfo ti = tables.get(key);
-                    //log.info("Key ["+idStr+"] Title["+tables.get(key).getTitle()+"]");
-                    if (ti.getTableId().equals(idStr) && ti.isExpressSearch())
-                    {
-                        tableInfo = ti;
-                    }
-                }
+                ExpressResultsTableInfo tableInfo = idToTableInfoMap.get(idStr);
                 if (tableInfo == null)
                 {
                     throw new RuntimeException("Bad id from search["+idStr+"]");
@@ -351,6 +356,7 @@ public class ExpressSearchTask extends BaseTask
                 {
                     tableInfo.addIndex(i);
                     cntUseHitsCache++;
+                    
                 } else
                 {
                     try
@@ -430,7 +436,7 @@ public class ExpressSearchTask extends BaseTask
 
         searchBtn   = new JButton(getResourceString("Search"));
 
-        searchText  = new JTextField("", 10);//"beanii"
+        searchText  = new JTextField("[19510707 TO 19510721]", 10);//"beanii"
         //searchText  = new JTextField(10);
         textBGColor = searchText.getBackground();
 

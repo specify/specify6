@@ -959,7 +959,7 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
             
             //System.out.println("["+fieldInfo.getFormCell().getName()+"]["+fieldInfo.getFormCell().getType()+"]");
             //if (fieldInfo.getFormCell().getName().equals("agentAddressByIssuer.agent"))
-            if (fieldInfo.getFormCell().getName().equals("agentAddressByIssuer.agent"))
+            if (fieldInfo.getFormCell().getName().equals("taxonItems") && dataObj != null)
             {
                 int x = 0;
                 x++;

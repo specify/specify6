@@ -69,7 +69,7 @@ public class ExpressResultsTableInfo
     protected Hashtable<String, String> outOfDate    = new Hashtable<String, String>();
     protected Vector<Integer>           indexes      = new Vector<Integer>();
 
-    protected int                       tableType;
+    //protected int                       tableType;
     protected int                       recordSetColumnInx;
     protected int                       priority;
     protected Color                     color;
@@ -178,7 +178,7 @@ public class ExpressResultsTableInfo
                 //log.info("No Captions!");
             }
             Element rsElement  = (Element)viewElement.selectSingleNode("recordset");
-            tableType = Integer.parseInt(rsElement.attributeValue("tabletype"));
+            //tableType = Integer.parseInt(rsElement.attributeValue("tabletype"));
             recordSetColumnInx = Integer.parseInt(rsElement.attributeValue("col"));
 
         }

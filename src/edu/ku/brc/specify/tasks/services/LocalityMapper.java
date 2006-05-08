@@ -125,6 +125,7 @@ public class LocalityMapper
 	{
 		localities.add(loc);
 		labels.add(label);
+		System.out.println("["+loc.getLatitude1()+"]["+label+"]");
 		
 		Point iconLoc = determinePixelCoordsOfLocality(loc);
 		markerLocations.add(iconLoc);
@@ -297,6 +298,11 @@ public class LocalityMapper
 		this.mapWidth = mapWidth;
 	}
 
+	public List<Point> getMarkerLocations() 
+	{
+		return markerLocations;
+	}
+
 	private Pair<Double, Double> getLatLong(Locality loc)
 	{
 		Double lat1 = loc.getLatitude1();
@@ -457,6 +463,7 @@ public class LocalityMapper
 		if( !cacheValid )
 		{
 			Image mapImage = getMapFromService(mapMinLat, mapMinLong, mapMaxLat, mapMaxLong);
+			//Image mapImage = new ImageIcon("/home/rods/map.png").getImage();
 			mapIcon = new ImageIcon(mapImage);
 			cacheValid = true;
 
@@ -503,15 +510,6 @@ public class LocalityMapper
 						continue;
 					}
 					
-					marker.paintIcon(c, g, markerLoc.x+x, markerLoc.y+y);
-					if( label != null )
-					{
-						Color origColor = g.getColor();
-						g.setColor(labelColor);
-						GraphicsUtils.drawCenteredString(label, g, markerLoc.x+x, markerLoc.y+y);
-						g.setColor(origColor);
-					}
-
 					// TODO: draw an arrow from lastLoc to iconLoc
 					if( showArrows && lastLoc != null )
 					{
@@ -525,6 +523,15 @@ public class LocalityMapper
 						g.setColor(origColor);
 					}
 					
+					marker.paintIcon(c, g, markerLoc.x+x, markerLoc.y+y);
+					if( label != null )
+					{
+						Color origColor = g.getColor();
+						g.setColor(labelColor);
+						GraphicsUtils.drawCenteredString(label, g, markerLoc.x+x, markerLoc.y+y);
+						g.setColor(origColor);
+					}
+
 					lastLoc = markerLoc;
 				}
 				
