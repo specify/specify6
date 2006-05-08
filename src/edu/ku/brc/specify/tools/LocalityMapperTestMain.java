@@ -1,16 +1,20 @@
 package edu.ku.brc.specify.tools;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.io.IOException;
+import java.util.Random;
 import java.util.Vector;
 
 import javax.swing.Icon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.logging.Log;
@@ -32,6 +36,8 @@ public class LocalityMapperTestMain implements MapperListener
 	public LocalityMapperTestMain(Vector<Locality> localities,
 								  Vector<String> labels)
 	{
+		this.localities = localities;
+		this.labels = labels;
 		cem = new LocalityMapper(localities,labels);
 		cem.setPreferredMapWidth(1000);
 		cem.setLabelColor(Color.GREEN);
@@ -40,6 +46,7 @@ public class LocalityMapperTestMain implements MapperListener
 		cem.setShowArrows(true);
 		cem.setArrowColor(Color.RED);
 		cem.setShowLabels(true);
+		cem.setCurrentLocColor(Color.ORANGE);
 	}
 	
 	public void getMap()
@@ -47,8 +54,18 @@ public class LocalityMapperTestMain implements MapperListener
 		cem.getMap(this);
 	}
 	
-	public void mapReceived(Icon map)
+	public void mapReceived(final Icon map)
 	{
+		if( !SwingUtilities.isEventDispatchThread() )
+		{
+			SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						mapReceived(map);
+					}
+				});
+		}
 		JFrame f = new JFrame();
 		final JLabel l = new JLabel(map);
 		l.setHorizontalAlignment(SwingConstants.CENTER);
@@ -67,6 +84,20 @@ public class LocalityMapperTestMain implements MapperListener
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setSize(1000,1000);
 		f.setVisible(true);
+		
+		Timer pickNewCurrent = new Timer(5000,new ActionListener()
+				{
+					public void actionPerformed(ActionEvent e)
+					{
+						Random r = new Random();
+						int index = r.nextInt(localities.size());
+						cem.setCurrentLoc(localities.elementAt(index));
+						l.repaint();
+					}
+				});
+		pickNewCurrent.setRepeats(true);
+		pickNewCurrent.start();
+
 	}
 
 	public void exceptionOccurred(Exception e)
@@ -117,6 +148,8 @@ public class LocalityMapperTestMain implements MapperListener
 		
 		LocalityMapperTestMain main = new LocalityMapperTestMain(localities,labels);
 		main.getMap();
-		JOptionPane.showMessageDialog(null, "Waiting");
+		JFrame f = new JFrame();
+		f.setVisible(true);
+		f.setVisible(false);
 	}
 }

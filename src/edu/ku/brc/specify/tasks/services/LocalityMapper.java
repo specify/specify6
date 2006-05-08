@@ -27,6 +27,7 @@ public class LocalityMapper
 	private static Log log = LogFactory.getLog(LocalityMapper.class);
 	
 	protected List<Locality> localities;
+	protected Locality currentLoc;
 	protected List<String> labels;
 	protected List<Point> markerLocations;
 	protected MapGrabber mapGrabber;
@@ -59,6 +60,12 @@ public class LocalityMapper
 	// this icon will get repainted in each location
 	protected SimpleCircleIcon marker;
 	
+	// this icon will be painted on whichever marker is considered current
+	// by using a separate Icon for the current one, we can later decide
+	// to not only customize the icon color for the current locality, but
+	// also the entire Icon (using a diff shape, etc)
+	protected SimpleCircleIcon currentLocMarker;
+	
 	// some configuration of the image
 	protected boolean showArrows;
 	protected boolean showLabels;
@@ -68,8 +75,6 @@ public class LocalityMapper
 	// the cached information
 	protected Icon mapIcon;
 	protected boolean cacheValid;
-	
-	protected String exceptionText;
 	
 	public LocalityMapper()
 	{
@@ -92,6 +97,7 @@ public class LocalityMapper
 		cacheValid = false;
 		
 		marker = new SimpleCircleIcon(8,Color.BLACK);
+		currentLocMarker = new SimpleCircleIcon(8,Color.BLACK);
 	}
 	
 	public LocalityMapper( List<Locality> localities )
@@ -121,6 +127,22 @@ public class LocalityMapper
 		recalculateBoundingBox();
 	}
 	
+	/**
+	 * @return Returns the currentLoc.
+	 */
+	public Locality getCurrentLoc()
+	{
+		return currentLoc;
+	}
+
+	/**
+	 * @param currentLoc The currentLoc to set.
+	 */
+	public void setCurrentLoc(Locality currentLoc)
+	{
+		this.currentLoc = currentLoc;
+	}
+
 	public void addLocalityAndLabel( Locality loc, String label )
 	{
 		localities.add(loc);
@@ -215,6 +237,22 @@ public class LocalityMapper
 	}
 
 	/**
+	 * @return Returns the currentLocColor.
+	 */
+	public Color getCurrentLocColor()
+	{
+		return currentLocMarker.getColor();
+	}
+
+	/**
+	 * @param currentLocColor The currentLocColor to set.
+	 */
+	public void setCurrentLocColor(Color currentLocColor)
+	{
+		currentLocMarker.setColor(currentLocColor);
+	}
+
+	/**
 	 * @return Returns the dotSize.
 	 */
 	public int getDotSize()
@@ -228,6 +266,7 @@ public class LocalityMapper
 	public void setDotSize(int dotSize)
 	{
 		marker.setSize(dotSize);
+		currentLocMarker.setSize(dotSize);
 	}
 
 	/**
@@ -303,6 +342,80 @@ public class LocalityMapper
 		return markerLocations;
 	}
 
+	public void zoom( float percentZoom )
+	{
+		if( percentZoom == 1 || percentZoom <= 0 )
+		{
+			// don't waste any time
+			return;
+		}
+		
+		cacheValid = false;
+		
+		double longRangeChange = mapLongRange * 1/percentZoom;
+		double longChange = .5 * (mapLongRange - longRangeChange);
+		mapMinLong+=longChange;
+		mapMaxLong-=longChange;
+		
+		double latRangeChange = mapLatRange * 1/percentZoom;
+		double latChange = .5 * (mapLatRange - latRangeChange);
+		mapMinLat+=latChange;
+		mapMaxLat-=latChange;
+	}
+	
+	public void pan( double latChange, double longChange )
+	{
+		cacheValid = false;
+		if( mapMinLat + latChange < -90 )
+		{
+			latChange = -90 - mapMinLat;
+		}
+		if( mapMaxLat + latChange > 90 )
+		{
+			latChange = 90 - mapMaxLat;
+		}
+		if( mapMinLong + longChange < -180 )
+		{
+			longChange = -180 - mapMinLong;
+		}
+		if( mapMaxLong + longChange > 180 )
+		{
+			longChange = 180 - mapMaxLong;
+		}
+
+		mapMinLat+=latChange;
+		mapMaxLat+=latChange;
+		mapMinLong+=longChange;
+		mapMaxLong+=longChange;
+	}
+	
+	protected boolean boxIsValid( double minLat, double minLong, double maxLat, double maxLong )
+	{
+		if( -90 <= minLat && minLat < maxLat && maxLat <= 90 )
+		{
+			if( -180 <= minLong && minLong < maxLong && maxLong <= 180 )
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public void setBoundingBox( double minLat, double minLong, double maxLat, double maxLong )
+	{
+		if( !boxIsValid(minLat, minLong, maxLat, maxLong) )
+		{
+			throw new IllegalArgumentException("Arguments define invalid bounding box");
+		}
+
+		cacheValid = false;
+		mapMinLat = minLat;
+		mapMinLong = minLong;
+		mapMaxLat = maxLat;
+		mapMaxLong = maxLong;
+	}
+	
 	private Pair<Double, Double> getLatLong(Locality loc)
 	{
 		Double lat1 = loc.getLatitude1();
@@ -510,9 +623,18 @@ public class LocalityMapper
 		{
 			public void paintIcon(Component c, Graphics g, int x, int y)
 			{
+				// this helps keep the labels inside the map
+				g.setClip(x, y, mapWidth, mapHeight);
+				
 				// log the x and y for the MouseMotionListener
 				mostRecentPaintedX = x;
 				mostRecentPaintedY = y;
+				
+				Point currentLocPoint = null;
+				if( currentLoc != null )
+				{
+					currentLocPoint = determinePixelCoordsOfLocality(currentLoc);
+				}
 
 				mapIcon.paintIcon(c, g, x, y);
 				Point lastLoc = null;
@@ -520,6 +642,8 @@ public class LocalityMapper
 				{
 					Point markerLoc = markerLocations.get(i);
 					String label = labels.get(i);
+					
+					boolean current = (currentLoc != null) && markerLoc.equals(currentLocPoint);
 
 					if( markerLoc == null )
 					{
@@ -540,12 +664,26 @@ public class LocalityMapper
 						int x2 = x + markerLoc.x;
 						int y2 = y + markerLoc.y;
 						Color origColor = g.getColor();
-						g.setColor(arrowColor);
+						if( current )
+						{
+							g.setColor(getCurrentLocColor());
+						}
+						else
+						{
+							g.setColor(arrowColor);
+						}
 						GraphicsUtils.drawArrow((Graphics2D)g, x1, y1, x2, y2, 2, 2);
 						g.setColor(origColor);
 					}
 					
-					marker.paintIcon(c, g, markerLoc.x+x, markerLoc.y+y);
+					if( current )
+					{
+						currentLocMarker.paintIcon(c, g, markerLoc.x+x, markerLoc.y+y);
+					}
+					else
+					{
+						marker.paintIcon(c, g, markerLoc.x+x, markerLoc.y+y);
+					}
 					if( label != null )
 					{
 						Color origColor = g.getColor();
@@ -555,14 +693,6 @@ public class LocalityMapper
 					}
 
 					lastLoc = markerLoc;
-				}
-				
-				if( exceptionText != null )
-				{
-					Color origColor = g.getColor();
-					g.setColor(labelColor);
-					GraphicsUtils.drawCenteredString(exceptionText, g, x+mapWidth/2, y+mapHeight/2);
-					g.setColor(origColor);			
 				}
 			}
 			

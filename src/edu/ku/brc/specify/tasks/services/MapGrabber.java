@@ -266,7 +266,7 @@ public class MapGrabber
 		
 		StringBuilder url = new StringBuilder("http://");
 		url.append(host);
-		url.append("/cgi-bin/ogc.cgi/bmortho?version=1.1.1&service=WMS&Request=GetMap&format=image/png&transparent=true&styles=&srs=epsg:4326&layers=");
+		url.append("/cgi-bin/ogc.cgi/bmortho?version=1.1.1&service=WMS&Request=GetMap&format=image/gif&styles=default&srs=epsg:4326&layers=");
 		url.append(layers);
 		
 		// set bounding box
