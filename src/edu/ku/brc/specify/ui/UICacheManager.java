@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.exceptions.UIException;
 import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
+import edu.ku.brc.util.FileCache;
 
 /**
  * This class manages all things UI. It is the central clearing house for UI components.
@@ -61,6 +62,8 @@ public class UICacheManager
     public static final String MAINPANE  = "mainpane";
     public static final String RECENTFRAME  = "recentframe";
 
+    public static final String LONGTERM_CACHE_MAP = "sp6-cache-map.xml";
+
     private static final Log            log      = LogFactory.getLog(UICacheManager.class);
     private static final UICacheManager instance = new UICacheManager();
 
@@ -75,6 +78,9 @@ public class UICacheManager
     protected SubPaneMgr     subPaneMgr     = null;
     protected Class          rootPrefClass   = null;
 
+    protected FileCache longTermCache = null;
+    protected FileCache shortTermCache = null;
+    
     /**
      * Default private constructor for singleton
      *
@@ -425,4 +431,40 @@ public class UICacheManager
         return Preferences.userNodeForPackage(getRootPrefClass());
     }
 
+
+    //----------------------------------------------------------------------------------
+    // File Cache Section
+    //----------------------------------------------------------------------------------
+
+    /**
+	 * @return Returns the longTermCache.
+	 */
+	public static FileCache getLongTermFileCache()
+	{
+		return instance.longTermCache;
+	}
+
+	/**
+	 * @param longTermCache The longTermCache to set.
+	 */
+	public static void setLongTermFileCache(FileCache longTermCache)
+	{
+		instance.longTermCache = longTermCache;
+	}
+
+	/**
+	 * @return Returns the shortTermCache.
+	 */
+	public static FileCache getShortTermFileCache()
+	{
+		return instance.shortTermCache;
+	}
+
+	/**
+	 * @param shortTermCache The shortTermCache to set.
+	 */
+	public static void setShortTermFileCache(FileCache shortTermCache)
+	{
+		instance.shortTermCache = shortTermCache;
+	}
 }

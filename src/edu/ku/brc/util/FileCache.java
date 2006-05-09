@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.Properties;
+import java.util.UUID;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
@@ -16,42 +17,88 @@ import org.apache.commons.logging.LogFactory;
 public class FileCache
 {
 	private static Log log = LogFactory.getLog(FileCache.class);
-	
-	private static String cacheMappingFilename = "sp6-cache-mapping.xml";
 	private static String mappingFileComment = "edu.ku.brc.util.FileCache Name Mapping File";
-	
 	private static String defaultPrefix = "sp6-";
 	private static String defaultSuffix = ".cache";
 	
 	protected HttpClient httpClient;
 	protected File cacheDir;
+	protected String mappingFilename;
 	protected String prefix;
 	protected String suffix;
-	
 	protected Properties handleToFilenameHash;
 	
 	public FileCache() throws IOException
 	{
-		this(System.getProperty("java.io.tmpdir"));
+		init(System.getProperty("java.io.tmpdir"));
 	}
 	
-	public FileCache( String dir ) throws IOException
+	public FileCache(String mappingFilename) throws IOException
+	{
+		this.mappingFilename = mappingFilename;
+		init(System.getProperty("java.io.tmpdir"));
+	}
+	
+	public FileCache(String dir, String mappingFilename) throws IOException
+	{
+		init(dir);
+		this.mappingFilename = mappingFilename;
+	}
+	
+	protected void init( String dir ) throws IOException
 	{
 		cacheDir = new File(dir);
 		if( !cacheDir.exists() )
 		{
 			throw new IOException("Requested cache directory must already exist");
 		}
-		
 		log.info("Creating FileCache using " + dir + " directory");
-		
-		init();
+
+		handleToFilenameHash = new Properties();
+		if( mappingFilename != null )
+		{
+			loadCacheMappingFile();
+		}
+		httpClient = new HttpClient();
+		prefix = defaultPrefix;
+		suffix = defaultSuffix;
 	}
 	
-	protected void init() throws IOException
+	/**
+	 * @return Returns the prefix.
+	 */
+	public String getPrefix()
 	{
-		handleToFilenameHash = new Properties();
-		File mappingFile = new File(cacheDir,cacheMappingFilename);
+		return prefix;
+	}
+
+	/**
+	 * @param prefix The prefix to set.
+	 */
+	public void setPrefix(String prefix)
+	{
+		this.prefix = prefix;
+	}
+
+	/**
+	 * @return Returns the suffix.
+	 */
+	public String getSuffix()
+	{
+		return suffix;
+	}
+
+	/**
+	 * @param suffix The suffix to set.
+	 */
+	public void setSuffix(String suffix)
+	{
+		this.suffix = suffix;
+	}
+
+	protected void loadCacheMappingFile() throws IOException
+	{
+		File mappingFile = new File(cacheDir,mappingFilename);
 		if( mappingFile.exists() )
 		{
 			try
@@ -66,14 +113,16 @@ public class FileCache
 				throw e;
 			}
 		}
-		httpClient = new HttpClient();
-		prefix = defaultPrefix;
-		suffix = defaultSuffix;
 	}
 
 	public void saveCacheMapping() throws IOException
 	{
-		File mappingFile = new File(cacheDir,cacheMappingFilename);
+		if( mappingFilename == null )
+		{
+			throw new RuntimeException("Cache map filename must be set before calling saveCacheMapping()");
+		}
+
+		File mappingFile = new File(cacheDir,mappingFilename);
 		try
 		{
 			handleToFilenameHash.storeToXML(new FileOutputStream(mappingFile), mappingFileComment);
@@ -85,27 +134,39 @@ public class FileCache
 		}
 	}
 
-	synchronized protected File getCacheFile() throws IOException
+	synchronized protected File createCacheFile() throws IOException
 	{
 		return File.createTempFile(prefix, suffix, cacheDir);
 	}
 	
 	public String cacheData( byte[] data ) throws IOException
 	{
-		File f = getCacheFile();
+		String key = UUID.randomUUID().toString();
+		cacheData(key, data);
+		return key;
+	}
+	
+	public void cacheData( String key, byte[] data ) throws IOException
+	{
+		File f = createCacheFile();
 		FileOutputStream fos = new FileOutputStream(f);
 		fos.write(data);
 		fos.flush();
 		fos.close();
-		handleToFilenameHash.setProperty(f.getName(), f.getAbsolutePath());
+		handleToFilenameHash.setProperty(key, f.getAbsolutePath());
+	}
+	
+	public String cacheFile( File f ) throws IOException
+	{
+		cacheFile(f.getName(),f);
 		return f.getName();
 	}
 	
-	public File cacheFile( File f ) throws IOException
+	public void cacheFile( String key, File f ) throws IOException
 	{
-		File cachedFile = getCacheFile();
+		File cachedFile = createCacheFile();
 		copyFile(f,cachedFile);
-		return f;
+		handleToFilenameHash.setProperty(key, cachedFile.getAbsolutePath());
 	}
 	
 	protected void copyFile( File src, File dest ) throws IOException
@@ -122,6 +183,12 @@ public class FileCache
 	
 	public String cacheWebResource( String url ) throws HttpException, IOException
 	{
+		cacheWebResource(url, url);
+		return url;
+	}
+	
+	public void cacheWebResource( String key, String url ) throws HttpException, IOException
+	{
 		GetMethod get = new GetMethod(url);
 		get.setFollowRedirects(true);
 		int result = httpClient.executeMethod(get);
@@ -133,15 +200,13 @@ public class FileCache
 		
 		byte[] response = get.getResponseBody();
 		
-		File f = getCacheFile();
+		File f = createCacheFile();
 		FileOutputStream fos = new FileOutputStream(f);
 		fos.write(response);
 		fos.flush();
 		fos.close();
 
-		handleToFilenameHash.setProperty(url, f.getAbsolutePath());
-		
-		return url;
+		handleToFilenameHash.setProperty(key, f.getAbsolutePath());
 	}
 	
 	public void refreshCachedWebResource( String key ) throws HttpException, IOException
@@ -159,7 +224,66 @@ public class FileCache
 		
 		else
 		{
-			return new File(filename);
+			File f = new File(filename);
+			if( f.exists() )
+			{
+				return f;
+			}
+			else
+			{
+				// the resource was previously cached, but the cache file is missing
+				// cleanup the cache mapping
+				log.info("Previously cached file '"+filename+"' is missing.  Cleaning up cache map data.");
+				handleToFilenameHash.remove(key);
+				return null;
+			}
 		}
+	}
+
+	public static void main(String[] args) throws IOException
+	{
+		FileCache fc = new FileCache("sp6-cache-map.xml");
+
+		// a little File caching test
+		File fileFile = fc.getCacheFile("kmloutput.kml");
+		if( fileFile == null )
+		{
+			log.info("Cached file not found.");
+			String fileKey = fc.cacheFile(new File("C:\\Documents and Settings\\jstewart\\Desktop\\kmloutput.kml"));
+			log.info("Cached kmloutput.kml under key value " + fileKey);
+		}
+		else
+		{
+			log.info("Found cached file under " + fileFile.getAbsolutePath());
+		}
+
+		// a little web resource caching test
+		File urlFile = fc.getCacheFile("http://www.google.com/");
+		if( urlFile == null )
+		{
+			log.info("Cached web resource not found.");
+			String urlKey = fc.cacheWebResource("http://www.google.com/");
+			log.info("Cached http://www.google.com/ under key value " + urlKey);
+		}
+		else
+		{
+			log.info("Found cached web resource under " + urlFile.getAbsolutePath());			
+		}
+
+		// a little data caching test
+		File dataFile = fc.getCacheFile("31a55ff8-763b-4ee6-92e8-485c29f8a937");
+		if( dataFile == null )
+		{
+			log.info("Cached data not found.");
+			String testData = "This data was generated for testing purposes only.  Feel free to delete at any time.";
+			String dataKey = fc.cacheData(testData.getBytes());
+			log.info("Cached data bytes under key value " + dataKey);
+		}
+		else
+		{
+			log.info("Found cached data under " + dataFile.getAbsolutePath());
+		}
+		
+		fc.saveCacheMapping();
 	}
 }
