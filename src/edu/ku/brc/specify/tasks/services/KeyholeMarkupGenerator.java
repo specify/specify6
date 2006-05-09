@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
@@ -32,6 +33,8 @@ public class KeyholeMarkupGenerator
 	protected List<CollectingEvent> events;
 	protected List<String> labels;
 	
+	protected Hashtable<String,String> speciesToImageURLHash;
+	
 	public KeyholeMarkupGenerator()
 	{
 		events = new Vector<CollectingEvent>();
@@ -42,6 +45,11 @@ public class KeyholeMarkupGenerator
 	{
 		events.add(ce);
 		labels.add(label);
+	}
+	
+	public void setSpeciesToImageMapper( Hashtable<String,String> mapper )
+	{
+		this.speciesToImageURLHash = mapper;
 	}
 	
 	public void outputToFile( String filename ) throws IOException
@@ -150,35 +158,49 @@ public class KeyholeMarkupGenerator
 			sb.append("</li>\n");
 		}
 		sb.append("</ul>\n");
-		sb.append("<br/><h3>Collection objects:</h3>\n<ul>\n");
+		sb.append("<br/><h3>Collection objects:</h3>\n<table>\n");
 		for( Pair<String,String> tax: genusSpecies )
 		{
-			sb.append("<li>");
+			sb.append("<tr>");
 
 			// simple name text
-			sb.append("<i>");
-			sb.append(tax.second);
-			sb.append(" ");
-			sb.append(tax.first);
-			sb.append("</i>");
-
-			sb.append("    <a href=\"http://www.fishbase.org/Summary/speciesSummary.php?genusname=");
+			String taxonomicName = tax.second + " " + tax.first;
+			sb.append("<td><i>");
+			sb.append(taxonomicName);
+			sb.append("</i></td>");
+			
+			sb.append("<td><a href=\"http://www.fishbase.org/Summary/speciesSummary.php?genusname=");
 			sb.append(tax.first);
 			sb.append("&speciesname=");
 			sb.append(tax.second);
 			sb.append("\">");
-			sb.append("fb</a>");
+			sb.append("fb</a></td>");
 
-			sb.append("    <a href=\"http://animaldiversity.ummz.umich.edu/site/accounts/information/");
+			sb.append("<td><a href=\"http://animaldiversity.ummz.umich.edu/site/accounts/information/");
 			sb.append(tax.first);
 			sb.append("_");
 			sb.append(tax.second);
 			sb.append("\">");
-			sb.append("ad</a>");
+			sb.append("ad</a></td>");
+			
+			if( speciesToImageURLHash != null )
+			{
+				String imgSrc = speciesToImageURLHash.get(taxonomicName);
+				if( imgSrc != null )
+				{
+					sb.append("<td><img src=\"");
+					sb.append(imgSrc);
+					sb.append("\"/></td>");
+				}
+				else
+				{
+					sb.append("<td>&nbsp;</td>");
+				}
+			}
 
-			sb.append("</li>\n");
+			sb.append("</tr>\n");
 		}
-		sb.append("]]></description>\n");
+		sb.append("</table>]]></description>\n");
 		sb.append("<LookAt>\n");
 		sb.append("<latitude>");
 		sb.append(lat);
@@ -218,6 +240,9 @@ public class KeyholeMarkupGenerator
 			kmlGen.addCollectingEvent(ce, Integer.toString(i));
 		}
 		
+		Hashtable<String,String> testMap = new Hashtable<String, String>();
+		testMap.put("girardi Notropis", "http://www.google.com/intl/en/images/logo.gif");
+		kmlGen.setSpeciesToImageMapper(testMap);
 		
 //		double[] locationArray = {
 //				39.0657, -95.4181,
