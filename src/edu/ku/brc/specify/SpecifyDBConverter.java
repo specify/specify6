@@ -156,11 +156,11 @@ public class SpecifyDBConverter
      */
     public static void main(String args[]) throws Exception
     {
-        String oldDatabaseName = "demo_fish2";
+        String oldDatabaseName = "demo_fish5";
         
         DBConnection.setUsernamePassword("rods", "rods");
         DBConnection.setDriver("com.mysql.jdbc.Driver");
-        DBConnection.setDBName("jdbc:mysql://localhost/fish");
+        DBConnection.setDBName("jdbc:mysql://localhost/cranbrook");
         
         IdMapperMgr idMapperMgr = null;
         try
@@ -227,7 +227,7 @@ public class SpecifyDBConverter
                 boolean copyUSYSTables = false;
                 if (copyUSYSTables || doAll)
                 {
-                    conversion.convertUSYSTables();
+                    //conversion.convertUSYSTables();
                 }
 
                 boolean copyTables = false;

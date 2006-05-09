@@ -182,11 +182,11 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
                 for (int i=0;i<data.size();i++)
                 {
                     String desc     = data.get(i++).toString();
-                    String val      = data.get(i++).toString();
+                    Object val      = data.get(i++);
                     Object colIdObj = data.get(i);
                     String colId    = colIdObj != null ? colIdObj.toString() : null;
                     StatDataItem statItem = new StatDataItem(desc, linkStr == null || colId == null ? null : (linkStr+",id="+colId), false);
-                    statItem.setValStr(val);
+                    statItem.setValue(val);
                     model.addDataItem(statItem);
                 }
                 data.clear();

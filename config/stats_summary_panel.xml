@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <panel>
- <!--
+
   <row>
       <box title="Specimen">
         <item title="Number of Specimens">
@@ -162,7 +162,7 @@
 		<sql><![CDATA[select TypeStatusName, count(determinationid) AS DeterminationCount from determination where TypeStatusName is not null group by TypeStatusName]]></sql>
     </box>
   </row>
-  -->
+
   <!--
   <row>
       <box title="Taxa Type Counts" desccol="1" valcol="2">

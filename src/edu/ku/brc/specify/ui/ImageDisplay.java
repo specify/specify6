@@ -89,7 +89,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
      */
     protected void createUI()
     {
-        PanelBuilder    builder = new PanelBuilder(new FormLayout("f:p:g,2px,p", "p"));
+        PanelBuilder    builder = new PanelBuilder(new FormLayout("f:p:g" + (isEditMode ? ",2px,p" : ""), "p"));
         CellConstraints cc      = new CellConstraints();
 
 
@@ -192,18 +192,6 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
             }
             getter = new ImageGetter(url);
             getter.start();
-
-            /*if (url.indexOf("http") != -1)
-            {
-
-            } else
-            {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        simpleLoad();
-                    }
-                });
-            }*/
 
         } else
         {

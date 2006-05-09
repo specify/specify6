@@ -42,27 +42,27 @@ public class PercentageGrowthCustomQuery implements CustomQuery
     {
         Vector<QueryResultsContainer> list = new Vector<QueryResultsContainer>();
         QueryResultsContainer ndbrc = new QueryResultsContainer("select count(*) from collectionobject where TimestampCreated < '2001-01-01' and TimestampCreated > '1999-12-31'; ");
-        ndbrc.add(new QueryResultsDataObj("2000"));
-        ndbrc.add(new QueryResultsDataObj(1, 1));
-        list.addElement(ndbrc);
-        
-        ndbrc = new QueryResultsContainer("select count(*) from collectionobject where TimestampCreated < '2002-01-01' and TimestampCreated > '2000-12-31'; ");
-        ndbrc.add(new QueryResultsDataObj("2001"));
-        ndbrc.add(new QueryResultsDataObj(1, 1));
-        list.addElement(ndbrc);
-        
-        ndbrc = new QueryResultsContainer("select count(*) from collectionobject where TimestampCreated < '2003-01-01' and TimestampCreated > '2001-12-31'; ");
         ndbrc.add(new QueryResultsDataObj("2002"));
         ndbrc.add(new QueryResultsDataObj(1, 1));
         list.addElement(ndbrc);
         
-        ndbrc = new QueryResultsContainer("select count(*) from collectionobject where TimestampCreated < '2004-01-01' and TimestampCreated > '2002-12-31'; ");
+        ndbrc = new QueryResultsContainer("select count(*) from collectionobject where TimestampCreated < '2002-01-01' and TimestampCreated > '2000-12-31'; ");
         ndbrc.add(new QueryResultsDataObj("2003"));
         ndbrc.add(new QueryResultsDataObj(1, 1));
         list.addElement(ndbrc);
         
-        ndbrc = new QueryResultsContainer("select count(*) from collectionobject where TimestampCreated < '2005-01-01' and TimestampCreated > '2003-12-31'; ");
+        ndbrc = new QueryResultsContainer("select count(*) from collectionobject where TimestampCreated < '2003-01-01' and TimestampCreated > '2001-12-31'; ");
         ndbrc.add(new QueryResultsDataObj("2004"));
+        ndbrc.add(new QueryResultsDataObj(1, 1));
+        list.addElement(ndbrc);
+        
+        ndbrc = new QueryResultsContainer("select count(*) from collectionobject where TimestampCreated < '2004-01-01' and TimestampCreated > '2002-12-31'; ");
+        ndbrc.add(new QueryResultsDataObj("2005"));
+        ndbrc.add(new QueryResultsDataObj(1, 1));
+        list.addElement(ndbrc);
+        
+        ndbrc = new QueryResultsContainer("select count(*) from collectionobject where TimestampCreated < '2005-01-01' and TimestampCreated > '2003-12-31'; ");
+        ndbrc.add(new QueryResultsDataObj("2006"));
         ndbrc.add(new QueryResultsDataObj(1, 1));
         list.addElement(ndbrc);
         

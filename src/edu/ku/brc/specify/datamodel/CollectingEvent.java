@@ -11,7 +11,7 @@ import java.util.Set;
 /**
 
  */
-public class CollectingEvent  implements java.io.Serializable {
+public class CollectingEvent  implements java.io.Serializable, Comparable<CollectingEvent> {
 
     // Fields    
 
@@ -410,4 +410,22 @@ public class CollectingEvent  implements java.io.Serializable {
     }
 
     // Delete Add Methods
+    
+    public int compareTo(CollectingEvent obj)
+    {
+        if (obj == null)
+        {
+            return 0;
+        }
+        
+        Calendar startDateObj = obj.getStartDate();
+        Date     date1        = startDate != null ? startDate.getTime() : null;
+        Date     date2        = startDateObj != null ? startDateObj.getTime() : null;
+        if (startDate == null || startDateObj == null)
+        {
+            return 0;
+        }
+        
+        return date1.compareTo(date2);
+    }
 }

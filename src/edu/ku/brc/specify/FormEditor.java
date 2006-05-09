@@ -47,6 +47,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -67,6 +68,7 @@ import javax.swing.UIManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Element;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -103,6 +105,7 @@ import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.EMailHelper;
 import edu.ku.brc.specify.helpers.UIHelper;
+import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.prefs.PrefMainPanel;
 import edu.ku.brc.specify.tests.CreateTestDatabases;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
@@ -331,7 +334,8 @@ public class FormEditor
      */
     protected Viewable createView(View view)
     {
-        multiView   = new MultiView(null, view, AltView.CreationMode.Edit, true, true);
+        multiView   = new MultiView(null, view, AltView.CreationMode.View, false, false);
+        //multiView   = new MultiView(null, view, AltView.CreationMode.Edit, true, true);
         contentPane.removeAll();
         builder.add(multiView, cc.xy(1,1));
 
@@ -431,6 +435,21 @@ public class FormEditor
                     dataObj = list;
                 }
                 multiView.setData(dataObj);
+            }
+
+
+            if (currViewSetName.equals("Main Views") && currViewName.equals("FishBase"))
+            {
+                try
+                {
+                    Element dom = XMLHelper.readFileToDOM4J(new File("/tmp/Pimephales_notatus_Summary.xml"));
+                    dataObj = dom;
+                    multiView.setData(dataObj);
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
             }
 
 
@@ -637,6 +656,9 @@ public class FormEditor
 
         //currViewName      = "Collection Object";
         currViewName      = "Accession";
+        currViewSetName =   "Main Views";
+
+        currViewName      = "FishBase";
         currViewSetName =   "Main Views";
 
 

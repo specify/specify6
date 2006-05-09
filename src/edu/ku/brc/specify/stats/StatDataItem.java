@@ -51,7 +51,7 @@ public class StatDataItem implements QueryResultsListener
     protected StatGroupTableModel model       = null;
     
     // The Data 
-    protected String valStr  = "...";
+    protected Object value  = "...";
     
     protected boolean hasStarted  = false;
     protected boolean hasData     = false;
@@ -208,14 +208,25 @@ public class StatDataItem implements QueryResultsListener
         return description;
     }
 
-    public String getValStr()
+    /*public String getValStr()
     {
-        return valStr;
+        return value != null ? value.toString() : "";
     }
-
+    
     public void setValStr(String valStr)
     {
-        this.valStr = valStr;
+        this.value = valStr;
+    }*/
+
+
+    public Object getValue()
+    {
+        return value;
+    }
+
+    public void setValue(Object valStr)
+    {
+        this.value = valStr;
     }
 
     public boolean isUseProgress()
@@ -257,7 +268,7 @@ public class StatDataItem implements QueryResultsListener
 
                 } else if (valType == VALUE_TYPE.Value)
                 {
-                    valStr = dataObj.toString();
+                    value = dataObj;
 
                 } else if (valType == VALUE_TYPE.Ignore)
                 {
@@ -277,7 +288,7 @@ public class StatDataItem implements QueryResultsListener
      */
     public void resultsInError(final QueryResultsContainer qrc)
     {
-        valStr = "N/A"; // XXX I18N
+        value = "N/A"; // XXX I18N
         model.fireNewData();
         hasData = true;
     }

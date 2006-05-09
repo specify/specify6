@@ -2,7 +2,7 @@
 <viewset name="Main Views" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <views>
-        <view name="Collection Object"
+        <view name="CollectionObject"
               class="edu.ku.brc.specify.datamodel.CollectionObject"
               resourcelabels="false"
             >
@@ -103,6 +103,16 @@
                 <altview name="LocalityMapper View" viewdef="LocalityMapper" label="View" mode="view" validated="false" default="true"/>
            </altviews>
         </view>
+        
+        <view name="FishBase"
+            class="org.dom4j.Element"
+            resourcelabels="false">
+            <desc><![CDATA[FishBase]]></desc>
+            <altviews>
+                <altview name="FishBase" viewdef="FishBase" label="View" mode="view" validated="false" default="true"/>
+            </altviews>
+        </view>
+        
     </views>
     
     <viewdefs>
@@ -131,8 +141,8 @@
     				<cell type="field" uitype="text" name="catalogSeries.seriesName"/>
     			</row>
     			<row>
-                 <cell type="label" labelfor="accession" label="Accession #"/>
-    				<cell type="field" name="accession" uitype="formattedtext" uifieldformatter="AccessionNumber"/>
+                 <cell type="label" labelfor="accession.number" label="Accession #"/>
+    			    <cell type="field" name="accession.number"  uitype="formattedtext" uifieldformatter="AccessionNumber"/>
 
                  <cell type="label" labelfor="cataloger" label="Cataloger"/>
     				<cell type="field" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent" isrequired="true"/>
@@ -186,7 +196,7 @@
     	    gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
     	    settable="edu.ku.brc.specify.ui.forms.DataSetterForObj">
 
-    	    <desc><![CDATA[Determination subform for Collcetion Object form.]]></desc>
+    	    <desc><![CDATA[Determination subform for Collection Object form.]]></desc>
     	    <enableRules/>
 
     		<columnDef>100px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
@@ -194,8 +204,8 @@
 
     		<rows>
     			<row>
-                    <cell type="label" labelfor="taxon.name" label="Taxon"/>
-    				<cell type="field" name="taxon.name" label="Taxon" colspan="5"/>
+                    <cell type="label" labelfor="taxon" label="Taxon"/>
+    			    <cell type="field" name="taxon" uitype="plugin" initialize="class=edu.ku.brc.specify.plugins.FishBase;name=Taxon;title=Taxon" colspan="5"/>
 
                     <cell type="label" labelfor="isCurrent" label=""/>
     				<cell type="field" name="isCurrent" uitype="checkbox" label="Is Current"/>
@@ -590,13 +600,13 @@
             gettable="edu.ku.brc.specify.ui.forms.DataGetterForHashMap"
             settable="edu.ku.brc.specify.ui.forms.DataSetterForHashMap">
             
-            <desc><![CDATA[LocalityMapper]]></desc>
-            <columnDef>p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <desc><![CDATA[Locality Mapper]]></desc>
+            <columnDef>p,3dlu,p,3dlu</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
                 <row>
-                    <cell type="separator" label="Collecting Event Information" colspan="11"/>
+                    <cell type="separator" label="Collecting Event Information" colspan="4"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="startDate" label="Start Date"/>
@@ -621,6 +631,98 @@
                 <row>
                     <cell type="label" labelfor="image" label="Image"/>
                     <cell type="field" name="image" uitype="image"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="FishBase"
+            class="org.dom4j.Element"
+            gettable="edu.ku.brc.specify.ui.forms.DataGetterForDOM">
+            
+            <desc><![CDATA[FishBase]]></desc>
+            <columnDef>p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="/fishbase/species/author" label="Author"/>
+                    <cell type="field" name="/fishbase/species/author"/>
+                    
+                    <cell type="label" labelfor="/fishbase/species/commonname" label="Common Name"/>
+                    <cell type="field" name="/fishbase/species/commonname" label="Common Name"/>
+                    
+                    <cell type="label" labelfor="/fishbase/species/picname#src" label="Image"/>                    
+                    <cell type="field" uitype="image" name="/fishbase/species/picname#src" rowspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="/fishbase/species/fbname" label="FB Name"/>
+                    <cell type="field" uitype="text" name="/fishbase/species/fbname" label="FB Name"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="/fishbase/species/speciesfb" label="Species"/>
+                    <cell type="field" name="/fishbase/species/speciesfb" label="Species"/>
+                    
+                    <cell type="label" labelfor="/fishbase/species/speciesfb#link" label=""/>
+                    <cell type="field" uitype="url" name="/fishbase/species/speciesfb#link" initialize="title=Show Species"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="/fishbase/species/genus" label="Genus"/>
+                    <cell type="field" name="/fishbase/species/genus"/>
+                    
+                    <cell type="label" labelfor="" label=""/>
+                    <cell type="field" uitype="url" name="/fishbase/species/genus#link" initialize="title=Show Genus"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="/fishbase/species/family" label="Family"/>
+                    <cell type="field" name="/fishbase/species/family" label="Family"/>
+                    
+                    <cell type="label" labelfor="/fishbase/species/family#link" label=""/>
+                    <cell type="field" uitype="url" name="/fishbase/species/family#link" initialize="title=Show Family"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="/fishbase/species/class" label="Class"/>
+                    <cell type="field" name="/fishbase/species/class"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="/fishbase/species/distribution" label="Distribution"/>
+                    <cell type="field" name="/fishbase/species/distribution" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="/fishbase/species/biology" label="Biology"/>
+                    <cell type="field" name="/fishbase/species/biology" label="Biology" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="/fishbase/species/climate" label="Climate"/>
+                    <cell type="field" name="/fishbase/species/climate" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="/fishbase/species/maxsize" label="Maxsize"/>
+                    <cell type="field" name="/fishbase/species/maxsize" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="/fishbase/species/environment" label="Environment"/>
+                    <cell type="field" name="/fishbase/species/environment" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="/fishbase/species/importance" label="Importance"/>
+                    <cell type="field" name="/fishbase/species/importance" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="/fishbase/species/threatened" label="Threatened"/>
+                    <cell type="field" name="/fishbase/species/threatened" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="/fishbase/species/dangerous" label="Dangerous"/>
+                    <cell type="field" name="/fishbase/species/dangerous" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="/fishbase/species/mainref" label="Main Ref"/>
+                    <cell type="field" name="/fishbase/species/mainref" colspan="10"/>
+                </row>
+                <row>
+                     <cell type="field" name="progress" uitype="progress" colspan="10"/>
                 </row>
             </rows>
         </viewdef>

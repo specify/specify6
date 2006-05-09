@@ -162,11 +162,15 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
         Preferences prefNode = appsNode.node("ui/formatting");
         prefNode.addPreferenceChangeListener(this);
 
-        mainBuilder    = new PanelBuilder(new FormLayout("f:p:g", mvParent == null ? "p,2px,p": "p:g,2px,p"));
+        boolean addController = mvParent != null && view.getAltViews().size() > 1;
+        
+        String rowDefs = (mvParent == null ? "p" : "p:g") + (addController ? ",2px,p" : "");
+
+        mainBuilder    = new PanelBuilder(new FormLayout("f:p:g", rowDefs));
         mainComp = mainBuilder.getPanel();
 
         // We will add the switchable UI if we are mvParented to a MultiView and have multiple AltViews
-        if (mvParent != null && view.getAltViews().size() > 1)
+        if (addController)
         {
             controlPanel = new ControlBarPanel();
             mainBuilder.add(controlPanel, cc.xy(1,3));
@@ -1485,7 +1489,7 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
 
         public void setEnabled(boolean enabled)
         {
-            log.info(formCell.getName()+"  "+(scrollPane != null ? "has Pane" : "no pane"));
+            //log.info(formCell.getName()+"  "+(scrollPane != null ? "has Pane" : "no pane"));
             comp.setEnabled(enabled);
             if (scrollPane != null)
             {

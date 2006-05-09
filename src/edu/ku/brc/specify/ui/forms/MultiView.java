@@ -96,9 +96,9 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         setLayout(cardLayout);
 
-        this.mvParent       = mvParent;
-        this.view           = view;
-        this.createWithMode = createWithMode;
+        this.mvParent                  = mvParent;
+        this.view                      = view;
+        this.createWithMode            = createWithMode;
         this.createRecordSetController = createRecordSetController;
         this.createViewSwitcher        = createViewSwitcher;
 

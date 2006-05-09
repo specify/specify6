@@ -51,6 +51,7 @@ public class FishBaseInfoGetter extends HTTPGetter
     protected String    genus;
     protected String    species;
     protected Image     image    = null;
+    protected String    imageURL = null;
 
     protected String    tmpDir   = null;
     protected Element   dom      = null;
@@ -80,17 +81,25 @@ public class FishBaseInfoGetter extends HTTPGetter
         return image;
     }
 
-    public void setConsumer(FishBaseInfoGetterListener consumer) {
+    public void setConsumer(FishBaseInfoGetterListener consumer) 
+    {
 		this.consumer = consumer;
 	}
 
-	/**
+	public String getImageURL()
+    {
+        return imageURL;
+    }
+
+    /**
      * Performs a "generic" HTTP request and fill member variable with results use
      * "getDigirResultsetStr" to get the results as a String
      *
      */
     public Image getImage(final String fileName, final String url)
     {
+        imageURL = url;
+        
         String fullPath = tmpDir + File.separator + fileName;
         System.out.println(fullPath);
         File file = new File(fullPath);
@@ -98,6 +107,8 @@ public class FishBaseInfoGetter extends HTTPGetter
         {
             try
             {
+                imageURL = file.toURI().toASCIIString();
+                
                 ImageIcon image = new ImageIcon(fullPath);
                 return image.getImage();
 
@@ -155,6 +166,8 @@ public class FishBaseInfoGetter extends HTTPGetter
 
         } else
         {
+            //System.out.println("http://www.fishbase.org.ph/webservice/Species/SpeciesSummary.asp?Genus=Etheostoma&Species=ramseyi");
+            System.out.println(url);
             byte[] bytes = super.doHTTPRequest(url);
 
             data = new String(bytes);
@@ -162,24 +175,31 @@ public class FishBaseInfoGetter extends HTTPGetter
             if (inx > -1)
             {
                 data = data.substring(inx, data.length());
-            }
-            System.out.println(data);
-            try
-            {
-                Writer output = new BufferedWriter(new FileWriter(file));
-                output.write(data);
-                output.flush();
-                output.close();
+                
+                System.out.println(data);
+                try
+                {
+                    Writer output = new BufferedWriter(new FileWriter(file));
+                    output.write(data);
+                    output.flush();
+                    output.close();
 
-                // Is is cheating and slow, but I will do it for now
-                // XXX FIXME!
-                dom = XMLHelper.readFileToDOM4J(file);
+                    // Is is cheating and slow, but I will do it for now
+                    // XXX FIXME!
+                    dom = XMLHelper.readFileToDOM4J(file);
 
-            } catch (Exception ex)
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    status = ErrorCode.Error;
+                }                
+                
+            } else
             {
-                ex.printStackTrace();
                 status = ErrorCode.Error;
+                data = null; 
             }
+
         }
     }
 
@@ -187,7 +207,7 @@ public class FishBaseInfoGetter extends HTTPGetter
     {
         if (type == InfoType.Summary)
         {
-            urlStr = "http://www.fishbase.org.ph/webservice/SpeciesSummary/SpeciesSummary.asp?Genus="+genus+"&Species="+species;
+            urlStr = "http://www.fishbase.org.ph/webservice/Species/SpeciesSummary.asp?Genus="+genus+"&Species="+species;
             getDOMDoc(urlStr, type);
 
         } else if (type == InfoType.Thumbnail || type == InfoType.Image)
@@ -231,17 +251,18 @@ public class FishBaseInfoGetter extends HTTPGetter
                     }
                 }
 
-                if (consumer != null)
-                {
-                    if (status == ErrorCode.NoError)
-                    {
-                        consumer.infoArrived(this);
+            }
+        }
 
-                    } else
-                    {
-                        consumer.infoGetWasInError(this);
-                    }
-                }
+        if (consumer != null)
+        {
+            if (status == ErrorCode.NoError)
+            {
+                consumer.infoArrived(this);
+
+            } else
+            {
+                consumer.infoGetWasInError(this);
             }
         }
         stop();

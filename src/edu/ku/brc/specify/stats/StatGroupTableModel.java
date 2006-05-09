@@ -113,7 +113,14 @@ public class StatGroupTableModel extends AbstractTableModel
     @SuppressWarnings("unchecked")
     public Class getColumnClass(int column)
     {
-        return (Class)String.class;
+        
+        Object val = null;
+        if (column == 1 && data.size() > 0)
+        {
+            StatDataItem sdi = data.get(0);
+            val = sdi.getValue();
+        }
+        return column == 0 ? String.class : (val == null ? String.class : val.getClass());
     }
 
 
@@ -134,7 +141,7 @@ public class StatGroupTableModel extends AbstractTableModel
         if (row < data.size() && column < 2)
         {
             StatDataItem sdi = data.get(row);
-            return column == 0 ? sdi.getDescription() : sdi.getValStr();
+            return column == 0 ? sdi.getDescription() : sdi.getValue();
 
             //return data.get(row);
         }

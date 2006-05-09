@@ -133,6 +133,8 @@ public class FormPane extends DroppableTaskPane
         View view = ViewMgr.getView(viewSetName, viewName);
         if (view != null)
         {
+            name = view.getName(); // names the Tab
+            
             boolean isList = data != null && (data instanceof List || data instanceof Set);
             multiView = new MultiView(null, view, mode, isList, true);
             //viewable = multiView.get

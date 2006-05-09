@@ -352,7 +352,16 @@ public abstract class ExpressTableResultsBase extends JPanel
         {
         	log.debug("["+v+"]");
         }
+        if (returnAll)
+        {
+            table.selectAll();
+        }
         RecordSet rs = getRecordSet(table.getSelectedRows(), tableInfo.getRecordSetColumnInx(), returnAll);
+        if (returnAll)
+        {
+            table.clearSelection();
+        }
+
         rs.setTableId(Integer.parseInt(tableInfo.getTableId()));
         return rs;
     }

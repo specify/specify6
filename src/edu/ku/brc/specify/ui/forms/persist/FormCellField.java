@@ -22,6 +22,7 @@ package edu.ku.brc.specify.ui.forms.persist;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * This represents all the information about a cell in the form.
@@ -311,6 +312,11 @@ public class FormCellField extends FormCell
     public void setUiFieldFormatter(String uiFieldFormatter)
     {
         this.uiFieldFormatter = uiFieldFormatter;
+    }
+
+    public Map<String, String> getProperties()
+    {
+        return properties;
     }
 
 

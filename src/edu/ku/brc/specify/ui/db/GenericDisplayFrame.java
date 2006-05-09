@@ -151,6 +151,16 @@ public class GenericDisplayFrame extends JFrame implements ActionListener
         pack();
     }
     
+    
+    
+    /**
+     * @return the multiview
+     */
+    public MultiView getMultiView()
+    {
+        return multiView;
+    }
+
     /**
      * Set a listener to know when the dialog is closed
      * @param propertyChangeListener the listener

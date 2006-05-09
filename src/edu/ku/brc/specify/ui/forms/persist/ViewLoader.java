@@ -523,6 +523,24 @@ public class ViewLoader
                             } else if (uitype.equals("image"))
                             {
                                 dspUIType = getAttr(cellElement, "dspuitype", "image");
+                                
+                            } else if (uitype.equals("url"))
+                            {
+                                dspUIType = getAttr(cellElement, "dspuitype", uitype);
+                                properties = processInitializeString(initialize);
+
+                            } else if (uitype.equals("progress"))
+                            {
+                                dspUIType = getAttr(cellElement, "dspuitype", uitype);
+                                
+                            } else if (uitype.equals("button"))
+                            {
+                                dspUIType = getAttr(cellElement, "dspuitype", uitype);
+                                
+                            } else if (uitype.equals("plugin"))
+                            {
+                                dspUIType = getAttr(cellElement, "dspuitype", uitype);
+                                properties = processInitializeString(initialize);
 
                             } else
                             {

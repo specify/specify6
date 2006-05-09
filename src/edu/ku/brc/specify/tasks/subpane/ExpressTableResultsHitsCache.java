@@ -259,6 +259,8 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
 
             Set<RecordSetItem> items = new HashSet<RecordSetItem>();
             rs.setItems(items);
+            
+            int colAdjusted = column - 1;
 
             try
             {
@@ -273,13 +275,15 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
                     {
                         Document doc  = hits.doc(i);
                         String   data = doc.get("data");
+                        
                         if (data != null)
                         {
                             StringTokenizer st = new StringTokenizer(data, "\t");
                             RecordSetItem rsi = new RecordSetItem();
-                            for (int col=0;col<st.countTokens();col++)
+                            rsi.setRecordId(doc.get("id"));
+                            /*for (int col=0;col<st.countTokens();col++)
                             {
-                                if (col == column)
+                                if (col == colAdjusted)
                                 {
                                     String val = st.nextToken();
                                     if (val != null)
@@ -289,7 +293,7 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
                                     break;
                                 }
                                 st.nextToken();
-                            }
+                            }*/
                             items.add(rsi);
                         } else
                         {
@@ -308,9 +312,10 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
                         {
                             StringTokenizer st = new StringTokenizer(data, "\t");
                             RecordSetItem rsi = new RecordSetItem();
-                            for (int col=0;col<st.countTokens();col++)
+                            rsi.setRecordId(doc.get("id"));
+                            /*for (int col=0;col<st.countTokens();col++)
                             {
-                                if (col == column)
+                                if (col == colAdjusted)
                                 {
                                     String val = st.nextToken();
                                     if (val != null)
@@ -320,7 +325,7 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
                                     break;
                                 }
                                 st.nextToken();
-                            }
+                            }*/
                             items.add(rsi);
                         } else
                         {

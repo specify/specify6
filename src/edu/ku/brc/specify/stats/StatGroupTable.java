@@ -92,8 +92,7 @@ public class StatGroupTable extends JPanel
         this.name = name;
         
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBorder(BorderFactory.createEmptyBorder(15, 2, 2, 2));
-        setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
+        setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), BorderFactory.createEmptyBorder(15, 2, 2, 2)));
         setBackground(Color.WHITE);
         
         if (progressIcon == null)
@@ -459,15 +458,16 @@ public class StatGroupTable extends JPanel
                     setIcon(null);
                     
                     String desc = sdi.getDescription();
-                    String val  = sdi.getValStr();
+                    Object val  = sdi.getValue();
                     
                     setForeground(StringUtils.isNotEmpty(sdi.getLink()) ? Color.BLUE : Color.BLACK);
                     
+                    String valStr = val != null ? val.toString() : "";
                     // Configure the component with the specified value
-                    setText(vColIndex == 0 ? desc : val);
+                    setText(vColIndex == 0 ? desc : valStr);
             
                     // Set tool tip if desired
-                    setToolTipText(desc + " " + val);
+                    setToolTipText(desc + " " + valStr);
                 //}
                 
             } else

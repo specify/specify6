@@ -87,10 +87,12 @@ public class StatsPane extends BaseSubPane
         if (bgColor != null)
         {
             this.bgColor = bgColor;
+        } else
+        {
+            this.bgColor = Color.WHITE;
         }
+        setBackground(this.bgColor);
         setLayout(new BorderLayout());
-
-        setBackground(bgColor);
 
         init();
     }
@@ -274,15 +276,15 @@ public class StatsPane extends BaseSubPane
             setBackground(bgColor);
             
             JPanel statPanel = builder.getPanel();
-            //statPanel.setBackground(bgColor);
-            statPanel.setOpaque(false);
+            statPanel.setBackground(Color.WHITE);
+            //statPanel.setOpaque(false);
             
             builder    = new PanelBuilder(new FormLayout("C:P:G", "p"));
             builder.add(statPanel, cc.xy(1,1));
             JPanel centerPanel = builder.getPanel();
 
-            //centerPanel.setBackground(Color.WHITE);
-            centerPanel.setOpaque(false);
+            centerPanel.setBackground(Color.WHITE);
+            //centerPanel.setOpaque(false);
             centerPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
             add(centerPanel, BorderLayout.CENTER);

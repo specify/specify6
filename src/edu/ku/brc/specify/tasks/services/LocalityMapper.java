@@ -2,6 +2,7 @@ package edu.ku.brc.specify.tasks.services;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -687,6 +688,10 @@ public class LocalityMapper
 					if( label != null )
 					{
 						Color origColor = g.getColor();
+                        FontMetrics fm = g.getFontMetrics();
+                        int length = fm.stringWidth(label);
+                        g.setColor(Color.WHITE);
+                        g.fillRect(markerLoc.x+x-(length/2), markerLoc.y+y-(fm.getHeight()/2), length, fm.getHeight());
 						g.setColor(labelColor);
 						GraphicsUtils.drawCenteredString(label, g, markerLoc.x+x, markerLoc.y+y);
 						g.setColor(origColor);
@@ -710,6 +715,9 @@ public class LocalityMapper
 		return icon;
 	}
 	
+    //-----------------------------------------------------------------
+    // Inner Class / Interface
+    //-----------------------------------------------------------------
 	public interface MapperListener
 	{
 		public void mapReceived( Icon map );

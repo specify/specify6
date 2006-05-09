@@ -28,6 +28,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,6 +44,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -56,13 +59,16 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.specify.helpers.BrowserLauncher;
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.BrowseBtnPanel;
 import edu.ku.brc.specify.ui.ColorChooser;
 import edu.ku.brc.specify.ui.ColorWrapper;
 import edu.ku.brc.specify.ui.CommandAction;
 import edu.ku.brc.specify.ui.CommandActionWrapper;
+import edu.ku.brc.specify.ui.GetSetValueIFace;
 import edu.ku.brc.specify.ui.ImageDisplay;
+import edu.ku.brc.specify.ui.UIPluginable;
 import edu.ku.brc.specify.ui.db.PickListDBAdapter;
 import edu.ku.brc.specify.ui.db.TextFieldWithInfo;
 import edu.ku.brc.specify.ui.forms.persist.AltView;
@@ -550,6 +556,7 @@ public class ViewFactory
                         uiType = "text";
                     }
 
+
                     if (mode == AltView.CreationMode.View)
                     {
                         uiType = cellField.getDspUIType();
@@ -603,39 +610,43 @@ public class ViewFactory
 
                     } else if (uiType.equals("image"))
                     {
+                        
                         int w = 150;
                         int h = 150;
-                        String str = cellField.getInitialize();
-                        if (isNotEmpty(str))
+                        String sizeDefStr = cellField.getProperty("size");
+                        if (isNotEmpty(sizeDefStr))
                         {
-                            int inx = str.indexOf("size=");
-                            if (inx > -1)
+                            String[] wh = StringUtils.split(sizeDefStr, ",");
+                            if (wh.length == 2)
                             {
-                                String[] wh = StringUtils.split(str.substring(inx+5), ",");
-                                if (wh.length == 2)
+                                try
                                 {
-                                    try
-                                    {
-                                        w = Integer.parseInt(wh[0]);
-                                        h = Integer.parseInt(wh[1]);
+                                    w = Integer.parseInt(wh[0]);
+                                    h = Integer.parseInt(wh[1]);
 
-                                    } catch (Exception ex)
-                                    {
-                                        log.error("Initialize string for Image is incorrect ["+str+"]");
-                                    }
+                                } catch (Exception ex)
+                                {
+                                    log.error("size prop for Image is incorrect ["+sizeDefStr+"]");
                                 }
                             }
+
+                        }
+                        
+                        boolean imageInEdit = mode == AltView.CreationMode.Edit;
+                        String editModeStr = cellField.getProperty("edit");
+                        if (isNotEmpty(editModeStr))
+                        {
+                            imageInEdit = editModeStr.toLowerCase().equals("true");
                         }
 
-                        ImageDisplay imgDisp = new ImageDisplay(w, h, true);
+                        ImageDisplay imgDisp = new ImageDisplay(w, h, imageInEdit);
                         compToAdd = imgDisp;
 
                         addToValidator = false;
 
                     } else if (uiType.equals("url"))
                     {
-                        JButton btn = new JButton("Show");
-                        compToAdd = btn;
+                        compToAdd = new BrowserLauncherBtn(cellField.getProperty("title"));
                         addToValidator = false;
 
                     } else if (uiType.equals("combobox"))
@@ -728,7 +739,48 @@ public class ViewFactory
                         }
                         compToAdd = colorChooser;
 
-
+                    } else if (uiType.equals("button"))
+                    {
+                        JButton btn = new JButton(cellField.getProperty("title"));
+                        compToAdd = btn;
+                        
+                    } else if (uiType.equals("progress"))
+                    {
+                        JProgressBar progressBar = new JProgressBar(0, 100);
+                        compToAdd = progressBar;
+                        
+                    } else if (uiType.equals("plugin"))
+                    {
+                        String classNameStr = cellField.getProperty("class");
+                        if (StringUtils.isEmpty(classNameStr))
+                        {
+                            throw new RuntimeException("Creating plugin and the class property was missing.");
+                        }
+                        
+                        try
+                        {
+                            Class  classObj = Class.forName(classNameStr);
+                            Object uiObj    = classObj.newInstance();
+                            if (uiObj instanceof UIPluginable)
+                            {
+                                ((UIPluginable)uiObj).initialize(cellField.getProperties());
+                            }
+                            
+                            if (uiObj instanceof JComponent)
+                            {
+                                compToAdd = (JComponent)uiObj;
+                                
+                            } else
+                            {
+                                throw new RuntimeException("A UIPlugin MUST be derived from a JComponent!");
+                            }
+                            
+                        } catch (Exception ex)
+                        {
+                           log.error(ex);
+                           throw new RuntimeException(ex);
+                        }
+                        
                     } else
                     {
                         throw new RuntimeException("Don't recognize uitype=["+uiType+"]");
@@ -1059,5 +1111,73 @@ public class ViewFactory
         return null;
     }
 
-
+    //-----------------------------------------------------------
+    // Inner Class
+    //-----------------------------------------------------------
+    
+    class BrowserLauncherBtn extends JButton implements GetSetValueIFace
+    {
+        protected String url     = null;
+        protected Object dataObj = null;
+        protected BrowserLauncherAction action = null;
+        
+        public BrowserLauncherBtn(final String text)
+        {
+            super(text);
+            setEnabled(false);
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object)
+         */
+        public void setValue(Object value)
+        {
+            if (value != null)
+            {
+                url = value.toString();
+                dataObj = value;
+                
+                if (action != null)
+                {
+                    this.removeActionListener(action);
+                }
+                
+                if (StringUtils.isNotEmpty(url) && url.startsWith("http"))
+                {
+                    action = new BrowserLauncherAction(url);
+                    addActionListener(action);
+                    setEnabled(true);
+                } else
+                {
+                    setEnabled(false);
+                }
+            } else
+            {
+                setEnabled(false);
+            }
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.ui.GetSetValueIFace#getValue()
+         */
+        public Object getValue()
+        {
+            return dataObj;
+        }
+    }
+    
+    class BrowserLauncherAction implements ActionListener
+    {
+        protected String url;
+        
+        public BrowserLauncherAction(final String url)
+        {
+            this.url = url;
+        }
+        
+        public void actionPerformed(ActionEvent ae)
+        {
+            BrowserLauncher.openURL(url);
+        }
+    };
 }

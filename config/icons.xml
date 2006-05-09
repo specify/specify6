@@ -75,4 +75,9 @@
 
     <icon name="Down" file="down.png" sizes="all"/>
     <icon name="Forward" file="forward.png" sizes="all"/>
+    
+    <!--  Plugins -->
+    <icon name="FishBase" file="fblogootw32.png" sizes="all"/>
+    <icon name="GoogleEarth" file="GoogleEarth16x16.png" sizes="16"/>
+    
 </icons>
