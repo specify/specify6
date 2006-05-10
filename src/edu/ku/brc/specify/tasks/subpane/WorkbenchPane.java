@@ -22,8 +22,10 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.io.File;
 
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +36,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.ui.CsvTableModel;
+import edu.ku.brc.specify.ui.JustifiedTableCellRenderer;
 import edu.ku.brc.specify.ui.db.WorkbenchTableModel;
 
 public class WorkbenchPane  extends BaseSubPane {
@@ -58,6 +61,14 @@ public class WorkbenchPane  extends BaseSubPane {
 	        try
 			{
 				table.setModel(new CsvTableModel(csvFile));
+				table.getColumnModel().getColumn(0).setCellRenderer(new JustifiedTableCellRenderer(SwingConstants.LEFT));
+				table.getColumnModel().getColumn(1).setCellRenderer(new JustifiedTableCellRenderer(SwingConstants.CENTER));
+				table.getColumnModel().getColumn(2).setCellRenderer(new JustifiedTableCellRenderer(SwingConstants.CENTER));
+				table.getColumnModel().getColumn(3).setCellRenderer(new JustifiedTableCellRenderer(SwingConstants.CENTER));
+				table.getColumnModel().getColumn(4).setCellRenderer(new JustifiedTableCellRenderer(SwingConstants.RIGHT));
+				table.getColumnModel().getColumn(5).setCellRenderer(new JustifiedTableCellRenderer(SwingConstants.RIGHT));
+				table.getColumnModel().getColumn(6).setCellRenderer(new JustifiedTableCellRenderer(SwingConstants.CENTER));
+				table.getColumnModel().getColumn(7).setCellRenderer(new JustifiedTableCellRenderer(SwingConstants.CENTER));
 			}
 			catch( Exception e )
 			{

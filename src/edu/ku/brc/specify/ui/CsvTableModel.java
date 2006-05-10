@@ -18,6 +18,7 @@ public class CsvTableModel implements TableModel
 	protected File csvFile;
 	
 	protected Vector<String[]> rowData;
+	protected Vector<String> methods;
 	protected String[] header;
 	
 	protected Random rand;
@@ -30,6 +31,7 @@ public class CsvTableModel implements TableModel
 		randStart = rand.nextInt(2756);
 		
 		rowData = new Vector<String[]>();
+		methods = new Vector<String>();
 		
 		this.csvFile = csvFile;
 		FileReader fr = new FileReader(csvFile);
@@ -47,6 +49,24 @@ public class CsvTableModel implements TableModel
 				rowData.add(row);
 			}
 			line = br.readLine();
+		}
+		
+		for( int i = 0; i < rowData.size(); ++i )
+		{
+			//setup a method
+			int j = rand.nextInt(100);
+			if( j < 10 )
+			{
+				methods.add("dynamite");
+			}
+			if( j >= 10 && j < 20 )
+			{
+				methods.add("boat electro-shocker");
+			}
+			if( j > 20 )
+			{
+				methods.add("seine");
+			}
 		}
 	}
 
@@ -69,20 +89,12 @@ public class CsvTableModel implements TableModel
 	{
 		if( column == 0 )
 		{
-			return "ACB-2006-" + row + randStart;
+			int x = row + randStart;
+			return "ACB-2006-" + x;
 		}
 		else if( column == 3 )
 		{
-			int i = rand.nextInt(10);
-			if( i == 0 )
-			{
-				return "dynamite";
-			}
-			if( i == 1 )
-			{
-				return "boat electro-shocker";
-			}
-			return "seine";
+			return methods.elementAt(column);
 		}
 		else if( column == 1 || column == 2 )
 		{
