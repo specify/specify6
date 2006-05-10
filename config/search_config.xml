@@ -13,12 +13,13 @@
     </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[Select collectionobject.CollectionObjectID, collectionobject.CatalogNumber, taxon.Name From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TreeID = determination.TaxonID]]>
+	        <![CDATA[Select collectionobject.CollectionObjectID, collectionobject.CatalogNumber, collectionobject.CatalogedDate, taxon.Name From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TreeID = determination.TaxonID]]>
 	    </sql>
 	    <cols>
 	       <col>1</col>
 	       <col>2</col>
 	       <col>3</col>
+	       <col>4</col>
 	    </cols>
 	</index>
     <detailView icon="ColObj">
@@ -28,6 +29,7 @@
         <captions>
             <caption col="CollectionObjectID" text="CollectionObjectID" visible="false"/>
             <caption col="CatalogNumber" text="Catalog Number"/>
+            <caption col="CatalogedDate" text="Cataloged Date"/>
             <caption col="Taxon" text="Taxon Name"/>
         </captions>
         <recordset tabletype="1" col="1"/>
@@ -336,7 +338,7 @@
 	</detailView>
   </table>
 
-  
+
   <table id="11" name="Collecting Event" title="Collecting Events" priority="1" color="30, 144, 255"
          expresssearch="true">
     <outofdate>

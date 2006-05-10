@@ -259,8 +259,6 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
 
             Set<RecordSetItem> items = new HashSet<RecordSetItem>();
             rs.setItems(items);
-            
-            int colAdjusted = column - 1;
 
             try
             {
@@ -274,63 +272,19 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
                     for (int i=0;i<hits.length();i++)
                     {
                         Document doc  = hits.doc(i);
-                        String   data = doc.get("data");
-                        
-                        if (data != null)
-                        {
-                            StringTokenizer st = new StringTokenizer(data, "\t");
-                            RecordSetItem rsi = new RecordSetItem();
-                            rsi.setRecordId(doc.get("id"));
-                            /*for (int col=0;col<st.countTokens();col++)
-                            {
-                                if (col == colAdjusted)
-                                {
-                                    String val = st.nextToken();
-                                    if (val != null)
-                                    {
-                                        rsi.setRecordId(val);
-                                    }
-                                    break;
-                                }
-                                st.nextToken();
-                            }*/
-                            items.add(rsi);
-                        } else
-                        {
-                            log.error("Why was the data object null? row="+i);
-                        }
+                        RecordSetItem rsi = new RecordSetItem();
+                        rsi.setRecordId(doc.get("id"));
+                        items.add(rsi);
                     }
                 } else
                 {
                     for (int i=0;i<rows.length;i++)
                     {
                         Document doc  = hits.doc(indexes[rows[i]]);
-                        log.info("["+doc.get("id")+"]["+doc.get("table")+"]["+doc.get("data")+"]");
-                        String   data = doc.get("data");
-
-                        if (data != null)
-                        {
-                            StringTokenizer st = new StringTokenizer(data, "\t");
-                            RecordSetItem rsi = new RecordSetItem();
-                            rsi.setRecordId(doc.get("id"));
-                            /*for (int col=0;col<st.countTokens();col++)
-                            {
-                                if (col == colAdjusted)
-                                {
-                                    String val = st.nextToken();
-                                    if (val != null)
-                                    {
-                                        rsi.setRecordId(val);
-                                    }
-                                    break;
-                                }
-                                st.nextToken();
-                            }*/
-                            items.add(rsi);
-                        } else
-                        {
-                            log.error("*Why was the data object null? row="+i);
-                        }
+                        //log.info("["+doc.get("id")+"]["+doc.get("table")+"]["+doc.get("data")+"]");
+                        RecordSetItem rsi = new RecordSetItem();
+                        rsi.setRecordId(doc.get("id"));
+                        items.add(rsi);
                     }
                 }
             } catch (Exception ex)
