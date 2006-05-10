@@ -94,7 +94,7 @@ public class WorkbenchTask extends BaseTask {
 					return false;
 				}
 				String nameEnd = f.getName().substring(f.getName().length()-4);
-				if( nameEnd.equalsIgnoreCase(".csv") )
+				if( nameEnd.equalsIgnoreCase(".csv") || nameEnd.equalsIgnoreCase(".tab") )
 					return true;
 				return false;
 			}

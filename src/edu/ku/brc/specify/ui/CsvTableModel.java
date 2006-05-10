@@ -54,16 +54,16 @@ public class CsvTableModel implements TableModel
 		for( int i = 0; i < rowData.size(); ++i )
 		{
 			//setup a method
-			int j = rand.nextInt(100);
-			if( j < 10 )
+			int j = rand.nextInt(15);
+			if( j == 0 )
 			{
 				methods.add("dynamite");
 			}
-			if( j >= 10 && j < 20 )
+			else if( j == 1 )
 			{
 				methods.add("boat electro-shocker");
 			}
-			if( j > 20 )
+			else
 			{
 				methods.add("seine");
 			}
@@ -94,7 +94,7 @@ public class CsvTableModel implements TableModel
 		}
 		else if( column == 3 )
 		{
-			return methods.elementAt(column);
+			return methods.elementAt(row);
 		}
 		else if( column == 1 || column == 2 )
 		{
