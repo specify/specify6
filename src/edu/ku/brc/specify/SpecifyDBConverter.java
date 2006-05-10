@@ -160,7 +160,15 @@ public class SpecifyDBConverter
         
         DBConnection.setUsernamePassword("rods", "rods");
         DBConnection.setDriver("com.mysql.jdbc.Driver");
-        DBConnection.setDBName("jdbc:mysql://localhost/cranbrook");
+        DBConnection.setDBName("jdbc:mysql://localhost/fish");
+        
+        if (true)
+        {
+            GenericDBConversion conversion = new GenericDBConversion("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/"+oldDatabaseName, "rods", "rods");
+            conversion.createAndFillStatTable();
+            return;
+        }
+
         
         IdMapperMgr idMapperMgr = null;
         try

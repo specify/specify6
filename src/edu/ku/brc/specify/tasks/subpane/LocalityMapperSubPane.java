@@ -38,6 +38,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -342,7 +343,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
                 {
                     UICacheManager.displayStatusBarText("Exporting Collecting Events in KML."); // XXX I18N
                     kmlGen.setSpeciesToImageMapper(imageURLs);
-                    kmlGen.outputToFile("/Users/rods/specify.kml");
+                    kmlGen.outputToFile(System.getProperty("user.home")+File.separator+"specify.kml");
 
                 } catch (Exception ex)
                 {

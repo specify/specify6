@@ -252,5 +252,29 @@ permit.EndDate,permit.RenewalDate,permit.Type From permit where permit.PermitID 
       </stat>
 
 
+      <!-- ********************* -->
+      <!--  Web Statistics -->
+      <!-- ********************* -->
+      
+      <stat name="Web Stats Visitors" display="Bar Chart">
+          <chartinfo>
+              <title>Web Stats Visitors</title>
+              <xaxis>Months</xaxis>
+              <yaxis>Number of Visitors</yaxis>
+          </chartinfo>
+          <sql type="builtin" className="edu.ku.brc.specify.dbsupport.WebStatsVisitorsCustomQuery"/>
+      </stat>
+      
+      <stat name="Web Stats Top 5 Taxon" display="Bar Chart">
+          <chartinfo>
+              <title>Web Stats Top 5 Taxon</title>
+              <xaxis>Species</xaxis>
+              <yaxis>Number of Hits</yaxis>
+          </chartinfo>
+          <sql type="builtin" className="edu.ku.brc.specify.dbsupport.WebStatsTaxonCustomQuery"/>
+      </stat>
+      
+      
+      
 
   </statistics>

@@ -4008,7 +4008,73 @@ public class GenericDBConversion
 
    }
 
+  
+    public void createAndFillStatTable()
+    {
+        try
+        {
+            Statement stmtNew = newDBConn.createStatement();
+            String str = "DROP TABLE `webstats`";
+            try
+            {
+                stmtNew.executeUpdate(str);
+                
+            } catch (SQLException ex)
+            {
+                ex.printStackTrace();
+            }
 
+            str = "CREATE TABLE `webstats` (`WebStatsID` int(11) NOT NULL default '0', "
+                + "`UniqueVisitors1` int(11), "
+                + "`UniqueVisitors2` int(11), "
+                + "`UniqueVisitors3` int(11), "
+                + "`UniqueVisitors4` int(11), "
+                + "`UniqueVisitors5` int(11), "
+                + "`UniqueVisitors6` int(11), "
+                + "`UniqueVisitorsMon1` varchar(32), "
+                + "`UniqueVisitorsMon2` varchar(32), "
+                + "`UniqueVisitorsMon3` varchar(32), "
+                + "`UniqueVisitorsMon4` varchar(32), "
+                + "`UniqueVisitorsMon5` varchar(32), "
+                + "`UniqueVisitorsMon6` varchar(32), "
+                + "`UniqueVisitorsYear` varchar(32), "
+                + "`Taxon1` varchar(32), "
+                + "`TaxonCnt1` int(11), "
+                + "`Taxon2` varchar(32), "
+                + "`TaxonCnt2` int(11), "
+                + "`Taxon3` varchar(32), "
+                + "`TaxonCnt3` int(11), "
+                + "`Taxon4` varchar(32), "
+                + "`TaxonCnt4` int(11), "
+                + "`Taxon5` varchar(32), "
+                + "`TaxonCnt5` int(11), "
+                    + " PRIMARY KEY (`WebStatsID`) ) ENGINE=InnoDB DEFAULT CHARSET=latin1";
+            // log.info(str);
+            stmtNew.executeUpdate(str);
+            
+            
+    
+            str = "INSERT INTO webstats VALUES (0, 234, 189, 211, 302, 229, 276, " +
+            "'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', " +
+            " 2621, " +
+            "'Etheostoma',  54," +
+            "'notatus',  39," +
+            "'lutrensis',  22," +
+            "'anomalum',  12," +
+            "'platostomus',  8" +
+                    ")";
+            
+            stmtNew.executeUpdate(str);
+
+            stmtNew.clearBatch();
+            stmtNew.close();
+            
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
+
+    }
 
     //--------------------------------------------------------------------
     //-- Static Methods
