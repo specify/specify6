@@ -21,25 +21,15 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 
-import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.dbsupport.DBTableIdMgr;
-import edu.ku.brc.specify.dbsupport.SQLExecutionListener;
-import edu.ku.brc.specify.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
-import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.tasks.subpane.LocalityMapperSubPane;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.specify.ui.CommandAction;
@@ -47,7 +37,7 @@ import edu.ku.brc.specify.ui.CommandDispatcher;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 /**
  * The LocalityMapperTask is responsible gettng and displaying all various idfferent kinds of stats
- * 
+ *
  * @author rods
  *
  */
@@ -55,12 +45,12 @@ public class LocalityMapperTask extends BaseTask
 {
     // Static Data Members
     public static final String LOCALITYMAPPER = "LocalityMapper";
-    
-    private static Log log = LogFactory.getLog(LocalityMapperTask.class);
-    
+
+    //private static Log log = LogFactory.getLog(LocalityMapperTask.class);
+
     // Data Members
     protected java.sql.ResultSet    resultSet;
-    
+
     // Data Members
     /**
      * Creates a Statistics Tasks
@@ -71,7 +61,7 @@ public class LocalityMapperTask extends BaseTask
         super(LOCALITYMAPPER, getResourceString(LOCALITYMAPPER));
         CommandDispatcher.register(LOCALITYMAPPER, this);
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
@@ -79,26 +69,27 @@ public class LocalityMapperTask extends BaseTask
     {
         return new SimpleDescPane(name, this, "Map");
     }
-    
+
     /**
      * @param recordSet
      */
+    @SuppressWarnings("unchecked")
     public void createMappingInfoFromRecordSet(final RecordSet recordSet)
     {
         Query query = DBTableIdMgr.getQueryForTable(recordSet);
-        
+
         List list = query.list();
-        
+
         LocalityMapperSubPane panel = new LocalityMapperSubPane(name, this, list);
         addSubPaneToMgr(panel);
 
     }
 
-    
+
     //-------------------------------------------------------
     // Plugin Interface
     //-------------------------------------------------------
-    
+
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getToolBarItems()
@@ -110,7 +101,7 @@ public class LocalityMapperTask extends BaseTask
         //list.add(new ToolBarItemDesc(btn));
         return list;
     }
-    
+
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getMenuItems()
@@ -118,9 +109,9 @@ public class LocalityMapperTask extends BaseTask
     public List<MenuItemDesc> getMenuItems()
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
-        
+
         return list;
-        
+
     }
 
     //-------------------------------------------------------
@@ -138,11 +129,11 @@ public class LocalityMapperTask extends BaseTask
             }
         }
     }
-    
+
     //--------------------------------------------------------------
     // Inner Classes
     //--------------------------------------------------------------
 
-   
+
 
 }

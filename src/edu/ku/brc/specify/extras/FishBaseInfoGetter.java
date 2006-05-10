@@ -81,7 +81,7 @@ public class FishBaseInfoGetter extends HTTPGetter
         return image;
     }
 
-    public void setConsumer(FishBaseInfoGetterListener consumer) 
+    public void setConsumer(FishBaseInfoGetterListener consumer)
     {
 		this.consumer = consumer;
 	}
@@ -99,7 +99,7 @@ public class FishBaseInfoGetter extends HTTPGetter
     public Image getImage(final String fileName, final String url)
     {
         imageURL = url;
-        
+
         String fullPath = tmpDir + File.separator + fileName;
         System.out.println(fullPath);
         File file = new File(fullPath);
@@ -107,8 +107,8 @@ public class FishBaseInfoGetter extends HTTPGetter
         {
             try
             {
-                imageURL = file.toURI().toASCIIString();
-                
+                //imageURL = file.toURI().toString();
+
                 ImageIcon image = new ImageIcon(fullPath);
                 return image.getImage();
 
@@ -175,7 +175,7 @@ public class FishBaseInfoGetter extends HTTPGetter
             if (inx > -1)
             {
                 data = data.substring(inx, data.length());
-                
+
                 System.out.println(data);
                 try
                 {
@@ -192,12 +192,12 @@ public class FishBaseInfoGetter extends HTTPGetter
                 {
                     ex.printStackTrace();
                     status = ErrorCode.Error;
-                }                
-                
+                }
+
             } else
             {
                 status = ErrorCode.Error;
-                data = null; 
+                data = null;
             }
 
         }
@@ -238,8 +238,9 @@ public class FishBaseInfoGetter extends HTTPGetter
                                     int inx = fileURL.lastIndexOf("/");
                                     if (inx > -1)
                                     {
-                                        shortName = fileURL.substring(inx, fileURL.length());
+                                        shortName = fileURL.substring(inx+1, fileURL.length());
                                     }
+                                    System.out.println("*["+shortName+"]["+fileURL+"]");
                                     image = getImage(shortName, fileURL);
                                     if (image != null)
                                     {

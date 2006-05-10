@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
   <statistics>
-      
+
     <stat name="Top Five Species" display="Pie Chart">
       <chartinfo>
         <title>Top Five Species</title>
@@ -29,7 +29,7 @@
         <value row="5" col="2"/>
       </slice>
     </stat>
-    
+
     <stat name="Items Cataloged Last 5 Years" display="Bar Chart">
        <chartinfo>
          <title>Items Cataloged Last 5 Years</title>
@@ -38,7 +38,16 @@
        </chartinfo>
       <sql type="builtin" className="edu.ku.brc.specify.dbsupport.CatalogedByYearCustomQuery"/>
     </stat>
-    
+
+    <stat name="Temporial Periods" display="Bar Chart">
+       <chartinfo>
+         <title>Temporial Periods</title>
+         <xaxis>Years</xaxis>
+         <yaxis>Number of Specimens</yaxis>
+       </chartinfo>
+      <sql type="builtin" className="edu.ku.brc.specify.dbsupport.CatByPrev10YearsCustomQuery"/>
+    </stat>
+
     <stat name="Percentage Grow Last 5 Years" display="Bar Chart">
        <chartinfo>
          <title>Percentage Grow Last 5 Years</title>
@@ -47,6 +56,7 @@
        </chartinfo>
        <sql type="builtin" className="edu.ku.brc.specify.dbsupport.PercentageGrowthCustomQuery"/>
     </stat>
+    
    <stat name="Percentage Grow Last 5 Years" display="Bar Chart">
        <chartinfo>
          <title>Percentage Grow Last 5 Years</title>
@@ -55,7 +65,7 @@
        </chartinfo>
        <sql type="builtin" className="edu.ku.brc.specify.dbsupport.PercentageGrowthCustomQuery"/>
     </stat>
-    
+
     <stat name="Specimens by Country" display="Bar Chart">
       <chartinfo>
         <title>Top 7 Number of Specimens by Country</title>
@@ -92,49 +102,98 @@
         <value row="7" col="2"/>
       </bar>
     </stat>
-    
+
+    <stat name="Specimens by Continent" display="Bar Chart">
+      <chartinfo>
+        <title>Top 10 Number of Specimens by Continent</title>
+      </chartinfo>
+      <sql type="text">
+          <![CDATA[select g.Name as Country, count(g.Name) AS SpecimenCount from (select CollectionObjectID, CE.LocalityID, LOC.GeographyID, GEO.NodeNumber  from collectionobject as CO inner join collectingevent as CE on CE.CollectingEventID = CO.CollectingEventID inner join locality LOC on CE.LocalityID = LOC.LocalityID inner join geography as GEO on GEO.TreeID = LOC.GeographyID) as COLGEO, geography as g where g.rankid = 100 and COLGEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber group by g.Name order by SpecimenCount DESC]]>
+      </sql>
+      <bar>
+        <desc row="1" col="1"/>
+        <value row="1" col="2"/>
+      </bar>
+      <bar>
+        <desc row="2" col="1"/>
+        <value row="2" col="2"/>
+      </bar>
+      <bar>
+        <desc row="3" col="1"/>
+        <value row="3" col="2"/>
+      </bar>
+      <bar>
+        <desc row="4" col="1"/>
+        <value row="4" col="2"/>
+      </bar>
+      <bar>
+        <desc row="5" col="1"/>
+        <value row="5" col="2"/>
+      </bar>
+      <bar>
+        <desc row="6" col="1"/>
+        <value row="6" col="2"/>
+      </bar>
+      <bar>
+        <desc row="7" col="1"/>
+        <value row="7" col="2"/>
+      </bar>
+     <bar>
+        <desc row="8" col="1"/>
+        <value row="8" col="2"/>
+      </bar>
+     <bar>
+        <desc row="9" col="1"/>
+        <value row="9" col="2"/>
+      </bar>
+     <bar>
+        <desc row="10" col="1"/>
+        <value row="10" col="2"/>
+      </bar>
+    </stat>
+
     <stat name="ListOnLoan" display="Table">
       <title>Items on Loan</title>
       <sql type="text">
           <![CDATA[Select distinct loan.LoanNumber as LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName,loan.OriginalDueDate, loanphysicalobject.Quantity, loanphysicalobject.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country From loan Inner Join loanphysicalobject ON loan.LoanID =  loanphysicalobject.LoanID Inner Join loanagents ON loan.LoanID = loanagents.LoanID Inner Join agent ON loanagents.AgentID = agent.AgentID Inner Join address ON agent.AgentID = address.AgentID where loan.loanid in (select loanid from loan where category = 0 and (closed = 0 or closed is null)) group by LoanNumber]]>
       </sql>
     </stat>
-    
+
     <stat name="OverdueLoansList" display="Table">
       <title>Overdue Loans</title>
       <sql type="text">
           <![CDATA[Select distinct loan.LoanNumber as LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName, loan.loanid, loan.OriginalDueDate, loanphysicalobject.Quantity, loanphysicalobject.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country From loan Inner Join loanphysicalobject ON loan.LoanID =  loanphysicalobject.LoanID Inner Join loanagents ON loan.LoanID = loanagents.LoanID Inner Join agent ON loanagents.AgentID = agent.AgentID Inner Join address ON agent.AgentID = address.AgentID where loan.loanid in (select loanid from loan where (not  (currentduedate is null)) and category = 0 and (closed = 0 or closed is null) and datediff(CURDATE(), currentduedate) > 0)  group by LoanNumber]]>
       </sql>
     </stat>
-    
+
     <stat name="CatalogedLast7DaysDetail" display="Table">
       <title>Cataloged Last 7 Days</title>
       <sql type="text">
           <![CDATA[Select collectionobject.CatalogNumber,taxon.Name,collectionobject.TimestampCreated From collectionobject Inner Join determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID Inner Join taxon ON determination.TaxonID = taxon.TreeID where DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= collectionobject.TimestampCreated]]>
       </sql>
     </stat>
-    
+
     <stat name="CatalogedLastMonth" display="Table">
       <title>Cataloged Last Month</title>
       <sql type="text">
           <![CDATA[Select collectionobject.CatalogNumber,taxon.Name,collectionobject.TimestampCreated From collectionobject Inner Join determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID Inner Join taxon ON determination.TaxonID = taxon.TreeID where DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= collectionobject.TimestampCreated]]>
       </sql>
     </stat>
-    
+
     <stat name="CatalogedLastYear" display="Table">
       <title>Cataloged Last Year</title>
       <sql type="text">
           <![CDATA[Select collectionobject.CatalogNumber,taxon.Name,collectionobject.TimestampCreated From collectionobject Inner Join determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID Inner Join taxon ON determination.TaxonID = taxon.TreeID where DATE_SUB(CURDATE(), INTERVAL 1 YEAR) <= collectionobject.TimestampCreated]]>
       </sql>
     </stat>
-    
+
     <stat name="OverdueLookup" display="Table">
       <title>Loan Overdue</title>
       <sql type="text">
           <![CDATA[Select distinct loan.LoanNumber as LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName,loan.OriginalDueDate, loanphysicalobject.Quantity, loanphysicalobject.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country From loan Inner Join loanphysicalobject ON loan.LoanID =  loanphysicalobject.LoanID Inner Join loanagents ON loan.LoanID = loanagents.LoanID Inner Join agent ON loanagents.AgentID = agent.AgentID Inner Join address ON agent.AgentID = address.AgentID where loan.loanid = %s]]>
       </sql>
     </stat>
-    
+
     <!-- ********************* -->
     <!--  Accession Statistics -->
     <!-- ********************* -->
@@ -166,15 +225,15 @@
               <value row="5" col="2"/>
           </bar>
       </stat>
-      
-      
+
+
       <stat name="Accession" display="Form" viewset="Main Views" view="Accession" mode="view">
           <title>Permits Expiring This Year</title>
           <sql type="text">
               <![CDATA[select * From accession where accession.AccessionID = %s]]>
           </sql>
       </stat>
-      
+
       <stat name="CITESPermitsExpireThisYear" display="Form" viewset="Main Views" view="PermitForAccessions" mode="view">
           <title>Permits Expiring This Year</title>
           <sql type="text">
@@ -182,7 +241,7 @@
 permit.EndDate,permit.RenewalDate,permit.Type From permit where permit.PermitID = %s]]>
           </sql>
       </stat>
-      
+
       <stat name="NonCITESPermitsExpireThisYear" display="Form" viewset="Main Views" view="PermitForAccessions" mode="view">
           <view mode="display">Permit</view>
           <title>Non-CITES Permits Expiring This Year</title>
@@ -191,8 +250,7 @@ permit.EndDate,permit.RenewalDate,permit.Type From permit where permit.PermitID 
 permit.EndDate,permit.RenewalDate,permit.Type From permit where permit.PermitID = %s]]>
           </sql>
       </stat>
-      
-      
-    
+
+
+
   </statistics>
-  

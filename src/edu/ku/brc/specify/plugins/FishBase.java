@@ -21,7 +21,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.specify.FormEditor;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.extras.FishBaseInfoGetter;
 import edu.ku.brc.specify.extras.FishBaseInfoGetterListener;
@@ -40,36 +39,36 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
     protected Taxon               taxon;
     protected JButton             infoBtn    = null;
     protected JProgressBar        progress   = null;
-    
+
     protected GenericDisplayFrame frame      = null;
     protected MultiView           multiView  = null;
-    
+
     protected FishBaseInfoGetter getter;
-    
+
     /**
-     * 
+     *
      */
     public FishBase()
     {
     }
 
-    
+
     /**
-     * Creates a Dialog (non-modl) that will display detail information 
-     * for the object in the text field. 
+     * Creates a Dialog (non-modl) that will display detail information
+     * for the object in the text field.
      */
     protected void createInfoFrame()
     {
         String species = taxon.getName();
         String genus   = taxon.getParent().getName();
-        
+
         frame = DialogFactory.createDisplayDialog("FishBase", "Fish Base Information", false); // false means View mode
         frame.setCloseListener(this);
         frame.setData(null);
         frame.setVisible(true);
-        
+
         multiView = frame.getMultiView();
-        
+
         if (multiView != null)
         {
             multiView.registerDisplayFrame(frame);
@@ -79,14 +78,14 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
             progress.setValue(50);
         }
         frame.setIconImage(IconManager.getIcon("FishBase", IconManager.IconSize.Std16).getImage());
-        
+
         if (getter == null)
         {
             getter = new FishBaseInfoGetter(this, FishBaseInfoGetter.InfoType.Summary, genus, species);
         }
         getter.start();
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.Component#requestFocus()
      */
@@ -94,7 +93,7 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
     {
         textField.requestFocus();
     }
-    
+
     protected void setDataIntoframe(final Element dom)
     {
         SwingUtilities.invokeLater(new Runnable() {
@@ -105,9 +104,9 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
                 frame.setData(getter.getDom());
 
             }
-        });  
+        });
     }
-    
+
     //--------------------------------------------------------
     //-- FishBaseInfoGetterListener
     //--------------------------------------------------------
@@ -127,11 +126,11 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
     {
         setDataIntoframe(null);
     }
-    
+
     //--------------------------------------------------------
     //-- UIPluginable
     //--------------------------------------------------------
-    
+
     public void initialize(Map<String, String> properties)
     {
         textField = new JTextField();
@@ -139,13 +138,13 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
         textField.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.bottom));
         textField.setForeground(Color.BLACK);
         textField.setEditable(false);
-        
+
         ColorWrapper viewFieldColor = PrefsCache.getColorWrapper("ui", "formatting", "viewfieldcolor");
         if (viewFieldColor != null)
         {
             textField.setBackground(viewFieldColor.getColor());
         }
-        
+
         PanelBuilder    builder    = new PanelBuilder(new FormLayout("f:p:g,1px,p", "c:p"), this);
         CellConstraints cc         = new CellConstraints();
 
@@ -158,7 +157,7 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
         builder.add(infoBtn, cc.xy(3,1));
 
         setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
-        
+
         infoBtn.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent e)
@@ -168,15 +167,15 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
                             {
                                 createInfoFrame();
                             }
-                        });  
+                        });
                     }
                 });
     }
-    
+
     //--------------------------------------------------------
     //-- GetSetValueIFace
     //--------------------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object)
      */
@@ -192,7 +191,7 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
             textField.setText("");
         }
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.GetSetValueIFace#getValue()
      */
@@ -200,7 +199,7 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
     {
         return taxon;
     }
-    
+
     //--------------------------------------------------------
     // PropertyChangeListener
     //--------------------------------------------------------

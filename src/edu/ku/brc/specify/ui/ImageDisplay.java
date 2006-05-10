@@ -45,12 +45,14 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.util.FileCache;
+
 
 /**
- * This class is repsonsible for displaying an image in a confined panel. The sizes that are passed in at constructoin time are 
- * the maximum sizes of the display area. The IMafeDisplay will resize the image approriately to fit within this size and it will 
+ * This class is repsonsible for displaying an image in a confined panel. The sizes that are passed in at constructoin time are
+ * the maximum sizes of the display area. The IMafeDisplay will resize the image approriately to fit within this size and it will
  * keep the image proportional.
- * 
+ *
  * @author rods
  *
  */
@@ -219,7 +221,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
             loadImage();
         }
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.GetSetValueIFace#getValue()
      */
@@ -389,7 +391,12 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
            {
                imagePanel.setNoImage(false); // means it is loading it
 
-               Image img = getToolkit().getImage(new URL(url));
+               //
+
+               FileCache fileCache = UICacheManager.getLongTermFileCache();
+               String    fileName  = fileCache.cacheWebResource(url);
+               File      file      = fileCache.getCacheFile(fileName);
+               Image     img       = getToolkit().getImage(file.toURL());
                ImageIcon imageIcon = new ImageIcon(img);
 
                setImage(imageIcon);

@@ -80,7 +80,7 @@ public class UICacheManager
 
     protected FileCache longTermCache = null;
     protected FileCache shortTermCache = null;
-    
+
     /**
      * Default private constructor for singleton
      *
@@ -441,6 +441,17 @@ public class UICacheManager
 	 */
 	public static FileCache getLongTermFileCache()
 	{
+        if (instance.longTermCache == null)
+        {
+            try
+            {
+                instance.longTermCache = new FileCache("longTermCache");
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                log.error(ex);
+            }
+        }
 		return instance.longTermCache;
 	}
 
@@ -457,6 +468,17 @@ public class UICacheManager
 	 */
 	public static FileCache getShortTermFileCache()
 	{
+        if (instance.longTermCache == null)
+        {
+            try
+            {
+                instance.longTermCache = new FileCache("shortTermCache");
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                log.error(ex);
+            }
+        }
 		return instance.shortTermCache;
 	}
 

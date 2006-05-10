@@ -75,9 +75,9 @@ import edu.ku.brc.specify.ui.dnd.GhostMouseInputAdapter;
 
 /**
  * A task to manage Labels and response to Label Commands
- * 
+ *
  * @author rods
- * 
+ *
  */
 @SuppressWarnings("serial")
 public class LabelsTask extends BaseTask
@@ -85,18 +85,18 @@ public class LabelsTask extends BaseTask
     // Static Data Members
     public static final DataFlavor LABEL_FLAVOR = new DataFlavor(LabelsTask.class, "Label");
     private static Log log = LogFactory.getLog(LabelsTask.class);
-    
+
     public static final String LABELS = "Labels";
-    
+
     public static final String DOLABELS_ACTION     = "DoLabels";
     public static final String NEWRECORDSET_ACTION = "NewRecordSet";
-    
+
     // Data Members
-    protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>(); 
-    protected Vector<NavBoxItemIFace> labelsList       = new Vector<NavBoxItemIFace>(); 
+    protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
+    protected Vector<NavBoxItemIFace> labelsList       = new Vector<NavBoxItemIFace>();
 
     /**
-     * 
+     *
      *
      */
     public LabelsTask()
@@ -104,7 +104,7 @@ public class LabelsTask extends BaseTask
         super(LABELS, getResourceString(LABELS));
         CommandDispatcher.register(LABELS, this);
     }
-    
+
    /**
      * Helper method for registering a NavBoxItem as a GhostMouseDropAdapter
      * @param list the list of NavBoxItems that will have this nbi registered as a drop zone
@@ -112,26 +112,26 @@ public class LabelsTask extends BaseTask
      * @param navBoxItemDropZone the nbi in question
      * @return returns the new NavBoxItem
      */
-    protected NavBoxItemIFace addToNavBoxAndRegisterAsDroppable(final java.util.List<NavBoxIFace> list, 
-                                                                final NavBox          navBox, 
+    protected NavBoxItemIFace addToNavBoxAndRegisterAsDroppable(final java.util.List<NavBoxIFace> list,
+                                                                final NavBox          navBox,
                                                                 final NavBoxItemIFace nbi,
                                                                 final String          fileName)
     {
         RolloverCommand roc = (RolloverCommand)nbi;
         roc.setData(fileName);
-        
+
         // When Being Dragged
         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
-        roc.addDragDataFlavor(LABEL_FLAVOR); 
-        
+        roc.addDragDataFlavor(LABEL_FLAVOR);
+
         // When something is dropped on it
         roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
-        
+
         navBox.add(nbi);
         labelsList.add(nbi);
         return nbi;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#initialize()
      */
@@ -140,30 +140,30 @@ public class LabelsTask extends BaseTask
         if (!isInitialized)
         {
             super.initialize(); // sets isInitialized to false
-            
-            NavBox navBox = new NavBox(name);  
-            
-            // Get all RecordSets and register them 
+
+            NavBox navBox = new NavBox(name);
+
+            // Get all RecordSets and register them
             RecordSetTask rst = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
-            
+
             java.util.List<NavBoxIFace> list = rst.getNavBoxes();
-            
+
             // Temporary these to come from a persistent store
-            //addToNavBoxAndRegisterAsDroppable(list, navBox, NavBox.createBtn("Fish Label Example", name, IconManager.IconSize.Std16, new DisplayAction("fish_label.jrxml", "Fish Label Example")), "fish_label.jrxml");
+            addToNavBoxAndRegisterAsDroppable(list, navBox, NavBox.createBtn("Fish Label Example", name, IconManager.IconSize.Std16, new DisplayAction("fish_label.jrxml", "Fish Label Example")), null);
             //addToNavBoxAndRegisterAsDroppable(list, navBox, NavBox.createBtn("Lichens Label Example", name, IconManager.IconSize.Std16, new DisplayAction("lichens_label.jrxml", "Lichens Label Example")), "lichens_label.jrxml");
-            
-            
+
+            /*
             addToNavBoxAndRegisterAsDroppable(list, navBox, NavBox.createBtn("Accessions", name, IconManager.IconSize.Std16, new DisplayAction("accession_report.jrxml", "Accession")), "accession_report.jrxml");
             addToNavBoxAndRegisterAsDroppable(list, navBox, NavBox.createBtn("Accessions In Process", name, IconManager.IconSize.Std16, new DisplayAction("accessions_inprocess.jrxml", "Accession")), "accessions_inprocess.jrxml");
             addToNavBoxAndRegisterAsDroppable(list, navBox, NavBox.createBtn("Repository Agreements", name, IconManager.IconSize.Std16, new DisplayAction("accessions_reposagree.jrxml", "Accession")), "accessions_reposagree.jrxml");
-            
+            */
             navBoxes.addElement(navBox);
-            
+
         }
-        
+
     }
 
-    
+
     /**
      * Performs a command (to cfreate a label)
      * @param name the XML file name for the label
@@ -180,13 +180,13 @@ public class LabelsTask extends BaseTask
         labelsPane.createReport(name, rs);
 
     }
-    
+
     /**
      * @return Return true if there is a small number of labels or whether the user wishes to continue.
      */
     protected boolean checkForALotOfLabels(final RecordSet recordSet)
     {
-        // 
+        //
         if (recordSet.getItems().size() > 200) // XXX Pref
         {
             Object[] options = {"Create Labels", "Cancel"};
@@ -202,13 +202,13 @@ public class LabelsTask extends BaseTask
             {
                 return false;
             }
-            
+
         }
 
         return true;
     }
-    
-    
+
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
@@ -216,7 +216,7 @@ public class LabelsTask extends BaseTask
     {
         return new SimpleDescPane(name, this, "Welcome to Specify's Label Maker");
     }
-    
+
     /**
      * Displays UI that asks the user to select a predefined label.
      * @return the name of the label file or null if cancelled
@@ -224,14 +224,14 @@ public class LabelsTask extends BaseTask
     protected String askForLabelName()
     {
         initialize();
-        
+
         // XXX need to pass in table type
         ChooseLabel dlg = new ChooseLabel();
         dlg.setVisible(true);
 
         return dlg.getName();
     }
-    
+
     /**
      * Displays UI that asks the user to select a predefined label.
      * @return
@@ -242,13 +242,13 @@ public class LabelsTask extends BaseTask
         dlg.setVisible(true);
         return dlg.getSelectedRecordSet();
     }
-    
-    
-    
+
+
+
     //-------------------------------------------------------
     // Taskable
     //-------------------------------------------------------
-    
+
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#getNavBoxes()
@@ -256,21 +256,21 @@ public class LabelsTask extends BaseTask
     public java.util.List<NavBoxIFace> getNavBoxes()
     {
         initialize();
-        
+
         extendedNavBoxes.clear();
         extendedNavBoxes.addAll(navBoxes);
-        
+
         RecordSetTask rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
-        
+
         extendedNavBoxes.addAll(rsTask.getNavBoxes());
-        
+
         return extendedNavBoxes;
     }
-    
+
     //-------------------------------------------------------
     // Plugin Interface
     //-------------------------------------------------------
-    
+
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getToolBarItems()
@@ -278,12 +278,12 @@ public class LabelsTask extends BaseTask
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        ToolBarDropDownBtn btn = createToolbarButton(name, "labels.gif", "labels_hint");   
-        
+        ToolBarDropDownBtn btn = createToolbarButton(name, "labels.gif", "labels_hint");
+
         list.add(new ToolBarItemDesc(btn));
         return list;
     }
-    
+
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getMenuItems()
@@ -292,10 +292,10 @@ public class LabelsTask extends BaseTask
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
         return list;
-        
+
     }
-    
-    
+
+
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
@@ -307,7 +307,7 @@ public class LabelsTask extends BaseTask
             if (cmdAction.getData() instanceof RecordSet)
             {
                 RecordSet recordSet = (RecordSet)cmdAction.getData();
-                            
+
                 if (checkForALotOfLabels(recordSet))
                 {
                     String labelName = askForLabelName();
@@ -323,7 +323,7 @@ public class LabelsTask extends BaseTask
             {
                 GhostActionable        ga  = (GhostActionable)cmdAction.getData();
                 GhostMouseInputAdapter gpa = ga.getMouseInputAdapter();
-                
+
                 for (NavBoxItemIFace nbi : labelsList)
                 {
                     if (nbi instanceof GhostActionable)
@@ -334,66 +334,66 @@ public class LabelsTask extends BaseTask
             }
         }
     }
-    
+
     //--------------------------------------------------------------
     // Inner Classes
     //--------------------------------------------------------------
- 
+
      /**
-     * 
+     *
      * @author rods
      *
      */
-    class DisplayAction implements ActionListener 
+    class DisplayAction implements ActionListener
     {
         private String   name;
         private String   title;
         private RecordSet recordSet = null;
-        
-        
+
+
         public DisplayAction(final String name, final String title)
         {
             this.name = name;
             this.title = title;
         }
-        
-        public void actionPerformed(ActionEvent e) 
+
+        public void actionPerformed(ActionEvent e)
         {
             Object data = null;
             if (e instanceof DataActionEvent)
             {
                 data = ((DataActionEvent)e).getData();
             }
-            
+
             if (data == null)
             {
                 data = askForRecordSet();
             }
             doLabels(name, title, data);
         }
-        
+
         public void setRecordSet(final RecordSet recordSet)
         {
             this.recordSet = recordSet;
         }
-        
+
         public RecordSet getRecordSet()
         {
             return recordSet;
         }
     }
-    
+
     /**
      * @author rods
      *
      */
-    public class ChooseLabel extends JDialog implements ActionListener 
+    public class ChooseLabel extends JDialog implements ActionListener
     {
         protected JButton        cancelBtn;
         protected JButton        okBtn;
         protected JList          list;
         protected java.util.List recordSets;
-        
+
         public ChooseLabel() throws HeadlessException
         {
             super((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString("ChooseLabel"), true);
@@ -409,26 +409,26 @@ public class LabelsTask extends BaseTask
          */
         protected void createUI()
         {
-            
+
             JPanel panel = new JPanel(new BorderLayout());
             panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
-            
+
             panel.add(new JLabel(getResourceString("ChooseLabel"), JLabel.CENTER), BorderLayout.NORTH);
 
             try
             {
-                ListModel listModel = new AbstractListModel() 
+                ListModel listModel = new AbstractListModel()
                 {
                     public int getSize() { return labelsList.size(); }
-                    public Object getElementAt(int index) 
-                    { 
-                        return ((RolloverCommand)labelsList.get(index)).getLabelText(); 
+                    public Object getElementAt(int index)
+                    {
+                        return ((RolloverCommand)labelsList.get(index)).getLabelText();
                     }
                 };
-                
+
                 list = new JList(listModel);
                 list.setCellRenderer(new IconListCellRenderer(icon));
-                
+
                 list.setVisibleRowCount(5);
                 list.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent e) {
@@ -439,43 +439,43 @@ public class LabelsTask extends BaseTask
                 });
                 JScrollPane listScroller = new JScrollPane(list);
                 panel.add(listScroller, BorderLayout.CENTER);
-                
+
                 // Bottom Button UI
                 cancelBtn         = new JButton(getResourceString("Cancel"));
                 okBtn             = new JButton(getResourceString("OK"));
 
                 okBtn.addActionListener(this);
                 getRootPane().setDefaultButton(okBtn);
-                
+
                 ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
                 btnBuilder.addGlue();
-                btnBuilder.addGriddedButtons(new JButton[] {cancelBtn, okBtn}); 
-     
+                btnBuilder.addGriddedButtons(new JButton[] {cancelBtn, okBtn});
+
                 cancelBtn.addActionListener(new ActionListener()
                         {  public void actionPerformed(ActionEvent ae) { setVisible(false);} });
-                
+
                 panel.add(btnBuilder.getPanel(), BorderLayout.SOUTH);
 
             } catch (Exception ex)
             {
                 log.error(ex);
             }
-            
+
             setContentPane(panel);
             pack();
             //setLocationRelativeTo(locationComp);
-            
+
         }
-        
+
          /* (non-Javadoc)
          * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
          */
-        public void actionPerformed(ActionEvent e) 
+        public void actionPerformed(ActionEvent e)
         {
             // Handle clicks on the OK and Cancel buttons.
            setVisible(false);
         }
-        
+
         /* (non-Javadoc)
          * @see java.awt.Component#getName()
          */
@@ -491,5 +491,5 @@ public class LabelsTask extends BaseTask
         }
     }
 
- 
+
 }

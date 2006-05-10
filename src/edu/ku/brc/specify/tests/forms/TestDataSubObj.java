@@ -1,11 +1,8 @@
 package edu.ku.brc.specify.tests.forms;
 
-import java.net.URL;
 import java.util.Set;
 
-import javax.swing.*;
-
-import edu.ku.brc.specify.ui.*;
+import edu.ku.brc.specify.ui.IconManager;
 
 public class TestDataSubObj
 {

@@ -74,6 +74,7 @@ import edu.ku.brc.specify.tasks.services.KeyholeMarkupGenerator;
 import edu.ku.brc.specify.tasks.services.LocalityMapper;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.ImageDisplay;
+import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.forms.ControlBarPanel;
 import edu.ku.brc.specify.ui.forms.FormViewObj;
 import edu.ku.brc.specify.ui.forms.MultiView;
@@ -85,7 +86,7 @@ import edu.ku.brc.specify.ui.forms.persist.View;
 
 /**
  * A default pane for display a simple label telling what it is suppose to do
- * 
+ *
  * @author rods
  *
  */
@@ -101,17 +102,17 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
     protected JLabel                          imageLabel     = new JLabel(getResourceString("LoadingImage"));
     protected JLabel                          titleLabel     = new JLabel();
     protected MultiView                       multiView;
-    
+
     protected List<CollectingEvent>           collectingEvents;
     protected List<Hashtable<String, Object>> valueList   = new ArrayList<Hashtable<String, Object>>();
     protected List<Rectangle>                 markerRects = new ArrayList<Rectangle>();
     protected boolean                         dirty       = false;
-    
+
     protected List<ImageGetter>               imageGetterList = new ArrayList<ImageGetter>();
     protected Hashtable<String, Image>        imageMap        = new Hashtable<String, Image>();
     protected FormViewObj                     formViewObj;
     protected JList                           imageJList;
-    
+
     protected Hashtable<String, String>       imageURLs   = new Hashtable<String, String>();
 
     protected ResultSetController             recordSetController;
@@ -125,17 +126,17 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
      * @param task the owning task
      * @param colEvents sorted list of collecting events
      */
-    public LocalityMapperSubPane(final String name, 
+    public LocalityMapperSubPane(final String name,
                                  final Taskable task,
                                  final List<CollectingEvent> colEvents)
     {
         super(name, task);
-        
+
         setBackground(Color.WHITE);
-        
+
         kmlGen = new KeyholeMarkupGenerator();
         this.collectingEvents = new ArrayList<CollectingEvent>();
-        
+
         CollectingEvent startCE = null;
         CollectingEvent endCE   = null;
 
@@ -144,22 +145,22 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         for (Object obj : colEvents)
         {
         	CollectingEvent collectingEvent = (CollectingEvent)obj;
-            
+
             Locality locality = collectingEvent.getLocality();
             if (locality == null || locality.getLatitude1() == null || locality.getLongitude1() == null)
             {
                 continue;
             }
-            
+
             collectingEvents.add(collectingEvent);
             kmlGen.addCollectingEvent(collectingEvent, "");
-            
+
             if (collectingEvents.size() == 1)
             {
                 startCE = collectingEvent;
                 endCE   = collectingEvent;
             }
-            
+
             // There may be an End Date that is further out than than the End Date of the last item
             // with the latest Start Date
             if (startCE.getStartDate().compareTo(collectingEvent.getStartDate()) > 1)
@@ -173,12 +174,12 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
                 endCE = collectingEvent;
             }
         	Hashtable<String, Object> map = new Hashtable<String, Object>();
-        	
+
         	Set<CollectionObject> colObjs = collectingEvent.getCollectionObjects();
-         	
+
         	map.put("startDate", collectingEvent.getStartDate());
         	map.put("endDate", collectingEvent.getEndDate());
-        	
+
         	Set<Object> taxonNames = new HashSet<Object>();
         	for (CollectionObject co : colObjs)
         	{
@@ -190,7 +191,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         				Taxon taxon = d.getTaxon();
         				if (taxon != null)
         				{
-        					taxonNames.add(taxon.getName() + (co.getCountAmt() != null ? "("+co.getCountAmt()+")" : ""));
+        					taxonNames.add(taxon.getName() + (co.getCountAmt() != null ? " ("+co.getCountAmt()+")" : ""));
         					if (taxon.getRankId() == 220)
         					{
         						Taxon genus = taxon.getParent();
@@ -206,7 +207,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         		}
         	}
         	map.put("taxonItems", taxonNames);
-        	
+
         	map.put("latitude1", locality.getLatitude1());
         	map.put("longitude1", locality.getLongitude1());
 
@@ -215,11 +216,11 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         	if (cal != null)
         	{
         		labels.add(scrDateFormat.format(cal.getTime()));
-        		
+
         	} else if (collectingEvent.getVerbatimDate() != null)
         	{
         		labels.add(collectingEvent.getVerbatimDate());
-        		
+
         	} else
         	{
         		labels.add(Integer.toString(collectingEvent.getCollectingEventId()));
@@ -229,18 +230,18 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
             labels.add(Integer.toString(collectingEvents.size()));
         	localities.add(locality);
         	valueList.add(map);
-	
+
         }
-        
+
         localityMapper.setPreferredMapWidth(300);
         localityMapper.setPreferredMapHeight(250);
-        
+
         Color arrow = new Color(220,220,220);
         localityMapper.setArrowColor(arrow);
         localityMapper.setDotColor(Color.WHITE);
         localityMapper.setDotSize(4);
         localityMapper.setLabelColor(Color.RED);
-        
+
         int inx = 0;
         for (Locality locality : localities)
         {
@@ -249,17 +250,17 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         }
         localityMapper.setCurrentLoc(localities.get(0));
         localityMapper.setCurrentLocColor(Color.RED);
-        
+
         // XXX DEMO  (Main Views is Hard Coded and shouldn't be)
         View view = ViewMgr.getView("Main Views", "LocalityMapper");
         multiView = new MultiView(null, view, AltView.CreationMode.View, false, false);
-        multiView.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(138,128,128)), 
+        multiView.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(138,128,128)),
                             BorderFactory.createEmptyBorder(4, 4, 4, 4)));
- 
-        
+
+
         formViewObj = (FormViewObj)multiView.getCurrentView();
         formViewObj.getUIComponent().setBackground(Color.WHITE);
-         
+
         imageJList = (JList)formViewObj.getComp("taxonItems");
         imageJList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e)
@@ -267,42 +268,53 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
                 if (!e.getValueIsAdjusting())
                 {
                 	String name = (String)imageJList.getSelectedValue();
-                	ImageDisplay imgDisplay = (ImageDisplay)formViewObj.getComp("image");
-                    
+                    if (name != null)
+                    {
+                        int inx = name.indexOf(" (");
+                        if (inx > -1)
+                        {
+                            name = name.substring(0, inx);
+                        }
+                    }
+
+
+                    //System.out.println("Getting["+name+"]");
                     Image img = null;
                     if (StringUtils.isNotEmpty(name))
                     {
-                    	img = imageMap.get(name); // might return nulll
+                        img = imageMap.get(name); // might return null
+                        ImageDisplay imgDisplay = (ImageDisplay)formViewObj.getComp("image");
+                        if (img != null)
+                        {
+                            imgDisplay.setImage(new ImageIcon(img));
+                        } else
+                        {
+                            imgDisplay.setImage(null);
+                        }
                     }
-                    
-                	if (img != null)
-                	{
-                		imgDisplay.setImage(new ImageIcon(img));
-                	} else
-                	{
-                		imgDisplay.setImage(null);
-                	}
+
+
                 }
             }});
-        
-         
+
+
         String startDateStr = scrDateFormat.format(startCE.getStartDate().getTime());
         String endDateStr   = scrDateFormat.format((endCE.getEndDate() != null ? endCE.getEndDate() : endCE.getStartDate()).getTime());
-        
+
         Formatter formatter = new Formatter();
         titleLabel.setText(formatter.format(getResourceString("LocalityMapperTitle"), new Object[] {startDateStr, endDateStr}).toString());
-        
+
         Font font = titleLabel.getFont();
         titleLabel.setFont(new Font(font.getFontName(), Font.BOLD, font.getSize()+2));
-        
+
         recordSetController = new ResultSetController(null, false, false, collectingEvents.size());
         recordSetController.addListener(this);
         recordSetController.getPanel().setBackground(Color.WHITE);
-        
+
         controlPanel = new ControlBarPanel();
         controlPanel.add(recordSetController);
         controlPanel.setBackground(Color.WHITE);
-        
+
         googleBtn = new JButton(IconManager.getIcon("GoogleEarth", IconManager.IconSize.Std16));
         googleBtn.setMargin(new Insets(1,1,1,1));
         googleBtn.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
@@ -311,33 +323,34 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         googleBtn.setMaximumSize(new Dimension(18,18));
         googleBtn.setFocusable(false);
         googleBtn.setBackground(Color.WHITE);
-        
+
         controlPanel.addButtons(new JButton[] {googleBtn}, false);
-        
+
         setLayout(new LocalityMapperLayoutManager(this, titleLabel, imageLabel, controlPanel, multiView));
-        
+
         multiView.setData(valueList.get(0));
-        
+
         validate();
         doLayout();
-        
-        
+
+
         googleBtn.addActionListener(new ActionListener()
                 {
             public void actionPerformed(ActionEvent ae)
             {
                 try
                 {
+                    UICacheManager.displayStatusBarText("Exporting Collecting Events in KML."); // XXX I18N
                     kmlGen.setSpeciesToImageMapper(imageURLs);
-                    kmlGen.outputToFile("/home/rods/specify.kml");
-                    
+                    kmlGen.outputToFile("/Users/rods/specify.kml");
+
                 } catch (Exception ex)
                 {
                     ex.printStackTrace();
                 }
             }
         });
-        
+
         addMouseMotionListener(new MouseMotionListener()
                 {
                     public void mouseDragged(MouseEvent e)
@@ -347,7 +360,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
                         checkMouseLocation(e.getPoint(), false);
                     }
                 });
-        
+
         addMouseListener(new MouseAdapter()
                 {
                     public void mouseClicked(MouseEvent e)
@@ -358,22 +371,22 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
                 });
 
         SwingUtilities.invokeLater(new Runnable() {
-            public void run() 
+            public void run()
             {
                 getLocalityMap();
             }
         });
-    
+
     }
-    
+
     /**
-     * Helper for the above Runnable 
+     * Helper for the above Runnable
      */
     protected void getLocalityMap()
     {
-        localityMapper.getMap(this); 
+        localityMapper.getMap(this);
     }
-    
+
     protected void setLabel(final Icon imageIcon)
     {
         SwingUtilities.invokeLater(new Runnable() {
@@ -383,7 +396,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
             }
           });
 
-        
+
         dirty = true;
     }
 
@@ -396,7 +409,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
             }
           });
     }
-    
+
     /**
      * @param mousePnt
      */
@@ -414,7 +427,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
             }
             dirty = false;
     	}
-    	
+
     	int inx = 0;
     	for (Rectangle r : markerRects)
         {
@@ -426,7 +439,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
                     Hashtable<String, Object> map = valueList.get(inx);
                     multiView.setData(map);
                     localityMapper.setCurrentLoc(collectingEvents.get(inx).getLocality());
-                    
+
                 } else
                 {
                     setCursor(handCursor);
@@ -439,9 +452,9 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
     		inx++;
         }
     	//multiView.setData(null);
-    	
+
     }
-    
+
     //------------------------------------------------------------------------
     //-- ResultSetControllerListener
     //------------------------------------------------------------------------
@@ -453,47 +466,51 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         localityMapper.setCurrentLoc(collectingEvents.get(newIndex).getLocality());
         repaint();
     }
-    
+
     public boolean indexAboutToChange(int oldIndex, int newIndex)
     {
         return true;
     }
- 
+
     //------------------------------------------------------------------------
     //-- Inner Classes
     //------------------------------------------------------------------------
-    
-    
-    
+
+
+
     class ImageGetter implements FishBaseInfoGetterListener
     {
     	protected FishBaseInfoGetter        getter;
     	protected List<ImageGetter>         list;
     	protected Hashtable<String, Image>  map;
         protected Hashtable<String, String> imageURLMap;
-    	protected String                    name;
-    	
-    	public ImageGetter(final List<ImageGetter> list, 
-    			           final Hashtable<String, Image> map,
-                           final Hashtable<String, String> imageURLMap, 
-    			           final String genus,
-    			           final String species)
+        protected String                    genus;
+        protected String                    species;
+
+    	public ImageGetter(final List<ImageGetter> list,
+                           final Hashtable<String, Image> map,
+                           final Hashtable<String, String> imageURLMap,
+                           final String genus,
+                           final String species)
     	{
-    		this.list = list;
-    		this.map  = map;
-            this.name = species;
+    		this.list        = list;
+    		this.map         = map;
+            this.genus       = genus;
+            this.species     = species;
             this.imageURLMap = imageURLMap;
-    		
+
     		getter = new FishBaseInfoGetter(this, FishBaseInfoGetter.InfoType.Thumbnail, genus, species);
     		getter.start();
     	}
-    	
+
         public void infoArrived(FishBaseInfoGetter getter)
         {
         	//System.out.println("["+name+"]["+getter.getImage()+"]");
         	if (getter.getImage() != null)
         	{
-        		map.put(name, getter.getImage());
+                imageURLMap.put(genus+" "+species, getter.getImageURL());
+                System.out.println("["+genus+" "+species+"]["+getter.getImageURL()+"]");
+        		map.put(species, getter.getImage());
         	}
         	cleanUp();
         }
@@ -502,7 +519,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         {
         	cleanUp();
         }
-        
+
         protected void cleanUp()
         {
         	list.remove(this);
@@ -512,11 +529,11 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         	getter = null;
         }
     }
-    
+
     //-----------------------------------------------------------------
     // MapperListener Interface
     //-----------------------------------------------------------------
-    
+
 	public void mapReceived(Icon map)
 	{
 		setLabel(map);
@@ -526,7 +543,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
 	{
 		setLabel("Was unable to get the map.");
 	}
-    
+
     /**
      * The layout manager for laying out NavBoxes in a vertical fashion (only)
      *
@@ -543,7 +560,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
     	protected final MultiView             form;
 
     	protected Dimension                   preferredSize = new Dimension(100,100);
-    	
+
         /**
          * Contructs a layout manager for layting out NavBoxes. It lays out all the NavBoxes vertically
          * and uses the 'ySeparator' as the spacing in between the boxes. It uses borderPadding as a 'margin'
@@ -551,9 +568,9 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
          * @param borderPadding the margin around the boxes
          * @param ySeparation the vertical separation inbetween the boxes.
          */
-        public LocalityMapperLayoutManager(final LocalityMapperSubPane parent, 
-                                           final JLabel titleLabel, 
-                                           final JLabel label, 
+        public LocalityMapperLayoutManager(final LocalityMapperSubPane parent,
+                                           final JLabel titleLabel,
+                                           final JLabel label,
                                            final JPanel controlBar,
                                            final MultiView form)
         {
@@ -562,7 +579,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
             this.titleLabel = titleLabel;
             this.controlBar = controlBar;
             this.form       = form;
-        	
+
         	parent.add(label);
             parent.add(form);
             parent.add(titleLabel);
@@ -602,7 +619,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         {
         	Dimension size     = arg0.getPreferredSize();
         	Dimension formSize = form.getPreferredSize();
-        	
+
         	int w = size.width - formSize.width - (3 * gap);
         	int h = size.height - formSize.height - (2*gap);
         	return new Dimension(w, h);
@@ -616,40 +633,40 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         	Dimension size      = arg0.getSize();
         	Dimension formSize  = form.getPreferredSize();
         	//Dimension labelSize = label.getPreferredSize();
-        	
-        	
+
+
         	if (size.width > formSize.width && size.height > formSize.height)
         	{
         		preferredSize.setSize(size.width - formSize.width - (3 * gap), size.height - formSize.height - (2*gap));
                 //preferredSize.setSize(300, 250); // XXX
-                
+
                 int formY = (size.height - formSize.height) / 2;
         		form.setLocation((size.width - formSize.width)-gap, formY);
         		//System.out.println("1 formSize: "+formSize);
         		form.setSize(formSize);
         		form.setVisible(true);
-                
+
                 Dimension compSize = titleLabel.getPreferredSize();
                 titleLabel.setBounds((size.width - compSize.width) / 2, (formY - compSize.height) / 2, compSize.width, compSize.height);
-        		
+
                 //label.setLocation((size.width - (preferredSize.width + (gap * 2))) / 2, (size.height - preferredSize.height)/2);
                 int labelX = gap;
                 int labelY = (size.height - preferredSize.height)/2;
                 label.setLocation(labelX, labelY);
-                
+
         		//System.out.println("2 label preferredSize "+preferredSize);
         		label.setSize(preferredSize);
                 localityMapper.setPreferredMapWidth(preferredSize.width);
                 localityMapper.setPreferredMapHeight(preferredSize.height);
-                
+
                 // XXXX DEBUG
                 //localityMapper.setPreferredMapWidth(300);
                 //localityMapper.setPreferredMapHeight(250);
 
-                
+
                 compSize = controlBar.getPreferredSize();
                 controlBar.setBounds(labelX + (preferredSize.width - compSize.width) / 2, labelY + preferredSize.height + gap, compSize.width, compSize.height);
-        		
+
         	} else
         	{
         		preferredSize.setSize(size.width - (2 * gap), size.height - (2*gap));

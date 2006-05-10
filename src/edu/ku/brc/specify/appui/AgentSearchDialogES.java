@@ -51,9 +51,9 @@ import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsHitsCache;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.db.GenericSearchDialog;
-import edu.ku.brc.specify.ui.forms.Viewable;
 import edu.ku.brc.specify.ui.forms.ViewFactory;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
+import edu.ku.brc.specify.ui.forms.Viewable;
 import edu.ku.brc.specify.ui.forms.persist.View;
 
 /**

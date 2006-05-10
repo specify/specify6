@@ -21,8 +21,8 @@
 
 package edu.ku.brc.specify.extfilerepos;
 
-import java.sql.Date;
 import java.io.File;
+import java.sql.Date;
 
 /**
  * Interface representing a single external file in the repository

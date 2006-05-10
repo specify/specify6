@@ -9,6 +9,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
@@ -29,29 +30,29 @@ public class KeyholeMarkupGenerator
 
 	protected static String XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 	protected static String KML_NAMESPACE_DECL = "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n";
-	
+
 	protected List<CollectingEvent> events;
 	protected List<String> labels;
-	
+
 	protected Hashtable<String,String> speciesToImageURLHash;
-	
+
 	public KeyholeMarkupGenerator()
 	{
 		events = new Vector<CollectingEvent>();
 		labels = new Vector<String>();
 	}
-	
+
 	public void addCollectingEvent( CollectingEvent ce, String label )
 	{
 		events.add(ce);
 		labels.add(label);
 	}
-	
+
 	public void setSpeciesToImageMapper( Hashtable<String,String> mapper )
 	{
 		this.speciesToImageURLHash = mapper;
 	}
-	
+
 	public void outputToFile( String filename ) throws IOException
 	{
 		BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
@@ -70,7 +71,7 @@ public class KeyholeMarkupGenerator
 		writer.flush();
 		writer.close();
 	}
-	
+
 	protected String generatePathForLocalities()
 	{
 		StringBuilder sb = new StringBuilder("<Placemark>\n");
@@ -91,11 +92,11 @@ public class KeyholeMarkupGenerator
 
 		return sb.toString();
 	}
-	
+
 	protected String generatePlacemark( CollectingEvent ce, String label )
 	{
 		// get all of the important information
-		
+
 		// get location information
 		Locality loc = ce.getLocality();
 		Double lat = loc.getLatitude1();
@@ -110,14 +111,20 @@ public class KeyholeMarkupGenerator
 		DateFormat dfEnd = DateFormat.getDateInstance();
 		dfEnd.setCalendar(end);
 		String endString = dfEnd.format(end.getTime());
-		
+
 		// get names of collectors
 		List<String> agentNames = new Vector<String>();
 		for( Collectors c: ce.getCollectors() )
 		{
-			agentNames.add(c.getAgent().getName());
+            if (StringUtils.isNotEmpty(c.getAgent().getName()))
+            {
+                agentNames.add(c.getAgent().getName());
+            } else
+            {
+                agentNames.add(c.getAgent().getFirstName()+ " "+ c.getAgent().getLastName());
+            }
 		}
-		
+
 		// get taxonomy of collection object
 		Vector<Pair<String,String>> genusSpecies = new Vector<Pair<String,String>>();
 		for( CollectionObject co: ce.getCollectionObjects() )
@@ -136,21 +143,27 @@ public class KeyholeMarkupGenerator
 			}
 			genusSpecies.add(new Pair<String,String>(genus,species));
 		}
-		
+
 		// build the placemark
 		StringBuilder sb = new StringBuilder("<Placemark>\n");
 		sb.append("<name>");
-		sb.append(label);
+		//sb.append(label);
+        sb.append(startString);
+        if (!startString.equals(endString))
+        {
+            sb.append(" - ");
+            sb.append(endString);
+        }
 		sb.append("</name>\n");
-		
+
 		// build the fancy HTML popup description
 		sb.append("<description><![CDATA[");
-		sb.append("<center><h3>");
-		sb.append(startString);
-		sb.append(" - ");
-		sb.append(endString);
-		sb.append("</h3></center>");
-		sb.append("<br/><h3>Collectors:</h3>\n<ul>\n");
+		//sb.append("<center><h3>");
+		//sb.append(startString);
+		//sb.append(" - ");
+		//sb.append(endString);
+		//sb.append("</h3></center><br/>");
+		sb.append("<h3>Collectors:</h3>\n<ul>\n");
 		for( String agent: agentNames )
 		{
 			sb.append("<li>");
@@ -161,40 +174,41 @@ public class KeyholeMarkupGenerator
 		sb.append("<br/><h3>Collection objects:</h3>\n<table>\n");
 		for( Pair<String,String> tax: genusSpecies )
 		{
-			sb.append("<tr>");
+			sb.append("<tr>\n");
 
 			// simple name text
-			String taxonomicName = tax.second + " " + tax.first;
+			String taxonomicName = tax.first + " " + tax.second;
 			sb.append("<td><i>");
 			sb.append(taxonomicName);
-			sb.append("</i></td>");
-			
+			sb.append("</i></td>\n");
+
 			sb.append("<td><a href=\"http://www.fishbase.org/Summary/speciesSummary.php?genusname=");
 			sb.append(tax.first);
 			sb.append("&speciesname=");
 			sb.append(tax.second);
 			sb.append("\">");
-			sb.append("fb</a></td>");
+			sb.append("fb</a></td>\n");
 
 			sb.append("<td><a href=\"http://animaldiversity.ummz.umich.edu/site/accounts/information/");
 			sb.append(tax.first);
 			sb.append("_");
 			sb.append(tax.second);
 			sb.append("\">");
-			sb.append("ad</a></td>");
-			
+			sb.append("ad</a></td>\n");
+
 			if( speciesToImageURLHash != null )
 			{
 				String imgSrc = speciesToImageURLHash.get(taxonomicName);
+                System.out.println("["+taxonomicName+"]["+imgSrc+"]");
 				if( imgSrc != null )
 				{
 					sb.append("<td><img src=\"");
 					sb.append(imgSrc);
-					sb.append("\"/></td>");
+					sb.append("\"/></td>\n");
 				}
 				else
 				{
-					sb.append("<td>&nbsp;</td>");
+					sb.append("<td>&nbsp;</td>\n");
 				}
 			}
 
@@ -218,19 +232,19 @@ public class KeyholeMarkupGenerator
 		sb.append("</coordinates>\n");
 		sb.append("</Point>\n");
 		sb.append("</Placemark>\n\n\n");
-		
+
 		log.debug("Generated placemark:\n " + sb.toString() );
 		return sb.toString();
 	}
-	
+
 	/**
 	 * @param args
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException
 	{
 		KeyholeMarkupGenerator kmlGen = new KeyholeMarkupGenerator();
-		
+
 		Session s = HibernateUtil.getCurrentSession();
 		Query q = s.createQuery("from collectingevent in class CollectingEvent where collectingevent.collectingEventId in (1,2,3,4,5,6)");
 		List events = q.list();
@@ -239,11 +253,11 @@ public class KeyholeMarkupGenerator
 			CollectingEvent ce = (CollectingEvent)events.get(i);
 			kmlGen.addCollectingEvent(ce, Integer.toString(i));
 		}
-		
+
 		Hashtable<String,String> testMap = new Hashtable<String, String>();
 		testMap.put("girardi Notropis", "http://www.google.com/intl/en/images/logo.gif");
 		kmlGen.setSpeciesToImageMapper(testMap);
-		
+
 //		double[] locationArray = {
 //				39.0657, -95.4181,
 //				37.8156, -98.7656,
@@ -256,7 +270,7 @@ public class KeyholeMarkupGenerator
 ////				29.9650, -99.2344,
 ////				37.3455, -95.5311
 //		};
-//		
+//
 //		String[] taxa = {
 //				"Polyodon", "spathula",
 //				"Lepisosteus", "oculatus",
@@ -269,7 +283,7 @@ public class KeyholeMarkupGenerator
 //				"Pomoxis", "nigromaculatus",
 //				"Sander", "vitreus"
 //		};
-//		
+//
 //		String[] agentNames = {
 //				"Andy Bentley",
 //				"Rod Spears",
@@ -279,10 +293,10 @@ public class KeyholeMarkupGenerator
 //		};
 //
 //		Agent[] agents = new Agent[agentNames.length];
-//		
+//
 //		Calendar c = Calendar.getInstance();
 //		Random r = new Random();
-//		
+//
 //		for( int i = 0; i < agentNames.length; ++i )
 //		{
 //			Agent a = new Agent();
@@ -290,9 +304,9 @@ public class KeyholeMarkupGenerator
 //			a.setName(agentNames[i]);
 //			agents[i] = a;
 //		}
-//		
+//
 //		CollectionObject[] objects = new CollectionObject[taxa.length/2];
-//		
+//
 //		for( int i = 0; i < taxa.length; i+=2 )
 //		{
 //			Taxon genus = new Taxon();
@@ -311,23 +325,23 @@ public class KeyholeMarkupGenerator
 //			o.getDeterminations().add(d);
 //			objects[i/2] = o;
 //		}
-//		
+//
 //		for( int i = 0; i < locationArray.length; i+=2 )
 //		{
 //			CollectingEvent ce = new CollectingEvent();
 //			ce.initialize();
-//			
+//
 //			// set the times
 //			ce.setStartDate(c);
 //			ce.setEndDate(c);
-//			
+//
 //			// set the location
 //			Locality loc = new Locality();
 //			loc.initialize();
 //			loc.setLatitude1(locationArray[i]);
 //			loc.setLongitude1(locationArray[i+1]);
 //			ce.setLocality(loc);
-//			
+//
 //			// set the agents
 //			for( int j = 0; j < agents.length; ++j )
 //			{
@@ -339,13 +353,13 @@ public class KeyholeMarkupGenerator
 //					ce.getCollectors().add(coll);
 //				}
 //			}
-//			
+//
 //			// setup the collection objects
 //			ce.getCollectionObjects().add(objects[i/2]);
-//			
+//
 //			kmlGen.addCollectingEvent(ce,Integer.toString(i/2));
 //		}
-		
+
 		kmlGen.outputToFile("C:\\Documents and Settings\\jstewart\\Desktop\\kmloutput.kml");
 	}
 }

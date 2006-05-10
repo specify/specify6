@@ -15,8 +15,6 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-//import edu.ku.brc.specify.dbsupport.DBTableIdMgr.TableInfo;
-//import edu.ku.brc.specify.dbsupport.DBTableIdMgr.TableInfo;
 import edu.ku.brc.specify.tools.datamodelparser.Field;
 import edu.ku.brc.specify.tools.datamodelparser.Relationship;
 import edu.ku.brc.specify.tools.datamodelparser.Table;

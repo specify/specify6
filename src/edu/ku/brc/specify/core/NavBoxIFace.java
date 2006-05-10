@@ -19,8 +19,9 @@
  */
 package edu.ku.brc.specify.core;
 
-import javax.swing.JComponent;
 import java.util.List;
+
+import javax.swing.JComponent;
 
 /**
  * Describes a Navigation Box (container) of objects. The objects can be commands, queries, 

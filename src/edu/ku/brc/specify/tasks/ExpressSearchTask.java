@@ -152,7 +152,7 @@ public class ExpressSearchTask extends BaseTask
                 if (tables.get(tableInfo.getName()) == null)
                 {
                     tables.put(tableInfo.getName(), tableInfo);
-                    
+
                 } else
                 {
                     log.error("Duplicate express Search name["+tableInfo.getName()+"]");
@@ -323,10 +323,10 @@ public class ExpressSearchTask extends BaseTask
                 }
                 return false;
             }
-            
+
             // "tables" maps by name so create a hash for mapping by ID
             Hashtable<String, ExpressResultsTableInfo> idToTableInfoMap = new Hashtable<String, ExpressResultsTableInfo>();
-            
+
             for (Enumeration<ExpressResultsTableInfo> e=tables.elements();e.hasMoreElements();)
             {
                 ExpressResultsTableInfo ti = e.nextElement();
@@ -337,7 +337,7 @@ public class ExpressSearchTask extends BaseTask
             }
 
             log.info(hits.length()+" Hits for ["+searchTerm+"]["+query.toString()+"]");
-            
+
             boolean useFloat = false;
 
             int cntUseHitsCache = 0;
@@ -356,7 +356,7 @@ public class ExpressSearchTask extends BaseTask
                 {
                     tableInfo.addIndex(i);
                     cntUseHitsCache++;
-                    
+
                 } else
                 {
                     try
@@ -436,7 +436,7 @@ public class ExpressSearchTask extends BaseTask
 
         searchBtn   = new JButton(getResourceString("Search"));
 
-        searchText  = new JTextField("[19510707 TO 19510721]", 10);//"beanii"
+        searchText  = new JTextField("[19510707 TO 19510711]", 10);//"beanii"
         //searchText  = new JTextField(10);
         textBGColor = searchText.getBackground();
 

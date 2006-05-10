@@ -26,7 +26,6 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JTable;
 import javax.swing.table.JTableHeader;
-
 import javax.swing.table.TableColumnModel;
 
 /**

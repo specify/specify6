@@ -37,7 +37,7 @@ import edu.ku.brc.specify.ui.UICacheManager;
 
 /**
  * Class responsible for doing all the work for the Drag portion of Drag and Drop.
- * 
+ *
  * @author rods
  *
  */
@@ -46,34 +46,34 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
     // Ghost MotionAdaptor
     protected static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
     protected static final Cursor DEF_CURSOR = new Cursor(Cursor.DEFAULT_CURSOR);
-    
+
     protected GhostGlassPane          glassPane;
-    protected Cursor                  currCursor    = null; 
-    protected Point                   firstPosition = new Point();        
-    
+    protected Cursor                  currCursor    = null;
+    protected Point                   firstPosition = new Point();
+
     protected String                  action;
     protected List<GhostDropListener> listeners;
     protected GhostActionable         ghostActionable;
 
     /**
      * Constructor
-     * @param glassPane the glass pane 
+     * @param glassPane the glass pane
      * @param action the action command
      * @param ghostActionable the actionable for the adapter
      */
     public GhostMouseInputAdapter(GhostGlassPane  glassPane,
                                   String          action,
-                                  GhostActionable ghostActionable) 
+                                  GhostActionable ghostActionable)
     {
         this.glassPane       = glassPane;
         this.action          = action;
         this.ghostActionable = ghostActionable;
         this.listeners = new ArrayList<GhostDropListener>();
     }
-    
- 
+
+
     // From GhostMouseDropAdapter
-    
+
     /**
      * Starts the Drag process
      * @param c the component
@@ -82,13 +82,16 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
      */
     protected void startDrag(Component c, int button, Point pnt)
     {
-        System.out.println("startDrag "+ghostActionable);
-        
-        if (DragAndDropLock.isLocked() || button != 0) 
+
+        //System.out.println(button+" startDrag "+DragAndDropLock.isDragAndDropStarted()+" "+DragAndDropLock.isLocked());
+
+        if (DragAndDropLock.isLocked() || button != 1)
         {
             DragAndDropLock.setDragAndDropStarted(false);
+            //System.out.println("startDrag bailing");
             return;
         }
+
         DragAndDropLock.setLocked(true);
         DragAndDropLock.setDragAndDropStarted(true);
 
@@ -102,28 +105,29 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
         glassPane.setPoint(p);
         glassPane.setImage(bi, bi.getWidth());
         glassPane.repaint();
-       
+
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
      */
-    public void mousePressed(MouseEvent e) 
+    public void mousePressed(MouseEvent e)
     {
+        //System.out.println("mousePressed");
         firstPosition.setLocation(e.getPoint());
     }
 
     /* (non-Javadoc)
      * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
      */
-    public void mouseReleased(MouseEvent e) 
+    public void mouseReleased(MouseEvent e)
     {
-        if (e.getButton() != 1 || !DragAndDropLock.isDragAndDropStarted()) 
+        if (e.getButton() != 1 || !DragAndDropLock.isDragAndDropStarted())
         {
             return;
         }
         DragAndDropLock.setDragAndDropStarted(false);
-        
+
         Component c = e.getComponent();
 
         Point p = (Point) e.getPoint().clone();
@@ -133,12 +137,12 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
         SwingUtilities.convertPointFromScreen(p, glassPane);
 
         glassPane.setPoint(p);
-        
+
         //System.out.println(NavBoxMgr.getInstance().getBounds());
         //JComponent rootPane = NavBoxMgr.getInstance();
         JComponent rootPane = (JComponent)UICacheManager.get(UICacheManager.MAINPANE);
         //System.out.println(rootPane.getBounds());
-        
+
         Point pp = (Point) e.getPoint().clone();
         SwingUtilities.convertPointToScreen(pp, c);
         SwingUtilities.convertPointFromScreen(pp, rootPane);
@@ -147,7 +151,7 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
         Component dropComponent = SwingUtilities.getDeepestComponentAt(rootPane, pp.x, pp.y);
 
         //System.out.println(component);
-        
+
         boolean clearIt = true;
         if (dropComponent instanceof GhostActionable && dropComponent instanceof JComponent)
         {
@@ -157,13 +161,13 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
                                                                     ((JComponent)dropComponent).getVisibleRect(),
                                                                     glassPane));
             Component source = e.getComponent();
-           
+
             if (source instanceof GhostActionable)
             {
                 ((GhostActionable)dropComponent).doAction((GhostActionable)source);
                 clearIt = false;
             }
-            
+
         } else
         {
             if (hasListeners())
@@ -176,18 +180,18 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
                 }
             }
         }
-        
+
         if (clearIt)
         {
-            glassPane.setImage(null); 
+            glassPane.setImage(null);
             glassPane.setVisible(false);
             DragAndDropLock.setLocked(false);
         }
     }
-    
+
     /**
      * Returns whether the flavors match
-     * @param srcGA the source 
+     * @param srcGA the source
      * @param dstGA the destination
      * @return Returns whether the flavors match
      */
@@ -197,7 +201,7 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
         {
             for (DataFlavor dstDF : dstGA.getDropDataFlavors())
             {
-                if (srcDF.equals(dstDF)) 
+                if (srcDF.equals(dstDF))
                 {
                     return true;
                 }
@@ -209,25 +213,26 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
     /**
      * Updates (draws) the glass pane as the image is dragged
      */
-    public void mouseDragged(MouseEvent e) 
+    public void mouseDragged(MouseEvent e)
     {
+        //System.out.println("mouseDragged "+DragAndDropLock.isDragAndDropStarted());
         Point pnt = e.getPoint();
-        if (!DragAndDropLock.isDragAndDropStarted()) 
+        if (!DragAndDropLock.isDragAndDropStarted())
         {
-            
-            if (Math.abs(firstPosition.x - pnt.x) > 3 || Math.abs(firstPosition.y - pnt.y) > 3) 
+
+            if (Math.abs(firstPosition.x - pnt.x) > 3 || Math.abs(firstPosition.y - pnt.y) > 3)
             {
                  startDrag(e.getComponent(), e.getButton(), pnt);
-                
+
             } else
             {
                 return;
             }
         }
-        
+
         Component c = e.getComponent();
-        
-        // Translate the Point from current component to the Main pane 
+
+        // Translate the Point from current component to the Main pane
         // which is the same size as the ghost pane
         JComponent rootPane = (JComponent)UICacheManager.get(UICacheManager.MAINPANE);
         Point      pp       = (Point) pnt.clone();
@@ -236,7 +241,7 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
 
         // Find the component that under this point on the main pane
         Component dropComponent = SwingUtilities.getDeepestComponentAt(rootPane, pp.x, pp.y);
-        
+
         boolean flavorOK = false;
         if (dropComponent instanceof GhostActionable && c != dropComponent)
         {
@@ -249,18 +254,18 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
             {
                 glassPane.setAlpha(1.0f);
                 glassPane.setCursor(HAND_CURSOR);
-                currCursor = HAND_CURSOR; 
+                currCursor = HAND_CURSOR;
             }
         } else
         {
             if (currCursor != DEF_CURSOR) // a little optimiztion
             {
-                glassPane.resetAlpha(); 
+                glassPane.resetAlpha();
                 glassPane.setCursor(DEF_CURSOR);
-                currCursor = DEF_CURSOR; 
+                currCursor = DEF_CURSOR;
             }
         }
-        
+
         // NOw translate the point ot the glass pane
         Point p = (Point) pnt.clone();
         SwingUtilities.convertPointToScreen(p, c);
@@ -269,34 +274,34 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
 
         glassPane.repaint(glassPane.getRepaintRect());
     }
-    
 
-    public void addGhostDropListener(GhostDropListener listener) 
+
+    public void addGhostDropListener(GhostDropListener listener)
     {
         if (listener != null)
             listeners.add(listener);
     }
 
-    public void removeGhostDropListener(GhostDropListener listener) 
+    public void removeGhostDropListener(GhostDropListener listener)
     {
         if (listener != null)
             listeners.remove(listener);
     }
 
-    protected void fireGhostDropEvent(GhostDropEvent evt) 
+    protected void fireGhostDropEvent(GhostDropEvent evt)
     {
         Iterator it = listeners.iterator();
-        while (it.hasNext()) 
+        while (it.hasNext())
         {
             ((GhostDropListener) it.next()).ghostDropped(evt);
         }
     }
-    
+
     protected boolean hasListeners()
     {
         return listeners.size() > 0;
     }
-    
+
 
 
 

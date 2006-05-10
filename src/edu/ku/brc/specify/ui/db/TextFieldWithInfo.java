@@ -20,8 +20,8 @@
 
 package edu.ku.brc.specify.ui.db;
 
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.split;
 
 import java.awt.Color;

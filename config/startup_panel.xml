@@ -30,7 +30,7 @@
 		  <link colid="6">OverdueLookup</link>
       </box>
    </row>
-   
+
     <row>
         <!--
         <box title="Recent Searches" desccol="1" valcol="2">
@@ -79,8 +79,9 @@
         <box type="Bar Chart" name="AccessionByDivision" colspan="3"/>
     </row>
     -->
+    <!--
     <row>
         <box type="Bar Chart" name="Specimens by Country" colspan="3"/>
     </row>
-    
+    -->
 </panel>

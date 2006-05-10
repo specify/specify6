@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.tools.datamodelparser;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Hashtable;
 
 public class Table
 {

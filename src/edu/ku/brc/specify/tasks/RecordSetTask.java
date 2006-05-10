@@ -32,6 +32,8 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 
 import org.hibernate.Criteria;
+import org.hibernate.LockMode;
+import org.hibernate.Session;
 
 import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.core.NavBoxItemIFace;
@@ -49,7 +51,7 @@ import edu.ku.brc.specify.ui.Trash;
 import edu.ku.brc.specify.ui.UICacheManager;
 /**
  * Takes care of offering up record sets, updating, deleteing and creating them.
- * 
+ *
  * @author rods
  *
  */
@@ -58,10 +60,10 @@ public class RecordSetTask extends BaseTask
     // Static Data Members
     public static final String RECORD_SET = "Record_Set";
     public static final DataFlavor RECORDSET_FLAVOR = new DataFlavor(RecordSetTask.class, "RECORD_SET");
-    
+
     // Data Members
     protected NavBox navBox = null;
-    
+
     /**
      * Default Constructor
      *
@@ -81,23 +83,23 @@ public class RecordSetTask extends BaseTask
         if (!isInitialized)
         {
             super.initialize(); // sets isInitialized to false
-            
+
             Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(RecordSet.class);
             List recordSets = criteria.list();
-              
+
             navBox = new NavBox(title);
-            
+
             for (Iterator iter=recordSets.iterator();iter.hasNext();)
             {
                 RecordSet recordSet = (RecordSet)iter.next();
                 addDraggableDataFlavors(addNavBoxItem(navBox, recordSet.getName(), RECORD_SET, "Delete", recordSet));
-            }          
+            }
             navBoxes.addElement(navBox);
             HibernateUtil.closeSession();
-            
+
         }
     }
-    
+
     /**
      * Adds the appropriate flavors to make it draggable
      * @param nbi the item to be made draggable
@@ -108,7 +110,7 @@ public class RecordSetTask extends BaseTask
         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
         roc.addDragDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
     }
-    
+
     /**
      * Save a record set
      * @param recordSet the rs to be saved
@@ -116,28 +118,28 @@ public class RecordSetTask extends BaseTask
     public void saveRecordSet(final RecordSet recordSet)
     {
         NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), "Record_Set", "Delete", recordSet);
-        
+
         addDraggableDataFlavors(nbi);
 
         recordSet.setTimestampCreated(Calendar.getInstance().getTime());
-        
+
         // save to database
         HibernateUtil.getCurrentSession();
         HibernateUtil.beginTransaction();
         HibernateUtil.getCurrentSession().saveOrUpdate(recordSet);
         HibernateUtil.commitTransaction();
         HibernateUtil.closeSession();
-        
+
         NavBoxMgr.getInstance().addBox(navBox);
-        
+
         // XXX This needs to be made generic
         navBox.invalidate();
         navBox.doLayout();
         navBox.repaint();
-        
+
         CommandDispatcher.dispatch(new CommandAction("Labels", "NewRecordSet", nbi));
     }
-    
+
     /**
      * Delete a record set
      * @param rs the recordSet to be deleted
@@ -145,13 +147,15 @@ public class RecordSetTask extends BaseTask
     protected void deleteRecordSet(final RecordSet recordSet)
     {
         // delete from database
-        HibernateUtil.getCurrentSession();
+        Session session = HibernateUtil.getCurrentSession();
+        session.lock(recordSet, LockMode.NONE);
         HibernateUtil.beginTransaction();
+
         HibernateUtil.getCurrentSession().delete(recordSet);
         HibernateUtil.commitTransaction();
-        HibernateUtil.closeSession();       
+        HibernateUtil.closeSession();
     }
-    
+
     /**
      * Return a NavBoxItem by name
      * @param boxName the name of the NavBoxItem
@@ -168,9 +172,9 @@ public class RecordSetTask extends BaseTask
         }
         return null;
     }
-    
+
     /**
-     * Delete the RecordSet from the UI, which really means remove the NavBoxItemIFace. 
+     * Delete the RecordSet from the UI, which really means remove the NavBoxItemIFace.
      * This method first checks to see if the boxItem is not null and uses that, i
      * f it is null then it looks the box up by name ans used that
      * @param boxItem the box item to be deleted
@@ -178,11 +182,11 @@ public class RecordSetTask extends BaseTask
      */
     protected void deleteRecordSetFromUI(final NavBoxItemIFace boxItem, final RecordSet recordSet)
     {
-        Component comp = boxItem != null ? boxItem.getUIComponent() : getBoxByName(recordSet.getName()).getUIComponent(); 
+        Component comp = boxItem != null ? boxItem.getUIComponent() : getBoxByName(recordSet.getName()).getUIComponent();
         if (comp != null)
         {
             navBox.remove(comp);
-            
+
             // XXX this is pathetic and needs to be generized
             navBox.invalidate();
             navBox.setSize(navBox.getPreferredSize());
@@ -194,7 +198,7 @@ public class RecordSetTask extends BaseTask
             UICacheManager.forceTopFrameRepaint();
         }
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
@@ -202,11 +206,11 @@ public class RecordSetTask extends BaseTask
     {
         return new SimpleDescPane(name, this, "This is the Data Entry Pane");
     }
-    
+
     //-------------------------------------------------------
     // Plugin Interface
     //-------------------------------------------------------
-    
+
      /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getToolBarItems()
@@ -214,13 +218,13 @@ public class RecordSetTask extends BaseTask
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        
+
         //ToolBarDropDownBtn btn = createToolbarButton(RECORD_SET,   "dataentry.gif",    "dataentry_hint");
         //list.add(new ToolBarItemDesc(btn));
-        
+
         return list;
     }
-    
+
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getMenuItems()
@@ -229,9 +233,9 @@ public class RecordSetTask extends BaseTask
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
         return list;
-        
+
     }
-    
+
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
@@ -262,5 +266,5 @@ public class RecordSetTask extends BaseTask
 
         }
     }
-    
+
 }

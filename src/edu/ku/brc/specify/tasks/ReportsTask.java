@@ -34,7 +34,7 @@ import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 
 /**
  * This task will enable a user to create, and view reports.
- * 
+ *
  * @author rods
  *
  */
@@ -45,18 +45,18 @@ public class ReportsTask extends BaseTask
     public ReportsTask()
     {
         super(REPORTS, getResourceString(REPORTS));
-        
+
         // Temporary
         NavBox navBox = new NavBox(getResourceString("Actions"));
         navBox.add(NavBox.createBtn(getResourceString("Create_New_Report"), name, IconManager.IconSize.Std16));
         navBoxes.addElement(navBox);
-        
-        //navBox = new NavBox(name);
-        //navBox.add(NavBox.createBtn(name, name, IconManager.IconSize.Std16));
-        //navBox.add(NavBox.createBtn(name, name, IconManager.IconSize.Std16));
-        //navBoxes.addElement(navBox);
+
+        navBox = new NavBox(name);
+        navBox.add(NavBox.createBtn("Year End Report", name, IconManager.IconSize.Std16));
+        navBox.add(NavBox.createBtn("Grant Statistics Report", name, IconManager.IconSize.Std16));
+        navBoxes.addElement(navBox);
     }
-    
+
     /**
      * @return the initial pane
      */
@@ -64,11 +64,11 @@ public class ReportsTask extends BaseTask
     {
         return new SimpleDescPane(title, this, "This is the Reports Pane");
     }
-    
+
     //-------------------------------------------------------
     // Plugin Interface
     //-------------------------------------------------------
-    
+
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getToolBarItems()
@@ -76,13 +76,13 @@ public class ReportsTask extends BaseTask
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        ToolBarDropDownBtn btn = createToolbarButton(name, "reports.gif", "reports_hint");      
+        ToolBarDropDownBtn btn = createToolbarButton(name, "reports.gif", "reports_hint");
 
-        
+
         list.add(new ToolBarItemDesc(btn));
         return list;
     }
-    
+
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getMenuItems()
@@ -91,8 +91,8 @@ public class ReportsTask extends BaseTask
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
         return list;
-        
+
     }
-    
+
 
 }
