@@ -468,11 +468,11 @@ public class UICacheManager
 	 */
 	public static FileCache getShortTermFileCache()
 	{
-        if (instance.longTermCache == null)
+        if (instance.shortTermCache == null)
         {
             try
             {
-                instance.longTermCache = new FileCache("shortTermCache");
+                instance.shortTermCache = new FileCache("shortTermCache");
             } catch (Exception ex)
             {
                 ex.printStackTrace();
