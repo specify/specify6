@@ -15,10 +15,12 @@ public class MapGrabber
 	private static Log log = LogFactory.getLog(MapGrabber.class);
 	// setup some default values
 	// TODO: remove these from any final versions
-	
+
 	protected HttpClient httpClient;
-	protected String host = "129.237.201.104";
-	protected String layers = "bmng";
+	//protected String host = "129.237.201.104";
+    protected String host = "mapus.jpl.nasa.gov";
+    //protected String layers = "bmng";
+    protected String layers = "global_mosaic";
 	protected double minLat = -90;
 	protected double minLong = -180;
 	protected double maxLat = 90;
@@ -32,7 +34,7 @@ public class MapGrabber
 	{
 		httpClient = new HttpClient();
 	}
-	
+
 	/**
 	 * @return Returns the host.
 	 */
@@ -64,7 +66,7 @@ public class MapGrabber
 	{
 		this.layers = layers;
 	}
-	
+
 	/**
 	 * @return Returns the height.
 	 */
@@ -96,7 +98,7 @@ public class MapGrabber
 	{
 		this.width = width;
 	}
-	
+
 	/**
 	 * @return Returns the defaultHeight.
 	 */
@@ -218,24 +220,24 @@ public class MapGrabber
 		setPreferredHeight(height);
 		return getMap();
 	}
-	
+
 	protected double getLatLongRatio()
 	{
 		double longRange = maxLong - minLong;
 		double latRange = maxLat - minLat;
 		return (double)(latRange/longRange);
 	}
-	
+
 	protected void calcHeight()
 	{
 		height = (int)(width * getLatLongRatio());
 	}
-	
+
 	protected void calcWidth()
 	{
 		width = (int)(height / getLatLongRatio());
 	}
-	
+
 	public Image getMap() throws HttpException, IOException
 	{
 		if( width == null && height == null )
@@ -251,24 +253,25 @@ public class MapGrabber
 		{
 			calcHeight();
 		}
-		
+
 		if( width > 2048 )
 		{
 			width = 2048;
 			calcHeight();
 		}
-		
+
 		if( height > 2048 )
 		{
 			height = 2048;
 			calcWidth();
 		}
-		
+
 		StringBuilder url = new StringBuilder("http://");
 		url.append(host);
-		url.append("/cgi-bin/ogc.cgi/bmortho?version=1.1.1&service=WMS&Request=GetMap&format=image/gif&styles=default&srs=epsg:4326&layers=");
+        url.append("/browse.cgi?wms_server=wms.cgi&srs=EPSG:4326&format=image/jpeg&styles=visual&layers=");
+		//url.append("/cgi-bin/ogc.cgi/bmortho?version=1.1.1&service=WMS&Request=GetMap&format=image/gif&styles=default&srs=epsg:4326&layers=");
 		url.append(layers);
-		
+
 		// set bounding box
 		url.append("&bbox=");
 		url.append(minLong);
@@ -278,17 +281,17 @@ public class MapGrabber
 		url.append(maxLong);
 		url.append(",");
 		url.append(maxLat);
-		
+
 		// set size
 		url.append("&height=");
 		url.append(height);
 		url.append("&width=");
 		url.append(width);
-		
+
 		GetMethod get = new GetMethod(url.toString());
 		get.setFollowRedirects(true);
 		int resultCode = httpClient.executeMethod(get);
-		log.debug("GET " + url.toString() + " returned " + resultCode );
+		log.info("GET " + url.toString() + " returned " + resultCode );
 		return Toolkit.getDefaultToolkit().createImage(get.getResponseBody());
 	}
 }
