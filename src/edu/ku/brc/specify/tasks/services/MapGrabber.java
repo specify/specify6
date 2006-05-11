@@ -32,7 +32,6 @@ public class MapGrabber
 	protected String defaultPathAndParams = "/wms.cgi?request=GetMap&srs=EPSG:4326&format=image/png&styles=visual";
 	protected String layers = "global_mosaic";
 	
-	
 	protected double minLat = -90;
 	protected double minLong = -180;
 	protected double maxLat = 90;
@@ -42,6 +41,8 @@ public class MapGrabber
 	protected int defaultMaxHeight = 2048;
 	protected int defaultMaxWidth = 2048;
 
+	protected static FileCache imageCache = UICacheManager.getLongTermFileCache();
+	
 	public MapGrabber()
 	{
 		httpClient = new HttpClient();
@@ -221,14 +222,15 @@ public class MapGrabber
 		double longSpread = maxLong - minLong;
 		double latSpread = maxLat - minLat;
 		
-		if( maxHeight == null )
+		boolean fatMap = longSpread > latSpread ? true : false;
+		
+		if( fatMap )
 		{
 			// calculate the height from max width
 			maxHeight = (int)(latSpread/longSpread*maxWidth);
 			return;
 		}
-		
-		if( maxWidth == null )
+		else
 		{
 			// calculate the width from the max height
 			maxWidth = (int)(maxHeight*longSpread/latSpread);
@@ -240,6 +242,10 @@ public class MapGrabber
 	{
 		log.info("Entering MapGrabber.getMap()");
 		log.info("maxWidth="+maxWidth+"\tmaxHeight="+maxHeight);
+		double longSpread = maxLong - minLong;
+		double latSpread = maxLat - minLat;
+		log.info("lat spread:  min="+minLat+"\tmax="+maxLat+"\trange="+latSpread);
+		log.info("long spread: min="+minLong+"\tmax="+maxLong+"\trange="+longSpread);
 		if( maxWidth == null && maxHeight == null )
 		{
 			maxWidth = defaultMaxWidth;
@@ -271,13 +277,33 @@ public class MapGrabber
 		url.append("&width=");
 		url.append(maxWidth);
 		
-		GetMethod get = new GetMethod(url.toString());
-		get.setFollowRedirects(true);
-		int resultCode = httpClient.executeMethod(get);
-		log.info("GET " + url.toString() + " returned " + resultCode );
-		log.info("Exiting MapGrabber.getMap()");
-		byte[] data = get.getResponseBody();
-		Image image = Toolkit.getDefaultToolkit().createImage(data);
+		Image image;
+		if( imageCache != null )
+		{
+			// check the image cache
+			String key = url.toString();
+			log.info("Asking cache to grab map image: " + url.toString());
+			File imageFile = imageCache.getCacheFile(key);
+			if( imageFile == null )
+			{
+				// the image wasn't in the cache
+				// grab it again
+				imageCache.cacheWebResource(key,url.toString());
+				imageFile = imageCache.getCacheFile(key);
+			}
+			image = Toolkit.getDefaultToolkit().getImage(imageFile.getAbsolutePath());
+		}
+		else
+		{
+			log.info("No image cache available.  Grabbing map internally.");
+			GetMethod get = new GetMethod(url.toString());
+			get.setFollowRedirects(true);
+			int resultCode = httpClient.executeMethod(get);
+			log.info("GET " + url.toString() + " returned " + resultCode );
+			log.info("Exiting MapGrabber.getMap()");
+			byte[] data = get.getResponseBody();
+			image = Toolkit.getDefaultToolkit().createImage(data);			
+		}
 		
 		return image;
 	}

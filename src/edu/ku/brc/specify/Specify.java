@@ -32,6 +32,9 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
@@ -269,7 +272,6 @@ public class Specify extends JPanel
                             add(mainPanel, BorderLayout.CENTER);
                             ContextMgr.getTaskByClass(StartUpTask.class).requestContext();
                             showApp();
-                            
                         }
                     });         
          
@@ -693,10 +695,21 @@ public class Specify extends JPanel
      */
     protected void doExit()
     {
+		log.info("Application shutdown");
+		
+		// save the long term cache mapping info
+		try
+		{
+			UICacheManager.getLongTermFileCache().saveCacheMapping();
+			log.info("Successfully saved long term cache mapping");
+		}
+		catch( IOException e1 )
+		{
+			log.warn("Error while saving long term cache mapping.",e1);
+		}
+
         System.exit(0);
     }
-
-
   
     /**
      * Bring up the PPApp demo by showing the frame (only applicable if coming up
@@ -709,7 +722,14 @@ public class Specify extends JPanel
         f.setTitle("Specify 6.0");
         f.getContentPane().add(this, BorderLayout.CENTER);
         f.pack();
-
+        
+        f.addWindowListener(new WindowAdapter()
+        		{
+        			public void windowClosing(WindowEvent e)
+        			{
+        				doExit();
+        			}
+        		});
         centerAndShow(f);
     }
   
@@ -808,6 +828,5 @@ public class Specify extends JPanel
 
       
   }
-
 }
 
