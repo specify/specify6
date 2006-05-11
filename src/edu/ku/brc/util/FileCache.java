@@ -30,19 +30,19 @@ public class FileCache
 	
 	public FileCache() throws IOException
 	{
+		mappingFilename = null;
 		init(System.getProperty("java.io.tmpdir"));
 	}
 	
 	public FileCache(String mappingFilename) throws IOException
 	{
-		this.mappingFilename = mappingFilename;
-		init(System.getProperty("java.io.tmpdir"));
+		this(System.getProperty("java.io.tmpdir"),mappingFilename);
 	}
 	
 	public FileCache(String dir, String mappingFilename) throws IOException
 	{
-		init(dir);
 		this.mappingFilename = mappingFilename;
+		init(dir);
 	}
 	
 	protected void init( String dir ) throws IOException
@@ -98,6 +98,7 @@ public class FileCache
 
 	protected void loadCacheMappingFile() throws IOException
 	{
+		log.info("Loading old cache mapping data from " + mappingFilename);
 		File mappingFile = new File(cacheDir,mappingFilename);
 		if( mappingFile.exists() )
 		{
