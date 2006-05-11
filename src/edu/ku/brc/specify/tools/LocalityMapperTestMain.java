@@ -1,12 +1,9 @@
 package edu.ku.brc.specify.tools;
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.io.IOException;
-import java.util.Random;
 import java.util.Vector;
 
 import javax.swing.Icon;
@@ -14,7 +11,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.logging.Log;
@@ -39,7 +35,7 @@ public class LocalityMapperTestMain implements MapperListener
 		this.localities = localities;
 		this.labels = labels;
 		cem = new LocalityMapper(localities,labels);
-		cem.setPreferredMapWidth(1000);
+		cem.setMaxMapWidth(500);
 		cem.setLabelColor(Color.GREEN);
 		cem.setDotSize(12);
 		cem.setDotColor(Color.BLUE);
@@ -65,6 +61,7 @@ public class LocalityMapperTestMain implements MapperListener
 						mapReceived(map);
 					}
 				});
+			return;
 		}
 		JFrame f = new JFrame();
 		final JLabel l = new JLabel(map);
@@ -82,21 +79,21 @@ public class LocalityMapperTestMain implements MapperListener
 					}
 				});
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.setSize(1000,1000);
+		f.setSize(600,600);
 		f.setVisible(true);
 		
-		Timer pickNewCurrent = new Timer(5000,new ActionListener()
-				{
-					public void actionPerformed(ActionEvent e)
-					{
-						Random r = new Random();
-						int index = r.nextInt(localities.size());
-						cem.setCurrentLoc(localities.elementAt(index));
-						l.repaint();
-					}
-				});
-		pickNewCurrent.setRepeats(true);
-		pickNewCurrent.start();
+//		Timer pickNewCurrent = new Timer(5000,new ActionListener()
+//				{
+//					public void actionPerformed(ActionEvent e)
+//					{
+//						Random r = new Random();
+//						int index = r.nextInt(localities.size());
+//						cem.setCurrentLoc(localities.elementAt(index));
+//						l.repaint();
+//					}
+//				});
+//		pickNewCurrent.setRepeats(true);
+//		pickNewCurrent.start();
 
 	}
 

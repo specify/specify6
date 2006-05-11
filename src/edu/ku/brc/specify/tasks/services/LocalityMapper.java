@@ -51,8 +51,11 @@ public class LocalityMapper
 	protected double pixelPerLatRatio;
 	protected double pixelPerLongRatio;
 	
-	protected Integer mapWidth;
-	protected Integer mapHeight;
+	protected Integer maxMapWidth;
+	protected Integer maxMapHeight;
+	
+	protected int mapWidth;
+	protected int mapHeight;
 	
 	protected int mostRecentPaintedX;
 	protected int mostRecentPaintedY;
@@ -318,24 +321,52 @@ public class LocalityMapper
 		this.showLabels = showLabels;
 	}
 
-	public Integer getMapHeight()
+	/**
+	 * @return Returns the maxMapHeight.
+	 */
+	public Integer getMaxMapHeight()
+	{
+		return maxMapHeight;
+	}
+
+	/**
+	 * @param maxMapHeight The maxMapHeight to set.
+	 */
+	public void setMaxMapHeight(Integer maxMapHeight)
+	{
+		this.maxMapHeight = maxMapHeight;
+	}
+
+	/**
+	 * @return Returns the maxMapWidth.
+	 */
+	public Integer getMaxMapWidth()
+	{
+		return maxMapWidth;
+	}
+
+	/**
+	 * @param maxMapWidth The maxMapWidth to set.
+	 */
+	public void setMaxMapWidth(Integer maxMapWidth)
+	{
+		this.maxMapWidth = maxMapWidth;
+	}
+
+	/**
+	 * @return Returns the mapHeight.
+	 */
+	public int getMapHeight()
 	{
 		return mapHeight;
 	}
-	
-	public void setPreferredMapHeight(Integer mapHeight)
-	{
-		this.mapHeight = mapHeight;
-	}
 
-	public Integer getMapWidth()
+	/**
+	 * @return Returns the mapWidth.
+	 */
+	public int getMapWidth()
 	{
 		return mapWidth;
-	}
-
-	public void setPreferredMapWidth(Integer mapWidth)
-	{
-		this.mapWidth = mapWidth;
 	}
 
 	public List<Point> getMarkerLocations() 
@@ -457,6 +488,12 @@ public class LocalityMapper
 			minLong = -180;
 			maxLat = 90;
 			maxLong = 180;
+			
+			mapMinLat = -90;
+			mapMinLong = -180;
+			mapMaxLat = 90;
+			mapMaxLong = 180;
+			
 			return;
 		}
 
@@ -496,12 +533,12 @@ public class LocalityMapper
 		double latSpread = maxLat - minLat;
 		if( latSpread == 0 )
 		{
-			latSpread += 10;
+			latSpread += 5;
 		}
 		double longSpread = maxLong - minLong;
 		if( longSpread == 0 )
 		{
-			longSpread += 10;
+			longSpread += 5;
 		}
 
 		double bufferFactor = .05;
@@ -520,8 +557,8 @@ public class LocalityMapper
 		mapGrabber.setMinLong(minLong);
 		mapGrabber.setMaxLong(maxLong);
 
-		mapGrabber.setPreferredHeight(mapHeight);
-		mapGrabber.setPreferredWidth(mapWidth);
+		mapGrabber.setMaxHeight(maxMapHeight);
+		mapGrabber.setMaxWidth(maxMapWidth);
 		
 		return mapGrabber.getMap();
 	}

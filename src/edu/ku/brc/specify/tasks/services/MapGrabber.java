@@ -2,6 +2,7 @@ package edu.ku.brc.specify.tasks.services;
 
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -10,31 +11,42 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.util.FileCache;
+
 public class MapGrabber
 {
 	private static Log log = LogFactory.getLog(MapGrabber.class);
 	// setup some default values
 	// TODO: remove these from any final versions
-
+	
 	protected HttpClient httpClient;
-	//protected String host = "129.237.201.104";
-    protected String host = "mapus.jpl.nasa.gov";
-    //protected String layers = "bmng";
-    protected String layers = "global_mosaic";
+	
+//	// Aimee's server
+//	protected String host = "129.237.201.104";
+//	protected String defaultPathAndParams = "/cgi-bin/ogc.cgi/bmortho?version=1.1.1&service=WMS&Request=GetMap&format=image/gif&styles=default&srs=epsg:4326";
+//	protected String layers = "bmng";
+
+	// NASA server
+	protected String host = "mapus.jpl.nasa.gov";
+	protected String defaultPathAndParams = "/wms.cgi?request=GetMap&srs=EPSG:4326&format=image/png&styles=visual";
+	protected String layers = "global_mosaic";
+	
+	
 	protected double minLat = -90;
 	protected double minLong = -180;
 	protected double maxLat = 90;
 	protected double maxLong = 180;
-	protected Integer height = null;
-	protected Integer width = null;
-	protected int defaultHeight = 300;
-	protected int defaultWidth = 500;
+	protected Integer maxHeight = null;
+	protected Integer maxWidth = null;
+	protected int defaultMaxHeight = 2048;
+	protected int defaultMaxWidth = 2048;
 
 	public MapGrabber()
 	{
 		httpClient = new HttpClient();
 	}
-
+	
 	/**
 	 * @return Returns the host.
 	 */
@@ -66,71 +78,47 @@ public class MapGrabber
 	{
 		this.layers = layers;
 	}
-
+	
 	/**
-	 * @return Returns the height.
+	 * @return Returns the maxHeight.
 	 */
-	public Integer getHeight()
+	public Integer getMaxHeight()
 	{
-		return height;
+		return maxHeight;
 	}
 
 	/**
-	 * @param height The height to set.
+	 * @param maxHeight The maxHeight to set.
 	 */
-	public void setPreferredHeight(Integer height)
+	public void setMaxHeight(Integer height)
 	{
-		this.height = height;
+		if( height != null && height > 2048 )
+		{
+			height = 2048;
+		}
+		this.maxHeight = height;
 	}
 
 	/**
-	 * @return Returns the width.
+	 * @return Returns the maxWidth.
 	 */
-	public Integer getWidth()
+	public Integer getMaxWidth()
 	{
-		return width;
+		return maxWidth;
 	}
 
 	/**
-	 * @param width The width to set.
+	 * @param maxWidth The maxWidth to set.
 	 */
-	public void setPreferredWidth(Integer width)
+	public void setMaxWidth(Integer width)
 	{
-		this.width = width;
+		if( width != null && width.intValue() > 2048 )
+		{
+			width = 2048;
+		}
+		this.maxWidth = width;
 	}
-
-	/**
-	 * @return Returns the defaultHeight.
-	 */
-	public int getDefaultHeight()
-	{
-		return defaultHeight;
-	}
-
-	/**
-	 * @param defaultHeight The defaultHeight to set.
-	 */
-	public void setDefaultHeight(int defaultHeight)
-	{
-		this.defaultHeight = defaultHeight;
-	}
-
-	/**
-	 * @return Returns the defaultWidth.
-	 */
-	public int getDefaultWidth()
-	{
-		return defaultWidth;
-	}
-
-	/**
-	 * @param defaultWidth The defaultWidth to set.
-	 */
-	public void setDefaultWidth(int defaultWidth)
-	{
-		this.defaultWidth = defaultWidth;
-	}
-
+	
 	/**
 	 * @return Returns the maxLat.
 	 */
@@ -199,8 +187,8 @@ public class MapGrabber
 						Integer height)
 		throws HttpException, IOException
 	{
-		setPreferredWidth(width);
-		setPreferredHeight(height);
+		setMaxWidth(width);
+		setMaxHeight(height);
 		return getMap();
 	}
 
@@ -216,62 +204,57 @@ public class MapGrabber
 		setMinLong(minLong);
 		setMaxLat(maxLat);
 		setMaxLong(maxLong);
-		setPreferredWidth(width);
-		setPreferredHeight(height);
+		setMaxWidth(width);
+		setMaxHeight(height);
 		return getMap();
 	}
-
+	
 	protected double getLatLongRatio()
 	{
 		double longRange = maxLong - minLong;
 		double latRange = maxLat - minLat;
 		return (double)(latRange/longRange);
 	}
-
-	protected void calcHeight()
+	
+	protected void calcWidthAndHeight()
 	{
-		height = (int)(width * getLatLongRatio());
+		double longSpread = maxLong - minLong;
+		double latSpread = maxLat - minLat;
+		
+		if( maxHeight == null )
+		{
+			// calculate the height from max width
+			maxHeight = (int)(latSpread/longSpread*maxWidth);
+			return;
+		}
+		
+		if( maxWidth == null )
+		{
+			// calculate the width from the max height
+			maxWidth = (int)(maxHeight*longSpread/latSpread);
+			return;
+		}
 	}
-
-	protected void calcWidth()
-	{
-		width = (int)(height / getLatLongRatio());
-	}
-
+	
 	public Image getMap() throws HttpException, IOException
 	{
-		if( width == null && height == null )
+		log.info("Entering MapGrabber.getMap()");
+		log.info("maxWidth="+maxWidth+"\tmaxHeight="+maxHeight);
+		if( maxWidth == null && maxHeight == null )
 		{
-			width = defaultWidth;
-			height = defaultHeight;
+			maxWidth = defaultMaxWidth;
+			maxHeight = defaultMaxHeight;
 		}
-		else if( width == null )
-		{
-			calcWidth();
-		}
-		else if( height == null )
-		{
-			calcHeight();
-		}
-
-		if( width > 2048 )
-		{
-			width = 2048;
-			calcHeight();
-		}
-
-		if( height > 2048 )
-		{
-			height = 2048;
-			calcWidth();
-		}
-
+		calcWidthAndHeight();
+		
 		StringBuilder url = new StringBuilder("http://");
 		url.append(host);
-        url.append("/browse.cgi?wms_server=wms.cgi&srs=EPSG:4326&format=image/jpeg&styles=visual&layers=");
-		//url.append("/cgi-bin/ogc.cgi/bmortho?version=1.1.1&service=WMS&Request=GetMap&format=image/gif&styles=default&srs=epsg:4326&layers=");
+		url.append(defaultPathAndParams);
+		
+		// set layers
+		url.append("&layers=");
 		url.append(layers);
-
+		
 		// set bounding box
 		url.append("&bbox=");
 		url.append(minLong);
@@ -281,17 +264,21 @@ public class MapGrabber
 		url.append(maxLong);
 		url.append(",");
 		url.append(maxLat);
-
+		
 		// set size
 		url.append("&height=");
-		url.append(height);
+		url.append(maxHeight);
 		url.append("&width=");
-		url.append(width);
-
+		url.append(maxWidth);
+		
 		GetMethod get = new GetMethod(url.toString());
 		get.setFollowRedirects(true);
 		int resultCode = httpClient.executeMethod(get);
 		log.info("GET " + url.toString() + " returned " + resultCode );
-		return Toolkit.getDefaultToolkit().createImage(get.getResponseBody());
+		log.info("Exiting MapGrabber.getMap()");
+		byte[] data = get.getResponseBody();
+		Image image = Toolkit.getDefaultToolkit().createImage(data);
+		
+		return image;
 	}
 }

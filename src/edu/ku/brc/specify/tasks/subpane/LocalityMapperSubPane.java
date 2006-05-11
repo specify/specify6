@@ -234,8 +234,8 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
 
         }
 
-        localityMapper.setPreferredMapWidth(300);
-        localityMapper.setPreferredMapHeight(250);
+        localityMapper.setMaxMapWidth(300);
+        localityMapper.setMaxMapHeight(250);
 
         Color arrow = new Color(220,220,220);
         localityMapper.setArrowColor(arrow);
@@ -657,8 +657,8 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
 
         		//System.out.println("2 label preferredSize "+preferredSize);
         		label.setSize(preferredSize);
-                localityMapper.setPreferredMapWidth(preferredSize.width);
-                localityMapper.setPreferredMapHeight(preferredSize.height);
+                localityMapper.setMaxMapWidth(preferredSize.width);
+                localityMapper.setMaxMapHeight(preferredSize.height);
 
                 // XXXX DEBUG
                 //localityMapper.setPreferredMapWidth(300);
