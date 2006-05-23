@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.ui;
 
+import com.jhlabs.image.OpacityFilter;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -27,7 +28,6 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
     protected int origWidth;
     protected int origHeight;
     protected TimingController timingController;
-    protected TwirlFilter filter;
     protected BufferedImage[] frames;
     protected int duration;
     protected int index;
@@ -62,8 +62,9 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
         }
 
         // initialize the filter
-        filter = initTwirlFilter();
-        float angle = 2*(float)Math.PI/frames.length;
+        TwirlFilter filter = new TwirlFilter();
+        filter.setRadius(origWidth/2);
+        float angle = 4*(float)Math.PI/frames.length;
         filter.setAngle(angle);
 
         // create the individual frames
@@ -71,6 +72,15 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
             filter.setAngle(angle*i);
             filter.filter(original,frames[i]);
         }
+  
+//        OpacityFilter filter = new OpacityFilter();
+//        filter.setOpacity(0);
+//        for( int i = 1; i < frames.length; ++i ) {
+//            int opacity = 255 - (int)((float)((float)i/(float)(frames.length-1)) * 255);
+//            System.out.println(opacity);
+//            filter.setOpacity(opacity);
+//            filter.filter(original,frames[i]);
+//        }
         
         //setup the animation Cycle
         int resolution = 0;
@@ -91,14 +101,7 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
     public void startAnimation() {
         timingController.start();
     }
-    
-    // initialize the filter
-    protected TwirlFilter initTwirlFilter() {
-        TwirlFilter filter = new TwirlFilter();
-        filter.setRadius(origWidth);
-        return filter;
-    }
-    
+        
     public void setIndex(int index)
     {
         this.index = index;
@@ -115,7 +118,8 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawImage(frames[frames.length - 1 - index], getX(), getY(), getBackground(), this);
+        int i = frames.length - 1 - index;
+        g.drawImage(frames[i], getX(), getY(), getBackground(), this);
     }
     
     public void begin() {
@@ -127,7 +131,6 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
     // modify the index appropraitely for the percent of the animation that is complete
     public void timingEvent(long cycleElapsedTime, long totalElapsedTime, float percent) {
         index = Math.min((int)(frames.length * percent),frames.length-1);
-        System.out.println(index);
         repaint();
     }
     
@@ -136,7 +139,7 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
      * @throws InterruptedException
      */
     public static void main(String[] args) throws InterruptedException {
-        final ImageSwirlPanel isp = new ImageSwirlPanel("/Users/jstewart/Desktop/splashfish.png",20,1000);
+        final ImageSwirlPanel isp = new ImageSwirlPanel("/Users/jstewart/Desktop/splashfish.png",20,1500);
         
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
