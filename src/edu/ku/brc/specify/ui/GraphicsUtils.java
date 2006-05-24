@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
@@ -90,6 +91,13 @@ public class GraphicsUtils
 		g2d.drawPolygon(tmpPoly);
 		g2d.fillPolygon(tmpPoly); // remove this line to leave arrow head unpainted
 		g2d.setStroke(origStroke);
+	}
+
+	public static Point getPointAlongLine( Point start, Point end, float percent )
+	{
+		int x = start.x + (int)(percent * (float)(end.x-start.x));
+		int y = start.y + (int)(percent * (float)(end.y-start.y));
+		return new Point(x,y);
 	}
 
 	private static int yCor(int len, double dir)
