@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.ui;
 
-import com.jhlabs.image.OpacityFilter;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -13,10 +12,6 @@ import javax.swing.SwingUtilities;
 
 import org.jdesktop.animation.timing.Cycle;
 import org.jdesktop.animation.timing.Envelope;
-import org.jdesktop.animation.timing.KeyFrames;
-import org.jdesktop.animation.timing.KeyValues;
-import org.jdesktop.animation.timing.ObjectModifier;
-import org.jdesktop.animation.timing.PropertyRange;
 import org.jdesktop.animation.timing.TimingController;
 import org.jdesktop.animation.timing.TimingTarget;
 
@@ -139,7 +134,8 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
      * @throws InterruptedException
      */
     public static void main(String[] args) throws InterruptedException {
-        final ImageSwirlPanel isp = new ImageSwirlPanel("/Users/jstewart/Desktop/splashfish.png",20,1500);
+    	String homedir = System.getProperty("user.home");
+        final ImageSwirlPanel isp = new ImageSwirlPanel(homedir+"/Desktop/splashfish.png",20,1500);
         
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
