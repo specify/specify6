@@ -61,6 +61,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
+import org.jdesktop.animation.timing.TimingController;
+import org.jdesktop.animation.timing.TimingTarget;
 
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
@@ -92,7 +94,7 @@ import edu.ku.brc.specify.ui.forms.persist.View;
  *
  */
 @SuppressWarnings("serial")
-public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper.MapperListener, ResultSetControllerListener
+public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper.MapperListener, ResultSetControllerListener, TimingTarget
 {
     //private static Log log = LogFactory.getLog(SimpleDescPane.class);
     protected SimpleDateFormat scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
@@ -133,6 +135,12 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
     {
         super(name, task);
 
+        TimingController mapAnimator = localityMapper.getAnimator();
+        if( mapAnimator != null )
+        {
+        	mapAnimator.addTarget(this);
+        }
+        
         setBackground(Color.WHITE);
 
         kmlGen = new KeyholeMarkupGenerator();
@@ -678,4 +686,16 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         }
     }
 
+	public void timingEvent(long arg0, long arg1, float arg2)
+	{
+		this.repaint();
+	}
+
+	public void begin()
+	{
+	}
+
+	public void end()
+	{
+	}
 }

@@ -172,7 +172,12 @@ public class FileCache
 	
 	protected String getAccessTimeFilename()
 	{
-		String accessTimeFilename = mappingFilename.substring(0, mappingFilename.lastIndexOf("."));
+		String accessTimeFilename = mappingFilename;
+		int index = mappingFilename.lastIndexOf(".");
+		if( index != -1 )
+		{
+			accessTimeFilename = mappingFilename.substring(0, mappingFilename.lastIndexOf("."));			
+		}
 		accessTimeFilename = accessTimeFilename + "-times.xml";
 		return accessTimeFilename;
 	}
