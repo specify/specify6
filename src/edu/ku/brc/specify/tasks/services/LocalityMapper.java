@@ -96,26 +96,23 @@ public class LocalityMapper implements TimingTarget
 		cacheValid = false;
 		marker = new SimpleCircleIcon(8,Color.BLACK);
 		currentLocMarker = new SimpleCircleIcon(8,Color.BLACK);
+		
 		// setup the animation Cycle
 		int resolution = 0;
-		int duration = 500;
+		int duration = 750;
 		Cycle cycle = new Cycle(duration,resolution);
+		
 		// setup the animation Envelope
 		double repeatCount = 1;
 		int start = 0;
 		Envelope.RepeatBehavior repeatBehavior = Envelope.RepeatBehavior.REVERSE;
 		Envelope.EndBehavior endBehavior = Envelope.EndBehavior.HOLD;
 		Envelope env = new Envelope(repeatCount,start,repeatBehavior,endBehavior);
+		
 		// setup the TimingController (the animation controller)
 		animator = new TimingController(cycle,env,this);
-	}
-
-	/**
-	 * @return Returns the animator.
-	 */
-	public TimingController getAnimator()
-	{
-		return animator;
+		animator.setAcceleration(0.45f);
+		animator.setDeceleration(0.45f);
 	}
 
 	public LocalityMapper(List<Locality> localities)
@@ -146,6 +143,14 @@ public class LocalityMapper implements TimingTarget
 	}
 
 	/**
+	 * @return Returns the animator.
+	 */
+	public TimingController getAnimator()
+	{
+		return animator;
+	}
+
+	/**
 	 * @return Returns the currentLoc.
 	 */
 	public Locality getCurrentLoc()
@@ -163,6 +168,41 @@ public class LocalityMapper implements TimingTarget
 		{
 			this.animStartLoc = this.currentLoc;
 			this.animEndLoc = currentLoc;
+
+			// normalize the arrow speed by calculating the appropriate cycle duration
+			// find the longest distance an arrow might have to cover
+			double mapDiagDist = Math.sqrt(Math.pow(mapWidth,2)+Math.pow(mapHeight,2));
+			
+			// set the arrow speed to cover the longest possible route in 2 seconds
+			// dist unit is pixels/millisec
+			double arrowSpeed = mapDiagDist / 2000;
+
+			// calculate the length of the arrow to animate
+			int startIndex = localities.indexOf(animStartLoc);
+			int endIndex = localities.indexOf(animEndLoc);
+			if( startIndex!=-1&&endIndex!=-1 )
+			{
+				Point startPoint = markerLocations.get(startIndex);
+				Point endPoint = markerLocations.get(endIndex);
+				double arrowLength = GraphicsUtils.distance(startPoint, endPoint);
+				int duration = (int)(arrowLength/arrowSpeed);
+				animator.getCycle().setDuration(duration);
+				
+				// normalize the acceleration to be 0->full_speed in 500 ms
+				// deceleration is the same (full_speed->0 in 500 ms)
+				if( duration <= 1000 )
+				{
+					animator.setAcceleration(0.5f);
+					animator.setDeceleration(0.5f);
+				}
+				else
+				{
+					float acc = 500/duration;
+					animator.setAcceleration(acc);
+					animator.setDeceleration(acc);
+				}
+			}
+			
 			animator.start();
 		}
 		this.currentLoc = currentLoc;

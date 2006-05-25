@@ -100,6 +100,11 @@ public class GraphicsUtils
 		return new Point(x,y);
 	}
 
+	public static double distance( Point a, Point b)
+	{
+		return Math.sqrt(Math.pow(a.x-b.x, 2) + Math.pow(a.y-b.y, 2));
+	}
+	
 	private static int yCor(int len, double dir)
 	{
 		return (int) (len * Math.cos(dir));
