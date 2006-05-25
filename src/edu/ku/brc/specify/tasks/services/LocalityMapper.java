@@ -764,7 +764,7 @@ public class LocalityMapper implements TimingTarget
 								percent);
 						Color orig = g.getColor();
 						g.setColor(getCurrentLocColor());
-						GraphicsUtils.drawArrow(g,startPoint.x,startPoint.y,arrowEnd.x,arrowEnd.y,
+						GraphicsUtils.drawArrow(g,startPoint.x+x,startPoint.y+y,arrowEnd.x+x,arrowEnd.y+y,
 								5,3);
 						g.setColor(orig);
 					}
@@ -787,6 +787,7 @@ public class LocalityMapper implements TimingTarget
 
 	public void begin()
 	{
+		this.percent = 0;
 		this.animationInProgress = true;
 	}
 
