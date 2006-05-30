@@ -75,7 +75,7 @@ public class BasicAnimatedComponent extends AnimationComponent
 						
 						JFrame f = new JFrame();
 						f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-						f.setSize(300,300);
+						f.setSize(300,330);
 						f.add(bac);
 						f.setVisible(true);
 						
