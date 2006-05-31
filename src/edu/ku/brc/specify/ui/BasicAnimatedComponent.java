@@ -14,6 +14,7 @@ import org.jdesktop.animation.timing.TimingController;
 import org.jdesktop.animation.timing.Envelope.EndBehavior;
 import org.jdesktop.animation.timing.Envelope.RepeatBehavior;
 
+@SuppressWarnings("serial")
 public class BasicAnimatedComponent extends AnimationComponent
 {
 	public BasicAnimatedComponent(	double repeatCount,
@@ -47,11 +48,14 @@ public class BasicAnimatedComponent extends AnimationComponent
 		int angleWidth = 30;
 		
 		Graphics2D g2d = (Graphics2D)g;
-		double radStart = degreesToRadians(startAngle);
+
 		double radEnd = degreesToRadians(startAngle+angleWidth);
-		Point a = new Point((int)(halfSize + halfSize * Math.cos(radStart)), (int)(halfSize - halfSize * Math.sin(radStart)));
-		Point b = new Point((int)(halfSize + halfSize * Math.cos(radEnd)), (int)(halfSize - halfSize * Math.sin(radEnd)));
 	
+		Point a = new Point(halfSize,halfSize);
+		int bx = (int)(halfSize+halfSize * Math.cos(radEnd));
+		int by = (int)(halfSize-halfSize * Math.sin(radEnd));
+		Point b = new Point(bx,by);
+				
 		g2d.setPaint(new GradientPaint(a,fg,b,bg));
 		g.fillArc(x, y, size, size, startAngle, angleWidth);
 	}
@@ -71,7 +75,7 @@ public class BasicAnimatedComponent extends AnimationComponent
 				{
 					public void run()
 					{
-						BasicAnimatedComponent bac = new BasicAnimatedComponent(TimingController.INFINITE,0,Envelope.RepeatBehavior.FORWARD,Envelope.EndBehavior.HOLD,1500,30);
+						BasicAnimatedComponent bac = new BasicAnimatedComponent(TimingController.INFINITE,0,Envelope.RepeatBehavior.FORWARD,Envelope.EndBehavior.HOLD,2000,30);
 						
 						JFrame f = new JFrame();
 						f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
