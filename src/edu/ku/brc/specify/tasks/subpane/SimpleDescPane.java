@@ -22,6 +22,9 @@ package edu.ku.brc.specify.tasks.subpane;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -31,7 +34,7 @@ import edu.ku.brc.specify.core.Taskable;
 
 /**
  * A default pane for display a simple label telling what it is suppose to do
- * 
+ *
  * @author rods
  *
  */
@@ -39,44 +42,66 @@ import edu.ku.brc.specify.core.Taskable;
 public class SimpleDescPane extends BaseSubPane
 {
     //private static Log log = LogFactory.getLog(SimpleDescPane.class);
-    
+    protected Image splashImage = null;
+
     /**
-     * 
+     *
      *
      */
-    public SimpleDescPane(final String name, 
+    public SimpleDescPane(final String name,
                           final Taskable task,
                           final String desc)
     {
         super(name, task);
-        
+
         setBackground(Color.WHITE);
-        
+
         JLabel label = new JLabel(desc, SwingConstants.CENTER);
         add(label, BorderLayout.CENTER);
-       
+
     }
-    
+
     /**
-     * 
+     *
      *
      */
-    public SimpleDescPane(final String name, 
+    public SimpleDescPane(final String name,
                           final Taskable task,
                           final JPanel panel)
     {
         super(name, task);
-        
-        /*
-        CellConstraints cc      = new CellConstraints();
-        PanelBuilder builder    = new PanelBuilder(new FormLayout("F:P:G", "F:P:G"), this);
-        builder.add(panel, cc.xy(1,1));
-*/
+
         setBackground(Color.WHITE);
         add(panel, BorderLayout.CENTER);
-       
+
     }
-    
-    
-    
+
+
+
+    @Override
+    public void paintAll(Graphics g)
+    {
+        super.paintAll(g);
+
+        if (splashImage != null)
+        {
+            Dimension dim = getSize();
+            int w = splashImage.getWidth(null);
+            int h = splashImage.getHeight(null);
+            g.drawImage(splashImage, (dim.width - w) / 2, (dim.height - h) / 2, w, h, null);
+        }
+    }
+
+    public Image getSplashImage()
+    {
+        return splashImage;
+    }
+
+    public void setSplashImage(Image splashImage)
+    {
+        this.splashImage = splashImage;
+    }
+
+
+
 }

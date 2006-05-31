@@ -1,7 +1,7 @@
-/* Filename:    $RCSfile: NavBoxItemIFace.java,v $
+/* Filename:    $RCSfile: TaskCommandDef.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
- * Date:        $Date: 2005/10/19 19:59:54 $
+ * Date:        $Date: 2006/05/16 19:59:54 $
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,37 +19,41 @@
  */
 package edu.ku.brc.specify.core;
 
-import javax.swing.JComponent;
+import java.util.Map;
 
 /**
- * Interface of an item to be organized by a NavBox
+ * Class that defines a command that is issued by UI components in a Task's SubPane or from the side bar.
+ * These commands are typically serviced by the task itself.
  *
  * @author rods
  *
  */
-public interface NavBoxItemIFace
+public class TaskCommandDef
 {
-    /**
-     * Returns the localized title of the item (it can be used for look ups by others)
-     * @return the localized title
-     */
-    public String getTitle();
+    protected String iconName;
+    protected String name;
+    protected Map<String, String> params;
 
-    /**
-     * Return the UI Component that is used to display the contents of the navigation box
-     * @return Return the UI Component that is used to display the contents of the navigation box
-     */
-    public JComponent getUIComponent();
+    public TaskCommandDef(final String name, final String iconName, final Map<String, String> params)
+    {
+        this.iconName = iconName;
+        this.name = name;
+        this.params = params;
+    }
 
-    /**
-     * Sets data into the Item
-     * @param data the data (anything really)
-     */
-    public void setData(Object data);
+    public String getIconName()
+    {
+        return iconName;
+    }
 
-    /**
-     * @return the data
-     */
-    public Object getData();
+    public String getName()
+    {
+        return name;
+    }
+
+    public Map<String, String> getParams()
+    {
+        return params;
+    }
 
 }

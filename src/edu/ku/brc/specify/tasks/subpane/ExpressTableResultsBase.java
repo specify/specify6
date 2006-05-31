@@ -69,7 +69,7 @@ import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
 public abstract class ExpressTableResultsBase extends JPanel
 {
 	private static Log log = LogFactory.getLog(ExpressTableResultsBase.class);
-			
+
     protected static final Cursor handCursor    = new Cursor(Cursor.HAND_CURSOR);
     protected static final Cursor defCursor     = new Cursor(Cursor.DEFAULT_CURSOR);
 
@@ -352,12 +352,19 @@ public abstract class ExpressTableResultsBase extends JPanel
         {
         	log.debug("["+v+"]");
         }
-        if (returnAll)
+
+        boolean doReturnAll = returnAll;
+        int[] rows = table.getSelectedRows();
+        if (returnAll || rows.length == 0)
         {
             table.selectAll();
+            rows = table.getSelectedRows();
+            table.clearSelection();
+            doReturnAll = true;
         }
-        RecordSet rs = getRecordSet(table.getSelectedRows(), tableInfo.getRecordSetColumnInx(), returnAll);
-        if (returnAll)
+        RecordSet rs = getRecordSet(rows, tableInfo.getRecordSetColumnInx(), doReturnAll);
+
+        if (doReturnAll)
         {
             table.clearSelection();
         }
@@ -402,7 +409,7 @@ public abstract class ExpressTableResultsBase extends JPanel
 
         public void actionPerformed(ActionEvent e)
         {
-            cmd.setData(getRecordSet(true));
+            cmd.setData(getRecordSet(false));
             CommandDispatcher.dispatch(cmd);
 
             // always reset the consumed flag and set the data to null

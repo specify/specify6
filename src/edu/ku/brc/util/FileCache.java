@@ -22,7 +22,8 @@ public class FileCache
 	private static String accessTimeFileComment = "edu.ku.brc.util.FileCache Access Times File";
 	private static String defaultPrefix = "sp6-";
 	private static String defaultSuffix = ".cache";
-	
+    private static String defaultPath = System.getProperty("java.io.tmpdir");
+
 	protected HttpClient httpClient;
 	protected File cacheDir;
 	protected String mappingFilename;
@@ -33,23 +34,23 @@ public class FileCache
 	protected int maxCacheKb;
 	protected boolean enforceMaxSize;
 	protected long totalCacheSize;
-	
+
 	public FileCache() throws IOException
 	{
-		this(System.getProperty("java.io.tmpdir"),null);
+		this(defaultPath, null);
 	}
-	
+
 	public FileCache(String mappingFilename) throws IOException
 	{
-		this(System.getProperty("java.io.tmpdir"),mappingFilename);
+		this(defaultPath, mappingFilename);
 	}
-	
+
 	public FileCache(String dir, String mappingFilename) throws IOException
 	{
 		this.mappingFilename = mappingFilename;
 		init(dir);
 	}
-	
+
 	protected void init( String dir ) throws IOException
 	{
 		cacheDir = new File(dir);
@@ -70,11 +71,11 @@ public class FileCache
 		httpClient = new HttpClient();
 		prefix = defaultPrefix;
 		suffix = defaultSuffix;
-		
+
 		enforceMaxSize = false;
 		maxCacheKb = Integer.MAX_VALUE;
 	}
-	
+
 	/**
 	 * @return Returns the prefix.
 	 */
@@ -111,23 +112,28 @@ public class FileCache
 	{
 		return maxCacheKb;
 	}
-	
+
 	public void setMaxCacheSize(int kilobytes)
 	{
 		maxCacheKb = kilobytes;
 	}
-	
+
 	public void setEnforceMaxCacheSize( boolean value )
 	{
 		enforceMaxSize = value;
 	}
-	
+
 	public boolean getEnforceMaxCacheSize()
 	{
 		return enforceMaxSize;
 	}
-	
-	protected synchronized void loadCacheMappingFile()
+
+	public static void setDefaultPath(String defaultPath)
+    {
+        FileCache.defaultPath = defaultPath;
+    }
+
+    protected synchronized void loadCacheMappingFile()
 	{
 		log.info("Loading old cache mapping data from " + mappingFilename);
 		File mappingFile = new File(cacheDir,mappingFilename);
@@ -149,7 +155,7 @@ public class FileCache
 			log.warn("Unable to locate old cache mapping file.  Cache will start out empty.");
 		}
 	}
-	
+
 	protected synchronized void loadCacheAccessTimesFile()
 	{
 		String accessTimeFilename = getAccessTimeFilename();
@@ -169,7 +175,7 @@ public class FileCache
 			}
 		}
 	}
-	
+
 	protected String getAccessTimeFilename()
 	{
 		String accessTimeFilename = mappingFilename;
@@ -181,11 +187,11 @@ public class FileCache
 		accessTimeFilename = accessTimeFilename + "-times.xml";
 		return accessTimeFilename;
 	}
-	
+
 	/**
 	 * Find the key in the cache that corresponds to the least recently used
 	 * cache file.
-	 * 
+	 *
 	 * @return the least recently used key
 	 */
 	protected String findKeyLRU()
@@ -208,7 +214,7 @@ public class FileCache
 				lruAccessTime = time;
 			}
 		}
-		
+
 		return lruKey;
 	}
 
@@ -229,10 +235,10 @@ public class FileCache
 			log.warn("Exception while saving cache mapping data to disk.  All cache data will be lost.",e);
 			throw e;
 		}
-		
+
 		saveCacheAccessTimes();
 	}
-	
+
 	protected synchronized void saveCacheAccessTimes() throws IOException
 	{
 		String accessTimeFilename = getAccessTimeFilename();
@@ -252,7 +258,7 @@ public class FileCache
 	{
 		return File.createTempFile(prefix, suffix, cacheDir);
 	}
-	
+
 	protected synchronized void calculateTotalCacheSize()
 	{
 		totalCacheSize = 0L;
@@ -267,7 +273,7 @@ public class FileCache
 			}
 		}
 	}
-	
+
 	protected synchronized void purgeLruCacheFile()
 	{
 		String oldKey = findKeyLRU();
@@ -276,7 +282,7 @@ public class FileCache
 		{
 			return;
 		}
-		
+
 		log.info("Purging " + filename + " from cache");
 		File f = new File(filename);
 		long filesize = f.length();
@@ -288,7 +294,7 @@ public class FileCache
 		handleToAccessTimeHash.remove(oldKey);
 		totalCacheSize -= filesize;
 	}
-	
+
 	protected void cacheNewItem( String key, File item )
 	{
 		handleToAccessTimeHash.setProperty(key, Long.toString(System.currentTimeMillis()));
@@ -297,15 +303,15 @@ public class FileCache
 		{
 			removeCacheItem((String)oldValue);
 		}
-		
+
 		totalCacheSize += item.length();
-		
+
 		while( enforceMaxSize && (totalCacheSize > maxCacheKb*1000) )
 		{
 			purgeLruCacheFile();
 		}
 	}
-	
+
 	protected void removeCacheItem( String filename )
 	{
 		File f = new File(filename);
@@ -316,14 +322,14 @@ public class FileCache
 		}
 		totalCacheSize -= size;
 	}
-	
+
 	public String cacheData( byte[] data ) throws IOException
 	{
 		String key = UUID.randomUUID().toString();
 		cacheData(key, data);
 		return key;
 	}
-	
+
 	public void cacheData( String key, byte[] data ) throws IOException
 	{
 		File f = createCacheFile();
@@ -331,41 +337,41 @@ public class FileCache
 		fos.write(data);
 		fos.flush();
 		fos.close();
-		
+
 		cacheNewItem(key,f);
 	}
-	
+
 	public String cacheFile( File f ) throws IOException
 	{
 		cacheFile(f.getName(),f);
 		return f.getName();
 	}
-	
+
 	public void cacheFile( String key, File f ) throws IOException
 	{
 		File cachedFile = createCacheFile();
 		copyFile(f,cachedFile);
 		cacheNewItem(key,cachedFile);
 	}
-	
+
 	protected void copyFile( File src, File dest ) throws IOException
 	{
 		FileChannel sourceChannel = new FileInputStream(src).getChannel();
 		FileChannel destinationChannel = new FileOutputStream(dest).getChannel();
 		sourceChannel.transferTo(0, sourceChannel.size(), destinationChannel);
-		
+
 		// or
 		//  destinationChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
 		sourceChannel.close();
 		destinationChannel.close();
 	}
-	
+
 	public String cacheWebResource( String url ) throws HttpException, IOException
 	{
 		cacheWebResource(url, url);
 		return url;
 	}
-	
+
 	public void cacheWebResource( String key, String url ) throws HttpException, IOException
 	{
 		GetMethod get = new GetMethod(url);
@@ -376,17 +382,17 @@ public class FileCache
 			log.info("Retrieving "+url+" resulted in unexpected code: "+result);
 			throw new HttpException("Unexpected HTTP code received: " + result);
 		}
-		
+
 		byte[] response = get.getResponseBody();
-		
+
 		cacheData(url, response);
 	}
-	
+
 	public void refreshCachedWebResource( String key ) throws HttpException, IOException
 	{
 		cacheWebResource(key);
 	}
-	
+
 	public File getCacheFile( String key )
 	{
 		String filename = handleToFilenameHash.getProperty(key);
@@ -394,7 +400,7 @@ public class FileCache
 		{
 			return null;
 		}
-		
+
 		else
 		{
 			File f = new File(filename);
@@ -418,7 +424,7 @@ public class FileCache
 	{
 		return totalCacheSize;
 	}
-	
+
 	public static void main(String[] args) throws IOException
 	{
 		FileCache fc = new FileCache("AAAATEST-cache-map.xml");
@@ -426,7 +432,7 @@ public class FileCache
 		// set max size to 10 KB
 		fc.setMaxCacheSize(1000);
 		fc.setEnforceMaxCacheSize(true);
-		
+
 		log.info("Current cache size: " + fc.getCurrentCacheSize());
 
 		// a little File caching test
@@ -454,7 +460,7 @@ public class FileCache
 		}
 		else
 		{
-			log.info("Found cached web resource under " + urlFile.getAbsolutePath());			
+			log.info("Found cached web resource under " + urlFile.getAbsolutePath());
 		}
 
 		log.info("Current cache size: " + fc.getCurrentCacheSize());

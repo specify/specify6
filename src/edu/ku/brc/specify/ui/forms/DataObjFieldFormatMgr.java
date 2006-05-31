@@ -44,7 +44,7 @@ public class DataObjFieldFormatMgr
     protected Object[]                           args     = new Object[2]; // start with two slots
     protected Hashtable<String, Class>           typeHash = new Hashtable<String, Class>();
 
-    protected StringBuilder                      strBuf   = new StringBuilder();
+    protected StringBuilder                      strBuf   = new StringBuilder(128);
     /**
      * Protected Constructor
      */

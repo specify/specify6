@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.ui.forms;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Set;
@@ -78,6 +79,7 @@ public class DataGetterForObj implements DataObjectGettable
                 if (dataObj instanceof Set)
                 {
                     iter = ((Set)dataObj).iterator();
+
                 } else if (dataObj instanceof org.hibernate.collection.PersistentSet)
                 {
                     iter = ((org.hibernate.collection.PersistentSet)dataObj).iterator();
@@ -125,21 +127,44 @@ public class DataGetterForObj implements DataObjectGettable
                         }
                     }
                 }
-                PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, fieldName.trim());
-                if (descr != null)
+                log.info(fieldName);
+
+                if (fieldName.startsWith("@get"))
                 {
-                    Method getter = PropertyUtils.getReadMethod(descr);
-                    /*if (fieldName.indexOf(".") != -1)
+                    try
                     {
-                        log.error("DataGetterForObj.getFieldValueInternal - How in thew world did we get here!");
-                    }*/
-                    if (getter != null)
+                        String methodName = fieldName.substring(1, fieldName.length()).trim();
+                        Method method = dataObj.getClass().getMethod(methodName, new Class[] {});
+                        value = method.invoke(dataObj, new Object[] {});
+
+                    } catch (NoSuchMethodException ex)
                     {
-                        value = getter.invoke(dataObj, (Object[])null);
+                        ex.printStackTrace();
+
+                    } catch (IllegalAccessException ex)
+                    {
+                        ex.printStackTrace();
+
+                    } catch (InvocationTargetException ex)
+                    {
+                        ex.printStackTrace();
                     }
+
                 } else
                 {
-                    log.error("We could not find a field named["+fieldName.trim()+"] in data object ["+dataObj.getClass().toString()+"]");
+                    PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, fieldName.trim());
+                    if (descr != null)
+                    {
+                        Method getter = PropertyUtils.getReadMethod(descr);
+
+                        if (getter != null)
+                        {
+                            value = getter.invoke(dataObj, (Object[])null);
+                        }
+                    } else
+                    {
+                        log.error("We could not find a field named["+fieldName.trim()+"] in data object ["+dataObj.getClass().toString()+"]");
+                    }
                 }
             } catch (Exception ex)
             {

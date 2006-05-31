@@ -18,7 +18,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package edu.ku.brc.specify.tasks.subpane;
+
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.io.File;
 
@@ -29,62 +31,72 @@ import javax.swing.SwingConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.ui.CsvTableModel;
 import edu.ku.brc.specify.ui.JustifiedTableCellRenderer;
-import edu.ku.brc.specify.ui.db.WorkbenchTableModel;
 
-public class WorkbenchPane  extends BaseSubPane {
+/**
+ * PLaceholder for Workbench Pane
+ *
+ * @author rods
+ *
+ */
+public class WorkbenchPane extends BaseSubPane
+{
     private static Log log = LogFactory.getLog(WorkbenchPane.class);
 
-    private JTable                table;
+    private JTable     table;
 
-	public WorkbenchPane(final String name, 
-            final Taskable task, final File csvFile) {
-		super(name, task);
-        setPreferredSize(new Dimension(600,600));
+    public WorkbenchPane(final String name,
+                         final Taskable task,
+                         final File csvFile)
+    {
+        super(name, task);
+        setPreferredSize(new Dimension(600, 600));
 
-        
         table = new JTable();
-        //table.setModel(new WorkbenchTableModel());
-        
+        table.setShowGrid(true);
+        table.setGridColor(Color.GRAY);
+        // table.setModel(new WorkbenchTableModel());
+
         // START OF CODE TO REMOVE AFTER DEMO
         // it was just for a quick demo
         log.info("This code section should be removed after the demo");
-        if( csvFile != null )
+        if (csvFile != null)
         {
-	        try
-			{
-				table.setModel(new CsvTableModel(csvFile));
-				table.getColumnModel().getColumn(0).setCellRenderer(new JustifiedTableCellRenderer(SwingConstants.LEFT));
-				table.getColumnModel().getColumn(1).setCellRenderer(new JustifiedTableCellRenderer(SwingConstants.CENTER));
-				table.getColumnModel().getColumn(2).setCellRenderer(new JustifiedTableCellRenderer(SwingConstants.CENTER));
-				table.getColumnModel().getColumn(3).setCellRenderer(new JustifiedTableCellRenderer(SwingConstants.CENTER));
-				table.getColumnModel().getColumn(4).setCellRenderer(new JustifiedTableCellRenderer(SwingConstants.RIGHT));
-				table.getColumnModel().getColumn(5).setCellRenderer(new JustifiedTableCellRenderer(SwingConstants.RIGHT));
-				table.getColumnModel().getColumn(6).setCellRenderer(new JustifiedTableCellRenderer(SwingConstants.CENTER));
-				table.getColumnModel().getColumn(7).setCellRenderer(new JustifiedTableCellRenderer(SwingConstants.CENTER));
-			}
-			catch( Exception e )
-			{
-				log.error(e);
-			}
+            try
+            {
+                table.setModel(new CsvTableModel(csvFile));
+                table.getColumnModel().getColumn(0).setCellRenderer(
+                        new JustifiedTableCellRenderer(SwingConstants.LEFT));
+                table.getColumnModel().getColumn(1).setCellRenderer(
+                        new JustifiedTableCellRenderer(SwingConstants.CENTER));
+                table.getColumnModel().getColumn(2).setCellRenderer(
+                        new JustifiedTableCellRenderer(SwingConstants.CENTER));
+                table.getColumnModel().getColumn(3).setCellRenderer(
+                        new JustifiedTableCellRenderer(SwingConstants.CENTER));
+                table.getColumnModel().getColumn(4).setCellRenderer(
+                        new JustifiedTableCellRenderer(SwingConstants.RIGHT));
+                table.getColumnModel().getColumn(5).setCellRenderer(
+                        new JustifiedTableCellRenderer(SwingConstants.RIGHT));
+                table.getColumnModel().getColumn(6).setCellRenderer(
+                        new JustifiedTableCellRenderer(SwingConstants.CENTER));
+                table.getColumnModel().getColumn(7).setCellRenderer(
+                        new JustifiedTableCellRenderer(SwingConstants.CENTER));
+            } catch (Exception e)
+            {
+                log.error(e);
+            }
         }
         // END OF CODE TO REMOVE AFTER DEMO
-        
-		// TODO Auto-generated constructor stub
-        
-        FormLayout      formLayout = new FormLayout("p,2dlu,100dlu:g,2dlu,p", "center:p:g");
-        PanelBuilder    builder    = new PanelBuilder(formLayout);
-        CellConstraints cc         = new CellConstraints();   
-        
-        add(new JScrollPane(table), BorderLayout.CENTER);   
-        //enableUI(true);
-	}
 
+        // TODO Auto-generated constructor stub
+
+        //PanelBuilder builder = new PanelBuilder(new FormLayout("p,2dlu,100dlu:g,2dlu,p", "center:p:g"));
+       // CellConstraints cc = new CellConstraints();
+
+        add(new JScrollPane(table), BorderLayout.CENTER);
+        //enableUI(true);
+    }
 
 }

@@ -24,7 +24,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
 /**
  * A TransferHandler for use for transferring TransferableMutableTreeNodes
  * between JTrees.
- * 
+ *
  * @author jstewart
  */
 @SuppressWarnings("serial")
@@ -34,7 +34,7 @@ public class TreeNodeTransferHandler extends TransferHandler
 
 	public static final String mimeType = DataFlavor.javaJVMLocalObjectMimeType+";class=javax.swing.tree.DefaultMutableTreeNode";
 	private DataFlavor nodeFlavor;
-	
+
 	public TreeNodeTransferHandler()
 	{
 		try
@@ -46,7 +46,7 @@ public class TreeNodeTransferHandler extends TransferHandler
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * @param flavors an array of DataFlavors that the dropped object has
 	 * @return true is flavors contains the proper tree node data flavor
@@ -57,7 +57,7 @@ public class TreeNodeTransferHandler extends TransferHandler
 		{
 			return false;
 		}
-		
+
 		for( DataFlavor df: flavors )
 		{
 			if( nodeFlavor.equals(df) )
@@ -65,7 +65,7 @@ public class TreeNodeTransferHandler extends TransferHandler
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -89,7 +89,7 @@ public class TreeNodeTransferHandler extends TransferHandler
 		{
 			JTree tree = (JTree)comp;
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)t.getTransferData(nodeFlavor);
-			
+
 			// disallow moving the root
 			if( node.isRoot() )
 			{
@@ -97,7 +97,7 @@ public class TreeNodeTransferHandler extends TransferHandler
 				log.debug("TreeNodeTransferHandler.canImport() returning 'false'");
 				return false;
 			}
-			
+
 			DefaultMutableTreeNode newParentNode = (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
 			DefaultMutableTreeNode oldParentNode = (DefaultMutableTreeNode)node.getParent();
 
@@ -108,7 +108,7 @@ public class TreeNodeTransferHandler extends TransferHandler
 //				log.debug("TreeNodeTransferHandler.canImport() returning 'false'");
 //				return false;
 //			}
-			
+
 			// disallow dropping on wrong rank
 			Treeable newParentTreeable = (Treeable)newParentNode.getUserObject();
 			Treeable oldParentTreeable = (Treeable)oldParentNode.getUserObject();
@@ -118,11 +118,11 @@ public class TreeNodeTransferHandler extends TransferHandler
 				log.debug("TreeNodeTransferHandler.canImport() returning 'false'");
 				return false;
 			}
-			
+
 			//TODO: disallow dropping on wrong rank (e.g. county on continent)
-			
-			Treeable movingNode = (Treeable)node.getUserObject();
-						
+
+			//Treeable movingNode = (Treeable)node.getUserObject();
+
 			TreeNode[] arrayPathToNode = node.getPath();
 			TreePath pathToNode = new TreePath(arrayPathToNode);
 
@@ -135,7 +135,7 @@ public class TreeNodeTransferHandler extends TransferHandler
 
 			DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
 			model.removeNodeFromParent(node);
-			
+
 			// find out where to insert this node in order to keep the model sorted
 			if( newParentNode.getChildCount() == 0 )
 			{
@@ -159,7 +159,7 @@ public class TreeNodeTransferHandler extends TransferHandler
 				}
 				model.insertNodeInto(node, newParentNode, index);
 			}
-			
+
 			for( TreeNode n: expandedChildren )
 			{
 				TreeNode[] pathArray = model.getPathToRoot(n);
@@ -179,7 +179,7 @@ public class TreeNodeTransferHandler extends TransferHandler
             // TODO Auto-generated catch block
             ex.printStackTrace();
         }
-		
+
 		log.debug("TreeNodeTransferHandler.canImport() returning 'false'");
 		return false;
 	}
@@ -194,7 +194,7 @@ public class TreeNodeTransferHandler extends TransferHandler
 		{
 			return null;
 		}
-		
+
 		JTree tree = (JTree)c;
 		return (TransferableMutableTreeNode)tree.getLastSelectedPathComponent();
 	}
@@ -214,7 +214,7 @@ public class TreeNodeTransferHandler extends TransferHandler
 		TreeNode[] pathArray = model.getPathToRoot(node);
 		TreePath path = new TreePath(pathArray);
 		tree.expandPath(path.getParentPath());
-		
+
 		log.debug("exportDone completed");
 	}
 

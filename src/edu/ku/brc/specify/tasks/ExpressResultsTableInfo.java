@@ -392,7 +392,7 @@ public class ExpressResultsTableInfo
 
     public String getRecIdList()
     {
-        StringBuffer idsStr = new StringBuffer();
+        StringBuffer idsStr = new StringBuffer(recIds.size()*8);
         for (int i=0;i<recIds.size();i++)
         {
             if (i > 0) idsStr.append(',');

@@ -43,6 +43,7 @@ import edu.ku.brc.specify.core.NavBoxLayoutManager;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.specify.dbsupport.DBTableIdMgr;
+import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
@@ -61,9 +62,9 @@ import edu.ku.brc.specify.ui.forms.persist.View;
  * (I think one of the bggest reasons NOT to do it this way is because the Express MUST be update  before it is used.
  * so if the user was entering in a lot of new data they may forget to update the express search as they went and then wouldn't
  * find thinkgs they just entered)
- * 
+ *
  * I am leaving this checked in for a while
- * 
+ *
  * @author rods
  *
  */
@@ -96,9 +97,9 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
     protected View           formView = null;
     protected Viewable   form     = null;
     //protected Agent          agent    = new Agent();
-    protected Hashtable<String, String> dataMap = new Hashtable<String, String>();
 
-    protected Map<String, String> formFieldToColumnMap = new Hashtable<String, String>();
+    protected Map<String, String> dataMap              = UIHelper.createMap();
+    protected Map<String, String> formFieldToColumnMap = UIHelper.createMap();
 
     /**
      *
@@ -138,7 +139,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
             {
                 form.getDataFromUI();
 
-                StringBuilder strBuf = new StringBuilder();
+                StringBuilder strBuf = new StringBuilder(128);
                 for (String key : formFieldToColumnMap.keySet())
                 {
                   String value  = dataMap.get(key);

@@ -92,22 +92,22 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
         this.descCol = descCol;
         this.valCol  = valCol;
         this.noResultsMsg = noResultsMsg;
-        
+
         StatDataItem statItem = new StatDataItem("RetrievingData", null , false);
         model.addDataItem(statItem);
 
         sqle = new SQLExecutionProcessor(this, sql);
         sqle.start();
     }
-    
+
     /**
-     * Requests that all the data be reloaded (Not implemented yet) 
+     * Requests that all the data be reloaded (Not implemented yet)
      */
     public void reloadData()
     {
-        
+
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.Component#getPreferredSize()
      */
@@ -116,7 +116,7 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
         // this is needed to the box isn't huge before it has data
         return hasData ? super.getPreferredSize() : new Dimension(100,100);
     }
-    
+
     /**
      * Sets info need to make links
      * @param linkStr the name of the static link
@@ -127,7 +127,7 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
         this.linkStr = linkStr;
         this.colId   = colId;
     }
-    
+
      /**
      * Removes the table and adds the None Available message
      * @param msg the message to be displayed
@@ -139,7 +139,7 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
         {
             builder.getPanel().remove(scrollPane != null ? scrollPane : table);
             builder.add(label, new CellConstraints().xy(1,2));
-            
+
         } else
         {
             remove(scrollPane != null ? scrollPane : table);
@@ -159,25 +159,20 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
     {
         model.clear();
         hasData = true;
-        
+
         List<Object> data = new Vector<Object>();
         try
         {
             if (resultSet.first())
             {
-                StringBuffer rowsDef = new StringBuffer();
                 do
                 {
                     data.add(resultSet.getObject(descCol));
                     data.add(resultSet.getObject(valCol));
                     data.add(colId > 0 ? resultSet.getObject(colId) : null);
-                    if (rowsDef.length() > 0)
-                    {
-                        rowsDef.append(",15dlu,");
-                    }
-                    rowsDef.append("top:p");
 
                 } while (resultSet.next());
+
 
                 for (int i=0;i<data.size();i++)
                 {
@@ -195,9 +190,9 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
                 addNoneAvailableMsg(noResultsMsg);
             }
             model.fireNewData();
-            
+
         } catch (Exception ex)
-        {   
+        {
             log.error(ex);
             ex.printStackTrace();
         }

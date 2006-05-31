@@ -20,6 +20,7 @@
 package edu.ku.brc.specify.ui;
 
 import java.awt.Component;
+import java.io.File;
 import java.util.Hashtable;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -78,8 +79,10 @@ public class UICacheManager
     protected SubPaneMgr     subPaneMgr     = null;
     protected Class          rootPrefClass   = null;
 
-    protected FileCache longTermCache = null;
-    protected FileCache shortTermCache = null;
+    protected FileCache      longTermCache = null;
+    protected FileCache      shortTermCache = null;
+
+    protected String         defaultWorkingPath = System.getProperty("user.home") + File.separator + "Specify";
 
     /**
      * Default private constructor for singleton
@@ -87,6 +90,17 @@ public class UICacheManager
      */
     private UICacheManager()
     {
+        File path = new File(defaultWorkingPath);
+        if (!path.exists())
+        {
+            if (!path.mkdirs())
+            {
+                String msg = "unable to create directory [" + path.getAbsolutePath() + "]";
+                log.error(msg);
+                throw new RuntimeException(msg);
+            }
+        }
+
         if (resourceBundle == null)
         {
             try {
@@ -115,6 +129,17 @@ public class UICacheManager
     public static ResourceBundle getResourceBundleInternal()
     {
         return instance.getResourceBundle();
+    }
+
+
+    public String getDefaultWorkingPath()
+    {
+        return defaultWorkingPath;
+    }
+
+    public void setDefaultWorkingPath(String defaultWorkingPath)
+    {
+        this.defaultWorkingPath = defaultWorkingPath;
     }
 
     /**
@@ -445,7 +470,7 @@ public class UICacheManager
         {
             try
             {
-                instance.longTermCache = new FileCache("longTermCache");
+                instance.longTermCache = new FileCache("longTerm.Cache");
             } catch (Exception ex)
             {
                 ex.printStackTrace();

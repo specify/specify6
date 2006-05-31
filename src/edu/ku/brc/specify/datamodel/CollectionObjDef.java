@@ -185,7 +185,7 @@ public class CollectionObjDef  implements java.io.Serializable {
 	 * @return String
 	 */
   public String toString() {
-	  StringBuffer buffer = new StringBuffer();
+	  StringBuffer buffer = new StringBuffer(128);
 
       buffer.append(getClass().getName()).append("@").append(Integer.toHexString(hashCode())).append(" [");
       buffer.append("name").append("='").append(getName()).append("' ");

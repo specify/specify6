@@ -58,9 +58,9 @@ public class BasicSQLUtils
 
     protected static BasicSQLUtils    basicSQLUtils = new  BasicSQLUtils();
 
-    protected static Hashtable<String, String> ignoreMappingFieldNames = null;
-    protected static Hashtable<String, String> ignoreMappingFieldIDs   = null;
-    
+    protected static Map<String, String> ignoreMappingFieldNames = null;
+    protected static Map<String, String> ignoreMappingFieldIDs   = null;
+
     protected static Connection dbConn = null;  // (it may be shared so don't close)
 
     /**
@@ -69,7 +69,7 @@ public class BasicSQLUtils
     protected  BasicSQLUtils()
     {
     }
-    
+
     /**
      * Sets the SQL connection
      * @param connection the SQL Connection
@@ -98,12 +98,12 @@ public class BasicSQLUtils
     }
 
     /**
-     * CReates or clears and fills a list
+     * Creates or clears and fills a list
      * @param fieldNames the list of names, can be null then the list is cleared and nulled out
      * @param ignoreMap the map to be be crated or cleared and nulled
      * @return the same map or a newly created one
      */
-    protected static Hashtable<String, String> configureIgnoreMap(final String[] fieldNames, Hashtable<String, String> ignoreMap)
+    protected static Map<String, String> configureIgnoreMap(final String[] fieldNames, Map<String, String> ignoreMap)
     {
         if (fieldNames == null)
         {
@@ -116,7 +116,7 @@ public class BasicSQLUtils
         {
             if (ignoreMap == null)
             {
-                ignoreMap  = new Hashtable<String, String>();
+                ignoreMap  = UIHelper.createMap();
             } else
             {
                 ignoreMap.clear();
@@ -185,19 +185,19 @@ public class BasicSQLUtils
         try
         {
             Connection connection = dbConn != null ? dbConn : DBConnection.getConnection();
-    
+
             count = deleteAllRecordsFromTable(DBConnection.getConnection(), tableName);
-            
+
             if (dbConn == null)
             {
                 connection.close();
             }
-            
+
         } catch (SQLException ex)
         {
             ex.printStackTrace();
         }
-        
+
         return count;
     }
 
@@ -433,7 +433,7 @@ public class BasicSQLUtils
     {
         try
         {
-            StringBuilder strBuf = new StringBuilder();
+            StringBuilder strBuf = new StringBuilder(128);
             for (int i=1;i<=rsmd.getColumnCount();i++)
             {
                 strBuf.setLength(0);
@@ -578,8 +578,8 @@ public class BasicSQLUtils
             }
             // System.out.println("Num Cols: "+rsmd.getColumnCount());
 
-            Hashtable<String, String>  vertbatimDateMap = new Hashtable<String, String>();
-            Hashtable<String, Date>    dateMap          = new Hashtable<String, Date>();
+            Map<String, String>  vertbatimDateMap = UIHelper.createMap();
+            Map<String, Date>    dateMap          = new Hashtable<String, Date>();
 
             // Get the columns that have dates in case we get a TimestampCreated date that is null
             // and then we can go looking for an older date to try to figure it out
@@ -603,8 +603,8 @@ public class BasicSQLUtils
             }*/
 
 
-            StringBuilder verbatimDateStr = new StringBuilder();
-            StringBuffer  str             = new StringBuffer();
+            StringBuilder verbatimDateStr = new StringBuilder(1024);
+            StringBuffer  str             = new StringBuffer(1024);
             int           count           = 0;
             while (rs.next())
             {
@@ -738,7 +738,7 @@ public class BasicSQLUtils
                                     if (fromTableName.equals("accession"))
                                     {
                                         str.append(getStrValue(UIHelper.convertIntToDate((Integer)rs.getInt(fromHash.get("DateAccessioned")))));
-                                        
+
                                     } else
                                     {
                                         str.append(getStrValue(Calendar.getInstance().getTime(), fieldMetaData.getType()));
@@ -773,7 +773,7 @@ public class BasicSQLUtils
                 int retVal = exeUpdateCmd(updateStatement, str.toString());
                 updateStatement.clearBatch();
                 updateStatement.close();
-                
+
                 if (retVal == -1)
                 {
                     rs.close();

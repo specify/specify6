@@ -72,6 +72,7 @@ import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.extras.FishBaseInfoGetter;
 import edu.ku.brc.specify.extras.FishBaseInfoGetterListener;
+import edu.ku.brc.specify.extras.SwingWorker;
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.tasks.services.KeyholeMarkupGenerator;
 import edu.ku.brc.specify.tasks.services.LocalityMapper;
@@ -101,27 +102,29 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
     protected static final Cursor handCursor   = new Cursor(Cursor.HAND_CURSOR);
     protected static final Cursor defCursor    = new Cursor(Cursor.DEFAULT_CURSOR);
 
-    protected LocalityMapper                  localityMapper = new LocalityMapper();
-    protected JLabel                          imageLabel     = new JLabel(getResourceString("LoadingImage"));
-    protected JLabel                          titleLabel     = new JLabel();
+    protected LocalityMapper                  localityMapper  = new LocalityMapper();
+    protected JLabel                          imageLabel      = new JLabel(getResourceString("LoadingImage"));
+    protected JLabel                          titleLabel      = new JLabel();
     protected MultiView                       multiView;
 
     protected List<CollectingEvent>           collectingEvents;
-    protected List<Hashtable<String, Object>> valueList   = new ArrayList<Hashtable<String, Object>>();
-    protected List<Rectangle>                 markerRects = new ArrayList<Rectangle>();
-    protected boolean                         dirty       = false;
+    protected List<Hashtable<String, Object>> valueList       = new ArrayList<Hashtable<String, Object>>();
+    protected List<Rectangle>                 markerRects     = new ArrayList<Rectangle>();
+    protected boolean                         dirty           = false;
 
     protected List<ImageGetter>               imageGetterList = new ArrayList<ImageGetter>();
     protected Hashtable<String, Image>        imageMap        = new Hashtable<String, Image>();
     protected FormViewObj                     formViewObj;
     protected JList                           imageJList;
 
-    protected Hashtable<String, String>       imageURLs   = new Hashtable<String, String>();
+    protected Hashtable<String, String>       imageURLs       = new Hashtable<String, String>();
 
     protected ResultSetController             recordSetController;
     protected ControlBarPanel                 controlPanel;
     protected JButton                         googleBtn;
     protected KeyholeMarkupGenerator          kmlGen;
+    protected List<CollectingEvent>           colEvents;
+    protected LocalityMapperSubPane           thisPane;
 
     /**
      * The incoming List of Collecting Events is already Sorted by StartDate
@@ -134,15 +137,48 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
                                  final List<CollectingEvent> colEvents)
     {
         super(name, task);
+        this.colEvents = colEvents;
+        this.thisPane  = this;
+
+        progressLabel.setText("Loading Locality Data and Maps...");
 
         TimingController mapAnimator = localityMapper.getAnimator();
         if( mapAnimator != null )
         {
         	mapAnimator.addTarget(this);
         }
-        
+
         setBackground(Color.WHITE);
 
+        final SwingWorker worker = new SwingWorker()
+        {
+            public Object construct()
+            {
+                createUI();
+                return null;
+            }
+
+            //Runs on the event-dispatching thread.
+            public void finished()
+            {
+                thisPane.removeAll();
+                setLayout(new LocalityMapperLayoutManager(thisPane, titleLabel, imageLabel, controlPanel, multiView));
+
+                multiView.setData(valueList.get(0));
+
+                validate();
+                doLayout();
+
+            }
+        };
+        worker.start();
+    }
+
+    /**
+     *
+     */
+    protected void createUI()
+    {
         kmlGen = new KeyholeMarkupGenerator();
         this.collectingEvents = new ArrayList<CollectingEvent>();
 
@@ -242,8 +278,9 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
 
         }
 
-        localityMapper.setMaxMapWidth(300);
-        localityMapper.setMaxMapHeight(250);
+        // XXX Fix me shouldn't be hard coded here to make it work
+        localityMapper.setMaxMapWidth(515);
+        localityMapper.setMaxMapHeight(375);
 
         Color arrow = new Color(220,220,220);
         localityMapper.setArrowColor(arrow);
@@ -334,14 +371,6 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         googleBtn.setBackground(Color.WHITE);
 
         controlPanel.addButtons(new JButton[] {googleBtn}, false);
-
-        setLayout(new LocalityMapperLayoutManager(this, titleLabel, imageLabel, controlPanel, multiView));
-
-        multiView.setData(valueList.get(0));
-
-        validate();
-        doLayout();
-
 
         googleBtn.addActionListener(new ActionListener()
                 {
@@ -646,7 +675,8 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
 
         	if (size.width > formSize.width && size.height > formSize.height)
         	{
-        		preferredSize.setSize(size.width - formSize.width - (3 * gap), size.height - formSize.height - (2*gap));
+                //preferredSize.setSize(size.width - formSize.width - (3 * gap), size.height - formSize.height - (2*gap));
+                preferredSize.setSize(size.width - formSize.width - (3 * gap), formSize.height);
                 //preferredSize.setSize(300, 250); // XXX
 
                 int formY = (size.height - formSize.height) / 2;

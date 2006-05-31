@@ -188,7 +188,7 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
 
                 form.getDataFromUI();
 
-                StringBuilder strBuf = new StringBuilder();
+                StringBuilder strBuf = new StringBuilder(256);
                 int cnt = 0;
                 String[] columnNames = tableInfo.getColNames();
                 for (String colName : columnNames)

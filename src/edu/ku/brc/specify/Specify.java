@@ -27,13 +27,19 @@ import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
@@ -75,11 +81,14 @@ import edu.ku.brc.specify.plugins.PluginMgr;
 import edu.ku.brc.specify.prefs.PrefMainPanel;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.StartUpTask;
+import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.MainPanel;
+import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolbarLayoutManager;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
+import edu.ku.brc.util.FileCache;
 /**
  * Specify Main Application Class
  *
@@ -99,65 +108,74 @@ public class Specify extends JPanel
     private JMenuBar            menuBar            = null;
     private JFrame              topFrame           = null;
     private MainPanel           mainPanel          = null;
-    
+
     protected  boolean          hasChanged         = false;
-  
+
     protected Configuration     mConfig            = null;
     protected SessionFactory    mSessionFactory    = null;
     protected Session           mSession           = null;
-  
+
     protected GhostGlassPane    glassPane;
-  
+
     private JLabel splashLabel = null;
-  
-    // Used only if swingset is an application 
-    private JFrame frame = null;
-    private JWindow splashWindow = null;
+
+    // Used only if swingset is an application
+    private JFrame    frame               = null;
+    private JWindow   splashWindow        = null;
+    private ImageIcon specifyImageIcon    = null;
+    private ImageIcon userSplashImageIcon = null;
     //private TransparentBackground splashScreen = null;
-    //private ImageIcon specifySplashImageIcon   = null;
-  
+    //private ImageIcon specifyspecifyImageIcon   = null;
+
     /*
     private String databaseName = "";
     private String userName = "";
     private String password ="";
     private String hostName ="";
     private boolean useLogonDialog = false;
-    */  
+    */
     //private GraphicsConfiguration grc;
-    
+
     // Global Prefs Registered into the Cache
 
-    
 
-  
+
+
     @SuppressWarnings("unused")
     private SpecifyConfig config;
-     
+
     private static Specify  specifyApp       = null;
-    
+
     /*static {
         System.setProperty ("apple.awt.antialiasing", "true");
         System.setProperty ("apple.awt.textantialiasing", "true");
         System.setProperty ("apple.laf.useScreenMenuBar", "true");
         System.setProperty ("apple.awt.brushMetalLook", "true");
         System.setProperty ("com.apple.mrj.application.apple.menu.about.name", "Specify");
-        
+
     }*/
 
-  
+
      /**
      * Constructor with GraphicsConfiguration
      * @param gc the GraphicsConfiguration
      */
     public Specify(GraphicsConfiguration gc)
     {
+
+        MacOSAppHandler macoshandler = new MacOSAppHandler(this);
+
+        UICacheManager.getInstance(); // initializes it first thing
+
         AppPrefs.initialPrefs();
-        
+
+        FileCache.setDefaultPath(UICacheManager.getInstance().getDefaultWorkingPath());
+
         UICacheManager.register(UICacheManager.MAINPANE, this); // important to be done immediately
-        
+
         initPrefs();
-        
-        
+
+
         // Create and throw the splash screen up. Since this will
         // physically throw bits on the screen, we need to do this
         // on the GUI thread using invokeLater.
@@ -165,45 +183,45 @@ public class Specify extends JPanel
         createSplashScreen();
         // do the following on the gui thread
         SwingUtilities.invokeLater(new Runnable() {
-              public void run() 
+              public void run()
               {
                   showSplashScreen();
               }
         });
-        
+
         specifyApp = this;
-        
+
         DBConnection.setUsernamePassword("rods", "rods");
         DBConnection.setDriver("com.mysql.jdbc.Driver");
         DBConnection.setDBName("jdbc:mysql://localhost/fish");
 
-        try 
-        { 
+        try
+        {
             //System.out.println(System.getProperty("os.name"));
-            
+
             if (!System.getProperty("os.name").equals("Mac OS X"))
             {
                 UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
                 PlasticLookAndFeel.setMyCurrentTheme(new DesertBlue());
             }
-                
-            //UIManager.setLookAndFeel(new PlasticLookAndFeel()); 
+
+            //UIManager.setLookAndFeel(new PlasticLookAndFeel());
             //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
             //UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-        } 
-        catch (Exception e) 
-        { 
-            log.error("Can't change L&F: ", e); 
-        }    
-      
+        }
+        catch (Exception e)
+        {
+            log.error("Can't change L&F: ", e);
+        }
+
         initialize(gc);
-      
+
         frame = new JFrame(gc);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+
         UICacheManager.register(UICacheManager.FRAME, frame);
 
-      
+
         try
         {
             config = SpecifyConfig.getInstance();
@@ -213,7 +231,7 @@ public class Specify extends JPanel
             log.error("Error with Configuration", e);
             JOptionPane.showMessageDialog(this, e.toString(), "Fatal Error", JOptionPane.ERROR_MESSAGE);
         }
-      
+
         /*
         if(useLogonDialog){
           DatabaseLogon dbl = new DatabaseLogon();
@@ -223,19 +241,19 @@ public class Specify extends JPanel
           hostName = dbl.getHostName();
         }
        */
-        
-        
+
+
 
         /*
         HibernateUtil.beginTransaction();
-        
+
         RecordSet recordSet = new RecordSet();
         //recordSet.setId(1L);
-        
+
         recordSet.setName("Catalog Items");
         recordSet.setTableId(1);
         recordSet.setCreated(Calendar.getInstance().getTime());
-        
+
         Set<RecordSetItem> items = new HashSet<RecordSetItem>();
         for (int i=0;i<10;i++)
         {
@@ -244,47 +262,122 @@ public class Specify extends JPanel
             items.add(rsi);
         }
         recordSet.setItems(items);
-        
+
         HibernateUtil.getCurrentSession().saveOrUpdate(recordSet);
-        
+
         //HibernateUtil.getCurrentSession().delete(recordSet);
-        
+
         HibernateUtil.commitTransaction();
         */
-        
-      
-        log.info("Creating configuration "); 
-        
+
+
+        log.info("Creating configuration ");
+
         // Create a configuration based on the properties file we've put
         // in the standard place.
         //mConfig = new Configuration();
 
+        initStartUpPanels();
 
-        try {
-            
+       /*try {
+
             SwingUtilities.invokeLater(new Runnable()
                     {
                         public void run()
                         {
+<<<<<<< .mine
+
+
+=======
                             validate();
                             hideSplash();
-                            
+
                             add(mainPanel, BorderLayout.CENTER);
                             ContextMgr.getTaskByClass(StartUpTask.class).requestContext();
                             showApp();
+>>>>>>> .r481
                         }
-                    });         
-         
+                    });
+
         } catch (Exception e)
         {
             log.error("Error",e);
+        }*/
+    }
+
+    protected void initStartUpPanels()
+    {
+        if( !SwingUtilities.isEventDispatchThread() )
+        {
+            SwingUtilities.invokeLater(new Runnable()
+                {
+                    public void run()
+                    {
+                        initStartUpPanels();
+                    }
+                });
+            return;
         }
 
-    
+        validate();
+        hideSplash();
+
+        add(mainPanel, BorderLayout.CENTER);
+        doLayout();
+
+        mainPanel.setBackground(Color.WHITE);
+
+        //GhostGlassPane ggp = UICacheManager.getGlassPane();
+
+        if (false)
+        {
+            java.io.File  f = new java.io.File(".");
+            userSplashImageIcon = new ImageIcon(f.getAbsolutePath() +  File.separator + "posterfish600.png");
+            int w = Math.max(userSplashImageIcon.getIconWidth(), specifyImageIcon.getIconWidth());
+            int h = userSplashImageIcon.getIconHeight() + specifyImageIcon.getIconHeight() + 20;
+
+            BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+
+            Graphics2D    g2 = (Graphics2D)bi.getGraphics();
+            g2.drawImage(specifyImageIcon.getImage(), (w - specifyImageIcon.getIconWidth()) / 2, 0, specifyImageIcon.getIconWidth(), specifyImageIcon.getIconHeight(), null);
+            g2.drawImage(userSplashImageIcon.getImage(), (w - userSplashImageIcon.getIconWidth()) / 2, specifyImageIcon.getIconHeight()+20, userSplashImageIcon.getIconWidth(), userSplashImageIcon.getIconHeight(), null);
+            glassPane.setImage(bi);
+
+            Dimension size = glassPane.getSize();
+            glassPane.setPoint(new Point(0,0), GhostGlassPane.ImagePaintMode.CENTERED);
+
+            System.out.println(glassPane.getLocation()+" "+size);
+            /*
+
+            SubPaneMgr sbm = UICacheManager.getSubPaneMgr();
+            Point      pp       = new Point(0,0);
+            SwingUtilities.convertPointToScreen(pp, sbm);
+            SwingUtilities.convertPointFromScreen(pp, mainPanel);*/
+
+            glassPane.setAlpha(1.0f);
+
+            ContextMgr.getTaskByClass(StartUpTask.class).requestContext();
+
+            glassPane.setVisible(true);
+            glassPane.addMouseListener(new MouseAdapter() {
+                    public void mouseClicked(MouseEvent e)
+                    {
+                        glassPane.setVisible(false);
+                        SubPaneIFace blankSP = ((StartUpTask)ContextMgr.getTaskByClass(StartUpTask.class)).getBlankPane();
+                        System.out.println(blankSP);
+                        ((SimpleDescPane)blankSP).setSplashImage(userSplashImageIcon.getImage());
+                    }
+
+            });
+        } else
+        {
+            ContextMgr.getTaskByClass(StartUpTask.class).requestContext();
+        }
+        showApp();
     }
-    
+
     /**
-     * 
+     *
      */
     protected void initPrefs()
     {
@@ -294,9 +387,9 @@ public class Specify extends JPanel
         {
             return;
         }
-        
+
         Preferences appPrefs = UICacheManager.getAppPrefs();
-        
+
         try
         {
             Element root = XMLHelper.readDOMFromConfigDir("prefsInit.xml");
@@ -304,12 +397,12 @@ public class Specify extends JPanel
             {
                 return; // XXX FIXME
             }
-            
+
             List sections = root.selectNodes("/prefs/section");
-            for ( Iterator iter = sections.iterator(); iter.hasNext(); ) 
+            for ( Iterator iter = sections.iterator(); iter.hasNext(); )
             {
                 org.dom4j.Element section = (org.dom4j.Element)iter.next();
-                
+
                 String      title       = section.attributeValue("title");
                 Preferences sectionNode = appPrefs.node(title);
                 if (!sectionNode.getBoolean("isApp", false))
@@ -317,28 +410,28 @@ public class Specify extends JPanel
                     sectionNode.put("title", title);
                     sectionNode.putBoolean("isApp", true);
                 }
-                
+
                 List prefs = section.selectNodes("pref");
-                for ( Iterator iterPrefs = prefs.iterator(); iterPrefs.hasNext(); ) 
+                for ( Iterator iterPrefs = prefs.iterator(); iterPrefs.hasNext(); )
                 {
                     org.dom4j.Element pref = (org.dom4j.Element)iterPrefs.next();
-                    
+
                     String prefTitle  = pref.attributeValue("title");
                     String iconName   = pref.attributeValue("icon");
                     String panelClass = pref.attributeValue("panelClass");
-                    
+
                     Preferences prefNode     = sectionNode.node(prefTitle);
                     String      prefTitleStr = prefNode.get("title", null);
                     if (prefTitleStr == null)
                     {
                         prefNode.put("title", prefTitle);
                         prefNode.put("panelClass", panelClass);
-                        
+
                         URL url = IconManager.getImagePath(iconName);
                         if (url != null)
                         {
                             prefNode.put("iconPath", url.toString());
-                            
+
                         } else
                         {
                             log.error("Image name["+iconName+"] not found.");
@@ -346,59 +439,60 @@ public class Specify extends JPanel
                     }
                 }
             }
-            
+
         } catch (Exception ex)
         {
             ex.printStackTrace();
             // XXX FIXME
         }
-       
+
     }
-    
-    /* 
+
+    /*
     public void setHibernateLogonConfig()
     {
         if(useLogonDialog){
             mConfig.setProperty("hibernate.connection.username",userName);
             mConfig.setProperty("hibernate.connection.password",password);
-            
-          
+
+
             if(hostName.indexOf("mysql")!=-1){
                 mConfig.setProperty("hibernate.connection.url",hostName + databaseName+ "?useServerPrepStmts=false");//&useOldUTF8Behavior=true");
                 mConfig.setProperty("hibernate.dialect","net.sf.hibernate.dialect.MySQLDialect");
                 mConfig.setProperty("hibernate.connection.driver_class","com.mysql.jdbc.Driver");
-                }  
+                }
             else if(hostName.indexOf("inetdae7")!=-1){//jdbc:inetdae7:localhost?database=KS_fish
                 mConfig.setProperty("hibernate.connection.url",hostName + "?database="+databaseName);
                 mConfig.setProperty("hibernate.dialect","net.sf.hibernate.dialect.SQLServerDialect");
                 mConfig.setProperty("hibernate.connection.driver_class","com.inet.tds.TdsDriver");
-            }           
+            }
             //else if(hostName.indexOf("sqlserver")!=-1){//jdbc:inetdae7:localhost?database=KS_fish
             //  mConfig.setProperty("hibernate.connection.url",hostName + ";DatabaseName="+databaseName);
             //  mConfig.setProperty("hibernate.dialect","net.sf.hibernate.dialect.SQLServerDialect");
             //  mConfig.setProperty("hibernate.connection.driver_class","com.microsoft.jdbc.sqlserver.SQLServerDriver");
-            //} 
-                    
-          } 
+            //}
+
+          }
     }
   */
-  
-  
+
+
     /**
      * Determines if this is an applet or application
      */
-    public boolean isApplet() 
+    public boolean isApplet()
     {
         return false;
     }
-  
+
     /**
      * Show the spash screen while the rest of the demo loads
      */
-    public void createSplashScreen() 
+    public void createSplashScreen()
     {
-        splashLabel = new JLabel(new ImageIcon(Specify.class.getResource("images/specify_splash.gif")));        
-        if(!isApplet()) 
+        specifyImageIcon = new ImageIcon(Specify.class.getResource("images/specify_splash.gif"));
+        splashLabel = new JLabel(specifyImageIcon);
+        if(!isApplet())
         {
             splashWindow = new JWindow(getFrame());
             splashWindow.getContentPane().add(splashLabel);
@@ -408,14 +502,14 @@ public class Specify extends JPanel
             splashWindow.setLocation(scrSize.width/2 - splashWindow.getSize().width/2,
                                      scrSize.height/2 - splashWindow.getSize().height/2);
             /*
-            specifySplashImageIcon = new ImageIcon(Specify.class.getResource("images/specify_splash.gif"));
+            specifyspecifyImageIcon = new ImageIcon(Specify.class.getResource("images/specify_splash.gif"));
             JPanel panel = new JPanel() {
-                
-                public void paintComponent(Graphics g) 
+
+                public void paintComponent(Graphics g)
                 {
-                    if (specifySplashImageIcon != null)
+                    if (specifyspecifyImageIcon != null)
                     {
-                        g.drawImage(specifySplashImageIcon.getImage(),0,0,null);
+                        g.drawImage(specifyspecifyImageIcon.getImage(),0,0,null);
                         //g.setColor(Color.BLACK);
                        // g.draw3DRect(0,0,199,199, true);
                         //System.out.println("Paint RECT");
@@ -425,7 +519,7 @@ public class Specify extends JPanel
                 public Dimension getSize()
                 {
                     //return new Dimension(200,200);
-                    return new Dimension(specifySplashImageIcon.getIconWidth(), specifySplashImageIcon.getIconHeight());
+                    return new Dimension(specifyspecifyImageIcon.getIconWidth(), specifyspecifyImageIcon.getIconHeight());
                 }
                 public Dimension getPreferredSize()
                 {
@@ -434,13 +528,13 @@ public class Specify extends JPanel
             };
             panel.setOpaque(false);
             JFrame splashFrame = new JFrame("Transparent Window");
-            splashScreen = new TransparentBackground(splashFrame, specifySplashImageIcon);
-            splashFrame.setSize(specifySplashImageIcon.getIconWidth(), specifySplashImageIcon.getIconHeight());
-            splashScreen.setSize(specifySplashImageIcon.getIconWidth(), specifySplashImageIcon.getIconHeight());
-            
+            splashScreen = new TransparentBackground(splashFrame, specifyspecifyImageIcon);
+            splashFrame.setSize(specifyspecifyImageIcon.getIconWidth(), specifyspecifyImageIcon.getIconHeight());
+            splashScreen.setSize(specifyspecifyImageIcon.getIconWidth(), specifyspecifyImageIcon.getIconHeight());
+
             //splashScreen.setLayout(new BorderLayout());
             //splashScreen.add(panel, BorderLayout.CENTER);
-            
+
             splashFrame.setUndecorated(true);
             //splashFrame.getContentPane().setLayout(new BorderLayout());
             //splashFrame.getContentPane().add(splashScreen, BorderLayout.CENTER);
@@ -455,7 +549,7 @@ public class Specify extends JPanel
         }
 
     }
-  
+
     public void showSplashScreen()
     {
         if (!isApplet())
@@ -498,26 +592,26 @@ public class Specify extends JPanel
         initializeUI(gc);
     }
 
- 
+
     // *******************************************************
     // *************** Load UI ******************
     // *******************************************************
     public void initializeUI(final GraphicsConfiguration gc)
-    {        
+    {
         topFrame = new JFrame(gc);
         topFrame.setIconImage( IconManager.getImage("Specify16", IconManager.IconSize.Std16).getImage() );
-        
+
         topFrame.setGlassPane(glassPane = new GhostGlassPane());
         topFrame.setLocationRelativeTo(null);
         Toolkit.getDefaultToolkit().setDynamicLayout(true);
         UICacheManager.register(UICacheManager.GLASSPANE, glassPane);
-        
+
         JPanel top = new JPanel();
         top.setLayout(new BorderLayout());
         add(top, BorderLayout.NORTH);
-        
+
         UICacheManager.register(UICacheManager.TOPFRAME, topFrame);
-        
+
         menuBar = createMenus();
         if (menuBar != null)
         {
@@ -526,58 +620,58 @@ public class Specify extends JPanel
         }
         UICacheManager.register(UICacheManager.MENUBAR, menuBar);
 
-        
+
         JToolBar toolBar = createToolBar();
         if (toolBar != null)
         {
             top.add(toolBar, BorderLayout.CENTER);
         }
         UICacheManager.register(UICacheManager.TOOLBAR, toolBar);
-        
+
         mainPanel = new MainPanel();
 
         statusField = new JTextField("");
         statusField.setEditable(false);
         UICacheManager.register(UICacheManager.STATUSBAR, statusField);
-        
+
         add(statusField, BorderLayout.SOUTH);
-        
+
         PluginMgr.readRegistry();
-        
+
         /*PluginMgr.register(new StartUpTask());
         PluginMgr.register(new DataEntryTask());
         PluginMgr.register(new LabelsTask());
         PluginMgr.register(new ReportsTask());
         PluginMgr.register(new InteractionsTask());
         PluginMgr.register(new StatsTask());
-        PluginMgr.register(new QueryTask());    
+        PluginMgr.register(new QueryTask());
         PluginMgr.register(new RecordSetTask());
         PluginMgr.register(new ExpressSearchTask());
         */
         PluginMgr.initializePlugins();
-        
-       
+
+
     }
-    
+
     /**
-     * 
+     *
      * @return the toolbar for the app
      */
     public JToolBar createToolBar()
     {
         JToolBar toolBar = new JToolBar();
         toolBar.setLayout(new ToolbarLayoutManager(2,2));
-        
+
         return toolBar;
     }
-    
-    
+
+
     /**
      * Create menus
      */
     public void preferences()
     {
-        
+
         JDialog dlg = new JDialog();
         dlg.setModal(true);
         PrefMainPanel pane = new PrefMainPanel(dlg);
@@ -587,9 +681,9 @@ public class Specify extends JPanel
         System.out.println(dlg.getPreferredSize());
         dlg.setPreferredSize(dlg.getPreferredSize());
         dlg.setSize(dlg.getPreferredSize());
-        UIHelper.centerAndShow(dlg); 
+        UIHelper.centerAndShow(dlg);
     }
-    
+
     /**
      * Create menus
      */
@@ -597,7 +691,7 @@ public class Specify extends JPanel
     {
         JMenuBar mb = new JMenuBar();
         JMenuItem mi;
-        
+
         JMenu menu = UIHelper.createMenu(mb, "FileMenu", "FileMneu");
         mi = UIHelper.createMenuItem(menu, "Exit", "x", "Exit Appication", false, null);
         mi.addActionListener(new ActionListener()
@@ -606,8 +700,8 @@ public class Specify extends JPanel
                     {
                         doExit();
                     }
-                });   
-        
+                });
+
         menu = UIHelper.createMenu(mb, "EditMenu", "EditMneu");
         mi = UIHelper.createMenuItem(menu, "Preferences", "P", "Preferences", false, null);
         mi.addActionListener(new ActionListener()
@@ -616,20 +710,20 @@ public class Specify extends JPanel
                     {
                         preferences();
                     }
-                });    
+                });
 
-        
+
         /*JMenuItem mi2;
         JMenu fileMenu2 = (JMenu) mb.add(new JMenu("Log off"));
-        
 
-        fileMenu2.setMnemonic('O');       
+
+        fileMenu2.setMnemonic('O');
         mi2 = UIHelper.createMenuItem(fileMenu2, "Log off", "O", "Log off database", false, null);
         mi2.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent ae)
                     {
-                        if (hasChanged) 
+                        if (hasChanged)
                         {
 
                         }
@@ -645,13 +739,13 @@ public class Specify extends JPanel
                         } catch (Exception e)
                         {
                             log.error("UIHelper.createMenus - ", e);
-                        }                       
+                        }
                         //frame.dispose();
                         final Window parentWindow = SwingUtilities.getWindowAncestor(Specify.this);
                         parentWindow.dispose();
                         Specify ha = new Specify(grc);
                     }
-                });  
+                });
         */
         menu = UIHelper.createMenu(mb, "AdvMenu", "AdvMneu");
         mi = UIHelper.createMenuItem(menu, getResourceString("ESConfig"), getResourceString("ESConfig_Mn"), getResourceString("ESConfig"), false, null);
@@ -662,10 +756,10 @@ public class Specify extends JPanel
                         ExpressSearchTask expressSearchTask = (ExpressSearchTask)ContextMgr.getTaskByName(ExpressSearchTask.EXPRESSSEARCH);
                         expressSearchTask.showIndexerPane();
                     }
-                }); 
-        
+                });
+
         menu.add(UIHelper.createMenu(mb, "SystemMenu", "SystemMneu"));
-       
+
         menu = UIHelper.createMenu(mb, "TabsMenu", "TabsMneu");
         /*mi = UIHelper.createMenuItem(menu, "Close Current", "C", "Close C", false, null);
         mi.addActionListener(new ActionListener()
@@ -674,7 +768,7 @@ public class Specify extends JPanel
                     {
                         UICacheManager.getSubPaneMgr().closeCurrent();
                     }
-                });*/  
+                });*/
 
         mi = UIHelper.createMenuItem(menu, "Close All", "A", "Close All", false, null);
         mi.addActionListener(new ActionListener()
@@ -683,12 +777,12 @@ public class Specify extends JPanel
                     {
                         UICacheManager.getSubPaneMgr().closeAll();
                     }
-                });  
+                });
 
 
          return mb;
     }
-   
+
     /**
      * Checks to see if cache has changed before exiting
      *
@@ -696,7 +790,7 @@ public class Specify extends JPanel
     protected void doExit()
     {
 		log.info("Application shutdown");
-		
+
 		// save the long term cache mapping info
 		try
 		{
@@ -710,7 +804,7 @@ public class Specify extends JPanel
 
         System.exit(0);
     }
-  
+
     /**
      * Bring up the PPApp demo by showing the frame (only applicable if coming up
      * as an application, not an applet);
@@ -722,7 +816,7 @@ public class Specify extends JPanel
         f.setTitle("Specify 6.0");
         f.getContentPane().add(this, BorderLayout.CENTER);
         f.pack();
-        
+
         f.addWindowListener(new WindowAdapter()
         		{
         			public void windowClosing(WindowEvent e)
@@ -732,7 +826,7 @@ public class Specify extends JPanel
         		});
         centerAndShow(f);
     }
-  
+
     /**
      * Returns the frame instance
      */
@@ -763,20 +857,20 @@ public class Specify extends JPanel
           }
         });
     }
-    
+
     // *******************************************************
     // *****************   Static Methods  *******************
     // *******************************************************
-    
+
     /**
-     * 
+     *
      * @return the specify app object
      */
     public static Specify getSpecify()
     {
         return specifyApp;
     }
-  
+
 
   // *******************************************************
   // ******************   Runnables  ***********************
@@ -806,27 +900,28 @@ public class Specify extends JPanel
     {
     }
   }
-  
+
   //-----------------------------------------------------------------------------
   //-- Application MAIN
   //-----------------------------------------------------------------------------
 
   /**
-   * 
+   *
    */
   public static void main(String[] args)
   {
 
+      Specify specify = new Specify(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration());
 
       // Create Specify Application
-      SwingUtilities.invokeLater(new Runnable() {
-          public void run() 
+      /*SwingUtilities.invokeLater(new Runnable() {
+          public void run()
           {
               Specify specify = new Specify(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration());
           }
-    });
+    });*/
 
-      
+
   }
 }
 

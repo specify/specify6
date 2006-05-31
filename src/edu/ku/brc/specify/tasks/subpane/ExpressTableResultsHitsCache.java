@@ -26,8 +26,6 @@ import java.util.StringTokenizer;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Hits;
 
@@ -47,7 +45,7 @@ import edu.ku.brc.specify.ui.UICacheManager;
 public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(ExpressTableResultsHitsCache.class);
+    //private static Log log = LogFactory.getLog(ExpressTableResultsHitsCache.class);
 
     // Data Members
     protected Hits hits;

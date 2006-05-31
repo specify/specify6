@@ -36,6 +36,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import edu.ku.brc.specify.helpers.XMLHelper;
+import edu.ku.brc.specify.ui.UICacheManager;
 
 /**
  * @author rods
@@ -68,7 +69,19 @@ public class FishBaseInfoGetter extends HTTPGetter
         this.genus    = genus;
         this.species  = species;
 
-        tmpDir = System.getProperty("java.io.tmpdir");
+        //tmpDir = System.getProperty("java.io.tmpdir");
+        // XXX Will use long term cache in future
+        tmpDir = UICacheManager.getInstance().getDefaultWorkingPath() + File.separator + "cache";
+        File path = new File(tmpDir);
+        if (!path.exists())
+        {
+            if (!path.mkdirs())
+            {
+                String msg = "unable to create directory [" + path.getAbsolutePath() + "]";
+                System.err.println(msg);
+                throw new RuntimeException(msg);
+            }
+        }
     }
 
     public Element getDom()

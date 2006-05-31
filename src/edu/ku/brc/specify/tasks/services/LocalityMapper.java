@@ -1,3 +1,23 @@
+/* Filename:    $RCSfile: LocalityMapper.java,v $
+ * Author:      $Author: rods $
+ * Revision:    $Revision: 1.1 $
+ * Date:        $Date: 2006/05/01 19:59:54 $
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 package edu.ku.brc.specify.tasks.services;
 
 import java.awt.Color;
@@ -27,6 +47,12 @@ import edu.ku.brc.specify.ui.GraphicsUtils;
 import edu.ku.brc.specify.ui.SimpleCircleIcon;
 import edu.ku.brc.util.Pair;
 
+/**
+ * Maps several Localities (SPNHC Demo)
+ *
+ * @author rods
+ *
+ */
 public class LocalityMapper implements TimingTarget
 {
 	private static Log			log					= LogFactory.getLog(LocalityMapper.class);
@@ -77,6 +103,7 @@ public class LocalityMapper implements TimingTarget
 	protected Locality			animEndLoc;
 	// the cached information
 	protected Icon				mapIcon;
+    protected Icon             overlayIcon = null;
 	protected boolean			cacheValid;
 
 	public LocalityMapper()
@@ -96,19 +123,20 @@ public class LocalityMapper implements TimingTarget
 		cacheValid = false;
 		marker = new SimpleCircleIcon(8,Color.BLACK);
 		currentLocMarker = new SimpleCircleIcon(8,Color.BLACK);
-		
+
 		// setup the animation Cycle
 		int resolution = 0;
 		int duration = 750;
+
 		Cycle cycle = new Cycle(duration,resolution);
-		
+
 		// setup the animation Envelope
 		double repeatCount = 1;
 		int start = 0;
 		Envelope.RepeatBehavior repeatBehavior = Envelope.RepeatBehavior.REVERSE;
 		Envelope.EndBehavior endBehavior = Envelope.EndBehavior.HOLD;
 		Envelope env = new Envelope(repeatCount,start,repeatBehavior,endBehavior);
-		
+
 		// setup the TimingController (the animation controller)
 		animator = new TimingController(cycle,env,this);
 		animator.setAcceleration(0.45f);
@@ -172,7 +200,7 @@ public class LocalityMapper implements TimingTarget
 			// normalize the arrow speed by calculating the appropriate cycle duration
 			// find the longest distance an arrow might have to cover
 			double mapDiagDist = Math.sqrt(Math.pow(mapWidth,2)+Math.pow(mapHeight,2));
-			
+
 			// set the arrow speed to cover the longest possible route in 2 seconds
 			// dist unit is pixels/millisec
 			double arrowSpeed = mapDiagDist / 2000;
@@ -187,7 +215,7 @@ public class LocalityMapper implements TimingTarget
 				double arrowLength = GraphicsUtils.distance(startPoint, endPoint);
 				int duration = (int)(arrowLength/arrowSpeed);
 				animator.getCycle().setDuration(duration);
-				
+
 				// normalize the acceleration to be 0->full_speed in 500 ms
 				// deceleration is the same (full_speed->0 in 500 ms)
 				if( duration <= 1000 )
@@ -202,7 +230,7 @@ public class LocalityMapper implements TimingTarget
 					animator.setDeceleration(acc);
 				}
 			}
-			
+
 			animator.start();
 		}
 		this.currentLoc = currentLoc;
@@ -618,9 +646,19 @@ public class LocalityMapper implements TimingTarget
 		mapMaxLong = Math.min(180,maxLong+longSpread*bufferFactor);
 	}
 
-	protected Image getMapFromService(double minLat, double minLong, double maxLat, double maxLong)	throws HttpException,
-																									IOException
+	protected Image getMapFromService(final String host,
+                                      final String defaultPathAndParams,
+                                      final String layers,
+                                      double minLat,
+                                      double minLong,
+                                      double maxLat,
+                                      double maxLong)	throws HttpException, IOException
 	{
+
+        mapGrabber.setHost(host);
+        mapGrabber.setDefaultPathAndParams(defaultPathAndParams);
+        mapGrabber.setLayers(layers);
+
 		mapGrabber.setMinLat(minLat);
 		mapGrabber.setMaxLat(maxLat);
 		mapGrabber.setMinLong(minLong);
@@ -696,10 +734,19 @@ public class LocalityMapper implements TimingTarget
 	{
 		if( !cacheValid )
 		{
-			Image mapImage = getMapFromService(mapMinLat,mapMinLong,mapMaxLat,mapMaxLong);
-			// Image mapImage = new ImageIcon("/home/rods/map.png").getImage();
-			mapIcon = new ImageIcon(mapImage);
-			cacheValid = true;
+            Image mapImage = getMapFromService("mapus.jpl.nasa.gov",
+                    "/wms.cgi?request=GetMap&srs=EPSG:4326&format=image/png&styles=visual",
+                    "global_mosaic",
+                    mapMinLat, mapMinLong, mapMaxLat, mapMaxLong);
+
+            Image overlayImage = getMapFromService("129.237.201.104",
+                    "/cgi-bin/ogc.cgi/specify?service=WMS&request=GetMap&srs=EPSG:4326&version=1.3.1&format=image/png&transparent=true",
+                    "states,rivers",
+                    mapMinLat, mapMinLong, mapMaxLat, mapMaxLong);
+
+			mapIcon     = new ImageIcon(mapImage);
+            overlayIcon = new ImageIcon(overlayImage);
+			cacheValid  = true;
 
 			mapWidth = mapIcon.getIconWidth();
 			mapHeight = mapIcon.getIconHeight();
@@ -733,6 +780,8 @@ public class LocalityMapper implements TimingTarget
 				}
 
 				mapIcon.paintIcon(c,g,x,y);
+                overlayIcon.paintIcon(c, g, x, y);
+
 				Point lastLoc = null;
 				for( int i = 0; i<localities.size(); ++i )
 				{
@@ -751,7 +800,7 @@ public class LocalityMapper implements TimingTarget
 						continue;
 					}
 					// TODO: draw an arrow from lastLoc to iconLoc
-					if( showArrows && lastLoc!=null )
+					if( showArrows && lastLoc != null )
 					{
 						int x1 = x+lastLoc.x;
 						int y1 = y+lastLoc.y;

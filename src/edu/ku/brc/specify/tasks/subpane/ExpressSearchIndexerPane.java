@@ -410,7 +410,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         String[] secondaryKeys = tableInfo.getSecondaryKeys();
         boolean  useHitsCache  = tableInfo.isUseHitsCache();
 
-        StringBuilder strBuf = new StringBuilder();
+        StringBuilder strBuf = new StringBuilder(128);
 
         long begin = 0;
 
@@ -824,6 +824,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     Element textField = (Element)iter.next();
                 }*/
 
+                StringBuilder strBuf = new StringBuilder(128);
                 List staticTexts = root.selectNodes("/jasperReport/detail/band/staticText/text");
                 for ( Iterator iter = staticTexts.iterator(); iter.hasNext(); )
                 {
@@ -836,7 +837,6 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     doc.add(Field.Keyword("id", labelName));
                     doc.add(Field.Keyword("table", "20000"));
 
-                    StringBuffer strBuf = new StringBuffer();
                     strBuf.append(fileName);
                     strBuf.append('\t');
                     strBuf.append(labelName);
@@ -850,6 +850,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     doc.add(Field.UnStored("contents", labelName));
                     doc.add(Field.UnStored("contents", label));
                     doc.add(Field.UnIndexed("data", strBuf.toString()));
+                    strBuf.setLength(0);
 
                     writer.addDocument(doc);
                }

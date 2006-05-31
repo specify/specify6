@@ -27,7 +27,7 @@
     <icon name="ColEvent"   file="collevent.gif" sizes="all"/>
     <icon name="InfoRequest" file="information.gif" sizes="all"/>
     <icon name="SystemSetup" file="information.gif" sizes="all"/>
-    <icon name="Search"      file="search.gif" sizes="all"/>    
+    <icon name="Search"      file="search.gif" sizes="all"/>
     <icon name="LocalityMapper" file="map.png" sizes="all"/>
 
     <icon name="Blue Dot"    file="blue_dot.png" sizes="all"/>
@@ -38,8 +38,8 @@
     <icon name="UpArrow"       file="up.png"            sizes="16"/>
     <icon name="DownArrow"     file="down.png"          sizes="16"/>
     <icon name="BlankIcon"     file="blank16x16.png"    sizes="16"/>
-    
-    
+
+
     <icon name="FirstRec" file="first.gif" sizes="NonStd"/>
     <icon name="PrevRec"  file="prev.gif"  sizes="NonStd"/>
     <icon name="NextRec"  file="next.gif"  sizes="NonStd"/>
@@ -53,9 +53,9 @@
     <icon name="LastRec"  file="go-last.png"  sizes="NonStd"/>
     <icon name="NewRec"   file="document-new16.png"  sizes="NonStd"/>
     -->
-    
+
     <icon name="CreateObj"   file="document-new32.png"  sizes="all"/>
-    
+
     <icon name="NewRec"   file="newrec.gif"  sizes="NonStd"/>
     <icon name="Save"     file="document-save16.png"  sizes="NonStd"/>
 
@@ -69,15 +69,16 @@
 
     <icon name="BGImage"  file="splash.jpg" sizes="NonStd"/>
     <!-- <icon name="BGImage"  file="frogs_bg.gif" sizes="NonStd"/> -->
-    
+
     <icon name="Green Arrow Down" file="green_arrow_down.gif" sizes="16"/>
     <icon name="Green Arrow Up" file="green_arrow_up.gif" sizes="16"/>
 
     <icon name="Down" file="down.png" sizes="all"/>
     <icon name="Forward" file="forward.png" sizes="all"/>
-    
+
     <!--  Plugins -->
     <icon name="FishBase" file="fblogootw32.png" sizes="all"/>
     <icon name="GoogleEarth" file="GoogleEarth16x16.png" sizes="16"/>
-    
+    <icon name="BioGeoMancer" file="BioGeoMancer.png" sizes="all"/>
+
 </icons>

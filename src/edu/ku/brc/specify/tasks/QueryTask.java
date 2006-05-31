@@ -141,6 +141,14 @@ public class QueryTask extends BaseTask
         
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
+     */
+    public Class getTaskClass()
+    {
+        return this.getClass();
+    }
+    
     //--------------------------------------------------------------
     // Inner Classes
     //--------------------------------------------------------------

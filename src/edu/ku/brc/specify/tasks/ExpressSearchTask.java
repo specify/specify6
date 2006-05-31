@@ -57,6 +57,8 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.store.FSDirectory;
 import org.dom4j.Element;
 
+import edu.ku.brc.specify.core.ContextMgr;
+import edu.ku.brc.specify.core.NavBoxIFace;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
@@ -414,6 +416,26 @@ public class ExpressSearchTask extends BaseTask
     {
         return new SimpleDescPane(name, this, "This is the Express Search Pane");
     }
+    
+    /*
+     *  (non-Javadoc)
+     * @see edu.ku.brc.specify.core.Taskable#getNavBoxes()
+     */
+    public java.util.List<NavBoxIFace> getNavBoxes()
+    {
+        initialize();
+
+        Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
+
+        extendedNavBoxes.clear();
+        extendedNavBoxes.addAll(navBoxes);
+
+        RecordSetTask rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
+
+        extendedNavBoxes.addAll(rsTask.getNavBoxes());
+
+        return extendedNavBoxes;
+    }
 
     //-------------------------------------------------------
     // Plugin Interface
@@ -493,5 +515,12 @@ public class ExpressSearchTask extends BaseTask
     {
         return new Vector<MenuItemDesc>();
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
+     */
+    public Class getTaskClass()
+    {
+        return this.getClass();
+    }
 }

@@ -69,34 +69,34 @@ import edu.ku.brc.specify.ui.dnd.GhostMouseInputAdapter;
 import edu.ku.brc.specify.ui.dnd.ShadowFactory;
 
 /**
- *  
+ *
  * Creates a panel containing an icon and button with a focus "ring" when the mouse is hovering.
  * This class is used mostly in NavBoxes
- * 
+ *
  * @author Rod Spears
  *
  */
 @SuppressWarnings("serial")
 public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostActionable, DndDeletable
 {
-    protected JTextField             txtFld     = null;   
+    protected JTextField             txtFld     = null;
     protected JLabel                 iconLabel;
     protected boolean                isEditing  = false;
-    
+
     protected boolean                isOver     = false;
     protected static Color           focusColor = Color.BLUE;
     protected Vector<ActionListener> actions    = new Vector<ActionListener>();
-    
+
     protected ImageIcon              imgIcon    = null;
     protected String                 label      = "";
 
-    protected BufferedImage          sizeBufImg       = null; 
+    protected BufferedImage          sizeBufImg       = null;
     protected Dimension              preferredSize    = new Dimension(0,0);
     protected Vector<ActionListener> listeners        = new Vector<ActionListener>();
     protected GhostMouseInputAdapter  mouseDropAdapter = null;
-    
+
     protected Object                 data = null;
-    
+
     // These used for the Ghosting
     protected static final int       SHADOW_SIZE = 10;
     protected RenderingHints         hints        = null;
@@ -105,16 +105,16 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     protected double                 ratio        = 0.0;
     protected Dimension              prefferedRenderSize = new Dimension(0,0);
     protected boolean                verticalLayout      = false;
-    
+
     protected JPopupMenu             popupMenu    = null;
     protected RolloverCommand        itself       = null; // for the mouse adapter
-    
-    protected List<DataFlavor>       dropFlavors  = new ArrayList<DataFlavor>(); 
-    protected List<DataFlavor>       dragFlavors  = new ArrayList<DataFlavor>(); 
+
+    protected List<DataFlavor>       dropFlavors  = new ArrayList<DataFlavor>();
+    protected List<DataFlavor>       dragFlavors  = new ArrayList<DataFlavor>();
 
     // DndDeletable
     protected CommandAction          deleteCmdAction = null;
-    
+
     /**
      * Constructs a UI component with a label and an icon which can be clicked to execute an action
      * @param label the text label for the UI
@@ -122,9 +122,9 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
      */
     protected RolloverCommand()
     {
-    
+
     }
-    
+
     /**
      * Constructs a UI component with a label and an icon which can be clicked to execute an action
      * @param label the text label for the UI
@@ -132,30 +132,30 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
      */
     public RolloverCommand(final String label, final ImageIcon imgIcon)
     {
-       
+
         setBorder(new EmptyBorder(new Insets(1,1,1,1)));
         setLayout(new BorderLayout());
-       
+
         this.imgIcon = imgIcon;
         this.label   = label;
-        
-        iconLabel    = new JLabel(imgIcon);        
+
+        iconLabel    = new JLabel(imgIcon);
         itself       = this;
-        
+
         MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {
-            public void mouseEntered(MouseEvent e) 
+            public void mouseEntered(MouseEvent e)
             {
                 isOver = true;
                 repaint();
                 UICacheManager.displayStatusBarText(itself.getToolTipText());
             }
-            public void mouseExited(MouseEvent e) 
+            public void mouseExited(MouseEvent e)
             {
                 isOver = false;
                 repaint();
                 UICacheManager.displayStatusBarText("");
             }
-            public void mouseClicked(MouseEvent e) 
+            public void mouseClicked(MouseEvent e)
             {
                 repaint();
                 doAction(itself);
@@ -163,13 +163,13 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
           };
         addMouseListener(mouseInputAdapter);
         addMouseMotionListener(mouseInputAdapter);
-          
+
         ActionListener actionListener = new ActionListener() {
               public void actionPerformed(ActionEvent actionEvent) {
                   startEditting();
               }
             };
-            
+
         if (label != null)
         {
             popupMenu = new JPopupMenu();
@@ -191,11 +191,11 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
                     showIfPopupTrigger(mouseEvent);
                   }
                 };
-                //iconLabel.addMouseListener (mouseListener);            
-            addMouseListener (mouseListener);        
+                //iconLabel.addMouseListener (mouseListener);
+            addMouseListener (mouseListener);
         }
     }
-    
+
     /**
      * @return the text part of the button
      */
@@ -203,7 +203,7 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     {
         return label;
     }
-    
+
     /**
      * @return the popup menu (right click)
      */
@@ -226,26 +226,26 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
             g.setFont(getFont());
             FontMetrics fm = g.getFontMetrics();
             Insets insets = getInsets();
-            
+
             if (verticalLayout)
             {
-                preferredSize.width  = ins.left + ins.right + insets.left + insets.right + 
+                preferredSize.width  = ins.left + ins.right + insets.left + insets.right +
                                        Math.max((label != null ? fm.stringWidth(label) : 0), (imgIcon != null ? (imgIcon.getIconWidth() + 2) : 0));
-                preferredSize.height = ins.top + ins.bottom + insets.top + insets.bottom + 
+                preferredSize.height = ins.top + ins.bottom + insets.top + insets.bottom +
                                        (label != null ? fm.getHeight() : 0) + (imgIcon != null ? (imgIcon.getIconHeight() + 2) : 0);
             } else
             {
-                preferredSize.width  = ins.left + ins.right + insets.left + insets.right + 
+                preferredSize.width  = ins.left + ins.right + insets.left + insets.right +
                                        ((label != null ? fm.stringWidth(label) : 0)+2) + (imgIcon != null ? imgIcon.getIconWidth() : 0);
-                preferredSize.height = ins.top + ins.bottom + insets.top + insets.bottom + 
+                preferredSize.height = ins.top + ins.bottom + insets.top + insets.bottom +
                                        (Math.max(fm.getHeight(), (imgIcon != null ? (imgIcon.getIconHeight() + 2) : 0)));
-               
+
             }
         }
     }
-    
+
     /**
-     * 
+     *
      */
     /* (non-Javadoc)
      * @see java.awt.Component#getPreferredSize()
@@ -255,9 +255,9 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
         calcPreferredSize();
         return new Dimension(preferredSize);
     }
-    
+
     /**
-     * Stops the editting of the name. 
+     * Stops the editting of the name.
      * It will accept any input that has already been typed, but it will not allow for a zero length string.
      * It sawps out the text field and swpas in the label.
      *
@@ -270,19 +270,19 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
             txtFld.setVisible(false);
             remove(txtFld);
             remove(iconLabel);
-            
+
             txtFld = null;
-            
+
             buffer     = null; // remove the current rendered image so a new one can be created.
             sizeBufImg = null;
-            
+
             invalidate();
             getParent().doLayout();
             getParent().repaint();
             isEditing = false;
         }
     }
-    
+
     /**
      * Start the editing of the name. It swaps out the label with a text field to enable the user to type in a new name.
      *
@@ -291,40 +291,40 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     {
         //btn.setVisible(false);
         //remove(btn);
-        
+
         txtFld = new JTextField(label);
         add(iconLabel, BorderLayout.WEST);
         add(txtFld, BorderLayout.CENTER);
 
-        
+
         txtFld.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 if (txtFld.getText().length() > 0)
                 {
                     stopEditting();
                 }
-                
+
             }
           });
-        
-        txtFld.addFocusListener(new FocusListener() 
+
+        txtFld.addFocusListener(new FocusListener()
         {
             public void focusGained(FocusEvent e) {}
-            public void focusLost(FocusEvent e) 
+            public void focusLost(FocusEvent e)
             {
                 stopEditting();
             }
-            
+
         });
-        
+
         isEditing = true;
-        
+
         invalidate();
         doLayout();
         repaint();
 
     }
-    
+
     /**
      * Helper function that paint the component
      * @param g graphics
@@ -332,37 +332,37 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     protected void paintComp(Graphics g)
     {
         super.paint(g);
-        
+
         if (!isEditing)
         {
             Insets    insets = getInsets();
             Dimension size   = getSize();
-            
+
             if (verticalLayout)
             {
                 int y = insets.top;
-                
+
                 if (imgIcon != null && imgIcon.getImage() != null)
                 {
-                    g.drawImage(imgIcon.getImage(), (size.width-imgIcon.getIconWidth())/2, y, 
+                    g.drawImage(imgIcon.getImage(), (size.width-imgIcon.getIconWidth())/2, y,
                                 imgIcon.getIconWidth(), imgIcon.getIconHeight(), null);
                     y += imgIcon.getIconHeight() + 1;
                 }
-                
+
                 if (label != null)
                 {
                     g.setFont(getFont());
                     FontMetrics fm = g.getFontMetrics();
                     g.setColor(getForeground());
-                    
+
                     g.drawString(label, (size.width - fm.stringWidth(label))/2, y+fm.getHeight());
                 }
-          
+
             } else
             {
                 int x = insets.left + 1;
                 int y = insets.top;
-                
+
                 int xOffset = 0;
                 if (imgIcon != null && imgIcon.getImage() != null)
                 {
@@ -370,32 +370,32 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
                     {
                         x = (size.width - imgIcon.getIconWidth()) / 2;
                     }
-                    g.drawImage(imgIcon.getImage(), x, y + (size.height - imgIcon.getIconHeight())/2, 
+                    g.drawImage(imgIcon.getImage(), x, y + (size.height - imgIcon.getIconHeight())/2,
                                 imgIcon.getIconWidth(), imgIcon.getIconHeight(), null);
                     xOffset = imgIcon.getIconWidth();
                 }
-           
+
                 if (label != null)
                 {
                     g.setFont(getFont());
                     FontMetrics fm = g.getFontMetrics();
                     g.setColor(getForeground());
-                    
+
                     g.drawString(label, x+xOffset+1, y+((size.height-fm.getHeight())/2)+fm.getAscent());
                 }
-                
+
             }
-             
-            
+
+
             if (isOver && !this.hasFocus())
             {
                  g.setColor(UIManager.getLookAndFeel() instanceof PlasticLookAndFeel ? PlasticLookAndFeel.getFocusColor() : Color.BLUE);
                  g.drawRect(insets.left, insets.top, size.width-insets.right-insets.left, size.height-insets.bottom-insets.top);
-                
+
             }
         }
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
@@ -404,23 +404,23 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
         if (isEnabled())
         {
             paintComp(g);
-            
-        } else 
+
+        } else
         {
-            BufferedImage buf = new BufferedImage(getWidth(),getHeight(), BufferedImage.TYPE_INT_RGB);        
+            BufferedImage buf = new BufferedImage(getWidth(),getHeight(), BufferedImage.TYPE_INT_RGB);
             paintComp(buf.getGraphics());
-            
+
             float[] my_kernel = {
                     0.10f, 0.10f, 0.10f,
                     0.10f, 0.20f, 0.10f,
                     0.10f, 0.10f, 0.10f };
-            
+
                 ConvolveOp op = new ConvolveOp(new Kernel(3,3, my_kernel));
                 Image img = op.filter(buf,null);
-                g.drawImage(img,0,0,null);            
+                g.drawImage(img,0,0,null);
         }
     }
-    
+
     /**
      * Adds an ActionListener
      * @param al the listener to be added
@@ -429,7 +429,7 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     {
         listeners.add(al);
     }
-    
+
     /**
      * Removes an ActionListener
      * @param al the listener to be removed
@@ -438,15 +438,7 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     {
         listeners.remove(al);
     }
-   
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.core.NavBoxItemIFace#getUIComponent()
-     */
-    public JComponent getUIComponent()
-    {
-        return this;
-    }
-    
+
     /**
      * Adds a new "drag" data flavor it's list of data flavors that it supports
      * @param dataFlavor the new data flavor
@@ -465,11 +457,34 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
         dropFlavors.add(dataFlavor);
     }
 
-    
+
+    //-----------------------------------------------
+    // NavBoxItemIFace Interface
+    // Note: Both GhostActionable and NavBoxItemIFace both hace a get/set Data
+    //-----------------------------------------------
+
+   /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.NavBoxItemIFace#getUIComponent()
+     */
+    public JComponent getUIComponent()
+    {
+        return this;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.core.NavBoxItemIFace#getTitle()
+     */
+    public String getTitle()
+    {
+        return label;
+    }
+
+
     //-----------------------------------------------
     // GhostActionable Interface
+    // Note: Both GhostActionable and NavBoxItemIFace both hace a get/set Data
     //-----------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.dnd.GhostActionable#doAction(edu.ku.brc.specify.ui.dnd.GhostActionable)
      */
@@ -480,9 +495,9 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
         for (ActionListener al : listeners)
         {
             al.actionPerformed(ae);
-        }       
+        }
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.dnd.GhostActionable#setData(java.lang.Object)
      */
@@ -490,7 +505,7 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     {
         this.data = data;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getData()
      */
@@ -498,7 +513,7 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     {
         return data;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getDataForClass(java.lang.Class)
      */
@@ -506,7 +521,7 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     {
         return UIHelper.getDataForClass(data, classObj);
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.dnd.GhostActionable#createMouseDropAdapter()
      */
@@ -516,7 +531,7 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
         addMouseListener(mouseDropAdapter);
         addMouseMotionListener(mouseDropAdapter);
     }
-    
+
     /**
      * Returns the adaptor for tracking mouse drop gestures
      * @return Returns the adaptor for tracking mouse drop gestures
@@ -525,30 +540,30 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     {
         return mouseDropAdapter;
     }
-    
+
     /**
      * Returns the width
      * @return Returns the width
      */
-    public int getItemWidth() 
+    public int getItemWidth()
     {
         return getPreferredSize().width + 10;
     }
-    
+
     /**
      * Returns the height
      * @return Returns the height
      */
-    public int getItemHeight() 
+    public int getItemHeight()
     {
         return getPreferredSize().height;
     }
-    
+
     /**
-     * Initialize rendering hints 
+     * Initialize rendering hints
      *
      */
-    private void createRenderingHints() 
+    private void createRenderingHints()
     {
         if (hints == null)
         {
@@ -563,15 +578,15 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
             hints.put(RenderingHints.KEY_TEXT_ANTIALIASING, value);
         }
     }
-    
+
     /**
      * Render the control to a buffer
      */
-    private void renderOffscreen() 
+    private void renderOffscreen()
     {
         createRenderingHints();
         BufferedImage bgBufImg = getBackgroundImageBuffer();
-        
+
         buffer = new BufferedImage(bgBufImg.getWidth(),bgBufImg.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
         int shadowWidth  = bgBufImg.getWidth() - getItemWidth();
@@ -581,46 +596,46 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
         int top    = (int)(((double)shadowHeight)* 0.4);
         int width  = getItemWidth() - 2;
         int height = getItemHeight() - 2;
-        
+
         Graphics2D g2 = (Graphics2D) buffer.createGraphics();
         g2.setRenderingHints(hints);
 
         g2.drawImage(bgBufImg, 0, 0, bgBufImg.getWidth(), bgBufImg.getHeight(), null);
 
         g2.fillRect(left, top, width, height);
-        
+
         g2.setClip(left, top, width, height);
-        g2.drawImage(imgIcon.getImage(), left + 1, top + (height - imgIcon.getIconHeight())/2, 
+        g2.drawImage(imgIcon.getImage(), left + 1, top + (height - imgIcon.getIconHeight())/2,
                      imgIcon.getIconWidth(), imgIcon.getIconHeight(), null);
-        
+
         g2.setFont(getFont());
         FontMetrics fm = g2.getFontMetrics();
         g2.setColor(Color.BLACK);
         g2.drawString(label, left+1+imgIcon.getIconWidth()+1, top+((height-fm.getHeight())/2)+fm.getAscent());
         g2.dispose();
     }
-    
+
     /**
      * Returns the buffered image of the control
      * @return Returns the buffered image of the control
      */
-    public BufferedImage getBufferedImage() 
-    {      
-        if (buffer == null) 
+    public BufferedImage getBufferedImage()
+    {
+        if (buffer == null)
         {
             renderOffscreen();
         }
 
         return buffer;
     }
-    
+
     /**
      * Returns the BufferedImage of a background shadow. I creates a large rectangle than the orignal image.
      * @return Returns the BufferedImage of a background shadow. I creates a large rectangle than the orignal image.
      */
-    private BufferedImage getBackgroundImageBuffer() 
+    private BufferedImage getBackgroundImageBuffer()
     {
-        if (shadowBuffer == null) 
+        if (shadowBuffer == null)
         {
             createRenderingHints();
             ShadowFactory factory = new ShadowFactory(SHADOW_SIZE, 0.17f, Color.BLACK);
@@ -631,7 +646,7 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
             g2.setColor(Color.WHITE);
             g2.fillRect(0, 0, image.getWidth(), image.getHeight());
             g2.dispose();
-            
+
             shadowBuffer = factory.createShadow(image);
         }
         return shadowBuffer;
@@ -654,7 +669,7 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     {
         this.verticalLayout = verticalLayout;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getDataFlavor()
      */
@@ -687,7 +702,7 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
         }
         return true;
     }
-    
+
     /**
      * Returns an XML string for cahing the entire contents of the object to be serialized
      * @return Returns an XML string for cahing the entire contents of the object to be serialized
@@ -696,7 +711,7 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     {
         return null;
     }
-    
+
     /**
      * The command that will be dispatched when "deleteRequest" is called
      * @param cmdAction the command that will delete the object from itself container
@@ -714,7 +729,7 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     {
         return label;
     }
-    
+
     /**
      * An icon that is representative of the item
      * @return An icon that is representative of the item
@@ -723,5 +738,5 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     {
         return imgIcon;
     }
-   
+
 }

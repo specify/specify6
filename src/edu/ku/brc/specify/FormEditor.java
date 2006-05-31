@@ -33,6 +33,7 @@ import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectionObject;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollector;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDataType;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDetermination;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createGeography;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createLocality;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPrepType;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPreparation;
@@ -43,32 +44,51 @@ import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserGroup;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.FileDialog;
+import java.awt.Frame;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpConnection;
+import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -80,6 +100,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
+import com.jhlabs.image.TwirlFilter;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
@@ -103,9 +124,11 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.extras.BGMRecordTableModel;
 import edu.ku.brc.specify.helpers.EMailHelper;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.helpers.XMLHelper;
+import edu.ku.brc.specify.plugins.BioGeoMancer;
 import edu.ku.brc.specify.prefs.PrefMainPanel;
 import edu.ku.brc.specify.tests.CreateTestDatabases;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
@@ -445,7 +468,7 @@ public class FormEditor
                     Element dom = XMLHelper.readFileToDOM4J(new File("/tmp/Pimephales_notatus_Summary.xml"));
                     dataObj = dom;
                     multiView.setData(dataObj);
-                    
+
                 } catch (Exception ex)
                 {
                     ex.printStackTrace();
@@ -839,18 +862,283 @@ public class FormEditor
     }
 
     /**
-     * @param args
+     * @param id
+     * @param country
+     * @param adm1
+     * @param adm2
+     * @param locality
+     * @return
+     */
+    public String getBioGeoMancerResponse(final String id,
+                                          final String country,
+                                          final String adm1,
+                                          final String adm2,
+                                          final String locality)
+    {
+
+        try
+        {
+            HttpClient httpClient = new HttpClient();
+            PostMethod postMethod = new PostMethod(
+                "http://130.132.27.130/cgi-bin/bgm-0.2/batch_test.pl");
+            StringBuilder strBuf = new StringBuilder(128);
+            strBuf.append("\""+ id + "\",");
+            strBuf.append("\""+ country + "\",");
+            strBuf.append("\""+ adm1 + "\",");
+            strBuf.append("\""+ (adm2 != null ? adm2 : "") + "\",");
+            strBuf.append("\""+ locality + "\"\r\n");
+
+            NameValuePair[] postData = {
+                //new NameValuePair("batchtext", "\"12931\",\"Mexico\",\"Veracruz\",\"\",\"12 km NW of Catemaco\"\r\n"),
+                new NameValuePair("batchtext", strBuf.toString()),
+                new NameValuePair("format", "xml") };
+
+            //the 2.0 beta1 version has a
+            // PostMethod.setRequestBody(NameValuePair[])
+            //method, as addParameters is deprecated
+            postMethod.addParameters(postData);
+            int status = httpClient.executeMethod(postMethod);
+            String responseBody = postMethod.getResponseBodyAsString();
+            System.out.println(responseBody);
+            //release the connection used by the method
+            postMethod.releaseConnection();
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * @param element
+     * @param name
+     * @return
+     */
+    protected static String getData(final Element element, final String name)
+    {
+        String data = ((Element)element.selectSingleNode(name)).getTextTrim();
+        int inx = data.indexOf("(");
+        if (inx != -1)
+        {
+            int einx = data.indexOf(")");
+            return data.substring(inx+1, einx);
+        }
+        return data;
+    }
+
+    /**
+     * @param element
+     * @param name
+     * @return
+     */
+    protected static JComponent createDataLabel(final Element element, final String name)
+    {
+        try
+        {
+            String data = getData(element, name);
+            JTextField dataLabel = new JTextField(data);
+            dataLabel.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+            return dataLabel;
+
+        } catch (Exception ex)
+        {
+            System.err.println("Couldn't find value for["+name+"]");
+        }
+        return new JLabel("", JLabel.LEFT);
+    }
+
+    /**
+     * @param element
+     * @param builder
+     * @param cc
+     * @param label
+     * @param name
+     * @param column
+     * @param row
+     */
+    protected static void addRow(final Element element,
+                          final PanelBuilder builder,
+                          final CellConstraints cc,
+                          final String label,
+                          final String name,
+                          final int column,
+                          final int row)
+    {
+        builder.add(new JLabel(label+":", JLabel.RIGHT), cc.xy(column,row));
+        builder.add(createDataLabel(element, name), cc.xy(column+2,row));
+    }
+
+    /**
+     * @param element
+     * @param builder
+     * @param cc
+     * @param label
+     * @param name
+     * @param column
+     * @param row
+     * @param colSpan
+     */
+    protected static void addRow(final Element element,
+            final PanelBuilder builder,
+            final CellConstraints cc,
+            final String label,
+            final String name,
+            final int column,
+            final int row,
+            int colSpan)
+    {
+        builder.add(new JLabel(label+":", JLabel.RIGHT), cc.xy(column,row));
+        builder.add(createDataLabel(element, name), cc.xywh(column+2,row, colSpan,1));
+    }
+
+
+    /**
+     * @param root
+     * @return
+     */
+    public static JPanel processBGMDOM(Element root)
+    {
+        String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "2px", 16);
+        PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p,10px,p,2px,p", rowDef));
+
+        Element summary = (Element)root.selectSingleNode("//summary");
+        if (summary != null)
+        {
+           CellConstraints cc = new CellConstraints();
+           builder.addSeparator("Biogeomancer Results", cc.xywh(1, 1, 7, 1));
+
+           addRow(summary, builder, cc, "ID",       "queryId",      1, 3);
+           addRow(summary, builder, cc, "Country",  "queryCountry", 5, 3);
+           addRow(summary, builder, cc, "Adm1",     "queryAdm1",    1, 5);
+           addRow(summary, builder, cc, "Adm2",     "queryAdm2",    5, 5);
+           addRow(summary, builder, cc, "Locality", "queryString",  1, 7, 3);
+
+           /*String countryBoundingBox = ((Element)summary.selectSingleNode("countryBoundingBox")).getTextTrim();
+           int matchedRecordCount = Integer.parseInt(((Element)summary.selectSingleNode("countryBoundingBox")).getTextTrim());
+           String boundingBox = ((Element)summary.selectSingleNode("countryBoundingBox")).getTextTrim();
+           String boundingBoxCentroid = ((Element)summary.selectSingleNode("boundingBoxCentroid")).getTextTrim();
+           String boundingBoxCentroidErrorRadius = ((Element)summary.selectSingleNode("boundingBoxCentroid")).getTextTrim();
+           String boundingBoxCentroidErrorRadiusUnits = ((Element)summary.selectSingleNode("boundingBoxCentroid")).getTextTrim();
+           String multiPointMatch = ((Element)summary.selectSingleNode("boundingBoxCentroid")).getTextTrim();
+           String weightedCentroid = ((Element)summary.selectSingleNode("boundingBoxCentroid")).getTextTrim();
+           */
+
+           int rowInx = 9;
+           String [] dataNames  = {"countryBoundingBox",   "matchedRecordCount", "boundingBox",  "boundingBoxCentroid",   "boundingBoxCentroidErrorRadius", "boundingBoxCentroidErrorRadiusUnits", "multiPointMatch",  "weightedCentroid"};
+           String [] dataLabels = {"Country Bounding Box", "Matched Count",      "Bounding Box", "Bounding Box Centroid", "Centroid Error Radius",          "Centroid Error Radius Units",         "Multi Point Match", "Weighted Centroid"};
+           for (int i=0;i<dataNames.length;i++)
+           {
+               addRow(summary, builder, cc, dataLabels[i], dataNames[i], 1, rowInx);
+               rowInx += 2;
+           }
+
+           List<String[]> rowData = new ArrayList<String[]>();
+           List records = root.selectNodes("//record");
+           if (records != null && records.size() > 0)
+           {
+               String[] elementNames = {"country", "adm1", "featureName", "featureName", "featureName", "gazetteerSource", "InterpretedCoordinates", "offsetVector", "boundingBox", "sourceCoordinates", "InterpretedString"};
+               // iterate through child elements of root with element name "foo"
+               for ( Object obj : records) {
+                   Element rec = (Element)obj;
+                   String[] row = new String[11];
+                   for (int i=0;i<elementNames.length;i++)
+                   {
+                       System.out.println("["+elementNames[i]+"]");
+                       row[i] = getData(rec, elementNames[i]);
+                       System.out.println("["+elementNames[i]+"]["+row[i]+"]");
+                   }
+                   rowData.add(row);
+               }
+
+           }
+           BGMRecordTableModel bgmTableModel = new BGMRecordTableModel(rowData);
+           JTable table = new JTable(bgmTableModel);
+           JScrollPane scrollPane = new JScrollPane(table);
+           builder.add(scrollPane, cc.xywh(1,rowInx, 7, 1));
+        }
+        return builder.getPanel();
+    }
+
+    /**
+     * @param argsargs
      */
     public static void main(String[] args)
     {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run()
-            {
-                FormEditor formEditor = new FormEditor();
-                formEditor.initialize();
+        {
+        JFrame frame = new JFrame();
 
+        frame.pack();
+        frame.setVisible(true);
+        frame.setLocation(0,0);
+        frame.setSize(frame.getPreferredSize());
+
+        FilenameFilter filter = new FilenameFilter() {
+            public boolean accept(File f, String name) {
+                //System.out.println(name);
+                String fileName = name;
+                if( fileName.length() < 4 )
+                {
+                    return false;
+                }
+                String nameEnd = fileName.substring(fileName.length()-4);
+
+                if( nameEnd.equalsIgnoreCase(".csv") || nameEnd.equalsIgnoreCase(".tab") )
+                {
+                    System.out.println(name+"["+nameEnd+"]");
+                    return true;
+                }
+                return false;
             }
-        });
+            };
+        FileDialog dialog = new FileDialog(frame, "Import Data",FileDialog.LOAD);
+        dialog.setFilenameFilter(filter);
+        dialog.setVisible(true);
+        if (true) return;
+        }
+
+                //FormEditor formEditor = new FormEditor();
+                //formEditor.initialize();
+        try
+        {
+            //JPanel panel = processBGMDOM(XMLHelper.readFileToDOM4J(new File("/Users/rods/Specify/bgm.xml")));
+            BioGeoMancer bgm = new BioGeoMancer();
+            bgm.initialize(null);
+
+            //Query q = HibernateUtil.getCurrentSession().createQuery("from locality in class Locality where locality.latitude1 is null");
+            //java.util.List list = q.list();
+            //bmg.
+
+            Geography country = createGeography(null, null, "USA", 200);
+            Geography state   = createGeography(null, country, "Kansas", 300);
+            Geography county  = createGeography(null, state, "Douglas", 400);
+
+            Locality locality = createLocality("Wakarusa", county);
+            //locality.setLatitude1();
+            locality.setLocalityName("Wakarusa River, 3 mi S Lawrence");
+            locality.setLocalityId(101);
+
+            JFrame frame = new JFrame();
+            frame.setContentPane(bgm);
+            bgm.setValue(locality);
+
+            frame.pack();
+            frame.setVisible(true);
+            frame.setLocation(0,0);
+            frame.setSize(frame.getPreferredSize());
+
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        //System.out.println(getBioGeoMancerResponse());
+
+        /*
+            if (StringUtils.isNotEmpty(responseBody))
+            {
+                return (Element)XMLHelper.readStrToDOM4J(responseBody);
+            }
+         */
 
     }
 

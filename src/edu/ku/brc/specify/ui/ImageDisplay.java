@@ -394,12 +394,19 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
                //
 
                FileCache fileCache = UICacheManager.getLongTermFileCache();
-               String    fileName  = fileCache.cacheWebResource(url);
-               File      file      = fileCache.getCacheFile(fileName);
-               Image     img       = getToolkit().getImage(file.toURL());
-               ImageIcon imageIcon = new ImageIcon(img);
-
-               setImage(imageIcon);
+               if (fileCache != null)
+               {
+                   File file = fileCache.getCacheFile(url);
+                   if (file == null)
+                   {
+                       String    fileName  = fileCache.cacheWebResource(url);
+                       file      = fileCache.getCacheFile(fileName);
+                   }
+                   Image     img       = getToolkit().getImage(file.toURL());
+                   ImageIcon imageIcon = new ImageIcon(img);
+    
+                   setImage(imageIcon);
+               }
 
                getter = null;
 

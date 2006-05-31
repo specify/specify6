@@ -712,7 +712,7 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 			return;
 		}
 		
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder(128);
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode)p.getLastPathComponent();
 		Treeable t = (Treeable)node.getUserObject();
 		sb.insert(0, t.getName());

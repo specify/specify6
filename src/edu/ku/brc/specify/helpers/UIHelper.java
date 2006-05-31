@@ -11,10 +11,14 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.GregorianCalendar;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -46,7 +50,7 @@ public final class UIHelper
 
     protected static Object[]          values   = new Object[2];
     protected static SimpleDateFormat  scrDateFormat = null;
-    
+
     static {
 
         String osStr = System.getProperty("os.name");
@@ -117,7 +121,7 @@ public final class UIHelper
      */
     public static String createDuplicateJGoodiesDef(final String def, final String separator, final int length)
     {
-        StringBuffer strBuf = new StringBuffer();
+        StringBuilder strBuf = new StringBuilder(64);
         for (int i=0;i<length;i++)
         {
             if (strBuf.length() > 0)
@@ -498,7 +502,7 @@ public final class UIHelper
         {
             scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
         }
-        
+
         if (fieldNames.length > values.length)
         {
             values = new Object[fieldNames.length];
@@ -509,9 +513,9 @@ public final class UIHelper
                 values[i] = null;
             }
         }
-        
+
         boolean  allFieldsNull = true;
-    
+
         int cnt = 0;
         for (String fldName : fieldNames)
         {
@@ -530,11 +534,11 @@ public final class UIHelper
             {
                 dataValue = getter.getFieldValue(dataObj, fldName);
             }
-            
+
             if (dataValue instanceof java.util.Date)
             {
                 dataValue = scrDateFormat.format((java.util.Date)dataValue);
-                
+
             } else if (dataValue instanceof java.util.Calendar)
             {
                 dataValue = scrDateFormat.format(((java.util.Calendar)dataValue).getTime());
@@ -566,10 +570,10 @@ public final class UIHelper
         return getFieldValues(fieldNames, dataObj, getter);
     }
 
-    
+
     /**
      * Adds new child object to its parent's set and set the parent point in the new obj
-     * @param parentDataObj the parent object 
+     * @param parentDataObj the parent object
      * @param newDataObj the new object to be added to a Set
      */
     public static boolean initAndAddToParent(final Object parentDataObj, final Object newDataObj)
@@ -582,28 +586,28 @@ public final class UIHelper
             {
                 Method method = newDataObj.getClass().getMethod("initialize", new Class[] {});
                 method.invoke(newDataObj, new Object[] {});
-                
+
                 method = parentDataObj.getClass().getMethod(methodName, new Class[] {newDataObj.getClass()});
                 method.invoke(parentDataObj, new Object[] {newDataObj});
                 log.info("Adding ["+newDataObj+"] to parent Set["+parentDataObj+"]");
                 return true;
-                
+
             } catch (NoSuchMethodException ex)
             {
                 ex.printStackTrace();
-                
+
             } catch (IllegalAccessException ex)
             {
-                ex.printStackTrace();   
-                
+                ex.printStackTrace();
+
             } catch (InvocationTargetException ex)
             {
-                ex.printStackTrace();    
+                ex.printStackTrace();
             }
         }
         return false;
     }
-    
+
     /**
       * Creates a new data object and initializes it
       * @param newDataClass class of new Object to be created and initialized
@@ -619,33 +623,33 @@ public final class UIHelper
                 method.invoke(dataObj, new Object[] {});
 
                 return dataObj;
-                
+
             } else
             {
                 log.error("Couldn't create new Data Object for Class["+newDataClass.getSimpleName()+"]");
             }
-            
+
         } catch (NoSuchMethodException ex)
         {
             ex.printStackTrace();
-            
+
         } catch (IllegalAccessException ex)
         {
-            ex.printStackTrace();   
-            
+            ex.printStackTrace();
+
         } catch (InvocationTargetException ex)
         {
-            ex.printStackTrace();  
-            
+            ex.printStackTrace();
+
         } catch (InstantiationException ex)
         {
-            ex.printStackTrace();   
-            
+            ex.printStackTrace();
+
         }
 
         return null;
     }
-    
+
     /**
      * @param fieldNames
      * @param dataObj
@@ -653,10 +657,10 @@ public final class UIHelper
      * @param getter
      * @param setter
      */
-    public static void setFieldValue(final String fieldNames, 
-                                     final Object dataObj, 
-                                     final Object newData, 
-                                     final DataObjectGettable getter, 
+    public static void setFieldValue(final String fieldNames,
+                                     final Object dataObj,
+                                     final Object newData,
+                                     final DataObjectGettable getter,
                                      final DataObjectSettable setter)
     {
         int inx = fieldNames.indexOf(".");
@@ -680,27 +684,27 @@ public final class UIHelper
                             log.debug("New Obj ["+newObj+"] being added to ["+dataObj+"]");
                             if (newObj != null)
                             {
-                                
+
                                 Method method = newObj.getClass().getMethod("initialize", new Class[] {});
                                 method.invoke(newObj, new Object[] {});
                                 setter.setFieldValue(dataObj, fieldName, newObj);
                                 data = newObj;
-                                
+
                                 log.debug("Inserting New Obj ["+newObj+" at top of new DB ObjCache");
-                                
+
                             }
                         } catch (NoSuchMethodException ex)
                         {
                             ex.printStackTrace();
-                            
+
                         } catch (IllegalAccessException ex)
                         {
                             ex.printStackTrace();
-                            
+
                         } catch (InvocationTargetException ex)
                         {
                             ex.printStackTrace();
-                            
+
                         } catch (InstantiationException ex)
                         {
                             ex.printStackTrace();
@@ -744,6 +748,19 @@ public final class UIHelper
             return values[0] != null ? values[0].toString() : "";
         }
 
+    }
+
+    //-------------------------------------------------------
+    //-- Helpers for creating Lists and Maps
+    //-------------------------------------------------------
+    public static Map<String, String> createMap()
+    {
+        return new Hashtable<String, String>();
+    }
+
+    public static List<String> createList()
+    {
+        return new ArrayList<String>();
     }
 
 }

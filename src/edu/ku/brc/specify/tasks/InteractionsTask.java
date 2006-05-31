@@ -50,7 +50,7 @@ import edu.ku.brc.specify.ui.forms.persist.View;
 public class InteractionsTask extends BaseTask
 {
     private static Log log = LogFactory.getLog(InteractionsTask.class);
-    
+
     public static final String INTERACTIONS = "Interactions";
 
     // Data Members
@@ -66,7 +66,7 @@ public class InteractionsTask extends BaseTask
 
         // Temporary
         NavBox navBox = new NavBox(getResourceString("Actions"));
-        navBox.add(NavBox.createBtn(getResourceString("Accession"),  "Interactions", IconManager.IconSize.Std16, 
+        navBox.add(NavBox.createBtn(getResourceString("Accession"),  "Interactions", IconManager.IconSize.Std16,
                 new CreateViewAction(this, "Main Views", "Accession", "Edit", Accession.class)));
         navBox.add(NavBox.createBtn(getResourceString("New_Loan"),  name, IconManager.IconSize.Std16));
         navBox.add(NavBox.createBtn(getResourceString("New_Gifts"), name, IconManager.IconSize.Std16));
@@ -103,7 +103,7 @@ public class InteractionsTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        return new SimpleDescPane(title, this, "This is the Interactions Pane");
+        return new SimpleDescPane(title, this, "Please select an Interaction");
     }
 
     //-------------------------------------------------------
@@ -133,6 +133,13 @@ public class InteractionsTask extends BaseTask
 
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
+     */
+    public Class getTaskClass()
+    {
+        return this.getClass();
+    }
 
     //-------------------------------------------------------
     // CommandListener Interface
@@ -145,7 +152,7 @@ public class InteractionsTask extends BaseTask
             if (cmdAction.getData() instanceof RecordSet)
             {
                 addSubPaneToMgr(DataEntryTask.createFormFor(this, name, (RecordSet)cmdAction.getData()));
-                
+
             } else if (cmdAction.getData() instanceof Object[])
             {
                 Object[] dataList = (Object[])cmdAction.getData();
@@ -155,7 +162,7 @@ public class InteractionsTask extends BaseTask
                     String mode = (String)dataList[1];
                     String idStr = (String)dataList[2];
                     DataEntryTask.openView(this, view, mode, idStr);
-                    
+
                 } else
                 {
                     log.error("The Edit Command was sent with an object Array that was not 3 components!");
@@ -164,7 +171,7 @@ public class InteractionsTask extends BaseTask
             {
                 log.error("The Edit Command was sent that didn't have data that was a RecordSet or an Object Array");
             }
-        } 
+        }
     }
 
     //--------------------------------------------------------------

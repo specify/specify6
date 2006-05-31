@@ -191,7 +191,7 @@ public class AttrUtils
                                               final int     prepsObjID,
                                               final Integer parasiteTaxonNameID)
     {
-        StringBuilder strBuf = new StringBuilder();
+        StringBuilder strBuf = new StringBuilder(128);
         strBuf.setLength(0);
         strBuf.append("INSERT INTO prepattrs VALUES (");
         strBuf.append(prepAttrsID);

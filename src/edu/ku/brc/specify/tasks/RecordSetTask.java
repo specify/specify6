@@ -24,6 +24,9 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -109,6 +112,7 @@ public class RecordSetTask extends BaseTask
         RolloverCommand roc = (RolloverCommand)nbi;
         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
         roc.addDragDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+        roc.addActionListener(new RecordSetSelectedAction((RecordSet)roc.getData()));
     }
 
     /**
@@ -124,7 +128,7 @@ public class RecordSetTask extends BaseTask
         recordSet.setTimestampCreated(Calendar.getInstance().getTime());
 
         // save to database
-        HibernateUtil.getCurrentSession();
+        //HibernateUtil.getCurrentSession();
         HibernateUtil.beginTransaction();
         HibernateUtil.getCurrentSession().saveOrUpdate(recordSet);
         HibernateUtil.commitTransaction();
@@ -157,23 +161,6 @@ public class RecordSetTask extends BaseTask
     }
 
     /**
-     * Return a NavBoxItem by name
-     * @param boxName the name of the NavBoxItem
-     * @return Return a NavBoxItem by name
-     */
-    protected NavBoxItemIFace getBoxByName(final String boxName)
-    {
-        for (NavBoxItemIFace nbi : navBox.getItems())
-        {
-            if (((RolloverCommand)nbi).getLabelText().equals(boxName))
-            {
-                return nbi;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Delete the RecordSet from the UI, which really means remove the NavBoxItemIFace.
      * This method first checks to see if the boxItem is not null and uses that, i
      * f it is null then it looks the box up by name ans used that
@@ -182,7 +169,7 @@ public class RecordSetTask extends BaseTask
      */
     protected void deleteRecordSetFromUI(final NavBoxItemIFace boxItem, final RecordSet recordSet)
     {
-        Component comp = boxItem != null ? boxItem.getUIComponent() : getBoxByName(recordSet.getName()).getUIComponent();
+        Component comp = boxItem != null ? boxItem.getUIComponent() : getBoxByTitle(navBox, recordSet.getName()).getUIComponent();
         if (comp != null)
         {
             navBox.remove(comp);
@@ -197,6 +184,34 @@ public class RecordSetTask extends BaseTask
             NavBoxMgr.getInstance().repaint();
             UICacheManager.forceTopFrameRepaint();
         }
+    }
+
+    /**
+     * Returns a list of RecordSets for a given Table Id (never returns null)
+     * @param tableId the matching tableId or -1 if all the recordsets should be returned
+     * @return a list of recordsets (never returns null)
+     */
+    public List<RecordSet> getRecordSets(final int tableId)
+    {
+        List<RecordSet> list = new ArrayList<RecordSet>();
+        for (NavBoxItemIFace nbi : navBox.getItems())
+        {
+            RecordSet rs = (RecordSet)nbi.getData();
+            if (tableId == -1 || tableId == rs.getTableId())
+            {
+                list.add(rs);
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Returns all the recordsets (never returns null)
+     * @return all the recordsets (never returns null)
+     */
+    public List<RecordSet> getRecordSets()
+    {
+        return getRecordSets(-1);
     }
 
     /* (non-Javadoc)
@@ -236,6 +251,14 @@ public class RecordSetTask extends BaseTask
 
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
+     */
+    public Class getTaskClass()
+    {
+        return this.getClass();
+    }
+
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
@@ -266,5 +289,30 @@ public class RecordSetTask extends BaseTask
 
         }
     }
+    //--------------------------------------------------------------
+    // Inner Classes
+    //--------------------------------------------------------------
+
+     /**
+     *
+     * @author rods
+     *
+     */
+    class RecordSetSelectedAction implements ActionListener
+    {
+        private RecordSet rs;
+
+        public RecordSetSelectedAction(final RecordSet rs)
+        {
+            this.rs = rs;
+        }
+
+        public void actionPerformed(ActionEvent e)
+        {
+            CommandDispatcher.dispatch(new CommandAction(RECORD_SET, "Selected", rs));
+        }
+
+    }
+
 
 }

@@ -24,10 +24,12 @@ import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.split;
 
 import java.awt.Component;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.AbstractButton;
 import javax.swing.JMenu;
@@ -37,12 +39,15 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 import javax.swing.MenuElement;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.core.ServiceInfo;
+import edu.ku.brc.specify.core.TaskCommandDef;
+import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.ui.CommandAction;
 import edu.ku.brc.specify.ui.IconManager;
@@ -54,19 +59,20 @@ public class PluginMgr
     // Static Data Members
     private static final Log log = LogFactory.getLog(PluginMgr.class);
     private static final PluginMgr instance = new PluginMgr();
-    
+
     // Data Members
-    protected Hashtable<String, TaskPluginable> plugins = new Hashtable<String, TaskPluginable>();
-    
+    protected Hashtable<String, TaskPluginable> plugins        = new Hashtable<String, TaskPluginable>();
+    protected Element                           commandDOMRoot = null;
+
     /**
      * Protected Default Constructor for Singleton
      *
      */
     protected PluginMgr()
     {
-        
+
     }
-    
+
     /**
      * Returns a singleton of the plugin manager
      * @return a singleton of the plugin manager
@@ -75,7 +81,7 @@ public class PluginMgr
     {
         return instance;
     }
-    
+
     /**
      * Registers a plugin into the applications
      * @param plugin the plugin to be registered
@@ -87,9 +93,9 @@ public class PluginMgr
             if (instance.plugins.get(plugin.getName()) == null)
             {
                 instance.plugins.put(plugin.getName(), plugin);
-                
+
                 registerWithUI(plugin);
-                
+
             } else
             {
                 throw new RuntimeException("Registering a plugin with an existing name["+plugin.getName()+"]");
@@ -99,7 +105,7 @@ public class PluginMgr
             throw new NullPointerException("Trying to register a null plugin!");
         }
     }
-    
+
     /**
      * Unregisters a plugin from the application
      * @param plugin
@@ -136,11 +142,11 @@ public class PluginMgr
                 if (tbItem.getPos() == ToolBarItemDesc.Position.Insert)
                 {
                     toolBar.add(toolBarComp, tbItem.getIndex());
-                    
+
                 } else if (tbItem.getPos() == ToolBarItemDesc.Position.Append)
                 {
                     toolBar.add(toolBarComp);
-                    
+
                 } else if (tbItem.getPos() == ToolBarItemDesc.Position.AppendNextToLast)
                 {
                     int inx = toolBar.getComponentCount();
@@ -155,7 +161,7 @@ public class PluginMgr
         {
             throw new NullPointerException("The Toolbar component cannot be null!");
         }
-        
+
         JMenuBar menuBar = (JMenuBar)UICacheManager.get(UICacheManager.MENUBAR);
         if (menuBar != null)
         {
@@ -169,21 +175,27 @@ public class PluginMgr
             throw new NullPointerException("The MenuBar component cannot be null!");
         }
     }
-    
-    public static void buildMenuTree(final MenuElement  parent, 
-                                     final MenuItemDesc menuItemDesc, 
-                                     final String[]     menuPath, 
+
+    /**
+     * @param parent
+     * @param menuItemDesc
+     * @param menuPath
+     * @param currIndex
+     */
+    public static void buildMenuTree(final MenuElement  parent,
+                                     final MenuItemDesc menuItemDesc,
+                                     final String[]     menuPath,
                                      final int          currIndex)
     {
-        
-        
+
+
         if (currIndex == menuPath.length)
         {
             MenuElement me = menuItemDesc.getMenuItem();
             if (parent instanceof JMenuBar)
             {
                 ((JMenuBar)parent).add((JMenu)me);
-                
+
             } else if (parent instanceof JMenu)
             {
                 ((JMenu)parent).add((JMenuItem)me);
@@ -191,7 +203,7 @@ public class PluginMgr
         } else
         {
             String label = getResourceString(menuPath[currIndex]);
-            
+
             MenuElement menuElement = getMenuByName(parent, label);
             if (menuElement == null)
             {
@@ -200,7 +212,12 @@ public class PluginMgr
             buildMenuTree(menuElement, menuItemDesc, menuPath, currIndex+1);
         }
     }
-    
+
+    /**
+     * @param parent
+     * @param name
+     * @return
+     */
     public static MenuElement getMenuByName(final MenuElement parent, final String name)
     {
         for (MenuElement mi : parent.getSubElements())
@@ -215,7 +232,7 @@ public class PluginMgr
             } else if (mi instanceof JPopupMenu)
             {
                 return getMenuByName(mi, name);
-                
+
                 /*System.out.println("["+((JPopupMenu)mi).getLabel()+"]["+name+"]");
                 if (((JPopupMenu)mi).getLabel().equals(name))
                 {
@@ -232,9 +249,9 @@ public class PluginMgr
      */
     protected static void unregisterWithUI(final TaskPluginable plugin)
     {
-        
+
     }
-    
+
     /**
      * Forces an initialization of all the plugins. Can be called mulitple times because plugins are responsible
      * for making sure they only get initialized one time.
@@ -244,10 +261,10 @@ public class PluginMgr
         for (Enumeration<TaskPluginable> e=instance.plugins.elements();e.hasMoreElements();)
         {
             TaskPluginable taskablePlugin = e.nextElement();
-            taskablePlugin.initialize();
+            taskablePlugin.initialize(getCommandDefinitions(taskablePlugin.getTaskClass()));
         }
     }
-    
+
     /**
      * Helper method that loads the standard icon sizes needed for services.
      * @param name the name of the icon
@@ -259,51 +276,51 @@ public class PluginMgr
         info.addIcon(IconManager.getIcon(name, IconManager.IconSize.Std24), IconManager.IconSize.Std24);
         info.addIcon(IconManager.getIcon(name, IconManager.IconSize.Std32), IconManager.IconSize.Std32);
     }
-    
+
     /**
-     * Reads the plugins registry and loads them 
-     * 
+     * Reads the plugins registry and loads them
+     *
      */
     public static void readRegistry()
     {
-        
+
         try
         {
             Element root  = XMLHelper.readDOMFromConfigDir("plugin_registry.xml");
-            
+
             List boxes = root.selectNodes("/plugins/core/plugin");
-            for ( Iterator iter = boxes.iterator(); iter.hasNext(); ) 
+            for ( Iterator iter = boxes.iterator(); iter.hasNext(); )
             {
                 org.dom4j.Element pluginElement = (org.dom4j.Element)iter.next();
-                
+
                 Object newObj = null;
                 String name   = pluginElement.attributeValue("class");
                 try
                 {
-    
+
                     Class cls = Class.forName(name);
                     newObj = cls.newInstance();
-                    
+
                 } catch (ClassNotFoundException ex)
                 {
                     log.error(ex);
                     // XXX Do we need a dialog here ???
                 }
-                
+
                 if (newObj instanceof TaskPluginable)
                 {
                     TaskPluginable tp = (TaskPluginable)newObj;
                     register(tp);
-                    
+
                     List servicesList = pluginElement.selectNodes("service");
-                    for ( Iterator iterServices = servicesList.iterator(); iterServices.hasNext(); ) 
+                    for ( Iterator iterServices = servicesList.iterator(); iterServices.hasNext(); )
                     {
-                        Element serviceElement = (Element)iterServices.next();
-                        int tableId = Integer.parseInt(serviceElement.attributeValue("tableid"));
-                        CommandAction cmd = new CommandAction(tp.getName(), serviceElement.attributeValue("command"), tableId);
-                        ServiceInfo serviceInfo = ContextMgr.registerService(tp.getName(), tableId, cmd, null, serviceElement.attributeValue("tooltip"));
+                        Element       serviceElement = (Element)iterServices.next();
+                        int           tableId        = Integer.parseInt(serviceElement.attributeValue("tableid"));
+                        CommandAction cmd            = new CommandAction(tp.getName(), serviceElement.attributeValue("command"), tableId);
+                        ServiceInfo   serviceInfo    = ContextMgr.registerService(tp.getName(), tableId, cmd, null, serviceElement.attributeValue("tooltip"));
                         loadServiceIcons(tp.getName(), serviceInfo);
-                    }  
+                    }
                 } else
                 {
                     log.error("Oops, the plugin is not instance of TaskPluginable ["+newObj+"]");
@@ -315,7 +332,66 @@ public class PluginMgr
             ex.printStackTrace();
             log.error(ex);
         }
-        
     }
+
+    /**
+     * @param name
+     * @param classObj
+     * @return
+     */
+    public static List<TaskCommandDef> getCommandDefinitions(final Class classObj)
+    {
+        List<TaskCommandDef> list = new ArrayList<TaskCommandDef>();
+        try
+        {
+            if (instance.commandDOMRoot == null)
+            {
+                instance.commandDOMRoot = XMLHelper.readDOMFromConfigDir("command_registry.xml");
+            }
+
+            List cmds = instance.commandDOMRoot.selectNodes("/commands/command[@class='"+classObj.getName()+"']");
+
+            for ( Iterator iter = cmds.iterator(); iter.hasNext(); )
+            {
+                Element cmdElement = (Element)iter.next();
+
+                String cmdName     = XMLHelper.getAttr(cmdElement, "name", null);
+                String cmdIconName = XMLHelper.getAttr(cmdElement, "icon", null);
+                if (StringUtils.isNotEmpty(cmdName) && StringUtils.isNotEmpty(cmdIconName))
+                {
+                    Map<String, String> params = null;
+                    List paramsList = cmdElement.selectNodes("param");
+                    for ( Iterator iterServices = paramsList.iterator(); iterServices.hasNext(); )
+                    {
+                        Element paramElement = (Element)iterServices.next();
+                        String name  = XMLHelper.getAttr(paramElement, "name", null);
+                        String value = paramElement.getTextTrim();
+                        if (StringUtils.isNotEmpty(name) && StringUtils.isNotEmpty(value))
+                        {
+                            if (params == null)
+                            {
+                                params = UIHelper.createMap();
+                            }
+                            params.put(name, value);
+                        }
+                    }
+                    TaskCommandDef tcd = new TaskCommandDef(cmdName, cmdIconName, params);
+                    list.add(tcd);
+
+                }
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            log.error(ex);
+        }
+        return list;
+    }
+
+
+    //---------------------------------------------------------------
+    //-- Inner Classes
+    //---------------------------------------------------------------
+
 
 }

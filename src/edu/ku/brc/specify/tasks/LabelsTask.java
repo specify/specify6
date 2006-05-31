@@ -30,6 +30,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.AbstractListModel;
@@ -53,6 +54,7 @@ import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.core.NavBoxIFace;
 import edu.ku.brc.specify.core.NavBoxItemIFace;
+import edu.ku.brc.specify.core.TaskCommandDef;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
@@ -94,6 +96,10 @@ public class LabelsTask extends BaseTask
     // Data Members
     protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
     protected Vector<NavBoxItemIFace> labelsList       = new Vector<NavBoxItemIFace>();
+    protected SubPaneIFace            starterPane      = null;
+
+    // temp data
+    protected NavBoxItemIFace         oneNbi           = null;
 
     /**
      *
@@ -103,22 +109,21 @@ public class LabelsTask extends BaseTask
     {
         super(LABELS, getResourceString(LABELS));
         CommandDispatcher.register(LABELS, this);
+        CommandDispatcher.register(RecordSetTask.RECORD_SET, this);
     }
 
    /**
      * Helper method for registering a NavBoxItem as a GhostMouseDropAdapter
-     * @param list the list of NavBoxItems that will have this nbi registered as a drop zone
      * @param navBox the parent box for the nbi to be added to
      * @param navBoxItemDropZone the nbi in question
      * @return returns the new NavBoxItem
      */
-    protected NavBoxItemIFace addToNavBoxAndRegisterAsDroppable(final java.util.List<NavBoxIFace> list,
-                                                                final NavBox          navBox,
-                                                                final NavBoxItemIFace nbi,
-                                                                final String          fileName)
+    protected NavBoxItemIFace addToNavBoxAndRegisterAsDroppable(final NavBox              navBox,
+                                                                final NavBoxItemIFace     nbi,
+                                                                final Map<String, String> params)
     {
         RolloverCommand roc = (RolloverCommand)nbi;
-        roc.setData(fileName);
+        roc.setData(params);
 
         // When Being Dragged
         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
@@ -135,7 +140,7 @@ public class LabelsTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#initialize()
      */
-    public void initialize()
+    public void initialize()//List<TaskCommandDef> commands)
     {
         if (!isInitialized)
         {
@@ -143,13 +148,23 @@ public class LabelsTask extends BaseTask
 
             NavBox navBox = new NavBox(name);
 
-            // Get all RecordSets and register them
-            RecordSetTask rst = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
-
-            java.util.List<NavBoxIFace> list = rst.getNavBoxes();
-
-            // Temporary these to come from a persistent store
-            addToNavBoxAndRegisterAsDroppable(list, navBox, NavBox.createBtn("Fish Label Example", name, IconManager.IconSize.Std16, new DisplayAction("fish_label.jrxml", "Fish Label Example")), null);
+            // Then add
+            if (commands != null)
+            {
+                for (TaskCommandDef tcd : commands)
+                {
+                    // XXX won't be needed when we start validating the XML
+                    String tableIdStr = tcd.getParams().get("tableid");
+                    if (tableIdStr == null)
+                    {
+                        log.error("Label Command is missing the table id");
+                    } else
+                    {
+                        addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(tcd.getName(), name, IconManager.IconSize.Std16, new DisplayAction(tcd)), tcd.getParams());
+                    }
+                }
+            }
+            //addToNavBoxAndRegisterAsDroppable(list, navBox, NavBox.createBtn("Fish Label Example", name, IconManager.IconSize.Std16, new DisplayAction("fish_label.jrxml", "Fish Label Example")), null);
             //addToNavBoxAndRegisterAsDroppable(list, navBox, NavBox.createBtn("Lichens Label Example", name, IconManager.IconSize.Std16, new DisplayAction("lichens_label.jrxml", "Lichens Label Example")), "lichens_label.jrxml");
 
             /*
@@ -158,26 +173,26 @@ public class LabelsTask extends BaseTask
             addToNavBoxAndRegisterAsDroppable(list, navBox, NavBox.createBtn("Repository Agreements", name, IconManager.IconSize.Std16, new DisplayAction("accessions_reposagree.jrxml", "Accession")), "accessions_reposagree.jrxml");
             */
             navBoxes.addElement(navBox);
-
         }
 
     }
 
 
     /**
-     * Performs a command (to cfreate a label)
+     *
      * @param name the XML file name for the label
      */
-    public void doLabels(final String name, final String title, final Object data)
+    /**
+     * Performs a command (to create a label)
+     * @param name the name of lable (the file name)
+     * @param title the localized title to be displayed as the tab title
+     * @param recordSet the recordSet to be turned into labels
+     */
+    public void doLabels(final String name, final String title, final RecordSet recordSet)
     {
         LabelsPane labelsPane = new LabelsPane(title, this);
         UICacheManager.addSubPane(labelsPane);
-        RecordSet rs = null;
-        if (data instanceof RecordSet)
-        {
-            rs = (RecordSet)data;
-        }
-        labelsPane.createReport(name, rs);
+        labelsPane.createReport(name, recordSet);
 
     }
 
@@ -202,9 +217,7 @@ public class LabelsTask extends BaseTask
             {
                 return false;
             }
-
         }
-
         return true;
     }
 
@@ -214,7 +227,8 @@ public class LabelsTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        return new SimpleDescPane(name, this, "Welcome to Specify's Label Maker");
+        starterPane = new SimpleDescPane(name, this, "Welcome to Specify's Label Maker");
+        return starterPane;
     }
 
     /**
@@ -225,25 +239,103 @@ public class LabelsTask extends BaseTask
     {
         initialize();
 
-        // XXX need to pass in table type
-        ChooseLabel dlg = new ChooseLabel();
-        dlg.setVisible(true);
+        // XXX Need to pass in or check table type for different types of lables.
 
-        return dlg.getName();
+        if (labelsList.size() == 1)
+        {
+            Map<String, String> params = convertDataToMap(labelsList.get(0).getData());
+            return (String)params.get("file");
+
+        } else
+        {
+            ChooseLabel dlg = new ChooseLabel();
+            dlg.setVisible(true);
+
+            return dlg.getName();
+        }
     }
 
     /**
      * Displays UI that asks the user to select a predefined label.
-     * @return
+     * @param tableId
+     * @return returns the selected RecordSet or null
      */
-    protected RecordSet askForRecordSet()
+    protected RecordSet askForRecordSet(final int tableId)
     {
-        ChooseRecordSetDlg dlg = new ChooseRecordSetDlg();
-        dlg.setVisible(true);
-        return dlg.getSelectedRecordSet();
+        ChooseRecordSetDlg dlg = new ChooseRecordSetDlg(tableId);
+        if (dlg.hasRecordSets())
+        {
+            dlg.setVisible(true); // modal (waits for answer here)
+            return dlg.getSelectedRecordSet();
+
+        } else
+        {
+            return null;
+        }
+
     }
 
+    /**
+     * Single place to convert the data to a Map
+     * @param data the data in a nbi
+     * @return a Map<String, String>
+     */
+    @SuppressWarnings("unchecked")
+    protected Map<String, String> convertDataToMap(Object data)
+    {
+        if (data instanceof Map)
+        {
+            return (Map<String, String>)data; // ok to Cast
+        }
+        throw new RuntimeException("Why isn't the data a Map<String, String>!");
+    }
 
+    /**
+     * Counts up how many labels match the same table id as the RecordSet and sets
+     * oneNbi to the non-null match which means if there is only one then it points to it
+     * @param tableId the RecordSet's Table Id
+     * @return the count of matches
+     */
+    protected int countLabelsWithSimilarTableIds(final int tableId)
+    {
+        oneNbi = null;
+        int count = 0;
+        for (NavBoxItemIFace nbi : labelsList)
+        {
+            if (Integer.parseInt(convertDataToMap(nbi.getData()).get("tableid")) == tableId)
+            {
+                oneNbi = nbi;
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Checks to make sure we are the current SubPane and then creates the labels from the selected RecordSet
+     * @param data the data that "should" be a RecordSet
+     */
+    protected void createLabelFromSelectedRecordSet(final Object data)
+    {
+        if (data instanceof RecordSet && ContextMgr.getCurrentContext() == this)
+        {
+            RecordSet rs = (RecordSet)data;
+
+            String fileName = null;
+            if (countLabelsWithSimilarTableIds(rs.getTableId()) > 1)
+            {
+                fileName = askForLabelName();
+            } else
+            {
+                fileName = convertDataToMap(oneNbi.getData()).get("file");
+            }
+
+            if (fileName != null)
+            {
+                doLabels(fileName, "Labels", (RecordSet)data);
+            }
+        }
+    }
 
     //-------------------------------------------------------
     // Taskable
@@ -295,6 +387,14 @@ public class LabelsTask extends BaseTask
 
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
+     */
+    public Class getTaskClass()
+    {
+        return this.getClass();
+    }
+
 
     //-------------------------------------------------------
     // CommandListener Interface
@@ -332,7 +432,12 @@ public class LabelsTask extends BaseTask
                     }
                  }
             }
+        } else if (cmdAction.getType().equals(RecordSetTask.RECORD_SET) &&
+                   cmdAction.getAction().equals("Selected"))
+        {
+            createLabelFromSelectedRecordSet(cmdAction.getData());
         }
+
     }
 
     //--------------------------------------------------------------
@@ -346,10 +451,18 @@ public class LabelsTask extends BaseTask
      */
     class DisplayAction implements ActionListener
     {
-        private String   name;
-        private String   title;
+        private String    name;
+        private String    title;
+        private int       tableId;
         private RecordSet recordSet = null;
 
+
+        public DisplayAction(final TaskCommandDef tcd)
+        {
+            this.name    = tcd.getParams().get("file");
+            this.title   = tcd.getParams().get("title");
+            this.tableId = Integer.parseInt(tcd.getParams().get("tableid"));
+        }
 
         public DisplayAction(final String name, final String title)
         {
@@ -365,11 +478,33 @@ public class LabelsTask extends BaseTask
                 data = ((DataActionEvent)e).getData();
             }
 
-            if (data == null)
+            if (data == null || data instanceof Map)
             {
-                data = askForRecordSet();
+                ChooseRecordSetDlg dlg = new ChooseRecordSetDlg(tableId);
+                if (dlg.hasRecordSets())
+                {
+                    dlg.setVisible(true); // modal (waits for answer here)
+                    data = dlg.getSelectedRecordSet();
+                    if (data == null)
+                    {
+                        return; // User hit cancel
+                    }
+
+                } else
+                {
+                    JOptionPane.showMessageDialog(null, getResourceString("NO_RECORD_SETS"));
+                }
             }
-            doLabels(name, title, data);
+
+            if (data instanceof RecordSet)
+            {
+                doLabels(name, title, (RecordSet)data);
+
+            } else
+            {
+                log.error("Data is not RecordSet");
+            }
+
         }
 
         public void setRecordSet(final RecordSet recordSet)
@@ -382,6 +517,7 @@ public class LabelsTask extends BaseTask
             return recordSet;
         }
     }
+
 
     /**
      * @author rods
@@ -484,10 +620,12 @@ public class LabelsTask extends BaseTask
             int inx = list.getSelectedIndex();
             if (inx != -1)
             {
-                RolloverCommand rb = (RolloverCommand)labelsList.get(inx);
-                return (String)rb.getData();
+                return (String)convertDataToMap(labelsList.get(inx).getData()).get("file");
+
+            } else
+            {
+                return null;
             }
-            return null;
         }
     }
 

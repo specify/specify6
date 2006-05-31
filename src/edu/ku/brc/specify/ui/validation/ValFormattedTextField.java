@@ -66,7 +66,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                                                                  PreferenceChangeListener
 {
     private static Log log  = LogFactory.getLog(ValFormattedTextField.class);
-            
+
     protected boolean  isInError  = false;
     protected boolean  isRequired = false;
     protected boolean  isChanged  = false;
@@ -104,7 +104,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         formatter = UIFieldFormatterMgr.getFormatter(formatterName);
         fields = formatter.getFields();
 
-        StringBuilder strBuf = new StringBuilder();
+        StringBuilder strBuf = new StringBuilder(32);
         for (UIFieldFormatterMgr.FormatterField field : fields)
         {
             inputLen += field.getSize();
@@ -178,7 +178,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
             FontMetrics fm   = g.getFontMetrics();
             int          w   = fm.stringWidth(text);
             pnt = new Point(inner.left+w, inner.top + fm.getAscent());
-            
+
             g.setColor(textColor);
             g.drawString(bgStr.substring(text.length(), bgStr.length()), pnt.x, pnt.y);
         }
@@ -276,7 +276,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     {
         this.isChanged = isChanged;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.validation.UIValidatable#setAsNew(boolean)
      */
@@ -307,7 +307,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
             if (value instanceof String)
             {
                 data = (String)value;
-    
+
             } else
             {
                 data = value.toString();
@@ -340,19 +340,19 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                     Calendar cal = Calendar.getInstance();
                     cal.setTime(simpleDateFormat.parse(value));
                     return cal;
-                    
+
                 } catch (ParseException ex)
                 {
-                    log.error("Date is in error for parsing["+value+"]");   
+                    log.error("Date is in error for parsing["+value+"]");
                 }
-            } 
+            }
             return null;
 
         } else
         {
-            return getText();     
+            return getText();
         }
-       
+
     }
 
 
@@ -506,7 +506,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                     //int newLen = Math.min(str.length(), limit);
                     //isInError = offset + newLen < inputLen;
                     //super.insertString(offset, str.substring(0, newLen), attr);
-                    
+
                     isInError = offset + str.length() < inputLen;
                     super.insertString(offset, str, attr);
 

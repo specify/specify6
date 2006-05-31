@@ -308,6 +308,15 @@ public class SystemSetupTask extends BaseTask
         return list;
 
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
+     */
+    public Class getTaskClass()
+    {
+        return this.getClass();
+    }
+    
 
     //-------------------------------------------------------
     // CommandListener Interface

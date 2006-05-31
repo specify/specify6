@@ -45,7 +45,7 @@ import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 /**
  * The StatsTask is responsible gettng and displaying all various idfferent kinds of stats
- * 
+ *
  * @author rods
  *
  */
@@ -53,16 +53,16 @@ public class StatsTask extends BaseTask
 {
     // Static Data Members
     public static final String STATISTICS = "Statistics";
-    
+
     private static Log log = LogFactory.getLog(StatsTask.class);
-    
+
     protected static final String DISPLAY   = "display";
     protected static final String BAR_CHART = "bar chart";
     protected static final String PIE_CHART = "pie chart";
     protected static final String TABLE     = "table";
     protected static final String FORM      = "form";
-    
-    
+
+
     // Data Members
      protected Element panelDOM;
 
@@ -73,11 +73,11 @@ public class StatsTask extends BaseTask
     public StatsTask()
     {
         super(STATISTICS, getResourceString(STATISTICS));
-        
+
         try
         {
             panelDOM = XMLHelper.readDOMFromConfigDir("statistics_panel.xml");   // contains a description of the NavBoxes
-            
+
         } catch (Exception ex)
         {
             log.error(ex);
@@ -85,15 +85,15 @@ public class StatsTask extends BaseTask
 
         // Process the NavBox Panel and create all the commands
         // XXX This needs to be made generic so everyone can use it
-        // 
+        //
         List boxes = panelDOM.selectNodes("/boxes/box");
-        for ( Iterator iter = boxes.iterator(); iter.hasNext(); ) 
+        for ( Iterator iter = boxes.iterator(); iter.hasNext(); )
         {
             Element box = (Element) iter.next();
             NavBox navBox = new NavBox(box.attributeValue("title"));
-            
+
             List items = box.selectNodes("item");
-            for ( Iterator iter2 = items.iterator(); iter2.hasNext(); ) 
+            for ( Iterator iter2 = items.iterator(); iter2.hasNext(); )
             {
                 Element item = (Element) iter2.next();
                 String boxName  = item.attributeValue("name");
@@ -104,29 +104,29 @@ public class StatsTask extends BaseTask
                 {
                     type = "Pie_Chart";
                     action = new DisplayAction(boxName);
-                    
+
                 } else if (type.toLowerCase().equals(BAR_CHART))
                 {
                     type = "Bar_Chart";
                     action = new DisplayAction(boxName);
                 }
-                
+
                 navBox.add(NavBox.createBtn(boxTitle, type, IconManager.IconSize.Std16, action));
-           } 
+           }
            navBoxes.addElement(navBox);
-        }    
+        }
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
     public SubPaneIFace getStarterPane()
     {
-        return new StatsPane(name, this, "stats_summary_panel.xml", false, null);
+        return new StatsPane(name, this, "stats_summary_panel.xml", true, null);
     }
-    
+
     /**
-     * Looks up statName and creates the appropriate SubPane 
+     * Looks up statName and creates the appropriate SubPane
      * @param statName the name of the stat to be displayed
      */
     public void createStatPane(final String statName)
@@ -141,15 +141,15 @@ public class StatsTask extends BaseTask
             addSubPaneToMgr(pane);
         }
 
-        
+
 
     }
 
-    
+
     //-------------------------------------------------------
     // Plugin Interface
     //-------------------------------------------------------
-    
+
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getToolBarItems()
@@ -157,13 +157,13 @@ public class StatsTask extends BaseTask
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        ToolBarDropDownBtn      btn  = createToolbarButton(name, "stats.gif", "stats_hint");      
+        ToolBarDropDownBtn      btn  = createToolbarButton(name, "stats.gif", "stats_hint");
 
-        
+
         list.add(new ToolBarItemDesc(btn));
         return list;
     }
-    
+
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getMenuItems()
@@ -172,32 +172,41 @@ public class StatsTask extends BaseTask
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
         return list;
-        
+
     }
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
+     */
+    public Class getTaskClass()
+    {
+        return this.getClass();
+    }
+
+
     //--------------------------------------------------------------
     // Inner Classes
     //--------------------------------------------------------------
- 
+
      /**
-     * 
+     *
      * @author rods
      *
      */
-    class DisplayAction implements ActionListener 
+    class DisplayAction implements ActionListener
     {
         private String   statName;
-        
+
         public DisplayAction(final String statName)
         {
             this.statName = statName;
         }
-        
-        public void actionPerformed(ActionEvent e) 
+
+        public void actionPerformed(ActionEvent e)
         {
             createStatPane(statName);
         }
     }
-   
+
 
 }

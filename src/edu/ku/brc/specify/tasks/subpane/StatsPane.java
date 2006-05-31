@@ -65,6 +65,9 @@ public class StatsPane extends BaseSubPane
     protected Color   bgColor            = Color.WHITE;
     protected boolean useSeparatorTitles = false;
 
+    protected int PREFERREDWIDTH = 260;
+    protected int SPACING        = 35;
+
     /**
      * Creates a StatsPane
      * @param name name of pane
@@ -109,7 +112,7 @@ public class StatsPane extends BaseSubPane
             rootElement = XMLHelper.readDOMFromConfigDir(fileName);
 
             // count up rows and column
-            StringBuffer rowsDef = new StringBuffer();
+            StringBuilder rowsDef = new StringBuilder(128);
 
             List rows = rootElement.selectNodes("/panel/row");
             int maxCols = 0;
@@ -125,9 +128,10 @@ public class StatsPane extends BaseSubPane
                 rowsDef.append("top:p");
             }
 
-            int preferredWidth = 260;
-            int spacing        = 35;
-            FormLayout      formLayout = new FormLayout(createDuplicateJGoodiesDef("f:min("+preferredWidth+"px;p)", spacing+"px", maxCols), rowsDef.toString());
+            int preferredWidth = PREFERREDWIDTH;
+            int spacing        = SPACING;
+
+            FormLayout      formLayout = new FormLayout(createDuplicateJGoodiesDef("f:max("+preferredWidth+"px;p)", spacing+"px", maxCols), rowsDef.toString());
             //FormLayout      formLayout = new FormLayout(createDuplicateJGoodiesDef("f:min("+preferredWidth+"px;p):g", "p:g", maxCols), rowsDef.toString());
             PanelBuilder    builder    = new PanelBuilder(formLayout);
             CellConstraints cc         = new CellConstraints();
@@ -145,17 +149,17 @@ public class StatsPane extends BaseSubPane
 
                     String type = getAttr(boxElement, "type", "box");
                     int colSpan = getAttr(boxElement, "colspan", 1);
-                    
+
                     Component comp = null;
                     if (type.equalsIgnoreCase("bar chart"))
                     {
                         String statName = getAttr(boxElement, "name", null);
-                        
+
                         if (isNotEmpty(statName))
                         {
                             BarChartPanel bcp = (BarChartPanel)StatsMgr.createStatPane(statName);
                             int width = colSpan > 1 ? ((maxCols * preferredWidth) + ((maxCols-1) * spacing)) : preferredWidth;
-                            // We start by assuming the chart will be square which is why we use 
+                            // We start by assuming the chart will be square which is why we use
                             // preferredWidth as the height, and then we calculate the new width
                             bcp.setPreferredChartSize(width, preferredWidth);
                             comp = bcp;
@@ -167,15 +171,15 @@ public class StatsPane extends BaseSubPane
                             validate();
                             doLayout();
                             repaint();
-                            
-                            
+
+
                         }
-                        
+
                     } else // The default is "Box"
                     {
                         int descCol = getAttr(boxElement, "desccol", -1);
                         int valCol  = getAttr(boxElement, "valcol", -1);
-                        
+
                         Element sqlElement = (Element)boxElement.selectSingleNode("sql");
 
                         if (descCol > -1 && valCol > -1 && sqlElement != null)
@@ -188,12 +192,12 @@ public class StatsPane extends BaseSubPane
                                 linkStr = link.getTextTrim();
                                 colId   = Integer.parseInt(link.attributeValue("colid"));
                             }
-                            StatGroupTableFromQuery group = new StatGroupTableFromQuery(boxElement.attributeValue("title"), 
-                                                                                        new String[] {getAttr(boxElement, "desctitle", " "),getAttr(boxElement, "valtitle", " ")}, 
+                            StatGroupTableFromQuery group = new StatGroupTableFromQuery(boxElement.attributeValue("title"),
+                                                                                        new String[] {getAttr(boxElement, "desctitle", " "),getAttr(boxElement, "valtitle", " ")},
                                                                                         sqlElement.getText(),
                                                                                         descCol,
                                                                                         valCol,
-                                                                                        useSeparatorTitles, 
+                                                                                        useSeparatorTitles,
                                                                                         getAttr(boxElement, "noresults", null));
                             group.setLinkInfo(linkStr, colId);
                             comp = group;
@@ -204,29 +208,29 @@ public class StatsPane extends BaseSubPane
                         } else
                         {
                             List items = boxElement.selectNodes("item");
-                            StatGroupTable groupTable = new StatGroupTable(boxElement.attributeValue("title"), 
-                                                                           new String[] {getAttr(boxElement, "desctitle", " "),getAttr(boxElement, "valtitle", " ")}, 
+                            StatGroupTable groupTable = new StatGroupTable(boxElement.attributeValue("title"),
+                                                                           new String[] {getAttr(boxElement, "desctitle", " "),getAttr(boxElement, "valtitle", " ")},
                                                                            useSeparatorTitles, items.size());
                             for (Object io : items)
                             {
                                 Element itemElement = (Element)io;
-                                
+
                                 //log.info("STAT["+getAttr(itemElement, "title", "N/A")+"]");
-    
+
                                 Element link    = (Element)itemElement.selectSingleNode("link");
                                 String  linkStr = null;
                                 if (link != null)
                                 {
                                     linkStr = link.getTextTrim();
                                 }
-    
+
                                 StatDataItem statItem   = new StatDataItem(itemElement.attributeValue("title"), linkStr, getAttr(itemElement, "useprogress", false));
                                 List         statements = itemElement.selectNodes("sql/statement");
-    
+
                                 if (statements.size() == 1)
                                 {
                                     statItem.add(((Element)statements.get(0)).getText(), 1, 1, StatDataItem.VALUE_TYPE.Value);
-    
+
                                 } else if (statements.size() > 0)
                                 {
                                     int cnt = 0;
@@ -247,22 +251,22 @@ public class StatsPane extends BaseSubPane
                                 }
                                 groupTable.addDataItem(statItem);
                                 statItem.startUp();
-                                
+
                             }
                             groupTable.relayout();
                             //log.info(groupTable.getPreferredSize());
                             comp = groupTable;
                             //comp = scrollPane;
                         }
-                        
+
                     }
-                    
+
                     if (comp != null)
                     {
                         if (colSpan == 1)
                         {
                             builder.add(comp, cc.xy(x, y));
-                            
+
                         } else
                         {
                             builder.add(comp, cc.xywh(x, y, colSpan, 1));
@@ -274,11 +278,11 @@ public class StatsPane extends BaseSubPane
             }
 
             setBackground(bgColor);
-            
+
             JPanel statPanel = builder.getPanel();
             statPanel.setBackground(Color.WHITE);
             //statPanel.setOpaque(false);
-            
+
             builder    = new PanelBuilder(new FormLayout("C:P:G", "p"));
             builder.add(statPanel, cc.xy(1,1));
             JPanel centerPanel = builder.getPanel();

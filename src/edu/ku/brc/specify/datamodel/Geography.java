@@ -7,7 +7,7 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class Geography  implements java.io.Serializable,Treeable {
 
-    // Fields    
+    // Fields
 
      protected Integer treeId;
      protected String name;
@@ -37,12 +37,12 @@ public class Geography  implements java.io.Serializable,Treeable {
     /** default constructor */
     public Geography() {
     }
-    
+
     /** constructor with id */
     public Geography(Integer treeId) {
         this.treeId = treeId;
     }
-   
+
     // Initializer
     public void initialize()
     {
@@ -69,7 +69,7 @@ public class Geography  implements java.io.Serializable,Treeable {
         parent = null;
         children = new HashSet<Geography>();
     }
-    // End Initializer 
+    // End Initializer
 
     // Property accessors
 
@@ -79,245 +79,245 @@ public class Geography  implements java.io.Serializable,Treeable {
     public Integer getTreeId() {
         return this.treeId;
     }
-    
+
     public void setTreeId(Integer treeId) {
         this.treeId = treeId;
     }
 
     /**
-     * 
+     *
      */
     public String getName() {
         return this.name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * 
+     *
      */
     public String getCommonName() {
         return this.commonName;
     }
-    
+
     public void setCommonName(String commonName) {
         this.commonName = commonName;
     }
 
     /**
-     * 
+     *
      */
     public String getGeographyCode() {
         return this.geographyCode;
     }
-    
+
     public void setGeographyCode(String geographyCode) {
         this.geographyCode = geographyCode;
     }
 
     /**
-     * 
+     *
      */
     public Integer getRankId() {
         return this.rankId;
     }
-    
+
     public void setRankId(Integer rankId) {
         this.rankId = rankId;
     }
 
     /**
-     * 
+     *
      */
     public Integer getNodeNumber() {
         return this.nodeNumber;
     }
-    
+
     public void setNodeNumber(Integer nodeNumber) {
         this.nodeNumber = nodeNumber;
     }
 
     /**
-     * 
+     *
      */
     public Integer getHighestChildNodeNumber() {
         return this.highestChildNodeNumber;
     }
-    
+
     public void setHighestChildNodeNumber(Integer highestChildNodeNumber) {
         this.highestChildNodeNumber = highestChildNodeNumber;
     }
 
     /**
-     * 
+     *
      */
     public String getAbbrev() {
         return this.abbrev;
     }
-    
+
     public void setAbbrev(String abbrev) {
         this.abbrev = abbrev;
     }
 
     /**
-     * 
+     *
      */
     public String getText1() {
         return this.text1;
     }
-    
+
     public void setText1(String text1) {
         this.text1 = text1;
     }
 
     /**
-     * 
+     *
      */
     public String getText2() {
         return this.text2;
     }
-    
+
     public void setText2(String text2) {
         this.text2 = text2;
     }
 
     /**
-     * 
+     *
      */
     public Integer getNumber1() {
         return this.number1;
     }
-    
+
     public void setNumber1(Integer number1) {
         this.number1 = number1;
     }
 
     /**
-     * 
+     *
      */
     public Integer getNumber2() {
         return this.number2;
     }
-    
+
     public void setNumber2(Integer number2) {
         this.number2 = number2;
     }
 
     /**
-     * 
+     *
      */
     public Date getTimestampCreated() {
         return this.timestampCreated;
     }
-    
+
     public void setTimestampCreated(Date timestampCreated) {
         this.timestampCreated = timestampCreated;
     }
 
     /**
-     * 
+     *
      */
     public Date getTimestampModified() {
         return this.timestampModified;
     }
-    
+
     public void setTimestampModified(Date timestampModified) {
         this.timestampModified = timestampModified;
     }
 
     /**
-     * 
+     *
      */
     public Date getTimestampVersion() {
         return this.timestampVersion;
     }
-    
+
     public void setTimestampVersion(Date timestampVersion) {
         this.timestampVersion = timestampVersion;
     }
 
     /**
-     * 
+     *
      */
     public String getLastEditedBy() {
         return this.lastEditedBy;
     }
-    
+
     public void setLastEditedBy(String lastEditedBy) {
         this.lastEditedBy = lastEditedBy;
     }
 
     /**
-     * 
+     *
      */
     public Boolean getIsCurrent() {
         return this.isCurrent;
     }
-    
+
     public void setIsCurrent(Boolean isCurrent) {
         this.isCurrent = isCurrent;
     }
 
     /**
-     * 
+     *
      */
     public Set<Locality> getLocalities() {
         return this.localities;
     }
-    
+
     public void setLocalities(Set<Locality> localities) {
         this.localities = localities;
     }
 
     /**
-     * 
+     *
      */
     public GeographyTreeDef getDefinition() {
         return this.definition;
     }
-    
+
     public void setDefinition(GeographyTreeDef definition) {
         this.definition = definition;
     }
 
     /**
-     * 
+     *
      */
     public GeographyTreeDefItem getDefinitionItem() {
         return this.definitionItem;
     }
-    
+
     public void setDefinitionItem(GeographyTreeDefItem definitionItem) {
         this.definitionItem = definitionItem;
     }
 
     /**
-     * 
+     *
      */
     public Geography getParent() {
         return this.parent;
     }
-    
+
     public void setParent(Geography parent) {
         this.parent = parent;
     }
 
     /**
-     * 
+     *
      */
     public Set<Geography> getChildren() {
         return this.children;
     }
-    
+
     public void setChildren(Set<Geography> children) {
         this.children = children;
     }
-    
-    
+
+
 	/* Code added in order to implement Treeable */
-    
+
 	/**
 	 * @return the parent Geography object
 	 */
@@ -325,7 +325,7 @@ public class Geography  implements java.io.Serializable,Treeable {
 	{
 		return getParent();
 	}
-	
+
 	/**
 	 * @param parent the new parent Geography object
 	 *
@@ -338,14 +338,14 @@ public class Geography  implements java.io.Serializable,Treeable {
 	        setParent(null);
 	        return;
 	    }
-	    
+
 		if( !(parent instanceof Geography) )
 		{
 			throw new IllegalArgumentException("Argument must be an instance of Geography");
 		}
 		setParent((Geography)parent);
 	}
-	
+
 	/**
 	 * @return the parent GeographyTreeDef object
 	 */
@@ -353,7 +353,7 @@ public class Geography  implements java.io.Serializable,Treeable {
 	{
 		return getDefinition();
 	}
-	
+
 	/**
 	 * @param treeDef the new GeographyTreeDef object
 	 *
@@ -365,10 +365,10 @@ public class Geography  implements java.io.Serializable,Treeable {
 		{
 			throw new IllegalArgumentException("Argument must be an instance of GeographyTreeDef");
 		}
-		
+
 		setDefinition((GeographyTreeDef)treeDef);
 	}
-	
+
 	/**
 	 *
 	 */
@@ -376,7 +376,7 @@ public class Geography  implements java.io.Serializable,Treeable {
 	{
 		return getDefinitionItem();
 	}
-	
+
 	/**
 	 * @param defItem the new GeographyTreeDefItem object representing this items level
 	 *
@@ -388,7 +388,7 @@ public class Geography  implements java.io.Serializable,Treeable {
 		{
 			throw new IllegalArgumentException("Argument must be an instance of GeographyTreeDefItem");
 		}
-		
+
 		setDefinitionItem((GeographyTreeDefItem)defItem);
 	}
 
@@ -410,11 +410,11 @@ public class Geography  implements java.io.Serializable,Treeable {
 		{
 			throw new IllegalArgumentException("New child must be an instance of " + getClass().getName());
 		}
-		
+
 		this.children.add((Geography)child);
 		child.setParentNode(this);
 	}
-	
+
 	public void removeChild( Treeable child )
 	{
 		if( !(child instanceof Geography) )
@@ -425,7 +425,7 @@ public class Geography  implements java.io.Serializable,Treeable {
 		children.remove(child);
 		child.setParentNode(null);
 	}
-	
+
     // Add Methods
 
     public void addLocalities(final Locality localities)
@@ -445,4 +445,37 @@ public class Geography  implements java.io.Serializable,Treeable {
     }
 
      // Delete Add Methods
+
+    protected String getGeo(Geography g, final int rankId)
+    {
+        while (g != null && g.getRankId() != rankId)
+        {
+            g = g.getParent();
+        }
+        if (g != null)
+        {
+            return g.getName();
+        }
+        return "";
+    }
+
+    public String getContinent()
+    {
+        return getGeo(this, 100);
+    }
+
+    public String getCountry()
+    {
+        return getGeo(this, 200);
+    }
+
+    public String getState()
+    {
+        return getGeo(this, 300);
+    }
+
+    public String getCounty()
+    {
+        return getGeo(this, 400);
+    }
 }

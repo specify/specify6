@@ -1,3 +1,23 @@
+/* Filename:    $RCSfile: MapGrabber.java,v $
+ * Author:      $Author: rods $
+ * Revision:    $Revision: 1.1 $
+ * Date:        $Date: 2006/05/01 19:59:54 $
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 package edu.ku.brc.specify.tasks.services;
 
 import java.awt.Image;
@@ -14,14 +34,20 @@ import org.apache.commons.logging.LogFactory;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.util.FileCache;
 
+/**
+ * Grabs Map from the KU Map Server (SPNHC Demo)
+ * 
+ * @author rods
+ *
+ */
 public class MapGrabber
 {
 	private static Log log = LogFactory.getLog(MapGrabber.class);
 	// setup some default values
 	// TODO: remove these from any final versions
-	
+
 	protected HttpClient httpClient;
-	
+
 //	// Aimee's server
 //	protected String host = "129.237.201.104";
 //	protected String defaultPathAndParams = "/cgi-bin/ogc.cgi/bmortho?version=1.1.1&service=WMS&Request=GetMap&format=image/gif&styles=default&srs=epsg:4326";
@@ -31,7 +57,7 @@ public class MapGrabber
 	protected String host = "mapus.jpl.nasa.gov";
 	protected String defaultPathAndParams = "/wms.cgi?request=GetMap&srs=EPSG:4326&format=image/png&styles=visual";
 	protected String layers = "global_mosaic";
-	
+
 	protected double minLat = -90;
 	protected double minLong = -180;
 	protected double maxLat = 90;
@@ -42,12 +68,12 @@ public class MapGrabber
 	protected int defaultMaxWidth = 2048;
 
 	protected static FileCache imageCache = UICacheManager.getLongTermFileCache();
-	
+
 	public MapGrabber()
 	{
 		httpClient = new HttpClient();
 	}
-	
+
 	/**
 	 * @return Returns the host.
 	 */
@@ -79,7 +105,7 @@ public class MapGrabber
 	{
 		this.layers = layers;
 	}
-	
+
 	/**
 	 * @return Returns the maxHeight.
 	 */
@@ -119,7 +145,7 @@ public class MapGrabber
 		}
 		this.maxWidth = width;
 	}
-	
+
 	/**
 	 * @return Returns the maxLat.
 	 */
@@ -184,7 +210,16 @@ public class MapGrabber
 		this.minLong = minLong;
 	}
 
-	public Image getMap(Integer width,
+
+	/**
+	 * @param defaultPathAndParams sets new path and params
+	 */
+	public void setDefaultPathAndParams(String defaultPathAndParams)
+    {
+        this.defaultPathAndParams = defaultPathAndParams;
+    }
+
+    public Image getMap(Integer width,
 						Integer height)
 		throws HttpException, IOException
 	{
@@ -209,21 +244,21 @@ public class MapGrabber
 		setMaxHeight(height);
 		return getMap();
 	}
-	
+
 	protected double getLatLongRatio()
 	{
 		double longRange = maxLong - minLong;
 		double latRange = maxLat - minLat;
 		return (double)(latRange/longRange);
 	}
-	
+
 	protected void calcWidthAndHeight()
 	{
 		double longSpread = maxLong - minLong;
 		double latSpread = maxLat - minLat;
-		
+
 		boolean fatMap = longSpread > latSpread ? true : false;
-		
+
 		if( fatMap )
 		{
 			// calculate the height from max width
@@ -237,7 +272,7 @@ public class MapGrabber
 			return;
 		}
 	}
-	
+
 	public Image getMap() throws HttpException, IOException
 	{
 		log.info("Entering MapGrabber.getMap()");
@@ -252,15 +287,15 @@ public class MapGrabber
 			maxHeight = defaultMaxHeight;
 		}
 		calcWidthAndHeight();
-		
+
 		StringBuilder url = new StringBuilder("http://");
 		url.append(host);
 		url.append(defaultPathAndParams);
-		
+
 		// set layers
 		url.append("&layers=");
 		url.append(layers);
-		
+
 		// set bounding box
 		url.append("&bbox=");
 		url.append(minLong);
@@ -270,13 +305,13 @@ public class MapGrabber
 		url.append(maxLong);
 		url.append(",");
 		url.append(maxLat);
-		
+
 		// set size
 		url.append("&height=");
 		url.append(maxHeight);
 		url.append("&width=");
 		url.append(maxWidth);
-		
+
 		Image image;
 		if( imageCache != null )
 		{
@@ -302,9 +337,9 @@ public class MapGrabber
 			log.info("GET " + url.toString() + " returned " + resultCode );
 			log.info("Exiting MapGrabber.getMap()");
 			byte[] data = get.getResponseBody();
-			image = Toolkit.getDefaultToolkit().createImage(data);			
+			image = Toolkit.getDefaultToolkit().createImage(data);
 		}
-		
+
 		return image;
 	}
 }

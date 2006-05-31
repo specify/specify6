@@ -13,35 +13,35 @@
         <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
 		<property name="hibernate.connection.url">jdbc:mysql://localhost/fish</property>
 		<property name="hibernate.connection.username">rods</property>
-		<property name="hibernate.connection.password">rods</property> 
+		<property name="hibernate.connection.password">rods</property>
 
 	    <property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
-	    
+
 	    <property name="c3p0.minPoolSize">5</property>
-	
-	    <property name="c3p0.timeout">1000</property>		
+
+	    <property name="c3p0.timeout">1000</property>
 
 
 		<!-- Use the Hibernate built-in pool for tests. -->
 		<property name="hibernate.connection.pool_size">5</property>
-		
+
         <!-- Use JTA for Transactions -->
-        <!-- 
+        <!--
         <property name="transaction.factory_class">org.hibernate.transaction.JTATransactionFactory</property>
         <property name="jta.UserTransaction">java:comp/UserTransaction</property>
         -->
-       
+
 		<!-- Use EHCache -->
 		<property name="cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
 		<property name="cache.use_query_cache">true</property>
 
 		<!-- Specify mapping files. -->
 		<mapping resource="edu/ku/brc/specify/ui/db/PickList.hbm.xml"/>
-		
-		
+
+
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/RecordSet.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/InfoRequest.hbm.xml"/>
-		
+
 	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Accession.hbm.xml"/>
 	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AccessionAgents.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/AccessionAuthorizations.hbm.xml"/>
@@ -108,14 +108,14 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/TaxonTreeDef.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/TaxonTreeDefItem.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/UserGroup.hbm.xml"/>
-		
+
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Workbench.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/WorkbenchDataItem.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/WorkbenchTemplate.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/WorkbenchTemplateMappingItem.hbm.xml"/>
-		
-		
-		
+
+
+
 
         <!-- Settings for the second-level cache -->
         <!--

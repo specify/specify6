@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.ui;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -26,26 +27,26 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
     protected BufferedImage[] frames;
     protected int duration;
     protected int index;
-    
+
     public ImageSwirlPanel( String imageFilename, int frameCount, int duration ) {
         ImageIcon imageIcon = new ImageIcon(imageFilename);
         init(imageIcon,frameCount,duration);
     }
-    
+
     public ImageSwirlPanel( Image image, int frameCount, int duration ) {
         ImageIcon imageIcon = new ImageIcon(image);
         init(imageIcon,frameCount,duration);
     }
-    
+
     private void init(ImageIcon icon, int frameCount, int duration) {
-        index = frameCount - 1;
+        index = 0;//frameCount - 1;
         frames = new BufferedImage[frameCount];
         this.duration = duration;
-        
+
         origWidth = icon.getIconWidth();
         origHeight = icon.getIconHeight();
         original = new BufferedImage(origWidth,origHeight,BufferedImage.TYPE_INT_ARGB);
-        
+
         // draw the original image into the BufferedImage
         Graphics2D g = original.createGraphics();
         g.drawImage(icon.getImage(), 0, 0, origWidth, origHeight, null);
@@ -64,10 +65,12 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
 
         // create the individual frames
         for( int i = 1; i < frames.length; ++i ) {
-            filter.setAngle(angle*i);
-            filter.filter(original,frames[i]);
+            //filter.setAngle(angle*i);
+            //filter.filter(original,frames[i]);
+            filter.setAngle(angle);
+            filter.filter(frames[i-1],frames[i]);
         }
-  
+
 //        OpacityFilter filter = new OpacityFilter();
 //        filter.setOpacity(0);
 //        for( int i = 1; i < frames.length; ++i ) {
@@ -76,37 +79,37 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
 //            filter.setOpacity(opacity);
 //            filter.filter(original,frames[i]);
 //        }
-        
+
         //setup the animation Cycle
         int resolution = 0;
         Cycle cycle = new Cycle(duration,resolution);
-        
+
         // setup the animation Envelope
         double repeatCount = 1;
         int start = 0;
         Envelope.RepeatBehavior repeatBehavior = Envelope.RepeatBehavior.REVERSE;
         Envelope.EndBehavior endBehavior = Envelope.EndBehavior.HOLD;
         Envelope env = new Envelope(repeatCount,start,repeatBehavior,endBehavior);
-        
+
         // setup the TimingController (the animation controller)
         timingController = new TimingController(cycle,env,this);
     }
-    
+
     // run the animation
     public void startAnimation() {
         timingController.start();
     }
-        
+
     public void setIndex(int index)
     {
         this.index = index;
     }
-    
+
     public int getIndex()
     {
         return this.index;
     }
-    
+
         /* (non-Javadoc)
          * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
          */
@@ -114,21 +117,26 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         int i = frames.length - 1 - index;
-        g.drawImage(frames[i], getX(), getY(), getBackground(), this);
+        g.drawImage(frames[i], 0,0, getBackground(), this);
     }
-    
+
     public void begin() {
     }
-    
+
     public void end() {
     }
-    
+
     // modify the index appropraitely for the percent of the animation that is complete
     public void timingEvent(long cycleElapsedTime, long totalElapsedTime, float percent) {
         index = Math.min((int)(frames.length * percent),frames.length-1);
         repaint();
     }
-    
+
+    public Dimension getPreferredSize()
+    {
+        return new Dimension(origWidth, origHeight);
+    }
+
     /**
      * @param args
      * @throws InterruptedException
@@ -136,7 +144,6 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
     public static void main(String[] args) throws InterruptedException {
     	String homedir = System.getProperty("user.home");
         final ImageSwirlPanel isp = new ImageSwirlPanel(homedir+"/Desktop/splashfish.png",20,1500);
-        
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 JFrame f = new JFrame();

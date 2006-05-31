@@ -74,7 +74,7 @@
                 <altview name="PermitForAccessions Edit" viewdef="PermitForAccessions" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
-    
+
         <view name="AccessionAuthorizations"
             class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
             resourcelabels="false">
@@ -84,7 +84,7 @@
                 <altview name="AccessionAuthorizations Edit" viewdef="AccessionAuthorizations" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
-        
+
         <view name="Address"
             class="edu.ku.brc.specify.datamodel.Address"
             resourcelabels="false">
@@ -94,7 +94,7 @@
                 <altview name="Address Edit" viewdef="Address" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
-        
+
         <view name="LocalityMapper"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
             resourcelabels="false">
@@ -103,7 +103,17 @@
                 <altview name="LocalityMapper View" viewdef="LocalityMapper" label="View" mode="view" validated="false" default="true"/>
            </altviews>
         </view>
-        
+
+       <view name="CollectingEvent"
+            class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            resourcelabels="false">
+            <desc><![CDATA[CollectingEvent Form]]></desc>
+            <altviews>
+                <altview name="CollectingEvent View" viewdef="CollectingEvent" label="View" mode="view" validated="false" default="true"/>
+                <altview name="CollectingEvent Edit" viewdef="CollectingEvent" label="Edit" mode="edit" validated="true"/>
+           </altviews>
+        </view>
+
         <view name="FishBase"
             class="org.dom4j.Element"
             resourcelabels="false">
@@ -112,9 +122,9 @@
                 <altview name="FishBase" viewdef="FishBase" label="View" mode="view" validated="false" default="true"/>
             </altviews>
         </view>
-        
+
     </views>
-    
+
     <viewdefs>
         <viewdef
             type="form"
@@ -126,7 +136,7 @@
             <desc><![CDATA[The Collection Object form.]]></desc>
             <enableRules/>
 
-            <columnDef>100px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+            <columnDef>120px,3dlu,p,3dlu,120px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
     		<rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
 
     		<rows>
@@ -162,10 +172,10 @@
     				<cell type="separator" label="Locality" colspan="12"/>
     			</row>
     			<row>
-                    <cell type="label" labelfor="fieldNumber" label="Field No"/>
+                 <cell type="label" labelfor="fieldNumber" label="Field No"/>
     				<cell type="field" name="fieldNumber"/>
 
-                    <cell type="label" labelfor="collectingEvent.locality.localityName" label="Locality"/>
+                 <cell type="label" labelfor="collectingEvent.locality.localityName" label="Locality"/>
     				<cell type="field" name="collectingEvent.locality.localityName" cols="41" colspan="6"/>
     			</row>
 
@@ -199,7 +209,7 @@
     	    <desc><![CDATA[Determination subform for Collection Object form.]]></desc>
     	    <enableRules/>
 
-    		<columnDef>100px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+    		<columnDef>120px,3dlu,p,3dlu,100px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
     		<rowDef>p,2dlu,p,2dlu,p,2dlu,p:g,2dlu</rowDef>
 
     		<rows>
@@ -238,7 +248,7 @@
     	    <desc><![CDATA[Preparation for Collection Object form.]]></desc>
     	    <enableRules/>
 
-    	    <columnDef>100px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+    	    <columnDef>120px,3dlu,p,3dlu,100px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
     		<rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu</rowDef>
 
     		<rows>
@@ -325,7 +335,7 @@
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
 
-            <columnDef>80px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
 
             <rows>
@@ -393,7 +403,7 @@
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
 
-            <columnDef>80px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p:g,2dlu</rowDef>
 
             <rows>
@@ -418,11 +428,11 @@
             class="edu.ku.brc.specify.datamodel.Agent"
             gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.specify.ui.forms.DataSetterForObj">
-            
+
             <desc><![CDATA[Agent subform for Acessions.]]></desc>
             <columnDef>p,3dlu,p,3dlu,p,3dlu,p</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10px,p:g</rowDef>
-            
+
             <rows>
                 <row>
                     <cell type="separator" label="Agent Info" colspan="7"/>
@@ -467,11 +477,11 @@
             class="edu.ku.brc.specify.datamodel.Permit"
             gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.specify.ui.forms.DataSetterForObj">
-            
+
             <desc><![CDATA[Permit subform for Acessions.]]></desc>
             <enableRules/>
 
-            <columnDef>80px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu</rowDef>
 
             <rows>
@@ -513,18 +523,18 @@
 
             </rows>
         </viewdef>
-        
+
         <viewdef
             type="form"
             name="AccessionAuthorizations"
             class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
             gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.specify.ui.forms.DataSetterForObj">
-            
+
             <desc><![CDATA[Permit subform for AccessionAuthorizations.]]></desc>
             <enableRules/>
-            
-            <columnDef>80px,2px,p,2px,p:g</columnDef>
+
+            <columnDef>100px,2px,p,2px,p:g</columnDef>
             <rowDef>p,2px,p</rowDef>
             <rows>
                 <row>
@@ -535,21 +545,21 @@
                     <cell type="label" labelfor="remarks" label="Remarks"/>
                     <cell type="field" name="remarks" uitype="textarea" colspan="3" />
                 </row>
-                
+
             </rows>
         </viewdef>
-        
+
         <viewdef
             type="form"
             name="Address"
             class="edu.ku.brc.specify.datamodel.Address"
             gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.specify.ui.forms.DataSetterForObj">
-            
+
             <desc><![CDATA[Address subform for Acessions.]]></desc>
             <columnDef>p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
-            
+
             <rows>
                 <row>
                     <cell type="separator" label="Address Information" colspan="11"/>
@@ -592,18 +602,18 @@
                 </row>
             </rows>
         </viewdef>
-        
+
         <viewdef
             type="form"
             name="LocalityMapper"
             class="java.util.Hashtable"
             gettable="edu.ku.brc.specify.ui.forms.DataGetterForHashMap"
             settable="edu.ku.brc.specify.ui.forms.DataSetterForHashMap">
-            
+
             <desc><![CDATA[Locality Mapper]]></desc>
             <columnDef>p,3dlu,p,3dlu</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
-            
+
             <rows>
                 <row>
                     <cell type="separator" label="Collecting Event Information" colspan="4"/>
@@ -634,26 +644,77 @@
                 </row>
             </rows>
         </viewdef>
-        
+
+
+        <viewdef
+            type="form"
+            name="CollectingEvent"
+            class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.specify.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[Locality Mapper]]></desc>
+            <columnDef>p,3dlu,p,3dlu</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+
+            <rows>
+                <row>
+                    <cell type="separator" label="Collecting Event" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="startDate" label="Start Date"/>
+                    <cell type="field" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="endDate" label="End Date"/>
+                    <cell type="field" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="locality" label="Lat/Lon"/>
+                    <cell type="field" name="locality" uitype="plugin" initialize="class=edu.ku.brc.specify.plugins.BioGeoMancer;name=Locality;title=Locality" colspan="1"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="locality.localityName" label="Locality Description"/>
+                    <cell type="field" name="locality.localityName"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="locality.geography.@getCountry" label="Country"/>
+                    <cell type="field" name="locality.geography.@getCountry"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="locality.geography.@getState" label="State"/>
+                    <cell type="field" name="locality.geography.@getState"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="locality.geography.@getCounty" label="County"/>
+                    <cell type="field" name="locality.geography.@getCounty"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="method" label="Method"/>
+                    <cell type="field" name="method"/>
+                </row>
+            </rows>
+        </viewdef>
+
         <viewdef
             type="form"
             name="FishBase"
             class="org.dom4j.Element"
             gettable="edu.ku.brc.specify.ui.forms.DataGetterForDOM">
-            
+
             <desc><![CDATA[FishBase]]></desc>
             <columnDef>p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
-            
+
             <rows>
                 <row>
                     <cell type="label" labelfor="/fishbase/species/author" label="Author"/>
                     <cell type="field" name="/fishbase/species/author"/>
-                    
+
                     <cell type="label" labelfor="/fishbase/species/commonname" label="Common Name"/>
                     <cell type="field" name="/fishbase/species/commonname" label="Common Name"/>
-                    
-                    <cell type="label" labelfor="/fishbase/species/picname#src" label="Image"/>                    
+
+                    <cell type="label" labelfor="/fishbase/species/picname#src" label="Image"/>
                     <cell type="field" uitype="image" name="/fishbase/species/picname#src" rowspan="12"/>
                 </row>
                 <row>
@@ -663,21 +724,21 @@
                 <row>
                     <cell type="label" labelfor="/fishbase/species/speciesfb" label="Species"/>
                     <cell type="field" name="/fishbase/species/speciesfb" label="Species"/>
-                    
+
                     <cell type="label" labelfor="/fishbase/species/speciesfb#link" label=""/>
                     <cell type="field" uitype="url" name="/fishbase/species/speciesfb#link" initialize="title=Show Species"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="/fishbase/species/genus" label="Genus"/>
                     <cell type="field" name="/fishbase/species/genus"/>
-                    
+
                     <cell type="label" labelfor="" label=""/>
                     <cell type="field" uitype="url" name="/fishbase/species/genus#link" initialize="title=Show Genus"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="/fishbase/species/family" label="Family"/>
                     <cell type="field" name="/fishbase/species/family" label="Family"/>
-                    
+
                     <cell type="label" labelfor="/fishbase/species/family#link" label=""/>
                     <cell type="field" uitype="url" name="/fishbase/species/family#link" initialize="title=Show Family"/>
                 </row>
@@ -726,6 +787,6 @@
                 </row>
             </rows>
         </viewdef>
-        
+
     </viewdefs>
 </viewset>

@@ -11,9 +11,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import edu.ku.brc.specify.ui.forms.persist.TableViewDef;
 import edu.ku.brc.specify.ui.forms.persist.View;
 import edu.ku.brc.specify.ui.forms.persist.ViewDef;
@@ -21,13 +18,13 @@ import edu.ku.brc.specify.ui.validation.FormValidator;
 
 public class TableViewObj implements Viewable
 {
-    private static Log log = LogFactory.getLog(TableViewObj.class);
+    //private static Log log = LogFactory.getLog(TableViewObj.class);
 
     protected boolean                       isEditting     = false;
     protected MultiView                     multiView      = null;
     protected FormViewObj                   parent;
     protected TableViewDef                  tableViewDef;
-    
+
     // UI
     protected JTable                        table;
     protected JScrollPane                   tableScroller;
@@ -41,7 +38,7 @@ public class TableViewObj implements Viewable
                         final TableViewDef tableViewDef,
                         final MultiView    multiView)
     {
-        
+
         this.parent       = parent;
         this.tableViewDef = tableViewDef;
         this.multiView    = multiView;
@@ -59,21 +56,21 @@ public class TableViewObj implements Viewable
         table = new JTable();
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setHorizontalAlignment(JLabel.CENTER);
-        
+
         //for (int i=0;i<_model.getColumnCount();i++) {
         //    TableColumn column = _table.getColumn(_model.getColumnName(i));
         //    column.setCellRenderer(renderer);
         //}
-        
+
         tableScroller = new JScrollPane(table);
         mainComp.add(tableScroller, BorderLayout.CENTER);
-        
+
     }
 
     //-------------------------------------------------
     // Viewable
     //-------------------------------------------------
-    
+
     public String getName()
     {
         return "XXX";
@@ -94,7 +91,7 @@ public class TableViewObj implements Viewable
     {
         return tableViewDef.getType();
     }
-    
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#getUIComponent()
@@ -103,7 +100,7 @@ public class TableViewObj implements Viewable
     {
         return null;
     }
-    
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#isSubform()
@@ -112,7 +109,7 @@ public class TableViewObj implements Viewable
     {
         return false;
     }
-    
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#getComp(java.lang.String)
@@ -130,7 +127,7 @@ public class TableViewObj implements Viewable
     {
         return null;
     }
-    
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#getValidator()
@@ -139,15 +136,15 @@ public class TableViewObj implements Viewable
     {
         return null;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#setDataObj(java.lang.Object)
      */
     public void setDataObj(final Object dataObj)
     {
-        
+
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#getDataObj()
      */
@@ -155,40 +152,40 @@ public class TableViewObj implements Viewable
     {
         return null;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#setParentDataObj(java.lang.Object)
      */
     public void setParentDataObj(Object parentDataObj)
     {
-        
+
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#getParentDataObj()
      */
     public Object getParentDataObj()
     {
         return null;
-        
-    }   
+
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#setDataIntoUI()
      */
     public void setDataIntoUI()
     {
-        
+
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#getDataFromUI()
      */
     public void getDataFromUI()
     {
-        
+
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#getDataFromUIComp(java.lang.String)
      */
@@ -196,13 +193,13 @@ public class TableViewObj implements Viewable
     {
         return null;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#setDataIntoUIComp(java.lang.String, java.lang.Object)
      */
     public void setDataIntoUIComp(final String name, Object data)
     {
-        
+
     }
 
 
@@ -213,24 +210,24 @@ public class TableViewObj implements Viewable
     {
         return null;
     }
-    
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#getFieldNames(java.util.List)
      */
     public void getFieldNames(final List<String> fieldNames)
     {
-        
+
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#aboutToShow(boolean)
      */
     public void aboutToShow(boolean show)
     {
-        
+
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#getView()
      */
@@ -251,7 +248,7 @@ public class TableViewObj implements Viewable
         }
         */
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#dataHasChanged()
      */

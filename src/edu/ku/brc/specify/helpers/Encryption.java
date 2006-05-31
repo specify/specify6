@@ -184,7 +184,7 @@ public class Encryption
      */
     public static String makeHEXStr(final byte[] bytes)
     {
-        StringBuffer strBuf = new StringBuffer();
+        StringBuffer strBuf = new StringBuffer(bytes.length+50);
         for (int i = 0; i < bytes.length; i++)
         {
             String s = Integer.toHexString(bytes[i] & 0xFF);

@@ -21,44 +21,53 @@
 package edu.ku.brc.specify.plugins;
 
 import java.util.List;
+
+import edu.ku.brc.specify.core.TaskCommandDef;
 /**
  * An interface for describing how a plugin can be registered into the UI and begin to provide service.
- * 
+ *
  * External plugins should make sure the call <i>initialize</i> after they install themselves, or they can call
  * PluginMgr.initilize();
- * 
+ *
  * @author rods
  *
  */
 public interface TaskPluginable
 {
     /**
-     * Initializes the task. The Taskable is responsible for making sure this method 
+     * Initializes the task. The Taskable is responsible for making sure this method
      * can be called mulitple times with no ill effects.
      *
+     * @param cmds the list of commands for the task
      */
-    public void initialize();
-    
+    public void initialize(List<TaskCommandDef> cmds);
+
 
     /**
      * Returns the name of the task (NOT Localized)
      * @return Returns the name of the task (NOT Localized)
      */
     public String getName();
-    
-    
+
+
+    /**
+     * Returns the implementing Class type
+     * @return Returns the implementing Class type
+     */
+    public abstract Class getTaskClass();
+
     /**
      * Returns the toolbar items (usually only one item)
      * @return Returns the toolbar items (usually only one item)
      */
     public List<ToolBarItemDesc> getToolBarItems();
-    
+
     /**
      * Returns the menu item to be registered
      * @return Returns the menu item to be registered
      */
     public List<MenuItemDesc>    getMenuItems();
-    
+
     /**
      * Install all preferences with default values
      */
@@ -69,5 +78,5 @@ public interface TaskPluginable
      */
     public void removePrefs();
 
-    
+
 }

@@ -1,12 +1,9 @@
 package edu.ku.brc.specify.ui.db;
 import javax.swing.table.AbstractTableModel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 
 public class WorkbenchTableModel extends AbstractTableModel {
-	private static Log log = LogFactory.getLog(WorkbenchTableModel.class);
+	//private static Log log = LogFactory.getLog(WorkbenchTableModel.class);
 	public WorkbenchTableModel(){
 		super();
 		// TODO Auto-generated constructor stub

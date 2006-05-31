@@ -713,7 +713,7 @@ public class GenericDBConversion
             int userGroupId = BasicSQLUtils.getHighestId(newDBConn, "UserGroupID", "usergroup");
 
             updateStatement = newDBConn.createStatement();
-            StringBuilder strBuf = new StringBuilder();
+            StringBuilder strBuf = new StringBuilder(128);
             strBuf.append("INSERT INTO specifyuser VALUES (");
             strBuf.append("NULL,");
             strBuf.append("'"+userName+"',");

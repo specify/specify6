@@ -15,18 +15,18 @@ public class Table
     Hashtable<String, Integer> hash = new Hashtable<String, Integer>();
     private Collection<Field> fields = new ArrayList<Field>();
     private Collection<Relationship> relationships = new ArrayList<Relationship>();
-    
+
     public Table()
     {
-        
+
     }
 
     public Table(String aName, String aTable, String aLazy, Hashtable<String, Integer> hash )
     {
-        name  = aName;
-        table = aTable;
-        lazy  = aLazy;
-        hash = hash;
+        this.name  = aName;
+        this.table = aTable;
+        this.lazy  = aLazy;
+        this.hash = hash;
 
         Integer i = hash.get(name);
         	if(i!=null) {
@@ -38,17 +38,17 @@ public class Table
         //	System.out.println("hash.put(\"" + aName +"\", "+tableId+");");
     }
 
-    public String getLazy() 
+    public String getLazy()
     {
         return lazy;
     }
 
-    public void setLazy(String lazy) 
+    public void setLazy(String lazy)
     {
         this.lazy = lazy;
     }
 
-    public String getName() 
+    public String getName()
     {
         return name;
     }
@@ -67,47 +67,47 @@ public class Table
         {
             return aName;
         }
-        
+
     }
-    
-    public void setName(String name) 
+
+    public void setName(String name)
     {
         this.name = name;
     }
 
-    public String getTable() 
+    public String getTable()
     {
         return table;
     }
 
-    public void setTable(String table) 
+    public void setTable(String table)
     {
         this.table = table;
     }
-    
+
     public void setTableId(String tableId) {
     		this.tableId = tableId;
     }
-    
+
     public void addField(Field aField)
     {
         fields.add(aField);
     }
-    
+
     public void addRelationship(Relationship rel)
     {
         relationships.add(rel);
     }
-    
-    
+
+
     public Collection<Field> getFields()
     {
         return fields;
     }
-    
+
     public Collection<Relationship> getRelationships()
     {
         return relationships;
     }
-    
+
 }

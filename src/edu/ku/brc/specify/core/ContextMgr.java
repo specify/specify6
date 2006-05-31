@@ -58,7 +58,16 @@ public class ContextMgr
      */
     protected ContextMgr()
     {
-        
+
+    }
+
+    /**
+     * Returns the current Context (Taskable)
+     * @return the current Context (Taskable)
+     */
+    public static Taskable getCurrentContext()
+    {
+        return instance.currentContext;
     }
 
     /**

@@ -64,7 +64,7 @@ public class GenericDisplayFrame extends JFrame implements ActionListener
     protected MultiView      multiView;
     protected View           formView;
     protected List<String>   fieldNames;
-    
+
     protected PropertyChangeListener propertyChangeListener = null;
 
     // Members needed for creating results
@@ -77,6 +77,15 @@ public class GenericDisplayFrame extends JFrame implements ActionListener
 
     protected JPanel         contentPanel;
 
+    public GenericDisplayFrame(final String title,
+                               final String className,
+                               final String idFieldName) throws HeadlessException
+    {
+        this.setTitle(title);
+
+        this.className   = className;
+        this.idFieldName = idFieldName;
+    }
 
     /**
      * Constructs a search dialog from form infor and from search info
@@ -98,7 +107,7 @@ public class GenericDisplayFrame extends JFrame implements ActionListener
     {
         //super((Frame)UICacheManager.get(UICacheManager.FRAME), title, true);
         this.setTitle(title);
-        
+
         this.className   = className;
         this.idFieldName = idFieldName;
         this.displayName  = displayName;
@@ -120,7 +129,7 @@ public class GenericDisplayFrame extends JFrame implements ActionListener
                             final AltView.CreationMode mode)
     {
         boolean isEdit = mode == AltView.CreationMode.Edit;
-        
+
         formView = ViewMgr.getView(viewSetName, viewName);
         if (formView != null)
         {
@@ -130,7 +139,7 @@ public class GenericDisplayFrame extends JFrame implements ActionListener
         {
             log.info("Couldn't load form with name ["+viewSetName+"] Id ["+viewName+"]");
         }
-        
+
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
 
@@ -150,9 +159,9 @@ public class GenericDisplayFrame extends JFrame implements ActionListener
         setContentPane(panel);
         pack();
     }
-    
-    
-    
+
+
+
     /**
      * @return the multiview
      */
@@ -169,7 +178,7 @@ public class GenericDisplayFrame extends JFrame implements ActionListener
     {
         this.propertyChangeListener = propertyChangeListener;
     }
-    
+
     /**
      * Sets data into the dialog
      * @param dataObj the data object
