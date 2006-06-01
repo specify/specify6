@@ -79,6 +79,6 @@
     <!--  Plugins -->
     <icon name="FishBase" file="fblogootw32.png" sizes="all"/>
     <icon name="GoogleEarth" file="GoogleEarth16x16.png" sizes="16"/>
-    <icon name="BioGeoMancer" file="BioGeoMancer.png" sizes="all"/>
+    <icon name="BioGeoMancer" file="biogeomancer.png" sizes="all"/>
 
 </icons>
