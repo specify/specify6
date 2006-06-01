@@ -2676,14 +2676,17 @@ public class GenericDBConversion
     @SuppressWarnings("unchecked")
 	public GeographyTreeDef createStandardGeographyDefinitionAndItems()
     {
+    	// empty out any pre-existing tree definitions
+    	BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "geographytreedef");
+    	BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "geographytreedefitem");
+    	
     	Session session = HibernateUtil.getCurrentSession();
     	HibernateUtil.beginTransaction();
     	GeographyTreeDef def = new GeographyTreeDef();
     	def.initialize();
-    	session.save(def);
-
     	def.setName("Default Geography Definition");
     	def.setRemarks("A simple continent/country/state/county geography tree");
+    	session.save(def);
 
 		GeographyTreeDefItem planet = new GeographyTreeDefItem();
 		planet.initialize();
@@ -2770,7 +2773,7 @@ public class GenericDBConversion
     public void convertGeography(GeographyTreeDef treeDef) throws SQLException
     {
     	// empty out any pre-existing records
-    	BasicSQLUtils.deleteAllRecordsFromTable("geography");
+    	BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "geography");
 
     	// get a Hibernate session for saving the new records
     	Session session = HibernateUtil.getCurrentSession();
@@ -2797,6 +2800,8 @@ public class GenericDBConversion
     			break;
     		}
     	}
+    	GeographyTreeDefItem defItem = (GeographyTreeDefItem)TreeTableUtils.getDefItemByRank(treeDef,0);
+    	planetEarth.setDefinitionItem(defItem);
     	session.save(planetEarth);
     	
     	// create an ID mapper for the geography table (mainly for use in converting localities)
