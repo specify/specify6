@@ -9,7 +9,7 @@ public class Geography  implements java.io.Serializable,Treeable {
 
     // Fields
 
-     protected Integer treeId;
+     protected Integer geographyId;
      protected String name;
      protected String commonName;
      protected String geographyCode;
@@ -39,14 +39,14 @@ public class Geography  implements java.io.Serializable,Treeable {
     }
 
     /** constructor with id */
-    public Geography(Integer treeId) {
-        this.treeId = treeId;
+    public Geography(Integer geographyId) {
+        this.geographyId = geographyId;
     }
 
     // Initializer
     public void initialize()
     {
-        treeId = null;
+    	geographyId = null;
         name = null;
         commonName = null;
         geographyCode = null;
@@ -76,12 +76,12 @@ public class Geography  implements java.io.Serializable,Treeable {
     /**
      *
      */
-    public Integer getTreeId() {
-        return this.treeId;
+    public Integer getGeographyId() {
+        return this.geographyId;
     }
 
-    public void setTreeId(Integer treeId) {
-        this.treeId = treeId;
+    public void setGeographyId(Integer geographyId) {
+        this.geographyId = geographyId;
     }
 
     /**
@@ -317,6 +317,16 @@ public class Geography  implements java.io.Serializable,Treeable {
 
 
 	/* Code added in order to implement Treeable */
+
+	public Integer getTreeId()
+	{
+		return getGeographyId();
+	}
+
+	public void setTreeId(Integer id)
+	{
+		setGeographyId(id);
+	}
 
 	/**
 	 * @return the parent Geography object

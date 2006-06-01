@@ -8,7 +8,7 @@ public class GeographyTreeDef  implements TreeDefinitionIface,java.io.Serializab
 
     // Fields    
 
-     protected Integer treeDefId;
+     protected Integer geographyTreeDefId;
      protected String name;
      protected String remarks;
      protected Set<Geography> treeEntries;
@@ -22,15 +22,15 @@ public class GeographyTreeDef  implements TreeDefinitionIface,java.io.Serializab
     }
     
     /** constructor with id */
-    public GeographyTreeDef(Integer treeDefId) {
-        this.treeDefId = treeDefId;
+    public GeographyTreeDef(Integer geographyTreeDefId) {
+        this.geographyTreeDefId = geographyTreeDefId;
     }
    
     
     // Initializer
     public void initialize()
     {
-        treeDefId = null;
+    	geographyTreeDefId = null;
         name = null;
         remarks = null;
         treeEntries = new HashSet<Geography>();
@@ -44,12 +44,12 @@ public class GeographyTreeDef  implements TreeDefinitionIface,java.io.Serializab
     /**
      * 
      */
-    public Integer getTreeDefId() {
-        return this.treeDefId;
+    public Integer getGeographyTreeDefId() {
+        return this.geographyTreeDefId;
     }
     
-    public void setTreeDefId(Integer treeDefId) {
-        this.treeDefId = treeDefId;
+    public void setGeographyTreeDefId(Integer geographyTreeDefId) {
+        this.geographyTreeDefId = geographyTreeDefId;
     }
 
     /**
@@ -109,4 +109,18 @@ public class GeographyTreeDef  implements TreeDefinitionIface,java.io.Serializab
 	public void setCollObjDefs(Set collObjDefs) {
         this.collObjDefs = collObjDefs;
     }
+
+    //
+    // Methods added to implement TreeDefinitionIface
+    //
+    
+	public Integer getTreeDefId()
+	{
+		return getGeographyTreeDefId();
+	}
+
+	public void setTreeDefId(Integer id)
+	{
+		setGeographyTreeDefId(id);
+	}
 }

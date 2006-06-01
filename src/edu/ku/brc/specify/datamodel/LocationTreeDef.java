@@ -8,7 +8,7 @@ public class LocationTreeDef  implements TreeDefinitionIface,java.io.Serializabl
 
     // Fields    
 
-     protected Integer treeDefId;
+     protected Integer locationTreeDefId;
      protected String name;
      protected String remarks;
      protected Set<Location> treeEntries;
@@ -22,14 +22,14 @@ public class LocationTreeDef  implements TreeDefinitionIface,java.io.Serializabl
     }
     
     /** constructor with id */
-    public LocationTreeDef(Integer treeDefId) {
-        this.treeDefId = treeDefId;
+    public LocationTreeDef(Integer locationTreeDefId) {
+        this.locationTreeDefId = locationTreeDefId;
     }
 
     // Initializer
     public void initialize()
     {
-        treeDefId = null;
+    	locationTreeDefId = null;
         name = null;
         remarks = null;
         treeEntries = new HashSet<Location>();
@@ -43,12 +43,12 @@ public class LocationTreeDef  implements TreeDefinitionIface,java.io.Serializabl
     /**
      * 
      */
-    public Integer getTreeDefId() {
-        return this.treeDefId;
+    public Integer getLocationTreeDefId() {
+        return this.locationTreeDefId;
     }
     
-    public void setTreeDefId(Integer treeDefId) {
-        this.treeDefId = treeDefId;
+    public void setLocationTreeDefId(Integer locationTreeDefId) {
+        this.locationTreeDefId = locationTreeDefId;
     }
 
     /**
@@ -107,4 +107,18 @@ public class LocationTreeDef  implements TreeDefinitionIface,java.io.Serializabl
     public void setCollObjDefs(Set<CollectionObjDef> collObjDefs) {
         this.collObjDefs = collObjDefs;
     }
+    
+    //
+    // Methods added to implement TreeDefinitionIface
+    //
+    
+	public Integer getTreeDefId()
+	{
+		return getLocationTreeDefId();
+	}
+
+	public void setTreeDefId(Integer id)
+	{
+		setLocationTreeDefId(id);
+	}
 }

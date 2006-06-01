@@ -74,6 +74,7 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.Encryption;
+import edu.ku.brc.specify.helpers.TreeTableUtils;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.tests.ObjCreatorHelper;
 import edu.ku.brc.specify.ui.db.PickList;
@@ -279,12 +280,15 @@ public class GenericDBConversion
         }
 
         // Map all the Physical IDs
-        idMapper = idMapperMgr.addTableMapper("geography", "GeographyID");
-        if (shouldCreateMapTables)
-        {
-            idMapper.mapAllIds("SELECT DISTINCT GeographyID,ContinentOrOcean,Country,State,County,IslandGroup,Island,WaterBody,Drainage,FullGeographicName from " +
-                                "geography ORDER BY ContinentOrOcean,Country,State,County");
-        }
+//        idMapper = idMapperMgr.addTableMapper("geography", "GeographyID");
+//        if (shouldCreateMapTables)
+//        {
+//            idMapper.mapAllIds("SELECT DISTINCT GeographyID,ContinentOrOcean,Country,State,County" +
+//            		"FROM demo_fish2.geography" +
+//            		"WHERE( (ContinentOrOcean IS NOT NULL) OR (Country IS NOT NULL) OR (State IS NOT NULL) OR (County IS NOT NULL) )" +
+//            		"AND ( (IslandGroup IS NULL) AND (Island IS NULL) AND (WaterBody IS NULL) AND (Drainage IS NULL) ) " +
+//            		"GROUP BY ContinentOrOcean,Country,State,County" );
+//        }
         
         //shouldCreateMapTables = true;
         
@@ -478,7 +482,7 @@ public class GenericDBConversion
 
             //"Borrow", "CollectionID", "Collection", "CollectionID",
 
-            "Locality", "GeographyID", "Geography", "GeographyID",
+            //"Locality", "GeographyID", "Geography", "GeographyID",
             //"Locality", "ElevationMethodID", "ElevationMethod", "ElevationMethodID",
             //"Locality", "LatLongTypeID", "LatLongType", "LatLongTypeID",
             //"Locality", "LatLongMethodID", "LatLongMethod", "LatLongMethodID",
@@ -2469,10 +2473,12 @@ public class GenericDBConversion
 
     public void copyTaxonTreeDefs()
     {
+    	BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "taxontreedef");
+    	
     	String sql = "SELECT * FROM taxonomytype";
 
     	Hashtable<String,String> newToOldColMap = new Hashtable<String,String>();
-    	newToOldColMap.put("TreeDefID", "TaxonomyTypeID");
+    	newToOldColMap.put("TaxonTreeDefID", "TaxonomyTypeID");
     	newToOldColMap.put("Name", "TaxonomyTypeName");
 
     	String[] ignoredFields = {"Remarks"};
@@ -2504,12 +2510,14 @@ public class GenericDBConversion
      */
     public void convertTaxonTreeDefItems() throws SQLException
     {
+    	BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "taxontreedefitem");
+
     	String sqlStr = "SELECT * FROM taxonomicunittype";
 
     	Hashtable<String,String> newToOldColMap = new Hashtable<String,String>();
-    	newToOldColMap.put("TreeDefItemID", "TaxonomicUnitTypeID");
+    	newToOldColMap.put("TaxonTreeDefItemID", "TaxonomicUnitTypeID");
     	newToOldColMap.put("Name", "RankName");
-    	newToOldColMap.put("TreeDefID", "TaxonomyTypeID");
+    	newToOldColMap.put("TaxonTreeDefID", "TaxonomyTypeID");
 
     	String[] ignoredFields = {"IsEnforced", "ParentItemID"};
     	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
@@ -2574,7 +2582,7 @@ public class GenericDBConversion
     		// what is the corresponding TreeDefID?
     		int treeDefId = typeIdMapper.get(typeId);
 
-    		StringBuilder sqlUpdate = new StringBuilder("UPDATE taxontreedefitem SET IsEnforced=TRUE WHERE TreeDefID="+treeDefId+" AND RankID IN (");
+    		StringBuilder sqlUpdate = new StringBuilder("UPDATE taxontreedefitem SET IsEnforced=TRUE WHERE TaxonTreeDefID="+treeDefId+" AND RankID IN (");
     		// add all the enforced ranks
     		for( int i = 0; i < enforcedIds.size(); ++i )
     		{
@@ -2604,7 +2612,7 @@ public class GenericDBConversion
     	for( Integer typeId: typeIds )
     	{
     		int treeDefId = typeIdMapper.get(typeId);
-        	sqlStr = "SELECT TreeDefItemID FROM taxontreedefitem WHERE TreeDefID="+treeDefId+" ORDER BY RankID";
+        	sqlStr = "SELECT TaxonTreeDefItemID FROM taxontreedefitem WHERE TaxonTreeDefID="+treeDefId+" ORDER BY RankID";
         	rs = newDbStmt.executeQuery(sqlStr);
 
         	boolean atLeastOneRecord = rs.next();
@@ -2625,7 +2633,7 @@ public class GenericDBConversion
         	rowsUpdated = 0;
         	for( Pair<Integer,Integer> idPair: idAndParentIdPairs )
         	{
-        		sqlStr = "UPDATE taxontreedefitem SET ParentItemID=" + idPair.second + " WHERE TreeDefItemID=" + idPair.first;
+        		sqlStr = "UPDATE taxontreedefitem SET ParentItemID=" + idPair.second + " WHERE TaxonTreeDefItemID=" + idPair.first;
         		rowsUpdated += newDbStmt.executeUpdate(sqlStr);
         	}
 
@@ -2635,13 +2643,15 @@ public class GenericDBConversion
 
     public void copyTaxonRecords()
     {
+    	BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "taxon");
+
     	String sql = "SELECT * FROM taxonname";
 
     	Hashtable<String,String> newToOldColMap = new Hashtable<String,String>();
-    	newToOldColMap.put("TreeID", "TaxonNameID");
+    	newToOldColMap.put("TaxonID", "TaxonNameID");
     	newToOldColMap.put("ParentID", "ParentTaxonNameID");
-    	newToOldColMap.put("TreeDefID", "TaxonomyTypeID");
-    	newToOldColMap.put("TreeDefItemID", "TaxonomicUnitTypeID");
+    	newToOldColMap.put("TaxonTreeDefID", "TaxonomyTypeID");
+    	newToOldColMap.put("TaxonTreeDefItemID", "TaxonomicUnitTypeID");
     	newToOldColMap.put("Name", "TaxonName");
     	newToOldColMap.put("FullTaxon", "FullTaxonName");
 
@@ -2663,40 +2673,47 @@ public class GenericDBConversion
     	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
     }
 
-    public GeographyTreeDef createStandardGeographyDefinitionAndItems()
+    @SuppressWarnings("unchecked")
+	public GeographyTreeDef createStandardGeographyDefinitionAndItems()
     {
     	Session session = HibernateUtil.getCurrentSession();
     	HibernateUtil.beginTransaction();
     	GeographyTreeDef def = new GeographyTreeDef();
+    	def.initialize();
     	session.save(def);
 
     	def.setName("Default Geography Definition");
     	def.setRemarks("A simple continent/country/state/county geography tree");
 
 		GeographyTreeDefItem planet = new GeographyTreeDefItem();
-		session.save(planet);
+		planet.initialize();
 		planet.setName("Planet");
 		planet.setRankId(0);
+		session.save(planet);
 
 		GeographyTreeDefItem cont = new GeographyTreeDefItem();
-		session.save(cont);
+		cont.initialize();
 		cont.setName("Continent");
 		cont.setRankId(100);
+		session.save(cont);
 
 		GeographyTreeDefItem country = new GeographyTreeDefItem();
-		session.save(country);
+		country.initialize();
 		country.setName("Country");
 		country.setRankId(200);
+		session.save(country);
 
 		GeographyTreeDefItem state = new GeographyTreeDefItem();
-		session.save(state);
+		state.initialize();
 		state.setName("State");
 		state.setRankId(300);
+		session.save(state);
 
 		GeographyTreeDefItem county = new GeographyTreeDefItem();
-		session.save(county);
+		county.initialize();
 		county.setName("County");
 		county.setRankId(400);
+		session.save(county);
 
 		// setup parents
 		county.setParent(state);
@@ -2710,542 +2727,18 @@ public class GenericDBConversion
 		country.setTreeDef(def);
 		state.setTreeDef(def);
 		county.setTreeDef(def);
+		
+		Set defItems = def.getTreeDefItems();
+		defItems.add(planet);
+		defItems.add(cont);
+		defItems.add(country);
+		defItems.add(state);
+		defItems.add(county);
 
 		HibernateUtil.commitTransaction();
 		HibernateUtil.closeSession();
 
 		return def;
-    }
-
-    /**
-     * @param filename the input file
-     * @return the collection of <code>GeoFileLine</code>s representing the input file lines
-     * @throws IOException if the input file cannot be found
-     */
-    public Vector<GeoFileLine> parseGeographyFile( final String filename ) throws IOException
-    {
-        BufferedReader inFile = new BufferedReader(new FileReader(filename));
-        Vector<GeoFileLine>     geoFileLines = new Vector<GeoFileLine>();
-        String line = null;
-        int cnt = 0;
-
-        while( (line = inFile.readLine()) != null )
-        {
-        	cnt++;
-            String fields[] = line.split("\t");
-
-            // verify that the proper number of fields are present
-            if( fields.length < 11 )
-            {
-            	log.error("Ignoring invalid line in geography file ("+filename+":"+cnt);
-            	continue;
-            }
-
-            // watch out for non-numbers in the ID field
-            int geoId;
-            try
-            {
-            	geoId = Integer.parseInt(fields[0]);
-            }
-            catch( NumberFormatException nfe )
-            {
-            	log.error("Ignoring invalid line in geography file ("+filename+":"+cnt);
-            	continue;
-            }
-            // int curId = Integer.parseInt(fields[1]);
-            String contOrOcean = fields[2].equals("") ? null : fields[2];
-            String country = fields[3].equals("") ? null : fields[3];
-            String state = fields[4].equals("") ? null : fields[4];
-            String county = fields[5].equals("") ? null : fields[5];
-            String islandGrp = fields[6].equals("") ? null : fields[6];
-            String island = fields[7].equals("") ? null : fields[7];
-            String waterBody = fields[8].equals("") ? null : fields[8];
-            String drainage = fields[9].equals("") ? null : fields[9];
-            String full = fields[10].equals("") ? null : fields[10];
-
-            GeoFileLine row = new GeoFileLine(geoId,0,0,contOrOcean,country,state,county,islandGrp,island,waterBody,drainage,full);
-           	if (cnt % 2000 == 0)
-           	{
-           		log.debug("Geography: " + cnt);
-           	}
-            geoFileLines.add(row);
-        }
-
-        return geoFileLines;
-    }
-
-    /**
-     * Create list of geo rows
-     * @param oldTableName x
-     * @return x
-     * @throws SQLException x
-     */
-    public Vector<GeoFileLine> extractGeographyFromOldDb( final String oldTableName ) throws SQLException
-    {
-    	Vector<GeoFileLine> oldStyleLines = new Vector<GeoFileLine>();
-
-    	Statement  st   = oldDBConn.createStatement();
-
-    	ResultSet rs = st.executeQuery(
-    			"SELECT DISTINCT GeographyID,ContinentOrOcean,Country,State,County FROM "
-    			+ oldTableName +
-    			" WHERE (ContinentOrOcean IS NOT NULL) " +
-    			"OR (Country IS NOT NULL) " +
-    			"OR (State IS NOT NULL) " +
-    			"OR (County IS NOT NULL) " +
-    			"ORDER BY ContinentOrOcean,Country,State,County");
-
-        IdMapper idMapper =  idMapperMgr.get("geography", "GeographyID");
-        int counter = 0;
-    	while( rs.next() )
-    	{
-    		int geoId = rs.getInt(1);
-            if (idMapper != null)
-            {
-                geoId = idMapper.get(geoId);
-            }
-
-    		String cont = rs.getString(2);
-    		String country = rs.getString(3);
-    		String state = rs.getString(4);
-    		String county = rs.getString(5);
-    		String islandGrp = null;
-    		String island = null;
-    		String waterBody = null;
-    		String drainage = null;
-    		String fullname = null;
-
-    		GeoFileLine gfl = new GeoFileLine(geoId,0,0,cont,country,state,county,islandGrp,island,waterBody,drainage,fullname);
-    		oldStyleLines.add(gfl);
-    		++counter;
-    		if( counter % 500 == 0 )
-    		{
-    			log.info("Extracted " + counter + " old geography records");
-    		}
-    	}
-    	log.info("Extracted " + counter + " old geography records");
-
-    	return oldStyleLines;
-    }
-
-    /**
-     * Create Geography Object
-     * @param def x
-     * @param id x
-     * @param name x
-     * @param rank x
-     * @param nodeNum x
-     * @param parent x
-     * @return x
-     */
-    private Geography buildGeography(GeographyTreeDef def, int id, String name, int rank, int nodeNum, Geography parent )
-    {
-    	Geography geo = new Geography(id);
-    	geo.setDefinition(def);
-    	geo.setName(name);
-    	geo.setRankId(rank);
-    	geo.setNodeNumber(nodeNum);
-    	geo.setParent(parent);
-    	return geo;
-    }
-
-    /**
-     * Parses a tab-delimited file containing geographical location data
-     *        and fills a db table with the appropriate data.
-     *
-     * The input file must format the data in the following order: id, current
-     * id, continent or ocean, country, state, county, island group, island,
-     * water body, drainage, full geographical name. <b>IT IS ASSUMED THAT THE
-     * INPUT DATA HAS BEEN SORTED ALPHABETICALLY BY CONTINENT, THEN COUNTRY,
-     * THEN STATE, AND FINALLY COUNTY.<b>
-     *
-     * @param tablename
-     *            Table name (FIX ME COMMENT
-     * @throws IOException
-     *             if filename doesn't refer to a valid file path or there is an
-     *             error while reading the file. In either situation, the
-     *             resulting database table should not be considered usable.
-     * @throws SQLException
-     */
-    public void loadSpecifyGeographicNames( final String tablename,
-                                            final Vector<GeoFileLine> oldGeoRecords,
-                                            final GeographyTreeDef treeDef )
-        throws Exception
-    {
-        Vector<Integer>         usedIds       = new Vector<Integer>();
-        //Vector<Geography> newTableRows  = new Vector<Geography>();
-        Vector<Geography> newTableRows  = new Vector<Geography>();
-
-        for( GeoFileLine gfl: oldGeoRecords )
-        {
-        	usedIds.add(gfl.getId());
-        	// we also have to find all the IDs currently used in the DB
-        }
-
-        // get the GeographyTreeDef from the DB
-		Session session = HibernateUtil.getCurrentSession();
-
-		GeographyTreeDef def = treeDef;
-
-//		Query query = session.createQuery("from "+GeographyTreeDef.class.getCanonicalName()+" as def where def.treeDefId = :treeid");
-//		query.setParameter("treeid",geographyTreeDefId);
-//		GeographyTreeDef def = (GeographyTreeDef)query.list().get(0);
-//		if( def == null )
-//		{
-//			throw new Exception("No GeographyTreeDef found with ID="+geographyTreeDefId);
-//		}
-
-        // setup the root node (Earth) of the geo tree
-        int geoRootId = findUnusedId(usedIds);
-        usedIds.add(geoRootId);
-        int nextNodeNumber = 1;
-        Geography geoRoot = buildGeography(def,geoRootId,"Earth",GEO_ROOT_RANK,nextNodeNumber++,null);
-        newTableRows.add(geoRoot);
-
-        String prevCont = null;
-        String prevCountry = null;
-        String prevState = null;
-        String prevCounty = null;
-        Geography prevContGeo = null;
-        Geography prevCountryGeo = null;
-        Geography prevStateGeo = null;
-        //Geography prevCountyGeo = null;
-
-        // process them all into the new tree structure
-        // on the first pass, we're simply going to create all of the nodes and
-        // setup the parent pointers
-        int counter = 0;
-        for( GeoFileLine geo: oldGeoRecords )
-        {
-            boolean hasCont = !(geo.getContOrOcean() == null);
-            boolean hasCountry = !(geo.getCountry() == null);
-            boolean hasState = !(geo.getState() == null);
-            boolean hasCounty = !(geo.getCounty() == null);
-
-            if( !hasCont && !hasCountry && !hasState && !hasCounty )
-            {
-                // this one has no geo information that we need
-                // it's probably just water bodies
-
-                // we could probably reclaim the geographyId if we wanted to
-                continue;
-            }
-
-            int countyGeoId;
-            int stateGeoId;
-            int countryGeoId;
-            int contGeoId;
-            String geoName;
-
-            if( geo.getContOrOcean() != null && !geo.getContOrOcean().equals(prevCont) )
-            {
-                // the continent is new (and country, state, and county, if
-                // non-empty)
-
-                // find geographyIds for each node
-                if( hasCounty )
-                {
-                    // the county keeps the existing id
-                    // the other levels get new ones
-
-                    contGeoId = findUnusedId(usedIds);
-                    usedIds.add(contGeoId);
-                    geoName = geo.getContOrOcean();
-                    Geography newCont = buildGeography(def,contGeoId,geoName,CONTINENT_RANK,nextNodeNumber++,geoRoot);
-                    prevCont = geoName;
-                    prevContGeo = newCont;
-
-                    countryGeoId = findUnusedId(usedIds);
-                    usedIds.add(countryGeoId);
-                    geoName = geo.getCountry();
-                    Geography newCountry = buildGeography(def,countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,newCont);
-                    prevCountry = geoName;
-                    prevCountryGeo = newCountry;
-
-                    stateGeoId = findUnusedId(usedIds);
-                    usedIds.add(stateGeoId);
-                    geoName = geo.getState();
-                    Geography newState = buildGeography(def,stateGeoId,geoName,STATE_RANK,nextNodeNumber++,newCountry);
-                    prevState = geoName;
-                    prevStateGeo = newState;
-
-                    // county keeps existing id
-                    countyGeoId = geo.getId();
-                    geoName = geo.getCounty();
-                    Geography newCounty = buildGeography(def,countyGeoId,geoName,COUNTY_RANK,nextNodeNumber++,newState);
-                    prevCounty = geoName;
-                    //prevCountyGeo = newCounty;
-
-                    newTableRows.add(newCont);
-                    newTableRows.add(newCountry);
-                    newTableRows.add(newState);
-                    newTableRows.add(newCounty);
-                }
-                else if( hasState )
-                {
-                    // state keeps the existing id
-                    // cont and country get new ones
-                    // this item has no county
-
-                    contGeoId = findUnusedId(usedIds);
-                    usedIds.add(contGeoId);
-                    geoName = geo.getContOrOcean();
-                    Geography newCont = buildGeography(def,contGeoId,geoName,CONTINENT_RANK,nextNodeNumber++,geoRoot);
-                    prevCont = geoName;
-                    prevContGeo = newCont;
-
-                    countryGeoId = findUnusedId(usedIds);
-                    usedIds.add(countryGeoId);
-                    geoName = geo.getCountry();
-                    Geography newCountry = buildGeography(def,countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,newCont);
-                    prevCountry = geoName;
-                    prevCountryGeo = newCountry;
-
-                    // state keeps existing id
-                    stateGeoId = geo.getId();
-                    geoName = geo.getState();
-                    Geography newState = buildGeography(def,stateGeoId,geoName,STATE_RANK,nextNodeNumber++,newCountry);
-                    prevState = geoName;
-                    prevStateGeo = newState;
-
-                    newTableRows.add(newCont);
-                    newTableRows.add(newCountry);
-                    newTableRows.add(newState);
-                }
-                else if( hasCountry )
-                {
-                    // country keeps the existing id
-                    // cont gets a new one
-                    // this item has no state or county
-
-                    contGeoId = findUnusedId(usedIds);
-                    usedIds.add(contGeoId);
-                    geoName = geo.getContOrOcean();
-                    Geography newCont = buildGeography(def,contGeoId,geoName,CONTINENT_RANK,nextNodeNumber++,geoRoot);
-                    prevCont = geoName;
-                    prevContGeo = newCont;
-
-                    // country keeps existing id
-                    countryGeoId = geo.getId();
-                    geoName = geo.getCountry();
-                    Geography newCountry = buildGeography(def,countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,newCont);
-                    prevCountry = geoName;
-                    prevCountryGeo = newCountry;
-
-                    newTableRows.add(newCont);
-                    newTableRows.add(newCountry);
-                }
-                else if( hasCont )
-                {
-                    // cont keeps the existing id
-                    // this item has no country, state, or county
-
-                    contGeoId = geo.getId();
-                    geoName = geo.getContOrOcean();
-                    Geography newCont = buildGeography(def,contGeoId,geoName,CONTINENT_RANK,nextNodeNumber++,geoRoot);
-                    prevCont = geoName;
-                    prevContGeo = newCont;
-
-                    newTableRows.add(newCont);
-                }
-            }
-
-            else if( geo.getCountry() != null && !geo.getCountry().equals(prevCountry) )
-            {
-                // the country is new (and the state and county, if non-empty)
-
-                // find geographyIds for each node
-                if( hasCounty )
-                {
-                    // the county keeps the existing id
-                    // the other levels get new ones
-
-                    countryGeoId = findUnusedId(usedIds);
-                    usedIds.add(countryGeoId);
-                    geoName = geo.getCountry();
-                    Geography newCountry = buildGeography(def,countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,prevContGeo);
-                    prevCountry = geoName;
-                    prevCountryGeo = newCountry;
-
-                    stateGeoId = findUnusedId(usedIds);
-                    usedIds.add(stateGeoId);
-                    geoName = geo.getState();
-                    Geography newState = buildGeography(def,stateGeoId,geoName,STATE_RANK,nextNodeNumber++,prevCountryGeo);
-                    prevState = geoName;
-                    prevStateGeo = newState;
-
-                    // county keeps existing id
-                    countyGeoId = geo.getId();
-                    geoName = geo.getCounty();
-                    Geography newCounty = buildGeography(def,countyGeoId,geoName,COUNTY_RANK,nextNodeNumber++,prevStateGeo);
-                    prevCounty = geoName;
-                    //prevCountyGeo = newCounty;
-
-                    newTableRows.add(newCountry);
-                    newTableRows.add(newState);
-                    newTableRows.add(newCounty);
-                }
-                else if( hasState )
-                {
-                    // state keeps the existing id
-                    // cont and country get new ones
-                    // this item has no county
-
-                    countryGeoId = findUnusedId(usedIds);
-                    usedIds.add(countryGeoId);
-                    geoName = geo.getCountry();
-                    Geography newCountry = buildGeography(def,countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,prevContGeo);
-                    prevCountry = geoName;
-                    prevCountryGeo = newCountry;
-
-                    // state keeps existing id
-                    stateGeoId = geo.getId();
-                    geoName = geo.getState();
-                    Geography newState = buildGeography(def,stateGeoId,geoName,STATE_RANK,nextNodeNumber++,prevCountryGeo);
-                    prevState = geoName;
-                    prevStateGeo = newState;
-
-                    newTableRows.add(newCountry);
-                    newTableRows.add(newState);
-                }
-                else if( hasCountry )
-                {
-                    // country keeps the existing id
-                    // cont gets a new one
-                    // this item has no state or county
-
-                    // country keeps existing id
-                    countryGeoId = geo.getId();
-                    geoName = geo.getCountry();
-                    Geography newCountry = buildGeography(def,countryGeoId,geoName,COUNTRY_RANK,nextNodeNumber++,prevContGeo);
-                    prevCountry = geoName;
-                    prevCountryGeo = newCountry;
-
-                    newTableRows.add(newCountry);
-                }
-            }
-
-            else if( geo.getState() != null && !geo.getState().equals(prevState) )
-            {
-                // the state is new (and the county, if non-empty)
-
-                // find geographyIds for each node
-                if( hasCounty )
-                {
-                    // the county keeps the existing id
-                    // the other levels get new ones
-
-                    stateGeoId = findUnusedId(usedIds);
-                    usedIds.add(stateGeoId);
-                    geoName = geo.getState();
-                    Geography newState = buildGeography(def,stateGeoId,geoName,STATE_RANK,nextNodeNumber++,prevCountryGeo);
-                    prevState = geoName;
-                    prevStateGeo = newState;
-
-                    // county keeps existing id
-                    countyGeoId = geo.getId();
-                    geoName = geo.getCounty();
-                    Geography newCounty = buildGeography(def,countyGeoId,geoName,COUNTY_RANK,nextNodeNumber++,prevStateGeo);
-                    prevCounty = geoName;
-                    //prevCountyGeo = newCounty;
-
-                    newTableRows.add(newState);
-                    newTableRows.add(newCounty);
-                }
-                else if( hasState )
-                {
-                    // state keeps the existing id
-                    // cont and country get new ones
-                    // this item has no county
-                    stateGeoId = geo.getId();
-                    geoName = geo.getState();
-                    Geography newState = buildGeography(def,stateGeoId,geoName,STATE_RANK,nextNodeNumber++,prevCountryGeo);
-                    prevState = geoName;
-                    prevStateGeo = newState;
-
-                    newTableRows.add(newState);
-                }
-            }
-
-            else if( geo.getCounty() != null && !geo.getCounty().equals(prevCounty) )
-            {
-                // only the county is new (and the county, if non-empty)
-
-                // find geographyIds for each node
-                if( hasCounty )
-                {
-                    // the county keeps the existing id
-                    // the other levels get new ones
-                    countyGeoId = geo.getId();
-                    geoName = geo.getCounty();
-                    Geography newCounty = buildGeography(def,countyGeoId,geoName,COUNTY_RANK,nextNodeNumber++,prevStateGeo);
-                    prevCounty = geoName;
-                    //prevCountyGeo = newCounty;
-
-                    newTableRows.add(newCounty);
-                }
-            }
-
-            ++counter;
-            if( counter % 500 == 0 )
-            {
-            	log.info("Converted " + counter + " geography records");
-            }
-        }// end of "for( GeoFileLine geo: oldGeoRecords )"
-    	log.info("Converted " + counter + " geography records");
-
-        // now we have a Vector of Geography's that contains all the data
-        // we simply need to fixup all the highChildNodeNumber fields
-
-        ListIterator<Geography> revIter = newTableRows.listIterator(newTableRows.size());
-        while(revIter.hasPrevious())
-        {
-            Geography newRow = revIter.previous();
-            int nodeNum = newRow.getNodeNumber();
-            if( newRow.getHighestChildNodeNumber() == null || nodeNum > newRow.getHighestChildNodeNumber() )
-            {
-                newRow.setHighestChildNodeNumber(nodeNum);
-            }
-            Geography parent = newRow.getParent();
-
-            // adjust all the parent nodes (all the way up)
-            while( parent != null )
-            {
-                if( parent.getHighestChildNodeNumber() == null || parent.getHighestChildNodeNumber() < nodeNum )
-                {
-                    parent.setHighestChildNodeNumber(nodeNum);
-                }
-                parent = parent.getParent();
-            }
-        }
-
-        log.info("Saving the geography records to the DB");
-        HibernateUtil.beginTransaction();
-        for( Geography geo: newTableRows )
-        {
-        	session.save(geo);
-        }
-        HibernateUtil.commitTransaction();
-        HibernateUtil.closeSession();
-        log.info("Done converting geography data");
-    }
-
-    /**
-     * Finds the smallest <code>int</code> not in the <code>Collection</code>
-     *
-     * @param usedIds
-     *            the <code>Collection</code> of used values
-     * @return the smallest unused value
-     */
-    public static int findUnusedId(final Collection<Integer> usedIds )
-    {
-        for(int i=1;;++i)
-        {
-            if( !usedIds.contains(i) )
-            {
-                return i;
-            }
-        }
     }
 
     /**
@@ -3273,13 +2766,157 @@ public class GenericDBConversion
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
         //BasicSQLUtils.setShowMappingError(showMappingErrors);
    }
+    
+    public void convertGeography(GeographyTreeDef treeDef) throws SQLException
+    {
+    	// empty out any pre-existing records
+    	BasicSQLUtils.deleteAllRecordsFromTable("geography");
+
+    	// get a Hibernate session for saving the new records
+    	Session session = HibernateUtil.getCurrentSession();
+    	HibernateUtil.beginTransaction();
+    	
+    	// get all of the old records
+    	String sql = "SELECT GeographyID,ContinentOrOcean,Country,State,County FROM geography";
+    	Statement statement = oldDBConn.createStatement();
+    	ResultSet oldGeoRecords = statement.executeQuery(sql);
+    	
+    	// setup the root Geography record (planet Earth)
+    	Geography planetEarth = new Geography();
+    	planetEarth.initialize();
+    	planetEarth.setName("Earth");
+    	planetEarth.setCommonName("Earth");
+    	planetEarth.setRankId(0);
+    	planetEarth.setDefinition(treeDef);
+    	for( Object o: treeDef.getTreeDefItems() )
+    	{
+    		GeographyTreeDefItem defItem = (GeographyTreeDefItem)o;
+    		if( defItem.getRankId() == 0 )
+    		{
+    			planetEarth.setDefinitionItem(defItem);
+    			break;
+    		}
+    	}
+    	session.save(planetEarth);
+    	
+    	// create an ID mapper for the geography table (mainly for use in converting localities)
+    	IdTableMapper geoIdMapper = IdMapperMgr.getInstance().addTableMapper("geography", "GeographyID");
+    	
+    	int counter = 0;
+    	// for each old record, convert the record
+    	while( oldGeoRecords.next() )
+    	{
+        	if( counter % 500 == 0 )
+        	{
+        		log.info("Converted " + counter + " geography records");
+        	}
+    		// grab the important data fields from the old record
+    		int oldId = oldGeoRecords.getInt(1);
+        	String cont = oldGeoRecords.getString(2);
+        	String country = oldGeoRecords.getString(3);
+        	String state = oldGeoRecords.getString(4);
+        	String county = oldGeoRecords.getString(5);
+
+        	// create a new Geography object from the old data
+        	Geography newGeo = convertOldGeoRecord(cont, country, state, county, planetEarth, session);
+
+        	counter++;
+        	
+        	// add this new ID to the ID mapper
+        	geoIdMapper.put(oldId,newGeo.getGeographyId());
+    	}
+    	HibernateUtil.commitTransaction();
+		log.info("Converted " + counter + " geography records");
+
+		// set up Geography foreign key mapping for locality
+		idMapperMgr.mapForeignKey("Locality", "GeographyID", "Geography", "GeographyID");
+    }
+    
+    /**
+     * Using the data passed in the parameters, create a new Geography object and attach
+     * it to the Geography tree rooted at geoRoot.
+     * 
+     * @param cont continent or ocean name
+     * @param country country name
+     * @param state state name
+     * @param county county name
+     * @param geoRoot the Geography tree root node (planet)
+     * @return the lowest level Geography item represented by the passed in data
+     */
+    protected Geography convertOldGeoRecord(String cont,
+											String country,
+											String state,
+											String county,
+											Geography geoRoot,
+											Session session)
+    {
+    	String levelNames[] = {cont,country,state,county};
+    	int levelsToBuild = 0;
+    	for( int i = 4; i > 0; --i )
+    	{
+    		if( levelNames[i-1] != null )
+    		{
+    			levelsToBuild = i;
+    			break;
+    		}
+    	}
+    	
+    	Geography prevLevelGeo = geoRoot;
+    	for( int i = 0; i < levelsToBuild; ++i )
+    	{
+    		Geography newLevelGeo = buildGeoLevel( levelNames[i], prevLevelGeo, session );
+    		prevLevelGeo = newLevelGeo;
+    	}
+    	
+    	return prevLevelGeo;
+    }
+    
+    protected Geography buildGeoLevel( String name, Geography parent, Session session )
+    {
+    	if( name == null )
+    	{
+    		name = "N/A";
+    	}
+    	
+    	// search through all of parent's children to see if one already exists with the same name
+    	Set<Geography> children = parent.getChildren();
+    	for( Geography child: children )
+    	{
+    		if( name.equalsIgnoreCase(child.getName()) )
+    		{
+    			// this parent already has a child by the given name
+    			// don't create a new one, just return this one
+    			return child;
+    		}
+    	}
+    	
+    	// we didn't find a child by the given name
+    	// we need to create a new Geography record
+    	Geography newGeo = new Geography();
+    	newGeo.initialize();
+    	newGeo.setName(name);
+    	newGeo.setParent(parent);
+    	parent.addChild(newGeo);
+    	newGeo.setTreeDef(parent.getTreeDef());
+    	int newGeoRank = parent.getRankId()+100;
+    	GeographyTreeDefItem defItem = (GeographyTreeDefItem)TreeTableUtils.getDefItemByRank(parent.getTreeDef(), newGeoRank);
+    	newGeo.setDefinitionItem(defItem);
+    	newGeo.setRankId(newGeoRank);
+    	session.save(newGeo);
+    	
+    	return newGeo;
+    }
 
     /**
-     * Copies the filed names to the list and prepend the table name
-     * @param list the destination list
-     * @param fieldNames the list of field names
-     * @param tableName the table name
-     */
+	 * Copies the filed names to the list and prepend the table name
+	 * 
+	 * @param list
+	 *            the destination list
+	 * @param fieldNames
+	 *            the list of field names
+	 * @param tableName
+	 *            the table name
+	 */
     protected void addNamesWithTableName(final List<String> list, final List<String> fieldNames, final String tableName)
     {
         for (String fldName : fieldNames)

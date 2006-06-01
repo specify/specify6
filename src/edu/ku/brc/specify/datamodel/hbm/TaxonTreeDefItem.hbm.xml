@@ -9,8 +9,8 @@
 		table="taxontreedefitem" lazy="true">
 		<meta attribute="class-description" inherit="false" />
 
-		<id name="treeDefItemId" type="java.lang.Integer"
-			column="TreeDefItemID" length="10">
+		<id name="taxonTreeDefItemId" type="java.lang.Integer"
+			column="TaxonTreeDefItemID" length="10">
 			<meta attribute="scope-field">protected</meta>
 			<generator class="native" />
 		</id>
@@ -32,7 +32,7 @@
 
 		<!-- Associations -->
 
-		<many-to-one name="treeDef" column="TreeDefID"
+		<many-to-one name="treeDef" column="TaxonTreeDefID"
 			class="edu.ku.brc.specify.datamodel.TaxonTreeDef" lazy="false">
 			<meta attribute="scope-field">protected</meta>
 		</many-to-one>
@@ -40,7 +40,7 @@
 		<set name="treeEntries" table="Taxon" inverse="true"
 			lazy="true">
 			<meta attribute="scope-field">protected</meta>
-			<key column="TreeDefItemID" />
+			<key column="TaxonTreeDefItemID" />
 			<one-to-many class="edu.ku.brc.specify.datamodel.Taxon" />
 		</set>
 

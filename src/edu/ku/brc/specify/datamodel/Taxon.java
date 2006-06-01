@@ -9,7 +9,7 @@ public class Taxon  implements java.io.Serializable,Treeable {
 
     // Fields    
 
-     protected Integer treeId;
+     protected Integer taxonId;
      protected String taxonomicSerialNumber;
      protected String guid;
      protected String name;
@@ -52,14 +52,14 @@ public class Taxon  implements java.io.Serializable,Treeable {
     }
     
     /** constructor with id */
-    public Taxon(Integer treeId) {
-        this.treeId = treeId;
+    public Taxon(Integer taxonId) {
+        this.taxonId = taxonId;
     }
    
     // Initializer
     public void initialize()
     {
-        treeId = null;
+    	taxonId = null;
         taxonomicSerialNumber = null;
         guid = null;
         name = null;
@@ -102,12 +102,12 @@ public class Taxon  implements java.io.Serializable,Treeable {
     /**
      * 
      */
-    public Integer getTreeId() {
-        return this.treeId;
+    public Integer getTaxonId() {
+        return this.taxonId;
     }
     
-    public void setTreeId(Integer treeId) {
-        this.treeId = treeId;
+    public void setTaxonId(Integer taxonId) {
+        this.taxonId = taxonId;
     }
 
     /**
@@ -485,6 +485,18 @@ public class Taxon  implements java.io.Serializable,Treeable {
     }
 
 	/* Code added in order to implement Treeable */
+    
+	public Integer getTreeId()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setTreeId(Integer id)
+	{
+		// TODO Auto-generated method stub
+		
+	}
     
 	/**
 	 * @return the parent Taxon object

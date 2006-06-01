@@ -10,8 +10,8 @@
 		table="geologictimeperiodtreedefitem" lazy="true">
 		<meta attribute="class-description" inherit="false" />
 
-		<id name="treeDefItemId" type="java.lang.Integer"
-			column="TreeDefItemID" length="10">
+		<id name="geologicTimePeriodTreeDefItemId" type="java.lang.Integer"
+			column="GeologicTimePeriodTreeDefItemID" length="10">
 			<meta attribute="scope-field">protected</meta>
 			<generator class="native" />
 		</id>
@@ -49,7 +49,7 @@
 		<set name="treeEntries" table="GeologicTimePeriod"
 			inverse="true" lazy="true">
 			<meta attribute="scope-field">protected</meta>
-			<key column="TreeDefItemID" />
+			<key column="GeologicTimePeriodTreeDefItemID" />
 			<one-to-many
 				class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" />
 		</set>

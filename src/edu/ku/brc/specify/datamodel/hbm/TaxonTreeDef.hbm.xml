@@ -9,8 +9,8 @@
 		table="taxontreedef" lazy="true">
 		<meta attribute="class-description" inherit="false" />
 
-		<id name="treeDefId" type="java.lang.Integer"
-			column="TreeDefID">
+		<id name="taxonTreeDefId" type="java.lang.Integer"
+			column="TaxonTreeDefID">
 			<meta attribute="scope-field">protected</meta>
 			<generator class="foreign">
 				<param name="property">collObjDef</param>
@@ -35,13 +35,13 @@
 
 		<set name="treeEntries" table="Taxon" inverse="true"
 			lazy="true">
-			<key column="TreeDefID" />
+			<key column="TaxonTreeDefID" />
 			<one-to-many class="edu.ku.brc.specify.datamodel.Taxon" />
 		</set>
 
 		<set name="treeDefItems" table="TaxonTreeDefItem" inverse="true"
 			lazy="false" cascade="all-delete-orphan">
-			<key column="TreeDefID" />
+			<key column="TaxonTreeDefID" />
 			<one-to-many
 				class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" />
 		</set>

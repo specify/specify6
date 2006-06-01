@@ -8,7 +8,7 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
 
     // Fields    
 
-     protected Integer treeDefItemId;
+     protected Integer geologicTimePeriodTreeDefItemId;
      protected String name;
      protected Integer rankId;
      protected Boolean isEnforced;
@@ -24,14 +24,14 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
     }
     
     /** constructor with id */
-    public GeologicTimePeriodTreeDefItem(Integer treeDefItemId) {
-        this.treeDefItemId = treeDefItemId;
+    public GeologicTimePeriodTreeDefItem(Integer geologicTimePeriodTreeDefItemId) {
+        this.geologicTimePeriodTreeDefItemId = geologicTimePeriodTreeDefItemId;
     }
    
     // Initializer
     public void initialize()
     {
-        treeDefItemId = null;
+    	geologicTimePeriodTreeDefItemId = null;
         name = null;
         rankId = null;
         isEnforced = null;
@@ -47,12 +47,12 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
     /**
      * 
      */
-    public Integer getTreeDefItemId() {
-        return this.treeDefItemId;
+    public Integer getGeologicTimePeriodTreeDefItemId() {
+        return this.geologicTimePeriodTreeDefItemId;
     }
     
-    public void setTreeDefItemId(Integer treeDefItemId) {
-        this.treeDefItemId = treeDefItemId;
+    public void setGeologicTimePeriodTreeDefItemId(Integer geologicTimePeriodTreeDefItemId) {
+        this.geologicTimePeriodTreeDefItemId = geologicTimePeriodTreeDefItemId;
     }
 
     /**
@@ -185,4 +185,14 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
         children.add(child);
         setChildren(children);
     }
+
+	public Integer getTreeDefItemId()
+	{
+		return getGeologicTimePeriodTreeDefItemId();
+	}
+
+	public void setTreeDefItemId(Integer id)
+	{
+		setGeologicTimePeriodTreeDefItemId(id);
+	}
 }

@@ -8,7 +8,7 @@ public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Se
 
     // Fields    
 
-     protected Integer treeDefItemId;
+     protected Integer geographyTreeDefItemId;
      protected String name;
      protected Integer rankId;
      protected Boolean isEnforced;
@@ -24,14 +24,14 @@ public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Se
     }
     
     /** constructor with id */
-    public GeographyTreeDefItem(Integer treeDefItemId) {
-        this.treeDefItemId = treeDefItemId;
+    public GeographyTreeDefItem(Integer geographyTreeDefItemId) {
+        this.geographyTreeDefItemId = geographyTreeDefItemId;
     }
    
     // Initializer
     public void initialize()
     {
-        treeDefItemId = null;
+    	geographyTreeDefItemId = null;
         name = null;
         rankId = null;
         isEnforced = null;
@@ -47,12 +47,12 @@ public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Se
     /**
      * 
      */
-    public Integer getTreeDefItemId() {
-        return this.treeDefItemId;
+    public Integer getGeographyTreeDefItemId() {
+        return this.geographyTreeDefItemId;
     }
     
-    public void setTreeDefItemId(Integer treeDefItemId) {
-        this.treeDefItemId = treeDefItemId;
+    public void setGeographyTreeDefItemId(Integer geographyTreeDefItemId) {
+        this.geographyTreeDefItemId = geographyTreeDefItemId;
     }
 
     /**
@@ -185,4 +185,14 @@ public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Se
         children.add(child);
         setChildren(children);
     }
+    
+	public Integer getTreeDefItemId()
+	{
+		return getGeographyTreeDefItemId();
+	}
+
+	public void setTreeDefItemId(Integer id)
+	{
+		setGeographyTreeDefItemId(id);
+	}
 }

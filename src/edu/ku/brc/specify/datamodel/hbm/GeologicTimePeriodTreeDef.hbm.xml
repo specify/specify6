@@ -9,8 +9,8 @@
 		table="geologictimeperiodtreedef" lazy="true">
 		<meta attribute="class-description" inherit="false" />
 
-		<id name="treeDefId" type="java.lang.Integer"
-			column="TreeDefID">
+		<id name="geologicTimePeriodTreeDefId" type="java.lang.Integer"
+			column="GeologicTimePeriodTreeDefID">
 			<meta attribute="scope-field">protected</meta>
 			<generator class="native" />
 		</id>
@@ -29,21 +29,21 @@
 
 		<set name="treeEntries" table="GeologicTimePeriod"
 			inverse="true" lazy="true">
-			<key column="TreeDefID" />
+			<key column="GeologicTimePeriodTreeDefID" />
 			<one-to-many
 				class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" />
 		</set>
 
 		<set name="treeDefItems" table="GeologicTimePeriodTreeDefItem"
 			inverse="true" lazy="false" cascade="all-delete-orphan">
-			<key column="TreeDefID" />
+			<key column="GeologicTimePeriodTreeDefID" />
 			<one-to-many
 				class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem" />
 		</set>
 
 		<set name="collObjDefs" table="CollectionObjDef"
 			inverse="true">
-			<key column="geologicTimePeriodTreeDefID" />
+			<key column="GeologicTimePeriodTreeDefID" />
 			<one-to-many
 				class="edu.ku.brc.specify.datamodel.CollectionObjDef" />
 		</set>

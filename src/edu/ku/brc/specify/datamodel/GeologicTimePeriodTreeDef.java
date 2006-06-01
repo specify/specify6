@@ -8,7 +8,7 @@ public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.S
 
     // Fields    
 
-     protected Integer treeDefId;
+     protected Integer geologicTimePeriodTreeDefId;
      protected String name;
      protected String remarks;
      protected Set<GeologicTimePeriod> treeEntries;
@@ -22,14 +22,14 @@ public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.S
     }
     
     /** constructor with id */
-    public GeologicTimePeriodTreeDef(Integer treeDefId) {
-        this.treeDefId = treeDefId;
+    public GeologicTimePeriodTreeDef(Integer geologicTimePeriodTreeDefId) {
+        this.geologicTimePeriodTreeDefId = geologicTimePeriodTreeDefId;
     }
    
     // Initializer
     public void initialize()
     {
-        treeDefId = null;
+    	geologicTimePeriodTreeDefId = null;
         name = null;
         remarks = null;
         treeEntries = new HashSet<GeologicTimePeriod>();
@@ -43,12 +43,12 @@ public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.S
     /**
      * 
      */
-    public Integer getTreeDefId() {
-        return this.treeDefId;
+    public Integer getGeologicTimePeriodTreeDefId() {
+        return this.geologicTimePeriodTreeDefId;
     }
     
-    public void setTreeDefId(Integer treeDefId) {
-        this.treeDefId = treeDefId;
+    public void setGeologicTimePeriodTreeDefId(Integer geologicTimePeriodTreeDefId) {
+        this.geologicTimePeriodTreeDefId = geologicTimePeriodTreeDefId;
     }
 
     /**
@@ -107,4 +107,18 @@ public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.S
     public void setCollObjDefs(Set<CollectionObjDef> collObjDefs) {
         this.collObjDefs = collObjDefs;
     }
+
+    //
+    // Methods added to implement TreeDefinitionIface
+    //
+
+	public Integer getTreeDefId()
+	{
+		return getGeologicTimePeriodTreeDefId();
+	}
+
+	public void setTreeDefId(Integer id)
+	{
+		setGeologicTimePeriodTreeDefId(id);
+	}
 }

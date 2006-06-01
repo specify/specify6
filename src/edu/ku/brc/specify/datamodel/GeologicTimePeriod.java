@@ -9,7 +9,7 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
 
     // Fields    
 
-     protected Integer treeId;
+     protected Integer geologicTimePeriodId;
      protected Integer rankId;
      protected String name;
      protected Integer nodeNumber;
@@ -34,14 +34,14 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
     }
     
     /** constructor with id */
-    public GeologicTimePeriod(Integer treeId) {
-        this.treeId = treeId;
+    public GeologicTimePeriod(Integer geologicTimePeriodId) {
+        this.geologicTimePeriodId = geologicTimePeriodId;
     }
    
     // Initializer
     public void initialize()
     {
-        treeId = null;
+    	geologicTimePeriodId = null;
         rankId = null;
         name = null;
         nodeNumber = null;
@@ -66,12 +66,12 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
     /**
      * 
      */
-    public Integer getTreeId() {
-        return this.treeId;
+    public Integer getGeologicTimePeriodId() {
+        return this.geologicTimePeriodId;
     }
     
-    public void setTreeId(Integer treeId) {
-        this.treeId = treeId;
+    public void setGeologicTimePeriodId(Integer geologicTimePeriodId) {
+        this.geologicTimePeriodId = geologicTimePeriodId;
     }
 
     /**
@@ -252,6 +252,16 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
 
 	/* Code added in order to implement Treeable */
     
+	public Integer getTreeId()
+	{
+		return getGeologicTimePeriodId();
+	}
+
+	public void setTreeId(Integer id)
+	{
+		setGeologicTimePeriodId(id);
+	}
+	
 	/**
 	 * @return the parent GeologicTimePeriod object
 	 */

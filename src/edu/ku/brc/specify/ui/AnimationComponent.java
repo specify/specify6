@@ -197,6 +197,11 @@ public abstract class AnimationComponent extends JComponent implements TimingTar
 		timingController.stop();
 	}
 
+	public boolean isRunning()
+	{
+		return timingController.isRunning();
+	}
+
 	public void timingEvent(long cycleElapsedTime, long totalElapsedTime, float percent)
 	{
 		this.cycleElapsedTime = cycleElapsedTime;

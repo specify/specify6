@@ -9,8 +9,8 @@
 		table="locationtreedefitem" lazy="true">
 		<meta attribute="class-description" inherit="false" />
 
-		<id name="treeDefItemId" type="java.lang.Integer"
-			column="TreeDefItemID" length="10">
+		<id name="locationTreeDefItemId" type="java.lang.Integer"
+			column="LocationTreeDefItemID" length="10">
 			<meta attribute="scope-field">protected</meta>
 			<generator class="native" />
 		</id>
@@ -47,7 +47,7 @@
 		<set name="treeEntries" table="Location" inverse="true"
 			lazy="true">
 			<meta attribute="scope-field">protected</meta>
-			<key column="TreeDefItemID" />
+			<key column="LocationTreeDefItemID" />
 			<one-to-many class="edu.ku.brc.specify.datamodel.Location" />
 		</set>
 

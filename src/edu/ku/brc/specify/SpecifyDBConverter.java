@@ -9,7 +9,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,7 +18,6 @@ import org.hibernate.criterion.Expression;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.GenericDBConversion;
-import edu.ku.brc.specify.conversion.GeoFileLine;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
@@ -156,13 +154,13 @@ public class SpecifyDBConverter
      */
     public static void main(String args[]) throws Exception
     {
-        String oldDatabaseName = "demo_fish5";
+        String oldDatabaseName = "demo_fish2";
         
         DBConnection.setUsernamePassword("rods", "rods");
         DBConnection.setDriver("com.mysql.jdbc.Driver");
         DBConnection.setDBName("jdbc:mysql://localhost/fish");
         
-        if (true)
+        if (false)
         {
             GenericDBConversion conversion = new GenericDBConversion("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/"+oldDatabaseName, "rods", "rods");
             conversion.createAndFillStatTable();
@@ -267,14 +265,9 @@ public class SpecifyDBConverter
                 boolean doTheRest = false;
                 if (doTheRest || doAll)
                 {
-                    conversion.convertLocality();
-
-                    // convert 'Geography' table
-                    //Vector<GeoFileLine> oldGeoRecords = conversion.parseGeographyFile(XMLHelper.getConfigDirPath("SpecifyGeographicNames.csv"));
-
-                    Vector<GeoFileLine> oldGeoRecords = conversion.extractGeographyFromOldDb("geography");
                     GeographyTreeDef treeDef = conversion.createStandardGeographyDefinitionAndItems();
-                    conversion.loadSpecifyGeographicNames("geography", oldGeoRecords, treeDef);
+                	conversion.convertGeography(treeDef);
+                	conversion.convertLocality();
                 }
 
                 boolean doFurtherTesting = false;
@@ -348,30 +341,6 @@ public class SpecifyDBConverter
                         return;
                     }
 
-                    //if (catalogSeriesList.size() > 0)
-                    //{
-                        /*try
-                        {
-                            Session session = HibernateUtil.getCurrentSession();
-                            HibernateUtil.beginTransaction();
-
-                            TaxonomyTreeDef treeDef = new TaxonomyTreeDef();
-                            treeDef.setName("Test");
-                            treeDef.setParentNodeId(0);
-                            treeDef.setTreeNodeId(0);
-
-                            session.save(treeDef);
-
-                            HibernateUtil.commitTransaction();
-
-                        } catch (Exception e)
-                        {
-                            log.error("******* " + e);
-                            e.printStackTrace();
-                            HibernateUtil.rollbackTransaction();
-                        }*/
-
-
                         Set<CollectionObjDef>  colObjDefSet = conversion.createCollectionObjDef("Fish", dataType, user, null, null);//(CatalogSeries)catalogSeriesList.get(0));
 
 
@@ -379,23 +348,6 @@ public class SpecifyDBConverter
                         CollectionObjDef colObjDef = (CollectionObjDef)obj;
 
                         conversion.convertBiologicalAttrs(colObjDef, null, null);
-
-                        boolean doFish = false;
-                        if (doFish)
-                        {/*
-                            FishConversion fishConversion = new FishConversion(colObjDef);
-                            fishConversion.loadAttrs(true);
-
-                            DBConnection oldDB     = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/demo_fish2", "rods", "rods");
-                            Connection   oldDBConn = oldDB.getConnectionToDB();
-                            fishConversion.loadPrepAttrs(oldDBConn, DBConnection.getConnection());
-                            oldDBConn.close();
-                            */
-                        }
-                        //} else
-                    //{
-                    //    log.error("Error: No Catalog Series!");
-                    //}
                 }
             }
 

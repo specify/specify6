@@ -9,7 +9,7 @@
 		table="geography" lazy="true">
 		<meta attribute="class-description" inherit="false" />
 		
-		<id name="treeId" type="java.lang.Integer" column="TreeID">
+		<id name="geographyId" type="java.lang.Integer" column="GeographyID">
 			<meta attribute="scope-field">protected</meta>
 			<generator class="native" />
 		</id>
@@ -102,7 +102,7 @@
 			cascade="none">
 			<meta attribute="scope-field">protected</meta>
 			<key>
-				<column name="TreeID" />
+				<column name="GeographyID" />
 			</key>
 			<one-to-many class="edu.ku.brc.specify.datamodel.Locality" />
 		</set>
@@ -112,7 +112,7 @@
 			class="edu.ku.brc.specify.datamodel.GeographyTreeDef" lazy="false"
 			not-null="true" outer-join="true">
 			<meta attribute="scope-field">protected</meta>
-			<column name="TreeDefID" />
+			<column name="GeographyTreeDefID" />
 		</many-to-one>
 		
 		<!-- bi-directional many-to-one association to GeographyTreeDefItem -->
@@ -120,13 +120,13 @@
 			class="edu.ku.brc.specify.datamodel.GeographyTreeDefItem"
 			lazy="false" not-null="true" outer-join="true">
 			<meta attribute="scope-field">protected</meta>
-			<column name="TreeDefItemID" />
+			<column name="GeographyTreeDefItemID" />
 		</many-to-one>
 		
 		<!-- bi-directional many-to-one association to Geography -->
 		<many-to-one name="parent"
 			class="edu.ku.brc.specify.datamodel.Geography" not-null="false"
-			outer-join="true">
+			outer-join="true" cascade="save-update">
 			<meta attribute="scope-field">protected</meta>
 			<column name="ParentID" />
 		</many-to-one>

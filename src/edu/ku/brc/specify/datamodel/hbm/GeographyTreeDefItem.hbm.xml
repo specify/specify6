@@ -9,8 +9,8 @@
 		table="geographytreedefitem" lazy="true">
 		<meta attribute="class-description" inherit="false" />
 
-		<id name="treeDefItemId" type="java.lang.Integer"
-			column="TreeDefItemID" length="10">
+		<id name="geographyTreeDefItemId" type="java.lang.Integer"
+			column="GeographyTreeDefItemID" length="10">
 			<meta attribute="scope-field">protected</meta>
 			<generator class="native" />
 		</id>
@@ -33,7 +33,7 @@
 		<!-- Associations -->
 
 		<!-- bi-directional many-to-one association to GeographyTreeDef -->
-		<many-to-one name="treeDef" column="TreeDefID"
+		<many-to-one name="treeDef" column="GeographyTreeDefID"
 			class="edu.ku.brc.specify.datamodel.GeographyTreeDef" lazy="false">
 			<meta attribute="scope-field">protected</meta>
 		</many-to-one>
@@ -47,7 +47,7 @@
 		<set name="treeEntries" table="Geography" inverse="true"
 			lazy="true">
 			<meta attribute="scope-field">protected</meta>
-			<key column="TreeDefItemID" />
+			<key column="GeographyTreeDefItemID" />
 			<one-to-many class="edu.ku.brc.specify.datamodel.Geography" />
 		</set>
 

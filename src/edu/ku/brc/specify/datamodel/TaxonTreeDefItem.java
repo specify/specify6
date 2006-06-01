@@ -8,7 +8,7 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
 
     // Fields    
 
-     protected Integer treeDefItemId;
+     protected Integer taxonTreeDefItemId;
      protected String name;
      protected Integer rankId;
      protected Boolean isEnforced;
@@ -24,14 +24,14 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
     }
     
     /** constructor with id */
-    public TaxonTreeDefItem(Integer treeDefItemId) {
-        this.treeDefItemId = treeDefItemId;
+    public TaxonTreeDefItem(Integer taxonTreeDefItemId) {
+        this.taxonTreeDefItemId = taxonTreeDefItemId;
     }
    
     // Initializer
     public void initialize()
     {
-        treeDefItemId = null;
+    	taxonTreeDefItemId = null;
         name = null;
         rankId = null;
         isEnforced = null;
@@ -47,12 +47,12 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
     /**
      * 
      */
-    public Integer getTreeDefItemId() {
-        return this.treeDefItemId;
+    public Integer getTaxonTreeDefItemId() {
+        return this.taxonTreeDefItemId;
     }
     
-    public void setTreeDefItemId(Integer treeDefItemId) {
-        this.treeDefItemId = treeDefItemId;
+    public void setTaxonTreeDefItemId(Integer taxonTreeDefItemId) {
+        this.taxonTreeDefItemId = taxonTreeDefItemId;
     }
 
     /**
@@ -135,7 +135,17 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
     }
 
     // Code added to implement TreeDefinitionItemIface
-                            
+
+	public Integer getTreeDefItemId()
+	{
+		return getTaxonTreeDefItemId();
+	}
+
+	public void setTreeDefItemId(Integer id)
+	{
+		setTaxonTreeDefItemId(id);
+	}
+
     public TreeDefinitionIface getTreeDefinition()
     {
         return getTreeDef();

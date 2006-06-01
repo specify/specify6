@@ -5,6 +5,8 @@ import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -25,7 +27,6 @@ public class BasicAnimatedComponent extends AnimationComponent
 									int resolution)
 	{
 		super(repeatCount,begin,repeatBehavior,endBehavior,duration,resolution);
-		this.setBackground(Color.BLACK);
 	}
 
 	@Override
@@ -57,7 +58,7 @@ public class BasicAnimatedComponent extends AnimationComponent
 		Point b = new Point(bx,by);
 				
 		g2d.setPaint(new GradientPaint(a,fg,b,bg));
-		g.fillArc(x, y, size, size, startAngle, angleWidth);
+		g.fillArc(x+1, y+1, size-2, size-2, startAngle, angleWidth);
 	}
 	
 	protected double degreesToRadians( int degrees )

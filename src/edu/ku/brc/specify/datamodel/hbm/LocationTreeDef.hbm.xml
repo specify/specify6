@@ -9,8 +9,8 @@
 		table="locationtreedef" lazy="true">
 		<meta attribute="class-description" inherit="false" />
 
-		<id name="treeDefId" type="java.lang.Integer"
-			column="TreeDefID">
+		<id name="locationTreeDefId" type="java.lang.Integer"
+			column="LocationTreeDefID">
 			<meta attribute="scope-field">protected</meta>
 			<generator class="native" />
 		</id>
@@ -29,20 +29,20 @@
 
 		<set name="treeEntries" table="Location" inverse="true"
 			lazy="true">
-			<key column="TreeDefID" />
+			<key column="LocationTreeDefID" />
 			<one-to-many class="edu.ku.brc.specify.datamodel.Location" />
 		</set>
 
 		<set name="treeDefItems" table="LocationTreeDefItem"
 			inverse="true" lazy="false" cascade="all-delete-orphan">
-			<key column="TreeDefID" />
+			<key column="LocationTreeDefID" />
 			<one-to-many
 				class="edu.ku.brc.specify.datamodel.LocationTreeDefItem" />
 		</set>
 
 		<set name="collObjDefs" table="CollectionObjDef"
 			inverse="true">
-			<key column="locationTreeDefID" />
+			<key column="LocationTreeDefID" />
 			<one-to-many
 				class="edu.ku.brc.specify.datamodel.CollectionObjDef" />
 		</set>

@@ -4,11 +4,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
+public class TaxonTreeDef implements TreeDefinitionIface,java.io.Serializable {
 
     // Fields    
 
-     protected Integer treeDefId;
+     protected Integer taxonTreeDefId;
      protected String name;
      protected String remarks;
      protected CollectionObjDef collObjDef;
@@ -22,15 +22,15 @@ public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
     }
     
     /** constructor with id */
-    public TaxonTreeDef(Integer treeDefId) {
-        this.treeDefId = treeDefId;
+    public TaxonTreeDef(Integer taxonTreeDefId) {
+        this.taxonTreeDefId = taxonTreeDefId;
     }
    
     
     // Initializer
     public void initialize()
     {
-        treeDefId = null;
+    	taxonTreeDefId = null;
         name = null;
         remarks = null;
         collObjDef = null;
@@ -44,12 +44,12 @@ public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
     /**
      * 
      */
-    public Integer getTreeDefId() {
-        return this.treeDefId;
+    public Integer getTaxonTreeDefId() {
+        return this.taxonTreeDefId;
     }
     
-    public void setTreeDefId(Integer treeDefId) {
-        this.treeDefId = treeDefId;
+    public void setTaxonTreeDefId(Integer taxonTreeDefId) {
+        this.taxonTreeDefId = taxonTreeDefId;
     }
 
     /**
@@ -108,4 +108,18 @@ public class TaxonTreeDef  implements TreeDefinitionIface,java.io.Serializable {
 	public void setTreeDefItems(Set treeDefItems) {
         this.treeDefItems = treeDefItems;
     }
+    
+    //
+    // Methods added to implement TreeDefinitionIface
+    //
+
+	public Integer getTreeDefId()
+	{
+		return getTaxonTreeDefId();
+	}
+
+	public void setTreeDefId(Integer id)
+	{
+		setTaxonTreeDefId(id);
+	}
 }

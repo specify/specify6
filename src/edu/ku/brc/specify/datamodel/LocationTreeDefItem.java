@@ -8,7 +8,7 @@ public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Ser
 
     // Fields    
 
-     protected Integer treeDefItemId;
+     protected Integer locationTreeDefItemId;
      protected String name;
      protected Integer rankId;
      protected Boolean isEnforced;
@@ -24,14 +24,14 @@ public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Ser
     }
     
     /** constructor with id */
-    public LocationTreeDefItem(Integer treeDefItemId) {
-        this.treeDefItemId = treeDefItemId;
+    public LocationTreeDefItem(Integer locationTreeDefItemId) {
+        this.locationTreeDefItemId = locationTreeDefItemId;
     }
     
     // Initializer
     public void initialize()
     {
-        treeDefItemId = null;
+    	locationTreeDefItemId = null;
         name = null;
         rankId = null;
         isEnforced = null;
@@ -47,12 +47,12 @@ public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Ser
     /**
      * 
      */
-    public Integer getTreeDefItemId() {
-        return this.treeDefItemId;
+    public Integer getLocationTreeDefItemId() {
+        return this.locationTreeDefItemId;
     }
     
-    public void setTreeDefItemId(Integer treeDefItemId) {
-        this.treeDefItemId = treeDefItemId;
+    public void setLocationTreeDefItemId(Integer locationTreeDefItemId) {
+        this.locationTreeDefItemId = locationTreeDefItemId;
     }
 
     /**
@@ -135,6 +135,16 @@ public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Ser
     }
 
     // Code added to implement TreeDefinitionItemIface
+
+	public Integer getTreeDefItemId()
+	{
+		return getLocationTreeDefItemId();
+	}
+
+	public void setTreeDefItemId(Integer id)
+	{
+		setLocationTreeDefItemId(id);
+	}
 
     public TreeDefinitionIface getTreeDefinition()
     {

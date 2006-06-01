@@ -9,7 +9,7 @@ public class Location  implements java.io.Serializable,Treeable {
 
     // Fields    
 
-     protected Integer treeId;
+     protected Integer locationId;
      protected String name;
      protected Integer rankId;
      protected Integer nodeNumber;
@@ -37,14 +37,14 @@ public class Location  implements java.io.Serializable,Treeable {
     }
     
     /** constructor with id */
-    public Location(Integer treeId) {
-        this.treeId = treeId;
+    public Location(Integer locationId) {
+        this.locationId = locationId;
     }
    
     // Initializer
     public void initialize()
     {
-        treeId = null;
+    	locationId = null;
         name = null;
         rankId = null;
         nodeNumber = null;
@@ -72,12 +72,12 @@ public class Location  implements java.io.Serializable,Treeable {
     /**
      * 
      */
-    public Integer getTreeId() {
-        return this.treeId;
+    public Integer getLocationId() {
+        return this.locationId;
     }
     
-    public void setTreeId(Integer treeId) {
-        this.treeId = treeId;
+    public void setLocationId(Integer locationId) {
+        this.locationId = locationId;
     }
 
     /**
@@ -292,6 +292,16 @@ public class Location  implements java.io.Serializable,Treeable {
 
 	/* Code added in order to implement Treeable */
     
+	public Integer getTreeId()
+	{
+		return getLocationId();
+	}
+
+	public void setTreeId(Integer id)
+	{
+		setLocationId(id);
+	}
+
 	/**
 	 * @return the parent Location object
 	 */

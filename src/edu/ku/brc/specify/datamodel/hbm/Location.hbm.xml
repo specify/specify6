@@ -9,7 +9,7 @@
 		lazy="true">
 		<meta attribute="class-description" inherit="false" />
 
-		<id name="treeId" type="java.lang.Integer" column="TreeID">
+		<id name="locationId" type="java.lang.Integer" column="LocationID">
 			<meta attribute="scope-field">protected</meta>
 			<generator class="native" />
 		</id>
@@ -86,14 +86,14 @@
 		<many-to-one name="definition"
 			class="edu.ku.brc.specify.datamodel.LocationTreeDef" lazy="false"
 			not-null="true" outer-join="true">
-			<column name="TreeDefID" />
+			<column name="LocationTreeDefID" />
 		</many-to-one>
 
 		<!-- bi-directional many-to-one association to LocationTreeDefItem -->
 		<many-to-one name="definitionItem"
 			class="edu.ku.brc.specify.datamodel.LocationTreeDefItem" lazy="false"
 			not-null="true" outer-join="true">
-			<column name="TreeDefItemID" />
+			<column name="LocationTreeDefItemID" />
 		</many-to-one>
 
 		<!-- bi-directional many-to-one association to Location -->
