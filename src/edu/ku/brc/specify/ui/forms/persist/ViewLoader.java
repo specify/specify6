@@ -435,6 +435,7 @@ public class ViewLoader
                 for ( Iterator cellIter = rowElement.elementIterator( "cell" ); cellIter.hasNext(); )
                 {
                     Element cellElement = (Element)cellIter.next();
+                    String  cellId      = getAttr(cellElement, "id", "");
                     String  cellName    = getAttr(cellElement, NAME, "");
                     int     colspan     = getAttr(cellElement, "colspan", 1);
                     int     rowspan     = getAttr(cellElement, "rowspan", 1);
@@ -445,11 +446,11 @@ public class ViewLoader
                     switch (cellType)
                     {
                         case label:
-                            cell = formRow.addCell(new FormCellLabel(cellName, getLabel(cellElement), getAttr(cellElement, "labelfor", ""), colspan));
+                            cell = formRow.addCell(new FormCellLabel(cellId, cellName, getLabel(cellElement), getAttr(cellElement, "labelfor", ""), colspan));
                             break;
 
                         case separator:
-                            cell = formRow.addCell(new FormCellSeparator(cellName, getLabel(cellElement), colspan));
+                            cell = formRow.addCell(new FormCellSeparator(cellId, cellName, getLabel(cellElement), colspan));
                             break;
 
                         case field:
@@ -562,7 +563,7 @@ public class ViewLoader
                                 }
                             }
 
-                            FormCellField field = new FormCellField(FormCell.CellType.field,
+                            FormCellField field = new FormCellField(FormCell.CellType.field, cellId, 
                                                                     cellName, uitype, dspUIType, format, formatName, uiFieldFormatter, isRequired,
                                                                     cols, rows, colspan, rowspan, validationType, validationRule, isEncrypted);
                             field.setLabel(getAttr(cellElement, "label", ""));
@@ -576,7 +577,7 @@ public class ViewLoader
 
                         case command:
                         {
-                            cell =  formRow.addCell(new FormCellCommand(cellName,
+                            cell =  formRow.addCell(new FormCellCommand(cellId, cellName,
                                                                 getLabel(cellElement),
                                                                 getAttr(cellElement, "commandtype", ""),
                                                                 getAttr(cellElement, "action", "")));
@@ -584,7 +585,7 @@ public class ViewLoader
 
                         case panel:
                         {
-                            FormCellPanel cellPanel = new FormCellPanel(cellName,
+                            FormCellPanel cellPanel = new FormCellPanel(cellId, cellName,
                                                                         getAttr(cellElement, "paneltype", ""),
                                                                         getAttr(cellElement, "coldef", "p"),
                                                                         getAttr(cellElement, "rowdef", "p"),
@@ -601,7 +602,7 @@ public class ViewLoader
                                 vsName = instance.viewSetName;
                             }
 
-                            cell = formRow.addCell(new FormCellSubView(cellElement.attributeValue(NAME),
+                            cell = formRow.addCell(new FormCellSubView(cellId, cellName,
                                                    vsName,
                                                    cellElement.attributeValue("viewname"),
                                                    cellElement.attributeValue("class"),

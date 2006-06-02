@@ -25,15 +25,20 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.split;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
@@ -87,14 +92,19 @@ import edu.ku.brc.specify.ui.forms.MultiView;
  *
  */
 @SuppressWarnings("serial")
-public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListDataListener, GetSetValueIFace, PreferenceChangeListener, PropertyChangeListener
+public class ValComboBoxFromQuery extends JPanel implements UIValidatable, 
+                                                            ListDataListener, 
+                                                            GetSetValueIFace, 
+                                                            PreferenceChangeListener, 
+                                                            PropertyChangeListener
 {
     protected static Log log = LogFactory.getLog(ValComboBoxFromQuery.class);
     
     protected static ColorWrapper valtextcolor       = null;
     protected static ColorWrapper requiredfieldcolor = null;
 
-    protected boolean            isInError  = false;
+    protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
+    
     protected boolean            isRequired = false;
     protected boolean            isChanged  = false;
     protected boolean            isNew      = false;
@@ -120,6 +130,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
     
     protected GenericDisplayFrame frame      = null;
     protected MultiView           multiView  = null;
+    
+    protected List<FocusListener> focusListeners = new ArrayList<FocusListener>();
 
 
     /**
@@ -282,11 +294,23 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
 
         comboBox.getTextField().addFocusListener(new FocusAdapter()
                 {
+                    public void focusGained(FocusEvent e)
+                    {
+                        for (FocusListener l : focusListeners)
+                        {
+                            l.focusGained(e);
+                        }  
+                    }
+
                     public void focusLost(FocusEvent e)
                     {
                         isNew = false;
-                        isInError = comboBox.getSelectedIndex() == -1;
+                        validateState();
                         repaint();
+                        for (FocusListener l : focusListeners)
+                        {
+                            l.focusLost(e);
+                        }
                     }
                 });
 
@@ -403,12 +427,33 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
     {
         super.paint(g);
 
-        if (!isNew && isInError() && comboBox.isEnabled())
+        if (!isNew && valState == UIValidatable.ErrorType.Error && comboBox.isEnabled())
         {
+            Graphics2D g2d = (Graphics2D)g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); 
             Dimension dim = getSize();
             g.setColor(valtextcolor.getColor());
             g.drawRect(0, 0, dim.width-1, dim.height-1);
         }
+    }
+    
+    // Overriding the add/remove of FocusListeners is so we can make sure they get 
+    // called AFTER the Combobox has had a change to process it's focus listener
+    
+    /* (non-Javadoc)
+     * @see java.awt.Component#addFocusListener(java.awt.event.FocusListener)
+     */
+    public void addFocusListener(FocusListener l)
+    {
+        focusListeners.add(l);
+    }
+
+    /* (non-Javadoc)
+     * @see java.awt.Component#removeFocusListener(java.awt.event.FocusListener)
+     */
+    public void removeFocusListener(FocusListener l)
+    {
+        focusListeners.remove(l);
     }
 
     //--------------------------------------------------
@@ -420,19 +465,24 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
      */
     public boolean isInError()
     {
-        return isInError;
+        return valState != UIValidatable.ErrorType.Valid;
     }
 
     /* (non-Javadoc)
-     * @see edu.kui.brc.specify.validation.UIValidatable#setInError(boolean)
+     * @see edu.ku.brc.specify.ui.validation.UIValidatable#getState()
      */
-    public void setInError(boolean isInError)
+    public ErrorType getState()
     {
-        this.isInError = isInError;
-        repaint();
-
+        return valState;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.validation.UIValidatable#setState(edu.ku.brc.specify.ui.validation.UIValidatable.ErrorType)
+     */
+    public void setState(ErrorType state)
+    {
+        this.valState = state;
+    }
     /* (non-Javadoc)
      * @see edu.kui.brc.specify.validation.UIValidatable#isRequired()
      */
@@ -471,15 +521,40 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
      */
     public void setAsNew(boolean isNew)
     {
-        if (isRequired)
-        {
-            this.isNew = isNew;
-        } else
-        {
-            this.isNew = false; // this shouldn't need to be done, but doing it just to be sure
-        }
+        this.isNew = isRequired ? isNew : false;
     }
-
+    
+    /* (non-Javadoc)
+     * @see java.awt.Component#validate()
+     */
+    public UIValidatable.ErrorType validateState()
+    {
+        valState = isRequired && comboBox.getSelectedIndex() == -1 ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
+        return valState;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.validation.UIValidatable#reset()
+     */
+    public void reset()
+    {
+        comboBox.setSelectedIndex(-1);
+        if (comboBox.getTextField() != null)
+        {
+            comboBox.getTextField().setText("");
+        }
+        valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
+        repaint();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.validation.UIValidatable#getValidatableUIComp()
+     */
+    public Component getValidatableUIComp()
+    {
+        return this;
+    }
+    
     //--------------------------------------------------------
     // ListDataListener (JComboxBox)
     //--------------------------------------------------------
@@ -490,7 +565,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
     public void contentsChanged(ListDataEvent e)
     {
         isChanged = true;
-        isInError = isRequired && comboBox.getSelectedIndex() == -1;
+        validateState();
         repaint();
     }
 
@@ -554,16 +629,16 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable, ListD
                 comboBox.getTextField().setCaretPosition(0);
                 list.add(newVal.toString());
                 comboBox.setSelectedIndex(0);
-                isInError = false;
+                valState = UIValidatable.ErrorType.Valid;
             } else
             {
                 comboBox.setSelectedIndex(-1);
-                isInError = true;
+                valState = UIValidatable.ErrorType.Incomplete;
             }
         } else
         {
             comboBox.setSelectedIndex(-1);
-            isInError = isRequired;
+            valState = UIValidatable.ErrorType.Incomplete;
         }
         repaint();
     }

@@ -20,6 +20,8 @@
 
 package edu.ku.brc.specify.ui.validation;
 
+import java.awt.Component;
+
 /**
  * Interface for validatable components.
  * 
@@ -28,17 +30,31 @@ package edu.ku.brc.specify.ui.validation;
  */
 public interface UIValidatable
 {
+    public enum ErrorType {Valid, Incomplete, Error};
+
     /**
      * Returns the isInError.
      * @return Returns the isInError.
      */
     public boolean isInError();
+    
+    
+    /**
+     * Returns the validation state
+     * @return the validation state
+     */
+    public ErrorType getState();
 
     /**
      * Sets whether it is in error.
      * @param isInError The isInError to set.
      */
-    public void setInError(boolean isInError);
+    public void setState(ErrorType state);
+    
+    /**
+     * Rests the state of the control to "empty" or what ever that means for the control
+     */
+    public void reset();
 
     /**
      * Returns the isRequired.
@@ -70,4 +86,19 @@ public interface UIValidatable
      * @param isNew true it's new, false it is not
      */
     public void setAsNew(boolean isNew);
+    
+    
+    /**
+     * Asks it to vaidate itself
+     * @return the result of the validation
+     */
+    public ErrorType validateState();
+    
+    
+    /**
+     * Returns the actual Component that is validatable, some UI components are composites or may be wrapped in a JPanel
+     * so this is the actual control the user interact with
+     * @return the actual Component being validated
+     */
+    public Component getValidatableUIComp();
 }

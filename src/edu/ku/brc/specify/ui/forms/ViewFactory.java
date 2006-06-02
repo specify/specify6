@@ -69,6 +69,7 @@ import edu.ku.brc.specify.ui.CommandActionWrapper;
 import edu.ku.brc.specify.ui.GetSetValueIFace;
 import edu.ku.brc.specify.ui.ImageDisplay;
 import edu.ku.brc.specify.ui.UIPluginable;
+import edu.ku.brc.specify.ui.db.JAutoCompComboBox;
 import edu.ku.brc.specify.ui.db.PickListDBAdapter;
 import edu.ku.brc.specify.ui.db.TextFieldWithInfo;
 import edu.ku.brc.specify.ui.forms.persist.AltView;
@@ -323,7 +324,8 @@ public class ViewFactory
             validator.hookupTextField((JTextField)textField,
                                       cellField.getName(),
                                       cellField.isRequired(),
-                                      UIValidator.Type.Changed,  cellField.getName()+".isInError() == false", false);
+                                      UIValidator.Type.Changed,  cellField.getValidationRule(), false);
+                                      //UIValidator.Type.Changed,  cellField.getName()+".isInError() == false", false);
 
 
         } else
@@ -398,6 +400,7 @@ public class ViewFactory
         {
             DataChangeNotifier dcn = validator.hookupComponent(valList, cellField.getName(), cellField.isRequired(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
             valList.getModel().addListDataListener(dcn);
+            valList.addFocusListener(dcn);
         }
         valList.setRequired(cellField.isRequired());
         valList.setVisibleRowCount(numRows);
@@ -423,6 +426,11 @@ public class ViewFactory
             {
                 DataChangeNotifier dcn = validator.hookupComponent(cbx, cellField.getName(), cellField.isRequired(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
                 cbx.getComboBox().getModel().addListDataListener(dcn);
+                
+                if (dcn.getValidationType() == UIValidator.Type.Focus) // returns None when no Validator
+                {
+                    cbx.addFocusListener(dcn);
+                }
             }
             return cbx;
 
@@ -464,6 +472,11 @@ public class ViewFactory
         {
             DataChangeNotifier dcn = validator.hookupComponent(cbx, cellField.getName(), cellField.isRequired(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
             cbx.getModel().addListDataListener(dcn);
+            
+            if (dcn.getValidationType() == UIValidator.Type.Focus) // returns None when no Validator
+            {
+                cbx.addFocusListener(dcn);
+            }
         }
 
         return cbx;
@@ -1011,6 +1024,8 @@ public class ViewFactory
                 // Load up validation Rules
                 FormValidator fv = validatedPanel.getFormValidator();
                 formViewObj.setValidator(fv);
+                
+                fv.setName(formViewDef.getName()); // For Debugging
 
                 for (String name : enableRules.keySet())
                 {

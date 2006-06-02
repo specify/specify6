@@ -26,7 +26,7 @@ import java.awt.Component;
 import javax.swing.JPanel;
 
 /**
- * A JPanel that has built in Validation support
+ * A JPanel that has built in Validation support, which hold Validatable objects
  * 
  * @author rods
  *

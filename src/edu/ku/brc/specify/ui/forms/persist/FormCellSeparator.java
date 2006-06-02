@@ -23,9 +23,9 @@ public class FormCellSeparator extends FormCell
 {
     protected String label;
 
-    public FormCellSeparator(String name, String label, int colspan)
+    public FormCellSeparator(final String id, final String name, final String label, final int colspan)
     {
-        super(FormCell.CellType.separator, name);
+        super(FormCell.CellType.separator, id, name);
         
         this.label   = label;
         this.colspan = colspan;

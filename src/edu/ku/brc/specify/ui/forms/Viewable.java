@@ -38,7 +38,14 @@ public interface Viewable
      * @param name the name of the component
      * @return the component
      */
-    public Component getComp(final String name);
+    public Component getCompByName(final String name);
+
+    /**
+     * Returns a component by id
+     * @param id the id of the component
+     * @return the component
+     */
+    public Component getCompById(final String id);
 
     /**
      * Returns the mapping of name to control

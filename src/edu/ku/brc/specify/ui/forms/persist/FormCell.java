@@ -34,6 +34,7 @@ public class FormCell
 
     // Required fields
     protected CellType type;
+    protected String   id;
     protected String   name;
     protected boolean  ignoreSetGet       = false;
     protected boolean  changeListenerOnly = false;
@@ -56,11 +57,13 @@ public class FormCell
     /**
      * Constructor
      * @param type type of cell
+     * @param id the unique id
      * @param name the name
      */
-    public FormCell(final CellType type, final String name)
+    public FormCell(final CellType type, final String id, final String name)
     {
         this.type = type;
+        this.id   = id;
         this.name = name;
         this.isMultiField = name.indexOf(',') > -1;
         //if (isMultiField)
@@ -80,16 +83,18 @@ public class FormCell
     /**
      * Constructor
      * @param type type of cell
+     * @param id the unique id
      * @param name the name
      * @param colspan the number of columns to span
      * @param rowspan the number of rows to span
      */
     public FormCell(final CellType type,
+                    final String   id,
                     final String   name,
                     final int      colspan,
                     final int      rowspan)
     {
-        this(type, name);
+        this(type, id, name);
 
         this.colspan = colspan;
         this.rowspan = rowspan;
@@ -103,6 +108,11 @@ public class FormCell
     public String getName()
     {
         return name;
+    }
+
+    public String getId()
+    {
+        return id;
     }
 
     public int getRowspan()

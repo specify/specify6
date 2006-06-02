@@ -112,9 +112,17 @@ public class TableViewObj implements Viewable
 
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.forms.Viewable#getComp(java.lang.String)
+     * @see edu.ku.brc.specify.ui.forms.Viewable#getCompByName(java.lang.String)
      */
-    public Component getComp(final String name)
+    public Component getCompByName(final String name)
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.forms.Viewable#getCompById(java.lang.String)
+     */
+    public Component getCompById(final String id)
     {
         return null;
     }

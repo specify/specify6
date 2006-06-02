@@ -58,20 +58,23 @@ public class FormCellField extends FormCell
     /**
      * Constructor
      * @param type type of cell
+     * @param id the id
      * @param name the name
      * @param colspan the number of columns to span
      * @param rowspan the number of rows to span
      */
     protected FormCellField(final FormCell.CellType type,
+                            final String            id,
                             final String            name,
                             final int               colspan,
                             final int               rowspan)
     {
-        super(type, name, colspan, rowspan);
+        super(type, id, name, colspan, rowspan);
     }
 
     /**
      * @param type type of cell
+     * @param id the id
      * @param name the name
      * @param uiType the type of ui component to be created (i.e. "checkbox", "textfield")
      * @param format the format for a text field
@@ -87,6 +90,7 @@ public class FormCellField extends FormCell
      * @param isEncrypted whether the control should have its value encrypted
      */
     public FormCellField(final FormCell.CellType type,
+                         final String            id,
                          final String  name,
                          final String  uiType,
                          final String  dspUIType,
@@ -102,7 +106,7 @@ public class FormCellField extends FormCell
                          final String  validationRule,
                          final boolean isEncrypted)
     {
-        this(type, name, colspan, rowspan);
+        this(type, id, name, colspan, rowspan);
 
         this.format         = format;
         this.formatName     = formatName;

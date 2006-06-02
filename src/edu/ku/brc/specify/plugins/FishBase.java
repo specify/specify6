@@ -97,7 +97,7 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
         if (multiView != null)
         {
             multiView.registerDisplayFrame(frame);
-            progress = (JProgressBar)multiView.getCurrentView().getComp("progress");
+            progress = (JProgressBar)multiView.getCurrentView().getCompByName("progress");
             System.out.println(progress);
             progress.setIndeterminate(true);
             progress.setValue(50);

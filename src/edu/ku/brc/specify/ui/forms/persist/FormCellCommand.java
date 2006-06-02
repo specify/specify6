@@ -24,9 +24,9 @@ public class FormCellCommand extends FormCellSeparator
     protected String commandType;
     protected String action;
     
-    public FormCellCommand(String name, String label, String commandType, String action)
+    public FormCellCommand(final String id, final String name, final String label, final String commandType, final String action)
     {
-        super(name, label, 1);
+        super(id, name, label, 1);
         
         this.type        = FormCell.CellType.command;
         this.commandType = commandType;

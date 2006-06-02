@@ -21,11 +21,14 @@
 package edu.ku.brc.specify.ui.validation;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.text.ParseException;
@@ -50,6 +53,7 @@ import edu.ku.brc.specify.ui.ColorWrapper;
 import edu.ku.brc.specify.ui.GetSetValueIFace;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.forms.UIFieldFormatterMgr;
+import edu.ku.brc.specify.ui.validation.UIValidatable.ErrorType;
 
 /**
  * A JTextField (wrapped inside a JPanel) that provides for "formatted" input. The format "mask" is define in XML
@@ -67,19 +71,19 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
 {
     private static Log log  = LogFactory.getLog(ValFormattedTextField.class);
 
-    protected boolean  isInError  = false;
-    protected boolean  isRequired = false;
-    protected boolean  isChanged  = false;
-    protected boolean  isNew      = false;
-    protected Color    bgColor    = null;
+    protected static ColorWrapper     valtextcolor       = null;
+    protected static ColorWrapper     requiredfieldcolor = null;
 
-    protected int      inputLen   = 0;
-    protected Object[] formatObj  = null;
+    protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
+    protected boolean                 isRequired = false;
+    protected boolean                 isChanged  = false;
+    protected boolean                 isNew      = false;
+    protected Color                   bgColor    = null;
 
-    protected JFormattedDoc document;
+    protected int                     requiredLength   = 0;
+    protected Object[]                formatObj  = null;
 
-    protected static ColorWrapper valtextcolor       = null;
-    protected static ColorWrapper requiredfieldcolor = null;
+    protected JFormattedDoc           document;
 
     protected UIFieldFormatterMgr.Formatter            formatter;
     protected List<UIFieldFormatterMgr.FormatterField> fields = null;
@@ -90,6 +94,13 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     protected Color  textColor = new Color(0,0,0,64);
     protected Insets inner;
 
+    /**
+     * Constructor
+     * @param formatterName the formatters name
+     */
+    protected ValFormattedTextField()
+    {
+    }
 
     /**
      * Constructor
@@ -107,15 +118,16 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         StringBuilder strBuf = new StringBuilder(32);
         for (UIFieldFormatterMgr.FormatterField field : fields)
         {
-            inputLen += field.getSize();
+            requiredLength += field.getSize();
             strBuf.append(field.getValue());
         }
         bgStr = strBuf.toString();
+        System.out.println("["+bgStr+"]");
         inner = getInsets();
 
-        this.setColumns(inputLen);
+        this.setColumns(requiredLength);
 
-        document = new JFormattedDoc(this, formatter, inputLen);
+        document = new JFormattedDoc(this, formatter, requiredLength);
         setDocument(document);
         addFocusListener(new FocusAdapter()
                 {
@@ -128,10 +140,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                     public void focusLost(FocusEvent e)
                     {
                         isNew = false;
-                        JTextField tf = (JTextField)e.getSource();
-                        String data = tf.getText();
-
-                        isInError = (isRequired && (StringUtils.isEmpty(data) || data.length() != inputLen));
+                        validateState();
                         repaint();
 
                     }
@@ -171,9 +180,9 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     {
         super.paint(g);
 
-        String      text = getText();
+        String text = getText();
 
-        if (text.length() < bgStr.length())
+        if (text != null && text.length() < bgStr.length())
         {
             FontMetrics fm   = g.getFontMetrics();
             int          w   = fm.stringWidth(text);
@@ -184,8 +193,12 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         }
 
 
-        if (!isNew && isInError() && isEnabled())
+        if (!isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
         {
+            log.info(getText()+" in error");
+            
+            Graphics2D g2d = (Graphics2D)g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); 
             Dimension dim = getSize();
             g.setColor(valtextcolor.getColor());
             g.drawRect(1, 1, dim.width-2, dim.height-2);
@@ -199,7 +212,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     {
         super.setEnabled(enabled);
 
-        setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+        //setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
     }
 
     /* (non-Javadoc)
@@ -218,8 +231,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
      */
     public boolean isOK()
     {
-        System.out.println("******* isOK "+(!isInError));
-        return !isInError;
+        return valState == UIValidatable.ErrorType.Valid;
     }
 
     //--------------------------------------------------
@@ -227,21 +239,28 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     //--------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.kui.brc.specify.validation.UIValidatable#isInError()
+     * @see edu.kui.brc.specify.validation.UIValidatable#valState()
      */
     public boolean isInError()
     {
-        return isInError;
+        System.out.println("["+getText()+"] "+valState);
+        return valState != UIValidatable.ErrorType.Valid;
     }
 
     /* (non-Javadoc)
-     * @see edu.kui.brc.specify.validation.UIValidatable#setInError(boolean)
+     * @see edu.ku.brc.specify.ui.validation.UIValidatable#getState()
      */
-    public void setInError(boolean isInError)
+    public ErrorType getState()
     {
-        this.isInError = isInError;
-        repaint();
+        return valState;
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.validation.UIValidatable#setState(edu.ku.brc.specify.ui.validation.UIValidatable.ErrorType)
+     */
+    public void setState(ErrorType state)
+    {
+        this.valState = state;
     }
 
     /* (non-Javadoc)
@@ -257,7 +276,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
      */
     public void setRequired(boolean isRequired)
     {
-        setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+        //setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
         this.isRequired = isRequired;
     }
 
@@ -282,15 +301,69 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
      */
     public void setAsNew(boolean isNew)
     {
+        this.isNew = isRequired ? isNew : false;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.validation.UIValidatable#reset()
+     */
+    public void reset()
+    {
+        setText("");
+        validateState();
+        valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
+        repaint();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.validation.UIValidatable#getValidatableUIComp()
+     */
+    public Component getValidatableUIComp()
+    {
+        return this;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.awt.Component#validate()
+     */
+    public UIValidatable.ErrorType validateState()
+    {
+        /*
+        int len = getText().length();
         if (isRequired)
         {
-            this.isNew = isNew;
+            if (len == 0)
+            {
+                valState = UIValidatable.ErrorType.Incomplete;
+                
+            } else if (len != requiredLength)
+            {
+                valState = UIValidatable.ErrorType.Error;
+            }
         } else
         {
-            this.isNew = false; // this shouldn't need to be done, but doing it just to be sure
+            valState = len != requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+        }*/
+        String data = getText();
+        if (isRequired) 
+        {
+            if (StringUtils.isEmpty(data))
+            {
+                valState = UIValidatable.ErrorType.Incomplete;
+            } else
+            {
+                valState = data.length() != requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+            }
+        } else
+        {
+            valState = data.length() != requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
         }
-    }
+        
+        System.out.println("#### validateState "+ getText()+"  "+data.length() +"  "+ requiredLength+"  "+valState);
 
+        return valState;
+    }
+    
     //--------------------------------------------------------
     // GetSetValueIFace
     //--------------------------------------------------------
@@ -319,7 +392,10 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
 
         setText(data);
 
-        this.isInError = (isRequired && (StringUtils.isEmpty(data) || data.length() != inputLen));
+        validateState();
+        
+        //this.valState = (isRequired && (StringUtils.isEmpty(data) || data.length() != requiredLength)) ? UIValidatable.ErrorType.Error :
+        //                UIValidatable.ErrorType.Valid;
 
         repaint();
     }
@@ -384,7 +460,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     {
         if (evt.getKey().equals("requiredfieldcolor"))
         {
-            setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+            //setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
         }
     }
 
@@ -479,7 +555,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
          */
         public void remove(int offset, int len)
         {
-            isInError = getLength() - len < inputLen;
+            valState = getLength() - len < requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
             try
             {
                 super.remove(offset, len);
@@ -504,18 +580,18 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                 {
                     // This way truncates incoming values
                     //int newLen = Math.min(str.length(), limit);
-                    //isInError = offset + newLen < inputLen;
+                    //valState = offset + newLen < requiredLength;
                     //super.insertString(offset, str.substring(0, newLen), attr);
 
-                    isInError = offset + str.length() < inputLen;
+                    valState = offset + str.length() < requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
                     super.insertString(offset, str, attr);
 
                 } else
                 {
-                    isInError = true;
+                    valState = UIValidatable.ErrorType.Error;
                     getToolkit().beep();
                 }
-                System.out.println("******* "+(isInError));
+                System.out.println("******* "+(valState));
                 return;
             }
 
@@ -526,8 +602,8 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                 if (!isCharOK(field, str))
                 {
                     getToolkit().beep();
-                    isInError = true;
-                    System.out.println("******* "+(isInError));
+                    valState = UIValidatable.ErrorType.Error;
+                    System.out.println("******* "+(valState));
                     return;
                 }
 
@@ -537,21 +613,19 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                     {
                         if (!isCharOK(fields[offset + 1], str))
                         {
-                            isInError = true;
+                            valState = UIValidatable.ErrorType.Error;
                             getToolkit().beep();
-                            System.out.println("******* "+(isInError));
                             return;
                         }
                         str = field.getValue() + str;
                     }
                 }
-                isInError = offset + str.length() < inputLen;
+                valState = offset + str.length() < requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
                 super.insertString(offset, str, attr);
             } else
             {
-                isInError = true;
+                valState = UIValidatable.ErrorType.Error;
             }
-            System.out.println("******* "+(isInError));
         }
     }
 }

@@ -125,7 +125,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
         {
             Viewable viewable = e.nextElement();
-            if (viewable.getValidator() != null && viewable.getValidator().hasChanged())
+            if (viewable.getValidator() != null && viewable.getValidator().hasChanged()) // XXX Not sure why it must have a validator ???
             {
                 viewable.getDataFromUI();
             }
@@ -248,7 +248,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public void addFormValidator(final FormValidator validator)
     {
-        //validator.addValidationListener(root);
         validator.addDataChangeListener(this);
         formValidators.add(validator);
 
@@ -403,6 +402,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         for (FormValidator validator : formValidators)
         {
+            log.info("*** "+validator.isFormValid()+"  "+validator.getName());
             if (!validator.isFormValid())
             {
                 return false;

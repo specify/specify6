@@ -39,19 +39,21 @@ public class FormCellPanel extends FormCell
     /**
      * Constructor
      * @param name the name
+     * @param id the id
      * @param colDef JGoodies column definition
      * @param rowDef JGoodies row definition
      * @param colspan the number of columns to span
      * @param rowspan the number of rows to span
      */
-    public FormCellPanel(final String            name,
+    public FormCellPanel(final String            id, 
+                         final String            name,
                          final String            panelType, 
                          final String            colDef, 
                          final String            rowDef,
                          final int               colspan, 
                          final int               rowspan)
     {
-        super(FormCell.CellType.panel, name, colspan, rowspan);
+        super(FormCell.CellType.panel, id, name, colspan, rowspan);
         this.panelType    = panelType;
         this.ignoreSetGet = true;
         this.colDef       = colDef;

@@ -223,7 +223,7 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
                 }
 
                 
-                altViewUI = new DropDownButtonStateful(labels, icons); 
+                altViewUI = new DropDownButtonStateful(labels, icons);
                 altViewUI.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent ae)
                     {
@@ -234,7 +234,7 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
                 List<JComponent> comps = new ArrayList<JComponent>();
                 if (altView.getMode() == AltView.CreationMode.Edit)
                 {
-                    saveBtn = new JButton(IconManager.getImage("Save"));
+                    saveBtn = new JButton(UICacheManager.getResourceString("Save"), IconManager.getImage("Save"));
                     saveBtn.setMargin(new Insets(1,1,1,1));
                     saveBtn.setEnabled(false);
                     saveBtn.addActionListener(new ActionListener() {
@@ -352,6 +352,11 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
     {
         if (formCell != null)
         {
+            if (controls.get(formCell.getId()) != null)
+            {
+                throw new RuntimeException("Two controls have the same id ["+formCell.getId()+"] "+formViewDef.getName());
+            }
+            
             if (controls.get(formCell.getName()) != null)
             {
                 throw new RuntimeException("Two controls have the same name ["+formCell.getName()+"] "+formViewDef.getName());
@@ -368,7 +373,13 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
                 scrollPane = null;
                 comp = control;
             }
-            controls.put(formCell.getName(), new FieldInfo(formCell, comp, scrollPane, controls.size()));
+            
+            controls.put(formCell.getId(), new FieldInfo(formCell, comp, scrollPane, controls.size()));
+            // Assumes they are always different, if not no harm no foal
+            //if (!formCell.getId().equals(formCell.getName()))
+            //{
+                controls.put(formCell.getName(), new FieldInfo(formCell, comp, scrollPane, controls.size()));
+            //}
         }
     }
 
@@ -384,7 +395,7 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
         {
             if (labels.get(formCell.getLabelFor()) != null)
             {
-                throw new RuntimeException("Two labels have the same name ["+formCell.getLabelFor()+"] "+formViewDef.getName());
+                throw new RuntimeException("Two labels have the same id ["+formCell.getLabelFor()+"] "+formViewDef.getName());
             }
             labels.put(formCell.getLabelFor(), new FieldInfo(formCell, label, null, controls.size()));
         }
@@ -427,23 +438,24 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
     {
         if (formCell != null)
         {
-            if (controls.get(formCell.getName()) != null)
+            if (controls.get(formCell.getId()) != null)
             {
-                throw new RuntimeException("Two controls have the same name ["+formCell.getName()+"] "+formViewDef.getName());
+                throw new RuntimeException("Two controls have the same id ["+formCell.getId()+"] "+formViewDef.getName());
             }
 
-            controls.put(formCell.getName(), new FieldInfo(formCell, subView, controls.size()));
+            controls.put(formCell.getId(), new FieldInfo(formCell, subView, controls.size()));
             kids.add(subView);
         }
     }
 
     /**
-     * Sest the form validator
+     * Se the form validator
      * @param validator the validator
      */
     public void setValidator(final FormValidator validator)
     {
         this.validator = validator;
+        log.info(formViewDef.getName()+ " validator: "+validator);
 
         if (validator != null && mvParent != null)
         {
@@ -452,6 +464,7 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
             {
                 root = root.getMultiViewParent();
             }
+            validator.addValidationListener(root);
             root.addFormValidator(validator);
         }
     }
@@ -760,11 +773,18 @@ public class FormViewObj implements Viewable, ResultSetControllerListener, Prefe
         return mvParent != null;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.forms.Viewable#getCompById(java.lang.String)
+     */
+    public Component getCompById(final String id)
+    {
+        return controls.get(id).getComp();
+    }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.forms.Viewable#getComp(java.lang.String)
+     * @see edu.ku.brc.specify.ui.forms.Viewable#getCompByName(java.lang.String)
      */
-    public Component getComp(final String name)
+    public Component getCompByName(final String name)
     {
         return controls.get(name).getComp();
     }

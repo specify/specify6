@@ -16,7 +16,7 @@ import org.jdesktop.animation.timing.Envelope;
 import org.jdesktop.animation.timing.TimingController;
 import org.jdesktop.animation.timing.TimingTarget;
 
-import com.jhlabs.image.TwirlFilter;
+//import com.jhlabs.image.TwirlFilter;
 
 @SuppressWarnings("serial")
 public class ImageSwirlPanel extends JPanel implements TimingTarget {
@@ -56,6 +56,7 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
         for( int i = 1; i < frames.length; ++i ) {
             frames[i] = new BufferedImage(origWidth,origHeight,BufferedImage.TYPE_INT_ARGB);
         }
+        /*
 
         // initialize the filter
         TwirlFilter filter = new TwirlFilter();
@@ -70,6 +71,7 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
             filter.setAngle(angle);
             filter.filter(frames[i-1],frames[i]);
         }
+  */    
 
 //        OpacityFilter filter = new OpacityFilter();
 //        filter.setOpacity(0);

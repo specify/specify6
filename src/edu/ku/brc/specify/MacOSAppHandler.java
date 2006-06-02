@@ -65,4 +65,5 @@ public class MacOSAppHandler extends Application
             event.setHandled(true);
          }
     }
+    
 }

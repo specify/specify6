@@ -55,6 +55,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
 {
     private static Log log = LogFactory.getLog(FormValidator.class);
 
+    private String name = ""; // Optional for debugging
+    
     // Form validation
     protected JexlContext jc  = null;
     protected Expression  exp = null;
@@ -169,12 +171,12 @@ public class FormValidator implements ValidationListener, DataChangeListener
         boolean debug = false;
         if (debug)
         {
-            log.info("****** processFormRules  ");
+            log.info(name+" ****** processFormRules  ");
             Map map = jc.getVars();
             Object[] keys = map.keySet().toArray();
             for (Object key : keys)
             {
-                log.info("### ["+key+"]["+map.get(key).getClass().toString()+"]");
+                log.info(name+" ### ["+key+"]["+map.get(key).getClass().toString()+"]");
             }
         }
 
@@ -184,13 +186,13 @@ public class FormValidator implements ValidationListener, DataChangeListener
             {
                 // Now evaluate the expression, getting the result
                 boolean result = rule.evaluate(jc);
-                log.info("Result "+result+" for "+rule.getName()+"  ["+((RuleExpression)rule).expression.getExpression()+"]");
+                log.info(name+" Result "+result+" for "+rule.getName()+"  ["+((RuleExpression)rule).expression.getExpression()+"]");
                 if (rule.getScope() == FormValidationRuleIFace.Scope.Field)
                 {
                     Component comp = getComp(rule.getName());
                     if (comp != null)
                     {
-                        log.info("comp.setEnabled("+result+") "+comp.getClass().toString());
+                        log.info(name+" comp.setEnabled("+result+") "+comp.getClass().toString());
                         comp.setEnabled(result);
                     }
 
@@ -208,7 +210,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
             } catch (Exception ex)
             {
-                log.error(ex);
+                log.error(name+" "+ex.toString());
                 formIsOK = false;
                 //ex.printStackTrace();
             }
@@ -367,7 +369,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
         fields.put(name, comp);
         addRuleObjectMapping(name, comp);
 
-        log.info("Adding ["+name+"]["+comp.getClass().toString()+"] to validator.");
+        log.info(name+" Adding ["+name+"]["+comp.getClass().toString()+"] to validator.");
 
         return comp;
     }
@@ -443,9 +445,11 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     protected void checkForValidForm()
     {
-        if (hasChanged)
-        {
+        //log.info(name+" checkForValidForm -> hasChanged "+hasChanged);
+        //if (hasChanged)
+        //{
             isFormValid = processFormRules();
+            log.info(name+" checkForValidForm -> isFormValid - processFormRules "+isFormValid);
 
             if (isFormValid)
             {
@@ -454,6 +458,10 @@ public class FormValidator implements ValidationListener, DataChangeListener
                     if (uiv.isInError())
                     {
                         isFormValid = false;
+                        if (uiv.getComp() instanceof ValComboBox)
+                        {
+                            System.out.println(((ValComboBox)uiv.getComp()).getValue());
+                        }
                         break; // at the first sign of an error
                     }
                 }
@@ -467,7 +475,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
                     }
                 }*/
             }
-        }
+        //}
         turnOnOKButton(hasChanged && isFormValid);
     }
 
@@ -630,9 +638,28 @@ public class FormValidator implements ValidationListener, DataChangeListener
         valListeners.remove(l);
     }
 
+    /**
+     * Returns the name of the validator (optional)
+     * @return the name of the validator (optional)
+     */
+    public String getName()
+    {
+        return name;
+    }
+
+    /**
+     * Sets the name of the validator (optional for debugging)
+     * @param name the name
+     */
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+    
     //-----------------------------------------------------
     // ValidationListener
     //-----------------------------------------------------
+
 
     /**
      * Helper methods for turning on the "default" OK button after a validation was completed.
@@ -640,7 +667,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     protected void turnOnOKButton(final boolean itsOKToEnable)
     {
-        log.info("hasChanged "+hasChanged+"  itsOKToEnable "+itsOKToEnable);
+        log.info(name+" hasChanged "+hasChanged+"  itsOKToEnable "+itsOKToEnable+ " hasBtn: " + (okBtn != null));
 
         if (okBtn != null)
         {
@@ -653,6 +680,11 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void wasValidated(final UIValidator validator)
     {
+        if (name.equals("Accession"))
+        {
+            int x = 0;
+            x++;
+        }
         // When the form has been asked manually to be validated then ignore the notifications
         if (!ignoreValidationNotifications)
         {
@@ -674,11 +706,22 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void dataChanged(final String name, final Component comp, DataChangeNotifier dcn)
     {
+
         if (!okToDataChangeNotification)
         {
             return;
         }
-
+        
+        if (name.equals("Accession"))
+        {
+            int x = 0;
+            x++;
+        }
+        if (name.equals("AccessionAgent"))
+        {
+            int x = 0;
+            x++;
+        }
         //log.debug("DataChangeListener "+name + " was changed");
 
         // Here is the big assumption:

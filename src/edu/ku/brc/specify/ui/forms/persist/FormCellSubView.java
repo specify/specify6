@@ -38,6 +38,7 @@ public class FormCellSubView extends FormCell
     
     /**
      * Constructor
+     * @param id unique id
      * @param name name of field for this view
      * @param viewSetName name of view set that this subview is referencing
      * @param viewName the name of the view within the view set
@@ -47,6 +48,7 @@ public class FormCellSubView extends FormCell
      * @param singleValueFromSet althught the data might be a "Set" pass in only the first data obj from the set
      */
     public FormCellSubView(final String name, 
+                           final String id,
                            final String viewSetName, 
                            final String viewName, 
                            final String classDesc, 
@@ -54,7 +56,7 @@ public class FormCellSubView extends FormCell
                            final int    rowspan,
                            final boolean singleValueFromSet)
     {
-        super(CellType.subview, name, colspan, rowspan);
+        super(CellType.subview, id, name, colspan, rowspan);
         this.viewName    = viewName;
         this.classDesc   = classDesc;
         this.viewSetName = viewSetName;

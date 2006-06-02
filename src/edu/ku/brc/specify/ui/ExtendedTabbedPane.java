@@ -44,6 +44,8 @@ public class ExtendedTabbedPane extends JTabbedPane
     
     protected void init()
     {
+        setBackground(Color.WHITE);
+        
         itself = this;
         
         MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {

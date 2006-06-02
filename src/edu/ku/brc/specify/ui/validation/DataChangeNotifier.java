@@ -187,7 +187,7 @@ public class DataChangeNotifier implements FocusListener,
         {
             UIValidatable uiv = (UIValidatable)comp;
             uiv.setChanged(false);
-            uiv.setInError(false);
+            uiv.setState(UIValidatable.ErrorType.Valid);
             
         } else
         {
@@ -288,6 +288,15 @@ public class DataChangeNotifier implements FocusListener,
         notifyDataChangeListeners();
     }
     
+    /**
+     * Helper function to return the UIValidator's type if it has a UIV, if not it returns 'None' 
+     * @return the UIValidator's type if it has a UIV, if not it returns 'None' 
+     */
+    public UIValidator.Type getValidationType()
+    {
+        return uiv != null ? uiv.getType() :  UIValidator.Type.None;
+    }
+    
     //---------------------------
     // FocusListener
     //---------------------------
@@ -309,6 +318,11 @@ public class DataChangeNotifier implements FocusListener,
     public void focusLost(FocusEvent e)
     {
         //log.info("["+((JTextComponent)comp).getText()+"]["+cachedData+"]");
+
+        if (uiv != null && uiv.getType() == UIValidator.Type.Focus)
+        {
+            uiv.validate();
+        }
         
         if (comp instanceof UIValidatable)
         {
@@ -326,10 +340,6 @@ public class DataChangeNotifier implements FocusListener,
         }
         
 
-        if (uiv != null && uiv.getType() == UIValidator.Type.Focus)
-        {
-            uiv.validate();
-        }
 
     }
     

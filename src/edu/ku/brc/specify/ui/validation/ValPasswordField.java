@@ -20,8 +20,11 @@
 
 package edu.ku.brc.specify.ui.validation;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.prefs.PreferenceChangeEvent;
@@ -46,7 +49,7 @@ import edu.ku.brc.specify.ui.UICacheManager;
 @SuppressWarnings("serial")
 public class ValPasswordField extends JPasswordField implements UIValidatable, DocumentListener, PreferenceChangeListener
 {
-    protected boolean isInError   = false;
+    protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
     protected boolean isRequired  = false;
     protected boolean isChanged   = false;    
     protected boolean isEncrypted = false;
@@ -120,8 +123,10 @@ public class ValPasswordField extends JPasswordField implements UIValidatable, D
     {
         super.paint(g);
         
-        if (!isNew && isInError() && isEnabled())
+        if (!isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
         {
+            Graphics2D g2d = (Graphics2D)g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); 
             Dimension dim = getSize();
             g.setColor(valtextcolor.getColor());
             g.drawRect(1, 1, dim.width-2, dim.height-2);
@@ -164,7 +169,7 @@ public class ValPasswordField extends JPasswordField implements UIValidatable, D
     {
         this.isEncrypted = isEncrypted;
     }
-
+    
     //--------------------------------------------------
     //-- UIValidatable Interface
     //--------------------------------------------------
@@ -174,17 +179,23 @@ public class ValPasswordField extends JPasswordField implements UIValidatable, D
      */
     public boolean isInError()
     {
-        return isInError;
+        return valState != UIValidatable.ErrorType.Valid;
     }
 
     /* (non-Javadoc)
-     * @see edu.kui.brc.specify.validation.UIValidatable#setInError(boolean)
+     * @see edu.ku.brc.specify.ui.validation.UIValidatable#getState()
      */
-    public void setInError(boolean isInError)
+    public ErrorType getState()
     {
-        this.isInError = isInError;
-        repaint();
+        return valState;
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.validation.UIValidatable#setState(edu.ku.brc.specify.ui.validation.UIValidatable.ErrorType)
+     */
+    public void setState(ErrorType state)
+    {
+        this.valState = state;
     }
 
     /* (non-Javadoc)
@@ -220,18 +231,40 @@ public class ValPasswordField extends JPasswordField implements UIValidatable, D
         this.isChanged = isChanged;
     }
     
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.validation.UIValidatable#setAsNew(boolean)
      */
     public void setAsNew(boolean isNew)
     {
-        if (isRequired)
-        {
-            this.isNew = isNew;
-        } else
-        {
-            this.isNew = false; // this shouldn't need to be done, but doing it just to be sure
-        }
+        this.isNew = isRequired ? isNew : false;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.awt.Component#validate()
+     */
+    public UIValidatable.ErrorType validateState()
+    {
+        valState = isRequired && getText().length() == 0 ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
+        return valState;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.validation.UIValidatable#reset()
+     */
+    public void reset()
+    {
+        setText("");
+        valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
+        repaint();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.validation.UIValidatable#getValidatableUIComp()
+     */
+    public Component getValidatableUIComp()
+    {
+        return this;
     }
     
     //--------------------------------------------------------

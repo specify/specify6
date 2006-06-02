@@ -20,12 +20,14 @@
 package edu.ku.brc.specify.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.border.EmptyBorder;
@@ -42,24 +44,27 @@ import javax.swing.border.EmptyBorder;
 @SuppressWarnings("serial")
 public class DropDownButtonStateful extends DropDownButton
 {
-    protected ImageIcon[]            imgIcons    = null;
-    protected String                 currLabel   = null;
-    protected int                    currInx     = 0;     
+    protected ImageIcon[]            imgIcons      = null;
+    protected String[]               labels        = null;
+    protected String                 currLabel     = null;
+    protected int                    currInx       = 0;
+    protected Dimension              preferredSize = null;
     
     /**
      * Constructs a UI component with a label and an icon which can be clicked to execute an action
      * @param label the text labels for the UI
      * @param imgIcon the icon for the UI
      */
-    public DropDownButtonStateful(final String[] labels, final ImageIcon[] imgIcons)
+    public DropDownButtonStateful(final String[]    labels, 
+                                  final ImageIcon[] imgIcons)
     {
-       super(imgIcons[0]);
+       super(labels[0], imgIcons[0], JButton.CENTER);
        
         setBorder(new EmptyBorder(new Insets(1,1,1,1)));
         setLayout(new BorderLayout());
        
-        currInx = 0;
-        this.imgIcons    = imgIcons;
+        this.imgIcons = imgIcons;
+        this.labels   = labels;
         
         ActionListener actionListener = new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
@@ -80,7 +85,7 @@ public class DropDownButtonStateful extends DropDownButton
             menus.add(menuItem);
         }
         
-        init(null, imgIcons[0]);
+        init(labels[0], imgIcons[0]);
         
         mainBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
@@ -93,7 +98,42 @@ public class DropDownButtonStateful extends DropDownButton
                 setCurrentIndex(currInx);
             }
         });
+        setCurrentIndex(0);
     }
+    
+    /**
+     * Returns the next index in the stateful button which means we wrap around to zero
+     * @return he next index in the stateful button which means we wrap around to zero
+     */
+    protected int getNextIndex()
+    {
+        return (currInx+ 1) % labels.length;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.awt.Component#getPreferredSize()
+     */
+    /*public Dimension getPreferredSize()
+    {
+        if (preferredSize == null)
+        {
+            this.validate();
+            preferredSize = super.getPreferredSize();
+            for (int i=0;i<labels.length;i++)
+            {
+                mainBtn.setIcon(imgIcons[i]);
+                mainBtn.setText(labels[i]);
+                this.validate();
+                doLayout();
+    
+                Dimension s = super.getPreferredSize();
+                System.out.println(s);
+                preferredSize.width = Math.max(s.width, preferredSize.width);
+                preferredSize.height = Math.max(s.height, preferredSize.height);
+            }
+        }
+        return preferredSize;
+    }*/
     
     /**
      * Sets Current Index
@@ -102,7 +142,9 @@ public class DropDownButtonStateful extends DropDownButton
     public void setCurrentIndex(final int index)
     {
         currInx = index;
-        mainBtn.setIcon(imgIcons[currInx]);
+        int nxtInx = getNextIndex();
+        mainBtn.setIcon(imgIcons[nxtInx]);
+        mainBtn.setText(labels[nxtInx]);
     }
     
     /**

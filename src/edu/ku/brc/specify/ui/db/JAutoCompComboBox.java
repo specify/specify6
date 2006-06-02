@@ -50,7 +50,7 @@ public class JAutoCompComboBox extends JComboBox
     protected boolean            enableAdditions = true;
     protected boolean            caseInsensitve  = true;
 
-    protected JTextField         tf              = null;
+    protected JTextField         textField       = null;
     protected boolean            foundMatch      = false;
     protected boolean            ignoreFocus     = false;
     protected boolean            askBeforeSave   = false;
@@ -124,7 +124,7 @@ public class JAutoCompComboBox extends JComboBox
      */
     public JTextField getTextField()
     {
-        return tf;
+        return textField;
     }
     
     /**
@@ -160,9 +160,9 @@ public class JAutoCompComboBox extends JComboBox
     public void setBackground(Color bgColor)
     {
         super.setBackground(bgColor);
-        if (tf != null)
+        if (textField != null)
         {
-            tf.setBackground(bgColor);
+            textField.setBackground(bgColor);
         }
     }
 
@@ -177,9 +177,9 @@ public class JAutoCompComboBox extends JComboBox
             Object item = getItemAt(index);
             if (item instanceof PickListItem)
             {
-    	        tf.setText(((PickListItem)item).getTitle());
-    	        tf.setSelectionEnd(caretPos + tf.getText().length());
-    	        tf.moveCaretPosition(caretPos);
+    	        textField.setText(((PickListItem)item).getTitle());
+    	        textField.setSelectionEnd(caretPos + textField.getText().length());
+    	        textField.moveCaretPosition(caretPos);
             }
         }
     }
@@ -231,23 +231,23 @@ public class JAutoCompComboBox extends JComboBox
     {
         if (getSelectedIndex() != -1) // accepting value and setting the selection to null 
         {
-            tf.setSelectionStart(0);
-            tf.setSelectionEnd(0);
-            tf.moveCaretPosition(0);
+            textField.setSelectionStart(0);
+            textField.setSelectionEnd(0);
+            textField.moveCaretPosition(0);
             
         } else
         {
             // Need to add a new value
             if (enableAdditions)
             {
-	            if (askToAdd(tf.getText()))
+	            if (askToAdd(textField.getText()))
 	            {
-	                tf.setSelectionStart(0);
-	                tf.setSelectionEnd(0);
-	                tf.moveCaretPosition(0);	                                    
+	                textField.setSelectionStart(0);
+	                textField.setSelectionEnd(0);
+	                textField.moveCaretPosition(0);	                                    
 	            } else 
 	            {
-	                tf.setText("");
+	                textField.setText("");
 	            }
             }
         }        
@@ -258,7 +258,7 @@ public class JAutoCompComboBox extends JComboBox
      */
     protected void lookForMatch()
     {
-        String s   = tf.getText();
+        String s   = textField.getText();
         int    len = s.length();
         if (len == 0)
         {
@@ -268,11 +268,11 @@ public class JAutoCompComboBox extends JComboBox
         }
         
         //System.out.println(s);
-        caretPos = tf.getCaretPosition();
+        caretPos = textField.getCaretPosition();
         String text = "";
         try
         {
-            text = tf.getText(0, caretPos);
+            text = textField.getText(0, caretPos);
             
         } catch (BadLocationException ex)
         {
@@ -307,7 +307,7 @@ public class JAutoCompComboBox extends JComboBox
         // so remove the last character typed and check to see if there is a match again.
         if (!enableAdditions && len > 0)
         {
-            tf.setText(s.substring(0, len-1));
+            textField.setText(s.substring(0, len-1));
             lookForMatch();
             return;
         }
@@ -322,9 +322,9 @@ public class JAutoCompComboBox extends JComboBox
         super.setEditor(anEditor);
         if (anEditor.getEditorComponent() instanceof JTextField)
         {
-            tf = (JTextField) anEditor.getEditorComponent();
-            tf.setBackground(super.getBackground());
-            tf.addFocusListener(new FocusAdapter() 
+            textField = (JTextField) anEditor.getEditorComponent();
+            textField.setBackground(super.getBackground());
+            textField.addFocusListener(new FocusAdapter() 
             {
                 public void focusLost(FocusEvent e)
                 {
@@ -332,14 +332,14 @@ public class JAutoCompComboBox extends JComboBox
                 }
             });
             
-            //System.out.println(tf.getKeyListeners());
-            tf.addKeyListener(new KeyAdapter()
+            //System.out.println(textField.getKeyListeners());
+            textField.addKeyListener(new KeyAdapter()
             {
                 protected int prevCaretPos = -1;
                 
                 public void keyPressed(KeyEvent ev)
                 {
-                    prevCaretPos = tf.getCaretPosition();
+                    prevCaretPos = textField.getCaretPosition();
                 }
                 
                 public void keyReleased(KeyEvent ev)
@@ -347,7 +347,7 @@ public class JAutoCompComboBox extends JComboBox
                     char key = ev.getKeyChar();
                     if (ev.getKeyCode() == KeyEvent.VK_BACK_SPACE)
                     {
-                        String textStr = tf.getText();
+                        String textStr = textField.getText();
                         int    len     = textStr.length();
                         if (len == 0)
                         {
@@ -359,11 +359,11 @@ public class JAutoCompComboBox extends JComboBox
                         {
                             if (foundMatch)
                             {
-                                tf.setText(textStr.substring(0, len-1));
+                                textField.setText(textStr.substring(0, len-1));
                                 
                             } else if (!enableAdditions && len > 0)
                             {
-                                tf.setText(textStr.substring(0, len-1));
+                                textField.setText(textStr.substring(0, len-1));
                                 lookForMatch();
                                 return;
                             }
@@ -378,8 +378,8 @@ public class JAutoCompComboBox extends JComboBox
                             
                         } else if (ev.getKeyCode() == KeyEvent.VK_END)
                         {
-                            tf.setSelectionStart(prevCaretPos);
-                            tf.setSelectionEnd(tf.getText().length());
+                            textField.setSelectionStart(prevCaretPos);
+                            textField.setSelectionEnd(textField.getText().length());
                         }
                         return;
                     }

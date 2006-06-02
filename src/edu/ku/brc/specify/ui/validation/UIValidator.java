@@ -23,12 +23,6 @@ package edu.ku.brc.specify.ui.validation;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Component;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Map;
 import java.util.Vector;
 
@@ -39,13 +33,14 @@ import org.apache.commons.jexl.ExpressionFactory;
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 /**
  *  Validates a single UI Component the component is to be referred to in the validation script as "obj"
  *
  * @author rods
  *
  */
-public class UIValidator implements FocusListener, KeyListener, PropertyChangeListener
+public class UIValidator 
 {
     public enum Type {None, Focus, Changed, OK};
 
@@ -161,22 +156,24 @@ public class UIValidator implements FocusListener, KeyListener, PropertyChangeLi
         // If it isn't enabled than don't validate it
         if (!comp.isEnabled())
         {
-            uiv.setInError(false);
             return true;
         }
 
-        boolean isInError   = false;
-        boolean isTextField = comp instanceof JTextField;
+        UIValidatable.ErrorType errorState = UIValidatable.ErrorType.Valid;
+        
+        boolean isTextField = (uiv != null && uiv.getValidatableUIComp() instanceof JTextField) || comp instanceof JTextField;
 
          // If it is required then it MUST have a value or it is in error
-        if (uiv != null && uiv.isRequired() && isTextField && ((JTextField)comp).getText().length() == 0)
+        if (uiv != null)
         {
-            isInError = true;
-            uiv.setInError(isInError);
+            errorState = uiv.validateState();
         }
 
         // Skip processing the field if it is already in error as a required field
-        if (!isInError && isTextField && jc != null && exp != null)
+        if (errorState ==  UIValidatable.ErrorType.Valid && 
+            isTextField && 
+            jc != null && 
+            exp != null)
         {
             try
             {
@@ -191,7 +188,7 @@ public class UIValidator implements FocusListener, KeyListener, PropertyChangeLi
                 log.info("** "+exp.getExpression()+"  "+result+"  "+(result != null ? result.getClass().toString() : ""));
                 if (result instanceof Boolean)
                 {
-                    isInError = !((Boolean)result).booleanValue();
+                    errorState = ((Boolean)result).booleanValue() ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error;
                 }
 
             } catch (Exception e)
@@ -202,14 +199,16 @@ public class UIValidator implements FocusListener, KeyListener, PropertyChangeLi
 
             if (uiv != null)
             {
-                uiv.setInError(isInError);
+                uiv.setState(errorState);
             }
         }
 
+        // XXX This isn't right, this needs some rethinking
+        
         // Don't notify any of the listeners if we are validating it for an OK button
         if (isTextField && uiv.isRequired())
         {
-            uiv.setInError(isInError);
+            uiv.setState(errorState);
             notifyValidationListeners();
 
         } else if (type != Type.OK)
@@ -217,7 +216,7 @@ public class UIValidator implements FocusListener, KeyListener, PropertyChangeLi
             notifyValidationListeners();
         }
 
-        return !isInError;
+        return errorState == UIValidatable.ErrorType.Valid;
     }
 
     /**
@@ -266,46 +265,6 @@ public class UIValidator implements FocusListener, KeyListener, PropertyChangeLi
     public void setJc(JexlContext jc)
     {
         this.jc = jc;
-    }
-
-    //----------------------------------------
-    // FocusListener
-    //----------------------------------------
-    public void focusGained(FocusEvent e)
-    {
-        validate();
-    }
-
-    public void focusLost(FocusEvent e)
-    {
-        validate();
-    }
-
-    //----------------------------------------
-    // KeyListener
-    //----------------------------------------
-    public void keyPressed(KeyEvent e)
-    {
-
-    }
-
-    public void keyReleased(KeyEvent e)
-    {
-        validate();
-    }
-
-    public void keyTyped(KeyEvent e)
-    {
-        //validate();
-    }
-
-    //----------------------------------------
-    // PropertyChangeListener
-    //----------------------------------------
-    public void propertyChange(PropertyChangeEvent evt)
-    {
-
-        //System.out.println(evt);
     }
 
     /**

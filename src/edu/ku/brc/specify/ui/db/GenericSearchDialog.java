@@ -245,7 +245,7 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
         form.getFieldNames(fieldNames);
         for (String fieldName : fieldNames)
         {
-            Component comp = form.getComp(fieldName);
+            Component comp = form.getCompByName(fieldName);
             if (comp instanceof JTextField)
             {
                 ((JTextField)comp).addActionListener(doQuery);
@@ -310,7 +310,7 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
         form.getFieldNames(fieldNames);
         for (String fieldName : fieldNames)
         {
-            Component comp = form.getComp(fieldName);
+            Component comp = form.getCompByName(fieldName);
             if (comp instanceof JTextField)
             {
                 ((JTextField)comp).setEnabled(enabled);

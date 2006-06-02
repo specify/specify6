@@ -23,10 +23,10 @@
                   <![CDATA[create temporary table Families1 select TaxonID from determination where IsCurrent <> 0]]>
                 </statement>
                 <statement>
-                  <![CDATA[create temporary table Families2 select DISTINCT tax.TreeID,tax.nodenumber from Families1,taxon as tax where tax.accepted <> 0 and tax.TreeID = Families1.TaxonID]]>
+                  <![CDATA[create temporary table Families2 select DISTINCT tax.TaxonID,tax.nodenumber from Families1,taxon as tax where tax.accepted <> 0 and tax.TaxonID = Families1.TaxonID]]>
                 </statement>
                <statement>
-                  <![CDATA[create temporary table Families3 select DISTINCT tx.TreeID from Families2, taxon as tx where tx.rankid = 140 and Families2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>
+                  <![CDATA[create temporary table Families3 select DISTINCT tx.TaxonID from Families2, taxon as tx where tx.rankid = 140 and Families2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>
                 </statement>
                 <statement row="1" col="1">
                   <![CDATA[select count(*) from Families3]]>
@@ -48,10 +48,10 @@
                   <![CDATA[create temporary table Genera1 select TaxonID from determination where IsCurrent <> 0]]>
                 </statement>
                 <statement>
-                  <![CDATA[create temporary table Genera2 select DISTINCT tax.TreeID,tax.nodenumber from Genera1,taxon as tax where tax.accepted <> 0 and tax.TreeID = Genera1.TaxonID]]>
+                  <![CDATA[create temporary table Genera2 select DISTINCT tax.TaxonID,tax.nodenumber from Genera1,taxon as tax where tax.accepted <> 0 and tax.TaxonID = Genera1.TaxonID]]>
                 </statement>
                <statement>
-                  <![CDATA[create temporary table Genera3 select DISTINCT tx.TreeID from Genera2, taxon as tx where tx.rankid = 180 and Genera2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>
+                  <![CDATA[create temporary table Genera3 select DISTINCT tx.TaxonID from Genera2, taxon as tx where tx.rankid = 180 and Genera2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>
                 </statement>
                 <statement row="1" col="1">
                   <![CDATA[select count(*) from Genera3]]>
@@ -73,10 +73,10 @@
                   <![CDATA[create temporary table Species1 select TaxonID from determination where IsCurrent <> 0]]>
                 </statement>
                 <statement>
-                  <![CDATA[create temporary table Species2 select DISTINCT tax.TreeID,tax.nodenumber from Species1,taxon as tax where tax.accepted <> 0 and tax.TreeID = Species1.TaxonID]]>
+                  <![CDATA[create temporary table Species2 select DISTINCT tax.TaxonID,tax.nodenumber from Species1,taxon as tax where tax.accepted <> 0 and tax.TaxonID = Species1.TaxonID]]>
                 </statement>
                <statement>
-                  <![CDATA[create temporary table Species3 select DISTINCT tx.TreeID from Species2, taxon as tx where tx.rankid = 220 and Species2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>
+                  <![CDATA[create temporary table Species3 select DISTINCT tx.TaxonID from Species2, taxon as tx where tx.rankid = 220 and Species2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>
                 </statement>
                 <statement row="1" col="1">
                   <![CDATA[select count(*) from Species3]]>
@@ -93,7 +93,7 @@
             </sql>
         </item>
         <item title="Taxa in Collection" useprogress="true">
-            <sql><statement><![CDATA[select count(TreeId) AS TaxaInCollectionCount from taxon where TreeId in (select TaxonId from determination where IsCurrent <> 0)]]></statement></sql>
+            <sql><statement><![CDATA[select count(TaxonID) AS TaxaInCollectionCount from taxon where TaxonID in (select TaxonId from determination where IsCurrent <> 0)]]></statement></sql>
         </item>
       </box>
       <box title="Data Entry">
@@ -133,7 +133,7 @@
             <sql><statement><![CDATA[select count(*) from geography]]></statement></sql>
         </item>
         <item title="Number of Countries" useprogress="true">
-            <sql><statement><![CDATA[select count(Name) from (select DISTINCT Name from (select g.TreeId,g.nodenumber from locality as l inner join geography as g on l.GeographyID = g.TreeId) as GEO, geography as g where g.rankid = 200 and GEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber) As GEO2]]></statement></sql>
+            <sql><statement><![CDATA[select count(Name) from (select DISTINCT Name from (select g.GeographyID,g.nodenumber from locality as l inner join geography as g on l.GeographyID = g.GeographyID) as GEO, geography as g where g.rankid = 200 and GEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber) As GEO2]]></statement></sql>
         </item>
         <item title="Percent Geo Referenced">
             <sql><statement><![CDATA[select CASE WHEN (select count(*) from locality) = 0 THEN 0 ELSE ((count(localityid) * 1.0) / ((select count(*) from locality) * 1.0)) * 100.0 END AS PercentGeoReferencedLocalities from locality where not latitude1 is null]]></statement></sql>
@@ -178,7 +178,7 @@
 
 <!--
     This is the Total Number of Countries Used by all the Localities
-    select count(Name) from (select DISTINCT Name from (select g.TreeId,g.nodenumber from locality as l inner join geography as g on l.GeographyID = g.TreeId) as GEO, geography as g where g.rankid = 200 and GEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber) As GEO2
+    select count(Name) from (select DISTINCT Name from (select g.GeographyID,g.nodenumber from locality as l inner join geography as g on l.GeographyID = g.GeographyID) as GEO, geography as g where g.rankid = 200 and GEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber) As GEO2
     
     
 -->

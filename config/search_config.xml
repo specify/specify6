@@ -13,7 +13,7 @@
     </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[Select collectionobject.CollectionObjectID, collectionobject.CatalogNumber, collectionobject.CatalogedDate, taxon.FullTaxon From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TreeID = determination.TaxonID]]>
+	        <![CDATA[Select collectionobject.CollectionObjectID, collectionobject.CatalogNumber, collectionobject.CatalogedDate, taxon.FullTaxon From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TaxonID = determination.TaxonID]]>
 	    </sql>
 	    <cols>
 	       <col>1</col>
@@ -108,7 +108,7 @@
     </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[select TreeID,Name,CommonName from taxon;]]>
+	        <![CDATA[select TaxonID,Name,CommonName from taxon;]]>
 	    </sql>
 	    <cols>
 	       <col>1</col>
@@ -118,12 +118,12 @@
 	</index>
     <detailView icon="Taxon">
 	    <sql>
-	        <![CDATA[select Name,CommonName,TreeID from taxon where TreeID in (%s)]]>
+	        <![CDATA[select Name,CommonName,TaxonID from taxon where TaxonID in (%s)]]>
 	    </sql>
         <captions>
             <caption col="Name" text="Taxon Name"/>
             <caption col="CommonName" text="Common Name"/>
-            <caption col="TreeID" text="Taxon ID" visible="false"/>
+            <caption col="TaxonID" text="Taxon ID" visible="false"/>
         </captions>
         <recordset tabletype="4" col="3"/>
 	</detailView>
@@ -267,7 +267,7 @@
  collectionobject
  Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
  Inner Join agent ON determination.DeterminerID = agent.AgentID
- Inner Join taxon ON determination.TaxonID = taxon.TreeID where determination.IsCurrent <> 0]]>
+ Inner Join taxon ON determination.TaxonID = taxon.TaxonID where determination.IsCurrent <> 0]]>
 	    </sql>
 	    <cols>
 	        <col>1</col>
@@ -289,7 +289,7 @@
  collectionobject
  Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
  Inner Join agent ON determination.DeterminerID = agent.AgentID
- Inner Join taxon ON determination.TaxonID = taxon.TreeID where determination.IsCurrent <> 0) as tx
+ Inner Join taxon ON determination.TaxonID = taxon.TaxonID where determination.IsCurrent <> 0) as tx
  where tx.CollectionObjectID in (%s)]]>
 	    </sql>
         <captions>

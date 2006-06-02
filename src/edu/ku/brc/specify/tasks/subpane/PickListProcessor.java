@@ -114,24 +114,24 @@ public class PickListProcessor implements FormProcessor
             Viewable = formPane.getViewable();
             pickList     = (PickList)Viewable.getDataObj();
 
-            name  = (JTextField)Viewable.getComp("name");
-            list  = (JList)Viewable.getComp("items");
-            title = (JTextField)Viewable.getComp("title");
-            value = (JTextField)Viewable.getComp("value");
+            name  = (JTextField)Viewable.getCompByName("name");
+            list  = (JList)Viewable.getCompByName("items");
+            title = (JTextField)Viewable.getCompByName("title");
+            value = (JTextField)Viewable.getCompByName("value");
 
             list.setModel(new AbstractListModel() {
                 public int getSize() { return usedInList.size(); }
                 public Object getElementAt(int index) { return usedInList.get(index); }
             });
 
-            JButton saveBtn = (JButton) Viewable.getComp("savePL");
+            JButton saveBtn = (JButton) Viewable.getCompByName("savePL");
             Viewable.getValidator().registerOKButton(saveBtn);
 
             //Viewable.getValidator().addRuleObjectMapping("titleVal", new TitleValidator(name, titlesList));
             Viewable.getValidator().addRuleObjectMapping("processor", this);
 
-            addBtn    = (JButton) Viewable.getComp("AddItem");
-            removeBtn = (JButton) Viewable.getComp("RemoveItem");
+            addBtn    = (JButton) Viewable.getCompByName("AddItem");
+            removeBtn = (JButton) Viewable.getCompByName("RemoveItem");
 
 
             addBtn.addActionListener(new ActionListener()
@@ -179,7 +179,7 @@ public class PickListProcessor implements FormProcessor
                         }
                     });
 
-            JButton deleteBtn = (JButton) Viewable.getComp("deletePL");
+            JButton deleteBtn = (JButton) Viewable.getCompByName("deletePL");
             deleteBtn.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
@@ -193,12 +193,12 @@ public class PickListProcessor implements FormProcessor
                     {
                         public void actionPerformed(ActionEvent ae)
                         {
-                            pickList.setName(((JTextField)Viewable.getComp("name")).getText());
+                            pickList.setName(((JTextField)Viewable.getCompByName("name")).getText());
 
-                            String sizeStr = ((JTextField)Viewable.getComp("sizeLimit")).getText().trim();
+                            String sizeStr = ((JTextField)Viewable.getCompByName("sizeLimit")).getText().trim();
                             pickList.setSizeLimit(isNotEmpty(sizeStr) ? Integer.parseInt(sizeStr) : 0);
 
-                            pickList.setReadOnly(((JCheckBox)Viewable.getComp("readOnly")).isSelected());
+                            pickList.setReadOnly(((JCheckBox)Viewable.getCompByName("readOnly")).isSelected());
 
                             CommandDispatcher.dispatch(new CommandAction(SystemSetupTask.SYSTEMSETUPTASK, "SavePickList", Viewable.getDataObj()));
 
