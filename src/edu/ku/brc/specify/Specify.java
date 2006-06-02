@@ -162,8 +162,8 @@ public class Specify extends JPanel
      */
     public Specify(GraphicsConfiguration gc)
     {
-
-        MacOSAppHandler macoshandler = new MacOSAppHandler(this);
+    	// we simply need to create this class, not use it
+        @SuppressWarnings("unused") MacOSAppHandler macoshandler = new MacOSAppHandler(this);
 
         UICacheManager.getInstance(); // initializes it first thing
 
@@ -174,8 +174,7 @@ public class Specify extends JPanel
         UICacheManager.register(UICacheManager.MAINPANE, this); // important to be done immediately
 
         initPrefs();
-
-
+        
         // Create and throw the splash screen up. Since this will
         // physically throw bits on the screen, we need to do this
         // on the GUI thread using invokeLater.
