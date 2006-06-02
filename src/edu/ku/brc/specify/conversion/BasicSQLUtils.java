@@ -683,6 +683,12 @@ public class BasicSQLUtils
                             if (idMapper != null)
                             {
                             	int oldPrimaryKeyId = rs.getInt(columnIndex);
+                                
+                                if (oldPrimaryKeyId == -159020476 && fromTableName.equals("locality"))
+                                {
+                                    int x = 0;
+                                    x++;
+                                }
 
                             	// if the value was null, getInt() returns 0
                             	// use wasNull() to distinguish real 0 from a null return

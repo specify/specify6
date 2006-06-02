@@ -461,7 +461,7 @@ public class ViewLoader
                             String uiFieldFormatter = getAttr(cellElement, "uifieldformatter", "");
                             int    cols           = getAttr(cellElement, "cols", 10); // XXX PREF for default width of text field
                             int    rows           = getAttr(cellElement, "rows", 5);  // XXX PREF for default heightof text area
-                            String validationType = getAttr(cellElement, "valtype", "OK");
+                            String validationType = getAttr(cellElement, "valtype", "Focus");
                             String validationRule = getAttr(cellElement, "validation", "");
                             String initialize     = getAttr(cellElement, "initialize", "");
                             boolean isRequired    = getAttr(cellElement, "isrequired", false);
