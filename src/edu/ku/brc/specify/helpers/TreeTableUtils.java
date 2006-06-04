@@ -196,7 +196,7 @@ public class TreeTableUtils
 	 * 
 	 * @return true if the action will not violate any reparenting rules, false otherwise
 	 */
-	public boolean canChildBeReparentedToNode( Treeable child, Treeable newParent )
+	public static boolean canChildBeReparentedToNode( Treeable child, Treeable newParent )
 	{
 		Integer nextEnforcedRank = getRankOfNextHighestEnforcedLevel(child);
 		if( nextEnforcedRank == null )
@@ -215,7 +215,7 @@ public class TreeTableUtils
 		return false;
 	}
 	
-	public Integer getRankOfNextHighestEnforcedLevel( Treeable node )
+	public static Integer getRankOfNextHighestEnforcedLevel( Treeable node )
 	{
 		TreeDefinitionItemIface defItem = node.getDefItem();
 		while( defItem.getParentItem() != null )
@@ -228,5 +228,26 @@ public class TreeTableUtils
 		}
 		
 		return null;
+	}
+
+	/**
+	 * @param node 
+	 * @return the number of nodes on the path from node (exclusive) to the root (inclusive if root!=node)
+	 */
+	public static int numberOfNodesToRoot( Treeable node )
+	{
+		if( node == null )
+		{
+			throw new NullPointerException();
+		}
+		
+		int count = 0;
+		Treeable t = node.getParentNode();
+		while( t != null )
+		{
+			++count;
+			t = node.getParentNode();
+		}
+		return count;
 	}
 }
