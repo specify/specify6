@@ -195,4 +195,33 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
         children.add(child);
         setChildren(children);
     }
+
+	public void addTreeEntry( Taxon entry )
+	{
+		treeEntries.add(entry);
+		entry.setDefinitionItem(this);
+	}
+	
+	public void removeTreeEntry( Taxon entry )
+	{
+		treeEntries.remove(entry);
+		entry.setDefinitionItem(null);
+	}
+	
+	public void setChild( TaxonTreeDefItem child )
+	{
+		for( TaxonTreeDefItem item: children )
+		{
+			removeChild( item );
+		}
+		
+		children.add(child);
+		child.setParent(this);
+	}
+	 
+	public void removeChild( TaxonTreeDefItem child )
+	{
+		children.remove(child);
+		child.setParent(null);
+	}
 }

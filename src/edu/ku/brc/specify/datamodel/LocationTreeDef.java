@@ -121,4 +121,40 @@ public class LocationTreeDef  implements TreeDefinitionIface,java.io.Serializabl
 	{
 		setLocationTreeDefId(id);
 	}
+
+	public void addTreeEntry( Location loc )
+	{
+		treeEntries.add(loc);
+		loc.setTreeDef(this);
+	}
+	
+	public void removeTreeEntry( Location loc )
+	{
+		treeEntries.remove(loc);
+		loc.setTreeDef(null);
+	}
+	
+	public void addTreeDefItem( LocationTreeDefItem item )
+	{
+		treeDefItems.add(item);
+		item.setTreeDef(this);
+	}
+	
+	public void removeTreeDefItem( LocationTreeDefItem item )
+	{
+		treeDefItems.remove(item);
+		item.setTreeDef(null);
+	}
+	
+	public void addCollectionObjDef( CollectionObjDef def )
+	{
+		collObjDefs.add(def);
+		def.setLocationTreeDef(this);
+	}
+	
+	public void removeCollectionObjDef( CollectionObjDef def )
+	{
+		collObjDefs.remove(def);
+		def.setLocationTreeDef(null);
+	}
 }

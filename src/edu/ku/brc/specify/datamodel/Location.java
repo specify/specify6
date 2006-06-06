@@ -395,8 +395,7 @@ public class Location  implements java.io.Serializable,Treeable {
 			throw new IllegalArgumentException("New child must be an instance of " + getClass().getName());
 		}
 		
-		this.children.add((Location)child);
-		child.setParentNode(this);
+		addChild((Location)child);
 	}
 	
 	public void removeChild( Treeable child )
@@ -406,6 +405,17 @@ public class Location  implements java.io.Serializable,Treeable {
 			throw new IllegalArgumentException("Child must be an instance of " + getClass().getName());
 		}
 
+		removeChild((Location)child);
+	}
+
+	public void addChild( Location child )
+	{
+		this.children.add((Location)child);
+		child.setParentNode(this);
+	}
+	
+	public void removeChild( Location child )
+	{
 		children.remove(child);
 		child.setParentNode(null);
 	}

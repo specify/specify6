@@ -122,4 +122,28 @@ public class TaxonTreeDef implements TreeDefinitionIface,java.io.Serializable {
 	{
 		setTaxonTreeDefId(id);
 	}
+
+	public void addTreeEntry( Taxon taxon )
+	{
+		treeEntries.add(taxon);
+		taxon.setTreeDef(this);
+	}
+	
+	public void removeTreeEntry( Taxon taxon )
+	{
+		treeEntries.remove(taxon);
+		taxon.setTreeDef(null);
+	}
+	
+	public void addTreeDefItem( TaxonTreeDefItem item )
+	{
+		treeDefItems.add(item);
+		item.setTreeDef(this);
+	}
+	
+	public void removeTreeDefItem( TaxonTreeDefItem item )
+	{
+		treeDefItems.remove(item);
+		item.setTreeDef(null);
+	}
 }

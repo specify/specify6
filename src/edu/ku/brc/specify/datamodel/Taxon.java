@@ -591,8 +591,7 @@ public class Taxon  implements java.io.Serializable,Treeable {
 			throw new IllegalArgumentException("New child must be an instance of " + getClass().getName());
 		}
 		
-		this.children.add((Taxon)child);
-		child.setParentNode(this);
+		addChild((Taxon)child);
 	}
 	
 	public void removeChild( Treeable child )
@@ -602,8 +601,31 @@ public class Taxon  implements java.io.Serializable,Treeable {
 			throw new IllegalArgumentException("Child must be an instance of " + getClass().getName());
 		}
 
+		removeChild((Taxon)child);
+	}
+
+	public void addChild( Taxon child )
+	{
+		children.add(child);
+		child.setParentNode(this);
+	}
+	
+	public void removeChild( Taxon child )
+	{
 		children.remove(child);
 		child.setParentNode(null);
+	}
+
+	public void addAcceptedChild( Taxon child )
+	{
+		acceptedChildren.add(child);
+		child.setAcceptedTaxon(this);
+	}
+	
+	public void removeAcceptedChild( Taxon child )
+	{
+		acceptedChildren.remove(child);
+		child.setAcceptedTaxon(null);
 	}
 
     // Add Methods

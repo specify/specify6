@@ -123,4 +123,40 @@ public class GeographyTreeDef  implements TreeDefinitionIface,java.io.Serializab
 	{
 		setGeographyTreeDefId(id);
 	}
+
+	public void addTreeEntry( Geography geo )
+	{
+		treeEntries.add(geo);
+		geo.setTreeDef(this);
+	}
+	
+	public void removeTreeEntry( Geography geo )
+	{
+		treeEntries.remove(geo);
+		geo.setTreeDef(null);
+	}
+	
+	public void addTreeDefItem( GeographyTreeDefItem item )
+	{
+		treeDefItems.add(item);
+		item.setTreeDef(this);
+	}
+	
+	public void removeTreeDefItem( GeographyTreeDefItem item )
+	{
+		treeDefItems.remove(item);
+		item.setTreeDef(null);
+	}
+	
+	public void addCollectionObjDef( CollectionObjDef def )
+	{
+		collObjDefs.add(def);
+		def.setGeographyTreeDef(this);
+	}
+	
+	public void removeCollectionObjDef( CollectionObjDef def )
+	{
+		collObjDefs.remove(def);
+		def.setGeographyTreeDef(null);
+	}
 }

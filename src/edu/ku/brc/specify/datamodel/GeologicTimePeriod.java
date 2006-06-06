@@ -355,8 +355,7 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
 			throw new IllegalArgumentException("New child must be an instance of " + getClass().getName());
 		}
 		
-		children.add((GeologicTimePeriod)child);
-		child.setParentNode(this);
+		addChild((GeologicTimePeriod)child);
 	}
 	
 	public void removeChild( Treeable child )
@@ -366,7 +365,19 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
 			throw new IllegalArgumentException("Child must be an instance of " + getClass().getName());
 		}
 
+		removeChild((GeologicTimePeriod)child);
+	}
+
+	public void addChild( GeologicTimePeriod child )
+	{
+		children.add(child);
+		child.setParentNode(this);
+	}
+	
+	public void removeChild( GeologicTimePeriod child )
+	{
 		children.remove(child);
 		child.setParentNode(null);
 	}
+
 }

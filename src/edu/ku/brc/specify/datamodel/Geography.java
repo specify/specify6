@@ -421,7 +421,12 @@ public class Geography  implements java.io.Serializable,Treeable {
 			throw new IllegalArgumentException("New child must be an instance of " + getClass().getName());
 		}
 
-		this.children.add((Geography)child);
+		addChild((Geography)child);
+	}
+
+	public void addChild( Geography child )
+	{
+		children.add(child);
 		child.setParentNode(this);
 	}
 
@@ -432,6 +437,11 @@ public class Geography  implements java.io.Serializable,Treeable {
 			throw new IllegalArgumentException("Child must be an instance of " + getClass().getName());
 		}
 
+		removeChild((Geography)child);
+	}
+
+	public void removeChild( Geography child )
+	{
 		children.remove(child);
 		child.setParentNode(null);
 	}

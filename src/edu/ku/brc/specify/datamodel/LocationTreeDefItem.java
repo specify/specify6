@@ -195,4 +195,33 @@ public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Ser
         children.add(child);
         setChildren(children);
     }
+
+	public void addTreeEntry( Location entry )
+	{
+		treeEntries.add(entry);
+		entry.setDefinitionItem(this);
+	}
+	
+	public void removeTreeEntry( Location entry )
+	{
+		treeEntries.remove(entry);
+		entry.setDefinitionItem(null);
+	}
+	
+	public void setChild( LocationTreeDefItem child )
+	{
+		for( LocationTreeDefItem item: children )
+		{
+			removeChild( item );
+		}
+		
+		children.add(child);
+		child.setParent(this);
+	}
+	
+	public void removeChild( LocationTreeDefItem child )
+	{
+		children.remove(child);
+		child.setParent(null);
+	}
 }

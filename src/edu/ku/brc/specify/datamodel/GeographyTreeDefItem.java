@@ -195,4 +195,33 @@ public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Se
 	{
 		setGeographyTreeDefItemId(id);
 	}
+
+	public void addTreeEntry( Geography entry )
+	{
+		treeEntries.add(entry);
+		entry.setDefinitionItem(this);
+	}
+	
+	public void removeTreeEntry( Geography entry )
+	{
+		treeEntries.remove(entry);
+		entry.setDefinitionItem(null);
+	}
+	
+	public void setChild( GeographyTreeDefItem child )
+	{
+		for( GeographyTreeDefItem item: children )
+		{
+			removeChild( item );
+		}
+		
+		children.add(child);
+		child.setParent(this);
+	}
+	
+	public void removeChild( GeographyTreeDefItem child )
+	{
+		children.remove(child);
+		child.setParent(null);
+	}
 }

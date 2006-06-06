@@ -195,4 +195,33 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
 	{
 		setGeologicTimePeriodTreeDefItemId(id);
 	}
+
+	public void addTreeEntry( GeologicTimePeriod entry )
+	{
+		treeEntries.add(entry);
+		entry.setDefinitionItem(this);
+	}
+	
+	public void removeTreeEntry( GeologicTimePeriod entry )
+	{
+		treeEntries.remove(entry);
+		entry.setDefinitionItem(null);
+	}
+	
+	public void setChild( GeologicTimePeriodTreeDefItem child )
+	{
+		for( GeologicTimePeriodTreeDefItem item: children )
+		{
+			removeChild( item );
+		}
+		
+		children.add(child);
+		child.setParent(this);
+	}
+	
+	public void removeChild( GeologicTimePeriodTreeDefItem child )
+	{
+		children.remove(child);
+		child.setParent(null);
+	}
 }
