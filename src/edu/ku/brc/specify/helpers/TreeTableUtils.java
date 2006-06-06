@@ -250,4 +250,29 @@ public class TreeTableUtils
 		}
 		return count;
 	}
+	
+	/**
+	 * @param t the possible descendant node
+	 * @param s the possible ancestor node
+	 * @return true if t is a descendant of s
+	 */
+	public static boolean nodeIsDescendantOfNode( Treeable t, Treeable s )
+	{
+		if( t==null || s==null )
+		{
+			throw new NullPointerException();
+		}
+		
+		Treeable i = t.getParentNode();
+		while( i != null )
+		{
+			if( i == s )
+			{
+				return true;
+			}
+			
+			i = i.getParentNode();
+		}
+		return false;
+	}
 }
