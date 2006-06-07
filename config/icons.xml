@@ -80,5 +80,8 @@
     <icon name="FishBase" file="fblogootw32.png" sizes="all"/>
     <icon name="GoogleEarth" file="GoogleEarth16x16.png" sizes="16"/>
     <icon name="BioGeoMancer" file="biogeomancer.png" sizes="all"/>
+    
+    <icon name="Warning" file="exclaim_yellow.gif" sizes="all"/>
+    <icon name="Error" file="exclaim.gif" sizes="all"/>
 
 </icons>
