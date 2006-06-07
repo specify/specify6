@@ -1,4 +1,4 @@
-package edu.ku.brc.specify.ui;
+package edu.ku.brc.specify.ui.treetables;
 
 import java.util.Iterator;
 import java.util.Vector;
@@ -54,7 +54,7 @@ public class FilteredDefaultTreeModel extends DefaultTreeModel implements Filter
 	 * 
 	 * @param workingRoot the new effective root node
 	 * 
-	 * @see edu.ku.brc.specify.ui.FilterableTreeModel#setWorkingRoot(javax.swing.tree.TreeNode)
+	 * @see edu.ku.brc.specify.ui.treetables.FilterableTreeModel#setWorkingRoot(javax.swing.tree.TreeNode)
 	 */
 	public void setWorkingRoot( TreeNode workingRoot )
 	{
@@ -76,7 +76,7 @@ public class FilteredDefaultTreeModel extends DefaultTreeModel implements Filter
 	 * 
 	 * @param node the node to hide
 	 * 
-	 * @see edu.ku.brc.specify.ui.FilterableTreeModel#hideNode(javax.swing.tree.TreeNode)
+	 * @see edu.ku.brc.specify.ui.treetables.FilterableTreeModel#hideNode(javax.swing.tree.TreeNode)
 	 */
 	public void hideNode( TreeNode node )
 	{
@@ -89,7 +89,7 @@ public class FilteredDefaultTreeModel extends DefaultTreeModel implements Filter
 	 * 
 	 * @param node the node to unhide
 	 * 
-	 * @see edu.ku.brc.specify.ui.FilterableTreeModel#unhideNode(javax.swing.tree.TreeNode)
+	 * @see edu.ku.brc.specify.ui.treetables.FilterableTreeModel#unhideNode(javax.swing.tree.TreeNode)
 	 */
 	public void unhideNode( TreeNode node )
 	{
@@ -101,7 +101,7 @@ public class FilteredDefaultTreeModel extends DefaultTreeModel implements Filter
 	 * Sets the effective root to be the actual root of the model.  This removes
 	 * all root-node type filters.
 	 * 
-	 * @see edu.ku.brc.specify.ui.FilterableTreeModel#setWorkingRootToActualRoot()
+	 * @see edu.ku.brc.specify.ui.treetables.FilterableTreeModel#setWorkingRootToActualRoot()
 	 */
 	public void setWorkingRootToActualRoot()
 	{
@@ -113,7 +113,7 @@ public class FilteredDefaultTreeModel extends DefaultTreeModel implements Filter
 	 * Sets the effective root to be the actual root of the model.  Reveals all
 	 * nodes.
 	 * 
-	 * @see edu.ku.brc.specify.ui.FilterableTreeModel#clearAllFilters()
+	 * @see edu.ku.brc.specify.ui.treetables.FilterableTreeModel#clearAllFilters()
 	 */
 	public void clearAllFilters()
 	{

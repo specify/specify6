@@ -1,4 +1,4 @@
-package edu.ku.brc.specify.ui;
+package edu.ku.brc.specify.ui.treetables;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -13,6 +13,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.ui.BorderedIcon;
 
 /**
  * A DefaultTreeCellRenderer that queries a Map to determine which Icon

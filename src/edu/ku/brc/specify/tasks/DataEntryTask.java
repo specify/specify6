@@ -49,10 +49,10 @@ import edu.ku.brc.specify.ui.CommandDispatcher;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
-import edu.ku.brc.specify.ui.TreeTableViewer;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
 import edu.ku.brc.specify.ui.forms.persist.View;
+import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 
 /**
  * This task controls the data entry forms

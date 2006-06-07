@@ -1,4 +1,4 @@
-package edu.ku.brc.specify.ui;
+package edu.ku.brc.specify.ui.treetables;
 
 import java.awt.Component;
 
