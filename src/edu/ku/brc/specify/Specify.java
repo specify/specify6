@@ -75,6 +75,8 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 import edu.ku.brc.specify.config.SpecifyConfig;
 import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.dbsupport.DBConnection;
+import edu.ku.brc.specify.dbsupport.DatabaseLogon;
+import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.plugins.PluginMgr;
@@ -111,7 +113,7 @@ public class Specify extends JPanel
 
     protected  boolean          hasChanged         = false;
 
-    protected Configuration     mConfig            = null;
+    protected Configuration     hibernateConfig    = null;
     protected SessionFactory    mSessionFactory    = null;
     protected Session           mSession           = null;
 
@@ -190,10 +192,6 @@ public class Specify extends JPanel
 
         specifyApp = this;
 
-        DBConnection.setUsernamePassword("rods", "rods");
-        DBConnection.setDriver("com.mysql.jdbc.Driver");
-        DBConnection.setDBName("jdbc:mysql://localhost/fish");
-
         try
         {
             //System.out.println(System.getProperty("os.name"));
@@ -220,81 +218,36 @@ public class Specify extends JPanel
 
         UICacheManager.register(UICacheManager.FRAME, frame);
 
-
         try
         {
             config = SpecifyConfig.getInstance();
             //config.init(this); // do this once
+            
         } catch (Exception e)
         {
             log.error("Error with Configuration", e);
             JOptionPane.showMessageDialog(this, e.toString(), "Fatal Error", JOptionPane.ERROR_MESSAGE);
         }
 
-        /*
-        if(useLogonDialog){
-          DatabaseLogon dbl = new DatabaseLogon();
-          databaseName = dbl.getDatabaseName();
-          userName = dbl.getUserName();
-          password = dbl.getPassword();
-          hostName = dbl.getHostName();
-        }
-       */
+        log.info("Creating Database configuration ");
 
-
-
-        /*
-        HibernateUtil.beginTransaction();
-
-        RecordSet recordSet = new RecordSet();
-        //recordSet.setId(1L);
-
-        recordSet.setName("Catalog Items");
-        recordSet.setTableId(1);
-        recordSet.setCreated(Calendar.getInstance().getTime());
-
-        Set<RecordSetItem> items = new HashSet<RecordSetItem>();
-        for (int i=0;i<10;i++)
-        {
-            RecordSetItem rsi = new RecordSetItem();
-            rsi.setRecordId(Integer.toString(i));
-            items.add(rsi);
-        }
-        recordSet.setItems(items);
-
-        HibernateUtil.getCurrentSession().saveOrUpdate(recordSet);
-
-        //HibernateUtil.getCurrentSession().delete(recordSet);
-
-        HibernateUtil.commitTransaction();
-        */
-
-
-        log.info("Creating configuration ");
-
-        // Create a configuration based on the properties file we've put
-        // in the standard place.
-        //mConfig = new Configuration();
+        HibernateUtil.initialize(); // This also sets up the DBConnection params for the JDBC driver
 
         initStartUpPanels();
 
-       /*try {
+       /*try 
+       {
 
             SwingUtilities.invokeLater(new Runnable()
                     {
                         public void run()
                         {
-<<<<<<< .mine
-
-
-=======
                             validate();
                             hideSplash();
 
                             add(mainPanel, BorderLayout.CENTER);
                             ContextMgr.getTaskByClass(StartUpTask.class).requestContext();
                             showApp();
->>>>>>> .r481
                         }
                     });
 
@@ -303,7 +256,7 @@ public class Specify extends JPanel
             log.error("Error",e);
         }*/
     }
-
+    
     protected void initStartUpPanels()
     {
         if( !SwingUtilities.isEventDispatchThread() )
@@ -343,6 +296,7 @@ public class Specify extends JPanel
             glassPane.setImage(bi);
 
             Dimension size = glassPane.getSize();
+            
             glassPane.setPoint(new Point(0,0), GhostGlassPane.ImagePaintMode.CENTERED);
 
             System.out.println(glassPane.getLocation()+" "+size);
@@ -446,35 +400,6 @@ public class Specify extends JPanel
         }
 
     }
-
-    /*
-    public void setHibernateLogonConfig()
-    {
-        if(useLogonDialog){
-            mConfig.setProperty("hibernate.connection.username",userName);
-            mConfig.setProperty("hibernate.connection.password",password);
-
-
-            if(hostName.indexOf("mysql")!=-1){
-                mConfig.setProperty("hibernate.connection.url",hostName + databaseName+ "?useServerPrepStmts=false");//&useOldUTF8Behavior=true");
-                mConfig.setProperty("hibernate.dialect","net.sf.hibernate.dialect.MySQLDialect");
-                mConfig.setProperty("hibernate.connection.driver_class","com.mysql.jdbc.Driver");
-                }
-            else if(hostName.indexOf("inetdae7")!=-1){//jdbc:inetdae7:localhost?database=KS_fish
-                mConfig.setProperty("hibernate.connection.url",hostName + "?database="+databaseName);
-                mConfig.setProperty("hibernate.dialect","net.sf.hibernate.dialect.SQLServerDialect");
-                mConfig.setProperty("hibernate.connection.driver_class","com.inet.tds.TdsDriver");
-            }
-            //else if(hostName.indexOf("sqlserver")!=-1){//jdbc:inetdae7:localhost?database=KS_fish
-            //  mConfig.setProperty("hibernate.connection.url",hostName + ";DatabaseName="+databaseName);
-            //  mConfig.setProperty("hibernate.dialect","net.sf.hibernate.dialect.SQLServerDialect");
-            //  mConfig.setProperty("hibernate.connection.driver_class","com.microsoft.jdbc.sqlserver.SQLServerDriver");
-            //}
-
-          }
-    }
-  */
-
 
     /**
      * Determines if this is an applet or application

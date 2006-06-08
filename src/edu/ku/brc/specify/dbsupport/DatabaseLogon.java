@@ -1,133 +1,171 @@
 package edu.ku.brc.specify.dbsupport;
 
-import java.awt.Component;
-import java.awt.GridLayout;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.JFrame;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.forms.MultiView;
+import edu.ku.brc.specify.ui.forms.ViewMgr;
+import edu.ku.brc.specify.ui.forms.Viewable;
+import edu.ku.brc.specify.ui.forms.persist.AltView;
+import edu.ku.brc.specify.ui.forms.persist.View;
+import edu.ku.brc.specify.ui.validation.ValComboBox;
+import edu.ku.brc.specify.ui.validation.ValPasswordField;
+import edu.ku.brc.specify.ui.validation.ValTextField;
 
 public class DatabaseLogon extends JDialog implements ActionListener, FocusListener
 {
-    final static Logger _logger       = Logger.getLogger(DatabaseLogon.class);
+    private static Log log  = LogFactory.getLog(DatabaseLogon.class);
+    
+    // Form Stuff
+    protected MultiView      multiView;
+    protected View           formView;
+    protected Viewable       form;
+    protected List<String>   fieldNames;
 
-    private final JComboBox     hostPrompt;
-    private final JTextField    userPrompt;
-    private final JComboBox     dbPrompt;
-    private final JTextField    pwdPrompt;
+    private final ValTextField     username;
+    private final ValPasswordField password;
+    
+    private final ValComboBox      databases;
+    private final ValComboBox      servers;
 
     private Vector<String>        databaseNames = new Vector<String>();
+    private Vector<String>        serverNames = new Vector<String>();
+    private JDialog               thisDlg;
 
-    private String[]    hostNames     = {
-            "jdbc:mysql://129.237.201.166/SpecifySchemaChanges.html",
-            "jdbc:mysql://localhost/", "jdbc:inetdae7://129.237.201.110/",
+    private String[]    serverNameStrs     = {
+            "jdbc:mysql://localhost/", 
+            "jdbc:inetdae7://129.237.201.110/",
             "jdbc:mysql://129.237.201.110/",
             "jdbc:microsoft:sqlserver://129.237.201.110/" };                   // "jdbc:inetdae7://129.237.201.110/"};
 
-    private String      hostName      = "";
-    private String      databaseName  = "";
-    private String      userName      = "rods";
-    private String      password      = "rods";
+    //private String      hostName      = "";
+    //private String      databaseName  = "";
+    //private String      userName      = "rods";
+    //private String      password      = "rods";
 
     /**
      *
      */
     public DatabaseLogon()
     {
+        thisDlg = this;
+        
+        createUI("SystemSetup", "DatabaseLogon", "Specify Login");
+        
+        username  = (ValTextField)form.getCompById("username");
+        password  = (ValPasswordField)form.getCompById("password");
+        
+        databases = (ValComboBox)form.getCompById("databases");
+        servers   = (ValComboBox)form.getCompById("servers");
+        
+        Collections.addAll(serverNames, serverNameStrs);
+        
+        servers.setModel(new DefaultComboBoxModel(serverNames));
+        servers.getComboBox().setSelectedIndex(0);
 
-        JPanel basePanel = new JPanel();
 
-        String[]     labelStrings = { "Enter a hostname:", "Enter a database: ", "Enter user name: ", "Enter a password: ", };
-        JLabel[]     labels = new JLabel[labelStrings.length];
-        JComponent[] fields = new JComponent[labelStrings.length];
-        int fieldNum = 0;
-
-        hostPrompt = new JComboBox(hostNames);
-        hostPrompt.setEditable(true);
-
-        // Create the text field and set it up.
-        // dbPrompt = new JTextField(databaseName);
-        // dbPrompt.setColumns(20);
-        fields[fieldNum++] = hostPrompt;
-
-        // the combo box (add/modify items if you like to)
-        dbPrompt = new JComboBox(databaseNames);
-        dbPrompt.setEditable(true);
-        // Create the text field and set it up.
-        // dbPrompt = new JTextField(databaseName);
-        // dbPrompt.setColumns(20);
-        fields[fieldNum++] = dbPrompt;
-
-        userPrompt = new JTextField(userName);
-        userPrompt.setColumns(20);
-        fields[fieldNum++] = userPrompt;
-
-        pwdPrompt = new JTextField(password);
-        // pwdPrompt.setEchoChar('*');
-        pwdPrompt.setColumns(20);
-        fields[fieldNum++] = pwdPrompt; // JFormattedTextField()
-
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(0, 2));
-
-        // Associate label/field pairs, add everything,
-        // and lay it out.
-        for (int i = 0; i < labelStrings.length; i++)
-        {
-            labels[i] = new JLabel(labelStrings[i], JLabel.TRAILING);
-            labels[i].setLabelFor(fields[i]);
-            panel.add(labels[i]);
-            panel.add(fields[i]);
-
-            // Add listeners to each field.
-            JComponent tf = (JComponent) fields[i];
-            if (tf instanceof JTextField)
-            {
-                JTextField jtf = (JTextField) tf;
-                jtf.addActionListener(this);
-            }
-            tf.addFocusListener(this);
-
-        }
-
-        final JButton button = new JButton("Ok");
-        final JButton cancelButton = new JButton("Cancel");
-
-        button.setActionCommand("Ok");
-        button.addActionListener(this);
-
-        cancelButton.setActionCommand("Ok");
-        cancelButton.addActionListener(this);
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(button);
-        buttonPanel.add(cancelButton);
-        basePanel.setLayout(new GridLayout(0, 1));
-        basePanel.add(panel);
-        basePanel.add(buttonPanel);
-        this.getContentPane().add(basePanel);
-        this.setTitle("Enter database credentials");
-        this.pack();
+        JButton closeBtn = (JButton)form.getCompById("cancel");
+        JButton loginBtn = (JButton)form.getCompById("login");
+        setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setModal(true);
-        this.setVisible(true);
-        // this.addWindowListener(new java.awt.event.WindowAdapter() {
-        // public void windowClosing(java.awt.event.WindowEvent e) {
-        // System.exit(0); // Terminate when the last window is closed.
+        
+        closeBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                thisDlg.dispose();
+            }
+         });
+        loginBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                doLogin();
+            }
+         });
+        
+        ((JButton)form.getCompById("getDBs")).addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                fillDatabaseList();
+            }
+         });
+        
+        pack();
+    }
+    
+    /**
+     * 
+     */
+    protected void fillDatabaseList()
+    {
+        //DBConnection.setDriver((String)servers.getComboBox().getSelectedItem());
+        //DBConnection.setUsernamePassword(username.getText(), password.getText());
+        
 
-        // }
-        // });
+        
 
+    }
+    
+    /**
+     * 
+     */
+    protected void doLogin()
+    {
+        
+    }
+    
+    protected void createUI(final String viewSetName,
+                            final String viewName,
+                            final String title)
+    {
+        formView = ViewMgr.getView(viewSetName, viewName);
+        if (formView != null)
+        {
+            multiView   = new MultiView(null, formView, AltView.CreationMode.Edit, false, true);
+            form = multiView.getCurrentView();//ViewFactory.createFormView(null, formView, null, null);
+            form.getValidator().validateForm();
+            
+            //add(form.getUIComponent(), BorderLayout.CENTER);
+
+        } else
+        {
+            log.info("Couldn't load form with name ["+viewSetName+"] Id ["+viewName+"]");
+        }
+        /*
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
+
+        panel.add(multiView, BorderLayout.NORTH);
+        JPanel contentPanel = new JPanel(new NavBoxLayoutManager(0,2));
+
+        
+        JButton closeBtn = new JButton(getResourceString("Close"));
+        closeBtn.addActionListener(this);
+        getRootPane().setDefaultButton(closeBtn);
+
+        ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
+        btnBuilder.addGlue();
+        btnBuilder.addGriddedButtons(new JButton[] { closeBtn });
+
+        panel.add(btnBuilder.getPanel(), BorderLayout.SOUTH);
+*/
+        setContentPane(multiView);
+        pack();
     }
 
     /**
@@ -135,6 +173,7 @@ public class DatabaseLogon extends JDialog implements ActionListener, FocusListe
      */
     public void actionPerformed(ActionEvent e)
     {
+        /*
         _logger.debug("actionperformaed");
         if ("Ok".equals(e.getActionCommand()))
         {
@@ -148,54 +187,54 @@ public class DatabaseLogon extends JDialog implements ActionListener, FocusListe
         {
             System.exit(0);
         }
-
+*/
     }
 
     private void setHostName(String s)
     {
-        this.hostName = s;
+        //this.hostName = s;
 
     }
 
     private void setDatabaseName(String s)
     {
-        this.databaseName = s;
+        //this.databaseName = s;
 
     }
 
     private void setUserName(String s)
     {
-        this.userName = s;
+        //this.userName = s;
 
     }
 
     private void setPassword(String s)
     {
-        this.password = s;
+        //this.password = s;
 
     }
 
     public String getHostName()
     {
-        return this.hostName;
+        return null;//this.hostName;
 
     }
 
     public String getDatabaseName()
     {
-        return this.databaseName;
+        return null;//this.databaseName;
 
     }
 
     public String getUserName()
     {
-        return this.userName;
+        return null;//this.userName;
 
     }
 
     public String getPassword()
     {
-        return this.password;
+        return null;//this.password;
 
     }
 
@@ -205,16 +244,16 @@ public class DatabaseLogon extends JDialog implements ActionListener, FocusListe
      */
     public void focusGained(FocusEvent e)
     {
-        _logger.debug("focus ganined");
-        Component c = e.getComponent();
+        log.debug("focus ganined");
+        //Component c = e.getComponent();
 
-        ((JTextField) c).selectAll();
+        //((JTextField) c).selectAll();
 
     }
 
     //Needed for FocusListener interface.
     public void focusLost(FocusEvent e)
     {
-        _logger.debug("focuse lost");
+        log.debug("focuse lost");
     } //ignore
 }

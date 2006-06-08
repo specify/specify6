@@ -49,8 +49,8 @@ public class HibernateUtil {
 
     //private static final String INTERCEPTOR_CLASS = "hibernate.util.interceptor_class";
 
-    private static Configuration       configuration;
-    private static SessionFactory      sessionFactory;
+    private static Configuration       configuration     = null;
+    private static SessionFactory      sessionFactory    = null;
     private static ThreadLocal<Object> threadSession     = new ThreadLocal<Object>();
     private static ThreadLocal<Object> threadTransaction = new ThreadLocal<Object>();
 
@@ -102,6 +102,8 @@ public class HibernateUtil {
     }
     */
     
+    /*
+    
     static {
         try {
             configuration = new Configuration();
@@ -116,6 +118,88 @@ public class HibernateUtil {
             throw new ExceptionInInitializerError(ex);
         }
     }
+    */
+    
+    /**
+     * Sets up the hibernate configured params
+     * 
+     * @param config the config object
+     */
+    public static void setHibernateLogonConfig(final Configuration config)
+    {
+        String userName     = "rods";
+        String password     = "rods";
+        String hostName     = "jdbc:mysql://localhost/";
+        String databaseName = "fish";
+        String driver       = "com.mysql.jdbc.Driver";
+        
+        boolean useLogonDialog = false;
+        if (useLogonDialog)
+        {
+            DatabaseLogon dl = new DatabaseLogon();
+            dl.setVisible(true);
+            // get vars from dialog
+        }
+        
+        config.setProperty("hibernate.connection.username", userName);
+        config.setProperty("hibernate.connection.password", password);
+        
+        String userHome = System.getProperty("user.home");
+        if (userHome.indexOf("rods") > -1)
+        {
+            databaseName = "accession";
+        }
+        
+        // Setup JDBC Connection
+        DBConnection.setUsernamePassword(userName, password);
+        DBConnection.setDriver(driver);
+        DBConnection.setDBName(hostName + databaseName);
+
+        
+        if (hostName.indexOf("mysql") != -1)
+        {
+            config.setProperty("hibernate.connection.url", hostName + databaseName + "?useServerPrepStmts=false");//&useOldUTF8Behavior=true");
+            config.setProperty("hibernate.dialect","net.sf.hibernate.dialect.MySQLDialect");
+            config.setProperty("hibernate.connection.driver_class", driver);
+        }  
+        else if (hostName.indexOf("inetdae7") != -1)
+        {
+
+            config.setProperty("hibernate.connection.url", hostName + "?database="+ databaseName);
+            config.setProperty("hibernate.dialect","net.sf.hibernate.dialect.SQLServerDialect");
+            config.setProperty("hibernate.connection.driver_class","com.inet.tds.TdsDriver");
+        }           
+        //else if(hostName.indexOf("sqlserver")!=-1){//jdbc:inetdae7:localhost?database=KS_fish
+        //  config.setProperty("hibernate.connection.url",hostName + ";DatabaseName="+databaseName);
+        //  config.setProperty("hibernate.dialect","net.sf.hibernate.dialect.SQLServerDialect");
+        //  config.setProperty("hibernate.connection.driver_class","com.microsoft.jdbc.sqlserver.SQLServerDriver");
+        //} 
+    }
+    
+    public static void initialize()
+    {
+        if (configuration != null)
+        {
+            shutdown();
+        }
+        
+        try 
+        {
+            configuration = new Configuration();
+            setHibernateLogonConfig(configuration);
+            
+            sessionFactory = configuration.configure().buildSessionFactory();
+            
+            // We could also let Hibernate bind it to JNDI:
+            //configuration.configure().buildSessionFactory();
+            
+        } catch (Throwable ex) {
+            // We have to catch Throwable, otherwise we will miss
+            // NoClassDefFoundError and other subclasses of Error
+            log.error("Building SessionFactory failed.", ex);
+            throw new ExceptionInInitializerError(ex);
+        }  
+    }
 
 
     /**
@@ -123,7 +207,8 @@ public class HibernateUtil {
      *
      * @return Configuration
      */
-    public static Configuration getConfiguration() {
+    public static Configuration getConfiguration() 
+    {
         return configuration;
     }
 
@@ -132,17 +217,27 @@ public class HibernateUtil {
      *
      * @return SessionFactory
      */
-    public static SessionFactory getSessionFactory() {
+    public static SessionFactory getSessionFactory()
+    {
+        if (configuration == null)
+        {
+            initialize();
+        }
+        
         SessionFactory sf = null;
         String sfName = configuration.getProperty(Environment.SESSION_FACTORY_NAME);
-        if ( sfName != null) {
+        if (sfName != null)
+        {
             log.debug("Looking up SessionFactory in JNDI.");
-            try {
+            try
+            {
                 sf = (SessionFactory) new InitialContext().lookup(sfName);
-            } catch (NamingException ex) {
+            } catch (NamingException ex)
+            {
                 throw new RuntimeException(ex);
             }
-        } else {
+        } else
+        {
             sf = sessionFactory;
         }
         if (sf == null)
@@ -156,7 +251,8 @@ public class HibernateUtil {
      * The only other method that can be called on HibernateUtil
      * after this one is rebuildSessionFactory(Configuration).
      */
-    public static void shutdown() {
+    public static void shutdown() 
+    {
         log.debug("Shutting down Hibernate.");
         // Close caches and connection pools
         getSessionFactory().close();
@@ -178,7 +274,8 @@ public class HibernateUtil {
      * Note that this method should only be used with static SessionFactory
      * management, not with JNDI or any other external registry.
      */
-     public static void rebuildSessionFactory() {
+     public static void rebuildSessionFactory() 
+     {
         log.debug("Using current Configuration for rebuild.");
         rebuildSessionFactory(configuration);
      }
@@ -192,18 +289,25 @@ public class HibernateUtil {
      *
      * @param cfg
      */
-     public static void rebuildSessionFactory(Configuration cfg) {
+     public static void rebuildSessionFactory(Configuration cfg)
+    {
         log.debug("Rebuilding the SessionFactory from given Configuration.");
-        synchronized(sessionFactory) {
+        synchronized (sessionFactory)
+        {
             if (sessionFactory != null && !sessionFactory.isClosed())
+            {
                 sessionFactory.close();
+            }
             if (cfg.getProperty(Environment.SESSION_FACTORY_NAME) != null)
+            {
                 cfg.buildSessionFactory();
-            else
+            } else
+            {
                 sessionFactory = cfg.buildSessionFactory();
+            }
             configuration = cfg;
         }
-     }
+    }
 
     /**
      * Retrieves the current Session local to the thread.
@@ -216,16 +320,20 @@ public class HibernateUtil {
      *
      * @return Session
      */
-    public static Session getCurrentSession() {
-        if (useThreadLocal) {
+    public static Session getCurrentSession()
+    {
+        if (useThreadLocal)
+        {
             Session s = (Session) threadSession.get();
-            if (s == null) {
+            if (s == null)
+            {
                 log.debug("Opening new Session for this thread.");
                 s = getSessionFactory().openSession();
                 threadSession.set(s);
             }
             return s;
-        } else {
+        } else
+        {
             return getSessionFactory().getCurrentSession();
         }
     }
@@ -237,18 +345,22 @@ public class HibernateUtil {
      * used in non-managed environments with resource local transactions, or
      * with EJBs and bean-managed transactions.
      */
-    public static void closeSession() {
-        if (useThreadLocal) {
+    public static void closeSession()
+    {
+        if (useThreadLocal)
+        {
             Session s = (Session) threadSession.get();
             threadSession.set(null);
             Transaction tx = (Transaction) threadTransaction.get();
-            if (tx != null && (!tx.wasCommitted() || !tx.wasRolledBack()) )
+            if (tx != null && (!tx.wasCommitted() || !tx.wasRolledBack()))
                 throw new IllegalStateException("Closing Session but Transaction still open!");
-            if (s != null && s.isOpen()) {
+            if (s != null && s.isOpen())
+            {
                 log.debug("Closing Session of this thread.");
                 s.close();
             }
-        } else {
+        } else
+        {
             log.warn("Using CMT/JTA, intercepted superfluous close call.");
         }
     }
@@ -262,15 +374,19 @@ public class HibernateUtil {
      * start a new transaction or join the existing ThreadLocal or JTA
      * transaction.
      */
-    public static void beginTransaction() {
-        if (useThreadLocal) {
+    public static void beginTransaction()
+    {
+        if (useThreadLocal)
+        {
             Transaction tx = (Transaction) threadTransaction.get();
-            if (tx == null) {
+            if (tx == null)
+            {
                 log.debug("Starting new database transaction in this thread.");
                 tx = getCurrentSession().beginTransaction();
                 threadTransaction.set(tx);
             }
-        } else {
+        } else
+        {
             log.warn("Using CMT/JTA, intercepted superfluous tx begin call.");
         }
     }
@@ -283,22 +399,27 @@ public class HibernateUtil {
      * with EJBs and bean-managed transactions. It will commit the
      * ThreadLocal or BMT/JTA transaction.
      */
-    public static void commitTransaction() {
-        if (useThreadLocal) {
+    public static void commitTransaction()
+    {
+        if (useThreadLocal)
+        {
             Transaction tx = (Transaction) threadTransaction.get();
-            try {
-                if ( tx != null && !tx.wasCommitted()
-                                && !tx.wasRolledBack() ) {
+            try
+            {
+                if (tx != null && !tx.wasCommitted() && !tx.wasRolledBack())
+                {
                     log.debug("Committing database transaction of this thread.");
                     tx.commit();
                 }
                 threadTransaction.set(null);
-            } catch (RuntimeException ex) {
+            } catch (RuntimeException ex)
+            {
                 log.error(ex);
                 rollbackTransaction();
                 throw ex;
             }
-        } else {
+        } else
+        {
             log.warn("Using CMT/JTA, intercepted superfluous tx commit call.");
         }
     }
@@ -311,22 +432,29 @@ public class HibernateUtil {
      * with EJBs and bean-managed transactions. It will rollback the
      * resource local or BMT/JTA transaction.
      */
-    public static void rollbackTransaction() {
-        if (useThreadLocal) {
+    public static void rollbackTransaction()
+    {
+        if (useThreadLocal)
+        {
             Transaction tx = (Transaction) threadTransaction.get();
-            try {
+            try
+            {
                 threadTransaction.set(null);
-                if ( tx != null && !tx.wasCommitted() && !tx.wasRolledBack() ) {
+                if (tx != null && !tx.wasCommitted() && !tx.wasRolledBack())
+                {
                     log.debug("Tyring to rollback database transaction of this thread.");
                     tx.rollback();
                     log.debug("Database transaction rolled back.");
                 }
-            } catch (RuntimeException ex) {
+            } catch (RuntimeException ex)
+            {
                 throw new RuntimeException("Might swallow original cause, check ERROR log!", ex);
-            } finally {
+            } finally
+            {
                 closeSession();
             }
-        } else {
+        } else
+        {
             log.warn("Using CMT/JTA, intercepted superfluous tx rollback call.");
         }
     }
@@ -338,12 +466,15 @@ public class HibernateUtil {
      *
      * @param session The Hibernate Session to be reconnected.
      */
-    public static void reconnect(Session session) {
-        if (useThreadLocal) {
+    public static void reconnect(Session session)
+    {
+        if (useThreadLocal)
+        {
             log.debug("Reconnecting Session to this thread.");
             session.reconnect();
             threadSession.set(session);
-        } else {
+        } else
+        {
             log.error("Using CMT/JTA, intercepted not supported reconnect call.");
         }
     }
@@ -353,19 +484,23 @@ public class HibernateUtil {
      *
      * @return Session the disconnected Session
      */
-    public static Session disconnectSession() {
-        if (useThreadLocal) {
+    public static Session disconnectSession()
+    {
+        if (useThreadLocal)
+        {
             Transaction tx = (Transaction) threadTransaction.get();
-            if (tx != null && (!tx.wasCommitted() || !tx.wasRolledBack()) )
+            if (tx != null && (!tx.wasCommitted() || !tx.wasRolledBack()))
                 throw new IllegalStateException("Disconnecting Session but Transaction still open!");
             Session session = getCurrentSession();
             threadSession.set(null);
-            if (session.isConnected() && session.isOpen()) {
+            if (session.isConnected() && session.isOpen())
+            {
                 log.debug("Disconnecting Session from this thread.");
                 session.disconnect();
             }
             return session;
-        } else {
+        } else
+        {
             log.error("Using CMT/JTA, intercepted not supported disconnect call.");
             return null;
         }
@@ -383,13 +518,15 @@ public class HibernateUtil {
      * the <tt>hibernateutil.interceptor</tt> system property to its
      * fully qualified class name.
      */
-    public static void registerInterceptorAndRebuild(Interceptor interceptor) {
+    public static void registerInterceptorAndRebuild(Interceptor interceptor)
+    {
         log.debug("Setting new global Hibernate interceptor and restarting.");
         configuration.setInterceptor(interceptor);
         rebuildSessionFactory();
     }
 
-    public static Interceptor getInterceptor() {
+    public static Interceptor getInterceptor()
+    {
         return configuration.getInterceptor();
     }
 
