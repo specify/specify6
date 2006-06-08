@@ -70,6 +70,10 @@
     <icon name="BGImage"  file="splash.jpg" sizes="NonStd"/>
     <!-- <icon name="BGImage"  file="frogs_bg.gif" sizes="NonStd"/> -->
 
+    <icon name="ValidationValid"   file="validation-valid.gif" sizes="NonStd"/>
+    <icon name="ValidationWarning" file="validation-warning.gif" sizes="NonStd"/>
+    <icon name="ValidationError"   file="validation-error.gif" sizes="NonStd"/>
+    
     <icon name="Green Arrow Down" file="green_arrow_down.gif" sizes="16"/>
     <icon name="Green Arrow Up" file="green_arrow_up.gif" sizes="16"/>
 

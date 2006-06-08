@@ -95,7 +95,7 @@ public class UserGroup  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addSpecifyUser(final SpecifyUser specifyUser)
+    public void addSpecifyUsers(final SpecifyUser specifyUser)
     {
         this.specifyUsers.add(specifyUser);
         specifyUser.setUserGroup(this);
@@ -105,7 +105,7 @@ public class UserGroup  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeSpecifyUser(final SpecifyUser specifyUser)
+    public void removeSpecifyUsers(final SpecifyUser specifyUser)
     {
         this.specifyUsers.remove(specifyUser);
         specifyUser.setUserGroup(null);

@@ -69,10 +69,10 @@ public class ValidatedJPanel extends JPanel
      * @param name the name of the component
      * @param comp the component
      */
-    public void addValidationComp(final String name, final Component comp)
+    public void addValidationComp(final String id, final Component comp)
     {
-        formValidator.addUIComp(name, comp);
-        formValidator.addRuleObjectMapping(name, comp);
+        formValidator.addUIComp(id, comp);
+        formValidator.addRuleObjectMapping(id, comp);
     }
 
     /**

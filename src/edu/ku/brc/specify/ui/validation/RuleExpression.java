@@ -37,19 +37,19 @@ public class RuleExpression implements FormValidationRuleIFace
 {
     private static Log log = LogFactory.getLog(RuleExpression.class);
 
-    protected String     name;
+    protected String     id;
     protected String     rule;
     protected Expression expression;
 
     /**
      * Constructor
-     * @param name the name of the rule
+     * @param id the id of the rule
      * @param rule the rule
      */
-    public RuleExpression(final String name,
+    public RuleExpression(final String id,
                           final String rule)
     {
-        this.name = name;
+        this.id   = id;
         this.rule = rule;
 
         try
@@ -107,11 +107,11 @@ public class RuleExpression implements FormValidationRuleIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.validation.FormValidationRuleIFace#getName()
+     * @see edu.ku.brc.specify.ui.validation.FormValidationRuleIFace#getId()
      */
-    public String getName()
+    public String getId()
     {
-        return name;
+        return id;
     }
 
 

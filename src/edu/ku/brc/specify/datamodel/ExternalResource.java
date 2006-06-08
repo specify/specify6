@@ -292,7 +292,7 @@ public class ExternalResource  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addAttr(final ExternalResourceAttr attr)
+    public void addAttrs(final ExternalResourceAttr attr)
     {
         this.attrs.add(attr);
         attr.setExternalResource(this);
@@ -351,7 +351,7 @@ public class ExternalResource  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeAttr(final ExternalResourceAttr attr)
+    public void removeAttrs(final ExternalResourceAttr attr)
     {
         this.attrs.remove(attr);
         attr.setExternalResource(null);

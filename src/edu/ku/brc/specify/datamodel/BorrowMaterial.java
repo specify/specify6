@@ -213,7 +213,7 @@ public class BorrowMaterial  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addBorrowReturnMaterial(final BorrowReturnMaterial borrowReturnMaterial)
+    public void addBorrowReturnMaterials(final BorrowReturnMaterial borrowReturnMaterial)
     {
         this.borrowReturnMaterials.add(borrowReturnMaterial);
         borrowReturnMaterial.setBorrowMaterial(this);
@@ -223,7 +223,7 @@ public class BorrowMaterial  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeBorrowReturnMaterial(final BorrowReturnMaterial borrowReturnMaterial)
+    public void removeBorrowReturnMaterials(final BorrowReturnMaterial borrowReturnMaterial)
     {
         this.borrowReturnMaterials.remove(borrowReturnMaterial);
         borrowReturnMaterial.setBorrowMaterial(null);

@@ -318,7 +318,7 @@ public class Permit  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addExternalResource(final ExternalResource externalResource)
+    public void addExternalResources(final ExternalResource externalResource)
     {
         this.externalResources.add(externalResource);
         externalResource.getPermits().add(this);
@@ -328,7 +328,7 @@ public class Permit  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeExternalResource(final ExternalResource externalResource)
+    public void removeExternalResources(final ExternalResource externalResource)
     {
         this.externalResources.remove(externalResource);
         externalResource.getPermits().remove(this);

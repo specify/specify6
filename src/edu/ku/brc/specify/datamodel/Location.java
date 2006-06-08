@@ -422,13 +422,13 @@ public class Location  implements java.io.Serializable,Treeable {
 
     // Add Methods
 
-    public void addPreparation(final Preparation preparation)
+    public void addPreparations(final Preparation preparation)
     {
         this.preparations.add(preparation);
         preparation.setLocation(this);
     }
 
-    public void addContainer(final Container container)
+    public void addContainers(final Container container)
     {
         this.containers.add(container);
         container.setLocation(this);
@@ -438,13 +438,13 @@ public class Location  implements java.io.Serializable,Treeable {
 
     // Delete Methods
 
-    public void removePreparation(final Preparation preparation)
+    public void removePreparations(final Preparation preparation)
     {
         this.preparations.remove(preparation);
         preparation.setLocation(null);
     }
 
-    public void removeContainer(final Container container)
+    public void removeContainers(final Container container)
     {
         this.containers.remove(container);
         container.setLocation(null);

@@ -707,25 +707,25 @@ public class Locality  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addCollectionObjDef(final CollectionObjDef collectionObjDef)
+    public void addCollectionObjDefs(final CollectionObjDef collectionObjDef)
     {
         this.collectionObjDefs.add(collectionObjDef);
         collectionObjDef.getLocalities().add(this);
     }
 
-    public void addLocalityCitation(final LocalityCitation localityCitation)
+    public void addLocalityCitations(final LocalityCitation localityCitation)
     {
         this.localityCitations.add(localityCitation);
         localityCitation.setLocality(this);
     }
 
-    public void addCollectingEvent(final CollectingEvent collectingEvent)
+    public void addCollectingEvents(final CollectingEvent collectingEvent)
     {
         this.collectingEvents.add(collectingEvent);
         collectingEvent.setLocality(this);
     }
 
-    public void addExternalResource(final ExternalResource externalResource)
+    public void addExternalResources(final ExternalResource externalResource)
     {
         this.externalResources.add(externalResource);
         externalResource.getLocalities().remove(this);
@@ -735,25 +735,25 @@ public class Locality  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeCollectionObjDef(final CollectionObjDef collectionObjDef)
+    public void removeCollectionObjDefs(final CollectionObjDef collectionObjDef)
     {
         this.collectionObjDefs.remove(collectionObjDef);
         collectionObjDef.getLocalities().add(this);
     }
 
-    public void removeLocalityCitation(final LocalityCitation localityCitation)
+    public void removeLocalityCitations(final LocalityCitation localityCitation)
     {
         this.localityCitations.remove(localityCitation);
         localityCitation.setLocality(null);
     }
 
-    public void removeCollectingEvent(final CollectingEvent collectingEvent)
+    public void removeCollectingEvents(final CollectingEvent collectingEvent)
     {
         this.collectingEvents.remove(collectingEvent);
         collectingEvent.setLocality(null);
     }
 
-    public void removeExternalResource(final ExternalResource externalResource)
+    public void removeExternalResources(final ExternalResource externalResource)
     {
         this.externalResources.remove(externalResource);
         externalResource.getLocalities().remove(this);

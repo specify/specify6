@@ -110,15 +110,6 @@ public class TableViewObj implements Viewable
         return false;
     }
 
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.forms.Viewable#getCompByName(java.lang.String)
-     */
-    public Component getCompByName(final String name)
-    {
-        return null;
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#getCompById(java.lang.String)
      */
@@ -223,7 +214,7 @@ public class TableViewObj implements Viewable
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#getFieldNames(java.util.List)
      */
-    public void getFieldNames(final List<String> fieldNames)
+    public void getFieldIds(final List<String> fieldIds)
     {
 
     }

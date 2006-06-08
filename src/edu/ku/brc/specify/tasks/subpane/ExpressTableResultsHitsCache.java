@@ -156,8 +156,7 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
          * @param column the column in question
          * @return the Class of the column
          */
-        @SuppressWarnings("unchecked")
-        public Class getColumnClass(int column)
+        public Class<?> getColumnClass(int column)
         {
             return String.class;
         }

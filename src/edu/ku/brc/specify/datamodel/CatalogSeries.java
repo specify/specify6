@@ -174,7 +174,7 @@ public class CatalogSeries  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addCollectionObjDefItem(final CollectionObjDef collectionObjDefItem)
+    public void addCollectionObjDefItems(final CollectionObjDef collectionObjDefItem)
     {
         this.collectionObjDefItems.add(collectionObjDefItem);
         collectionObjDefItem.getCatalogSeries().add(this);
@@ -184,7 +184,7 @@ public class CatalogSeries  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeCollectionObjDefItem(final CollectionObjDef collectionObjDefItem)
+    public void removeCollectionObjDefItems(final CollectionObjDef collectionObjDefItem)
     {
         this.collectionObjDefItems.remove(collectionObjDefItem);
         collectionObjDefItem.getCatalogSeries().remove(this);

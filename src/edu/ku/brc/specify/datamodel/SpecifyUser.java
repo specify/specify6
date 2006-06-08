@@ -134,13 +134,13 @@ public class SpecifyUser  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addCollectionObjDef(final CollectionObjDef collectionObjDef)
+    public void addCollectionObjDefs(final CollectionObjDef collectionObjDef)
     {
         this.collectionObjDef.add(collectionObjDef);
         collectionObjDef.setSpecifyUser(this);
     }
 
-    public void addRecordSet(final RecordSet recordSet)
+    public void addRecordSets(final RecordSet recordSet)
     {
         this.recordSets.add(recordSet);
         recordSet.setOwner(this);
@@ -150,13 +150,13 @@ public class SpecifyUser  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeCollectionObjDef(final CollectionObjDef collectionObjDef)
+    public void removeCollectionObjDefs(final CollectionObjDef collectionObjDef)
     {
         this.collectionObjDef.remove(collectionObjDef);
         collectionObjDef.setSpecifyUser(null);
     }
 
-    public void removeRecordSet(final RecordSet recordSet)
+    public void removeRecordSets(final RecordSet recordSet)
     {
         this.recordSets.remove(recordSet);
         recordSet.setOwner(null);

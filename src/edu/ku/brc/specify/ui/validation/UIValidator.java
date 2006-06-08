@@ -285,4 +285,13 @@ public class UIValidator
         return type;
     }
 
+    /**
+     * Returns the UIValidatable
+     * @return the UIValidatable
+     */
+    public UIValidatable getUIV()
+    {
+        return uiv;
+    }
+    
 }

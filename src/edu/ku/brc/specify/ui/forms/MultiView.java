@@ -77,7 +77,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     
     protected List<MultiView>              kids            = new ArrayList<MultiView>();
     
-    protected List<GenericDisplayFrame>   displayFrames  = null;
+    protected List<GenericDisplayFrame>    displayFrames   = null;
 
     /**
      * Constructor - Note that createWithMode can be null and is passed in from parent ALWAYS.
@@ -402,7 +402,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         for (FormValidator validator : formValidators)
         {
-            log.info("*** "+validator.isFormValid()+"  "+validator.getName());
+            //log.info("*** "+validator.isFormValid()+"  "+validator.getName());
+            //validator.dumpState(false);
             if (!validator.isFormValid())
             {
                 return false;

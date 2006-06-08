@@ -266,19 +266,19 @@ public class Preparation  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addLoanPhysicalObject(final LoanPhysicalObject loanPhysicalObject)
+    public void addLoanPhysicalObjects(final LoanPhysicalObject loanPhysicalObject)
     {
         this.loanPhysicalObjects.add(loanPhysicalObject);
         loanPhysicalObject.setPreparation(this);
     }
 
-    public void addAttr(final PreparationAttr attr)
+    public void addAttrs(final PreparationAttr attr)
     {
         this.attrs.add(attr);
         attr.setPreparation(this);
     }
 
-    public void addExternalResource(final ExternalResource externalResource)
+    public void addExternalResources(final ExternalResource externalResource)
     {
         this.externalResources.add(externalResource);
         externalResource.getPreparations().add(this);
@@ -288,19 +288,19 @@ public class Preparation  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeLoanPhysicalObject(final LoanPhysicalObject loanPhysicalObject)
+    public void removeLoanPhysicalObjects(final LoanPhysicalObject loanPhysicalObject)
     {
         this.loanPhysicalObjects.remove(loanPhysicalObject);
         loanPhysicalObject.setPreparation(null);
     }
 
-    public void removeAttr(final PreparationAttr attr)
+    public void removeAttrs(final PreparationAttr attr)
     {
         this.attrs.remove(attr);
         attr.setPreparation(null);
     }
 
-    public void removeExternalResource(final ExternalResource externalResource)
+    public void removeExternalResources(final ExternalResource externalResource)
     {
         this.externalResources.remove(externalResource);
         externalResource.getPreparations().remove(this);

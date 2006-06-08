@@ -95,7 +95,7 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
     // Form Stuff
     protected View           formView = null;
     protected Viewable       form     = null;
-    protected List<String>   fieldNames;
+    protected List<String>   fieldIds;
     
     // Members needed for creating results
     protected String         className;
@@ -241,11 +241,11 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
             log.info("Couldn't load form with name ["+viewSetName+"] Id ["+viewName+"]");
         }
         
-        fieldNames = new ArrayList<String>();
-        form.getFieldNames(fieldNames);
-        for (String fieldName : fieldNames)
+        fieldIds = new ArrayList<String>();
+        form.getFieldIds(fieldIds);
+        for (String id : fieldIds)
         {
-            Component comp = form.getCompByName(fieldName);
+            Component comp = form.getCompById(id);
             if (comp instanceof JTextField)
             {
                 ((JTextField)comp).addActionListener(doQuery);
@@ -307,10 +307,10 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
 
     protected void setUIEnabled(final boolean enabled)
     {
-        form.getFieldNames(fieldNames);
-        for (String fieldName : fieldNames)
+        form.getFieldIds(fieldIds);
+        for (String fieldId : fieldIds)
         {
-            Component comp = form.getCompByName(fieldName);
+            Component comp = form.getCompById(fieldId);
             if (comp instanceof JTextField)
             {
                 ((JTextField)comp).setEnabled(enabled);

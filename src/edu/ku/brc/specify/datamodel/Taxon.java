@@ -630,13 +630,13 @@ public class Taxon  implements java.io.Serializable,Treeable {
 
     // Add Methods
 
-    public void addTaxonCitation(final TaxonCitation taxonCitation)
+    public void addTaxonCitations(final TaxonCitation taxonCitation)
     {
         this.taxonCitations.add(taxonCitation);
         taxonCitation.setTaxon(this);
     }
 
-    public void addExternalResource(final ExternalResource externalResource)
+    public void addExternalResources(final ExternalResource externalResource)
     {
         this.externalResources.add(externalResource);
         externalResource.getTaxonomy().add(this);
@@ -646,13 +646,13 @@ public class Taxon  implements java.io.Serializable,Treeable {
 
     // Delete Methods
 
-    public void removeTaxonCitation(final TaxonCitation taxonCitation)
+    public void removeTaxonCitations(final TaxonCitation taxonCitation)
     {
         this.taxonCitations.remove(taxonCitation);
         taxonCitation.setTaxon(null);
     }
 
-    public void removeExternalResource(final ExternalResource externalResource)
+    public void removeExternalResources(final ExternalResource externalResource)
     {
         this.externalResources.remove(externalResource);
         externalResource.getTaxonomy().remove(this);

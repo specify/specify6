@@ -147,7 +147,7 @@ public class HibernateUtil {
         String userHome = System.getProperty("user.home");
         if (userHome.indexOf("rods") > -1)
         {
-            databaseName = "accession";
+            databaseName = "accessions";
         }
         
         // Setup JDBC Connection
@@ -466,6 +466,7 @@ public class HibernateUtil {
      *
      * @param session The Hibernate Session to be reconnected.
      */
+    @SuppressWarnings("deprecation")
     public static void reconnect(Session session)
     {
         if (useThreadLocal)

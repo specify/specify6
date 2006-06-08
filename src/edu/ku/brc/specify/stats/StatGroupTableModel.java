@@ -110,8 +110,7 @@ public class StatGroupTableModel extends AbstractTableModel
     /* (non-Javadoc)
      * @see javax.swing.table.TableModel#getColumnClass(int)
      */
-    @SuppressWarnings("unchecked")
-    public Class getColumnClass(int column)
+    public Class<?> getColumnClass(int column)
     {
         
         Object val = null;

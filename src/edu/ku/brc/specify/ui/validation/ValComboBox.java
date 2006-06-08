@@ -432,6 +432,11 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         } else
         {
             valState = isRequired && comboBox.getSelectedIndex() == -1 ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
+            if (comboBox.getTextField() != null)
+            {
+                comboBox.getTextField().setText("");
+            }
+            comboBox.setSelectedIndex(-1);
         }
 
         repaint();

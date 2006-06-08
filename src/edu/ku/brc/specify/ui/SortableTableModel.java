@@ -97,12 +97,11 @@ public class SortableTableModel implements TableModel, TableModelListener
 
     // contents stuff
 
-    @SuppressWarnings("unchecked")
-    public Class getColumnClass(int columnIndex)
+    public Class<?> getColumnClass(int column)
     {
         if (delegatedModel.getRowCount() > 0)
         {
-            return delegatedModel.getValueAt(0, columnIndex).getClass();
+            return delegatedModel.getValueAt(0, column).getClass();
             
         } else 
         {

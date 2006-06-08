@@ -197,7 +197,7 @@ public class Container  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addItem(final ContainerItem item)
+    public void addItems(final ContainerItem item)
     {
         this.items.add(item);
         item.setContainer(this);
@@ -207,7 +207,7 @@ public class Container  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeItem(final ContainerItem item)
+    public void removeItems(final ContainerItem item)
     {
         this.items.remove(item);
         item.setContainer(null);

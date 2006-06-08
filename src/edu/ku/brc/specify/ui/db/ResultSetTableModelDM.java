@@ -51,7 +51,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
      * @param column the column in question
      * @return the Class of the column
      */
-    public Class getColumnClass(int column)
+    public Class<?> getColumnClass(int column)
     {
         return classNames.size() == 0 ? String.class : 
             (displayColIndexes != null ? (Class)classNames.elementAt(displayColIndexes[column]) : 

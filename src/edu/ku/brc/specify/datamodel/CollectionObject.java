@@ -536,49 +536,49 @@ public class CollectionObject  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addCollectionObjectCitation(final CollectionObjectCitation collectionObjectCitation)
+    public void addCollectionObjectCitations(final CollectionObjectCitation collectionObjectCitation)
     {
         this.collectionObjectCitations.add(collectionObjectCitation);
         collectionObjectCitation.setCollectionObject(this);
     }
 
-    public void addAttr(final CollectionObjectAttr attr)
+    public void addAttrs(final CollectionObjectAttr attr)
     {
         this.attrs.add(attr);
         attr.setCollectionObject(this);
     }
 
-    public void addPreparation(final Preparation preparation)
+    public void addPreparations(final Preparation preparation)
     {
         this.preparations.add(preparation);
         preparation.setCollectionObject(this);
     }
 
-    public void addDetermination(final Determination determination)
+    public void addDeterminations(final Determination determination)
     {
         this.determinations.add(determination);
         determination.setCollectionObject(this);
     }
 
-    public void addProjectCollectionObject(final ProjectCollectionObject projectCollectionObject)
+    public void addProjectCollectionObjects(final ProjectCollectionObject projectCollectionObject)
     {
         this.projectCollectionObjects.add(projectCollectionObject);
         projectCollectionObject.setCollectionObject(this);
     }
 
-    public void addDeaccessionCollectionObject(final DeaccessionCollectionObject deaccessionCollectionObject)
+    public void addDeaccessionCollectionObjects(final DeaccessionCollectionObject deaccessionCollectionObject)
     {
         this.deaccessionCollectionObjects.add(deaccessionCollectionObject);
         deaccessionCollectionObject.setCollectionObjectCatalog(this);
     }
 
-    public void addOtherIdentifier(final OtherIdentifier otherIdentifier)
+    public void addOtherIdentifiers(final OtherIdentifier otherIdentifier)
     {
         this.otherIdentifiers.add(otherIdentifier);
         otherIdentifier.setCollectionObject(this);
     }
 
-    public void addExternalResource(final ExternalResource externalResource)
+    public void addExternalResources(final ExternalResource externalResource)
     {
         this.externalResources.add(externalResource);
         externalResource.getCollectionObjects().add(this);
@@ -588,49 +588,49 @@ public class CollectionObject  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeCollectionObjectCitation(final CollectionObjectCitation collectionObjectCitation)
+    public void removeCollectionObjectCitations(final CollectionObjectCitation collectionObjectCitation)
     {
         this.collectionObjectCitations.remove(collectionObjectCitation);
         collectionObjectCitation.setCollectionObject(null);
     }
 
-    public void removeAttr(final CollectionObjectAttr attr)
+    public void removeAttrs(final CollectionObjectAttr attr)
     {
         this.attrs.remove(attr);
         attr.setCollectionObject(null);
     }
 
-    public void removePreparation(final Preparation preparation)
+    public void removePreparations(final Preparation preparation)
     {
         this.preparations.remove(preparation);
         preparation.setCollectionObject(null);
     }
 
-    public void removeDetermination(final Determination determination)
+    public void removeDeterminations(final Determination determination)
     {
         this.determinations.remove(determination);
         determination.setCollectionObject(null);
     }
 
-    public void removeProjectCollectionObject(final ProjectCollectionObject projectCollectionObject)
+    public void removeProjectCollectionObjects(final ProjectCollectionObject projectCollectionObject)
     {
         this.projectCollectionObjects.remove(projectCollectionObject);
         projectCollectionObject.setCollectionObject(null);
     }
 
-    public void removeDeaccessionCollectionObject(final DeaccessionCollectionObject deaccessionCollectionObject)
+    public void removeDeaccessionCollectionObjects(final DeaccessionCollectionObject deaccessionCollectionObject)
     {
         this.deaccessionCollectionObjects.remove(deaccessionCollectionObject);
         deaccessionCollectionObject.setCollectionObjectCatalog(null);
     }
 
-    public void removeOtherIdentifier(final OtherIdentifier otherIdentifier)
+    public void removeOtherIdentifiers(final OtherIdentifier otherIdentifier)
     {
         this.otherIdentifiers.remove(otherIdentifier);
         otherIdentifier.setCollectionObject(null);
     }
 
-    public void removeExternalResource(final ExternalResource externalResource)
+    public void removeExternalResources(final ExternalResource externalResource)
     {
         this.externalResources.remove(externalResource);
         externalResource.getCollectionObjects().remove(this);

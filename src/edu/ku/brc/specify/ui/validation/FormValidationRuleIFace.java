@@ -49,9 +49,9 @@ public interface FormValidationRuleIFace
     public Scope getScope(); 
     
     /**
-     * Returns the name of the rule
-     * @return the name of the rule
+     * Returns the id of the rule
+     * @return the id of the rule
      */
-    public String getName();
+    public String getId();
     
 }

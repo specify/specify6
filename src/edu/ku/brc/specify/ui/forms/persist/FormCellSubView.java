@@ -47,8 +47,8 @@ public class FormCellSubView extends FormCell
      * @param rowspan row span
      * @param singleValueFromSet althught the data might be a "Set" pass in only the first data obj from the set
      */
-    public FormCellSubView(final String name, 
-                           final String id,
+    public FormCellSubView(final String id,
+                           final String name, 
                            final String viewSetName, 
                            final String viewName, 
                            final String classDesc, 

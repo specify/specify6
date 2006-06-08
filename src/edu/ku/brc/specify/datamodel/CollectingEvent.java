@@ -357,25 +357,25 @@ public class CollectingEvent  implements java.io.Serializable, Comparable<Collec
 
     // Add Methods
 
-    public void addCollectionObject(final CollectionObject collectionObject)
+    public void addCollectionObjects(final CollectionObject collectionObject)
     {
         this.collectionObjects.add(collectionObject);
         collectionObject.setCollectingEvent(this);
     }
 
-    public void addCollector(final Collectors collector)
+    public void addCollectors(final Collectors collector)
     {
         this.collectors.add(collector);
         collector.setCollectingEvent(this);
     }
 
-    public void addAttr(final CollectingEventAttr attr)
+    public void addAttrs(final CollectingEventAttr attr)
     {
         this.attrs.add(attr);
         attr.setCollectingEvent(this);
     }
 
-    public void addExternalResource(final ExternalResource externalResource)
+    public void addExternalResources(final ExternalResource externalResource)
     {
         this.externalResources.add(externalResource);
         externalResource.getCollectinEvents().add(this);
@@ -385,25 +385,25 @@ public class CollectingEvent  implements java.io.Serializable, Comparable<Collec
 
     // Delete Methods
 
-    public void removeCollectionObject(final CollectionObject collectionObject)
+    public void removeCollectionObjects(final CollectionObject collectionObject)
     {
         this.collectionObjects.remove(collectionObject);
         collectionObject.setCollectingEvent(null);
     }
 
-    public void removeCollector(final Collectors collector)
+    public void removeCollectors(final Collectors collector)
     {
         this.collectors.remove(collector);
         collector.setCollectingEvent(null);
     }
 
-    public void removeAttr(final CollectingEventAttr attr)
+    public void removeAttrs(final CollectingEventAttr attr)
     {
         this.attrs.remove(attr);
         attr.setCollectingEvent(null);
     }
 
-    public void removeExternalResource(final ExternalResource externalResource)
+    public void removeExternalResources(final ExternalResource externalResource)
     {
         this.externalResources.remove(externalResource);
         externalResource.getCollectinEvents().remove(null);

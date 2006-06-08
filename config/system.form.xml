@@ -1,83 +1,161 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <viewset name="SystemSetup" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   
-  <view id="500" name="Pick List" 
-         class="edu.ku.brc.specify.ui.db.PickList" 
-         gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
-         type="form"
-         useresourcelabels="false"
-         validate="true">
-   	<desc><![CDATA[Form for editing an Info Request]]></desc>
-	<enableRules>
-		<rule name="sizeLimit"><![CDATA[readOnly.isSelected() == false]]></rule>
-		<rule name="RemoveItem"><![CDATA[items.getSelectedIndex() != -1]]></rule>
-		<rule name="AddItem"><![CDATA[title.isNotEmpty() && value.isNotEmpty()]]></rule>
-		<rule name="name"><![CDATA[dataObj.getCreated() == null]]></rule>
-		<rule name="deletePL"><![CDATA[dataObj.getCreated() != null && processor.getNumUsed() == 0]]></rule>
-	</enableRules>
-    <columnDef>r:p, 2dlu, l:p</columnDef>
-    <rowDef>p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p</rowDef>
-    <rows>
-      <row>
-        <cell type="separator" label="Pick List" colspan="3"/>
-      </row>
-      <row>
-        <cell type="label" labelfor="name" label="Name"/>
-        <cell type="field" name="name" isrequired="true" valtype="Changed">
-        	<validation><![CDATA[processor.doEvaluate()]]></validation>
-        </cell>
-      </row>
-      <row>
-        <cell type="label" labelfor="checkBox" label=""/>
-        <cell type="field" name="readOnly" label="Read Only" uitype="checkbox" />
-      </row>
-      <row>
-        <cell type="label" labelfor="sizeLimit" label="Size Limit"/>
-        <cell type="field" name="sizeLimit" cols="5" isrequired="true"/>
-      </row>
-      <row>
-        <cell type="label" labelfor="items" label="Items"/>
-        <cell type="panel" name="outerPanel" coldef="max(120px;p),5px,p" rowdef="p">
-		    <rows>
-		      <row>
-		         <cell type="field" name="items" uitype="list"/>
-		         <cell type="panel" name="innerPanel" coldef="p" rowdef="p,20px,p">
-				    <rows>
-				      <row>
-				         <cell type="command" name="RemoveItem" label="Remove Item" commandtype="" action="" ignore="true"/>
-				      </row>
-				      <row>
-				         <cell type="command" name="AddItem" label="Add Item" commandtype="" action="" ignore="true"/>
-				      </row>
-				    </rows>
-		         </cell>
-		      </row>
-		    </rows>
-        </cell>
-      </row>
-       <row>
-        <cell type="label" labelfor="title" label="Item Title"/>
-        <cell type="field" name="title" cols="25" ignore="true" changesonly="true"/>
-      </row>
-       <row>
-        <cell type="label" labelfor="value" label="Value"/>
-        <cell type="field" name="value" cols="25" ignore="true" changesonly="true"/>
-      </row>
-       <row>
-        <cell type="label" labelfor="value" label="Used In Forms" />
-        <cell type="field" name="usedInForms" uitype="list" ignore="true" initialize="rows=5"/>
-      </row>
-       <row>
-          <cell type="panel" name="btnPanel" paneltype="buttonbar" colspan="3">
-		    <rows>
-		      <row>
-		         <cell type="command" name="deletePL" label="Delete" commandtype="" action="" ignore="true"/>
-		         <cell type="command" name="savePL" label="Save Changes" commandtype="" action="" ignore="true"/>
-		      </row>
-		    </rows>
-		</cell>
-      </row>
-    </rows>
-  </view>
+    <views>
+        <view name="PickList"
+            class="edu.ku.brc.specify.ui.db.PickList"
+            resourcelabels="false"
+            >
+            <desc><![CDATA[The Collection Object form.]]></desc>
+            <altviews>
+                <altview name="Pick List View" viewdef="PickList" label="View" mode="view" validated="false"/>
+                <altview name="Pick List Edit" viewdef="PickList" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+            
+        </view>
+        
+        <view name="DatabaseLogon"
+            class="java.util.Hashtable"
+            resourcelabels="false">
+            <desc><![CDATA[Database Login]]></desc>
+            <altviews>
+                <altview name="DatabaseLogon" viewdef="DatabaseLogon" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
+    </views>
   
+    <viewdefs>
+        <viewdef
+            type="form"
+            name="PickList"
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
+            gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.specify.ui.forms.DataSetterForObj">
+            
+            
+            <desc><![CDATA[Form for editing an Info Request]]></desc>
+            <enableRules>
+                <rule name="sizeLimit"><![CDATA[readOnly.isSelected() == false]]></rule>
+                <rule name="RemoveItem"><![CDATA[items.getSelectedIndex() != -1]]></rule>
+                <rule name="AddItem"><![CDATA[title.isNotEmpty() && value.isNotEmpty()]]></rule>
+                <rule name="name"><![CDATA[dataObj.getCreated() == null]]></rule>
+                <rule name="deletePL"><![CDATA[dataObj.getCreated() != null && processor.getNumUsed() == 0]]></rule>
+            </enableRules>
+            <columnDef>r:p, 2dlu, l:p</columnDef>
+            <rowDef>p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p, 2dlu, p</rowDef>
+            <rows>
+                <row>
+                    <cell type="separator" label="Pick List" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="name" label="Name"/>
+                    <cell type="field" id="name" name="name" isrequired="true" valtype="Changed">
+                        <validation><![CDATA[processor.doEvaluate()]]></validation>
+                    </cell>
+                </row>
+                <row>
+                    <cell type="label" labelfor="readOnly" label=""/>
+                    <cell type="field" id="readOnly" name="readOnly" label="Read Only" uitype="checkbox" />
+                </row>
+                <row>
+                    <cell type="label" labelfor="sizeLimit" label="Size Limit"/>
+                    <cell type="field" id="sizeLimit" name="sizeLimit" cols="5" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="items" label="Items"/>
+                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="max(120px;p),5px,p" rowdef="p">
+                        <rows>
+                            <row>
+                                <cell type="field" id="items" name="items" uitype="list"/>
+                                <cell type="panel" id="innerPanel" name="innerPanel" coldef="p" rowdef="p,20px,p">
+                                    <rows>
+                                        <row>
+                                            <cell type="command" id="RemoveItem" name="RemoveItem" label="Remove Item" commandtype="" action="" ignore="true"/>
+                                        </row>
+                                        <row>
+                                            <cell type="command" id="AddItem" name="AddItem" label="Add Item" commandtype="" action="" ignore="true"/>
+                                        </row>
+                                    </rows>
+                                </cell>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+                <row>
+                    <cell type="label" labelfor="title" label="Item Title"/>
+                    <cell type="field" id="title" name="title" cols="25" ignore="true" changesonly="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="value" label="Value"/>
+                    <cell type="field" id="value" name="value" cols="25" ignore="true" changesonly="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="value" label="Used In Forms" />
+                    <cell type="field" id="value" name="usedInForms" uitype="list" ignore="true" initialize="rows=5"/>
+                </row>
+                <row>
+                    <cell type="panel" id="btnPanel" name="btnPanel" paneltype="buttonbar" colspan="3">
+                        <rows>
+                            <row>
+                                <cell type="command" id="deletePL" name="deletePL" label="Delete" commandtype="" action="" ignore="true"/>
+                                <cell type="command" id="savePL" name="savePL" label="Save Changes" commandtype="" action="" ignore="true"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="DatabaseLogon"
+            class="java.util.Hashtable"
+            gettable="edu.ku.brc.specify.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.specify.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[Database Logon]]></desc>
+            <enableRules>
+                <rule name="getDBs"><![CDATA[username.isNotEmpty() && password.isNotEmpty() && servers.getComboBox().getSelectedIndex() > -1]]></rule>
+                <!-- <rule name="databases"><![CDATA[items.getSelectedIndex() != -1]]></rule> -->
+            </enableRules>
+            <columnDef>p,3dlu,p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Specify Login" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="username" label="Username"/>
+                    <cell type="field" id="username" name="Username" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="password" label="Password"/>
+                    <cell type="field" id="password" name="password" uitype="password"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="databases" label="Databases"/>
+                    <cell type="field" id="databases" name="databases" uitype="combobox"/>
+                    <cell type="command" id="getDBs" name="getDBs" label="Get Databases" commandtype="" action="" ignore="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="servers" label="Servers"/>
+                    <cell type="field" id="servers" name="servers" uitype="combobox"/>
+                </row>
+                <row>
+                    <cell type="panel" id="btnPanel" name="btnPanel" paneltype="buttonbar" colspan="5">
+                        <rows>
+                            <row>
+                                <cell type="command" id="login" name="login" label="Login" commandtype="" action="" ignore="true"/>
+                                <cell type="command" id="cancel" name="cancel" label="Cancel" commandtype="" action="" ignore="true"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>                
+            </rows>
+        </viewdef>
+        
+    </viewdefs>
+        
 </viewset>

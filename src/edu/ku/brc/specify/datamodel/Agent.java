@@ -638,43 +638,43 @@ public class Agent  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addAuthor(final Authors author)
+    public void addAuthors(final Authors author)
     {
         this.authors.add(author);
         author.setAgent(this);
     }
 
-    public void addLoanReturnPhysicalObject(final LoanReturnPhysicalObject loanReturnPhysicalObject)
+    public void addLoanReturnPhysicalObjects(final LoanReturnPhysicalObject loanReturnPhysicalObject)
     {
         this.loanReturnPhysicalObjects.add(loanReturnPhysicalObject);
         loanReturnPhysicalObject.setAgent(this);
     }
 
-    public void addBorrowReturnMaterial(final BorrowReturnMaterial borrowReturnMaterial)
+    public void addBorrowReturnMaterials(final BorrowReturnMaterial borrowReturnMaterial)
     {
         this.borrowReturnMaterials.add(borrowReturnMaterial);
         borrowReturnMaterial.setAgent(this);
     }
 
-    public void addMember(final Agent member)
+    public void addMembers(final Agent member)
     {
         this.members.add(member);
         member.getMembers().add(this);
     }
 
-    public void addProject(final Project project)
+    public void addProjects(final Project project)
     {
         this.projects.add(project);
         project.setAgent(this);
     }
     
-    public void addExternalResource(final ExternalResource externalResource)
+    public void addExternalResources(final ExternalResource externalResource)
     {
         this.externalResources.add(externalResource);
         externalResource.getAgents().add(this);
     }
 
-    public void addAddress(final Address address)
+    public void addAddresses(final Address address)
     {
         this.addresses.add(address);
         address.setAgent(this);
@@ -686,25 +686,25 @@ public class Agent  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeMember(final Agent member)
+    public void removeMembers(final Agent member)
     {
         this.members.remove(member);
         member.getMembers().remove(this);
     }
 
-    public void removeProject(final Project project)
+    public void removeProjects(final Project project)
     {
         this.projects.remove(project);
         project.setAgent(null);
     }
 
-    public void removeExternalResource(final ExternalResource externalResource)
+    public void removeExternalResources(final ExternalResource externalResource)
     {
         this.externalResources.remove(externalResource);
         externalResource.getAgents().remove(this);
     }
     
-    public void removeAddress(final Address address)
+    public void removeAddresses(final Address address)
     {
         this.addresses.remove(address);
         address.setAgent(null);

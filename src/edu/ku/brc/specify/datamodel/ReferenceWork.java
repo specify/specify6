@@ -408,31 +408,31 @@ public class ReferenceWork  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addLocalityCitation(final LocalityCitation localityCitation)
+    public void addLocalityCitations(final LocalityCitation localityCitation)
     {
         this.localityCitations.add(localityCitation);
         localityCitation.setReferenceWork(this);
     }
 
-    public void addCollectionObjectCitation(final CollectionObjectCitation collectionObjectCitation)
+    public void addCollectionObjectCitations(final CollectionObjectCitation collectionObjectCitation)
     {
         this.collectionObjectCitations.add(collectionObjectCitation);
         collectionObjectCitation.setReferenceWork(this);
     }
 
-    public void addTaxonCitation(final TaxonCitation taxonCitation)
+    public void addTaxonCitations(final TaxonCitation taxonCitation)
     {
         this.taxonCitations.add(taxonCitation);
         taxonCitation.setReferenceWork(this);
     }
 
-    public void addDeterminationCitation(final DeterminationCitation determinationCitation)
+    public void addDeterminationCitations(final DeterminationCitation determinationCitation)
     {
         this.determinationCitations.add(determinationCitation);
         determinationCitation.setReferenceWork(this);
     }
 
-    public void addAuthor(final Authors author)
+    public void addAuthors(final Authors author)
     {
         this.authors.add(author);
         author.setReferenceWork(this);
@@ -442,31 +442,31 @@ public class ReferenceWork  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeLocalityCitation(final LocalityCitation localityCitation)
+    public void removeLocalityCitations(final LocalityCitation localityCitation)
     {
         this.localityCitations.remove(localityCitation);
         localityCitation.setReferenceWork(null);
     }
 
-    public void removeCollectionObjectCitation(final CollectionObjectCitation collectionObjectCitation)
+    public void removeCollectionObjectCitations(final CollectionObjectCitation collectionObjectCitation)
     {
         this.collectionObjectCitations.remove(collectionObjectCitation);
         collectionObjectCitation.setReferenceWork(null);
     }
 
-    public void removeTaxonCitation(final TaxonCitation taxonCitation)
+    public void removeTaxonCitations(final TaxonCitation taxonCitation)
     {
         this.taxonCitations.remove(taxonCitation);
         taxonCitation.setReferenceWork(null);
     }
 
-    public void removeDeterminationCitation(final DeterminationCitation determinationCitation)
+    public void removeDeterminationCitations(final DeterminationCitation determinationCitation)
     {
         this.determinationCitations.remove(determinationCitation);
         determinationCitation.setReferenceWork(null);
     }
 
-    public void removeAuthor(final Authors author)
+    public void removeAuthors(final Authors author)
     {
         this.authors.remove(author);
         author.setReferenceWork(null);

@@ -473,12 +473,6 @@ public class ViewLoader
                                 log.error("Both format and formatname cannot both be set! ["+cellName+"] ignoring format");
                                 format = "";
                             }
-                            
-                            if (cellName.equals("agentAddressByIssuer.agent"))
-                            {
-                                int x = 0;
-                                x++;
-                            }
 
                             Hashtable<String, String> properties = null;
                             
@@ -509,7 +503,7 @@ public class ViewLoader
                             } else if (uitype.equals("formattedtext"))
                             {
                                 validationRule = getAttr(cellElement, "validation", "formatted");
-                                dspUIType = getAttr(cellElement, "dspuitype", "dsptextfield");
+                                dspUIType      = getAttr(cellElement, "dspuitype", "dsptextfield");
                                 if (isNotEmpty(uiFieldFormatter))
                                 {
                                     Formatter formatter = UIFieldFormatterMgr.getFormatter(uiFieldFormatter);

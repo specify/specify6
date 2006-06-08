@@ -318,7 +318,7 @@ public class Determination  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addDeterminationCitation(final DeterminationCitation determinationCitation)
+    public void addDeterminationCitations(final DeterminationCitation determinationCitation)
     {
         this.determinationCitations.add(determinationCitation);
         determinationCitation.setDetermination(this);
@@ -328,7 +328,7 @@ public class Determination  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeDeterminationCitation(final DeterminationCitation determinationCitation)
+    public void removeDeterminationCitations(final DeterminationCitation determinationCitation)
     {
         this.determinationCitations.remove(determinationCitation);
         determinationCitation.setDetermination(null);

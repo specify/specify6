@@ -109,7 +109,7 @@ public class ContainerItem  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addCollectionObject(final CollectionObject collectionObject)
+    public void addCollectionObjects(final CollectionObject collectionObject)
     {
         this.collectionObjects.add(collectionObject);
         collectionObject.setContainerItem(this);
@@ -119,7 +119,7 @@ public class ContainerItem  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeCollectionObject(final CollectionObject collectionObject)
+    public void removeCollectionObjects(final CollectionObject collectionObject)
     {
         this.collectionObjects.remove(collectionObject);
         collectionObject.setContainerItem(null);

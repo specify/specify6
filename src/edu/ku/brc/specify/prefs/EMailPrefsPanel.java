@@ -157,6 +157,8 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
      */
     protected void testSettings()
     {
+        /*
+        -- this use IDs instead of names
         String usernameStr     = (String)form.getDataFromUIComp("username");
         String passwordStr     = (String)form.getDataFromUIComp("password");
         String smtpStr         = (String)form.getDataFromUIComp("smtp");
@@ -338,7 +340,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
         checkerDialog.getContentPane().doLayout();
         checkerDialog.getContentPane().repaint();
         checkerDialog.setSize(checkerDialog.getPreferredSize());
-
+*/
     }
     
     //--------------------------------------------------------------------

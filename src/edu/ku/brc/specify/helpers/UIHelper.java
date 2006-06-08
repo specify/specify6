@@ -578,33 +578,35 @@ public final class UIHelper
      */
     public static boolean initAndAddToParent(final Object parentDataObj, final Object newDataObj)
     {
-        if (parentDataObj != null)
+        try
         {
-            String methodName = "add" + newDataObj.getClass().getSimpleName();
-            log.info("Invoking method["+methodName+"]");
-            try
-            {
-                Method method = newDataObj.getClass().getMethod("initialize", new Class[] {});
-                method.invoke(newDataObj, new Object[] {});
+            Method method = newDataObj.getClass().getMethod("initialize", new Class[] {});
+            method.invoke(newDataObj, new Object[] {});
 
+            if (parentDataObj != null)
+            {
+                String methodName = "add" + newDataObj.getClass().getSimpleName();
+                log.info("Invoking method["+methodName+"]");
+                
                 method = parentDataObj.getClass().getMethod(methodName, new Class[] {newDataObj.getClass()});
                 method.invoke(parentDataObj, new Object[] {newDataObj});
                 log.info("Adding ["+newDataObj+"] to parent Set["+parentDataObj+"]");
-                return true;
-
-            } catch (NoSuchMethodException ex)
-            {
-                ex.printStackTrace();
-
-            } catch (IllegalAccessException ex)
-            {
-                ex.printStackTrace();
-
-            } catch (InvocationTargetException ex)
-            {
-                ex.printStackTrace();
             }
+            return true;
+
+        } catch (NoSuchMethodException ex)
+        {
+            ex.printStackTrace();
+
+        } catch (IllegalAccessException ex)
+        {
+            ex.printStackTrace();
+
+        } catch (InvocationTargetException ex)
+        {
+            ex.printStackTrace();
         }
+
         return false;
     }
 

@@ -331,19 +331,19 @@ public class Loan  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addLoanAgent(final LoanAgents loanAgent)
+    public void addLoanAgents(final LoanAgents loanAgent)
     {
         this.loanAgents.add(loanAgent);
         loanAgent.setLoan(this);
     }
 
-    public void addLoanPhysicalObject(final LoanPhysicalObject loanPhysicalObject)
+    public void addLoanPhysicalObjects(final LoanPhysicalObject loanPhysicalObject)
     {
         this.loanPhysicalObjects.add(loanPhysicalObject);
         loanPhysicalObject.setLoan(this);
     }
 
-    public void addExternalResource(final ExternalResource externalResource)
+    public void addExternalResources(final ExternalResource externalResource)
     {
         this.externalResources.add(externalResource);
         externalResource.getLoans().add(this);
@@ -353,19 +353,19 @@ public class Loan  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeLoanAgent(final LoanAgents loanAgent)
+    public void removeLoanAgents(final LoanAgents loanAgent)
     {
         this.loanAgents.remove(loanAgent);
         loanAgent.setLoan(null);
     }
 
-    public void removeLoanPhysicalObject(final LoanPhysicalObject loanPhysicalObject)
+    public void removeLoanPhysicalObjects(final LoanPhysicalObject loanPhysicalObject)
     {
         this.loanPhysicalObjects.remove(loanPhysicalObject);
         loanPhysicalObject.setLoan(null);
     }
 
-    public void removeExternalResource(final ExternalResource externalResource)
+    public void removeExternalResources(final ExternalResource externalResource)
     {
         this.externalResources.remove(externalResource);
         externalResource.getLoans().remove(this);

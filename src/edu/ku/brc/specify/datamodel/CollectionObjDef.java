@@ -205,7 +205,7 @@ public class CollectionObjDef  implements java.io.Serializable {
         catalogSeries.getCollectionObjDefItems().add(this);
     }
 
-    public void addAttributeDef(final AttributeDef attributeDef)
+    public void addAttributeDefs(final AttributeDef attributeDef)
     {
         this.attributeDefs.add(attributeDef);
         attributeDef.setCollectionObjDef(this);
@@ -227,7 +227,7 @@ public class CollectionObjDef  implements java.io.Serializable {
         catalogSeries.getCollectionObjDefItems().remove(this);
     }
 
-    public void removeAttributeDef(final AttributeDef attributeDef)
+    public void removeAttributeDefs(final AttributeDef attributeDef)
     {
         this.attributeDefs.remove(attributeDef);
         attributeDef.setCollectionObjDef(null);

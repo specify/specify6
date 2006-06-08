@@ -74,30 +74,30 @@ public class DataChangeNotifier implements FocusListener,
     protected Vector<DataChangeListener> dcListeners    = new Vector<DataChangeListener>();
 
     protected Component                  comp;
-    protected String                     name;
+    protected String                     id;
     protected String                     cachedData     = null;
     
     /**
      * Constructor
-     * @param name the name
+     * @param id the id
      * @param comp the component
      * @param uiv the UI validator
      */
-    public DataChangeNotifier(String name, Component comp, UIValidator uiv)
+    public DataChangeNotifier(String id, Component comp, UIValidator uiv)
     {
-        this.name = name;
+        this.id   = id;
         this.comp = comp;
         this.uiv  = uiv;
     }
     
     /**
      * Constructor with no validator
-     * @param name the name
+     * @param id the id
      * @param comp the component
      */
-    public DataChangeNotifier(String name, Component comp)
+    public DataChangeNotifier(String id, Component comp)
     {
-        this.name = name;
+        this.id   = id;
         this.comp = comp;
         this.uiv  = null;
     }
@@ -125,13 +125,13 @@ public class DataChangeNotifier implements FocusListener,
      */
     protected void notifyDataChangeListeners()
     {
-        log.info("DataChangeNotifier - notifyDataChangeListeners");
+        //log.info("DataChangeNotifier - notifyDataChangeListeners");
         
         hasDataChanged = true;
         
         for (DataChangeListener dcl : dcListeners)
         {
-            dcl.dataChanged(name, comp, this);
+            dcl.dataChanged(id, comp, this);
         }
     }
     
@@ -243,19 +243,19 @@ public class DataChangeNotifier implements FocusListener,
     }
 
     /**
-     * @return Returns the name.
+     * @return Returns the id.
      */
-    public String getName()
+    public String getId()
     {
-        return name;
+        return id;
     }
 
     /**
-     * @param name The name to set.
+     * @param name The id to set.
      */
-    public void setName(String name)
+    public void setId(String id)
     {
-        this.name = name;
+        this.id = id;
     }
 
     /**
@@ -319,20 +319,26 @@ public class DataChangeNotifier implements FocusListener,
     {
         //log.info("["+((JTextComponent)comp).getText()+"]["+cachedData+"]");
 
-        if (uiv != null && uiv.getType() == UIValidator.Type.Focus)
-        {
-            uiv.validate();
-        }
-        
         if (comp instanceof UIValidatable)
         {
             if (((UIValidatable)comp).isChanged())
             {
+                if (uiv != null && uiv.getType() == UIValidator.Type.Focus)
+                {
+                    uiv.validate();
+                }
+                
                 notifyDataChangeListeners();
             }
             
         } else
         {
+            // XXX Not sure we should be validating unless it changes
+            if (uiv != null && uiv.getType() == UIValidator.Type.Focus)
+            {
+                uiv.validate();
+            }
+            
             if (cachedData != null && !cachedData.equals(getValueForControl(comp)))
             {
                 notifyDataChangeListeners();

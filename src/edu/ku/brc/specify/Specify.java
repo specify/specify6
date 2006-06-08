@@ -74,8 +74,6 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.specify.config.SpecifyConfig;
 import edu.ku.brc.specify.core.ContextMgr;
-import edu.ku.brc.specify.dbsupport.DBConnection;
-import edu.ku.brc.specify.dbsupport.DatabaseLogon;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.helpers.XMLHelper;
@@ -835,15 +833,14 @@ public class Specify extends JPanel
   public static void main(String[] args)
   {
 
-      Specify specify = new Specify(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration());
 
       // Create Specify Application
-      /*SwingUtilities.invokeLater(new Runnable() {
+      SwingUtilities.invokeLater(new Runnable() {
           public void run()
           {
-              Specify specify = new Specify(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration());
+              @SuppressWarnings("unused") Specify specify = new Specify(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration());
           }
-    });*/
+    });
 
 
   }

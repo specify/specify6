@@ -161,7 +161,7 @@ public class DeaccessionCollectionObject  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addLoanReturnPhysicalObject(final LoanReturnPhysicalObject loanReturnPhysicalObject)
+    public void addLoanReturnPhysicalObjects(final LoanReturnPhysicalObject loanReturnPhysicalObject)
     {
         this.loanReturnPhysicalObjects.add(loanReturnPhysicalObject);
         loanReturnPhysicalObject.setDeaccessionCollectionObject(this);
@@ -171,7 +171,7 @@ public class DeaccessionCollectionObject  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeLoanReturnPhysicalObject(final LoanReturnPhysicalObject loanReturnPhysicalObject)
+    public void removeLoanReturnPhysicalObjects(final LoanReturnPhysicalObject loanReturnPhysicalObject)
     {
         this.loanReturnPhysicalObjects.remove(loanReturnPhysicalObject);
         loanReturnPhysicalObject.setDeaccessionCollectionObject(null);

@@ -173,25 +173,25 @@ public class AttributeDef  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addCollectingEventAttr(final CollectingEventAttr collectingEventAttr)
+    public void addCollectingEventAttrs(final CollectingEventAttr collectingEventAttr)
     {
         this.collectingEventAttrs.add(collectingEventAttr);
         collectingEventAttr.setDefinition(this);
     }
 
-    public void addPreparationAttr(final PreparationAttr preparationAttr)
+    public void addPreparationAttrs(final PreparationAttr preparationAttr)
     {
         this.preparationAttr.add(preparationAttr);
         preparationAttr.setDefinition(this);
     }
 
-    public void addCollectionObjectAttr(final CollectionObjectAttr collectionObjectAttr)
+    public void addCollectionObjectAttrs(final CollectionObjectAttr collectionObjectAttr)
     {
         this.collectionObjectAttrs.add(collectionObjectAttr);
         collectionObjectAttr.setDefinition(this);
     }
 
-    public void addExternalResource(final ExternalResourceAttr externalResourceAttr)
+    public void addExternalResourcesAttrs(final ExternalResourceAttr externalResourceAttr)
     {
         this.externalResourcesAttrs.add(externalResourceAttr);
         externalResourceAttr.setDefinition(this);
@@ -201,25 +201,25 @@ public class AttributeDef  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeCollectingEventAttr(final CollectingEventAttr collectingEventAttr)
+    public void removeCollectingEventAttrs(final CollectingEventAttr collectingEventAttr)
     {
         this.collectingEventAttrs.remove(collectingEventAttr);
         collectingEventAttr.setCollectingEvent(null);
     }
 
-    public void removePreparationAttr(final PreparationAttr preparationAttr)
+    public void removePreparationAttrs(final PreparationAttr preparationAttr)
     {
         this.preparationAttr.remove(preparationAttr);
         preparationAttr.setPreparation(null);
     }
 
-    public void removeCollectionObjectAttr(final CollectionObjectAttr collectionObjectAttr)
+    public void removeCollectionObjectAttrs(final CollectionObjectAttr collectionObjectAttr)
     {
         this.collectionObjectAttrs.remove(collectionObjectAttr);
         collectionObjectAttr.setCollectionObject(null);
     }
 
-    public void removeExternalResource(final ExternalResourceAttr externalResource)
+    public void removeExternalResourcesAttrs(final ExternalResourceAttr externalResource)
     {
         this.externalResourcesAttrs.remove(externalResource);
         externalResource.setExternalResource(null);

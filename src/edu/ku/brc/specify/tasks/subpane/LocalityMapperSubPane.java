@@ -307,7 +307,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         formViewObj = (FormViewObj)multiView.getCurrentView();
         formViewObj.getUIComponent().setBackground(Color.WHITE);
 
-        imageJList = (JList)formViewObj.getCompByName("taxonItems");
+        imageJList = (JList)formViewObj.getCompById("taxonItems");
         imageJList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e)
             {
@@ -329,7 +329,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
                     if (StringUtils.isNotEmpty(name))
                     {
                         img = imageMap.get(name); // might return null
-                        ImageDisplay imgDisplay = (ImageDisplay)formViewObj.getCompByName("image");
+                        ImageDisplay imgDisplay = (ImageDisplay)formViewObj.getCompById("image");
                         if (img != null)
                         {
                             imgDisplay.setImage(new ImageIcon(img));

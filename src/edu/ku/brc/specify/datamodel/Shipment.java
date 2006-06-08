@@ -344,19 +344,19 @@ public class Shipment  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addBorrowShipment(final BorrowShipments borrowShipment)
+    public void addBorrowShipments(final BorrowShipments borrowShipment)
     {
         this.borrowShipments.add(borrowShipment);
         borrowShipment.setShipment(this);
     }
 
-    public void addLoan(final Loan loan)
+    public void addLoans(final Loan loan)
     {
         this.loans.add(loan);
         loan.setShipment(this);
     }
 
-    public void addExchangeOut(final ExchangeOut exchangeOut)
+    public void addExchangeOuts(final ExchangeOut exchangeOut)
     {
         this.exchangeOuts.add(exchangeOut);
         exchangeOut.setShipment(this);
@@ -366,19 +366,19 @@ public class Shipment  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeBorrowShipment(final BorrowShipments borrowShipment)
+    public void removeBorrowShipments(final BorrowShipments borrowShipment)
     {
         this.borrowShipments.remove(borrowShipment);
         borrowShipment.setShipment(null);
     }
 
-    public void removeLoan(final Loan loan)
+    public void removeLoans(final Loan loan)
     {
         this.loans.remove(loan);
         loan.setShipment(null);
     }
 
-    public void removeExchangeOut(final ExchangeOut exchangeOut)
+    public void removeExchangeOuts(final ExchangeOut exchangeOut)
     {
         this.exchangeOuts.remove(exchangeOut);
         exchangeOut.setShipment(null);

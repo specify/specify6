@@ -97,10 +97,9 @@ public class TableViewObjModel extends AbstractTableModel
      *            the column in question
      * @return the Class of the column
      */
-    @SuppressWarnings("unchecked")
-    public Class getColumnClass(int aColumn)
+    public Class<?> getColumnClass(int column)
     {
-        return ((ColumnInfo) _colInfo.elementAt(aColumn))._class;
+        return ((ColumnInfo) _colInfo.elementAt(column))._class;
     }
 
     /**

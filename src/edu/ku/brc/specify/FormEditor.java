@@ -33,7 +33,6 @@ import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectionObject;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollector;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDataType;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDetermination;
-import static edu.ku.brc.specify.tests.ObjCreatorHelper.createGeography;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createLocality;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPrepType;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPreparation;
@@ -44,51 +43,32 @@ import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserGroup;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
-import java.awt.FileDialog;
-import java.awt.Frame;
-import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpConnection;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
-import org.dom4j.Node;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -100,7 +80,6 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
-//import com.jhlabs.image.TwirlFilter;
 
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
@@ -123,12 +102,11 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.dbsupport.DBConnection;
+import edu.ku.brc.specify.dbsupport.DatabaseLogon;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.extras.BGMRecordTableModel;
 import edu.ku.brc.specify.helpers.EMailHelper;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.helpers.XMLHelper;
-import edu.ku.brc.specify.plugins.BioGeoMancer;
 import edu.ku.brc.specify.prefs.PrefMainPanel;
 import edu.ku.brc.specify.tests.CreateTestDatabases;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
@@ -172,16 +150,7 @@ public class FormEditor
     public FormEditor()
     {
 
-        DBConnection.setUsernamePassword("rods", "rods");
-        DBConnection.setDriver("com.mysql.jdbc.Driver");
-        DBConnection.setDBName("jdbc:mysql://localhost/demo_fish3");
-
-        init();
-    }
-
-    protected void init()
-    {
-        //dataType = createDataTypes("Animal");
+        HibernateUtil.initialize(); // This also sets up the DBConnection params for the JDBC driver
     }
 
     /**
@@ -357,8 +326,8 @@ public class FormEditor
      */
     protected Viewable createView(View view)
     {
-        multiView   = new MultiView(null, view, AltView.CreationMode.View, false, false);
-        //multiView   = new MultiView(null, view, AltView.CreationMode.Edit, true, true);
+        //multiView   = new MultiView(null, view, AltView.CreationMode.View, false, false);
+        multiView   = new MultiView(null, view, AltView.CreationMode.Edit, true, true);
         contentPane.removeAll();
         builder.add(multiView, cc.xy(1,1));
 
@@ -443,6 +412,9 @@ public class FormEditor
                 if (doDB)
                 {
                     Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setMaxResults(10);
+                    Session s = HibernateUtil.getCurrentSession();
+                    System.out.println("!!!!! "+HibernateUtil.getCurrentSession());
+                    
                     //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setFetchMode(Accession.class.getName(), FetchMode.DEFAULT).setMaxResults(300);
                     java.util.List list = criteria.list();//session.find("from collev");
                     dataObj = list;
@@ -591,15 +563,50 @@ public class FormEditor
         */
     }
 
-     /**
-     * Create the GUI and show it.  For thread safety,
-     * this method should be invoked from the
-     * event-dispatching thread.
-     */
-    private void initialize()
-    {
-        AppPrefs.initialPrefs(); // Must be done first thing!
+    /**
+    * Create the GUI and show it.  For thread safety,
+    * this method should be invoked from the
+    * event-dispatching thread.
+    */
+   private void initialize()
+   {
+       UICacheManager.getInstance(); // initializes it first thing
+       
+       AppPrefs.initialPrefs(); // Must be done first thing!
+       
+       try
+       {
+           //System.out.println(System.getProperty("os.name"));
 
+           if (!System.getProperty("os.name").equals("Mac OS X"))
+           {
+               UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
+               //PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
+               //UIManager.setLookAndFeel(new WindowsLookAndFeel());
+               //UIManager.setLookAndFeel(new com.jgoodies.looks.windows.WindowsLookAndFeel());
+               PlasticLookAndFeel.setCurrentTheme(new ExperienceBlue());
+               //PlasticLookAndFeel.setPlasticTheme(new ConfigurableTheme());
+               //PlasticLookAndFeel.setMyCurrentTheme(new ConfigurableTheme());
+           }
+
+           //UIManager.setLookAndFeel(new PlasticLookAndFeel());
+           //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+           //UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+       }
+       catch (Exception e)
+       {
+           log.error("Can't change L&F: ", e);
+       }
+   }
+
+   /**
+   * Create the GUI and show it.  For thread safety,
+   * this method should be invoked from the
+   * event-dispatching thread.
+   */
+  private void startup()
+  {
+        
         for (int i=0;i<10;i++)
         {
             testDataObj = new TestDataObj();
@@ -624,29 +631,7 @@ public class FormEditor
 
         dataObj = list;
 
-        try
-        {
-            //System.out.println(System.getProperty("os.name"));
 
-            if (!System.getProperty("os.name").equals("Mac OS X"))
-            {
-                UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
-                //PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
-                //UIManager.setLookAndFeel(new WindowsLookAndFeel());
-                //UIManager.setLookAndFeel(new com.jgoodies.looks.windows.WindowsLookAndFeel());
-                PlasticLookAndFeel.setCurrentTheme(new ExperienceBlue());
-                //PlasticLookAndFeel.setPlasticTheme(new ConfigurableTheme());
-                //PlasticLookAndFeel.setMyCurrentTheme(new ConfigurableTheme());
-            }
-
-            //UIManager.setLookAndFeel(new PlasticLookAndFeel());
-            //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-            //UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-        }
-        catch (Exception e)
-        {
-            log.error("Can't change L&F: ", e);
-        }
 
 
         //Make sure we have nice window decorations.
@@ -678,12 +663,12 @@ public class FormEditor
         currViewSetName =  "view valid";
 
         //currViewName      = "Collection Object";
-        currViewName      = "Accession";
-        currViewSetName =   "Main Views";
 
         currViewName      = "FishBase";
         currViewSetName =   "Main Views";
 
+        currViewName      = "Accession";
+        currViewSetName =   "Main Views";
 
         View view = ViewMgr.getView(currViewSetName, currViewName);
 
@@ -860,6 +845,12 @@ public class FormEditor
         //mi.setEnabled(aEnabled);
         return mi;
     }
+    
+    public void testLogin()
+    {
+        DatabaseLogon dl = new DatabaseLogon();
+        UIHelper.centerAndShow(dl);
+    }
 
 
     /**
@@ -868,9 +859,19 @@ public class FormEditor
     public static void main(String[] args)
     {
 
+        // Create Specify Application
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                FormEditor formEditor = new FormEditor();
+                formEditor.initialize();
+                //formEditor.testLogin();
+                
+                formEditor.startup();
+                
+            }
+      });
 
-        FormEditor formEditor = new FormEditor();
-        formEditor.initialize();
         
     }
 

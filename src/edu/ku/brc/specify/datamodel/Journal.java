@@ -148,7 +148,7 @@ public class Journal  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addReferenceWork(final ReferenceWork referenceWork)
+    public void addReferenceWorks(final ReferenceWork referenceWork)
     {
         this.referenceWorks.add(referenceWork);
         referenceWork.setJournal(this);
@@ -158,7 +158,7 @@ public class Journal  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeReferenceWork(final ReferenceWork referenceWork)
+    public void removeReferenceWorks(final ReferenceWork referenceWork)
     {
         this.referenceWorks.remove(referenceWork);
         referenceWork.setJournal(null);

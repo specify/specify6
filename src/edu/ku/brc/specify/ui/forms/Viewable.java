@@ -32,13 +32,6 @@ public interface Viewable
      * @return Returns whether it is a sub form or not
      */
     public boolean isSubform();
-    
-    /**
-     * Returns a component by name
-     * @param name the name of the component
-     * @return the component
-     */
-    public Component getCompByName(final String name);
 
     /**
      * Returns a component by id
@@ -52,7 +45,6 @@ public interface Viewable
      * @return Returns the mapping of name to control
      */
     public Map<String, Component> getControlMapping();
-    
     
     /**
      * Returns the validator for the form
@@ -98,10 +90,10 @@ public interface Viewable
     
     /**
      * Return the data from the UI control
-     * @param name the name of the control
+     * @param id the id of the control
      * @return return the value or null if the control was not found.
      */
-    public Object getDataFromUIComp(final String name);
+    public Object getDataFromUIComp(final String id);
     
     /**
      * Sets data into a single field
@@ -109,7 +101,6 @@ public interface Viewable
      * @param data the data for the control
      */
     public void setDataIntoUIComp(final String name, Object data);
-
 
     /**
      * Returns a subform by name
@@ -122,7 +113,7 @@ public interface Viewable
      * List the List with all the names of the cells of type "field"
      * @param fieldNames the list to be filled
      */
-    public void getFieldNames(final List<String> fieldNames);
+    public void getFieldIds(final List<String> fieldIds);
     
     /**
      * Tells the object it is abut to be shown
@@ -143,6 +134,10 @@ public interface Viewable
      */
     public void hideMultiViewSwitch(boolean hide);
     
+    /**
+     * Tell the viewable whether the validation was OK so it knows to update the UI appropriately. This usually means it should update an OK or save button.
+     * @param wasOK whether validation was OK
+     */
     public void validationWasOK(boolean wasOK);
 
 }

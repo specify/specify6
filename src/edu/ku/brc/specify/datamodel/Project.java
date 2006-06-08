@@ -279,7 +279,7 @@ public class Project  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addProjectCollectionObject(final ProjectCollectionObject projectCollectionObject)
+    public void addProjectCollectionObjects(final ProjectCollectionObject projectCollectionObject)
     {
         this.projectCollectionObjects.add(projectCollectionObject);
         projectCollectionObject.setProject(this);
@@ -289,7 +289,7 @@ public class Project  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeProjectCollectionObject(final ProjectCollectionObject projectCollectionObject)
+    public void removeProjectCollectionObjects(final ProjectCollectionObject projectCollectionObject)
     {
         this.projectCollectionObjects.remove(projectCollectionObject);
         projectCollectionObject.setProject(null);

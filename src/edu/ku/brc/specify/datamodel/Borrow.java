@@ -305,19 +305,19 @@ public class Borrow  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addBorrowShipment(final BorrowShipments borrowShipment)
+    public void addBorrowShipments(final BorrowShipments borrowShipment)
     {
         this.borrowShipments.add(borrowShipment);
         borrowShipment.setBorrow(this);
     }
 
-    public void addBorrowAgent(final BorrowAgents borrowAgent)
+    public void addBorrowAgents(final BorrowAgents borrowAgent)
     {
         this.borrowAgents.add(borrowAgent);
         borrowAgent.setBorrow(this);
     }
 
-    public void addBorrowMaterial(final BorrowMaterial borrowMaterial)
+    public void addBorrowMaterials(final BorrowMaterial borrowMaterial)
     {
         this.borrowMaterials.add(borrowMaterial);
         borrowMaterial.setBorrow(this);
@@ -327,19 +327,19 @@ public class Borrow  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeBorrowShipment(final BorrowShipments borrowShipment)
+    public void removeBorrowShipments(final BorrowShipments borrowShipment)
     {
         this.borrowShipments.remove(borrowShipment);
         borrowShipment.setBorrow(null);
     }
 
-    public void removeBorrowAgent(final BorrowAgents borrowAgent)
+    public void removeBorrowAgents(final BorrowAgents borrowAgent)
     {
         this.borrowAgents.remove(borrowAgent);
         borrowAgent.setBorrow(null);
     }
 
-    public void removeBorrowMaterial(final BorrowMaterial borrowMaterial)
+    public void removeBorrowMaterials(final BorrowMaterial borrowMaterial)
     {
         this.borrowMaterials.remove(borrowMaterial);
         borrowMaterial.setBorrow(null);

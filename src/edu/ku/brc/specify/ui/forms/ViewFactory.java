@@ -69,7 +69,6 @@ import edu.ku.brc.specify.ui.CommandActionWrapper;
 import edu.ku.brc.specify.ui.GetSetValueIFace;
 import edu.ku.brc.specify.ui.ImageDisplay;
 import edu.ku.brc.specify.ui.UIPluginable;
-import edu.ku.brc.specify.ui.db.JAutoCompComboBox;
 import edu.ku.brc.specify.ui.db.PickListDBAdapter;
 import edu.ku.brc.specify.ui.db.TextFieldWithInfo;
 import edu.ku.brc.specify.ui.forms.persist.AltView;
@@ -249,7 +248,7 @@ public class ViewFactory
             textField.setRequired(cellField.isRequired());
 
             validator.hookupTextField((JTextField)textField,
-                                        cellField.getName(),
+                                        cellField.getId(),
                                         cellField.isRequired(),
                                         parseValidationType(cellField.getValidationType()),
                                         cellField.getValidationRule(),
@@ -284,7 +283,7 @@ public class ViewFactory
             textField.setEncrypted(cellField.isEncrypted());
 
             validator.hookupTextField((JTextField)textField,
-                                        cellField.getName(),
+                                        cellField.getId(),
                                         cellField.isRequired(),
                                         parseValidationType(cellField.getValidationType()),
                                         validationRule,
@@ -322,7 +321,7 @@ public class ViewFactory
             textField.setRequired(cellField.isRequired());
 
             validator.hookupTextField((JTextField)textField,
-                                      cellField.getName(),
+                                      cellField.getId(),
                                       cellField.isRequired(),
                                       UIValidator.Type.Changed,  cellField.getValidationRule(), false);
                                       //UIValidator.Type.Changed,  cellField.getName()+".isInError() == false", false);
@@ -348,7 +347,7 @@ public class ViewFactory
         ValTextArea textArea = new ValTextArea("", cellField.getRows(), cellField.getCols());
         if (validator != null)
         {
-            DataChangeNotifier dcn = validator.hookupComponent(textArea, cellField.getName(), false, UIValidator.Type.Focus, null, true);
+            DataChangeNotifier dcn = validator.hookupComponent(textArea, cellField.getId(), false, UIValidator.Type.Focus, null, true);
             textArea.addFocusListener(dcn);
         }
         textArea.setLineWrap(true);
@@ -398,7 +397,7 @@ public class ViewFactory
         ValListBox valList = initArray == null ? new ValListBox() : new ValListBox(initArray);
         if (validator != null && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
         {
-            DataChangeNotifier dcn = validator.hookupComponent(valList, cellField.getName(), cellField.isRequired(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
+            DataChangeNotifier dcn = validator.hookupComponent(valList, cellField.getId(), cellField.isRequired(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
             valList.getModel().addListDataListener(dcn);
             valList.addFocusListener(dcn);
         }
@@ -424,7 +423,7 @@ public class ViewFactory
             cbx.setRequired(cellField.isRequired());
             if (validator != null && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
             {
-                DataChangeNotifier dcn = validator.hookupComponent(cbx, cellField.getName(), cellField.isRequired(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
+                DataChangeNotifier dcn = validator.hookupComponent(cbx, cellField.getId(), cellField.isRequired(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
                 cbx.getComboBox().getModel().addListDataListener(dcn);
                 
                 if (dcn.getValidationType() == UIValidator.Type.Focus) // returns None when no Validator
@@ -470,7 +469,7 @@ public class ViewFactory
 
         if (validator != null && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
         {
-            DataChangeNotifier dcn = validator.hookupComponent(cbx, cellField.getName(), cellField.isRequired(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
+            DataChangeNotifier dcn = validator.hookupComponent(cbx, cellField.getId(), cellField.isRequired(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
             cbx.getModel().addListDataListener(dcn);
             
             if (dcn.getValidationType() == UIValidator.Type.Focus) // returns None when no Validator
@@ -673,7 +672,7 @@ public class ViewFactory
                         JCheckBox checkbox = new JCheckBox(cellField.getLabel());
                         if (validator != null)
                         {
-                            DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getName(), checkbox, null);
+                            DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getId(), checkbox, null);
                             checkbox.addActionListener(dcn);
                         }
 
@@ -977,23 +976,19 @@ public class ViewFactory
             FormViewDef formViewDef = (FormViewDef)altView.getViewDef();
 
             Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
-
-            FormViewObj     formViewObj    = new FormViewObj(view, altView, parentView, createRecordSetController, createViewSwitcher);
+            
             ValidatedJPanel validatedPanel = null;
             FormValidator   validator      = null;
-
-            Object currDataObj = formViewObj.getCurrentDataObj();
-
             if (altView.isValidated())
             {
                 validatedPanel = new ValidatedJPanel();
                 validator      = validatedPanel.getFormValidator();
                 validator.setDataChangeNotification(true);
-                //if (dataObj != null)
-                //{
-                //    validator.addRuleObjectMapping("dataObj", dataObj);
-                //}
             }
+
+            FormViewObj formViewObj = new FormViewObj(view, altView, parentView, validator, createRecordSetController, createViewSwitcher);
+
+            Object currDataObj = formViewObj.getCurrentDataObj();
 
             // Figure columns
             FormLayout      formLayout = new FormLayout(formViewDef.getColumnDef(), formViewDef.getRowDef());
@@ -1015,9 +1010,9 @@ public class ViewFactory
                 // Here we add all the components whether they are used or not
                 // XXX possible optimization is to only load the ones being used (although I am not sure how we will know that)
                 Map<String, Component> mapping = formViewObj.getControlMapping();
-                for (String name : mapping.keySet())
+                for (String id : mapping.keySet())
                 {
-                    validatedPanel.addValidationComp(name, mapping.get(name));
+                    validatedPanel.addValidationComp(id, mapping.get(id));
                 }
                 Map<String, String> enableRules = formViewDef.getEnableRules();
 
@@ -1033,13 +1028,13 @@ public class ViewFactory
                 }
 
                 // Load up labels and associate them with there component
-                for (String nameFor : labelsForHash.keySet())
+                for (String idFor : labelsForHash.keySet())
                 {
-                    fv.addUILabel(nameFor, labelsForHash.get(nameFor));
+                    fv.addUILabel(idFor, labelsForHash.get(idFor));
                 }
 
-
                 formViewObj.setFormComp(validatedPanel);
+                
             } else
             {
                 formViewObj.setFormComp(builder.getPanel());

@@ -93,22 +93,25 @@ public class ControlBarPanel extends JPanel
      */
     public void addComponents(final List<JComponent> compsList, final boolean onLeftSide)
     {
-        CellConstraints cc       = new CellConstraints();
-        String          colsDef  = compsList.size() == 1 ? "p" : UIHelper.createDuplicateJGoodiesDef("p", "2px", compsList.size());
-        PanelBuilder    pBuilder = new PanelBuilder(new FormLayout(colsDef, "p"));
-
-        for (int i=0;i<compsList.size();i++)
+        if (compsList != null && compsList.size() > 0)
         {
-            pBuilder.add(compsList.get(i), cc.xy((i*2)+1, 1));
-        }
-        if (onLeftSide)
-        {
-            leftSidePanel = pBuilder.getPanel();
-            builder.add(leftSidePanel, cc.xy(1,1));
-        } else
-        {
-            rightSidePanel = pBuilder.getPanel();
-            builder.add(rightSidePanel, cc.xy(5,1));
+            CellConstraints cc       = new CellConstraints();
+            String          colsDef  = compsList.size() == 1 ? "p" : UIHelper.createDuplicateJGoodiesDef("p", "2px", compsList.size());
+            PanelBuilder    pBuilder = new PanelBuilder(new FormLayout(colsDef, "p"));
+    
+            for (int i=0;i<compsList.size();i++)
+            {
+                pBuilder.add(compsList.get(i), cc.xy((i*2)+1, 1));
+            }
+            if (onLeftSide)
+            {
+                leftSidePanel = pBuilder.getPanel();
+                builder.add(leftSidePanel, cc.xy(1,1));
+            } else
+            {
+                rightSidePanel = pBuilder.getPanel();
+                builder.add(rightSidePanel, cc.xy(5,1));
+            }
         }
     }
 

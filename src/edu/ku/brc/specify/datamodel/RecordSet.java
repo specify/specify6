@@ -152,7 +152,7 @@ public class RecordSet  implements java.io.Serializable {
     	this.items.add(new RecordSetItem(recordId));
     }
 
-    public void addItem(final RecordSetItem item)
+    public void addItems(final RecordSetItem item)
     {
         this.items.add(item);
     }
@@ -161,7 +161,7 @@ public class RecordSet  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeItem(final RecordSetItem item)
+    public void removeItems(final RecordSetItem item)
     {
         this.items.remove(item);
         //item.setRecordSet(null);

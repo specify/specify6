@@ -253,13 +253,13 @@ public class Deaccession  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addDeaccessionAgent(final DeaccessionAgents deaccessionAgent)
+    public void addDeaccessionAgents(final DeaccessionAgents deaccessionAgent)
     {
         this.deaccessionAgents.add(deaccessionAgent);
         deaccessionAgent.setDeaccession(this);
     }
 
-    public void addDeaccessionCollectionObject(final DeaccessionCollectionObject deaccessionCollectionObject)
+    public void addDeaccessionCollectionObjects(final DeaccessionCollectionObject deaccessionCollectionObject)
     {
         this.deaccessionCollectionObjects.add(deaccessionCollectionObject);
         deaccessionCollectionObject.setDeaccession(this);
@@ -269,13 +269,13 @@ public class Deaccession  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removeDeaccessionAgent(final DeaccessionAgents deaccessionAgent)
+    public void removeDeaccessionAgents(final DeaccessionAgents deaccessionAgent)
     {
         this.deaccessionAgents.remove(deaccessionAgent);
         deaccessionAgent.setDeaccession(null);
     }
 
-    public void removeDeaccessionCollectionObject(final DeaccessionCollectionObject deaccessionCollectionObject)
+    public void removeDeaccessionCollectionObjects(final DeaccessionCollectionObject deaccessionCollectionObject)
     {
         this.deaccessionCollectionObjects.remove(deaccessionCollectionObject);
         deaccessionCollectionObject.setDeaccession(null);

@@ -46,8 +46,11 @@ import edu.ku.brc.specify.ui.validation.ValidationListener;
  */
 public class ResultSetController implements ValidationListener
 {
-    protected static Border enabledBorder = BorderFactory.createLineBorder(Color.BLACK);
-    protected static Border disabledBorder = BorderFactory.createLineBorder(Color.GRAY);
+    protected static Border enabledBorder  = BorderFactory.createLineBorder(Color.BLACK);
+    protected static Border disabledBorder = BorderFactory.createLineBorder(Color.GRAY.brighter());
+    
+    protected static Color  enabledTxtBG   = Color.WHITE;
+    protected static Color  disabledTxtBG  = new Color(225,225,225);//Color.WHITE.darker();
     
     protected List<ResultSetControllerListener> listeners = new ArrayList<ResultSetControllerListener>();
     
@@ -187,9 +190,6 @@ public class ResultSetController implements ValidationListener
     {
         currentInx = enabled ? 0 : -1;
         updateUI();
-        recDisp.setEnabled(enabled);
-        recDisp.setBorder(enabled ? enabledBorder : disabledBorder);
-
     }
 
     /**
@@ -254,12 +254,20 @@ public class ResultSetController implements ValidationListener
         nextBtn.setEnabled(currentInx < lastInx);
         lastBtn.setEnabled(currentInx < lastInx);
         
+        boolean enabled = numRecords > 0;
+        
+        recDisp.setEnabled(enabled);
+        recDisp.setBorder(enabled ? enabledBorder : disabledBorder);
+        recDisp.setBackground(enabled ? enabledTxtBG : disabledTxtBG);
+        
+        
+        
         if (delRecBtn != null)
         {
-            delRecBtn.setEnabled(numRecords > 0);
+            delRecBtn.setEnabled(enabled);
         }
         
-        recDisp.setText((currentInx+1) + " of " + numRecords);
+        recDisp.setText(enabled ? ((currentInx+1) + " of " + numRecords) : " "); // XXX Move to I18N properties file formatted
         panel.validate();
     }
     

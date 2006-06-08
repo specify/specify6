@@ -127,7 +127,7 @@ public class DataGetterForObj implements DataObjectGettable
                         }
                     }
                 }
-                log.info(fieldName);
+                //log.debug(fieldName);
 
                 if (fieldName.startsWith("@get"))
                 {

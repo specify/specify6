@@ -95,13 +95,13 @@ public class PrepType  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addPreparation(final Preparation preparation)
+    public void addPreparations(final Preparation preparation)
     {
         this.preparations.add(preparation);
         preparation.setPrepType(this);
     }
 
-    public void addAttributeDef(final AttributeDef attributeDef)
+    public void addAttributeDefs(final AttributeDef attributeDef)
     {
         this.attributeDefs.add(attributeDef);
         attributeDef.setPrepType(this);
@@ -111,13 +111,13 @@ public class PrepType  implements java.io.Serializable {
 
     // Delete Methods
 
-    public void removePreparation(final Preparation preparation)
+    public void removePreparations(final Preparation preparation)
     {
         this.preparations.remove(preparation);
         preparation.setPrepType(null);
     }
 
-    public void removeAttributeDef(final AttributeDef attributeDef)
+    public void removeAttributeDefs(final AttributeDef attributeDef)
     {
         this.attributeDefs.remove(attributeDef);
         attributeDef.setPrepType(null);

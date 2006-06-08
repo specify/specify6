@@ -69,7 +69,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
     protected Hashtable<String, JLabel>     labels      = new Hashtable<String, JLabel>();
 
     protected boolean                       hasChanged  = false;
-    protected boolean                       isFormValid = false;
+    //protected boolean                       isFormValid = false;
+    protected UIValidatable.ErrorType       formValidationState = UIValidatable.ErrorType.Error;
 
     protected JButton                       okBtn       = null;
 
@@ -107,7 +108,17 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public boolean isFormValid()
     {
-        return isFormValid;
+        return formValidationState == UIValidatable.ErrorType.Valid;
+    }
+    
+    /**
+     * Returns the state of the form, which really means... return the worst
+     * "state" that was found from all the validators.
+     * @return the state of the form
+     */
+    public UIValidatable.ErrorType getState()
+    {
+        return formValidationState;
     }
 
     /**
@@ -186,17 +197,17 @@ public class FormValidator implements ValidationListener, DataChangeListener
             {
                 // Now evaluate the expression, getting the result
                 boolean result = rule.evaluate(jc);
-                log.info(name+" Result "+result+" for "+rule.getName()+"  ["+((RuleExpression)rule).expression.getExpression()+"]");
+                log.info(name+" Result "+result+" for "+rule.getId()+"  ["+((RuleExpression)rule).expression.getExpression()+"]");
                 if (rule.getScope() == FormValidationRuleIFace.Scope.Field)
                 {
-                    Component comp = getComp(rule.getName());
+                    Component comp = getComp(rule.getId());
                     if (comp != null)
                     {
                         log.info(name+" comp.setEnabled("+result+") "+comp.getClass().toString());
                         comp.setEnabled(result);
                     }
 
-                    JLabel lbl = labels.get(rule.getName());
+                    JLabel lbl = labels.get(rule.getId());
                     if (lbl != null)
                     {
                         lbl.setEnabled(result);
@@ -220,36 +231,36 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
     /**
      * @param textField textField to be hooked up
-     * @param name name of control
+     * @param id id of control
      * @param isRequired whether the field must be filled in
      * @param valType the type of validation to do
      * @param valStr the validation rule where the subject is its name
      * @param changeListenerOnly indicates whether to create a validator
      */
     public void hookupTextField(final JTextField       textField,
-                                final String           name,
+                                final String           id,
                                 final boolean          isRequired,
                                 final UIValidator.Type valType,
                                 final String           valStr,
                                 final boolean          changeListenerOnly)
     {
 
-        fields.put(name, textField);
+        fields.put(id, textField);
 
         UIValidator.Type type = isRequired ? UIValidator.Type.Changed : valType;
 
         UIValidator uiv;
         if (valStr == null)
         {
-            uiv = createValidator(name, textField, valType);
+            uiv = createValidator(id, textField, valType);
         } else
         {
-            uiv = changeListenerOnly ? null : createValidator(name, textField, isRequired, type, valStr);
+            uiv = changeListenerOnly ? null : createValidator(id, textField, isRequired, type, valStr);
         }
-        DataChangeNotifier dcn = new DataChangeNotifier(name, textField, uiv);
+        DataChangeNotifier dcn = new DataChangeNotifier(id, textField, uiv);
         dcn.addDataChangeListener(this);
 
-        dcNotifiers.put(name, dcn);
+        dcNotifiers.put(id, dcn);
 
         if (type == UIValidator.Type.Changed || isRequired || changeListenerOnly)
         {
@@ -264,13 +275,13 @@ public class FormValidator implements ValidationListener, DataChangeListener
            // Do nothing for UIValidator.Type.OK
         }
 
-        addRuleObjectMapping(name, textField);
+        addRuleObjectMapping(id, textField);
     }
 
     /**
      * Hooks up generic component to be validated
      * @param comp component to be hooked up
-     * @param name name of control
+     * @param id id of control
      * @param isRequired whether the field must be filled in
      * @param valType the type of validation to do
      * @param valStr the validation rule where the subject is its name
@@ -278,32 +289,32 @@ public class FormValidator implements ValidationListener, DataChangeListener
      * @return the component passed in
      */
     public DataChangeNotifier hookupComponent(final JComponent       comp,
-                                              final String           name,
+                                              final String           id,
                                               final boolean          isRequired,
                                               final UIValidator.Type valType,
                                               final String           valStr,
                                               final boolean          changeListenerOnly)
     {
 
-        fields.put(name, comp);
+        fields.put(id, comp);
 
         UIValidator uiv = null;
         if (!changeListenerOnly)
         {
             if (isNotEmpty(valStr))
             {
-                uiv = createValidator(name, comp, isRequired, valType, valStr);
+                uiv = createValidator(id, comp, isRequired, valType, valStr);
             } else
             {
-                uiv = createValidator(name, comp, valType);
+                uiv = createValidator(id, comp, valType);
             }
         }
-        DataChangeNotifier dcn = new DataChangeNotifier(name, comp, uiv);
+        DataChangeNotifier dcn = new DataChangeNotifier(id, comp, uiv);
         dcn.addDataChangeListener(this);
 
-        dcNotifiers.put(name, dcn);
+        dcNotifiers.put(id, dcn);
 
-        addRuleObjectMapping(name, comp);
+        addRuleObjectMapping(id, comp);
 
         return dcn;
     }
@@ -334,28 +345,28 @@ public class FormValidator implements ValidationListener, DataChangeListener
     }
 
     /**
-     * Gets a component by name and returns it as a ValTextField
-     * @param name the name of the component
-     * @return returns the component by name
+     * Gets a component by id and returns it as a ValTextField
+     * @param id the id of the component
+     * @return returns the component by id
      */
-    public ValTextField getTextField(final String name)
+    public ValTextField getTextField(final String id)
     {
-        Component comp = fields.get(name);
+        Component comp = fields.get(id);
         if (comp instanceof ValTextField)
         {
             return (ValTextField)comp;
         }
-        throw new RuntimeException("Desired JComponent ["+name+"]is not of type ValTextField"+comp);
+        throw new RuntimeException("Desired JComponent ["+id+"]is not of type ValTextField"+comp);
     }
 
     /**
      * Returns a component by name
-     * @param name the name of the component
+     * @param id the name of the component
      * @return Returns a component by name
      */
-    public Component getComp(final String name)
+    public Component getComp(final String id)
     {
-        return fields.get(name);
+        return fields.get(id);
     }
 
     /**
@@ -364,35 +375,55 @@ public class FormValidator implements ValidationListener, DataChangeListener
      * @param comp the component to add
      * @return returns the passed in component after it is registered
      */
-    public Component addUIComp(final String name, final Component comp)
+    public Component addUIComp(final String id, final Component comp)
     {
-        fields.put(name, comp);
-        addRuleObjectMapping(name, comp);
+        fields.put(id, comp);
+        addRuleObjectMapping(id, comp);
 
-        log.info(name+" Adding ["+name+"]["+comp.getClass().toString()+"] to validator.");
+        log.info(" Adding ["+id+"]["+comp.getClass().toString()+"] to validator.");
 
         return comp;
+    }
+    
+    /**
+     * Returns the Text of the label for a control's Id (strips ':' from end of string)
+     * @param id the unique identifier
+     * @return the text of the label
+     */
+    public String getLabelTextForId(final String id)
+    {
+        JLabel label = labels.get(id);
+        if (label != null)
+        {
+            String labelStr = label.getText();
+            if (labelStr.endsWith(":"))
+            {
+                return labelStr.substring(0, labelStr.length()-1);
+            }
+            return labelStr;
+        }
+        return "";
     }
 
     /**
      * Adds a component (or object) that can be referred to oby name in a validatoin rule
-     * @param name the name of the component
+     * @param id the name of the component
      * @param comp the component
      */
     @SuppressWarnings("unchecked")
-    public void addRuleObjectMapping(final String name, final Object comp)
+    public void addRuleObjectMapping(final String id, final Object comp)
     {
-        if (isNotEmpty(name) && comp != null)
+        if (isNotEmpty(id) && comp != null)
         {
-            jc.getVars().put(name, comp);
+            jc.getVars().put(id, comp);
         } else
         {
-            throw new RuntimeException("Name["+name+"] or Comp["+comp+"] is null.");
+            throw new RuntimeException("id["+id+"] or Comp["+comp+"] is null.");
         }
     }
 
     /**
-     * CReates a validator for the control (usually a JTextField) that can have a string as a default value
+     * Creates a validator for the control (usually a JTextField) that can have a string as a default value
      *
      * @param componentName the name of the component
      * @param comp the component to be validated (MUST implement UIValidatable)
@@ -445,38 +476,37 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     protected void checkForValidForm()
     {
-        //log.info(name+" checkForValidForm -> hasChanged "+hasChanged);
-        //if (hasChanged)
-        //{
-            isFormValid = processFormRules();
-            log.info(name+" checkForValidForm -> isFormValid - processFormRules "+isFormValid);
+        formValidationState = processFormRules() ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error;
+        
+        //log.info(name+" checkForValidForm -> formValidationState - processFormRules ["+formValidationState+"]");
 
-            if (isFormValid)
+        if (formValidationState == UIValidatable.ErrorType.Valid)
+        {
+            for (UIValidator uiv : validators)
             {
-                for (UIValidator uiv : validators)
+                if (uiv.isInError())
                 {
-                    if (uiv.isInError())
+                    UIValidatable.ErrorType state = uiv.getUIV().getState();
+                    
+                    // Assumes Error is th worst, so if it is "less than" an Error i.e. Incompete
+                    // then we don't want to override an error with a lesser state 
+                    if (formValidationState != UIValidatable.ErrorType.Error)
                     {
-                        isFormValid = false;
-                        if (uiv.getComp() instanceof ValComboBox)
-                        {
-                            System.out.println(((ValComboBox)uiv.getComp()).getValue());
-                        }
-                        break; // at the first sign of an error
+                        formValidationState = state;
                     }
+                    
+                    if (state == UIValidatable.ErrorType.Error)
+                    {
+                        // Break for an Erro, but keep going for Incomplete
+                        // to see if there are any errors
+                        //break; 
+                    }
+                    
                 }
-                /*for (DataChangeNotifier dcn : dcNotifiers.values())
-                {
-                    UIValidator uiv = dcn.getUIV();
-                    if (uiv != null && uiv.isInError())
-                    {
-                        isFormValid = false;
-                        break; // at the first sign of an error
-                    }
-                }*/
             }
-        //}
-        turnOnOKButton(hasChanged && isFormValid);
+        }
+
+        turnOnOKButton(hasChanged && formValidationState == UIValidatable.ErrorType.Valid);
     }
 
     /**
@@ -489,7 +519,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     {
         ignoreValidationNotifications = true;
 
-        isFormValid = processFormRules();
+        formValidationState = processFormRules() ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error;
 
         // We need to go ahead and validate everything even if processFormRules fails
         // because the user will need the visual feed back on the form for which fields are in error
@@ -500,13 +530,28 @@ public class FormValidator implements ValidationListener, DataChangeListener
             {
                 dcn.manualCheckForDataChanged();
 
-                // Make sure we validate the fields that only get validated when the OK button is pressed
+                // Make sure we validate the fields that only get validated the type matches
                 if (uiv != null && (validateAll || uiv.getType() == valType))
                 {
                     if (!uiv.validate())
                     {
-                        isFormValid = false;
+                        UIValidatable.ErrorType state = uiv.getUIV().getState();
+                        
+                        // Assumes Error is th worst, so if it is "less than" an Error i.e. Incompete
+                        // then we don't want to override an error with a lesser state 
+                        if (formValidationState != UIValidatable.ErrorType.Error)
+                        {
+                            formValidationState = state;
+                        }
+                        if (state == UIValidatable.ErrorType.Error)
+                        {
+                            // Break for an Erro, but keep going for Incomplete
+                            // to see if there are any errors
+                            //break; 
+                        }
+                        
                     }
+
                 }
             }
         }
@@ -532,6 +577,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void validateForm()
     {
+        // Because we call it manually it will turn off validation notifications
         validateForm(true, UIValidator.Type.Changed); // second arg doesn't matter
     }
 
@@ -553,16 +599,16 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
     /**
      * Creates and register a DataChangeNotifier
-     * @param name the name
+     * @param id the id
      * @param comp the component
      * @param uiv the UI validator
      * @return the dcn
      */
-    public DataChangeNotifier createDataChangeNotifer(String name, Component comp, UIValidator uiv)
+    public DataChangeNotifier createDataChangeNotifer(String id, Component comp, UIValidator uiv)
     {
-        DataChangeNotifier dcn = new DataChangeNotifier(name, comp, uiv);
+        DataChangeNotifier dcn = new DataChangeNotifier(id, comp, uiv);
         dcn.addDataChangeListener(this);
-        dcNotifiers.put(name, dcn);
+        dcNotifiers.put(id, dcn);
 
         if (uiv != null && !validators.contains(uiv))
         {
@@ -656,6 +702,62 @@ public class FormValidator implements ValidationListener, DataChangeListener
         this.name = name;
     }
     
+    /**
+     * Returns the Map of Notifiers
+     * @return the Map of Notifiers
+     */
+    public Map<String, DataChangeNotifier> getDCNs()
+    {
+        return dcNotifiers;
+    }
+    
+    /**
+     * Dumps the State of the Validation State
+     * @param doBrief just the state of validator, when false it dumps everthing about all the DCNs and validators
+     */
+    public void dumpState(final boolean doBrief)
+    {
+        String displayName = (name != null ? name : "No Name");
+        
+        if (doBrief)
+        {
+            log.info("*** "+isFormValid()+"  "+displayName);
+        } else
+        {
+            StringBuilder strBuf = new StringBuilder(64);
+            log.info("\n------------"+displayName+"-------------");
+            log.info("Valid: "+isFormValid());
+            log.info("\n");
+            
+            int maxLen = 0;
+            for (DataChangeNotifier dcn : dcNotifiers.values())
+            {
+                int len = dcn.getId().length();
+                maxLen = Math.max(maxLen, len);
+            }
+            
+            for (DataChangeNotifier dcn : dcNotifiers.values())
+            {
+                String nm = dcn.getId();
+                strBuf.setLength(0); 
+                strBuf.append(nm);
+                for (int i=0;i<=(maxLen-nm.length());i++) strBuf.append(" ");
+                UIValidator uiv = dcn.getUIV();
+                if (uiv != null)
+                {
+                    strBuf.append("UIV: ");
+                    strBuf.append(uiv.getType());
+                    strBuf.append(" ");
+                    strBuf.append(uiv.getUIV().getState());
+                }
+
+                log.info(strBuf.toString());
+            }
+            log.info("-------------------------");
+        }
+            
+    }
+    
     //-----------------------------------------------------
     // ValidationListener
     //-----------------------------------------------------
@@ -667,7 +769,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     protected void turnOnOKButton(final boolean itsOKToEnable)
     {
-        log.info(name+" hasChanged "+hasChanged+"  itsOKToEnable "+itsOKToEnable+ " hasBtn: " + (okBtn != null));
+        //log.info(name+" hasChanged "+hasChanged+"  itsOKToEnable "+itsOKToEnable+ " hasBtn: " + (okBtn != null));
 
         if (okBtn != null)
         {
@@ -680,21 +782,18 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void wasValidated(final UIValidator validator)
     {
-        if (name.equals("Accession"))
-        {
-            int x = 0;
-            x++;
-        }
+       
         // When the form has been asked manually to be validated then ignore the notifications
         if (!ignoreValidationNotifications)
         {
             checkForValidForm();
+            
+            for (ValidationListener vcl : valListeners)
+            {
+                vcl.wasValidated(validator);
+            }
         }
 
-        for (ValidationListener vcl : valListeners)
-        {
-            vcl.wasValidated(validator);
-        }
     }
 
     //-----------------------------------------------------
@@ -710,17 +809,6 @@ public class FormValidator implements ValidationListener, DataChangeListener
         if (!okToDataChangeNotification)
         {
             return;
-        }
-        
-        if (name.equals("Accession"))
-        {
-            int x = 0;
-            x++;
-        }
-        if (name.equals("AccessionAgent"))
-        {
-            int x = 0;
-            x++;
         }
         //log.debug("DataChangeListener "+name + " was changed");
 
@@ -759,7 +847,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
         hasChanged = true;
 
-        turnOnOKButton(isFormValid);
+        turnOnOKButton(formValidationState == UIValidatable.ErrorType.Valid);
     }
 
     /**
