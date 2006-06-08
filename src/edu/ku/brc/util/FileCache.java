@@ -15,6 +15,10 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * @author jstewart
+ *
+ */
 public class FileCache
 {
 	private static Log log = LogFactory.getLog(FileCache.class);
@@ -24,33 +28,96 @@ public class FileCache
 	private static String defaultSuffix = ".cache";
     private static String defaultPath = System.getProperty("java.io.tmpdir");
 
+	/**
+	 * The HttpClient used for grabbing web resources
+	 */
 	protected HttpClient httpClient;
+	
+	/**
+	 * The directory to use for cached files and the mapping files
+	 */
 	protected File cacheDir;
+
+	/**
+	 * The name of the mapping file
+	 */
 	protected String mappingFilename;
+	
+	/**
+	 * The prefix to be added to all cache filenames
+	 */
 	protected String prefix;
+	
+	/**
+	 * The suffix to be added to all cache filenames
+	 */
 	protected String suffix;
+	
+	/**
+	 * A Hashtable mapping from a "handle" to the name of the cached file it refers to
+	 */
 	protected Properties handleToFilenameHash;
+	
+	/**
+	 * A Hashtable mapping from a "handle" to the last access time of the cached file it refers to
+	 */
 	protected Properties handleToAccessTimeHash;
+	
+	/**
+	 * The maximum size of the file cache in kilobytes (using 1 kilobyte = 1000 bytes).
+	 * This value is only enforced if enforceMaxSize is set to true.
+	 */
 	protected int maxCacheKb;
+	
+	/**
+	 * A boolean determining whether or not to enforce the cache size limit.
+	 */
 	protected boolean enforceMaxSize;
+	
+	/**
+	 * The current total size of the cache, in bytes.
+	 */
 	protected long totalCacheSize;
 
+	/**
+	 * Creates a FileCache using the default path and mapping file name.
+	 * 
+	 * @throws IOException if the default cache directory doesn't exist
+	 */
 	public FileCache() throws IOException
 	{
 		this(defaultPath, null);
 	}
 
+	/**
+	 * Creates a FileCache using the default path and the given
+	 * name for the mapping file.
+	 * 
+	 * @param mappingFilename the name of the mapping file, not including path
+	 * @throws IOException if the default cache directory doesn't exist
+	 */
 	public FileCache(String mappingFilename) throws IOException
 	{
 		this(defaultPath, mappingFilename);
 	}
 
+	/**
+	 * @param dir the directory in which to place the cached files and the mapping files
+	 * @param mappingFilename the name of the mapping file, not including path
+	 * @throws IOException if the given directory doesn't exist
+	 */
 	public FileCache(String dir, String mappingFilename) throws IOException
 	{
 		this.mappingFilename = mappingFilename;
 		init(dir);
 	}
 
+	/**
+	 * Does all of the work of constructing a FileCache.
+	 * 
+	 * @param dir the directory in which to place the cached files and the mapping files
+	 * @throws IOException if the given directory doesn't exist
+	 */
 	protected void init( String dir ) throws IOException
 	{
 		cacheDir = new File(dir);
@@ -108,31 +175,53 @@ public class FileCache
 		this.suffix = suffix;
 	}
 
+	/**
+	 * Get the max cache size.  Only enforced if enforceMaxSize is set to true.
+	 * 
+	 * @return the cache size limit, in kilobytes (using 1 kilobyte = 1000 bytes)
+	 */
 	public int getMaxCacheSize()
 	{
 		return maxCacheKb;
 	}
 
+	/**
+	 * Set the max cache size.  Only enforced if enforceMaxSize is set to true.
+	 * 
+	 * @param kilobytes the new cache size limit, in kilobytes (using 1 kilobyte = 1000 bytes)
+	 */
 	public void setMaxCacheSize(int kilobytes)
 	{
 		maxCacheKb = kilobytes;
 	}
 
+	/**
+	 * @param value whether or not to enforce the cache size limit
+	 */
 	public void setEnforceMaxCacheSize( boolean value )
 	{
 		enforceMaxSize = value;
 	}
 
+	/**
+	 * @return whether or not to enforce the cache size limit
+	 */
 	public boolean getEnforceMaxCacheSize()
 	{
 		return enforceMaxSize;
 	}
 
+	/**
+	 * @param defaultPath the default cache path to use if a path is not supplied to a constructor
+	 */
 	public static void setDefaultPath(String defaultPath)
     {
         FileCache.defaultPath = defaultPath;
     }
 
+    /**
+     * Load handleToFilenameHash from filenames stored in the mapping file.
+     */
     protected synchronized void loadCacheMappingFile()
 	{
 		log.info("Loading old cache mapping data from " + mappingFilename);
@@ -156,6 +245,9 @@ public class FileCache
 		}
 	}
 
+	/**
+	 * Load handleToAccessTimeHash from times stored in the access time file.
+	 */
 	protected synchronized void loadCacheAccessTimesFile()
 	{
 		String accessTimeFilename = getAccessTimeFilename();
@@ -176,6 +268,9 @@ public class FileCache
 		}
 	}
 
+	/**
+	 * @return the name of the access time file
+	 */
 	protected String getAccessTimeFilename()
 	{
 		String accessTimeFilename = mappingFilename;
@@ -218,6 +313,10 @@ public class FileCache
 		return lruKey;
 	}
 
+	/**
+	 * @throws IOException an error occurred while writing the handleToFilenameHash
+	 * 			contents to the mapping file
+	 */
 	public synchronized void saveCacheMapping() throws IOException
 	{
 		if( mappingFilename == null )
@@ -239,6 +338,10 @@ public class FileCache
 		saveCacheAccessTimes();
 	}
 
+	/**
+	 * @throws IOException an error occurred while writing the handleToAccessTimeHash
+	 * 			contents to the mapping file
+	 */
 	protected synchronized void saveCacheAccessTimes() throws IOException
 	{
 		String accessTimeFilename = getAccessTimeFilename();
@@ -254,11 +357,19 @@ public class FileCache
 		}
 	}
 
+	/**
+	 * @return a newly created cache file
+	 * @throws IOException an I/O error occurred while creating a new cache file object
+	 */
 	synchronized protected File createCacheFile() throws IOException
 	{
 		return File.createTempFile(prefix, suffix, cacheDir);
 	}
 
+	/**
+	 * Updates totalCacheSize to be in sync with actual contents of cache.  This method is only
+	 * used after loading a cache mapping file from disk.
+	 */
 	protected synchronized void calculateTotalCacheSize()
 	{
 		totalCacheSize = 0L;
@@ -274,6 +385,10 @@ public class FileCache
 		}
 	}
 
+	/**
+	 * Determine which cache file is the least recently used and delete it.  This method
+	 * is called when the cache exceeds its maximum size.
+	 */
 	protected synchronized void purgeLruCacheFile()
 	{
 		String oldKey = findKeyLRU();
@@ -295,6 +410,10 @@ public class FileCache
 		totalCacheSize -= filesize;
 	}
 
+	/**
+	 * @param key the "handle" used to retrieve this cached data item in the future
+	 * @param item the File to be cached
+	 */
 	protected void cacheNewItem( String key, File item )
 	{
 		handleToAccessTimeHash.setProperty(key, Long.toString(System.currentTimeMillis()));
@@ -312,6 +431,9 @@ public class FileCache
 		}
 	}
 
+	/**
+	 * @param filename the name of the cache file to be deleted
+	 */
 	protected void removeCacheItem( String filename )
 	{
 		File f = new File(filename);
@@ -323,6 +445,13 @@ public class FileCache
 		totalCacheSize -= size;
 	}
 
+	/**
+	 * Cache the given data bytes.
+	 * 
+	 * @param data binary data to be stored in a cache file
+	 * @return a "handle" used to retrieve the cached data in the future
+	 * @throws IOException an error occurred while storing the data to disk
+	 */
 	public String cacheData( byte[] data ) throws IOException
 	{
 		String key = UUID.randomUUID().toString();
@@ -330,6 +459,13 @@ public class FileCache
 		return key;
 	}
 
+	/**
+	 * Cache the given data bytes under the given handle name.
+	 * 
+	 * @param key the retrieval handle to cache under
+	 * @param data the data to be cached
+	 * @throws IOException an error occurred while storing the data to disk
+	 */
 	public void cacheData( String key, byte[] data ) throws IOException
 	{
 		File f = createCacheFile();
@@ -341,12 +477,26 @@ public class FileCache
 		cacheNewItem(key,f);
 	}
 
+	/**
+	 * Cache the given file.
+	 * 
+	 * @param f the file to cache
+	 * @return a handle used to retrieve the cached data in the future
+	 * @throws IOException an error occurred while storing the data to disk
+	 */
 	public String cacheFile( File f ) throws IOException
 	{
 		cacheFile(f.getName(),f);
 		return f.getName();
 	}
 
+	/**
+	 * Cache the given file using the given handle for retrieval.
+	 * 
+	 * @param key a handle used to retrieve the cached data in the future
+	 * @param f the file to cache
+	 * @throws IOException an error occurred while storing the data to disk
+	 */
 	public void cacheFile( String key, File f ) throws IOException
 	{
 		File cachedFile = createCacheFile();
@@ -354,6 +504,13 @@ public class FileCache
 		cacheNewItem(key,cachedFile);
 	}
 
+	/**
+	 * Copy the source file to the destination.
+	 * 
+	 * @param src the source filename
+	 * @param dest the destination filename
+	 * @throws IOException an error occurred while reading the source file or writing the destination file.
+	 */
 	protected void copyFile( File src, File dest ) throws IOException
 	{
 		FileChannel sourceChannel = new FileInputStream(src).getChannel();
@@ -366,12 +523,29 @@ public class FileCache
 		destinationChannel.close();
 	}
 
+	/**
+	 * Retrieve and cache the web resource located at the given URL.
+	 * 
+	 * @param url the URL to the web resource to cache
+	 * @return a handle to the cached resource
+	 * @throws HttpException a network error occurred while grabbing the web resource
+	 * @throws IOException an error occurred while writing the resource to a cache file
+	 */
 	public String cacheWebResource( String url ) throws HttpException, IOException
 	{
 		cacheWebResource(url, url);
 		return url;
 	}
 
+	/**
+	 * Retrieve and cache the web resource located at the given URL using the given key as the
+	 * retrieval handle.
+	 * 
+	 * @param key the handle used for retrieval of the cached resource
+	 * @param url the URL to the web resource to cache
+	 * @throws HttpException a network error occurred while grabbing the web resource
+	 * @throws IOException an error occurred while writing the resource to a cache file
+	 */
 	public void cacheWebResource( String key, String url ) throws HttpException, IOException
 	{
 		GetMethod get = new GetMethod(url);
@@ -388,11 +562,24 @@ public class FileCache
 		cacheData(url, response);
 	}
 
+	/**
+	 * Re-retrieve the web resourced cached under the given key.
+	 * 
+	 * @param key the handle to the cached resource to be refreshed
+	 * @throws HttpException a network error occurred while grabbing the web resource
+	 * @throws IOException an error occurred while writing the resource to a cache file
+	 */
 	public void refreshCachedWebResource( String key ) throws HttpException, IOException
 	{
 		cacheWebResource(key);
 	}
 
+	/**
+	 * Retrieve the cached file associated with the given handle.
+	 * 
+	 * @param key the handle to the cached file
+	 * @return the cached File, or null if no such file exists
+	 */
 	public File getCacheFile( String key )
 	{
 		String filename = handleToFilenameHash.getProperty(key);
@@ -420,6 +607,9 @@ public class FileCache
 		}
 	}
 
+	/**
+	 * @return the current size of the cache in bytes
+	 */
 	public long getCurrentCacheSize()
 	{
 		return totalCacheSize;
