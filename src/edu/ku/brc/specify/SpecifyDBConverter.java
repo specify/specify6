@@ -154,6 +154,8 @@ public class SpecifyDBConverter
      */
     public static void main(String args[]) throws Exception
     {
+    	HibernateUtil.initialize();
+    	
         String oldDatabaseName = "demo_fish2";
         
         DBConnection.setUsernamePassword("rods", "rods");
