@@ -49,8 +49,8 @@ public class MacOSAppHandler extends Application
     {
         public void handleAbout(ApplicationEvent event)
         {
-           //app.get().showAbout();
-           //event.setHandled(true);
+            ((Specify)app.get()).doAbout();
+            event.setHandled(true);
         }
 
         public void handlePreferences(ApplicationEvent event)

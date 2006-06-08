@@ -68,12 +68,16 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.specify.config.SpecifyConfig;
 import edu.ku.brc.specify.core.ContextMgr;
+import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.helpers.XMLHelper;
@@ -174,7 +178,7 @@ public class Specify extends JPanel
         UICacheManager.register(UICacheManager.MAINPANE, this); // important to be done immediately
 
         initPrefs();
-        
+
         // Create and throw the splash screen up. Since this will
         // physically throw bits on the screen, we need to do this
         // on the GUI thread using invokeLater.
@@ -220,7 +224,7 @@ public class Specify extends JPanel
         {
             config = SpecifyConfig.getInstance();
             //config.init(this); // do this once
-            
+
         } catch (Exception e)
         {
             log.error("Error with Configuration", e);
@@ -233,7 +237,7 @@ public class Specify extends JPanel
 
         initStartUpPanels();
 
-       /*try 
+       /*try
        {
 
             SwingUtilities.invokeLater(new Runnable()
@@ -254,7 +258,7 @@ public class Specify extends JPanel
             log.error("Error",e);
         }*/
     }
-    
+
     protected void initStartUpPanels()
     {
         if( !SwingUtilities.isEventDispatchThread() )
@@ -294,7 +298,7 @@ public class Specify extends JPanel
             glassPane.setImage(bi);
 
             Dimension size = glassPane.getSize();
-            
+
             glassPane.setPoint(new Point(0,0), GhostGlassPane.ImagePaintMode.CENTERED);
 
             System.out.println(glassPane.getLocation()+" "+size);
@@ -322,7 +326,11 @@ public class Specify extends JPanel
             });
         } else
         {
-            ContextMgr.getTaskByClass(StartUpTask.class).requestContext();
+            Taskable startUpTask = ContextMgr.getTaskByClass(StartUpTask.class);
+            if (startUpTask != null)
+            {
+                startUpTask.requestContext();
+            }
         }
         showApp();
     }
@@ -476,7 +484,10 @@ public class Specify extends JPanel
     {
         if (!isApplet())
         {
-            splashWindow.setVisible(true);
+            if (splashWindow != null)
+            {
+                splashWindow.setVisible(true);
+            }
             //splashScreen.getFrame().setVisible(true);
         } else
         {
@@ -703,6 +714,34 @@ public class Specify extends JPanel
 
 
          return mb;
+    }
+
+    /**
+     * Checks to see if cache has changed before exiting
+     *
+     */
+    protected void doAbout()
+    {
+
+        PanelBuilder    builder    = new PanelBuilder(new FormLayout("l:p:g,30px,r:p:g", "f:p:g"));
+        CellConstraints cc         = new CellConstraints();
+
+        builder.add(new JLabel("Specify 6.0"), cc.xy(1,1));
+        builder.add(new JLabel(IconManager.getImage("SpecifyLargeIcon")), cc.xy(3,1));
+
+        final JDialog dialog = new JDialog(frame, "About Specify 6.0", true);
+        //dialog.setContentPane(builder.getPanel());
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(new JLabel("Specify 6.0"), BorderLayout.WEST);
+        panel.add(new JLabel(IconManager.getImage("SpecifyLargeIcon")), BorderLayout.EAST);
+        dialog.setContentPane(panel);
+
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        //dialog.validate();
+        //dialog.setSize(dialog.getPreferredSize());
+        dialog.pack();
+        UIHelper.centerAndShow(dialog);
     }
 
     /**
