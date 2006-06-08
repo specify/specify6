@@ -275,4 +275,23 @@ public class TreeTableUtils
 		}
 		return false;
 	}
+
+	/**
+	 * Regenerates all nodeNumber and highestChildNodeNumber field values for all
+	 * nodes attached to the given root.  The nodeNumber field of the givne root
+	 * must already be set.
+	 * 
+	 * @param root the top of the tree to be renumbered
+	 */
+	public static void fixNodeNumbersFromRoot( Treeable root )
+	{
+		int nextNodeNumber = root.getNodeNumber();
+		for( Treeable child: root.getChildNodes() )
+		{
+			child.setNodeNumber(++nextNodeNumber);
+			fixNodeNumbersFromRoot(child);
+			nextNodeNumber = child.getHighestChildNodeNumber();
+		}
+		root.setHighestChildNodeNumber(nextNodeNumber);
+	}
 }
