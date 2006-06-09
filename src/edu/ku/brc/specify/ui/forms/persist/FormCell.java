@@ -28,7 +28,7 @@ import org.apache.commons.lang.StringUtils;
  * @author rods
  *
  */
-public class FormCell
+public class FormCell implements Comparable<FormCell>
 {
     public enum CellType {separator, field, label, subview, command, panel};
 
@@ -175,6 +175,11 @@ public class FormCell
         this.name = name;
     }
 
+    public void setId(String id)
+    {
+        this.id = id;
+    }
+
     public void setRowspan(int rowspan)
     {
         this.rowspan = rowspan;
@@ -183,6 +188,25 @@ public class FormCell
     public void setType(CellType type)
     {
         this.type = type;
+    }
+    
+    public int compareTo(FormCell obj)
+    {
+        if (obj == null || obj.id == null)
+        {
+            return 0;
+        }
+        
+        System.out.println("compareTo["+id+"]["+obj.id+"]");
+
+        //if (id.equals(obj.id))
+        //{
+        //    return 0;
+//
+        //} else
+        //{
+           return id.compareTo(obj.id);
+        //}
     }
 
  }

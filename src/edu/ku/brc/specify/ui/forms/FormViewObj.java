@@ -103,8 +103,13 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
 {
     private static Log log = LogFactory.getLog(FormViewObj.class);
 
+    // Static Data Members
     protected static Object[]               formattedValues = new Object[2];
+    protected static SimpleDateFormat       scrDateFormat   = null;
+    protected static ColorWrapper           viewFieldColor  = null;
+    protected static CellConstraints        cc              = new CellConstraints();
 
+    // Data Members
     protected boolean                       isEditting     = false;
     protected boolean                       formIsInNewDataMode = false; // when this is true it means the form was cleared and new data is expected
     protected MultiView                     mvParent       = null;
@@ -120,15 +125,15 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
     protected Map<String, FieldInfo>        labels         = new Hashtable<String, FieldInfo>(); // ID is the Key
 
     protected FormValidator                 formValidator   = null;
-    protected Object                        parentDataObj  = null;
-    protected Object                        dataObj        = null;
-    protected Set                           origDataSet    = null; 
+    protected Object                        parentDataObj   = null;
+    protected Object                        dataObj         = null;
+    protected Set                           origDataSet     = null; 
     protected Object[]                      singleItemArray = new Object[1];
 
-    protected JPanel                        mainComp       = null;
-    protected ControlBarPanel               controlPanel   = null;
-    protected ResultSetController           rsController   = null;
-    protected List<Object>                  list           = null;
+    protected JPanel                        mainComp        = null;
+    protected ControlBarPanel               controlPanel    = null;
+    protected ResultSetController           rsController    = null;
+    protected List<Object>                  list            = null;
     protected boolean                       ignoreSelection = false;
     protected JButton                       saveBtn         = null;
     protected JButton                       validationInfoBtn = null;
@@ -136,12 +141,11 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
     protected DropDownButtonStateful        altViewUI;
 
     protected PanelBuilder                  mainBuilder;
-    protected CellConstraints               cc             = new CellConstraints();
 
-    // Data Members
-    protected static SimpleDateFormat       scrDateFormat  = null;
-    protected static ColorWrapper           viewFieldColor = null;
-
+    // Carry Forward
+    protected CarryForwardInfo              carryFwdInfo    = null;
+    protected boolean                       doCarryForward  = false;
+    protected Object                        carryFwdDataObj = null;
 
     /**
      * Constructor with FormView definition
@@ -166,8 +170,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         this.formViewDef = (FormViewDef)altView.getViewDef();
         
         setValidator(formValidator);
-
-
+        
         if (scrDateFormat == null)
         {
             scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
@@ -281,9 +284,47 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         {
             addRSController();
         }
+    }
 
+    /**
+     * Returns the CarryForwardInfo Object for the Form
+     * @return the CarryForwardInfo Object for the Form
+     */
+    public CarryForwardInfo getCarryForwardInfo()
+    {
+        if (carryFwdInfo == null)
+        {
+            try
+            {
+                Class classObj = Class.forName(formViewDef.getClassName());
+                carryFwdInfo = new CarryForwardInfo(classObj, this, formViewDef);
+                
+            } catch (ClassNotFoundException ex)
+            {
+                throw new RuntimeException(ex);
+            }
+        }
+        return carryFwdInfo;
     }
     
+    /**
+     * Returns whether this form is doing Carry Forward
+     * @return whether this form is doing Carry Forward
+     */
+    public boolean isDoCarryForward()
+    {
+        return doCarryForward;
+    }
+
+    /**
+     * Turns on/off Carry Forward for this form
+     * @param doCarryForward true - on, false - off
+     */
+    public void setDoCarryForward(boolean doCarryForward)
+    {
+        this.doCarryForward = doCarryForward;
+    }
+
     /**
      * Creates the JButton that displays the current state of the forms validation
      * @param comps the list of control that will be added to the controlbar
@@ -673,6 +714,16 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
             Object obj      = classObj.newInstance();
             UIHelper.initAndAddToParent(parentDataObj, obj);
             
+            if (carryFwdDataObj == null && dataObj != null)
+            {
+                carryFwdDataObj = dataObj;
+            }
+            
+            if (doCarryForward && carryFwdDataObj != null  && carryFwdInfo != null)
+            {
+                carryFwdInfo.carryForward(carryFwdDataObj, obj);
+            }
+            
             dataObj = obj;
                 
             if (list != null)
@@ -724,6 +775,11 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
             
             formIsInNewDataMode = false;
             traverseToToSetAsNew(mvParent, false);
+            
+            if (doCarryForward)
+            {
+                carryFwdDataObj = dataObj;
+            }
 
             
         } catch (Exception e)

@@ -296,7 +296,8 @@ public class Specify extends JPanel
             g2.drawImage(specifyImageIcon.getImage(), (w - specifyImageIcon.getIconWidth()) / 2, 0, specifyImageIcon.getIconWidth(), specifyImageIcon.getIconHeight(), null);
             g2.drawImage(userSplashImageIcon.getImage(), (w - userSplashImageIcon.getIconWidth()) / 2, specifyImageIcon.getIconHeight()+20, userSplashImageIcon.getIconWidth(), userSplashImageIcon.getIconHeight(), null);
             glassPane.setImage(bi);
-
+            g2.dispose();
+            
             Dimension size = glassPane.getSize();
 
             glassPane.setPoint(new Point(0,0), GhostGlassPane.ImagePaintMode.CENTERED);

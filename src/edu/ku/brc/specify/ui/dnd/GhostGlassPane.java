@@ -176,6 +176,7 @@ public class GhostGlassPane extends JPanel
         }
 
         g2.drawImage(dragged, x, y, (int) (width * zoom), (int) (height * zoom), null);
+        g2.dispose();
     }
 
     /**

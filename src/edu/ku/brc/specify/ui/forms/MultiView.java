@@ -21,7 +21,10 @@ package edu.ku.brc.specify.ui.forms;
 
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -79,6 +82,10 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     
     protected List<GenericDisplayFrame>    displayFrames   = null;
 
+    // Temp
+    protected MultiView                    thisObj          = null;
+    protected CarryForwardSetUp            carryForwardSetup = null;
+
     /**
      * Constructor - Note that createWithMode can be null and is passed in from parent ALWAYS.
      * So forms that may not have multiple views or do not wish to have Edit/View can pass in null. (See Class description)
@@ -105,6 +112,43 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         specialEditView = view.isSpecialViewEdit();
         
         createDefaultViewable(createRecordSetController, createViewSwitcher);
+        
+        // Testing
+        if (mvParent == null)
+        {
+            thisObj = this;
+            addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e)
+                {
+                    carryForwardSetup = new CarryForwardSetUp(thisObj);
+                    add(carryForwardSetup, "carryforward");
+                    cardLayout.show(thisObj, "carryforward");
+                    
+                }
+            });
+            
+        }
+    }
+    
+    
+    public void acceptCarryForwardSetup(final boolean accept)
+    {
+        if (carryForwardSetup != null)
+        {
+            cardLayout.show(thisObj, currentView.getName());
+            remove(carryForwardSetup);
+            carryForwardSetup = null;
+        }
+    }
+    
+
+    /**
+     * Returns a Collection of the Viewables
+     * @return  a Collection of the Viewables
+     */
+    public Collection<Viewable> getViewables()
+    {
+        return viewMapByName.values();
     }
     
     /**

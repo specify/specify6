@@ -70,6 +70,26 @@ public class FormViewDef extends ViewDef
         return rows;
     }
     
+    /**
+     * Returns a FormCell by name (searches the rows and then the columns)
+     * @param name the name of the field 
+     * @return a FormCell by name (searches the rows and then the columns)
+     */
+    public FormCell getFormCellById(String name)
+    {
+        for (FormRow row : rows)
+        {
+            for (FormCell c : row.getCells())
+            {
+                if (c.getId().equals(name))
+                {
+                    return c;
+                }
+            }
+        }
+        return null;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.persist.FormView#cleanUp()
      */
