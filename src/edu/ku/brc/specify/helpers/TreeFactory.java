@@ -18,31 +18,39 @@ import edu.ku.brc.specify.datamodel.Treeable;
 
 public class TreeFactory
 {
-	public static Treeable createNewTreeable( Class implementingClass, Treeable parent, String name )
+	public static Treeable createNewTreeable( Class implementingClass, Treeable parent, String name, Integer rank )
 	{
 		Treeable t = null;
 		// big switch statement on implementingClass
 		if( implementingClass.equals(Geography.class) )
 		{
 			t = new Geography();
+			((Geography)t).initialize();
 		}
 		else if( implementingClass.equals(GeologicTimePeriod.class) )
 		{
 			t = new GeologicTimePeriod();
+			((GeologicTimePeriod)t).initialize();
 		}
 		else if( implementingClass.equals(Location.class) )
 		{
 			t = new Location();			
+			((Location)t).initialize();
 		}
 		else if( implementingClass.equals(Taxon.class) )
 		{
 			t = new Taxon();
+			((Taxon)t).initialize();
 		}
 		t.setName(name);
-		t.setParentNode(parent);
+
 		if( parent != null )
 		{
-			Integer rank = TreeTableUtils.getRankOfChildren(parent);
+			parent.addChild(t);
+			if( rank == null )
+			{
+				rank = TreeTableUtils.getRankOfChildren(parent);
+			}
 			t.setRankId(rank);
 			t.setTreeDef(parent.getTreeDef());
 		}
@@ -51,14 +59,20 @@ public class TreeFactory
 	
 	public static Treeable createNewTreeable( Treeable parent, String name )
 	{
-		return createNewTreeable( parent.getClass(), parent, name );
+		Integer rank = TreeTableUtils.getRankOfChildren(parent);
+		return createNewTreeable( parent.getClass(), parent, name, rank );
 	}
 	
 	public static Treeable createNewTreeable( Class implementingClass, String name )
 	{
-		return createNewTreeable(implementingClass,null,name);
+		return createNewTreeable(implementingClass,null,name,null);
 	}
 
+	public static Treeable createNewTreeable( Treeable parent, String name, Integer rankId )
+	{
+		return createNewTreeable( parent.getClass(), parent, name, rankId );
+	}
+	
 	public static TreeDefinitionIface createNewTreeDef( Class implementingClass, String name, String remarks )
 	{
 		TreeDefinitionIface def = null;
