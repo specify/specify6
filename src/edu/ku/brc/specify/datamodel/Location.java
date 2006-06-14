@@ -11,6 +11,7 @@ public class Location  implements java.io.Serializable,Treeable {
 
      protected Integer locationId;
      protected String name;
+     protected String remarks;
      protected Integer rankId;
      protected Integer nodeNumber;
      protected Integer highestChildNodeNumber;
@@ -46,6 +47,7 @@ public class Location  implements java.io.Serializable,Treeable {
     {
     	locationId = null;
         name = null;
+        remarks = null;
         rankId = null;
         nodeNumber = null;
         highestChildNodeNumber = null;
@@ -91,7 +93,17 @@ public class Location  implements java.io.Serializable,Treeable {
         this.name = name;
     }
 
-    /**
+    public String getRemarks()
+	{
+		return remarks;
+	}
+
+	public void setRemarks(String remarks)
+	{
+		this.remarks = remarks;
+	}
+
+	/**
      * 
      */
     public Integer getRankId() {

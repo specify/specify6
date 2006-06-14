@@ -11,6 +11,7 @@ public class Geography  implements java.io.Serializable,Treeable {
 
      protected Integer geographyId;
      protected String name;
+     protected String remarks;
      protected String commonName;
      protected String geographyCode;
      protected Integer rankId;
@@ -48,6 +49,7 @@ public class Geography  implements java.io.Serializable,Treeable {
     {
     	geographyId = null;
         name = null;
+        remarks = null;
         commonName = null;
         geographyCode = null;
         rankId = null;
@@ -95,7 +97,17 @@ public class Geography  implements java.io.Serializable,Treeable {
         this.name = name;
     }
 
-    /**
+    public String getRemarks()
+	{
+		return remarks;
+	}
+
+	public void setRemarks(String remarks)
+	{
+		this.remarks = remarks;
+	}
+
+	/**
      *
      */
     public String getCommonName() {

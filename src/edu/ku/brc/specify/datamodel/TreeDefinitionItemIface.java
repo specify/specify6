@@ -10,6 +10,9 @@ public interface TreeDefinitionItemIface
 	public String getName();
 	public void setName(String name);
 	
+	public String getRemarks();
+	public void setRemarks(String remarks);
+
 	public Integer getRankId();
 	public void setRankId(Integer rank);
 	
@@ -23,8 +26,11 @@ public interface TreeDefinitionItemIface
 	public void setChildItem(TreeDefinitionItemIface child);
 	
 	public Boolean getIsEnforced();
-	public void setIsEnforced(Boolean enforced);
-	
+	public void setIsEnforced(Boolean isEnforced);
+
+	public Boolean getIsInFullName();
+	public void setIsInFullName(Boolean isInFullName);
+
 	public Set getTreeEntries();
 	public void setTreeEntries(Set treeables);
 }

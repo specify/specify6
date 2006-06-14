@@ -28,9 +28,6 @@ import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldMetaDataFromSc
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldNamesFromSchema;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getStrValue;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -38,13 +35,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -67,6 +62,8 @@ import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
+import edu.ku.brc.specify.datamodel.LocationTreeDef;
+import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
@@ -92,12 +89,6 @@ public class GenericDBConversion
 
     protected static StringBuilder strBuf   = new StringBuilder("");
     protected static Calendar     calendar  = Calendar.getInstance();
-
-    private static final int GEO_ROOT_RANK  = 0;
-    private static final int CONTINENT_RANK = 100;
-    private static final int COUNTRY_RANK   = 200;
-    private static final int STATE_RANK     = 300;
-    private static final int COUNTY_RANK    = 400;
 
     protected String oldDriver   = "";
     protected String oldDBName   = "";
@@ -2598,6 +2589,12 @@ public class GenericDBConversion
 
     		int rowsUpdated = newDbStmt.executeUpdate(sqlUpdate.toString());
     		log.info(rowsUpdated + " rows updated");
+    		
+    		StringBuilder fullNameUpdate = new StringBuilder("UPDATE taxontreedefitem SET IsInFullName=TRUE WHERE TaxonTreeDefID="+treeDefId+" AND Name IN ('Genus','Species')");
+    		log.info(fullNameUpdate);
+    		
+    		rowsUpdated = newDbStmt.executeUpdate(fullNameUpdate.toString());
+    		log.info(fullNameUpdate);
     	}
 
     	// at this point, we've set all the IsEnforced fields that need to be TRUE
@@ -2682,6 +2679,7 @@ public class GenericDBConversion
     	
     	Session session = HibernateUtil.getCurrentSession();
     	HibernateUtil.beginTransaction();
+
     	GeographyTreeDef def = new GeographyTreeDef();
     	def.initialize();
     	def.setName("Default Geography Definition");
@@ -2704,18 +2702,21 @@ public class GenericDBConversion
 		country.initialize();
 		country.setName("Country");
 		country.setRankId(200);
+		country.setIsInFullName(true);
 		session.save(country);
 
 		GeographyTreeDefItem state = new GeographyTreeDefItem();
 		state.initialize();
 		state.setName("State");
 		state.setRankId(300);
+		state.setIsInFullName(true);
 		session.save(state);
 
 		GeographyTreeDefItem county = new GeographyTreeDefItem();
 		county.initialize();
 		county.setName("County");
 		county.setRankId(400);
+		county.setIsInFullName(true);
 		session.save(county);
 
 		// setup parents
@@ -2912,6 +2913,60 @@ public class GenericDBConversion
     	return newGeo;
     }
 
+    public LocationTreeDef buildSampleLocationTreeDef()
+    {
+    	// empty out any pre-existing tree definitions
+    	BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "locationtreedef");
+    	BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "locationtreedefitem");
+
+    	log.info("Creating a sample location tree definition");
+    	
+    	Session session = HibernateUtil.getCurrentSession();
+    	HibernateUtil.beginTransaction();
+
+    	LocationTreeDef locDef = new LocationTreeDef();
+    	locDef.initialize();
+    	locDef.setName("Sample location tree definition");
+    	locDef.setRemarks("This definition is merely for demonstration purposes.  Consult documentation or support staff for instructions on creating one tailored for an institutions specific needs.");
+    	session.save(locDef);
+    	
+    	LocationTreeDefItem building = new LocationTreeDefItem();
+    	building.initialize();
+    	building.setName("Building");
+    	building.setIsEnforced(false);
+    	building.setIsInFullName(false);
+    	building.setTreeDef(locDef);
+    	session.save(building);
+
+    	LocationTreeDefItem room = new LocationTreeDefItem();
+    	room.initialize();
+    	room.setName("Room");
+    	room.setIsEnforced(true);
+    	room.setIsInFullName(true);
+    	room.setTreeDef(locDef);
+    	session.save(room);
+    	
+    	LocationTreeDefItem freezer = new LocationTreeDefItem();
+    	freezer.initialize();
+    	freezer.setName("Freezer");
+    	freezer.setIsEnforced(true);
+    	freezer.setIsInFullName(true);
+    	freezer.setTreeDef(locDef);
+    	session.save(freezer);
+    	
+    	building.setChild(room);
+    	room.setChild(freezer);
+    	
+    	locDef.addTreeDefItem(building);
+    	locDef.addTreeDefItem(room);
+    	locDef.addTreeDefItem(freezer);
+    	
+		HibernateUtil.commitTransaction();
+		HibernateUtil.closeSession();
+
+    	return locDef;
+    }
+    
     /**
 	 * Copies the filed names to the list and prepend the table name
 	 * 

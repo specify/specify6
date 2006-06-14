@@ -24,6 +24,11 @@
 			<meta attribute="scope-field">protected</meta>
 		</property>
 
+		<property name="remarks" type="java.lang.String"
+			column="Remarks" length="255">
+			<meta attribute="scope-field">protected</meta>
+		</property>
+		
 		<property name="nodeNumber" type="java.lang.Integer"
 			column="NodeNumber" length="10" index="IX_GTP_NodeNumber">
 			<meta attribute="scope-field">protected</meta>
@@ -47,10 +52,6 @@
 
 		<property name="ageUncertainty" type="java.lang.Float"
 			column="AgeUncertainty" length="24">
-			<meta attribute="scope-field">protected</meta>
-		</property>
-
-		<property name="remarks" type="text" column="Remarks">
 			<meta attribute="scope-field">protected</meta>
 		</property>
 
@@ -93,11 +94,11 @@
 		<!-- bi-directional many-to-one association to GeologicTimePeriod -->
 		<many-to-one name="parent"
 			class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
-			not-null="true" outer-join="true">
+			not-null="true" outer-join="true" lazy="false">
 			<column name="ParentID" />
 		</many-to-one>
 
-		<set name="children" lazy="true" inverse="true"
+		<set name="children" lazy="false" inverse="true"
 			cascade="none">
 			<meta attribute="scope-field">protected</meta>
 			<key>

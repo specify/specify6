@@ -5,7 +5,9 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.HibernateException;
 import org.hibernate.Interceptor;
+import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -148,6 +150,11 @@ public class HibernateUtil {
         if (userHome.indexOf("rods") > -1)
         {
             databaseName = "accessions";
+        }
+        
+        if (userHome.indexOf("stewart") > -1)
+        {
+        	databaseName = "fish";
         }
         
         // Setup JDBC Connection
@@ -531,5 +538,16 @@ public class HibernateUtil {
         return configuration.getInterceptor();
     }
 
+    public static void attach( Object obj, Session session )
+    {
+    	try
+    	{
+    		session.lock(obj, LockMode.NONE);
+    	}
+    	catch( HibernateException he )
+    	{
+    		log.warn("Exception thrown in attach()", he);
+    	}
+    }
 }
 

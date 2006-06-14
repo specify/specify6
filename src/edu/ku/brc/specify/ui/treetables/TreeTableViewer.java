@@ -8,7 +8,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -19,33 +18,21 @@ import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
-import javax.swing.JToggleButton;
-import javax.swing.JTree;
 import javax.swing.SwingUtilities;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.plaf.TreeUI;
-import javax.swing.plaf.basic.BasicTreeUI;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import org.hibernate.Hibernate;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
-import org.jdesktop.animation.timing.Envelope;
 
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
@@ -55,9 +42,6 @@ import edu.ku.brc.specify.helpers.TreeFactory;
 import edu.ku.brc.specify.helpers.TreeTableUtils;
 import edu.ku.brc.specify.tasks.subpane.BaseSubPane;
 import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.IconManager.IconSize;
-import edu.ku.brc.specify.ui.dnd.TransferableMutableTreeNode;
-import edu.ku.brc.specify.ui.dnd.TreeNodeTransferHandler;
 
 /**
  * The TreeTableViewer is a SubPaneIface implementation that provides a
@@ -67,7 +51,7 @@ import edu.ku.brc.specify.ui.dnd.TreeNodeTransferHandler;
  * 
  * @author jstewart
  */
-public class TreeTableViewer extends BaseSubPane implements TreeSelectionListener
+public class TreeTableViewer extends BaseSubPane implements ListSelectionListener
 {
 	protected JPanel uiComp;
 
@@ -79,15 +63,6 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 	protected JLabel messageLabel;
 	protected Icon errorIcon;
 	
-	protected JTree tree;
-	protected FilteredDefaultTreeModel model;
-	protected DefaultMutableTreeNode rootNode;
-	protected RankBasedTreeCellRenderer mainRenderer;
-	protected NameBasedTreeCellRenderer subRenderer;
-	protected TreeNodeTransferHandler transferHandler;
-	protected boolean subRendsEnabled;
-	protected JPopupMenu popupMenu;
-	
 	protected TreeDataListModel listModel;
 	protected TreeDataJList list;
 	protected TreeDataListCellRenderer listCellRenderer;
@@ -98,6 +73,9 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 	protected JComboBox defsBox;
 	
 	protected Class treeableClass;
+	
+    private static final Log log = LogFactory.getLog(TreeTableViewer.class);
+
 
 	/**
 	 * Build a TreeTableViewer to view/edit the data found
@@ -106,6 +84,7 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 	 * @param name a String name for this viewer/editor
 	 * @param task the owning Taskable
 	 */
+	@SuppressWarnings("unchecked")
 	public TreeTableViewer( final Class treeDefClass,
 							final String name,
 							final Taskable task )
@@ -115,11 +94,10 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 		Criteria c = session.createCriteria(treeDefClass);
 		List results = c.list();
 		
-		HibernateUtil.closeSession();
-
 		errorIcon = IconManager.getIcon("Error", IconManager.IconSize.Std24);
-		
 		init(results);
+
+		HibernateUtil.closeSession();
 	}
 	
 	/**
@@ -150,18 +128,6 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 		defs.add(0, "Choose a tree definition");
 		defsBox = new JComboBox(defs);
 		defsBox.setRenderer(new TreeDefListCellRenderer());
-//		defsBox.addActionListener(new ActionListener()
-//				{
-//					public void actionPerformed(ActionEvent e)
-//					{
-//						Object selection = defsBox.getSelectedItem();
-//						if( selection instanceof TreeDefinitionIface )
-//						{
-//							TreeDefinitionIface treeDef = (TreeDefinitionIface)defsBox.getSelectedItem();
-//							initTreeData(treeDef);
-//						}
-//					}
-//				});
 		defsBox.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -171,12 +137,6 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 				{
 					TreeDefinitionIface treeDef = (TreeDefinitionIface)defsBox.getSelectedItem();
 					
-//					JProgressBar pb = new JProgressBar();
-//					pb.setIndeterminate(true);
-//					uiComp.add(pb);					
-//					pb.setValue(1);
-
-					uiComp.removeAll();
 					messageLabel.setText("Please wait while the tree is prepared");
 					messageLabel.setIcon(null);
 					uiComp.add(messageLabel);
@@ -197,146 +157,20 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 		southPanel.add(statusBar,BorderLayout.SOUTH);
 	}
 
-	/**
-	 * Initialize the tree data (nodes and model) and insert the tree into the main panel
-	 * 
-	 * @param treeDef the TreeDefinitionIface defining the tree to be viewed/edited
-	 */
-	protected synchronized void initTreeData(TreeDefinitionIface treeDef)
-	{
-		Session session = HibernateUtil.getCurrentSession();
-		session.lock(treeDef, LockMode.NONE);
-		Set<Treeable> treeables = treeDef.getTreeEntries();
-		Hibernate.initialize(treeables);
-		HibernateUtil.closeSession();
-		
-		rootNode = null;
-		
-		Vector<TransferableMutableTreeNode> nodes = new Vector<TransferableMutableTreeNode>();
-		for( Treeable t: treeables )
-		{
-			nodes.add( new TransferableMutableTreeNode(t) );
-		}
-		
-		// setup TransferableMutableTreeNode objects for each userObject
-		for (TransferableMutableTreeNode nodeI: nodes)
-		{
-			for( TransferableMutableTreeNode nodeJ: nodes )
-			{
-				Treeable treeableJ = (Treeable)nodeJ.getUserObject();
-				Treeable treeableI = (Treeable)nodeI.getUserObject();
-				if( treeableJ.getParentNode() == treeableI )
-				{
-					int newChildPos = TreeTableUtils.findIndexOfNewChild(nodeI, nodeJ);
-					nodeI.insert(nodeJ, newChildPos);
-				}
-				if( treeableJ.getParentNode() == null )
-				{
-					rootNode = nodeJ;
-				}
-			}
-		}
-		
-		model = new FilteredDefaultTreeModel(rootNode);
-		
-		if( tree == null )
-		{
-			tree = new JTree(model);
-			initTreeComponent();
-
-			uiComp.removeAll();
-			uiComp.add(new JScrollPane(tree),BorderLayout.CENTER);
-			uiComp.repaint();
-		}
-		else
-		{
-			tree.setModel(model);
-		}
-		
-		enableAllButtons();
-	}
-	
-	/**
-	 * Configure the JTree's drag-and-drop handler, cell renderers,
-	 * and UI options.  This should only ever be called once per
-	 * TreeTableViewer instance.  To display a different tree,
-	 * JTree.setModel(TreeModel) should be called.
-	 */
-	protected void initTreeComponent()
-	{
-		tree.setDragEnabled(true);
-		
-		tree.setScrollsOnExpand(false);
-		
-		transferHandler = new TreeNodeTransferHandler();
-		
-		tree.setTransferHandler(transferHandler);
-		
-		//Map<Integer,Icon> iconMap = getIconMapForClass(treeableClass);
-		Map<Integer,Icon> iconMap = new Hashtable<Integer,Icon>();
-		mainRenderer = new RankBasedTreeCellRenderer(iconMap);
-		Icon defIcon = IconManager.getIcon("Blue Dot", IconManager.IconSize.Std16);
-		mainRenderer.setDefaultIcon(defIcon);
-		
-		//Map<String,Icon> nameIconMap = getNameIconMapForClass(treeableClass);		
-		Map<String,Icon> nameIconMap = new Hashtable<String,Icon>();
-		subRenderer = new NameBasedTreeCellRenderer(nameIconMap);
-		mainRenderer.setSubRendererForRank(subRenderer, 200);
-		subRendsEnabled = false;
-		mainRenderer.setSubRenderersEnabled(subRendsEnabled);
-		tree.setCellRenderer(mainRenderer);
-		
-		// setup other tree rendering options
-		TreeUI treeUI = tree.getUI();
-		BasicTreeUI tui = (BasicTreeUI)treeUI;
-		tui.setCollapsedIcon(IconManager.getIcon("Forward", IconManager.IconSize.Std8));
-		tui.setExpandedIcon(IconManager.getIcon("Down", IconManager.IconSize.Std8));
-		tui.setLeftChildIndent(50);
-		tree.putClientProperty("JTree.lineStyle", "None");
-		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
-		setupPopupMenu();
-		
-		MouseAdapter ma = new MouseAdapter()
-		{
-			public void mouseReleased(MouseEvent e)
-			{
-				checkForTrigger(e);
-			}
-			
-			public void mousePressed(MouseEvent e)
-			{
-				checkForTrigger(e);
-			}
-			
-			protected void checkForTrigger(MouseEvent e)
-			{
-				if( e.isPopupTrigger() )
-				{
-					popupMenu.show(tree,e.getX(),e.getY());
-				}
-			}
-		};
-
-		tree.addMouseListener(ma);
-		tree.addTreeSelectionListener(this);
-		
-		disableAllButtons();
-	}
-	
 	protected synchronized void initTreeList( final TreeDefinitionIface treeDef )
 	{
+		// setup a thread to load the objects from the DB
 		Runnable runnable = new Runnable()
 		{
 			public void run()
 			{
 				Session session = HibernateUtil.getCurrentSession();
-				session.beginTransaction();
-				
 				session.lock(treeDef, LockMode.NONE);
+				
 				Set treeNodes = treeDef.getTreeEntries();
 				if (treeNodes.isEmpty())
 				{
+					// do the failure callback on the Swing thread
 					SwingUtilities.invokeLater(new Runnable()
 					{
 						public void run()
@@ -356,26 +190,17 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 				
 				// now 'node' should be the root node of the tree
 				final Treeable root = node;
+				HibernateUtil.closeSession();
 
+				// do the success callback on the Swing thread
 				SwingUtilities.invokeLater(new Runnable()
 				{
 					public void run()
 					{
-						listModel = new TreeDataListModel(root);
-						list = new TreeDataJList(listModel);
-						listCellRenderer = new TreeDataListCellRenderer(list,listModel);
-						list.setCellRenderer(listCellRenderer);
-						listHeader = new TreeDataListHeader(list,listModel);
-						
-						list.addMouseListener(new MouseAdapter()
-						{
-							public void mouseClicked( MouseEvent e )
-							{
-								handleMouseEvent(e);
-							}
-						});
-						
+						Session session = HibernateUtil.getCurrentSession();
+						session.lock(root,LockMode.NONE);
 						initTreeListSucess(root);
+						HibernateUtil.closeSession();
 					}
 				});
 			}
@@ -387,25 +212,40 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 	
 	protected synchronized void initTreeListSucess( Treeable root )
 	{
-		System.out.println("Successfully initialized tree editor");
-		System.out.println("\troot node: " + root.getName());
+		log.info("Successfully initialized tree editor");
+
+		listModel = new TreeDataListModel(root);
+		list = new TreeDataJList(listModel);
+		listCellRenderer = new TreeDataListCellRenderer(list,listModel);
+		list.setCellRenderer(listCellRenderer);
+		list.addListSelectionListener(TreeTableViewer.this);
+		listHeader = new TreeDataListHeader(list,listModel);
+		
+		list.addMouseListener(new MouseAdapter()
+		{
+			public void mouseClicked( MouseEvent e )
+			{
+				handleMouseEvent(e);
+			}
+		});
 
 		JPanel treeListPanel = new JPanel(new BorderLayout());
-		uiComp.removeAll();
+		uiComp.remove(messageLabel);
 		treeListPanel.add(new JScrollPane(list), BorderLayout.CENTER);
 		treeListPanel.add(listHeader, BorderLayout.NORTH);
-		uiComp.add(treeListPanel);
-		
+		uiComp.add(treeListPanel, BorderLayout.CENTER);
+		uiComp.repaint();
+		list.repaint();
 		treeListPanel.repaint();
+		listHeader.repaint();
+		
+		enableAllButtons();
 	}
 	
 	protected synchronized void initTreeListFailure( String failureMessage )
 	{
-		// hide the init progress bar
+		log.error("Error while initializing tree editor: " + failureMessage );
 		
-		System.out.println("Error while initializing tree editor: " + failureMessage );
-		
-		uiComp.removeAll();
 		messageLabel.setText(failureMessage);
 		messageLabel.setIcon(errorIcon);
 		uiComp.add(messageLabel);
@@ -416,8 +256,6 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 	protected void handleMouseEvent( MouseEvent e )
 	{
 		int clickCount = e.getClickCount();
-		System.out.println( "Mouse event handler entered: " + clickCount );
-
 		if( clickCount == 2 )
 		{
 			Treeable t = (Treeable)list.getSelectedValue();
@@ -437,7 +275,7 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 				{
 					public void actionPerformed(ActionEvent ae)
 					{
-						addChildToSelectedNode();
+						addChildToSelection();
 					}
 				});
 		
@@ -446,19 +284,9 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 				{
 					public void actionPerformed(ActionEvent ae)
 					{
-						deleteSelectedNode();
+						deleteSelection();
 					}
 				});
-		
-		final JToggleButton displayFlags = new JCheckBox("Display Flags");
-		displayFlags.addActionListener(new ActionListener()
-				{
-					public void actionPerformed(ActionEvent ae)
-					{
-						enableSubRenderers(displayFlags.isSelected());
-					}
-				});
-		displayFlags.setSelected(subRendsEnabled);
 		
 		JButton commitButton = new JButton("Commit changes to DB");
 		commitButton.addActionListener(new ActionListener()
@@ -471,14 +299,12 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 		
 		buttonPanel = new JPanel();
 				
-		buttons.add(displayFlags);
 		buttons.add(addNode);
 		buttons.add(deleteNode);
 		buttons.add(commitButton);
 		
 		disableAllButtons();
 		
-		buttonPanel.add(displayFlags);
 		buttonPanel.add(addNode);
 		buttonPanel.add(deleteNode);
 		buttonPanel.add(commitButton);
@@ -500,83 +326,30 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 		}
 	}
 
-	/**
-	 * Creates a new TransferbleMutableTreeNode and inserts it in the tree as a child
-	 * of the currently selected node.  If the current selection is empty, this does
-	 * nothing.
-	 */
-	public void addChildToSelectedNode()
+	public void addChildToSelection()
 	{
-		TreePath path = tree.getSelectionPath();
-		if( path == null )
+		Object selection = list.getSelectedValue();
+		if( selection == null )
 		{
 			return;
 		}
-		DefaultMutableTreeNode parent = (DefaultMutableTreeNode)path.getLastPathComponent();
-		Treeable t = (Treeable)parent.getUserObject();
-		if( TreeTableUtils.childrenAllowed(t) == false )
-		{
-			statusBar.setText("Children not allowed for this rank");
-			return;
-		}
 		
-		String name = JOptionPane.showInputDialog(tree, "enter a name for the new node");
+		Treeable parent = (Treeable)selection;
 		
-		Integer childRank = TreeTableUtils.getRankOfChildren(t);
-		Treeable newChild = TreeFactory.createNewTreeable(t,name);
-		if( childRank != null )
-		{
-			newChild.setRankId(childRank);
-		}
-		TransferableMutableTreeNode newNode = new TransferableMutableTreeNode(newChild);
-		int newChildPos = TreeTableUtils.findIndexOfNewChild(parent, newNode);
-		model.insertNodeInto(newNode,parent,newChildPos);
-		
-		tree.expandPath(new TreePath(model.getPathToRoot(parent)));
-	}
-
-	/**
-	 * Delete the selected node from the tree.  If nothing is selected, do nothing.
-	 */
-	public void deleteSelectedNode()
-	{
-		TreePath path = tree.getSelectionPath();
-		if( path == null )
-		{
-			return;
-		}
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode)path.getLastPathComponent();
-		model.removeNodeFromParent(node);
-		Treeable t = (Treeable)node.getUserObject();
-		t.setParentNode(null);
-		//removeAllChildrenOfDeletedNode(node);
-		deletedNodes.add((Treeable)node.getUserObject());
+		// display a form for filling in child data
+		Treeable child = showNewTreeableForm(parent);
+		listModel.addChild(child, parent);
 	}
 	
-//	protected void removeAllChildrenOfDeletedNode(DefaultMutableTreeNode parent)
-//	{
-//		while( parent.getChildCount() > 0 )
-//		{
-//			DefaultMutableTreeNode child = (DefaultMutableTreeNode)parent.getFirstChild();
-//			Treeable childT = (Treeable)child.getUserObject();
-//
-//			childT.setParentNode(null);
-//			
-//			parent.remove(child);
-//			removeAllChildrenOfDeletedNode(child);
-//		}
-//	}
-	
-	/**
-	 * Enables or disables the sub-renderers that have been registered with the main
-	 * renderer
-	 * 
-	 * @param enable turn on sub-renderers if true, turn off otherwise
-	 */
-	public void enableSubRenderers( boolean enable )
+	protected Treeable showNewTreeableForm(Treeable parent)
 	{
-		mainRenderer.setSubRenderersEnabled(enable);
-		tree.repaint();
+		Treeable newT = TreeFactory.createNewTreeable(parent, "new treeable w/o a name");
+		return newT;
+	}
+	
+	public void deleteSelection()
+	{
+		
 	}
 	
 	/**
@@ -587,14 +360,7 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 	 */
 	public boolean commitStructureToDb()
 	{
-		// walk the entire model and fixup the parent/child pointers
-		// in the Treeable user objects
-		
-		model.clearAllFilters();
-		
-		fixTreeables(rootNode);
-		
-		return updateAllTreeablesInDb();
+		return false;
 	}
 	
 	/**
@@ -683,107 +449,6 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 		}
 	}
 	
-	/**
-	 * Saves the current tree structure to the database
-	 * 
-	 * @return true on success, false on failure
-	 */
-	protected boolean updateAllTreeablesInDb()
-	{
-		Session session = HibernateUtil.getCurrentSession();
-		HibernateUtil.beginTransaction();
-
-		// call saveOrUpdate for all the nodes still in the tree
-		Enumeration nodes = rootNode.breadthFirstEnumeration();
-		while( nodes.hasMoreElements() )
-		{
-			session.saveOrUpdate(((DefaultMutableTreeNode)nodes.nextElement()).getUserObject() );
-		}
-		
-		// call delete for all nodes that have been removed from the tree
-		for( Treeable t: deletedNodes )
-		{
-			session.delete(t);
-		}
-
-		HibernateUtil.commitTransaction();
-		HibernateUtil.closeSession();
-		
-		return true;
-	}
-	
-	/**
-	 * Setup the right-click popup menu
-	 */
-	protected void setupPopupMenu()
-	{
-		popupMenu = new JPopupMenu();
-		JMenuItem setAsRoot = new JMenuItem("Set as root");
-		JMenuItem hideNode = new JMenuItem("Hide");
-		JMenuItem showAll = new JMenuItem("Show all nodes");
-		JMenuItem createNewChild = new JMenuItem("New child");
-		setAsRoot = popupMenu.add(setAsRoot);
-		hideNode = popupMenu.add(hideNode);
-		showAll = popupMenu.add(showAll);
-		createNewChild = popupMenu.add(createNewChild);
-		
-		setAsRoot.addActionListener(new ActionListener()
-				{
-					public void actionPerformed(ActionEvent ae)
-					{
-						System.out.println("set root");
-						SwingUtilities.invokeLater(new Runnable()
-								{
-									public void run()
-									{
-										TreeNode node = (TreeNode)tree.getSelectionPath().getLastPathComponent();
-										model.setWorkingRoot(node);
-									}
-								});
-					}
-				});
-		
-		hideNode.addActionListener(new ActionListener()
-				{
-					public void actionPerformed(ActionEvent ae)
-					{
-						System.out.println("hide node");
-						SwingUtilities.invokeLater(new Runnable()
-								{
-									public void run()
-									{
-										TreeNode node = (TreeNode)tree.getSelectionPath().getLastPathComponent();
-										model.hideNode(node);
-									}
-								});
-					}
-				});
-		
-		showAll.addActionListener(new ActionListener()
-				{
-					public void actionPerformed(ActionEvent ae)
-					{
-						System.out.println("show all");
-						SwingUtilities.invokeLater(new Runnable()
-								{
-									public void run()
-									{
-										model.clearAllFilters();
-									}
-								});
-					}
-				});
-		
-	}
-
-	/**
-	 * @return the main, rank-based tree cell renderer
-	 */
-	public RankBasedTreeCellRenderer getCellRenderer()
-	{
-		return mainRenderer;
-	}
-	
 	protected Map<Integer,Icon> getIconMapForClass( Class treeableClass )
 	{
 		// TODO: implement this with some sort of runtime settings thingy
@@ -832,36 +497,23 @@ public class TreeTableViewer extends BaseSubPane implements TreeSelectionListene
 		return uiComp;
 	}
 
-	public JTree getTreeComponent()
+	public void valueChanged(ListSelectionEvent e)
 	{
-		return tree;
-	}
-	
-	/**
-	 * Updates the status bar text to contain the text representation of the path
-	 * from the tree root to the selected node
-	 * 
-	 * @param e the associated TreeSelectionEvent
-	 */
-	public void valueChanged(TreeSelectionEvent e)
-	{
-		TreePath p = e.getPath();
-		if( p == null )
+		Treeable t = (Treeable)list.getSelectedValue();
+		if( t == null )
 		{
 			statusBar.setText(null);
 			return;
 		}
 		
-		StringBuilder sb = new StringBuilder(128);
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode)p.getLastPathComponent();
-		Treeable t = (Treeable)node.getUserObject();
-		sb.insert(0, t.getName());
-		while(node.getParent() != null )
-		{
-			node = (DefaultMutableTreeNode)node.getParent();
-			t = (Treeable)node.getUserObject();
-			sb.insert(0,t.getName()+" : ");
-		}
-		statusBar.setText(sb.toString());
+//		StringBuilder sb = new StringBuilder(128);
+//		while( t != null )
+//		{
+//			sb.insert(0, t.getName() + " : ");			
+//			t = t.getParentNode();
+//		}
+//		sb.delete(sb.length()-2, sb.length()-1);
+//		statusBar.setText(sb.toString());
+		statusBar.setText(TreeTableUtils.getFullName(t));
 	}
 }

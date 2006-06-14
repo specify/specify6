@@ -93,6 +93,16 @@ public interface Treeable
 	public void setName(String name);
 	
 	/**
+	 * @return the remarks of this node
+	 */
+	public String getRemarks();
+	
+	/**
+	 * @param name the new remarks of the node
+	 */
+	public void setRemarks(String remarks);
+
+	/**
 	 * @return the rank (tree level) of this node
 	 */
 	public Integer getRankId();

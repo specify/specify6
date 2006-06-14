@@ -10,8 +10,10 @@ public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Ser
 
      protected Integer locationTreeDefItemId;
      protected String name;
+     protected String remarks;
      protected Integer rankId;
      protected Boolean isEnforced;
+     protected Boolean isInFullName;
      protected LocationTreeDef treeDef;
      protected LocationTreeDefItem parent;
      protected Set<Location> treeEntries;
@@ -33,8 +35,10 @@ public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Ser
     {
     	locationTreeDefItemId = null;
         name = null;
+        remarks = null;
         rankId = null;
         isEnforced = null;
+        isInFullName = null;
         treeDef = null;
         parent = null;
         treeEntries = new HashSet<Location>();
@@ -66,7 +70,17 @@ public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Ser
         this.name = name;
     }
 
-    /**
+    public String getRemarks()
+	{
+		return remarks;
+	}
+
+	public void setRemarks(String remarks)
+	{
+		this.remarks = remarks;
+	}
+
+	/**
      * 
      */
     public Integer getRankId() {
@@ -88,7 +102,17 @@ public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Ser
         this.isEnforced = isEnforced;
     }
 
-    /**
+    public Boolean getIsInFullName()
+	{
+		return isInFullName;
+	}
+
+	public void setIsInFullName(Boolean isInFullName)
+	{
+		this.isInFullName = isInFullName;
+	}
+
+	/**
      * 
      */
     public LocationTreeDef getTreeDef() {

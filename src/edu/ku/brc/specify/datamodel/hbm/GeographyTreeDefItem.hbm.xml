@@ -20,6 +20,11 @@
 			<meta attribute="scope-field">protected</meta>
 		</property>
 
+		<property name="remarks" type="java.lang.String"
+			column="Remarks" length="255">
+			<meta attribute="scope-field">protected</meta>
+		</property>
+		
 		<property name="rankId" type="java.lang.Integer"
 			column="RankID">
 			<meta attribute="scope-field">protected</meta>
@@ -27,6 +32,11 @@
 
 		<property name="isEnforced" type="java.lang.Boolean"
 			column="IsEnforced">
+			<meta attribute="scope-field">protected</meta>
+		</property>
+
+		<property name="isInFullName" type="java.lang.Boolean"
+			column="IsInFullName">
 			<meta attribute="scope-field">protected</meta>
 		</property>
 

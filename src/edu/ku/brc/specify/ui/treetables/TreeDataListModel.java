@@ -15,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.TreeTableUtils;
 import edu.ku.brc.util.Pair;
 
@@ -54,12 +55,12 @@ public class TreeDataListModel extends AbstractListModel
 	{
 		for(Treeable child: t.getChildNodes())
 		{
-			if(visibleNodes.contains(child))
+			if(!visibleNodes.contains(child))
 			{
-				return true;
+				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 	
 	protected boolean childrenWereShowing(Treeable t)
@@ -254,6 +255,7 @@ public class TreeDataListModel extends AbstractListModel
 		if( childrenAreVisible(t) )
 		{
 			childrenWereShowing.put(t, true);
+			
 			for( Treeable child: t.getChildNodes() )
 			{
 				makeNodeInvisible(child);
@@ -448,5 +450,13 @@ public class TreeDataListModel extends AbstractListModel
 		this.removeNode(node);
 		this.insertNode(node, newParent);
 		return true;
+	}
+
+	public void addChild( Treeable child, Treeable parent )
+	{
+		HibernateUtil.attach(parent, HibernateUtil.getCurrentSession());
+		parent.addChild(child);
+		HibernateUtil.closeSession();
+		showChildren(parent);
 	}
 }

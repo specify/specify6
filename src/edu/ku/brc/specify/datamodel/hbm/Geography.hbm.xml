@@ -18,6 +18,11 @@
 			length="128">
 			<meta attribute="scope-field">protected</meta>
 		</property>
+
+		<property name="remarks" type="java.lang.String"
+			column="Remarks" length="255">
+			<meta attribute="scope-field">protected</meta>
+		</property>
 		
 		<property name="commonName" type="java.lang.String"
 			column="CommonName" length="128">
@@ -126,12 +131,12 @@
 		<!-- bi-directional many-to-one association to Geography -->
 		<many-to-one name="parent"
 			class="edu.ku.brc.specify.datamodel.Geography" not-null="false"
-			outer-join="true" cascade="save-update">
+			outer-join="true" cascade="save-update" lazy="false">
 			<meta attribute="scope-field">protected</meta>
 			<column name="ParentID" />
 		</many-to-one>
 		
-		<set name="children" lazy="true" inverse="true"
+		<set name="children" lazy="false" inverse="true"
 			cascade="none">
 			<meta attribute="scope-field">protected</meta>
 			<key>

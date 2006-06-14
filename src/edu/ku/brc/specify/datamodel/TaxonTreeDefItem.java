@@ -10,8 +10,10 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
 
      protected Integer taxonTreeDefItemId;
      protected String name;
+     protected String remarks;
      protected Integer rankId;
      protected Boolean isEnforced;
+     protected Boolean isInFullName;
      protected TaxonTreeDef treeDef;
      protected TaxonTreeDefItem parent;
      protected Set<Taxon> treeEntries;
@@ -33,8 +35,10 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
     {
     	taxonTreeDefItemId = null;
         name = null;
+        remarks = null;
         rankId = null;
         isEnforced = null;
+        isInFullName = null;
         treeDef = null;
         treeEntries = new HashSet<Taxon>();
         parent = null;
@@ -69,6 +73,17 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
     /**
      * 
      */
+    public String getRemarks() {
+        return this.remarks;
+    }
+    
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
+    /**
+     * 
+     */
     public Integer getRankId() {
         return this.rankId;
     }
@@ -88,7 +103,17 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
         this.isEnforced = isEnforced;
     }
 
-    /**
+    public Boolean getIsInFullName()
+	{
+		return isInFullName;
+	}
+
+	public void setIsInFullName(Boolean isInFullName)
+	{
+		this.isInFullName = isInFullName;
+	}
+
+	/**
      * 
      */
     public TaxonTreeDef getTreeDef() {

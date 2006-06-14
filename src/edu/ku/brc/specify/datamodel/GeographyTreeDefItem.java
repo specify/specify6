@@ -10,8 +10,10 @@ public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Se
 
      protected Integer geographyTreeDefItemId;
      protected String name;
+     protected String remarks;
      protected Integer rankId;
      protected Boolean isEnforced;
+     protected Boolean isInFullName;
      protected GeographyTreeDef treeDef;
      protected GeographyTreeDefItem parent;
      protected Set<Geography> treeEntries;
@@ -33,8 +35,10 @@ public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Se
     {
     	geographyTreeDefItemId = null;
         name = null;
+        remarks = null;
         rankId = null;
         isEnforced = null;
+        isInFullName = null;
         treeDef = null;
         parent = null;
         treeEntries = new HashSet<Geography>();
@@ -66,7 +70,17 @@ public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Se
         this.name = name;
     }
 
-    /**
+    public String getRemarks()
+	{
+		return remarks;
+	}
+
+	public void setRemarks(String remarks)
+	{
+		this.remarks = remarks;
+	}
+
+	/**
      * 
      */
     public Integer getRankId() {
@@ -88,7 +102,17 @@ public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Se
         this.isEnforced = isEnforced;
     }
 
-    /**
+    public Boolean getIsInFullName()
+	{
+		return isInFullName;
+	}
+
+	public void setIsInFullName(Boolean isInFullName)
+	{
+		this.isInFullName = isInFullName;
+	}
+
+	/**
      * 
      */
     public GeographyTreeDef getTreeDef() {

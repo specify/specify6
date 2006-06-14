@@ -267,9 +267,13 @@ public class SpecifyDBConverter
                 boolean doTheRest = false;
                 if (doTheRest || doAll)
                 {
+                	// do Geography
                     GeographyTreeDef treeDef = conversion.createStandardGeographyDefinitionAndItems();
                 	conversion.convertGeography(treeDef);
                 	conversion.convertLocality();
+                	
+                	// do Location
+                	conversion.buildSampleLocationTreeDef();
                 }
 
                 boolean doFurtherTesting = false;

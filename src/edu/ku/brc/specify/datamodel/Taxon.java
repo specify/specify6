@@ -13,6 +13,7 @@ public class Taxon  implements java.io.Serializable,Treeable {
      protected String taxonomicSerialNumber;
      protected String guid;
      protected String name;
+     protected String remarks;
      protected String unitInd1;
      protected String unitName1;
      protected String unitInd2;
@@ -27,7 +28,6 @@ public class Taxon  implements java.io.Serializable,Treeable {
      protected String source;
      protected Integer groupPermittedToView;
      protected String environmentalProtectionStatus;
-     protected String remarks;
      protected Integer nodeNumber;
      protected Integer highestChildNodeNumber;
      protected Date timestampCreated;
@@ -63,6 +63,7 @@ public class Taxon  implements java.io.Serializable,Treeable {
         taxonomicSerialNumber = null;
         guid = null;
         name = null;
+        remarks = null;
         unitInd1 = null;
         unitName1 = null;
         unitInd2 = null;
@@ -77,7 +78,6 @@ public class Taxon  implements java.io.Serializable,Treeable {
         source = null;
         groupPermittedToView = null;
         environmentalProtectionStatus = null;
-        remarks = null;
         nodeNumber = null;
         highestChildNodeNumber = null;
         timestampCreated = new Date();
@@ -141,6 +141,17 @@ public class Taxon  implements java.io.Serializable,Treeable {
     
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * 
+     */
+    public String getRemarks() {
+        return this.remarks;
+    }
+    
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 
     /**
@@ -295,17 +306,6 @@ public class Taxon  implements java.io.Serializable,Treeable {
     
     public void setEnvironmentalProtectionStatus(String environmentalProtectionStatus) {
         this.environmentalProtectionStatus = environmentalProtectionStatus;
-    }
-
-    /**
-     * 
-     */
-    public String getRemarks() {
-        return this.remarks;
-    }
-    
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
     }
 
     /**

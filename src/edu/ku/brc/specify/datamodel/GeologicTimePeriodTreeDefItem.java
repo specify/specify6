@@ -10,8 +10,10 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
 
      protected Integer geologicTimePeriodTreeDefItemId;
      protected String name;
+     protected String remarks;
      protected Integer rankId;
      protected Boolean isEnforced;
+     protected Boolean isInFullName;
      protected GeologicTimePeriodTreeDef treeDef;
      protected GeologicTimePeriodTreeDefItem parent;
      protected Set<GeologicTimePeriod> treeEntries;
@@ -33,8 +35,10 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
     {
     	geologicTimePeriodTreeDefItemId = null;
         name = null;
+        remarks = null;
         rankId = null;
         isEnforced = null;
+        isInFullName = null;
         treeDef = null;
         parent = null;
         treeEntries = new HashSet<GeologicTimePeriod>();
@@ -66,7 +70,17 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
         this.name = name;
     }
 
-    /**
+    public String getRemarks()
+	{
+		return remarks;
+	}
+
+	public void setRemarks(String remarks)
+	{
+		this.remarks = remarks;
+	}
+
+	/**
      * 
      */
     public Integer getRankId() {
@@ -88,7 +102,17 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
         this.isEnforced = isEnforced;
     }
 
-    /**
+    public Boolean getIsInFullName()
+	{
+		return isInFullName;
+	}
+
+	public void setIsInFullName(Boolean isInFullName)
+	{
+		this.isInFullName = isInFullName;
+	}
+
+	/**
      * 
      */
     public GeologicTimePeriodTreeDef getTreeDef() {

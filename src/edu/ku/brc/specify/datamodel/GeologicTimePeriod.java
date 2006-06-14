@@ -12,12 +12,12 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
      protected Integer geologicTimePeriodId;
      protected Integer rankId;
      protected String name;
+     protected String remarks;
      protected Integer nodeNumber;
      protected Integer highestChildNodeNumber;
      protected String standard;
      protected Float age;
      protected Float ageUncertainty;
-     protected String remarks;
      protected Date timestampModified;
      protected Date timestampCreated;
      protected Date timestampVersion;
@@ -44,12 +44,12 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
     	geologicTimePeriodId = null;
         rankId = null;
         name = null;
+        remarks = null;
         nodeNumber = null;
         highestChildNodeNumber = null;
         standard = null;
         age = null;
         ageUncertainty = null;
-        remarks = null;
         timestampModified = new Date();
         timestampCreated = new Date();
         timestampVersion = null;

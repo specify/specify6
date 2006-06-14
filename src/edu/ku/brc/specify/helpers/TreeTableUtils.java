@@ -1,8 +1,12 @@
 package edu.ku.brc.specify.helpers;
 
 import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
@@ -22,6 +26,111 @@ import edu.ku.brc.specify.datamodel.Treeable;
  */
 public class TreeTableUtils
 {
+    protected static Log log = LogFactory.getLog(TreeTableUtils.class);
+
+	public static final int FORWARD = 1;
+	public static final int REVERSE = -1;
+	
+	//TODO: move these to prefs
+	//XXX: pref
+	public static int getFullNameDirection( Class treeableClass )
+	{
+		if( treeableClass.equals(Geography.class) )
+		{
+			return REVERSE;
+		}
+		if( treeableClass.equals(GeologicTimePeriod.class) )
+		{
+			return REVERSE;
+		}
+		if( treeableClass.equals(Location.class) )
+		{
+			return REVERSE;
+		}
+		if( treeableClass.equals(Taxon.class) )
+		{
+			return FORWARD;
+		}
+		
+		return 0;
+	}
+	
+	//TODO: move these to prefs
+	//XXX: pref
+	public static String getFullNameSeparator( Class treeableClass )
+	{
+		if( treeableClass.equals(Geography.class) )
+		{
+			return ", ";
+		}
+		if( treeableClass.equals(GeologicTimePeriod.class) )
+		{
+			return ", ";
+		}
+		if( treeableClass.equals(Location.class) )
+		{
+			return ", ";
+		}
+		if( treeableClass.equals(Taxon.class) )
+		{
+			return " ";
+		}
+		
+		return " ";
+	}
+	
+	public static String getFullName( Treeable node )
+	{
+		Vector<String> parts = new Vector<String>();
+		parts.add(node.getName());
+		Treeable parent = node.getParentNode();
+		while( parent != null )
+		{
+			Boolean include = parent.getDefItem().getIsInFullName();
+			if( include != null && include.booleanValue() == true )
+			{
+				parts.add(parent.getName());
+			}
+			
+			parent = parent.getParentNode();
+		}
+		
+		int direction = TreeTableUtils.getFullNameDirection(node.getClass());
+		String sep = TreeTableUtils.getFullNameSeparator(node.getClass());
+		
+		StringBuilder fullName = new StringBuilder(parts.size() * 10);
+		
+		switch( direction )
+		{
+			case FORWARD:
+			{
+				for( int i = parts.size()-1; i > -1; --i )
+				{
+					fullName.append(parts.get(i));
+					fullName.append(sep);
+				}
+				break;
+			}
+			case REVERSE:
+			{
+				for( int i = 0; i < parts.size(); ++i )
+				{
+					fullName.append(parts.get(i));
+					fullName.append(sep);
+				}
+				break;
+			}
+			default:
+			{
+				log.error("Invalid tree walk direction (for creating fullname field) found in tree definition");
+				return null;
+			}
+		}
+		
+		fullName.delete(fullName.length()-sep.length(), fullName.length());
+		return fullName.toString();
+	}
+	
 	/**
 	 * @param item the node to examine
 	 * @return the rank of children of this node, or null if no children are allowed by the node's tree definition

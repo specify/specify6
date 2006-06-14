@@ -19,6 +19,11 @@
 			<meta attribute="scope-field">protected</meta>
 		</property>
 
+		<property name="remarks" type="java.lang.String"
+			column="Remarks" length="255">
+			<meta attribute="scope-field">protected</meta>
+		</property>
+		
 		<property name="rankId" type="java.lang.Integer" column="RankID"
 			length="10">
 			<meta attribute="scope-field">protected</meta>
@@ -99,7 +104,7 @@
 		<!-- bi-directional many-to-one association to Location -->
 		<many-to-one name="parent"
 			class="edu.ku.brc.specify.datamodel.Location" not-null="true"
-			outer-join="true">
+			outer-join="true" lazy="false">
 			<meta attribute="field-description"></meta>
 			<column name="ParentID" />
 		</many-to-one>
@@ -125,7 +130,7 @@
 			<one-to-many class="edu.ku.brc.specify.datamodel.Container" />
 		</set>
 
-		<set name="children" lazy="true" inverse="true"
+		<set name="children" lazy="false" inverse="true"
 			cascade="none">
 			<meta attribute="scope-field">protected</meta>
 			<key>
