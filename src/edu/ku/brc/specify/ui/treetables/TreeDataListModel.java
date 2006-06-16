@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.ui.treetables;
 
 import java.awt.FontMetrics;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -16,7 +17,8 @@ import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.helpers.TreeTableUtils;
+import edu.ku.brc.specify.treeutils.TreeFactory;
+import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -32,6 +34,7 @@ public class TreeDataListModel extends AbstractListModel
 	protected TreeDefinitionIface treeDef;
     private static final Log log = LogFactory.getLog(TreeDataListModel.class);
     protected Treeable root;
+    protected Comparator<Treeable> comparator;
 
 	public TreeDataListModel( Treeable root )
 	{
@@ -39,6 +42,7 @@ public class TreeDataListModel extends AbstractListModel
 		childrenWereShowing = new Hashtable<Treeable, Boolean>();
 		rankToNodeCount = new Hashtable<Integer, Integer>();
 		this.root = root;
+		comparator = TreeFactory.getAppropriateComparator(root);
 		
 		treeDef = root.getTreeDef();
 		
@@ -216,9 +220,9 @@ public class TreeDataListModel extends AbstractListModel
 				}
 				return currentIndex;
 			}
-			else if( (node.getParentNode() == parent) && (t.getName().compareTo(node.getName()) < 0) )
+			else if( (node.getParentNode() == parent) && (comparator.compare(t, node) < 0) )
 			{
-				//else if 'node' is a direct child of 'parent' and is alphabetically after 't',
+				//else if 'node' is a direct child of 'parent' and is after 't' according to the comparator,
 				// the new node ('t') should be inserted before 'node'
 				visibleNodes.insertElementAt(t, currentIndex);
 				incrementRankNodeCount(t.getRankId());

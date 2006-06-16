@@ -45,16 +45,26 @@
 			<meta attribute="scope-field">protected</meta>
 		</property>
 
-		<property name="age" type="java.lang.Float" column="Age"
+		<property name="start" type="java.lang.Float" column="Start"
 			length="24">
 			<meta attribute="scope-field">protected</meta>
 		</property>
-
-		<property name="ageUncertainty" type="java.lang.Float"
-			column="AgeUncertainty" length="24">
+		
+		<property name="StartUncertainty" type="java.lang.Float"
+			column="AgeStartUncertainty" length="24">
 			<meta attribute="scope-field">protected</meta>
 		</property>
-
+		
+		<property name="end" type="java.lang.Float" column="End"
+			length="24">
+			<meta attribute="scope-field">protected</meta>
+		</property>
+		
+		<property name="endUncertainty" type="java.lang.Float"
+			column="EndUncertainty" length="24">
+			<meta attribute="scope-field">protected</meta>
+		</property>
+		
 		<property name="timestampModified" type="java.sql.Timestamp"
 			column="TimestampModified" length="23">
 			<meta attribute="scope-field">protected</meta>
@@ -81,7 +91,7 @@
 		<many-to-one name="definition"
 			class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"
 			not-null="true" lazy="false" outer-join="true">
-			<column name="TreeDefID" />
+			<column name="GeologicTimePeriodTreeDefID" />
 		</many-to-one>
 
 		<!-- bi-directional many-to-one association to GeologicTimePeriodTreeDefItem -->

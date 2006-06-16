@@ -16,8 +16,10 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
      protected Integer nodeNumber;
      protected Integer highestChildNodeNumber;
      protected String standard;
-     protected Float age;
-     protected Float ageUncertainty;
+     protected Float start;
+     protected Float startUncertainty;
+     protected Float end;
+     protected Float endUncertainty;
      protected Date timestampModified;
      protected Date timestampCreated;
      protected Date timestampVersion;
@@ -48,8 +50,10 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
         nodeNumber = null;
         highestChildNodeNumber = null;
         standard = null;
-        age = null;
-        ageUncertainty = null;
+        start = null;
+        startUncertainty = null;
+        end = null;
+        endUncertainty = null;
         timestampModified = new Date();
         timestampCreated = new Date();
         timestampVersion = null;
@@ -129,29 +133,47 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
         this.standard = standard;
     }
 
-    /**
-     * 
-     */
-    public Float getAge() {
-        return this.age;
-    }
-    
-    public void setAge(Float age) {
-        this.age = age;
-    }
+    public Float getEnd()
+	{
+		return end;
+	}
 
-    /**
-     * 
-     */
-    public Float getAgeUncertainty() {
-        return this.ageUncertainty;
-    }
-    
-    public void setAgeUncertainty(Float ageUncertainty) {
-        this.ageUncertainty = ageUncertainty;
-    }
+	public void setEnd(Float end)
+	{
+		this.end = end;
+	}
 
-    /**
+	public Float getEndUncertainty()
+	{
+		return endUncertainty;
+	}
+
+	public void setEndUncertainty(Float endUncertainty)
+	{
+		this.endUncertainty = endUncertainty;
+	}
+
+	public Float getStart()
+	{
+		return start;
+	}
+
+	public void setStart(Float start)
+	{
+		this.start = start;
+	}
+
+	public Float getStartUncertainty()
+	{
+		return startUncertainty;
+	}
+
+	public void setStartUncertainty(Float startUncertainty)
+	{
+		this.startUncertainty = startUncertainty;
+	}
+
+	/**
      * 
      */
     public String getRemarks() {

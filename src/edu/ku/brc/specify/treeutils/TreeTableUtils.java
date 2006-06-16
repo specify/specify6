@@ -1,4 +1,4 @@
-package edu.ku.brc.specify.helpers;
+package edu.ku.brc.specify.treeutils;
 
 import java.util.Set;
 import java.util.Vector;
@@ -387,7 +387,7 @@ public class TreeTableUtils
 
 	/**
 	 * Regenerates all nodeNumber and highestChildNodeNumber field values for all
-	 * nodes attached to the given root.  The nodeNumber field of the givne root
+	 * nodes attached to the given root.  The nodeNumber field of the given root
 	 * must already be set.
 	 * 
 	 * @param root the top of the tree to be renumbered

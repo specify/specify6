@@ -555,7 +555,7 @@ public class ObjCreatorHelper
         gtdi.setName(name);
         gtdi.setParent(parent);
         gtdi.setRankId(rankId);
-        gtdi.setTreeDef(gltptd);
+        gtdi.setGeologicTimePeriodTreeDef(gltptd);
         if( gltptd != null )
         {
         	gltptd.getTreeDefItems().add(gtdi);

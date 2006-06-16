@@ -19,7 +19,7 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
-import edu.ku.brc.specify.helpers.TreeTableUtils;
+import edu.ku.brc.specify.treeutils.TreeTableUtils;
 
 @SuppressWarnings("serial")
 public class TreeDataListHeader extends JLabel implements Icon, ListDataListener

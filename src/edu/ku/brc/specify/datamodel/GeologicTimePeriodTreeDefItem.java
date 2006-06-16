@@ -14,7 +14,7 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
      protected Integer rankId;
      protected Boolean isEnforced;
      protected Boolean isInFullName;
-     protected GeologicTimePeriodTreeDef treeDef;
+     protected GeologicTimePeriodTreeDef geologicTimePeriodTreeDef;
      protected GeologicTimePeriodTreeDefItem parent;
      protected Set<GeologicTimePeriod> treeEntries;
      protected Set<GeologicTimePeriodTreeDefItem> children;
@@ -39,7 +39,7 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
         rankId = null;
         isEnforced = null;
         isInFullName = null;
-        treeDef = null;
+        geologicTimePeriodTreeDef = null;
         parent = null;
         treeEntries = new HashSet<GeologicTimePeriod>();
         children = new HashSet<GeologicTimePeriodTreeDefItem>();
@@ -115,12 +115,12 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
 	/**
      * 
      */
-    public GeologicTimePeriodTreeDef getTreeDef() {
-        return this.treeDef;
+    public GeologicTimePeriodTreeDef getGeologicTimePeriodTreeDef() {
+        return this.geologicTimePeriodTreeDef;
     }
     
-    public void setTreeDef(GeologicTimePeriodTreeDef treeDef) {
-        this.treeDef = treeDef;
+    public void setGeologicTimePeriodTreeDef(GeologicTimePeriodTreeDef treeDef) {
+        this.geologicTimePeriodTreeDef = treeDef;
     }
 
     /**
@@ -162,7 +162,7 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
                 
     public TreeDefinitionIface getTreeDefinition()
     {
-        return getTreeDef();
+        return getGeologicTimePeriodTreeDef();
     }
     
     public void setTreeDefinition(TreeDefinitionIface treeDef)
@@ -171,7 +171,7 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
         {
             throw new IllegalArgumentException("Argument must be an instance of GeologicTimePeriodTreeDef");
         }
-        setTreeDef((GeologicTimePeriodTreeDef)treeDef);
+        setGeologicTimePeriodTreeDef((GeologicTimePeriodTreeDef)treeDef);
     }
     
     public TreeDefinitionItemIface getParentItem()

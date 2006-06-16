@@ -1,4 +1,6 @@
-package edu.ku.brc.specify.helpers;
+package edu.ku.brc.specify.treeutils;
+
+import java.util.Comparator;
 
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
@@ -137,5 +139,16 @@ public class TreeFactory
 	public static TreeDefinitionItemIface createNewTreeDefinitionItem( Class implementingClass, String name )
 	{
 		return createNewTreeDefItem(implementingClass,null,name);
+	}
+
+	public static Comparator<Treeable> getAppropriateComparator( Treeable node )
+	{
+		Class nodeClass = node.getClass();
+		if( nodeClass.equals(GeologicTimePeriod.class) )
+		{
+			return new GeologicTimePeriodComparator();
+		}
+		
+		return new NameBasedTreeableComparator();
 	}
 }

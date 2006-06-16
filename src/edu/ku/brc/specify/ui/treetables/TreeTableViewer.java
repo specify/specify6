@@ -38,9 +38,9 @@ import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.helpers.TreeFactory;
-import edu.ku.brc.specify.helpers.TreeTableUtils;
 import edu.ku.brc.specify.tasks.subpane.BaseSubPane;
+import edu.ku.brc.specify.treeutils.TreeFactory;
+import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.specify.ui.IconManager;
 
 /**

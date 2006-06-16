@@ -35,6 +35,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -62,18 +64,22 @@ import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
+import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
+import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
+import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
+import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.Encryption;
-import edu.ku.brc.specify.helpers.TreeTableUtils;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.tests.ObjCreatorHelper;
+import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.specify.ui.db.PickList;
 import edu.ku.brc.specify.ui.db.PickListItem;
 import edu.ku.brc.util.Pair;
@@ -2965,6 +2971,241 @@ public class GenericDBConversion
 		HibernateUtil.closeSession();
 
     	return locDef;
+    }
+    
+    /**
+     * Walks the old GTP records and creates a GTP tree def and items
+     * based on the ranks and rank names found in the old records
+     * 
+     * @return the new tree def
+     * @throws SQLException on any error while contacting the old database
+     */
+    public GeologicTimePeriodTreeDef convertGTPDefAndItems() throws SQLException
+    {
+    	BasicSQLUtils.deleteAllRecordsFromTable("geologictimeperiodtreedef");
+    	BasicSQLUtils.deleteAllRecordsFromTable("geologictimeperiodtreedefitem");
+    	
+    	log.info("Inferring geologic time period definition from old records");
+    	int count = 0;
+
+    	// get all of the old records
+    	String sql = "SELECT RankCode, RankName from GeologicTimePeriod";
+    	Statement statement = oldDBConn.createStatement();
+    	ResultSet oldGtpRecords = statement.executeQuery(sql);
+
+    	Session session = HibernateUtil.getCurrentSession();
+    	HibernateUtil.beginTransaction();
+
+    	GeologicTimePeriodTreeDef def = new GeologicTimePeriodTreeDef();
+    	def.initialize();
+    	def.setName("Inferred Geologic Time Period Definition");
+    	def.setRemarks("");
+    	session.save(def);
+    	
+    	Vector<GeologicTimePeriodTreeDefItem> newItems = new Vector<GeologicTimePeriodTreeDefItem>();
+    	
+    	GeologicTimePeriodTreeDefItem rootItem = addGtpDefItem(0, "Time Root", def);
+    	session.save(rootItem);
+    	newItems.add(rootItem);
+    	++count;
+    	
+    	while( oldGtpRecords.next() )
+    	{
+    		// we're modifying the rank since the originals were 1,2,3,...
+    		// to make them 100, 200, 300, ... (more like the other trees)
+    		Integer rankCode = oldGtpRecords.getInt(1) * 100;
+    		String rankName  = oldGtpRecords.getString(2);
+    		GeologicTimePeriodTreeDefItem newItem = addGtpDefItem(rankCode, rankName, def);
+    		if( newItem != null )
+    		{
+    			session.save(newItem);
+    			newItems.add(newItem);
+    		}
+    		if( ++count % 1000 == 0 )
+    		{
+    	    	log.info(count + " geologic time period records processed");
+    		}
+    	}
+    	
+    	// sort the vector to put them in parent/child order
+    	Comparator<GeologicTimePeriodTreeDefItem> itemComparator = new Comparator<GeologicTimePeriodTreeDefItem>()
+    	{
+    		public int compare(GeologicTimePeriodTreeDefItem o1, GeologicTimePeriodTreeDefItem o2)
+    		{
+    			return o1.getRankId().compareTo(o2.getRankId());
+    		}
+    		public boolean equals(Object obj)
+    		{
+    			return false;
+    		}
+    	};
+    	Collections.sort(newItems, itemComparator);
+    	
+    	// set the parent/child pointers
+    	for( int i = 0; i < newItems.size()-1; ++i )
+    	{
+    		newItems.get(i).setChild(newItems.get(i+1));
+    	}
+    	
+    	HibernateUtil.commitTransaction();
+    	HibernateUtil.closeSession();
+    	
+    	log.info("Finished inferring GTP tree definition and items");
+    	return def;
+    }
+    
+    /**
+     * Creates a new GTP def item if one with the same rank doesn't exist.
+     * 
+     * @param rankCode the rank of the new item
+     * @param rankName the name of the new item
+     * @param def the def to which the item is attached
+     * @return the new item, or null if one already exists with this rank
+     */
+    protected GeologicTimePeriodTreeDefItem addGtpDefItem( Integer rankCode, String rankName, GeologicTimePeriodTreeDef def )
+    {
+    	// check to see if this item already exists
+    	for( Object o: def.getTreeDefItems() )
+    	{
+    		GeologicTimePeriodTreeDefItem item = (GeologicTimePeriodTreeDefItem)o;
+    		if( item.getRankId().equals(rankCode) )
+    		{
+    			return null;
+    		}
+    	}
+    	
+    	//create a new item
+    	GeologicTimePeriodTreeDefItem item = new GeologicTimePeriodTreeDefItem();
+    	item.initialize();
+    	item.setRankId(rankCode);
+    	item.setName(rankName);
+    	def.addTreeDefItem(item);
+    	return item;
+    }
+
+    public void convertGTP( GeologicTimePeriodTreeDef treeDef ) throws SQLException
+    {
+    	BasicSQLUtils.deleteAllRecordsFromTable("geologictimeperiod");
+    	
+    	log.info("Converting old geologic time period records");
+    	int count = 0;
+    	
+    	IdTableMapper gtpIdMapper = IdMapperMgr.getInstance().addTableMapper("geologictimeperiod", "GeologicTimePeriodID");
+    	
+    	String sql = "SELECT g.GeologicTimePeriodID,g.RankCode,g.Name,g.Standard,g.Remarks,g.TimestampModified,g.TimestampCreated,p1.Age as Upper,p1.AgeUncertainty as UpperUncertainty,p2.Age as Lower,p2.AgeUncertainty as LowerUncertainty FROM geologictimeperiod g, geologictimeboundary p1, geologictimeboundary p2 WHERE g.UpperBoundaryID=p1.GeologicTimeBoundaryID AND g.LowerBoundaryID=p2.GeologicTimeBoundaryID ORDER BY Lower DESC, RankCode";
+    	Statement statement = oldDBConn.createStatement();
+    	ResultSet rs = statement.executeQuery(sql);
+
+    	Session session = HibernateUtil.getCurrentSession();
+    	HibernateUtil.beginTransaction();
+    	
+    	Vector<GeologicTimePeriod> newItems = new Vector<GeologicTimePeriod>();
+    	
+    	GeologicTimePeriod allTime = new GeologicTimePeriod();
+    	allTime.initialize();
+    	allTime.setDefinition(treeDef);
+    	TreeDefinitionItemIface rootDefItem = TreeTableUtils.getDefItemByRank(treeDef, 0);
+		allTime.setDefItem(rootDefItem);
+    	allTime.setRankId(0);
+    	allTime.setName("All Time");
+    	allTime.setStart(100000f);
+    	allTime.setEnd(0f);
+    	allTime.setEndUncertainty(0f);
+    	Date now = Calendar.getInstance().getTime();
+    	allTime.setTimestampCreated(now);
+    	allTime.setTimestampModified(now);
+    	session.save(allTime);
+    	++count;
+    	newItems.add(allTime);
+    	
+    	while( rs.next() )
+    	{
+    		Integer id   = rs.getInt(1);
+    		Integer rank = rs.getInt(2) * 100;
+    		String name  = rs.getString(3);
+    		String std   = rs.getString(4);
+    		String rem   = rs.getString(5);
+    		Date modT    = rs.getDate(6);
+    		Date creT    = rs.getDate(7);
+    		Float upper  = rs.getFloat(8);
+    		Float uError = (Float)rs.getObject(9);
+    		Float lower  = rs.getFloat(10);
+    		Float lError = (Float)rs.getObject(11);
+    		
+    		GeologicTimePeriod gtp = new GeologicTimePeriod();
+    		gtp.initialize();
+    		gtp.setName(name);
+    		TreeDefinitionItemIface defItem = TreeTableUtils.getDefItemByRank(treeDef, rank);
+    		gtp.setDefItem(defItem);
+    		gtp.setRankId(rank);
+    		gtp.setDefinition(treeDef);
+    		gtp.setStart(lower);
+    		gtp.setStartUncertainty(lError);
+    		gtp.setEnd(upper);
+    		gtp.setEndUncertainty(uError);
+    		gtp.setStandard(std);
+    		gtp.setRemarks(rem);
+    		gtp.setTimestampCreated(creT);
+    		gtp.setTimestampModified(modT);
+    		
+    		session.save(gtp);
+
+    		newItems.add(gtp);
+    		
+    		gtpIdMapper.put(id, gtp.getGeologicTimePeriodId());
+    		
+    		if( ++count % 1000 == 0 )
+    		{
+    	    	log.info(count + " geologic time period records converted");
+    		}
+    	}
+    	
+    	// TODO: fix parent pointers
+    	// now we need to fix the parent/pointers
+    	for( int i = 0; i < newItems.size(); ++i )
+    	{
+    		GeologicTimePeriod gtp = newItems.get(i);
+    		for( int j = 0; j < newItems.size(); ++j )
+    		{
+    			GeologicTimePeriod child = newItems.get(j);
+    			if( isParentChildPair(gtp, child) )
+    			{
+    				gtp.addChild(child);
+    			}
+    		}
+    	}
+    	
+    	// TODO: fix node number, child node number stuff
+    	allTime.setNodeNumber(1);
+    	TreeTableUtils.fixNodeNumbersFromRoot(allTime);
+    	
+    	HibernateUtil.commitTransaction();
+    	HibernateUtil.closeSession();
+    	
+    	log.info(count + " geologic time period records converted");
+    }
+    
+    protected boolean isParentChildPair( GeologicTimePeriod parent, GeologicTimePeriod child )
+    {
+    	if( parent == child )
+    	{
+    		return false;
+    	}
+    	
+    	Float startParent = parent.getStart();
+    	Float endParent   = parent.getEnd();
+    	
+    	Float startChild  = child.getStart();
+    	Float endChild    = child.getEnd();
+    	
+    	// remember, the numbers represent MYA (millions of yrs AGO)
+    	// so the logic seems a little backwards
+    	if( startParent >= startChild && endParent <= endChild && parent.getRankId() < child.getRankId() )
+    	{
+    		return true;
+    	}
+    	
+    	return false;
     }
     
     /**

@@ -44,7 +44,8 @@
 		<!-- Associations -->
 
 		<!-- bi-directional many-to-one association to GeologicTimePeriodTreeDef -->
-		<many-to-one name="treeDef" column="TreeDefID"
+		<many-to-one name="geologicTimePeriodTreeDef"
+			column="GeologicTimePeriodTreeDefID"
 			class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"
 			lazy="false">
 			<meta attribute="scope-field">protected</meta>
@@ -57,7 +58,7 @@
 		</many-to-one>
 
 		<set name="treeEntries" table="GeologicTimePeriod"
-			inverse="true" lazy="true">
+			inverse="true" lazy="false">
 			<meta attribute="scope-field">protected</meta>
 			<key column="GeologicTimePeriodTreeDefItemID" />
 			<one-to-many

@@ -24,6 +24,7 @@ import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
+import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.UserGroup;
@@ -274,6 +275,13 @@ public class SpecifyDBConverter
                 	
                 	// do Location
                 	conversion.buildSampleLocationTreeDef();
+                }
+                
+                boolean doGTP = false;
+                if( doAll || doGTP )
+                {
+                	GeologicTimePeriodTreeDef treeDef = conversion.convertGTPDefAndItems();
+                	conversion.convertGTP(treeDef);
                 }
 
                 boolean doFurtherTesting = false;

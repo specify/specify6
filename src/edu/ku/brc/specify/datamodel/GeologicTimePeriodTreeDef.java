@@ -137,13 +137,13 @@ public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.S
 	public void addTreeDefItem( GeologicTimePeriodTreeDefItem item )
 	{
 		treeDefItems.add(item);
-		item.setTreeDef(this);
+		item.setGeologicTimePeriodTreeDef(this);
 	}
 	
 	public void removeTreeDefItem( GeologicTimePeriodTreeDefItem item )
 	{
 		treeDefItems.remove(item);
-		item.setTreeDef(null);
+		item.setGeologicTimePeriodTreeDef(null);
 	}
 	
 	public void addCollectionObjDef( CollectionObjDef def )
