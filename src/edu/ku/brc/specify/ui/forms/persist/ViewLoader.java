@@ -477,17 +477,9 @@ public class ViewLoader
                             Hashtable<String, String> properties = null;
                             
                             String dspUIType;
-                            if (uitype.equals("checkbox"))
-                            {
-                                dspUIType = getAttr(cellElement, "dspuitype", "checkbox");
-
-                            } else if (uitype.equals("textarea"))
+                            if (uitype.equals("textarea"))
                             {
                                 dspUIType = getAttr(cellElement, "dspuitype", "dsptextarea");
-
-                            } else if (uitype.equals("list"))
-                            {
-                                dspUIType = getAttr(cellElement, "dspuitype", "list");
 
                             } else if (uitype.equals("querycbx"))
                             {
@@ -515,24 +507,21 @@ public class ViewLoader
                                     }
                                 }
 
-                            } else if (uitype.equals("image"))
-                            {
-                                dspUIType = getAttr(cellElement, "dspuitype", "image");
-                                
                             } else if (uitype.equals("url"))
                             {
                                 dspUIType = getAttr(cellElement, "dspuitype", uitype);
                                 properties = processInitializeString(initialize);
 
-                            } else if (uitype.equals("progress"))
+                            } else if (uitype.equals("list") ||
+                                       uitype.equals("image") ||
+                                       uitype.equals("checkbox") ||
+                                       uitype.equals("progress") ||
+                                       uitype.equals("password"))
                             {
                                 dspUIType = getAttr(cellElement, "dspuitype", uitype);
                                 
-                            } else if (uitype.equals("button"))
-                            {
-                                dspUIType = getAttr(cellElement, "dspuitype", uitype);
-                                
-                            } else if (uitype.equals("plugin"))
+                            } else if (uitype.equals("plugin") ||
+                                       uitype.equals("button"))
                             {
                                 dspUIType = getAttr(cellElement, "dspuitype", uitype);
                                 properties = processInitializeString(initialize);
@@ -560,7 +549,10 @@ public class ViewLoader
                             FormCellField field = new FormCellField(FormCell.CellType.field, cellId, 
                                                                     cellName, uitype, dspUIType, format, formatName, uiFieldFormatter, isRequired,
                                                                     cols, rows, colspan, rowspan, validationType, validationRule, isEncrypted);
-                            field.setLabel(getAttr(cellElement, "label", ""));
+                            
+                            field.setLabel(getAttr(cellElement,        "label", ""));
+                            field.setReadOnly(getAttr(cellElement,     "readonly", false));
+                            field.setDefaultValue(getAttr(cellElement, "default", ""));
                             field.setPickListName(getAttr(cellElement, "picklist", ""));
                             field.setChangeListenerOnly(getAttr(cellElement, "changesonly", true) && !isRequired);
                             field.setInitialize(initialize);

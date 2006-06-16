@@ -77,7 +77,7 @@ public class ViewMgr
     {
         try
         {
-            org.dom4j.Document document = readFileToDOM4J(new FileInputStream(XMLHelper.getConfigDirPath("forms_registry.xml")));
+            org.dom4j.Document document = readFileToDOM4J(new FileInputStream(XMLHelper.getConfigDirPath("viewset_registry.xml")));
             Element            root     = document.getRootElement();
             if (root != null)
             {

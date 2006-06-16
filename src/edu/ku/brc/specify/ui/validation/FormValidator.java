@@ -589,11 +589,11 @@ public class FormValidator implements ValidationListener, DataChangeListener
         for (Enumeration e=dcNotifiers.elements();e.hasMoreElements();)
         {
             DataChangeNotifier dcn = (DataChangeNotifier)e.nextElement();
-            UIValidator        uiv = dcn.getUIV();
-            if (uiv != null && uiv.getType() == UIValidator.Type.OK)
-            {
+            //UIValidator        uiv = dcn.getUIV();
+            //if (uiv != null && uiv.getType() == UIValidator.Type.OK)
+            //{
                 dcn.reset();
-            }
+            //}
         }
     }
 

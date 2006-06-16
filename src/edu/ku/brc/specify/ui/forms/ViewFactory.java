@@ -237,8 +237,8 @@ public class ViewFactory
         if (validator != null && (cellField.isRequired() || isNotEmpty(validationRule) || cellField.isChangeListenerOnly()))
         {
 
-            String pickListName = cellField.getPickListName();
-            PickListDBAdapter pickListDBAdapter= null;
+            String            pickListName      = cellField.getPickListName();
+            PickListDBAdapter pickListDBAdapter = null;
             if (isNotEmpty(pickListName))
             {
                 pickListDBAdapter = new PickListDBAdapter(pickListName, false);
@@ -255,6 +255,7 @@ public class ViewFactory
                                         cellField.isChangeListenerOnly());
 
             txtField = textField;
+            textField.setEditable(!cellField.isReadOnly());
 
         } else
         {
@@ -332,6 +333,8 @@ public class ViewFactory
             textField = new ValFormattedTextField(cellField.getUIFieldFormatter());
         }
 
+        textField.setEditable(!cellField.isReadOnly());
+
         return textField;
     }
 
@@ -352,6 +355,8 @@ public class ViewFactory
         }
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
+
+        textArea.setEditable(!cellField.isReadOnly());
 
         return textArea;
     }
@@ -773,6 +778,12 @@ public class ViewFactory
                         {
                             Class  classObj = Class.forName(classNameStr);
                             Object uiObj    = classObj.newInstance();
+                            
+                            if (!(uiObj instanceof GetSetValueIFace))
+                            {
+                                throw new RuntimeException("Plugin of class["+classNameStr+"] doesn't implement the GetSetValueIFace!");
+                            }
+                            
                             if (uiObj instanceof UIPluginable)
                             {
                                 ((UIPluginable)uiObj).initialize(cellField.getProperties());
@@ -1109,10 +1120,16 @@ public class ViewFactory
             if (altView.getViewDef().getType() == ViewDef.ViewType.form)
             {
                 FormViewObj form = (FormViewObj)instance.buildViewable(view, altView, multiView, createRecordSetContoller, createViewSwitcher);
-                if (data != null)
+                if (form != null)
                 {
-                    form.setDataObj(data);
-                    form.setDataIntoUI();
+                    if (data != null)
+                    {
+                        form.setDataObj(data);
+                        form.setDataIntoUI();
+                    }
+                } else
+                {
+                    throw new RuntimeException("Form could be created! ["+view.getName()+"]["+altView.getName()+"]");
                 }
                 return form;
             }
@@ -1138,9 +1155,9 @@ public class ViewFactory
         }
         
         /* (non-Javadoc)
-         * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object)
+         * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
          */
-        public void setValue(Object value)
+        public void setValue(Object value, String defaultValue)
         {
             if (value != null)
             {

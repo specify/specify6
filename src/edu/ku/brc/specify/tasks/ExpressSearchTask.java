@@ -458,7 +458,8 @@ public class ExpressSearchTask extends BaseTask
 
         searchBtn   = new JButton(getResourceString("Search"));
 
-        searchText  = new JTextField("[19510707 TO 19510711]", 10);//"beanii"
+        //searchText  = new JTextField("[19510707 TO 19510711]", 10);//"beanii"
+        searchText  = new JTextField("beanii", 15);
         //searchText  = new JTextField(10);
         textBGColor = searchText.getBackground();
 

@@ -99,7 +99,7 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
             {
                 itself.hidePopup();
                 Color color = (Color)evt.getNewValue();
-                setValue(color);
+                setValue(color, null);
                 //System.out.println(color);
                 //visible_comp.setBackground((Color)evt.getNewValue());
             }
@@ -200,9 +200,9 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
     //-----------------------------------------------------
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object)
+     * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
      */
-    public void setValue(Object value)
+    public void setValue(Object value, String defaultValue)
     {
         
         Object data = value;

@@ -83,6 +83,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     protected Object[]                formatObj  = null;
 
     protected JFormattedDoc           document;
+    protected String                  defaultValue = null;
 
     protected UIFieldFormatterMgr.Formatter            formatter;
     protected List<UIFieldFormatterMgr.FormatterField> fields = null;
@@ -306,7 +307,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
      */
     public void reset()
     {
-        setText("");
+        setText( StringUtils.isNotEmpty(defaultValue) ? defaultValue : "");
         validateState();
         repaint();
     }
@@ -343,10 +344,12 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     //--------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object)
+     * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
      */
-    public void setValue(Object value)
+    public void setValue(Object value, String defaultValue)
     {
+        this.defaultValue = defaultValue;
+        
         String data;
 
         if (value != null)
@@ -361,7 +364,8 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
             }
         } else
         {
-            data = "";
+            
+            data = StringUtils.isNotEmpty(defaultValue) ? defaultValue : "";
         }
 
         setText(data);

@@ -586,7 +586,7 @@ public final class UIHelper
             if (parentDataObj != null)
             {
                 String methodName = "add" + newDataObj.getClass().getSimpleName();
-                log.info("Invoking method["+methodName+"]");
+                log.info("Invoking method["+methodName+"] on Object "+parentDataObj.getClass().getSimpleName());
                 
                 method = parentDataObj.getClass().getMethod(methodName, new Class[] {newDataObj.getClass()});
                 method.invoke(parentDataObj, new Object[] {newDataObj});
@@ -720,8 +720,8 @@ public final class UIHelper
             }
         } else
         {
+            log.info("setFieldValue -  newData ["+newData+"] fieldNames["+fieldNames+"] set into ["+dataObj+"]");
             setter.setFieldValue(dataObj, fieldNames, newData);
-            log.info("setter ["+newData+"] being added to ["+dataObj+"]");
         }
     }
 

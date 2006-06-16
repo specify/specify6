@@ -40,6 +40,8 @@ import javax.swing.JTextField;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -62,7 +64,10 @@ import edu.ku.brc.specify.ui.db.PickListItem;
 @SuppressWarnings("serial")
 public class ValComboBox extends JPanel implements UIValidatable, ListDataListener, GetSetValueIFace, PreferenceChangeListener
 {
-    protected static Color defaultTextBGColor = null;
+    protected static Color        defaultTextBGColor = null;
+    protected static ColorWrapper valtextcolor       = null;
+    protected static ColorWrapper requiredfieldcolor = null;
+
 
     protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
     protected boolean isRequired = false;
@@ -70,9 +75,8 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     protected boolean isNew      = false;
 
     protected JAutoCompComboBox comboBox;
+    protected String                  defaultValue = null;
 
-    protected static ColorWrapper valtextcolor       = null;
-    protected static ColorWrapper requiredfieldcolor = null;
 
     /**
      * Constructor
@@ -327,7 +331,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         comboBox.setSelectedIndex(-1);
         if (comboBox.getTextField() != null)
         {
-            comboBox.getTextField().setText("");
+            comboBox.getTextField().setText(StringUtils.isNotEmpty(defaultValue) ? defaultValue : "");
         }
         valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         repaint();
@@ -375,9 +379,9 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     //--------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object)
+     * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
      */
-    public void setValue(Object value)
+    public void setValue(Object value, String defaultValue)
     {
         boolean fnd = false;
 

@@ -3,18 +3,18 @@
 
     <views>
         <view name="CollectionObject"
-              class="edu.ku.brc.specify.datamodel.CollectionObject"
-              resourcelabels="false"
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
+            resourcelabels="false"
             >
-        	<desc><![CDATA[The Collection Object form.]]></desc>
+            <desc><![CDATA[The Collection Object form.]]></desc>
             <altviews>
                 <altview name="Collection Object View" viewdef="Collection Object" label="View" mode="view" validated="false"/>
                 <altview name="Collection Object Edit" viewdef="Collection Object" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
-
-    	</view>
-
-    	<view name="Determination"
+            
+        </view>
+        
+        <view name="Determination"
               class="edu.ku.brc.specify.datamodel.Determination"
               resourcelabels="false">
     	    <desc><![CDATA[Subform within the Collection Object form.]]></desc>
@@ -165,36 +165,36 @@
     			</row>
 
     			<row>
-    				<cell type="subview" viewname="Determination" id="XX" name="determinations" colspan="12"/>
+    				<cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12"/>
     			</row>
 
     			<row>
     				<cell type="separator" label="Locality" colspan="12"/>
     			</row>
     			<row>
-                 <cell type="label" labelfor="6" label="Field No"/>
-    			    <cell type="field" id="6" name="fieldNumber"/>
+                 <cell type="label" labelfor="7" label="Field No"/>
+    			    <cell type="field" id="7" name="fieldNumber"/>
 
-                 <cell type="label" labelfor="7" label="Locality"/>
-    			    <cell type="field" id="7" name="collectingEvent.locality.localityName" cols="41" colspan="6"/>
+                 <cell type="label" labelfor="8" label="Locality"/>
+    			    <cell type="field" id="8" name="collectingEvent.locality.localityName" cols="41" colspan="6"/>
     			</row>
 
     			<row>
     				<cell type="separator" label="Preparations" colspan="12"/>
     			</row>
     			<row>
-    			    <cell type="subview" viewname="Preparation" id="XX" name="preparations" colspan="12"/>
+    			    <cell type="subview" viewname="Preparation" id="9" name="preparations" colspan="12"/>
     			</row>
 
     			<row>
     				<cell type="separator" label="" colspan="12"/>
     			</row>
     			<row>
-                    <cell type="label" labelfor="8" label="Edited By"/>
-    			    <cell type="field" id="8" name="lastEditedBy"/>
+                    <cell type="label" labelfor="10" label="Edited By"/>
+    			    <cell type="field" id="10" name="lastEditedBy" readonly="true"/>
 
-                    <cell type="label" labelfor="9" label="Last Edited"/>
-    			    <cell type="field" id="9" name="timestampModified" cols="20" colspan="2"/>
+                    <cell type="label" labelfor="11" label="Last Edited"/>
+    			    <cell type="field" id="11" name="timestampModified" readonly="true" cols="20" colspan="2"/>
     			</row>
     		</rows>
     	</viewdef>
@@ -222,19 +222,19 @@
     			</row>
     			<row>
 
-                 <cell type="label" labelfor="2" label="Determiner"/>
-    			    <cell type="field" id="2" name="determiner" uitype="querycbx" initialize="name=Agent;title=Determiner Agent" isrequired="true"/>
+                 <cell type="label" labelfor="3" label="Determiner"/>
+    			    <cell type="field" id="3" name="determiner" uitype="querycbx" initialize="name=Agent;title=Determiner Agent" isrequired="true"/>
 
-                    <cell type="label" labelfor="3" label="Confidence"/>
-    			    <cell type="field" id="3" name="confidence"/>
+                    <cell type="label" labelfor="4" label="Confidence"/>
+    			    <cell type="field" id="4" name="confidence"/>
 
-                    <cell type="label" labelfor="4" label="Date"/>
-    			    <cell type="field" id="4" name="determinedDate" isrequired="true" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="label" labelfor="5" label="Date"/>
+    			    <cell type="field" id="5" name="determinedDate" isrequired="true" uitype="formattedtext" uifieldformatter="Date"/>
     			</row>
 
     			<row>
-                    <cell type="label" labelfor="5" label="Remarks"/>
-    			    <cell type="field" id="5" name="remarks" uitype="textarea" colspan="9" cols="50"/>
+                    <cell type="label" labelfor="6" label="Remarks"/>
+    			    <cell type="field" id="6" name="remarks" uitype="textarea" colspan="9" cols="50"/>
     			</row>
     		</rows>
     	</viewdef>
@@ -368,6 +368,7 @@
                     <cell type="label" labelfor="7" label="Description"/>
                     <cell type="field" id="7" name="text2" uitype="textarea" cols="60" rows="6" colspan="10"/>
                 </row>
+                
                 <row>
                     <cell type="separator" label="Accession Agents" colspan="12"/>
                 </row>
@@ -384,12 +385,13 @@
                 <row>
                     <cell type="separator" label="" colspan="12"/>
                 </row>
+                
                 <row>
                     <cell type="label" labelfor="10" label="Edited By"/>
-                    <cell type="field" id="10" name="lastEditedBy"/>
+                    <cell type="field" id="10" name="lastEditedBy" readonly="true"/>
 
                     <cell type="label" labelfor="11" label="Last Edited"/>
-                    <cell type="field" id="11" name="timestampModified" cols="20" colspan="2"/>
+                    <cell type="field" id="11" name="timestampModified" readonly="true" cols="20" colspan="2"/>
                 </row>
             </rows>
         </viewdef>

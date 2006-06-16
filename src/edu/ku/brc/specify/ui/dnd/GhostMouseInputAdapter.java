@@ -46,7 +46,8 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
     // Ghost MotionAdaptor
     protected static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
     protected static final Cursor DEF_CURSOR = new Cursor(Cursor.DEFAULT_CURSOR);
-
+    protected static final int    dragButtonIndex;
+    
     protected GhostGlassPane          glassPane;
     protected Cursor                  currCursor    = null;
     protected Point                   firstPosition = new Point();
@@ -54,6 +55,16 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
     protected String                  action;
     protected List<GhostDropListener> listeners;
     protected GhostActionable         ghostActionable;
+    
+    static {
+        if (System.getProperty("os.name").equals("Mac OS X"))
+        {
+            dragButtonIndex = 1;
+        } else
+        {
+            dragButtonIndex = 0;
+        }
+    }
 
     /**
      * Constructor
@@ -83,9 +94,9 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
     protected void startDrag(Component c, int button, Point pnt)
     {
 
-        //System.out.println(button+" startDrag "+DragAndDropLock.isDragAndDropStarted()+" "+DragAndDropLock.isLocked());
+        //System.out.println(button+" startDrag "+DragAndDropLock.isDragAndDropStarted()+" "+DragAndDropLock.isLocked()+"  dragButtonIndex "+dragButtonIndex);
 
-        if (DragAndDropLock.isLocked() || button != 1)
+        if (DragAndDropLock.isLocked() || button != dragButtonIndex)
         {
             DragAndDropLock.setDragAndDropStarted(false);
             //System.out.println("startDrag bailing");
@@ -122,7 +133,9 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
      */
     public void mouseReleased(MouseEvent e)
     {
-        if (e.getButton() != 1 || !DragAndDropLock.isDragAndDropStarted())
+        //System.out.println(e.getButton()+" mouseReleased "+DragAndDropLock.isDragAndDropStarted()+" "+DragAndDropLock.isLocked()+"  dragButtonIndex "+dragButtonIndex);
+        //if (e.getButton() != dragButtonIndex || !DragAndDropLock.isDragAndDropStarted())
+        if (!DragAndDropLock.isDragAndDropStarted())
         {
             return;
         }
@@ -215,7 +228,7 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
      */
     public void mouseDragged(MouseEvent e)
     {
-        //System.out.println("mouseDragged "+DragAndDropLock.isDragAndDropStarted());
+        //System.out.println("mouseDragged "+DragAndDropLock.isDragAndDropStarted()+" btn "+e.getButton());
         Point pnt = e.getPoint();
         if (!DragAndDropLock.isDragAndDropStarted())
         {

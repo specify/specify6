@@ -35,9 +35,12 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.specify.helpers.Encryption;
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.ColorWrapper;
+import edu.ku.brc.specify.ui.GetSetValueIFace;
 import edu.ku.brc.specify.ui.UICacheManager;
 
 /**
@@ -47,18 +50,23 @@ import edu.ku.brc.specify.ui.UICacheManager;
  *
  */
 @SuppressWarnings("serial")
-public class ValPasswordField extends JPasswordField implements UIValidatable, DocumentListener, PreferenceChangeListener
+public class ValPasswordField extends JPasswordField implements UIValidatable, 
+                                                                GetSetValueIFace, 
+                                                                DocumentListener, 
+                                                                PreferenceChangeListener
 {
+    protected static ColorWrapper valtextcolor       = null;
+    protected static ColorWrapper requiredfieldcolor = null;
+    
     protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
     protected boolean isRequired  = false;
     protected boolean isChanged   = false;    
     protected boolean isEncrypted = false;
-    protected boolean isNew      = false;
+    protected boolean isNew       = false;
     protected Color   bgColor     = null;
 
-    protected static ColorWrapper valtextcolor       = null;
-    protected static ColorWrapper requiredfieldcolor = null;
-   
+    protected String  defaultValue = null;
+
     public ValPasswordField()
     {
         super();
@@ -148,7 +156,7 @@ public class ValPasswordField extends JPasswordField implements UIValidatable, D
      */
     public void setText(String text)
     {
-            super.setText(isEncrypted ? Encryption.decrypt(text) : text);
+        super.setText(isEncrypted ? Encryption.decrypt(text) : text);
     }
 
     /* (non-Javadoc)
@@ -168,6 +176,49 @@ public class ValPasswordField extends JPasswordField implements UIValidatable, D
     public void setEncrypted(boolean isEncrypted)
     {
         this.isEncrypted = isEncrypted;
+    }
+    
+    //--------------------------------------------------------
+    // GetSetValueIFace
+    //--------------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
+     */
+    public void setValue(Object value, String defaultValue)
+    {
+        this.defaultValue = defaultValue;
+        
+        String data;
+        
+        if (value != null)
+        {
+            if (value instanceof String)
+            {
+                data = (String)value;
+                
+            } else
+            {
+                data = value.toString();
+            }
+        } else
+        {
+            data = StringUtils.isNotEmpty(defaultValue) ? defaultValue : "";
+        }
+        
+        setText(data);
+        
+        validateState();
+        
+        repaint();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.GetSetValueIFace#getValue()
+     */
+    public Object getValue()
+    {
+        return getText();
     }
     
     //--------------------------------------------------

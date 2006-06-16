@@ -37,9 +37,11 @@ public class FormCellField extends FormCell
     protected String   formatName;
     protected String   uiFieldFormatter;
     protected boolean  isRequired     = false;
+    protected boolean  isReadOnly     = false;
     protected boolean  isEncrypted    = false;
     protected String   label          = null;
-
+    protected String   defaultValue   = null;
+    
     protected String   pickListName       = null; // Comboboxes and TextFields
 
     // Needed for Text Components
@@ -215,6 +217,26 @@ public class FormCellField extends FormCell
     public boolean isRequired()
     {
         return isRequired;
+    }
+
+    public String getDefaultValue()
+    {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue)
+    {
+        this.defaultValue = defaultValue;
+    }
+
+    public boolean isReadOnly()
+    {
+        return isReadOnly;
+    }
+
+    public void setReadOnly(boolean isReadOnly)
+    {
+        this.isReadOnly = isReadOnly;
     }
 
     public void setRequired(boolean isRequired)

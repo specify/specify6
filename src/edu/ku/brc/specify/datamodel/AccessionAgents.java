@@ -158,10 +158,15 @@ public class AccessionAgents  implements java.io.Serializable {
 
 
     // Add Methods
-
+    public void addAgent(Agent agent) {
+        this.agent = agent;
+    }
     // Done Add Methods
 
     // Delete Methods
+    public void removeAgent(Agent agent) {
+        this.agent = null;
+    }
 
     // Delete Add Methods
 }

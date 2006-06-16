@@ -34,6 +34,8 @@ import java.util.prefs.PreferenceChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.ColorWrapper;
 import edu.ku.brc.specify.ui.GetSetValueIFace;
@@ -63,6 +65,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     protected static ColorWrapper requiredfieldcolor = null;
 
     protected ValPlainTextDocument document;
+    protected String               defaultValue = null;
 
     /**
      * Constructor
@@ -270,7 +273,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
      */
     public void reset()
     {
-        setText("");
+        setText( StringUtils.isNotEmpty(defaultValue) ? defaultValue : "");
         valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         repaint();
     }
@@ -288,10 +291,12 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     //--------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object)
+     * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
      */
-    public void setValue(Object value)
+    public void setValue(Object value, String defaultValue)
     {
+        this.defaultValue = defaultValue;
+        
         String data;
         
         if (value != null)
@@ -306,7 +311,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
             }
         } else
         {
-            data = "";
+            data = StringUtils.isNotEmpty(defaultValue) ? defaultValue : "";
         }
         setText(data);
         

@@ -35,6 +35,7 @@ import java.util.Vector;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JList;
+import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -321,6 +322,11 @@ public class DataChangeNotifier implements FocusListener,
 
         if (comp instanceof UIValidatable)
         {
+            if (comp instanceof JTextArea)
+            {
+                int x = 0;
+                x++;
+            }
             if (((UIValidatable)comp).isChanged())
             {
                 if (uiv != null && uiv.getType() == UIValidator.Type.Focus)

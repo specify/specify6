@@ -211,9 +211,9 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
     //--------------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object)
+     * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
      */
-    public void setValue(Object value)
+    public void setValue(Object value, String defaultValue)
     {
         if (value instanceof String)
         {

@@ -36,6 +36,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.ColorWrapper;
 import edu.ku.brc.specify.ui.GetSetValueIFace;
@@ -61,6 +63,9 @@ public class ValTextArea extends JTextArea implements UIValidatable,
     
     protected static ColorWrapper valtextcolor       = null;
     protected static ColorWrapper requiredfieldcolor = null;
+    
+    protected String              defaultValue = null;
+
 
     /**
      * Constructor
@@ -119,6 +124,9 @@ public class ValTextArea extends JTextArea implements UIValidatable,
         }
         UICacheManager.getAppPrefs().node("ui/formatting").addPreferenceChangeListener(this);
         
+        getDocument().addDocumentListener(this);
+        
+        
         addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e)
             {
@@ -126,6 +134,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
                 repaint();
             }
         });
+        
     }
     
     /**
@@ -247,7 +256,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
      */
     public void reset()
     {
-        setText("");
+        setText( StringUtils.isNotEmpty(defaultValue) ? defaultValue : "");
         valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         repaint();
     }
@@ -285,11 +294,12 @@ public class ValTextArea extends JTextArea implements UIValidatable,
     //--------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object)
+     * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
      */
-    public void setValue(Object value)
+    public void setValue(Object value, String defaultValue)
     {
-        setText(value != null ? value.toString() : "");
+        this.defaultValue = defaultValue;
+        setText(value != null ? value.toString() : StringUtils.isNotEmpty(defaultValue) ? defaultValue : "");
     }
 
     

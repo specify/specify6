@@ -66,7 +66,7 @@ public class DataSetterForObj implements DataObjectSettable
                 if (setter != null)
                 {
                     args[0] = data;
-                    log.info("fieldname["+fieldName+"] dataObj["+dataObj+"] data ["+data+"]");
+                    log.info("fieldname["+fieldName+"] dataObj["+dataObj+"] data ["+data+"] ("+(data != null ? data.getClass().getSimpleName() : "")+")");
                     setter.invoke(dataObj, new Object[] { data});
                 }
             } else

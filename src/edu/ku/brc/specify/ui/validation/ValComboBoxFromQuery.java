@@ -324,7 +324,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     dlg.setVisible(true);
                     if (!dlg.isCancelled())
                     {
-                        setValue(dlg.getSelectedObject());
+                        setValue(dlg.getSelectedObject(), null);
                     }
     
                 }
@@ -357,7 +357,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         if (isNewObject)
         {
             Object object = UIHelper.createAndNewDataObj(classObj);
-            UIHelper.initAndAddToParent(multiView.getParentDataObj(), object);
+            UIHelper.initAndAddToParent(multiView.getData(), object);
             frame.setData(object);
             
         } else
@@ -589,9 +589,9 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     //--------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object)
+     * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
      */
-    public void setValue(Object value)
+    public void setValue(Object value, String defaultValue)
     {
         dataObj = value;
         List<String> list = comboBox.getList();

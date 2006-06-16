@@ -42,7 +42,8 @@ public class ComboBoxFromQueryFactory
     {
         // These will eventually be defined in an XML file.
 
-        comboBoxes.put("Agent", new ComboBoxFromQueryInfo(null, "agent",
+        comboBoxes.put("Agent", new ComboBoxFromQueryInfo(null, 
+                "agent",
                 "AgentID",
                 "lastName",
                 "LastName,FirstName",
@@ -54,7 +55,8 @@ public class ComboBoxFromQueryFactory
                 "AgentSearch",
                 "AgentDisplay"));
 
-        comboBoxes.put("Taxon", new ComboBoxFromQueryInfo(null, "taxon",
+        comboBoxes.put("Taxon", new ComboBoxFromQueryInfo(null, 
+                "taxon",
                 "TreeID",
                 "Name",
                 null,

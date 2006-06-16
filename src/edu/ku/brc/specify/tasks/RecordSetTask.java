@@ -36,7 +36,6 @@ import javax.swing.JOptionPane;
 
 import org.hibernate.Criteria;
 import org.hibernate.LockMode;
-import org.hibernate.Session;
 
 import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.core.NavBoxItemIFace;
@@ -151,8 +150,7 @@ public class RecordSetTask extends BaseTask
     protected void deleteRecordSet(final RecordSet recordSet)
     {
         // delete from database
-        Session session = HibernateUtil.getCurrentSession();
-        session.lock(recordSet, LockMode.NONE);
+        HibernateUtil.getCurrentSession().lock(recordSet, LockMode.NONE);
         HibernateUtil.beginTransaction();
 
         HibernateUtil.getCurrentSession().delete(recordSet);

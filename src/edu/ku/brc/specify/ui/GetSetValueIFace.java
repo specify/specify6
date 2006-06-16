@@ -32,8 +32,9 @@ public interface GetSetValueIFace
     /**
      * Sets a value into the component
      * @param value the new value (NOTE: this fires a Property change event "setValue")
+     * @param defaultValue a default value defined as a string, ok if  null
      */
-    public void setValue(Object value);
+    public void setValue(Object value, String defaultValue);
     
     /**
      * Returns a value for the component

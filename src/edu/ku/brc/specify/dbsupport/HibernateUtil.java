@@ -149,7 +149,7 @@ public class HibernateUtil {
         String userHome = System.getProperty("user.home");
         if (userHome.indexOf("rods") > -1)
         {
-            databaseName = "accessions";
+            databaseName = "fish";
         }
         
         if (userHome.indexOf("stewart") > -1)

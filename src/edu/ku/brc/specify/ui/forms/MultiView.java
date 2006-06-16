@@ -21,6 +21,8 @@ package edu.ku.brc.specify.ui.forms;
 
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -30,7 +32,9 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
 
@@ -117,15 +121,48 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         if (mvParent == null)
         {
             thisObj = this;
+            
             addMouseListener(new MouseAdapter() {
+                public void mousePressed(MouseEvent e)
+                {
+                    showContextMenu(e);
+                }
+                
+                public void mouseReleased(MouseEvent e)
+                {
+                    showContextMenu(e);
+
+                }
                 public void mouseClicked(MouseEvent e)
                 {
-                    carryForwardSetup = new CarryForwardSetUp(thisObj);
-                    add(carryForwardSetup, "carryforward");
-                    cardLayout.show(thisObj, "carryforward");
-                    
+                    ((FormViewObj)thisObj.currentView).listFieldChanges();
                 }
             });
+            
+        }
+    }
+    
+    /**
+     * Shows Parent Form's Context Menu
+     * @param e the mouse event
+     */
+    protected void showContextMenu(MouseEvent e)
+    {
+        if (e.isPopupTrigger())
+        {
+            JPopupMenu popup = new JPopupMenu();
+            JMenuItem menuItem = new JMenuItem("Configure Carry Forward"); // I18N
+            menuItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    carryForwardSetup = new CarryForwardSetUp(thisObj);
+                    thisObj.add(carryForwardSetup, "carryforward");
+                    cardLayout.show(thisObj, "carryforward");  
+                }
+            });
+            
+            popup.add(menuItem);
+            popup.show(e.getComponent(), e.getX(), e.getY());                       
             
         }
     }
@@ -435,6 +472,10 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public Object getData()
     {
+        if (data instanceof Collection<?>)
+        {
+            return currentView.getDataObj();
+        }
         return data;
     }
 
