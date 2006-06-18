@@ -1,5 +1,6 @@
 package edu.ku.brc.util;
 
+@SuppressWarnings("serial")
 public class Triple<F,S,T> extends Pair<F,S>
 {
 	public T third;

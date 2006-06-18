@@ -12,6 +12,7 @@ import java.io.Serializable;
  * @param <F> the first item in the pair
  * @param <S> the second item in the pair
  */
+@SuppressWarnings("serial")
 public class Pair<F,S> implements Serializable
 {
 	public F first = null;
