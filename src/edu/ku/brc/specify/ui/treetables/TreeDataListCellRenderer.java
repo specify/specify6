@@ -252,9 +252,11 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 			g2d.setColor(list.getForeground());
 			
 			
-			Rectangle rect = g.getClipBounds();
-			int x = rect.x;
-			int y = rect.y;
+			//Rectangle rect = g.getClipBounds();
+			//int x = rect.x;
+			//int y = rect.y;
+			int x = 0;
+			int y = 0;
 			int cellHeight = list.getFixedCellHeight();
 			FontMetrics fm = g.getFontMetrics();
 			int baselineAdj = (int)(1.0/2.0*fm.getAscent() + 1.0/2.0*cellHeight);
