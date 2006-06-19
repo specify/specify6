@@ -251,12 +251,6 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g2d.setColor(list.getForeground());
 			
-			
-			//Rectangle rect = g.getClipBounds();
-			//int x = rect.x;
-			//int y = rect.y;
-			int x = 0;
-			int y = 0;
 			int cellHeight = list.getFixedCellHeight();
 			FontMetrics fm = g.getFontMetrics();
 			int baselineAdj = (int)(1.0/2.0*fm.getAscent() + 1.0/2.0*cellHeight);
@@ -275,14 +269,14 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 				if( !model.parentHasChildrenAfterNode(parent, child) )
 				{
 					// draw an L-shape
-					g.drawLine(x+parentWidth+2*whitespace, y, x+parentWidth+2*whitespace, y+midCell);
-					g.drawLine(x+parentWidth+2*whitespace, y+midCell, x+childWidth, y+midCell);
+					g.drawLine(parentWidth+2*whitespace, 0, parentWidth+2*whitespace, midCell);
+					g.drawLine(parentWidth+2*whitespace, midCell, childWidth, midCell);
 				}
 				else
 				{
 					// draw a T-shape
-					g.drawLine(x+parentWidth+2*whitespace, y, x+parentWidth+2*whitespace, y+cellHeight);
-					g.drawLine(x+parentWidth+2*whitespace, y+midCell, x+childWidth, y+midCell);
+					g.drawLine(parentWidth+2*whitespace, 0, parentWidth+2*whitespace, cellHeight);
+					g.drawLine(parentWidth+2*whitespace, midCell, childWidth, midCell);
 				}
 			}
 			
@@ -293,7 +287,7 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 				{
 					// draw the vertical line for under this parent
 					int width = rankWidthsMap.get(parent.getRankId());
-					g.drawLine(x+width+2*whitespace, y, x+width+2*whitespace, y+cellHeight);
+					g.drawLine(width+2*whitespace, 0, width+2*whitespace, cellHeight);
 				}
 				
 				child = parent;
@@ -306,13 +300,13 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 			
 			//draw the string name of the node
 			String name = treeable.getName();
-			int stringX = x + rankWidthsMap.get(treeable.getRankId()) + whitespace;
-			int stringY = y + baselineAdj;
+			int stringX = rankWidthsMap.get(treeable.getRankId()) + whitespace;
+			int stringY = baselineAdj;
 			int stringWidth = fm.stringWidth(name);
 			if( selected )
 			{
 				g2d.setColor(list.getSelectionBackground());
-				g2d.fillRoundRect(stringX-1, y+1, stringWidth+2, cellHeight-2, 8, 8);
+				g2d.fillRoundRect(stringX-2, 1, stringWidth+4, cellHeight-2, 8, 8);
 				g2d.setColor(list.getSelectionForeground());
 			}
 			g.drawString(name, stringX, stringY);
