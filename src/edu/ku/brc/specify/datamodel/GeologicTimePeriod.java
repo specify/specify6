@@ -392,6 +392,12 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
 
 	public void addChild( GeologicTimePeriod child )
 	{
+		GeologicTimePeriod oldParent = child.getParent();
+		if( oldParent != null )
+		{
+			oldParent.removeChild(child);
+		}
+		
 		children.add(child);
 		child.setParentNode(this);
 	}
@@ -402,4 +408,9 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
 		child.setParentNode(null);
 	}
 
+	// temporary implementation of toString() for easier debugging
+	public String toString()
+	{
+		return this.name + " : " + this.rankId + " : " + this.nodeNumber + " : " + this.highestChildNodeNumber;
+	}
 }

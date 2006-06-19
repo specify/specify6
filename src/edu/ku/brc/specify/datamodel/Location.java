@@ -422,6 +422,12 @@ public class Location  implements java.io.Serializable,Treeable {
 
 	public void addChild( Location child )
 	{
+		Location oldParent = child.getParent();
+		if( oldParent != null )
+		{
+			oldParent.removeChild(child);
+		}
+
 		this.children.add((Location)child);
 		child.setParentNode(this);
 	}

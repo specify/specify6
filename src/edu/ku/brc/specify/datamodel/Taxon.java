@@ -606,6 +606,12 @@ public class Taxon  implements java.io.Serializable,Treeable {
 
 	public void addChild( Taxon child )
 	{
+		Taxon oldParent = child.getParent();
+		if( oldParent != null )
+		{
+			oldParent.removeChild(child);
+		}
+		
 		children.add(child);
 		child.setParentNode(this);
 	}

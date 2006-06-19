@@ -438,6 +438,12 @@ public class Geography  implements java.io.Serializable,Treeable {
 
 	public void addChild( Geography child )
 	{
+		Geography oldParent = child.getParent();
+		if( oldParent != null )
+		{
+			oldParent.removeChild(child);
+		}
+		
 		children.add(child);
 		child.setParentNode(this);
 	}
