@@ -1,4 +1,4 @@
-/* Filename:    $RCSfile: SearchDialogFactory.java,v $
+/* Filename:    $RCSfile: DialogFactory.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2006/01/10 16:52:27 $
@@ -32,7 +32,10 @@ import org.dom4j.Element;
 import edu.ku.brc.specify.exceptions.ConfigurationException;
 import edu.ku.brc.specify.helpers.XMLHelper;
 /**
- * This factory knows how to create GenericSearchDialogs by name.
+ * This class reads in dialog definitions from dialog_defs.xml, there are two types of dialog: "search" and "display".
+ * Certain UI components use this factory to create dialogs for searching or displaying child objects.
+ * For example, the TextWithInfo or the ComboBoxFromQuery has buttons that enables the user to pop up a dialog for displaying the current object in the control,
+ * or to poop up a search dialog for locating (more precisely the object they desire.
  *
  * @author rods
  *
@@ -139,7 +142,7 @@ public class DialogFactory
      * @param name the name of the GenericSearchDialog to return
      * @return a GenericSearchDialog by name
      */
-    public static GenericDisplayFrame createDisplayDialog(final String name, 
+    public static GenericDisplayFrame createDisplayDialog(final String name,
                                                           final String frameTitle,
                                                           final boolean isEdit)
     {
