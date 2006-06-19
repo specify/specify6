@@ -35,7 +35,7 @@ import edu.ku.brc.specify.helpers.XMLHelper;
  * This class reads in dialog definitions from dialog_defs.xml, there are two types of dialog: "search" and "display".
  * Certain UI components use this factory to create dialogs for searching or displaying child objects.
  * For example, the TextWithInfo or the ComboBoxFromQuery has buttons that enables the user to pop up a dialog for displaying the current object in the control,
- * or to poop up a search dialog for locating (more precisely the object they desire.
+ * or to pop up a search dialog for locating (more precisely the object they desire.
  *
  * @author rods
  *
