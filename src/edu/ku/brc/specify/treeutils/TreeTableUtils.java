@@ -392,15 +392,15 @@ public class TreeTableUtils
 	 * 
 	 * @param root the top of the tree to be renumbered
 	 */
-	public static void fixNodeNumbersFromRoot( Treeable root )
+	public static int fixNodeNumbersFromRoot( Treeable root )
 	{
 		int nextNodeNumber = root.getNodeNumber();
 		for( Treeable child: root.getChildNodes() )
 		{
 			child.setNodeNumber(++nextNodeNumber);
-			fixNodeNumbersFromRoot(child);
-			nextNodeNumber = child.getHighestChildNodeNumber();
+			nextNodeNumber = fixNodeNumbersFromRoot(child);
 		}
 		root.setHighestChildNodeNumber(nextNodeNumber);
+		return nextNodeNumber;
 	}
 }
