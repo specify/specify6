@@ -28,6 +28,7 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
      private GeologicTimePeriodTreeDefItem definitionItem;
      private GeologicTimePeriod parent;
      protected Set<GeologicTimePeriod> children;
+     protected Set<Stratigraphy> stratigraphies;
 
     // Constructors
 
@@ -62,6 +63,7 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
         definitionItem = null;
         parent = null;
         children = new HashSet<GeologicTimePeriod>();
+        stratigraphies = new HashSet<Stratigraphy>();
     }
     // End Initializer
 
@@ -271,9 +273,19 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
     public void setChildren(Set<GeologicTimePeriod> children) {
         this.children = children;
     }
+    
+	public Set<Stratigraphy> getStratigraphies()
+	{
+		return stratigraphies;
+	}
+
+	public void setStratigraphies(Set<Stratigraphy> stratigraphies)
+	{
+		this.stratigraphies = stratigraphies;
+	}
 
 	/* Code added in order to implement Treeable */
-    
+
 	public Integer getTreeId()
 	{
 		return getGeologicTimePeriodId();
@@ -406,6 +418,24 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
 	{
 		children.remove(child);
 		child.setParentNode(null);
+	}
+
+	public void addStratigraphy( Stratigraphy strat )
+	{
+		GeologicTimePeriod oldGTP = strat.getGeologicTimePeriod();
+		if( oldGTP != null )
+		{
+			oldGTP.removeStratigraphy(strat);
+		}
+		
+		stratigraphies.add(strat);
+		strat.setGeologicTimePeriod(this);
+	}
+	
+	public void removeStratigraphy( Stratigraphy strat )
+	{
+		stratigraphies.remove(strat);
+		strat.setGeologicTimePeriod(null);
 	}
 
 	// temporary implementation of toString() for easier debugging

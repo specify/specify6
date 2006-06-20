@@ -87,13 +87,12 @@
     </one-to-one>
     
     <!-- bi-directional one-to-many association to GeologicTimePeriod -->
-    <set name="children" lazy="true" inverse="true" cascade="none">
-        <meta attribute="field-description"></meta>
-        <key>
-            <column name="StratigraphyID"/>
-        </key>
-        <one-to-many class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
-    </set>
+    <many-to-one name="geologicTimePeriod"
+                class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+                lazy="false" cascade="none">
+        <meta attribute="scope-field">protected</meta>
+        <column name="GeologicTimePeriodID"/>
+    </many-to-one>
     
 </class>
 </hibernate-mapping>

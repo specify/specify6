@@ -112,12 +112,20 @@
 			cascade="none">
 			<meta attribute="scope-field">protected</meta>
 			<key>
-				<column name="ParentId" />
+				<column name="ParentID" />
 			</key>
-			<one-to-many
-				class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" />
+			<one-to-many class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" />
 		</set>
 
+		<!-- bi-directional many-to-one association to Stratigraphy -->
+		<set name="stratigraphies" lazy="true" inverse="true"
+			cascade="none">
+			<meta attribute="scope-field">protected</meta>
+			<key>
+				<column name="GeologicTimePeriodID" />
+			</key>
+			<one-to-many class="edu.ku.brc.specify.datamodel.Stratigraphy" />
+		</set>
+		
 	</class>
-
 </hibernate-mapping>

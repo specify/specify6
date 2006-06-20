@@ -31,6 +31,7 @@ public class Stratigraphy  implements java.io.Serializable {
      protected Boolean yesNo1;
      protected Boolean yesNo2;
      protected CollectingEvent collectingEvent;
+     protected GeologicTimePeriod geologicTimePeriod;
      protected Set<GeologicTimePeriod> children;
 
 
@@ -68,6 +69,7 @@ public class Stratigraphy  implements java.io.Serializable {
         yesNo1 = null;
         yesNo2 = null;
         collectingEvent = null;
+        geologicTimePeriod = null;
         children = new HashSet<GeologicTimePeriod>();
     }
     // End Initializer
@@ -261,7 +263,17 @@ public class Stratigraphy  implements java.io.Serializable {
         this.collectingEvent = collectingEvent;
     }
 
-    /**
+    public GeologicTimePeriod getGeologicTimePeriod()
+	{
+		return geologicTimePeriod;
+	}
+
+	public void setGeologicTimePeriod(GeologicTimePeriod geologicTimePeriod)
+	{
+		this.geologicTimePeriod = geologicTimePeriod;
+	}
+
+	/**
      *
      */
     public Set<GeologicTimePeriod> getChildren() {
