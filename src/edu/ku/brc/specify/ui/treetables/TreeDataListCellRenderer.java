@@ -4,7 +4,6 @@ import java.awt.Component;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -17,12 +16,17 @@ import javax.swing.JPanel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.ui.IconManager;
 
 @SuppressWarnings("serial")
 public class TreeDataListCellRenderer extends DefaultListCellRenderer implements ListDataListener
 {
+    private static final Log log = LogFactory.getLog(TreeDataListCellRenderer.class);
+
 	protected TreeDataListModel model;
 	protected JList list;
 	protected boolean lengthsValid;
@@ -190,23 +194,11 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 	
 	protected void recomputeLengthPerLevel( Graphics g )
 	{
-//		for( int i = 0; i < model.getSize(); ++i )
-//		{
-//			String s = model.getElementAt(i).toString();
-//			int stringWidth = g.getFontMetrics().stringWidth(s);
-//			if( stringWidth > lengthPerLevel )
-//			{
-//				lengthPerLevel = stringWidth;
-//			}
-//		}
-//		lengthsValid = true;
+		rankWidthsMap.clear();
 		
 		int prevRanksWidths = 0;
 		for( Integer rank: model.getVisibleRanks() )
 		{
-			// the icon size should be equal to the sum of the lengths of the longest strings
-			// from each of the lower ranks
-			
 			rankWidthsMap.put(rank, prevRanksWidths);
 			
 			Integer longestStringLength = model.getLongestNamePixelLengthByRank(rank,g.getFontMetrics(),true);
@@ -239,8 +231,6 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 		@Override
 		protected void paintComponent(Graphics g)
 		{
-			//super.paintComponent(g);
-			
 			// ensure that the lengths are valid
 			if( !lengthsValid )
 			{
@@ -255,6 +245,8 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 			FontMetrics fm = g.getFontMetrics();
 			int baselineAdj = (int)(1.0/2.0*fm.getAscent() + 1.0/2.0*cellHeight);
 			int midCell = cellHeight/2;
+			
+			// TODO: draw the alternating color background
 			
 			// determine if this node has more peer nodes below it
 			// if not, draw an L-shape
@@ -298,7 +290,7 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 //			Icon icon = open ? getOpen() : getClosed();
 //			icon.paintIcon(c, g, x+width-icon.getIconWidth(), y+cellHeight);
 			
-			//draw the string name of the node
+			// draw the string name of the node
 			String name = treeable.getName();
 			int stringX = rankWidthsMap.get(treeable.getRankId()) + whitespace;
 			int stringY = baselineAdj;

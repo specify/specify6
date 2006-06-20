@@ -215,7 +215,7 @@ public class GenericDBConversion
         "ExchangeOut",
         //"Geography",
         "GeologicTimeBoundary",
-        "GeologicTimePeriod",
+        //"GeologicTimePeriod",
         "GroupPersons",
         "Habitat",
         "ImageAgents",
@@ -2516,7 +2516,7 @@ public class GenericDBConversion
     	newToOldColMap.put("Name", "RankName");
     	newToOldColMap.put("TaxonTreeDefID", "TaxonomyTypeID");
 
-    	String[] ignoredFields = {"IsEnforced", "ParentItemID"};
+    	String[] ignoredFields = {"IsEnforced", "ParentItemID", "Remarks", "IsInFullName"};
     	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
 
     	// Copy over most of the columns in the old table to the new one

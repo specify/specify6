@@ -205,7 +205,15 @@ public class SpecifyDBConverter
                     idMapperMgr.addTableMapper("address", "AddressID");
                     idMapperMgr.addTableMapper("agentaddress", "AgentAddressID");
                 }
-
+                
+                // GTP needs to be converted here so the stratigraphy conversion can use
+                // the IDs
+                boolean doGTP = false;
+                if( doGTP || doAll )
+                {
+                	GeologicTimePeriodTreeDef treeDef = conversion.convertGTPDefAndItems();
+                	conversion.convertGTP(treeDef);
+                }
 
                 boolean mapTables = true;
                 if (mapTables || doAll)
@@ -256,7 +264,7 @@ public class SpecifyDBConverter
                     }
                     conversion.createCollectionRecords();
                 }
-
+                
                 boolean doTaxonomy = false;
                 if( doTaxonomy || doAll )
                 {
@@ -264,26 +272,21 @@ public class SpecifyDBConverter
                 	conversion.convertTaxonTreeDefItems();
                 	conversion.copyTaxonRecords();
                 }
-
-                boolean doTheRest = false;
-                if (doTheRest || doAll)
+                
+                boolean doGeography = false;
+                if (doGeography || doAll)
                 {
-                	// do Geography
-                    GeographyTreeDef treeDef = conversion.createStandardGeographyDefinitionAndItems();
+                	GeographyTreeDef treeDef = conversion.createStandardGeographyDefinitionAndItems();
                 	conversion.convertGeography(treeDef);
                 	conversion.convertLocality();
-                	
-                	// do Location
+                }
+                
+                boolean doLocation = false;
+                if( doLocation || doAll )
+                {
                 	conversion.buildSampleLocationTreeDef();
                 }
                 
-                boolean doGTP = false;
-                if( doAll || doGTP )
-                {
-                	GeologicTimePeriodTreeDef treeDef = conversion.convertGTPDefAndItems();
-                	conversion.convertGTP(treeDef);
-                }
-
                 boolean doFurtherTesting = false;
                 if (doFurtherTesting)
                 {
