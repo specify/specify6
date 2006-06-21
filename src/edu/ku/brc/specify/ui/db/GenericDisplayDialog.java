@@ -166,7 +166,6 @@ public class GenericDisplayDialog extends JDialog implements ActionListener
     public void setData(final Object dataObj)
     {
         form.setDataObj(dataObj);
-        form.setDataIntoUI();
     }
 
 

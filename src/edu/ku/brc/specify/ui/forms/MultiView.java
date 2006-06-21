@@ -463,7 +463,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         this.data = data;
         currentView.setDataObj(data);
-        //currentView.setDataIntoUI();
     }
 
     /**

@@ -1124,7 +1124,6 @@ public class ViewFactory
                     if (data != null)
                     {
                         form.setDataObj(data);
-                        form.setDataIntoUI();
                     }
                 } else
                 {
