@@ -24,8 +24,7 @@ import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.core.NavBox;
@@ -49,7 +48,7 @@ import edu.ku.brc.specify.ui.forms.persist.View;
  */
 public class InteractionsTask extends BaseTask
 {
-    private static Log log = LogFactory.getLog(InteractionsTask.class);
+    private static final Logger log = Logger.getLogger(InteractionsTask.class);
 
     public static final String INTERACTIONS = "Interactions";
 

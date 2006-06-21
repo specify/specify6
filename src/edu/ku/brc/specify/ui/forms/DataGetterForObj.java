@@ -26,8 +26,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.AttributeIFace;
 
@@ -43,7 +42,7 @@ import edu.ku.brc.specify.datamodel.AttributeIFace;
 public class DataGetterForObj implements DataObjectGettable
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(DataGetterForObj.class);
+    private static final Logger log = Logger.getLogger(DataGetterForObj.class);
 
 
     /**
@@ -93,7 +92,7 @@ public class DataGetterForObj implements DataObjectGettable
                         if (obj instanceof AttributeIFace) // Not scalable (needs interface)
                         {
                             AttributeIFace asg = (AttributeIFace)obj;
-                            //log.info("["+asg.getDefinition().getFieldName()+"]["+fieldName+"]");
+                            //log.debug("["+asg.getDefinition().getFieldName()+"]["+fieldName+"]");
                             if (asg.getDefinition().getFieldName().equals(fieldName))
                             {
                                 if (asg.getDefinition().getDataType() == AttributeIFace.FieldType.StringType.getType())

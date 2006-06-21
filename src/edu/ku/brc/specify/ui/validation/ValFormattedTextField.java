@@ -45,8 +45,7 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.ColorWrapper;
@@ -68,7 +67,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                                                                  DocumentListener,
                                                                  PreferenceChangeListener
 {
-    private static Log log  = LogFactory.getLog(ValFormattedTextField.class);
+    private static final Logger log  = Logger.getLogger(ValFormattedTextField.class);
 
     protected static ColorWrapper     valtextcolor       = null;
     protected static ColorWrapper     requiredfieldcolor = null;
@@ -194,8 +193,6 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
 
         if (!isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
         {
-            //log.info(getText()+" in error");
-            
             Graphics2D g2d = (Graphics2D)g;
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); 
             Dimension dim = getSize();

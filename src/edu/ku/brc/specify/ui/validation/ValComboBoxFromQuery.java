@@ -52,8 +52,7 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
@@ -98,7 +97,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                                             PreferenceChangeListener, 
                                                             PropertyChangeListener
 {
-    protected static Log log = LogFactory.getLog(ValComboBoxFromQuery.class);
+    protected static final Logger log = Logger.getLogger(ValComboBoxFromQuery.class);
     
     protected static ColorWrapper valtextcolor       = null;
     protected static ColorWrapper requiredfieldcolor = null;

@@ -51,8 +51,7 @@ import javax.swing.JTextField;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -105,7 +104,7 @@ import edu.ku.brc.specify.ui.validation.ValidatedJPanel;
 public class ViewFactory
 {
     // Statics
-    private static Log log = LogFactory.getLog(ViewFactory.class);
+    private static final Logger log = Logger.getLogger(ViewFactory.class);
     private static final ViewFactory  instance = new ViewFactory();
 
     // Data Members
@@ -309,7 +308,7 @@ public class ViewFactory
     protected JTextField createFormattedTextField(final FormValidator validator,
                                                   final FormCellField cellField)
     {
-        log.info(cellField.getName()+"  "+cellField.getUIFieldFormatter());
+        log.debug(cellField.getName()+"  "+cellField.getUIFieldFormatter());
         ValFormattedTextField textField;// = new ValFormattedTextField(cellField.getUIFieldFormatter());
 
         // Because it is formatted we ALWAYS validate it when there is a validator

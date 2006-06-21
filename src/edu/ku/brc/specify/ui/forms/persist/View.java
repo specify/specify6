@@ -26,7 +26,7 @@ public class View implements Comparable<View>
 {
     
     
-    //private final static Logger log = Logger.getLogger(View.class);
+    //private static final Logger log = Logger.getLogger(View.class);
     
     protected String               viewSetName;
     protected String               name;

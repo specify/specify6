@@ -16,8 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.ui.IconManager;
@@ -25,7 +24,7 @@ import edu.ku.brc.specify.ui.IconManager;
 @SuppressWarnings("serial")
 public class TreeDataListCellRenderer extends DefaultListCellRenderer implements ListDataListener
 {
-    private static final Log log = LogFactory.getLog(TreeDataListCellRenderer.class);
+    private static final Logger log = Logger.getLogger(TreeDataListCellRenderer.class);
 
 	protected TreeDataListModel model;
 	protected JList list;

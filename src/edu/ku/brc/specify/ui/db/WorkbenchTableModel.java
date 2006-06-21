@@ -3,7 +3,7 @@ import javax.swing.table.AbstractTableModel;
 
 
 public class WorkbenchTableModel extends AbstractTableModel {
-	//private static Log log = LogFactory.getLog(WorkbenchTableModel.class);
+	//private static final Logger log = Logger.getLogger(WorkbenchTableModel.class);
 	public WorkbenchTableModel(){
 		super();
 		// TODO Auto-generated constructor stub

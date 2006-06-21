@@ -37,8 +37,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -62,7 +61,7 @@ import edu.ku.brc.specify.ui.UICacheManager;
  */
 public class PrefTester
 {
-    private static Log log = LogFactory.getLog(FormEditor.class);
+    private static final Logger log = Logger.getLogger(FormEditor.class);
     
     protected JPanel contentPane;
     protected JFrame mainFrame;

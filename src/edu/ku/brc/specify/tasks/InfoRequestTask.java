@@ -42,8 +42,7 @@ import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 
 import edu.ku.brc.specify.core.NavBox;
@@ -76,7 +75,7 @@ import edu.ku.brc.specify.ui.UICacheManager;
 public class InfoRequestTask extends BaseTask
 {
     // Static Data Members
-    private static Log log  = LogFactory.getLog(InfoRequestTask.class);
+    private static final Logger log  = Logger.getLogger(InfoRequestTask.class);
     
     public static final String     INFOREQUEST        = "InfoRequest";
     public static final DataFlavor INFOREQUEST_FLAVOR = new DataFlavor(RecordSetTask.class, INFOREQUEST);

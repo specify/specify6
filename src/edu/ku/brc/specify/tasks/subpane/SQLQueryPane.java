@@ -58,7 +58,7 @@ import edu.ku.brc.specify.ui.db.SaveRecordSetDlg;
 @SuppressWarnings("serial")
 public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
 {
-    //private static Log log = LogFactory.getLog(SQLQueryPane.class);
+    //private static final Logger log = Logger.getLogger(SQLQueryPane.class);
 
     private JTextArea             textArea;
     private JScrollPane           taScrollPane;

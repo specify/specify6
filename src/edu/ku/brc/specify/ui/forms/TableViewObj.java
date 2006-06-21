@@ -18,7 +18,7 @@ import edu.ku.brc.specify.ui.validation.FormValidator;
 
 public class TableViewObj implements Viewable
 {
-    //private static Log log = LogFactory.getLog(TableViewObj.class);
+    //private static final Logger log = Logger.getLogger(TableViewObj.class);
 
     protected boolean                       isEditting     = false;
     protected MultiView                     multiView      = null;

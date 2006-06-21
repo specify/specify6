@@ -67,7 +67,7 @@ import edu.ku.brc.specify.ui.db.PickList;
 public class SystemSetupTask extends BaseTask
 {
     // Static Data Members
-    //private static Log log  = LogFactory.getLog(SystemSetupTask.class);
+    //private static final Logger log  = Logger.getLogger(SystemSetupTask.class);
 
     public static final String     SYSTEMSETUPTASK        = "SystemSetup";
     public static final DataFlavor SYSTEMSETUPTASK_FLAVOR = new DataFlavor(SystemSetupTask.class, SYSTEMSETUPTASK);

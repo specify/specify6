@@ -33,7 +33,7 @@ import java.util.Vector;
 public class QueryResultsGetter
 {
     // Static Data Members
-    //private static Log log = LogFactory.getLog(QueryResultsGetter.class);
+    //private static final Logger log = Logger.getLogger(QueryResultsGetter.class);
     
     // Data Members
     protected Vector<SQLExec>               sqlExecList = new Vector<SQLExec>();

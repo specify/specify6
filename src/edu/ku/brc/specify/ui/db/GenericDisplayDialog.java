@@ -36,8 +36,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
@@ -60,7 +59,7 @@ import edu.ku.brc.specify.ui.forms.persist.View;
 @SuppressWarnings("serial")
 public class GenericDisplayDialog extends JDialog implements ActionListener
 {
-    private static Log log  = LogFactory.getLog(GenericDisplayDialog.class);
+    private static final Logger log  = Logger.getLogger(GenericDisplayDialog.class);
 
     // Form Stuff
     protected MultiView      multiView;
@@ -128,7 +127,7 @@ public class GenericDisplayDialog extends JDialog implements ActionListener
 
         } else
         {
-            log.info("Couldn't load form with name ["+viewSetName+"] Id ["+viewName+"]");
+            log.error("Couldn't load form with name ["+viewSetName+"] Id ["+viewName+"]");
         }
         
         JPanel panel = new JPanel(new BorderLayout());

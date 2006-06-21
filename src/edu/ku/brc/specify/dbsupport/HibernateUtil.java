@@ -3,8 +3,7 @@ package edu.ku.brc.specify.dbsupport;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Interceptor;
 import org.hibernate.LockMode;
@@ -47,7 +46,7 @@ import org.hibernate.cfg.Environment;
  */
 public class HibernateUtil {
 
-    private static Log log = LogFactory.getLog(HibernateUtil.class);
+    private static final Logger log = Logger.getLogger(HibernateUtil.class);
 
     //private static final String INTERCEPTOR_CLASS = "hibernate.util.interceptor_class";
 

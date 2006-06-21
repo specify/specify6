@@ -24,8 +24,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Query;
 
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -39,7 +38,7 @@ import edu.ku.brc.specify.datamodel.RecordSetItem;
  */
 public class DBTableIdMgr
 {
-    private static final   Log          log      = LogFactory.getLog(DBTableIdMgr.class);
+    private static final   Logger       log      = Logger.getLogger(DBTableIdMgr.class);
     protected static final DBTableIdMgr instance;
 
     Hashtable<Integer, TableInfo> hash = new Hashtable<Integer, TableInfo>();
@@ -157,7 +156,7 @@ public class DBTableIdMgr
             strBuf.append('.');
             strBuf.append(tableInfo.getPrimaryKeyName());
             strBuf.append(getInClause(recordSet));
-            log.info(strBuf.toString());
+            log.debug(strBuf.toString());
             //query = HibernateUtil.getCurrentSession().createQuery("from catalogobj in class CollectionObj where catalogobj.collectionObjectId in ('30972.0','30080.0','27794.0','30582.0')");
             query = HibernateUtil.getCurrentSession().createQuery(strBuf.toString());
         }
@@ -184,7 +183,7 @@ public class DBTableIdMgr
             strBuf.append('.');
             strBuf.append(tableInfo.getPrimaryKeyName());
             strBuf.append(" = "+recordId);
-            log.info(strBuf.toString());
+            log.debug(strBuf.toString());
             //query = HibernateUtil.getCurrentSession().createQuery("from catalogobj in class CollectionObj where catalogobj.collectionObjectId in ('30972.0','30080.0','27794.0','30582.0')");
             query = HibernateUtil.getSessionFactory().openSession().createQuery(strBuf.toString());
         }

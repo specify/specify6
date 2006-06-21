@@ -9,8 +9,7 @@ import java.util.Vector;
 
 import javax.swing.JLabel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.layout.CellConstraints;
 
@@ -32,7 +31,7 @@ import edu.ku.brc.specify.dbsupport.SQLExecutionProcessor;
 public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecutionListener
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(StatGroupTableFromQuery.class);
+    private static final Logger log = Logger.getLogger(StatGroupTableFromQuery.class);
 
     // Data Members
     protected SQLExecutionProcessor sqle;

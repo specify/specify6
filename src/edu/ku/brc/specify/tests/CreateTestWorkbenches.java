@@ -24,8 +24,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Calendar;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 
@@ -42,7 +41,7 @@ import edu.ku.brc.specify.dbsupport.HibernateUtil;
  *
  */
 public class CreateTestWorkbenches {
-    private static Log log = LogFactory.getLog(CreateTestWorkbenches.class);
+    private static final Logger log = Logger.getLogger(CreateTestWorkbenches.class);
     protected static Calendar calendar = Calendar.getInstance();
 	public CreateTestWorkbenches() {
 		calendar.clear();

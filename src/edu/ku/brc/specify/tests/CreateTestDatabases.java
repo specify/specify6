@@ -40,8 +40,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
@@ -88,7 +87,7 @@ import edu.ku.brc.specify.dbsupport.HibernateUtil;
 
 public class CreateTestDatabases
 {
-    private static Log log = LogFactory.getLog(CreateTestDatabases.class);
+    private static final Logger log = Logger.getLogger(CreateTestDatabases.class);
     protected static Calendar calendar = Calendar.getInstance();
 
     protected CreateTestDatabases()

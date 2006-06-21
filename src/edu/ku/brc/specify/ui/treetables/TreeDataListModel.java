@@ -10,8 +10,7 @@ import java.util.Map.Entry;
 
 import javax.swing.AbstractListModel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
@@ -32,7 +31,7 @@ public class TreeDataListModel extends AbstractListModel
 	protected Hashtable<Treeable, Boolean> childrenWereShowing;
 	protected Hashtable<Integer,Integer> rankToNodeCount;
 	protected TreeDefinitionIface treeDef;
-    private static final Log log = LogFactory.getLog(TreeDataListModel.class);
+    private static final Logger log = Logger.getLogger(TreeDataListModel.class);
     protected Treeable root;
     protected Comparator<Treeable> comparator;
 

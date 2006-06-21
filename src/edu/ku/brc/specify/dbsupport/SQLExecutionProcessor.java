@@ -25,8 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -37,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class SQLExecutionProcessor implements Runnable
 {
-    private static Log log = LogFactory.getLog(SQLExecutionProcessor.class);
+    private static final Logger log = Logger.getLogger(SQLExecutionProcessor.class);
 
     protected Thread               thread;
     protected SQLExecutionListener listener;

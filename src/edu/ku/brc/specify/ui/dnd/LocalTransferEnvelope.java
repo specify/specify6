@@ -5,13 +5,12 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 public class LocalTransferEnvelope implements Transferable
 {
 	protected Object transferObject;
-	protected static Log log = LogFactory.getLog(LocalTransferEnvelope.class);
+	protected static final Logger log = Logger.getLogger(LocalTransferEnvelope.class);
 
 	protected static DataFlavor localObjectFlavor;
 	static

@@ -23,14 +23,13 @@ import java.io.File;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.ui.forms.ViewMgr;
 
 public class TestFormFactory extends TestCase
 {
-    private static Log log = LogFactory.getLog(TestFormFactory.class);
+    private static final Logger log = Logger.getLogger(TestFormFactory.class);
     private static final String dataPath = "forms";
     
     /**

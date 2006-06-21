@@ -25,8 +25,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.specify.helpers.XMLHelper;
@@ -41,7 +40,7 @@ public class UIFieldFormatterMgr
 {
     public enum FieldType {numeric, alphanumeric, alpha, separator};
 
-    private static Log log = LogFactory.getLog(UIFieldFormatterMgr.class);
+    private static final Logger log = Logger.getLogger(UIFieldFormatterMgr.class);
     protected static UIFieldFormatterMgr instance = new UIFieldFormatterMgr();
 
     protected Hashtable<String, Formatter> hash = new Hashtable<String, Formatter>();

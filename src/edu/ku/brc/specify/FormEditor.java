@@ -66,8 +66,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -126,7 +125,7 @@ import edu.ku.brc.specify.ui.forms.persist.View;
  */
 public class FormEditor
 {
-    private static Log log = LogFactory.getLog(FormEditor.class);
+    private static final Logger log = Logger.getLogger(FormEditor.class);
 
     protected JPanel    contentPane = new JPanel(new BorderLayout());
     protected JFrame    mainFrame;

@@ -12,8 +12,7 @@ import java.util.UUID;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * @author jstewart
@@ -21,7 +20,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class FileCache
 {
-	private static Log log = LogFactory.getLog(FileCache.class);
+	private static final Logger log = Logger.getLogger(FileCache.class);
 	private static String mappingFileComment = "edu.ku.brc.util.FileCache Name Mapping File";
 	private static String accessTimeFileComment = "edu.ku.brc.util.FileCache Access Times File";
 	private static String defaultPrefix = "sp6-";
@@ -125,7 +124,7 @@ public class FileCache
 		{
 			throw new IOException("Requested cache directory must already exist");
 		}
-		log.info("Creating FileCache using " + dir + " directory");
+		log.debug("Creating FileCache using " + dir + " directory");
 
 		handleToFilenameHash = new Properties();
 		handleToAccessTimeHash = new Properties();

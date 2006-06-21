@@ -41,7 +41,7 @@ import edu.ku.brc.specify.core.Taskable;
 @SuppressWarnings("serial")
 public class SimpleDescPane extends BaseSubPane
 {
-    //private static Log log = LogFactory.getLog(SimpleDescPane.class);
+    //private static final Logger log = Logger.getLogger(SimpleDescPane.class);
     protected Image splashImage = null;
 
     /**

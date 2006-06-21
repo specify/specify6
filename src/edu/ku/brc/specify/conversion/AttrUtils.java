@@ -26,8 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 import edu.ku.brc.specify.datamodel.AttributeDef;
@@ -46,7 +45,7 @@ import edu.ku.brc.specify.dbsupport.HibernateUtil;
  */
 public class AttrUtils
 {
-    protected static Log log = LogFactory.getLog(BasicSQLUtils.class);
+    protected static final Logger log = Logger.getLogger(BasicSQLUtils.class);
     
     /**
      * 

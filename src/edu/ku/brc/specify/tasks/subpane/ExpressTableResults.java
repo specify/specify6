@@ -20,8 +20,7 @@
 
 package edu.ku.brc.specify.tasks.subpane;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.dbsupport.SQLExecutionListener;
@@ -41,7 +40,7 @@ import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
 public class ExpressTableResults extends ExpressTableResultsBase implements SQLExecutionListener
 {
     // Static Data Members
-    private static Log log  = LogFactory.getLog(ExpressTableResults.class);
+    private static final Logger log  = Logger.getLogger(ExpressTableResults.class);
 
     // Data Members
     protected SQLExecutionProcessor sqlExecutor;
@@ -132,7 +131,7 @@ public class ExpressTableResults extends ExpressTableResultsBase implements SQLE
     public RecordSet getRecordSet(final int[] rows, final int column, final boolean returnAll)
     {
         ResultSetTableModelDM rsm = (ResultSetTableModelDM)table.getModel();
-        log.info("Row Selection Count["+table.getSelectedRowCount()+"]");
+        log.debug("Row Selection Count["+table.getSelectedRowCount()+"]");
         return rsm.getRecordSet(table.getSelectedRows(), column, returnAll);
     }
 

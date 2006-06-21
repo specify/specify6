@@ -57,8 +57,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JSeparator;
 import javax.swing.border.EtchedBorder;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -104,7 +103,7 @@ import edu.ku.brc.specify.ui.forms.persist.FormViewDef;
 public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, QueryResultsListener
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(ExpressSearchIndexerPane.class);
+    private static final Logger log = Logger.getLogger(ExpressSearchIndexerPane.class);
 
     // Data Members
     protected Thread       thread;
@@ -205,7 +204,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             {
                 String nameStr = e.nextElement();
                 String sqlStr = "select count(*) from " + nameStr +" where datediff(TimeStampCreated, "+formatter.format(lastModified)+") > 0";
-                log.info(sqlStr);
+                log.debug(sqlStr);
                 QueryResultsContainer container = new QueryResultsContainer(sqlStr);
                 container.add(new QueryResultsDataObj(nameStr));
 
@@ -348,7 +347,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     {
                         doc.add(Field.UnStored("contents", value));
                     }
-                    //log.info("["+fieldName+"]["+secondaryKey+"]["+value+"]");
+                    //log.debug("["+fieldName+"]["+secondaryKey+"]["+value+"]");
                 }
 
             } else
@@ -376,7 +375,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     {
                         doc.add(Field.UnStored("contents", value));
                     }
-                    //log.info("["+fieldName+"]["+secondaryKey+"]["+value+"]");
+                    //log.debug("["+fieldName+"]["+secondaryKey+"]["+value+"]");
                 }
 
             } else
@@ -389,7 +388,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 }
             }
         }
-        //log.info("["+fieldName+"]["+secondaryKey+"]["+value+"]");
+        //log.debug("["+fieldName+"]["+secondaryKey+"]["+value+"]");
         return value;
     }
 
@@ -422,7 +421,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             {
                 dbStatement = dbConnection.createStatement();
 
-                log.info("SQL ["+tableInfo.getBuildSql()+"]");
+                log.debug("SQL ["+tableInfo.getBuildSql()+"]");
 
                 ResultSet rs = dbStatement.executeQuery(tableInfo.getBuildSql());
 
@@ -442,10 +441,10 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     trigger = (int)(numRows * 0.02);
                 } else
                 {
-                    log.info("Table["+tableInfo.getTitle()+"] is empty.");
+                    log.debug("Table["+tableInfo.getTitle()+"] is empty.");
                     //throw new RuntimeException("Can't go to last record.");
                 }
-                log.info("Row ["+numRows+"] to index in ["+tableInfo.getTitle()+"].");
+                log.debug("Row ["+numRows+"] to index in ["+tableInfo.getTitle()+"].");
 
                 if (rs.first())
                 {
@@ -458,7 +457,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                         try
                         {
                             classes[i] = Class.forName(rsmd.getColumnClassName(i));
-                            //log.info(rsmd.getColumnName(i)+"  "+classes[i].getSimpleName());
+                            //log.debug(rsmd.getColumnName(i)+"  "+classes[i].getSimpleName());
                         } catch (Exception ex) {  }
                     }
 
@@ -556,7 +555,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                             writer.addDocument(doc);
                         }
                     } while(rs.next());
-                    log.info("done indexing");
+                    log.debug("done indexing");
                 }
                 progressBar.setString("");
 
@@ -576,7 +575,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         long end = new Date().getTime();
 
         long delta = end - begin;
-        log.info("Time to index (" + delta + " ms)");
+        log.debug("Time to index (" + delta + " ms)");
         return delta;
     }
 
@@ -778,7 +777,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         }
         long end = new Date().getTime();
         long delta = end - begin;
-        log.info("Time to index (" + delta + " ms)");
+        log.debug("Time to index (" + delta + " ms)");
 
         progressBar.setString("100%");
         indvLabel.setText("");
@@ -863,7 +862,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         }
         long end = new Date().getTime();
         long delta = end - begin;
-        log.info("Time to index (" + delta + " ms)");
+        log.debug("Time to index (" + delta + " ms)");
 
         progressBar.setString("100%");
         indvLabel.setText("");
@@ -909,13 +908,13 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
                 if (isNotEmpty(tableInfo.getBuildSql()))
                 {
-                    log.info("Indexing: "+tableInfo.getTitle()+"  Id: "+tableInfo.getTableId());
+                    log.debug("Indexing: "+tableInfo.getTitle()+"  Id: "+tableInfo.getTableId());
                     indvLabel.setText(tableInfo.getTitle());
                     int id = Integer.parseInt(tableInfo.getTableId());
                     if (id < 10000)
                     {
                        deltaTime += indexQuery(writer, tableInfo);
-                       log.info(deltaTime);
+                       log.debug(deltaTime);
                     }
                     if (isCancelled)
                     {
@@ -932,13 +931,13 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             if (doIndexForms)
             {
                 deltaTime += indexForms(writer);
-                log.info(deltaTime);
+                log.debug(deltaTime);
             }
 
             if (doIndexLabels)
             {
                 deltaTime += indexLabels(writer);
-                log.info(deltaTime);
+                log.debug(deltaTime);
             }
 
         } catch (Exception ex)
@@ -969,15 +968,15 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 File file = new File(lucenePath.getAbsoluteFile()+File.separator+fileNames[i]);
                 file.delete();
             }
-            log.info(lucenePath.delete() ? "deleted" : "not deleted");
+            log.debug(lucenePath.delete() ? "deleted" : "not deleted");
 
         } else
         {
 
             indvLabel.setText(termsIndexed+ " terms indexed in "+(((double)deltaTime) / 1000.0) + " seconds");
             globalLabel.setText(getResourceString("doneIndexing"));
-            log.info(deltaTime);
-            log.info("Time to index all (" + (((double)deltaTime) / 1000.0) + " seconds)");
+            log.debug(deltaTime);
+            log.debug("Time to index all (" + (((double)deltaTime) / 1000.0) + " seconds)");
             writer.optimize();
             writer.close();
         }
@@ -1054,7 +1053,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 }
             } else
             {
-                log.info("Couldn't find label["+getString(name)+"]");
+                log.error("Couldn't find label["+getString(name)+"]");
             }
         }
         list.clear();

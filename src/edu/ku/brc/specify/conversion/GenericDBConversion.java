@@ -48,8 +48,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
@@ -91,7 +90,7 @@ import edu.ku.brc.util.Pair;
  */
 public class GenericDBConversion
 {
-    protected static Log log = LogFactory.getLog(GenericDBConversion.class);
+    protected static final Logger log = Logger.getLogger(GenericDBConversion.class);
 
     protected static StringBuilder strBuf   = new StringBuilder("");
     protected static Calendar     calendar  = Calendar.getInstance();

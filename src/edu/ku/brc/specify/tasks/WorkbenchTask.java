@@ -35,8 +35,7 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
@@ -56,7 +55,7 @@ import edu.ku.brc.specify.ui.UICacheManager;
  */
 public class WorkbenchTask extends BaseTask
 {
-	private static Log log = LogFactory.getLog(WorkbenchTask.class);
+	private static final Logger log = Logger.getLogger(WorkbenchTask.class);
 	public static final DataFlavor WORKBENCH_FLAVOR = new DataFlavor(WorkbenchTask.class, "Workbench");
 	public static final String WORKBENCH = "Workbench";
 
@@ -115,7 +114,7 @@ public class WorkbenchTask extends BaseTask
     		if( result == JFileChooser.APPROVE_OPTION )
     		{
     			File csvFile = jfc.getSelectedFile();
-    			log.info("Importing field notebook: " + csvFile.getAbsolutePath() );
+    			log.debug("Importing field notebook: " + csvFile.getAbsolutePath() );
     			UICacheManager.getSubPaneMgr().addPane(new WorkbenchPane("Field Notebook Import", this, jfc.getSelectedFile()));
     		}
         } else

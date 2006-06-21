@@ -51,8 +51,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.apache.lucene.search.Hits;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -90,7 +89,7 @@ import edu.ku.brc.specify.ui.forms.persist.View;
 @SuppressWarnings("serial")
 public class GenericSearchDialog extends JDialog implements ActionListener, ExpressSearchResultsPaneIFace
 {
-    private static Log log  = LogFactory.getLog(GenericSearchDialog.class);
+    private static final Logger log  = Logger.getLogger(GenericSearchDialog.class);
 
     // Form Stuff
     protected View           formView = null;
@@ -211,7 +210,7 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
                 }
                 String fullSQL = sqlStr.replace("%s", strBuf.toString());
                 tableInfo.setViewSql(fullSQL);
-                log.info(fullSQL);
+                log.debug(fullSQL);
                 setUIEnabled(false);
                 addSearchResults(tableInfo, null);
             }
@@ -238,7 +237,7 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
 
         } else
         {
-            log.info("Couldn't load form with name ["+viewSetName+"] Id ["+viewName+"]");
+            log.error("Couldn't load form with name ["+viewSetName+"] Id ["+viewName+"]");
         }
         
         fieldIds = new ArrayList<String>();
@@ -339,7 +338,7 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
             RecordSetItem item = (RecordSetItem)recordSet.getItems().iterator().next();
             try
             {
-                log.info("getSelectedObject class["+className+"] idFieldName["+idFieldName+"] id["+item.getRecordId()+"]");
+                log.debug("getSelectedObject class["+className+"] idFieldName["+idFieldName+"] id["+item.getRecordId()+"]");
                 
                 Class classObj = Class.forName(className);
                 SessionFactory sessionFactory = HibernateUtil.getSessionFactory();

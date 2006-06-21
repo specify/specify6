@@ -27,8 +27,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -37,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class HTTPGetter implements Runnable
 {
-    private static Log log = LogFactory.getLog(HTTPGetter.class);
+    private static final Logger log = Logger.getLogger(HTTPGetter.class);
 
     public enum ErrorCode {
         NoError, Error, HttpError, NotDoneError, IOError, URLError

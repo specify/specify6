@@ -47,8 +47,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.JTextComponent;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.ui.GetSetValueIFace;
 
@@ -68,7 +67,7 @@ public class DataChangeNotifier implements FocusListener,
                                            ActionListener,
                                            DocumentListener
 {
-    private static Log log = LogFactory.getLog(DataChangeNotifier.class);
+    private static final Logger log = Logger.getLogger(DataChangeNotifier.class);
     
     protected UIValidator                uiv;
     protected boolean                    hasDataChanged = false;
@@ -126,7 +125,7 @@ public class DataChangeNotifier implements FocusListener,
      */
     protected void notifyDataChangeListeners()
     {
-        //log.info("DataChangeNotifier - notifyDataChangeListeners");
+        //log.debug("DataChangeNotifier - notifyDataChangeListeners");
         
         hasDataChanged = true;
         
@@ -143,7 +142,7 @@ public class DataChangeNotifier implements FocusListener,
      */
     public String getValueForControl(Component comp)
     {
-        log.info("DataChangeNotifier - getValueForControl "+comp);
+        log.debug("DataChangeNotifier - getValueForControl "+comp);
         
         if (comp instanceof JTextComponent)
         {
@@ -318,7 +317,7 @@ public class DataChangeNotifier implements FocusListener,
      */
     public void focusLost(FocusEvent e)
     {
-        //log.info("["+((JTextComponent)comp).getText()+"]["+cachedData+"]");
+        //log.debug("["+((JTextComponent)comp).getText()+"]["+cachedData+"]");
 
         if (comp instanceof UIValidatable)
         {

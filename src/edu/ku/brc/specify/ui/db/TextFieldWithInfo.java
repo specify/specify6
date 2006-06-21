@@ -41,8 +41,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -68,7 +67,7 @@ import edu.ku.brc.specify.ui.forms.MultiView;
 @SuppressWarnings("serial")
 public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, PreferenceChangeListener, PropertyChangeListener
 {
-    protected static Log log = LogFactory.getLog(TextFieldWithInfo.class);
+    protected static final Logger log = Logger.getLogger(TextFieldWithInfo.class);
     
     protected static ColorWrapper valtextcolor       = null;
     protected static ColorWrapper requiredfieldcolor = null;

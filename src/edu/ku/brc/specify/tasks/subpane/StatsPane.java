@@ -32,8 +32,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -58,7 +57,7 @@ import edu.ku.brc.specify.stats.StatsMgr;
 public class StatsPane extends BaseSubPane
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(StatsPane.class);
+    private static final Logger log = Logger.getLogger(StatsPane.class);
 
     // Data Members
     protected String  fileName           = null;
@@ -203,7 +202,7 @@ public class StatsPane extends BaseSubPane
                             comp = group;
 
                             group.relayout();
-                            //log.info("After Relayout: "+group.getPreferredSize()+" "+group.getSize()+" "+group.getComponentCount());
+                            //log.debug("After Relayout: "+group.getPreferredSize()+" "+group.getSize()+" "+group.getComponentCount());
 
                         } else
                         {
@@ -215,7 +214,7 @@ public class StatsPane extends BaseSubPane
                             {
                                 Element itemElement = (Element)io;
 
-                                //log.info("STAT["+getAttr(itemElement, "title", "N/A")+"]");
+                                //log.debug("STAT["+getAttr(itemElement, "title", "N/A")+"]");
 
                                 Element link    = (Element)itemElement.selectSingleNode("link");
                                 String  linkStr = null;
@@ -254,7 +253,7 @@ public class StatsPane extends BaseSubPane
 
                             }
                             groupTable.relayout();
-                            //log.info(groupTable.getPreferredSize());
+                            //log.debug(groupTable.getPreferredSize());
                             comp = groupTable;
                             //comp = scrollPane;
                         }

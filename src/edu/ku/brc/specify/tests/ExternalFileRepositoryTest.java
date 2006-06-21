@@ -2,15 +2,14 @@ package edu.ku.brc.specify.tests;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.config.SpecifyConfig;
 import edu.ku.brc.specify.extfilerepos.impl.ExternalFileRepository;
 
 public class ExternalFileRepositoryTest extends TestCase
 {
-    private static Log log = LogFactory.getLog(SpecifyConfig.class);
+    private static final Logger log = Logger.getLogger(SpecifyConfig.class);
 
     public ExternalFileRepository extFileRepos = null;
     

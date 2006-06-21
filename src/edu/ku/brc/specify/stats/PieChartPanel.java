@@ -47,7 +47,7 @@ import edu.ku.brc.specify.ui.IconManager;
 public class PieChartPanel extends ChartPanel implements QueryResultsListener, QueryResultsProcessable
 {
     // Static Data Members
-    //private static Log log = LogFactory.getLog(BarChartPanel.class);
+    //private static final Logger log = Logger.getLogger(BarChartPanel.class);
 
     // Data Members
     @SuppressWarnings("unused")

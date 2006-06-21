@@ -45,9 +45,8 @@ public class LocalityMapperTask extends BaseTask
 {
     // Static Data Members
     public static final String LOCALITYMAPPER = "LocalityMapper";
-
-    //private static Log log = LogFactory.getLog(LocalityMapperTask.class);
-
+    //private static final Logger log = Logger.getLogger(LocalityMapperTask.class);
+    
     // Data Members
     protected java.sql.ResultSet    resultSet;
 

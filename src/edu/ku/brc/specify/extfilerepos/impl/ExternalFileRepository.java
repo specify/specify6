@@ -22,8 +22,7 @@ package edu.ku.brc.specify.extfilerepos.impl;
 import java.io.File;
 import java.util.NoSuchElementException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.extfilerepos.ExternalFileRepositoryIFace;
@@ -38,7 +37,7 @@ public class ExternalFileRepository implements ExternalFileRepositoryIFace
 {
     private static final String EXTERNAL_FILE_REPOS_PATH = "external.file.repository.path";
     
-    private static Log log = LogFactory.getLog(ExternalFileRepository.class);
+    private static final Logger log = Logger.getLogger(ExternalFileRepository.class);
     
     protected static final ExternalFileRepository instance = new ExternalFileRepository();
     

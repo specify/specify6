@@ -36,8 +36,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.jdesktop.animation.timing.Cycle;
 import org.jdesktop.animation.timing.Envelope;
 import org.jdesktop.animation.timing.TimingController;
@@ -56,7 +55,7 @@ import edu.ku.brc.util.Pair;
  */
 public class BioGeoMancerMapper implements TimingTarget
 {
-    private static Log          log                 = LogFactory.getLog(BioGeoMancerMapper.class);
+    private static final Logger          log                 = Logger.getLogger(BioGeoMancerMapper.class);
     protected List<BGMData>    bgmDatas;
     protected BGMData          currentLoc;
     protected List<String>      labels;
@@ -699,12 +698,12 @@ public class BioGeoMancerMapper implements TimingTarget
 
                     if( markerLoc==null )
                     {
-                        log.info("A marker location is null");
+                        log.error("A marker location is null");
                         continue;
                     }
                     if( !pointIsOnMapIcon(x+markerLoc.x,y+markerLoc.y) )
                     {
-                        log.info("A marker location is off the map");
+                        log.error("A marker location is off the map");
                         continue;
                     }
                     marker.paintIcon(c,g,markerLoc.x+x,markerLoc.y+y);

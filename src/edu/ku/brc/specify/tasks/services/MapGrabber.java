@@ -28,8 +28,7 @@ import java.io.IOException;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.util.FileCache;
@@ -42,7 +41,7 @@ import edu.ku.brc.util.FileCache;
  */
 public class MapGrabber
 {
-	private static Log log = LogFactory.getLog(MapGrabber.class);
+	private static final Logger log = Logger.getLogger(MapGrabber.class);
 	// setup some default values
 	// TODO: remove these from any final versions
 
@@ -275,12 +274,12 @@ public class MapGrabber
 
 	public Image getMap() throws HttpException, IOException
 	{
-		log.info("Entering MapGrabber.getMap()");
-		log.info("maxWidth="+maxWidth+"\tmaxHeight="+maxHeight);
+		log.debug("Entering MapGrabber.getMap()");
+		log.debug("maxWidth="+maxWidth+"\tmaxHeight="+maxHeight);
 		double longSpread = maxLong - minLong;
 		double latSpread = maxLat - minLat;
-		log.info("lat spread:  min="+minLat+"\tmax="+maxLat+"\trange="+latSpread);
-		log.info("long spread: min="+minLong+"\tmax="+maxLong+"\trange="+longSpread);
+		log.debug("lat spread:  min="+minLat+"\tmax="+maxLat+"\trange="+latSpread);
+		log.debug("long spread: min="+minLong+"\tmax="+maxLong+"\trange="+longSpread);
 		if( maxWidth == null && maxHeight == null )
 		{
 			maxWidth = defaultMaxWidth;

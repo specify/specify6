@@ -45,8 +45,7 @@ import javax.swing.ListModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
@@ -63,7 +62,7 @@ import edu.ku.brc.specify.ui.dnd.DndDeletable;
 public class TrashCanDlg extends JDialog implements ActionListener, ListSelectionListener
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(TrashCanDlg.class);
+    private static final Logger log = Logger.getLogger(TrashCanDlg.class);
 
     
     private final static ImageIcon icon = IconManager.getImage(RecordSetTask.RECORD_SET, IconManager.IconSize.Std16);

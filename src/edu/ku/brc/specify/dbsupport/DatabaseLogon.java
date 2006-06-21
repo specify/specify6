@@ -14,8 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.forms.MultiView;
@@ -29,7 +28,7 @@ import edu.ku.brc.specify.ui.validation.ValTextField;
 
 public class DatabaseLogon extends JDialog implements ActionListener, FocusListener
 {
-    private static Log log  = LogFactory.getLog(DatabaseLogon.class);
+    private static final Logger log  = Logger.getLogger(DatabaseLogon.class);
     
     // Form Stuff
     protected MultiView      multiView;
@@ -144,7 +143,7 @@ public class DatabaseLogon extends JDialog implements ActionListener, FocusListe
 
         } else
         {
-            log.info("Couldn't load form with name ["+viewSetName+"] Id ["+viewName+"]");
+            log.error("Couldn't load form with name ["+viewSetName+"] Id ["+viewName+"]");
         }
         /*
         JPanel panel = new JPanel(new BorderLayout());

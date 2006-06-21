@@ -32,7 +32,7 @@ import edu.ku.brc.specify.core.Taskable;
 @SuppressWarnings("serial")
 public class InteractionsPane extends BaseSubPane
 {
-    //private static Log log = LogFactory.getLog(InteractionsPane.class);
+    //private static final Logger log = Logger.getLogger(InteractionsPane.class);
     
     /**
      * 

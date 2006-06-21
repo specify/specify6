@@ -32,8 +32,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.exceptions.UIException;
 import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
@@ -65,7 +64,7 @@ public class UICacheManager
 
     public static final String LONGTERM_CACHE_MAP = "sp6-cache-map.xml";
 
-    private static final Log            log      = LogFactory.getLog(UICacheManager.class);
+    private static final Logger         log      = Logger.getLogger(UICacheManager.class);
     private static final UICacheManager instance = new UICacheManager();
 
     // Data Members

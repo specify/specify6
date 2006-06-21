@@ -15,7 +15,7 @@ public class InitializeData
     protected static Hashtable prepTypeMapper    = new Hashtable();
     protected static int       attrsId           = 0;
     protected static boolean   classesWereLoaded = false;
-    protected final static Logger   log = Logger.getLogger(InitializeData.class);
+    protected static final Logger   log = Logger.getLogger(InitializeData.class);
     public static int getIndex(String[] aOldNames, String aNewName)
     {
         for (int i=0;i<aOldNames.length;i++)
@@ -182,7 +182,7 @@ public class InitializeData
         //log.info("Found ### of records " + c.get(0) +" from " + tableName);            
         // Clean up after ourselves
         //sessionFactory.close();
-        log.info("Done.");  	
+        //log.info("Done.");  	
     	
     }
     

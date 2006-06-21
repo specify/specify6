@@ -30,8 +30,7 @@ import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
@@ -40,7 +39,7 @@ import edu.ku.brc.specify.datamodel.RecordSetItem;
 public class ResultSetTableModel extends AbstractTableModel
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(ResultSetTableModel.class);
+    private static final Logger log = Logger.getLogger(ResultSetTableModel.class);
 
     // Data Members
     protected ResultSet         resultSet  = null;

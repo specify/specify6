@@ -25,8 +25,7 @@ import java.io.FileOutputStream;
 
 import javax.swing.table.TableModel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -43,7 +42,7 @@ import org.apache.poi.hssf.util.HSSFColor;
 
 public class TableModel2Excel
 {
-    private static Log log = LogFactory.getLog(TableModel2Excel.class);
+    private static final Logger log = Logger.getLogger(TableModel2Excel.class);
 
     public TableModel2Excel()
     {

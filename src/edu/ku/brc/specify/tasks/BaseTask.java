@@ -34,8 +34,7 @@ import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.core.NavBox;
@@ -70,7 +69,7 @@ import edu.ku.brc.specify.ui.dnd.GhostActionable;
 public abstract class BaseTask implements Taskable, TaskPluginable, CommandListener, SubPaneMgrListener
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(BaseTask.class);
+    private static final Logger log = Logger.getLogger(BaseTask.class);
 
     // Data Members
     protected final String        name;

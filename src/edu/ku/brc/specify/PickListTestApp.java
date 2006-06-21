@@ -51,8 +51,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -90,7 +89,7 @@ import edu.ku.brc.specify.ui.db.PickListItem;
  */
 public class PickListTestApp
 {
-    private static Log log = LogFactory.getLog(PickListTestApp.class);
+    private static final Logger log = Logger.getLogger(PickListTestApp.class);
     
     protected JPanel contentPane;
     protected JFrame mainFrame;

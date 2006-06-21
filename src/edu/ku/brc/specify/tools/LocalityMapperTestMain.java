@@ -13,8 +13,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.tasks.services.LocalityMapper;
@@ -23,7 +22,7 @@ import edu.ku.brc.util.Pair;
 
 public class LocalityMapperTestMain implements MapperListener
 {
-    private static Log log = LogFactory.getLog(LocalityMapperTestMain.class);
+    private static final Logger log = Logger.getLogger(LocalityMapperTestMain.class);
 
     protected Vector<Locality> localities;
     protected Vector<String> labels;

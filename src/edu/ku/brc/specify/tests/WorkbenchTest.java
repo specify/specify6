@@ -21,8 +21,7 @@
 package edu.ku.brc.specify.tests;
 import junit.framework.TestCase;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
@@ -34,7 +33,7 @@ import edu.ku.brc.specify.dbsupport.HibernateUtil;
  *
  */
 public class WorkbenchTest extends TestCase {
-	private static Log log = LogFactory.getLog(WorkbenchTest.class);
+	private static final Logger log = Logger.getLogger(WorkbenchTest.class);
 	public static void main(String[] args) {
 		
 	}

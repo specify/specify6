@@ -59,8 +59,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
@@ -102,7 +101,7 @@ import edu.ku.brc.specify.ui.validation.ValidationListener;
  */
 public class FormViewObj implements Viewable, ValidationListener, ResultSetControllerListener, PreferenceChangeListener
 {
-    private static Log log = LogFactory.getLog(FormViewObj.class);
+    private static final Logger log = Logger.getLogger(FormViewObj.class);
 
     // Static Data Members
     protected static Object[]               formattedValues = new Object[2];
@@ -607,7 +606,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         {
             formValidator.addValidationListener(this);
             
-            //log.info(formViewDef.getName()+ " formValidator: "+formValidator);
+            //log.debug(formViewDef.getName()+ " formValidator: "+formValidator);
     
             if (mvParent != null)
             {
@@ -631,7 +630,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         if (parentDataObj != null)
         {
             String methodName = "add" + newDataObj.getClass().getSimpleName();
-            log.info("Invoking method["+methodName+"]");
+            log.debug("Invoking method["+methodName+"]");
             try
             {
                 Method method = newDataObj.getClass().getMethod("initialize", new Class[] {});
@@ -718,7 +717,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
     @SuppressWarnings("unchecked")
     protected void createNewRecord()
     {
-        log.info("createNewRecord " + this.getView().getName());
+        log.debug("createNewRecord " + this.getView().getName());
         try
         {
             Class  classObj = Class.forName(view.getClassName());
@@ -1080,7 +1079,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
      */
     public Object getDataObj()
     {
-        log.info("getDataObj " + this.getView().getName());
+        log.debug("getDataObj " + this.getView().getName());
         return dataObj;
     }
     
@@ -1308,7 +1307,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                 Object uiData = getDataFromUIComp(id); // if ID is null then we have huge problems
                 if (uiData != null)
                 {
-                    //log.info(fieldInfo.getFormCell().getName());
+                    //log.debug(fieldInfo.getFormCell().getName());
                     UIHelper.setFieldValue(fieldInfo.getFormCell().getName(), dataObj, uiData, dg, ds);
                 }
             }
@@ -1593,7 +1592,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         ImageIcon icon = IconManager.getImage("ValidationValid");
         UIValidatable.ErrorType state = formValidator.getState();
         
-        //log.info(state);
+        //log.debug(state);
         
         if (state == UIValidatable.ErrorType.Incomplete)
         {
@@ -1650,7 +1649,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
             {
                 FormCellField cellField = (FormCellField)fieldInfo.getFormCell();
                 String uiType = cellField.getUiType();
-                //log.info("["+uiType+"]");
+                //log.debug("["+uiType+"]");
 
                 // XXX maybe check check to see if it is a JTextField component instead
                 if (uiType.equals("dsptextfield") || uiType.equals("dsptextarea"))
@@ -1694,7 +1693,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
 
             setColorOnControls(0, vfColor);
         }
-        log.info("Pref: ["+evt.getKey()+"]["+pref.get(evt.getKey(), "XXX")+"]");
+        log.debug("Pref: ["+evt.getKey()+"]["+pref.get(evt.getKey(), "XXX")+"]");
     }
 
     /* (non-Javadoc)
@@ -1771,7 +1770,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
 
         public void setEnabled(boolean enabled)
         {
-            //log.info(formCell.getName()+"  "+(scrollPane != null ? "has Pane" : "no pane"));
+            //log.debug(formCell.getName()+"  "+(scrollPane != null ? "has Pane" : "no pane"));
             comp.setEnabled(enabled);
             if (scrollPane != null)
             {

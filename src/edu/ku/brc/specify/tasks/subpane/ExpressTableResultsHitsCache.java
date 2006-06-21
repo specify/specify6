@@ -45,7 +45,7 @@ import edu.ku.brc.specify.ui.UICacheManager;
 public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
 {
     // Static Data Members
-    //private static Log log = LogFactory.getLog(ExpressTableResultsHitsCache.class);
+    //private static final Logger log = Logger.getLogger(ExpressTableResultsHitsCache.class);
 
     // Data Members
     protected Hits hits;
@@ -278,7 +278,7 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
                     for (int i=0;i<rows.length;i++)
                     {
                         Document doc  = hits.doc(indexes[rows[i]]);
-                        //log.info("["+doc.get("id")+"]["+doc.get("table")+"]["+doc.get("data")+"]");
+                        //log.debug("["+doc.get("id")+"]["+doc.get("table")+"]["+doc.get("data")+"]");
                         RecordSetItem rsi = new RecordSetItem();
                         rsi.setRecordId(doc.get("id"));
                         items.add(rsi);

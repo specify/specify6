@@ -32,8 +32,7 @@ import java.util.StringTokenizer;
 
 import javax.swing.ImageIcon;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.specify.exceptions.ConfigurationException;
@@ -47,7 +46,7 @@ import edu.ku.brc.specify.helpers.XMLHelper;
  */
 public class IconManager
 {
-    private static Log log = LogFactory.getLog(IconManager.class);
+    private static final Logger log = Logger.getLogger(IconManager.class);
 
     // Icon Size Enumerations
     public enum IconSize {

@@ -46,7 +46,7 @@ import edu.ku.brc.specify.config.SpecifyConfig;
 @SuppressWarnings("serial")
 public class PropertyViewer extends JPanel
 {
-    //private static Log log = LogFactory.getLog(PropertyViewer.class);
+    //private static final Logger log = Logger.getLogger(PropertyViewer.class);
     
     protected CardLayout    cardLayout   = new CardLayout();
     protected JPanel        groupContainer; 

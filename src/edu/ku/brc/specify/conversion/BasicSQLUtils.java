@@ -37,8 +37,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.helpers.UIHelper;
@@ -50,7 +49,7 @@ import edu.ku.brc.specify.helpers.UIHelper;
  */
 public class BasicSQLUtils
 {
-    protected static Log              log               = LogFactory.getLog(BasicSQLUtils.class);
+    protected static final Logger           log               = Logger.getLogger(BasicSQLUtils.class);
     protected static SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     protected static SimpleDateFormat dateFormatter     = new SimpleDateFormat("yyyy-MM-dd");
     protected static Calendar         calendar          = new GregorianCalendar();

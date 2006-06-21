@@ -28,8 +28,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
@@ -74,7 +73,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	
 	protected Class treeableClass;
 	
-    private static final Log log = LogFactory.getLog(TreeTableViewer.class);
+    private static final Logger log = Logger.getLogger(TreeTableViewer.class);
 
 
 	/**
@@ -212,7 +211,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	
 	protected synchronized void initTreeListSucess( Treeable root )
 	{
-		log.info("Successfully initialized tree editor");
+		log.debug("Successfully initialized tree editor");
 
 		listModel = new TreeDataListModel(root);
 		list = new TreeDataJList(listModel);

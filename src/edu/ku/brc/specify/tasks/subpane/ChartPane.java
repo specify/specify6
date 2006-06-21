@@ -33,7 +33,7 @@ import edu.ku.brc.specify.core.Taskable;
 public class ChartPane extends BaseSubPane implements Chartable
 {
     // Static Data Members
-    //private static Log log = LogFactory.getLog(ChartPane.class);
+    //private static final Logger log = Logger.getLogger(ChartPane.class);
     
     // Data Members
     protected String  title       = "";

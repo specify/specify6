@@ -27,8 +27,7 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 
@@ -69,7 +68,7 @@ import edu.ku.brc.specify.dbsupport.HibernateUtil;
  */
 public class DBSchemaTest extends TestCase
 {
-    private static Log log = LogFactory.getLog(DBSchemaTest.class);
+    private static final Logger log = Logger.getLogger(DBSchemaTest.class);
 
     static {
         DBConnection.setUsernamePassword("rods", "rods");

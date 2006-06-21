@@ -37,7 +37,7 @@ import org.dom4j.io.SAXReader;
 public class XMLHelper
 {
     // Static Data Members
-    final static Logger log = Logger.getLogger(XMLHelper.class);
+    private static final Logger log = Logger.getLogger(XMLHelper.class);
 
    /**
     * Reads a File and return the root element from the DOM

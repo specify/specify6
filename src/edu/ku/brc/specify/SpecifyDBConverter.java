@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
@@ -38,7 +37,7 @@ import edu.ku.brc.specify.tests.ObjCreatorHelper;
  */
 public class SpecifyDBConverter
 {
-    protected static Log log = LogFactory.getLog(SpecifyDBConverter.class);
+    protected static final Logger log = Logger.getLogger(SpecifyDBConverter.class);
 
     protected static Hashtable<String, Integer> prepTypeMapper    = new Hashtable<String, Integer>();
     protected static int                        attrsId           = 0;

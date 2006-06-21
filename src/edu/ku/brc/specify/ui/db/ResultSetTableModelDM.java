@@ -5,8 +5,7 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
@@ -15,7 +14,7 @@ import edu.ku.brc.specify.datamodel.RecordSetItem;
 public class ResultSetTableModelDM extends ResultSetTableModel
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(ResultSetTableModelDM.class);
+    private static final Logger log = Logger.getLogger(ResultSetTableModelDM.class);
    
     private int[] displayIndexes    = null;
     private int[] displayColIndexes = null;

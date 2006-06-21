@@ -42,8 +42,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListModel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
@@ -57,7 +56,7 @@ import com.jgoodies.forms.builder.ButtonBarBuilder;
 public class ChooseFromListDlg extends JDialog implements ActionListener 
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(ChooseFromListDlg.class);
+    private static final Logger log = Logger.getLogger(ChooseFromListDlg.class);
     
     // Data Members
     protected JButton        cancelBtn;

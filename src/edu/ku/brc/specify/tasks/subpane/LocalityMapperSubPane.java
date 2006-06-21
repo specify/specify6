@@ -97,7 +97,7 @@ import edu.ku.brc.specify.ui.forms.persist.View;
 @SuppressWarnings("serial")
 public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper.MapperListener, ResultSetControllerListener, TimingTarget
 {
-    //private static Log log = LogFactory.getLog(SimpleDescPane.class);
+    //private static final Logger log = Logger.getLogger(SimpleDescPane.class);
     protected SimpleDateFormat scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
     protected static final Cursor handCursor   = new Cursor(Cursor.HAND_CURSOR);
     protected static final Cursor defCursor    = new Cursor(Cursor.DEFAULT_CURSOR);

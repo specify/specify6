@@ -31,7 +31,7 @@ import edu.ku.brc.specify.ui.forms.DataObjectSettableFactory;
 
 public class ViewDef
 {
-    private final static Logger log = Logger.getLogger(ViewDef.class);
+    private static final Logger log = Logger.getLogger(ViewDef.class);
     
     public enum ViewType {form, table, field};
     
@@ -85,7 +85,7 @@ public class ViewDef
                 dataGettable = (DataObjectGettable)DataObjectGettableFactory.get(className, dataGettableName);
             } else
             {
-                log.info("dataGettableName or is null for "+name);
+                log.error("dataGettableName or is null for "+name);
             }
            
             // OK to NOT have a Settable

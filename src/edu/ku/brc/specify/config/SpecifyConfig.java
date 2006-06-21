@@ -28,8 +28,7 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.extfilerepos.impl.ExternalFileRepository;
 import edu.ku.brc.specify.helpers.AskForDirectory;
@@ -42,7 +41,7 @@ import edu.ku.brc.specify.helpers.AskForDirectory;
  */
 public class SpecifyConfig
 {
-    private static Log           log           = LogFactory.getLog(SpecifyConfig.class);
+    private static final Logger        log           = Logger.getLogger(SpecifyConfig.class);
     private static SpecifyConfig specifyConfig = new SpecifyConfig();
 
     private Configuration config = null;
@@ -105,7 +104,7 @@ public class SpecifyConfig
             {
                 Object key = iter.next();
                 
-                log.info(key+"  "+config.getProperty((String)key).toString());
+                log.debug(key+"  "+config.getProperty((String)key).toString());
             }
  
             /*ConfigurationFactory factory = new ConfigurationFactory();

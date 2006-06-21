@@ -10,8 +10,7 @@ import java.util.prefs.Preferences;
 import junit.framework.TestCase;
 
 import org.apache.commons.lang.time.FastDateFormat;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.prefs.PrefsCache;
@@ -27,7 +26,7 @@ import edu.ku.brc.specify.ui.UICacheManager;
  */
 public class PreferenceTest extends TestCase
 {
-    private static Log log = LogFactory.getLog(PreferenceTest.class);
+    private static final Logger log = Logger.getLogger(PreferenceTest.class);
     
     protected Preferences appPrefs;
     

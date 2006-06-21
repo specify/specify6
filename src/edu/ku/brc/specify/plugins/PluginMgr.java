@@ -40,8 +40,7 @@ import javax.swing.JToolBar;
 import javax.swing.MenuElement;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.specify.core.ContextMgr;
@@ -57,7 +56,7 @@ public class PluginMgr
 {
 
     // Static Data Members
-    private static final Log log = LogFactory.getLog(PluginMgr.class);
+    private static final Logger    log      = Logger.getLogger(PluginMgr.class);
     private static final PluginMgr instance = new PluginMgr();
 
     // Data Members

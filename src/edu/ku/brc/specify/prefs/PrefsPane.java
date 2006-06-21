@@ -35,8 +35,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.ui.UICacheManager;
 
@@ -52,7 +51,7 @@ import edu.ku.brc.specify.ui.UICacheManager;
 @SuppressWarnings("serial")
 public class PrefsPane extends JPanel
 {
-    private static Log log = LogFactory.getLog(PrefsPane.class);
+    private static final Logger log = Logger.getLogger(PrefsPane.class);
     
     public static final String NAME        = "name";
     public static final String TITLE       = "title";

@@ -38,7 +38,7 @@ import edu.ku.brc.specify.helpers.XMLHelper;
 
 public class ViewSet
 {
-    private final static Logger  log = Logger.getLogger(ViewSet.class);
+    private static final Logger  log = Logger.getLogger(ViewSet.class);
 
     protected String           name     = null;
     protected String           fileName = null;

@@ -22,8 +22,7 @@ package edu.ku.brc.specify.ui;
 import java.awt.Color;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * A class to wrap a Color object so it can be mutable easily 
@@ -33,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ColorWrapper
 {
-    private static Log log = LogFactory.getLog(ColorWrapper.class);
+    private static final Logger log = Logger.getLogger(ColorWrapper.class);
     
     protected Color color;
     

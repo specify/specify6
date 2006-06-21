@@ -26,8 +26,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Query;
 
 import edu.ku.brc.specify.core.ContextMgr;
@@ -62,7 +61,7 @@ import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
  */
 public class DataEntryTask extends BaseTask
 {
-    private static Log log = LogFactory.getLog(DataEntryTask.class);
+    private static final Logger log = Logger.getLogger(DataEntryTask.class);
 
     public static final String DATA_ENTRY = "Data_Entry";
 

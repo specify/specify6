@@ -29,8 +29,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.apache.lucene.search.Hits;
 
 import edu.ku.brc.specify.core.NavBox;
@@ -49,7 +48,7 @@ import edu.ku.brc.specify.ui.IconManager;
 @SuppressWarnings("serial")
 public class ExpressSearchResultsPane extends BaseSubPane implements ExpressSearchResultsPaneIFace
 {
-    private static Log log = LogFactory.getLog(ExpressSearchResultsPane.class);
+    private static final Logger log = Logger.getLogger(ExpressSearchResultsPane.class);
 
     protected JPanel      contentPanel;
     protected JScrollPane scrollPane;

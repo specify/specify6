@@ -44,7 +44,7 @@ import com.jgoodies.forms.layout.FormLayout;
 public class ChartPanel extends JPanel implements Chartable
 {
     // Static Data Members
-    //private static Log log = LogFactory.getLog(ChartPanel.class);
+    //private static final Logger log = Logger.getLogger(ChartPanel.class);
 
     // Data Members
     protected org.jfree.chart.ChartPanel chartPanel;
@@ -109,7 +109,7 @@ public class ChartPanel extends JPanel implements Chartable
     
     public void setPreferredChartSize(int width, int height)
     {
-    	System.out.println("setPreferredChartSize "+width+"  "+height);
+    	//System.out.println("setPreferredChartSize "+width+"  "+height);
         maxChartSize.setSize(width, height);
     }
 
@@ -178,7 +178,7 @@ public class ChartPanel extends JPanel implements Chartable
          */
         public Dimension minimumLayoutSize(Container arg0)
         {
-        	System.out.println("minimumLayoutSize "+parentChartPanel.maxChartSize);
+        	//System.out.println("minimumLayoutSize "+parentChartPanel.maxChartSize);
         	return parentChartPanel.maxChartSize;
              //return new Dimension(preferredSize);
         }
@@ -189,7 +189,7 @@ public class ChartPanel extends JPanel implements Chartable
         public void layoutContainer(Container arg0)
         {
             Dimension parentSize =  arg0.getSize();
-        	System.out.println("parentSize "+parentSize);
+        	//System.out.println("parentSize "+parentSize);
 
             //preferredSize.setSize(parentSize.width, parentSize.height-5);
             chartPanel.setBounds(0,0,parentSize.width, parentSize.height-5);

@@ -32,7 +32,7 @@ import java.util.Vector;
 public class QueryResultsSerializedGetter implements SQLExecutionListener
 {
     // Static Data Members
-    // private static Log log = LogFactory.getLog(QueryResultsSerializedGetter.class);
+    // private static final Logger log = Logger.getLogger(QueryResultsSerializedGetter.class);
     
     // Data Members
     protected SQLExecutionProcessor         sqlProc;

@@ -45,8 +45,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListModel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
@@ -86,7 +85,7 @@ public class LabelsTask extends BaseTask
 {
     // Static Data Members
     public static final DataFlavor LABEL_FLAVOR = new DataFlavor(LabelsTask.class, "Label");
-    private static Log log = LogFactory.getLog(LabelsTask.class);
+    private static final Logger log = Logger.getLogger(LabelsTask.class);
 
     public static final String LABELS = "Labels";
 

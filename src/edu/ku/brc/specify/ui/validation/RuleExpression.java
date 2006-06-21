@@ -22,8 +22,7 @@ package edu.ku.brc.specify.ui.validation;
 import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
 import org.apache.commons.jexl.JexlContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * This class is an implementation of a JEXL expression. The rule has a name and the Java expression
@@ -35,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class RuleExpression implements FormValidationRuleIFace
 {
-    private static Log log = LogFactory.getLog(RuleExpression.class);
+    private static final Logger log = Logger.getLogger(RuleExpression.class);
 
     protected String     id;
     protected String     rule;
@@ -83,13 +82,13 @@ public class RuleExpression implements FormValidationRuleIFace
         try
         {
             Object result = expression.evaluate(context);
-            //log.info("Result "+result+" for "+name+"  "+rule);
+            //log.debug("Result "+result+" for "+name+"  "+rule);
             if (result instanceof Boolean)
             {
                 return (Boolean)result;
             } else
             {
-                log.info("the return from the evaluation is of class "+result);
+                log.debug("the return from the evaluation is of class "+result);
             }
         } catch (Exception ex)
         {

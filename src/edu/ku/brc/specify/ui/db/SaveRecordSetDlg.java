@@ -16,8 +16,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
@@ -25,7 +24,7 @@ import com.jgoodies.forms.builder.ButtonBarBuilder;
 public class SaveRecordSetDlg extends JDialog
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(SaveRecordSetDlg.class);
+    private static final Logger log = Logger.getLogger(SaveRecordSetDlg.class);
 
     // Data Members
     protected JTable                srcTable;

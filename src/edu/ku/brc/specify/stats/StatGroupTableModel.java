@@ -29,7 +29,7 @@ import javax.swing.table.AbstractTableModel;
 public class StatGroupTableModel extends AbstractTableModel
 {
     // Static Data Members
-    //private static Log log = LogFactory.getLog(StatGroupTableModel.class);
+    //private static final Logger log = Logger.getLogger(StatGroupTableModel.class);
 
     // Data Members
     protected Vector<StatDataItem> data        = new Vector<StatDataItem>();

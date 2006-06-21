@@ -32,8 +32,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.AttributeIFace;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
@@ -44,7 +43,7 @@ import edu.ku.brc.specify.datamodel.PrepType;
  */
 public class FishConversion 
 {
-    protected static Log log = LogFactory.getLog(FishConversion.class);
+    protected static final Logger log = Logger.getLogger(FishConversion.class);
     
     protected static Hashtable<String, Integer> prepTypeMapper    = new Hashtable<String, Integer>();
     protected static int                        attrsId           = 0;

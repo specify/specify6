@@ -36,7 +36,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     protected enum NotificationType {Added, Removed, Shown};
     
     // Static Data Members
-    //private static Log log = LogFactory.getLog(SubPaneMgr.class);
+    //private static final Logger log = Logger.getLogger(SubPaneMgr.class);
     
     // Data Members
     protected Hashtable<String, SubPaneIFace> panes = new Hashtable<String, SubPaneIFace>();   
@@ -104,7 +104,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         // Add this pane to the tabs
         String title = pane.getName() + (cnt > 0 ? ":" + Integer.toString(cnt+1) : "");
         
-        //log.info("addPane: adding pane "+pane.getTitle());
+        //log.debug("addPane: adding pane "+pane.getTitle());
         // When the first the pane is added there is no notification via the listener so we nedd to do it here
         // when items are added and there is already items then the listener gets notified.
         /*if (currentPane != null)
@@ -299,7 +299,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             // might be null when it is the very first one
             if (subPane != null)
             {
-                //log.info("stateChanged: new pane ["+subPane.getTitle()+"]");
+                //log.debug("stateChanged: new pane ["+subPane.getTitle()+"]");
                 // When the first the pane is added there is no notification via the listener so we nedd to do it here
                 // when items are added and there is already items then the listener gets notified.
                 if (currentPane != subPane)

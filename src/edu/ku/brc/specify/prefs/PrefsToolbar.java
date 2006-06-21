@@ -31,8 +31,7 @@ import java.util.prefs.Preferences;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.ui.RolloverCommand;
 import edu.ku.brc.specify.ui.ToolbarLayoutManager;
@@ -47,7 +46,7 @@ import edu.ku.brc.specify.ui.UICacheManager;
 @SuppressWarnings("serial")
 public class PrefsToolbar extends JPanel
 {
-    private static Log log = LogFactory.getLog(PrefsToolbar.class);
+    private static final Logger log = Logger.getLogger(PrefsToolbar.class);
     
     public static final String NAME        = "name";
     public static final String TITLE       = "title";

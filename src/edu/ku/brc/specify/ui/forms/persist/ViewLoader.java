@@ -501,7 +501,7 @@ public class ViewLoader
                                     Formatter formatter = UIFieldFormatterMgr.getFormatter(uiFieldFormatter);
                                     if (formatter == null)
                                     {
-                                        log.info("Couldn't find formatter["+uiFieldFormatter+"]");
+                                        log.error("Couldn't find formatter["+uiFieldFormatter+"]");
                                         uiFieldFormatter = "";
                                         uitype = "text";
                                     }

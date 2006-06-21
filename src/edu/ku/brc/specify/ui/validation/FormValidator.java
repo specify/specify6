@@ -37,8 +37,7 @@ import javax.swing.JTextField;
 import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.JexlHelper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * This class manages all the validators for a single form. One or all the UI components
@@ -53,7 +52,7 @@ import org.apache.commons.logging.LogFactory;
 @SuppressWarnings("serial")
 public class FormValidator implements ValidationListener, DataChangeListener
 {
-    private static Log log = LogFactory.getLog(FormValidator.class);
+    private static final Logger log = Logger.getLogger(FormValidator.class);
 
     private String name = ""; // Optional for debugging
     
@@ -182,12 +181,12 @@ public class FormValidator implements ValidationListener, DataChangeListener
         boolean debug = false;
         if (debug)
         {
-            log.info(name+" ****** processFormRules  ");
+            log.debug(name+" ****** processFormRules  ");
             Map map = jc.getVars();
             Object[] keys = map.keySet().toArray();
             for (Object key : keys)
             {
-                log.info(name+" ### ["+key+"]["+map.get(key).getClass().toString()+"]");
+                log.debug(name+" ### ["+key+"]["+map.get(key).getClass().toString()+"]");
             }
         }
 
@@ -197,13 +196,13 @@ public class FormValidator implements ValidationListener, DataChangeListener
             {
                 // Now evaluate the expression, getting the result
                 boolean result = rule.evaluate(jc);
-                log.info(name+" Result "+result+" for "+rule.getId()+"  ["+((RuleExpression)rule).expression.getExpression()+"]");
+                log.debug(name+" Result "+result+" for "+rule.getId()+"  ["+((RuleExpression)rule).expression.getExpression()+"]");
                 if (rule.getScope() == FormValidationRuleIFace.Scope.Field)
                 {
                     Component comp = getComp(rule.getId());
                     if (comp != null)
                     {
-                        log.info(name+" comp.setEnabled("+result+") "+comp.getClass().toString());
+                        log.debug(name+" comp.setEnabled("+result+") "+comp.getClass().toString());
                         comp.setEnabled(result);
                     }
 
@@ -380,7 +379,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
         fields.put(id, comp);
         addRuleObjectMapping(id, comp);
 
-        log.info(" Adding ["+id+"]["+comp.getClass().toString()+"] to validator.");
+        log.debug(" Adding ["+id+"]["+comp.getClass().toString()+"] to validator.");
 
         return comp;
     }
@@ -478,7 +477,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     {
         formValidationState = processFormRules() ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error;
         
-        //log.info(name+" checkForValidForm -> formValidationState - processFormRules ["+formValidationState+"]");
+        //log.debug(name+" checkForValidForm -> formValidationState - processFormRules ["+formValidationState+"]");
 
         if (formValidationState == UIValidatable.ErrorType.Valid)
         {
@@ -721,13 +720,13 @@ public class FormValidator implements ValidationListener, DataChangeListener
         
         if (doBrief)
         {
-            log.info("*** "+isFormValid()+"  "+displayName);
+            log.debug("*** "+isFormValid()+"  "+displayName);
         } else
         {
             StringBuilder strBuf = new StringBuilder(64);
-            log.info("\n------------"+displayName+"-------------");
-            log.info("Valid: "+isFormValid());
-            log.info("\n");
+            log.debug("\n------------"+displayName+"-------------");
+            log.debug("Valid: "+isFormValid());
+            log.debug("\n");
             
             int maxLen = 0;
             for (DataChangeNotifier dcn : dcNotifiers.values())
@@ -751,9 +750,9 @@ public class FormValidator implements ValidationListener, DataChangeListener
                     strBuf.append(uiv.getUIV().getState());
                 }
 
-                log.info(strBuf.toString());
+                log.debug(strBuf.toString());
             }
-            log.info("-------------------------");
+            log.debug("-------------------------");
         }
             
     }
@@ -769,7 +768,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     protected void turnOnOKButton(final boolean itsOKToEnable)
     {
-        //log.info(name+" hasChanged "+hasChanged+"  itsOKToEnable "+itsOKToEnable+ " hasBtn: " + (okBtn != null));
+        //log.debug(name+" hasChanged "+hasChanged+"  itsOKToEnable "+itsOKToEnable+ " hasBtn: " + (okBtn != null));
 
         if (okBtn != null)
         {

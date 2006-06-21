@@ -27,8 +27,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -40,7 +39,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class IdHashMapper implements IdMapper
 {
-    protected static Log log = LogFactory.getLog(IdHashMapper.class);
+    protected static final Logger log = Logger.getLogger(IdHashMapper.class);
 
     protected String          sql           = null;
     protected String          tableName;

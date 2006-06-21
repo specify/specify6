@@ -30,8 +30,7 @@ import javax.swing.KeyStroke;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.ui.dnd.GhostDataAggregatable;
@@ -44,7 +43,7 @@ public final class UIHelper
     public enum OSTYPE {Unknown, Windows, MacOSX, Linux};
 
     // Static Data Members
-    protected static Log      log      = LogFactory.getLog(UIHelper.class);
+    protected static final Logger   log      = Logger.getLogger(UIHelper.class);
     protected static Calendar calendar = new GregorianCalendar();
     protected static OSTYPE   oSType;
 
@@ -477,7 +476,7 @@ public final class UIHelper
         } catch (Exception ex)
         {
             ex.printStackTrace();
-            log.info("Couldn't create menu for " + labelKey + "  " + mneuKey);
+            log.error("Couldn't create menu for " + labelKey + "  " + mneuKey);
         }
         return menu;
     }
@@ -586,11 +585,11 @@ public final class UIHelper
             if (parentDataObj != null)
             {
                 String methodName = "add" + newDataObj.getClass().getSimpleName();
-                log.info("Invoking method["+methodName+"] on Object "+parentDataObj.getClass().getSimpleName());
+                log.debug("Invoking method["+methodName+"] on Object "+parentDataObj.getClass().getSimpleName());
                 
                 method = parentDataObj.getClass().getMethod(methodName, new Class[] {newDataObj.getClass()});
                 method.invoke(parentDataObj, new Object[] {newDataObj});
-                log.info("Adding ["+newDataObj+"] to parent Set["+parentDataObj+"]");
+                log.debug("Adding ["+newDataObj+"] to parent Set["+parentDataObj+"]");
             }
             return true;
 

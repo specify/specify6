@@ -46,8 +46,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.swing.JOptionPane;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import com.sun.mail.smtp.SMTPTransport;
 
@@ -61,7 +60,7 @@ import edu.ku.brc.specify.ui.UICacheManager;
 
 public class EMailHelper
 {
-    private static Log log  = LogFactory.getLog(EMailHelper.class);
+    private static final Logger log  = Logger.getLogger(EMailHelper.class);
     
     public enum AccountType {Unknown, POP3, IMAP};
     
@@ -193,7 +192,7 @@ public class EMailHelper
             } finally 
             {
                   
-                 log.info("Response: " + t.getLastServerResponse());
+                 log.debug("Response: " + t.getLastServerResponse());
                  t.close();
             }
 

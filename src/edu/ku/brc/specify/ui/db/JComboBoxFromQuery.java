@@ -37,8 +37,7 @@ import javax.swing.JTextField;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
 import javax.swing.text.BadLocationException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.dbsupport.DBConnection;
 
@@ -50,7 +49,7 @@ import edu.ku.brc.specify.dbsupport.DBConnection;
  */
 public class JComboBoxFromQuery extends JComboBox
 {
-    protected static Log log = LogFactory.getLog(JComboBoxFromQuery.class);
+    protected static final Logger log = Logger.getLogger(JComboBoxFromQuery.class);
     
     protected int                  caretPos         = 0;
     protected boolean              caseInsensitve   = true;
@@ -282,7 +281,7 @@ public class JComboBoxFromQuery extends JComboBox
             {
                 queryString = sql.replace("%s", entryStr.toLowerCase());
             }
-            log.info(queryString);
+            log.debug(queryString);
             
             Statement  dbStatement = dbConnection.createStatement();
             ResultSet rs           = dbStatement.executeQuery(queryString);

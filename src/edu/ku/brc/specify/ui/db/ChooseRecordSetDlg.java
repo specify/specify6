@@ -22,8 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListModel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 
@@ -46,7 +45,7 @@ import edu.ku.brc.specify.ui.UICacheManager;
 public class ChooseRecordSetDlg extends JDialog implements ActionListener
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(ChooseRecordSetDlg.class);
+    private static final Logger log = Logger.getLogger(ChooseRecordSetDlg.class);
 
 
     private final static ImageIcon icon = IconManager.getImage(RecordSetTask.RECORD_SET, IconManager.IconSize.Std16);

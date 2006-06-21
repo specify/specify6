@@ -55,7 +55,7 @@ import edu.ku.brc.specify.ui.IconManager;
 public class BarChartPane extends ChartPane implements QueryResultsListener, QueryResultsProcessable
 {
     // Static Data Members
-    //private static Log log = LogFactory.getLog(BarChartPane.class);
+    //private static final Logger log = Logger.getLogger(BarChartPane.class);
     
     // Data Members
     private QueryResultsHandlerIFace handler = null;

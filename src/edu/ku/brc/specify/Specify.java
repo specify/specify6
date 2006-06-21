@@ -61,8 +61,7 @@ import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -101,7 +100,7 @@ import edu.ku.brc.util.FileCache;
 @SuppressWarnings("serial")
 public class Specify extends JPanel
 {
-    private static Log log = LogFactory.getLog(Specify.class);
+    private static final Logger log = Logger.getLogger(Specify.class);
 
     // The preferred size of the demo
     private static final int    PREFERRED_WIDTH  = 900;

@@ -24,8 +24,7 @@ import java.util.Formatter;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.specify.helpers.XMLHelper;
@@ -36,7 +35,7 @@ import edu.ku.brc.specify.helpers.XMLHelper;
  */
 public class DataObjFieldFormatMgr
 {
-    protected static Log log = LogFactory.getLog(DataObjFieldFormatMgr.class);
+    protected static final Logger log = Logger.getLogger(DataObjFieldFormatMgr.class);
     protected static DataObjFieldFormatMgr  instance = new DataObjFieldFormatMgr();
 
 

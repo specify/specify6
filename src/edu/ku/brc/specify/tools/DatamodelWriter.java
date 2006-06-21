@@ -10,8 +10,7 @@ import java.util.Iterator;
 
 import org.apache.commons.betwixt.XMLIntrospector;
 import org.apache.commons.betwixt.io.BeanWriter;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
@@ -24,7 +23,7 @@ import edu.ku.brc.specify.tools.datamodelparser.Table;
  *
  */
 public class DatamodelWriter {
-	private static Log log = LogFactory.getLog(DatamodelWriter.class);
+	private static final Logger log = Logger.getLogger(DatamodelWriter.class);
 	private java.util.List<Table> classesList = new ArrayList<Table>();
 	private String fileName = "SpecifyDataModel.xml";
 	int classCounter = 10;

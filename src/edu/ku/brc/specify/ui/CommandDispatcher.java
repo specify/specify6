@@ -36,7 +36,7 @@ import java.util.Vector;
 public class CommandDispatcher
 {
     // Static Data Members
-    //private static Log log  = LogFactory.getLog(CommandDispatcher.class);
+    //private static final Logger log  = Logger.getLogger(CommandDispatcher.class);
     
     private static final CommandDispatcher instance = new CommandDispatcher();
     

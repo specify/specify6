@@ -29,8 +29,7 @@ import java.util.Vector;
 
 import javax.swing.JPanel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.specify.core.NavBox;
@@ -54,7 +53,7 @@ public class StatsTask extends BaseTask
     // Static Data Members
     public static final String STATISTICS = "Statistics";
 
-    private static Log log = LogFactory.getLog(StatsTask.class);
+    private static final Logger log = Logger.getLogger(StatsTask.class);
 
     protected static final String DISPLAY   = "display";
     protected static final String BAR_CHART = "bar chart";

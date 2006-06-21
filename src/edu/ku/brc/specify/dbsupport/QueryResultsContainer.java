@@ -23,8 +23,7 @@ package edu.ku.brc.specify.dbsupport;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * A class that conatains a collection of QueryResultsDatObjects and a single SQL statement to be executed.
@@ -37,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
 public class QueryResultsContainer
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(QueryResultsContainer.class);
+    private static final Logger log = Logger.getLogger(QueryResultsContainer.class);
     
     // Data Members
     protected String                      sql;

@@ -16,8 +16,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.Treeable;
 
@@ -30,7 +29,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
 @SuppressWarnings("serial")
 public class TreeNodeTransferHandler extends TransferHandler
 {
-	private static Log log  = LogFactory.getLog(TreeNodeTransferHandler.class);
+	private static final Logger log  = Logger.getLogger(TreeNodeTransferHandler.class);
 
 	public static final String mimeType = DataFlavor.javaJVMLocalObjectMimeType+";class=javax.swing.tree.DefaultMutableTreeNode";
 	private DataFlavor nodeFlavor;

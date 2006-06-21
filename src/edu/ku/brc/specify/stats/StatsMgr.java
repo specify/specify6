@@ -7,8 +7,7 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.specify.core.ContextMgr;
@@ -33,7 +32,7 @@ import edu.ku.brc.specify.ui.forms.persist.View;
 public class StatsMgr
 {
 
-    private static Log log = LogFactory.getLog(StatsMgr.class);
+    private static final Logger log = Logger.getLogger(StatsMgr.class);
 
     protected static final String DISPLAY   = "display";
     protected static final String BAR_CHART = "bar chart";

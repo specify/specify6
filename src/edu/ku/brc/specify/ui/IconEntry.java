@@ -33,7 +33,7 @@ import edu.ku.brc.specify.ui.IconManager.IconSize;
  */
 public class IconEntry
 {
-    //private static Log log = LogFactory.getLog(IconManager.class);
+    //private static final Logger log = Logger.getLogger(IconManager.class);
     
     private String name;
     private Hashtable<String, ImageIcon> icons = new Hashtable<String, ImageIcon>();
@@ -54,7 +54,7 @@ public class IconEntry
      */
     public ImageIcon getIcon(final IconSize id)
     {
-        //log.info("Getting["+name+"]["+id.toString()+"]");
+        //log.debug("Getting["+name+"]["+id.toString()+"]");
         return icons.get(id.toString());
     }
     
@@ -65,7 +65,7 @@ public class IconEntry
      */
     public void add(final IconSize id, final ImageIcon icon)
     {
-        //log.info("Putting["+name+"]["+id.toString()+"]");
+        //log.debug("Putting["+name+"]["+id.toString()+"]");
         icons.put(id.toString(), icon);
     }
 
@@ -77,7 +77,7 @@ public class IconEntry
      */
     public void addScaled(final IconSize id, final IconSize newId)
     {
-        //log.info("Putting["+name+"]["+id.toString()+"]");
+        //log.debug("Putting["+name+"]["+id.toString()+"]");
         icons.put(newId.toString(), getScaledIcon(id, newId));
     }
 

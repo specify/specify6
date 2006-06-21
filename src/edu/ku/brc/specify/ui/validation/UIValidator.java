@@ -31,8 +31,7 @@ import javax.swing.JTextField;
 import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
 import org.apache.commons.jexl.JexlContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  *  Validates a single UI Component the component is to be referred to in the validation script as "obj"
@@ -44,7 +43,7 @@ public class UIValidator
 {
     public enum Type {None, Focus, Changed, OK};
 
-    private static Log log = LogFactory.getLog(UIValidator.class);
+    private static final Logger log = Logger.getLogger(UIValidator.class);
 
     protected JexlContext    jc  = null;
     protected Expression     exp = null;
@@ -183,9 +182,9 @@ public class UIValidator
                 Object[] keys = map.keySet().toArray();
                 for (Object key : keys)
                 {
-                    log.info("## ["+key+"]["+map.get(key).getClass().toString()+"]");
+                    log.debug("## ["+key+"]["+map.get(key).getClass().toString()+"]");
                 }
-                log.info("** "+exp.getExpression()+"  "+result+"  "+(result != null ? result.getClass().toString() : ""));
+                log.debug("** "+exp.getExpression()+"  "+result+"  "+(result != null ? result.getClass().toString() : ""));
                 if (result instanceof Boolean)
                 {
                     errorState = ((Boolean)result).booleanValue() ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error;

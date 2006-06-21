@@ -9,8 +9,7 @@ import java.util.Iterator;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;
@@ -24,7 +23,7 @@ import edu.ku.brc.specify.helpers.UIHelper;
 
 public class MiscUtilTest extends TestCase
 {
-    private static Log log = LogFactory.getLog(MiscUtilTest.class);
+    private static final Logger log = Logger.getLogger(MiscUtilTest.class);
     /**
      * Tests the Date formating 
      */

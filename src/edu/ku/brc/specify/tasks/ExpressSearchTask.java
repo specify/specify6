@@ -44,8 +44,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -78,7 +77,7 @@ import edu.ku.brc.specify.ui.UICacheManager;
 public class ExpressSearchTask extends BaseTask
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(ExpressSearchTask.class);
+    private static final Logger log = Logger.getLogger(ExpressSearchTask.class);
 
     public static final String EXPRESSSEARCH = "Express_Search";
 
@@ -312,7 +311,7 @@ public class ExpressSearchTask extends BaseTask
 
             if (hits.length() == 0)
             {
-                log.info("No Hits for ["+searchTerm+"]["+query.toString()+"]");
+                log.debug("No Hits for ["+searchTerm+"]["+query.toString()+"]");
                 if (searchText != null)
                 {
                     if (badSearchColor != null)
@@ -338,7 +337,7 @@ public class ExpressSearchTask extends BaseTask
                 }
             }
 
-            log.info(hits.length()+" Hits for ["+searchTerm+"]["+query.toString()+"]");
+            log.debug(hits.length()+" Hits for ["+searchTerm+"]["+query.toString()+"]");
 
             boolean useFloat = false;
 
@@ -393,13 +392,13 @@ public class ExpressSearchTask extends BaseTask
         } catch (ParseException ex)
         {
             JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.FRAME), getResourceString("BadQuery"), getResourceString("BadQueryTitle"), JOptionPane.ERROR_MESSAGE);
-            log.info(ex);
+            log.error(ex);
 
         } catch (IOException ex)
         {
             // XXX Change message
             JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.FRAME), getResourceString("BadQuery"), getResourceString("BadQueryTitle"), JOptionPane.ERROR_MESSAGE);
-            log.info(ex);
+            log.error(ex);
         }
         return false;
     }

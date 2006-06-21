@@ -31,7 +31,7 @@ import edu.ku.brc.specify.core.Taskable;
 @SuppressWarnings("serial")
 public class ReportsPane extends BaseSubPane
 {
-    //private static Log log = LogFactory.getLog(LabelsPane.class);
+    //private static final Logger log = Logger.getLogger(LabelsPane.class);
 
     /**
      * 

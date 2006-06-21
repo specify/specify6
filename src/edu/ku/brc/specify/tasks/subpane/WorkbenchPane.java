@@ -28,8 +28,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.ui.CsvTableModel;
@@ -43,7 +42,7 @@ import edu.ku.brc.specify.ui.JustifiedTableCellRenderer;
  */
 public class WorkbenchPane extends BaseSubPane
 {
-    private static Log log = LogFactory.getLog(WorkbenchPane.class);
+    private static final Logger log = Logger.getLogger(WorkbenchPane.class);
 
     private JTable     table;
 
@@ -61,7 +60,7 @@ public class WorkbenchPane extends BaseSubPane
 
         // START OF CODE TO REMOVE AFTER DEMO
         // it was just for a quick demo
-        log.info("This code section should be removed after the demo");
+        log.debug("This code section should be removed after the demo");
         if (csvFile != null)
         {
             try

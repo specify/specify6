@@ -28,8 +28,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.search.Hits;
@@ -71,7 +70,7 @@ import edu.ku.brc.specify.ui.forms.persist.View;
 @SuppressWarnings("serial")
 public class AgentSearchDialogES extends JDialog implements ActionListener, ExpressSearchResultsPaneIFace
 {
-    private static Log log  = LogFactory.getLog(GenericSearchDialog.class);
+    private static final Logger log  = Logger.getLogger(GenericSearchDialog.class);
 
     protected JButton        cancelBtn;
     protected JButton        okBtn;

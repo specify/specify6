@@ -23,33 +23,24 @@ import static edu.ku.brc.specify.helpers.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Properties;
 import java.util.prefs.Preferences;
 
-import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.URLName;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.specify.helpers.EMailHelper;
-import edu.ku.brc.specify.helpers.Encryption;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.ui.CommandAction;
 import edu.ku.brc.specify.ui.CommandDispatcher;
@@ -61,7 +52,6 @@ import edu.ku.brc.specify.ui.forms.ViewMgr;
 import edu.ku.brc.specify.ui.forms.Viewable;
 import edu.ku.brc.specify.ui.forms.persist.View;
 import edu.ku.brc.specify.ui.validation.FormValidator;
-import edu.ku.brc.specify.ui.validation.ValPasswordField;
 
 /**
  * Preference Panel for setting EMail Preferences.
@@ -74,7 +64,7 @@ import edu.ku.brc.specify.ui.validation.ValPasswordField;
 @SuppressWarnings("serial")
 public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandListener, PrefsPanelIFace
 {
-    private static Log log  = LogFactory.getLog(EMailPrefsPanel.class);
+    private static final Logger log  = Logger.getLogger(EMailPrefsPanel.class);
     
     //protected FormValidator formValidator = new FormValidator();
 
@@ -138,7 +128,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
             
         } else
         {
-            log.info("Couldn't load form with name ["+name+"] Id ["+viewName+"]");
+            log.error("Couldn't load form with name ["+name+"] Id ["+viewName+"]");
         }
 
         form.setDataObj(prefNode);

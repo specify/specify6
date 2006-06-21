@@ -23,8 +23,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -38,7 +37,7 @@ import org.apache.commons.logging.LogFactory;
 public class DataSetterForObj implements DataObjectSettable
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(DataSetterForObj.class);
+    private static final Logger log = Logger.getLogger(DataSetterForObj.class);
     
     protected Object[] args = new Object[1];
     
@@ -56,7 +55,7 @@ public class DataSetterForObj implements DataObjectSettable
      */
     public void setFieldValue(Object dataObj, String fieldName, Object data)
     {
-        log.info("fieldName["+fieldName+"] dataObj["+dataObj+"] data ["+data+"]");
+        log.debug("fieldName["+fieldName+"] dataObj["+dataObj+"] data ["+data+"]");
         try
         {
             PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, fieldName.trim());
@@ -66,7 +65,7 @@ public class DataSetterForObj implements DataObjectSettable
                 if (setter != null)
                 {
                     args[0] = data;
-                    log.info("fieldname["+fieldName+"] dataObj["+dataObj+"] data ["+data+"] ("+(data != null ? data.getClass().getSimpleName() : "")+")");
+                    log.debug("fieldname["+fieldName+"] dataObj["+dataObj+"] data ["+data+"] ("+(data != null ? data.getClass().getSimpleName() : "")+")");
                     setter.invoke(dataObj, new Object[] { data});
                 }
             } else

@@ -45,7 +45,7 @@ import edu.ku.brc.specify.ui.SubPaneIFace;
 @SuppressWarnings("serial")
 public class BaseSubPane extends JPanel implements SubPaneIFace
 {
-    //private static Log log = LogFactory.getLog(BaseSubPane.class);
+    //private static final Logger log = Logger.getLogger(BaseSubPane.class);
 
     protected String            name;
     protected Taskable          task;

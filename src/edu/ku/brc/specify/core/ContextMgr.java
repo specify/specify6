@@ -24,8 +24,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.ui.CommandAction;
 
@@ -42,7 +41,7 @@ import edu.ku.brc.specify.ui.CommandAction;
 public class ContextMgr
 {
     // Static Data Members
-    private static final Log         log      = LogFactory.getLog(ContextMgr.class);
+    private static final Logger      log      = Logger.getLogger(ContextMgr.class);
     private static final ContextMgr  instance = new ContextMgr();
 
     // Data Members
@@ -136,7 +135,7 @@ public class ContextMgr
                 return task;
             }
         }
-        log.info("Couldn't find task by name");
+        log.error("Couldn't find task by name["+name+"]");
         return null;
     }
 
@@ -160,7 +159,7 @@ public class ContextMgr
                 return task;
             }
         }
-        log.info("Couldn't find task by class");
+        log.error("Couldn't find task by class ["+theClass.getSimpleName()+"]");
         return null;
     }
 

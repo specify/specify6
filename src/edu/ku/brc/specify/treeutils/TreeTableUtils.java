@@ -5,8 +5,7 @@ import java.util.Vector;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
@@ -26,7 +25,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
  */
 public class TreeTableUtils
 {
-    protected static Log log = LogFactory.getLog(TreeTableUtils.class);
+    protected static final Logger log = Logger.getLogger(TreeTableUtils.class);
 
 	public static final int FORWARD = 1;
 	public static final int REVERSE = -1;

@@ -20,8 +20,7 @@
  */
 package edu.ku.brc.specify.tests;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 
@@ -40,7 +39,7 @@ import edu.ku.brc.specify.dbsupport.HibernateUtil;
  *
  */
 public class WorkbenchTestHelper {
-	private static Log log = LogFactory.getLog(WorkbenchTestHelper.class);
+	private static final Logger log = Logger.getLogger(WorkbenchTestHelper.class);
 	/**
 	 * 
 	 */

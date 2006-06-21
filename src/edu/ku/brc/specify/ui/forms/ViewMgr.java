@@ -46,7 +46,7 @@ import edu.ku.brc.specify.ui.forms.persist.ViewSet;
 public class ViewMgr
 {
     // Statics
-    private final static Logger  log        = Logger.getLogger(ViewMgr.class);
+    private static final Logger  log        = Logger.getLogger(ViewMgr.class);
     private static final ViewMgr instance;
     
     private static SAXReader saxReader  = null;

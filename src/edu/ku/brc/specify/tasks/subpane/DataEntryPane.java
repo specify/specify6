@@ -20,7 +20,7 @@
 
 package edu.ku.brc.specify.tasks.subpane;
 
-//import org.apache.commons.logging.Log;
+//import org.apache.log4j.Logger;
 //import org.apache.commons.logging.LogFactory;
 
 import edu.ku.brc.specify.core.Taskable;
@@ -34,7 +34,7 @@ import edu.ku.brc.specify.core.Taskable;
 @SuppressWarnings("serial")
 public class DataEntryPane extends BaseSubPane
 {
-    //private static Log log = LogFactory.getLog(DataEntryPane.class);
+    //private static final Logger log = Logger.getLogger(DataEntryPane.class);
 
     /**
      * 

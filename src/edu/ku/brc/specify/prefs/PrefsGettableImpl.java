@@ -34,7 +34,7 @@ import edu.ku.brc.specify.ui.forms.DataObjectGettable;
 public class PrefsGettableImpl implements DataObjectGettable
 {
     // Static Data Members
-    //private static Log log = LogFactory.getLog(PrefsGettableImpl.class);
+    //private static final Logger log = Logger.getLogger(PrefsGettableImpl.class);
     
     /**
      * Default constructor (needed for factory) 

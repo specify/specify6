@@ -38,8 +38,7 @@ import net.sf.jasperreports.engine.fill.AsynchronousFilllListener;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.view.JRViewer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -60,7 +59,7 @@ import edu.ku.brc.specify.ui.UICacheManager;
 public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 {
     // Static Data Members
-    private static Log log = LogFactory.getLog(LabelsPane.class);
+    private static final Logger log = Logger.getLogger(LabelsPane.class);
     
     // Data Members
     protected AsynchronousFillHandle asyncFillHandler = null;

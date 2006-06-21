@@ -30,8 +30,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
@@ -52,7 +51,7 @@ import edu.ku.brc.util.Pair;
  */
 public class KeyholeMarkupGenerator
 {
-	private static Log log = LogFactory.getLog(KeyholeMarkupGenerator.class);
+	private static final Logger log = Logger.getLogger(KeyholeMarkupGenerator.class);
 
 	protected static String XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 	protected static String KML_NAMESPACE_DECL = "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n";

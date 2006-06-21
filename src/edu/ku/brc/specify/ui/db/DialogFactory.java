@@ -42,7 +42,7 @@ import edu.ku.brc.specify.helpers.XMLHelper;
  */
 public class DialogFactory
 {
-    private final static Logger  log        = Logger.getLogger(DialogFactory.class);
+    private static final Logger  log        = Logger.getLogger(DialogFactory.class);
 
     protected static DialogFactory instance = new DialogFactory();
 

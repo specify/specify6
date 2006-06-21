@@ -23,8 +23,7 @@ package edu.ku.brc.specify.dbsupport;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * A singleton that remembers all the information needed for creating a Database connection. 
@@ -36,7 +35,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DBConnection
 {
-    private static Log log = LogFactory.getLog(DBConnection.class);
+    private static final Logger log = Logger.getLogger(DBConnection.class);
     
     protected String dbUserid;
     protected String dbPassword;

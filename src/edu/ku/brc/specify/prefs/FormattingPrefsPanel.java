@@ -5,8 +5,7 @@ import java.util.prefs.Preferences;
 
 import javax.swing.JPanel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.forms.ViewFactory;
@@ -24,7 +23,7 @@ import edu.ku.brc.specify.ui.validation.FormValidator;
 @SuppressWarnings("serial")
 public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, PrefsSavable
 {
-    private static Log log  = LogFactory.getLog(FormattingPrefsPanel.class);
+    private static final Logger log  = Logger.getLogger(FormattingPrefsPanel.class);
     
     protected Preferences  prefNode = null;
     protected View         formView = null;
@@ -64,7 +63,7 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
             
         } else
         {
-            log.info("Couldn't load form with name ["+name+"] Id ["+viewName+"]");
+            log.error("Couldn't load form with name ["+name+"] Id ["+viewName+"]");
         }
         
         form.setDataObj(prefNode);

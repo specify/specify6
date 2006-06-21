@@ -30,8 +30,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * This will encrypt and decrypt strings. I added a couple of helper methods for getting to and from an array of bytes to a string.
@@ -44,7 +43,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class Encryption
 {
-    private static Log log  = LogFactory.getLog(Encryption.class);
+    private static final Logger log  = Logger.getLogger(Encryption.class);
     private static String encryptDecryptPassword = "KU BRC Specify";
 
     /*
