@@ -457,6 +457,7 @@ public class TreeDataListModel extends AbstractListModel
 		
 		this.removeNode(node);
 		this.insertNode(node, newParent);
+		TreeTableUtils.fixFullNames(node);
 		return true;
 	}
 

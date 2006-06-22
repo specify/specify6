@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -135,4 +136,13 @@ public interface Treeable
 	 * @throws IllegalArgumentException if defItem isn't an object of the correct type to represent this Treeable's tree definition
 	 */
 	public void setDefItem(TreeDefinitionItemIface defItem);
+
+	public String getFullName();
+	public void setFullName(String fullName);
+	
+	public Date getTimestampCreated();
+	public void setTimestampCreated(Date created);
+	
+	public Date getTimestampModified();
+	public void setTimestampModified(Date modified);
 }

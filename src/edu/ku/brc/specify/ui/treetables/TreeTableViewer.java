@@ -44,6 +44,7 @@ import edu.ku.brc.specify.tasks.subpane.BaseSubPane;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.util.Pair;
 
 /**
  * The TreeTableViewer is a SubPaneIface implementation that provides a
@@ -362,10 +363,10 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	{
 		Treeable newT = TreeFactory.createNewTreeable(parent, "Some new node name");
 		
-		String canonicalClassName = newT.getClass().getCanonicalName();
 		String shortClassName = newT.getClass().getName();
 		String idFieldName = shortClassName.substring(0,1).toLowerCase() + shortClassName.substring(1) + "Id";
-		TreeNodeEditDialog editDialog = new TreeNodeEditDialog("Main Views","Taxon","New Tree Node",shortClassName,idFieldName,this);
+		Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(parent);
+		TreeNodeEditDialog editDialog = new TreeNodeEditDialog(formsNames.first, formsNames.second,"New Tree Node",shortClassName,idFieldName,this);
 		editDialog.setData(newT);
 		editDialog.setVisible(true);
 	}

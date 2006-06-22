@@ -13,6 +13,7 @@ public class Geography  implements java.io.Serializable,Treeable {
      protected String name;
      protected String remarks;
      protected String commonName;
+     protected String fullName;
      protected String geographyCode;
      protected Integer rankId;
      protected Integer nodeNumber;
@@ -119,6 +120,22 @@ public class Geography  implements java.io.Serializable,Treeable {
     }
 
     /**
+	 * @return the fullName
+	 */
+	public String getFullName()
+	{
+		return fullName;
+	}
+
+	/**
+	 * @param fullName the fullName to set
+	 */
+	public void setFullName(String fullName)
+	{
+		this.fullName = fullName;
+	}
+
+	/**
      *
      */
     public String getGeographyCode() {

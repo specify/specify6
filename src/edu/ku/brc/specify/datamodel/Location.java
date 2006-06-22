@@ -11,6 +11,7 @@ public class Location  implements java.io.Serializable,Treeable {
 
      protected Integer locationId;
      protected String name;
+     protected String fullName;
      protected String remarks;
      protected Integer rankId;
      protected Integer nodeNumber;
@@ -93,7 +94,23 @@ public class Location  implements java.io.Serializable,Treeable {
         this.name = name;
     }
 
-    public String getRemarks()
+    /**
+	 * @return the fullname
+	 */
+	public String getFullName()
+	{
+		return fullName;
+	}
+
+	/**
+	 * @param fullname the fullname to set
+	 */
+	public void setFullName(String fullName)
+	{
+		this.fullName = fullName;
+	}
+
+	public String getRemarks()
 	{
 		return remarks;
 	}

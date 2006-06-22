@@ -24,6 +24,11 @@
 			<meta attribute="scope-field">protected</meta>
 		</property>
 
+		<property name="fullName" type="java.lang.String" column="fullName"
+			length="255">
+			<meta attribute="scope-field">protected</meta>
+		</property>
+
 		<property name="remarks" type="java.lang.String"
 			column="Remarks" length="255">
 			<meta attribute="scope-field">protected</meta>

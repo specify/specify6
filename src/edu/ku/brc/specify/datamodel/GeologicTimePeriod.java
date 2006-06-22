@@ -12,6 +12,7 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
      protected Integer geologicTimePeriodId;
      protected Integer rankId;
      protected String name;
+     protected String fullName;
      protected String remarks;
      protected Integer nodeNumber;
      protected Integer highestChildNodeNumber;
@@ -103,6 +104,22 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
     }
 
     /**
+	 * @return the fullName
+	 */
+	public String getFullName()
+	{
+		return fullName;
+	}
+
+	/**
+	 * @param fullName the fullName to set
+	 */
+	public void setFullName(String fullName)
+	{
+		this.fullName = fullName;
+	}
+
+	/**
      * 
      */
     public Integer getNodeNumber() {

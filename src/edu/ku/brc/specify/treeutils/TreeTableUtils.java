@@ -402,4 +402,13 @@ public class TreeTableUtils
 		root.setHighestChildNodeNumber(nextNodeNumber);
 		return nextNodeNumber;
 	}
+
+	public static void fixFullNames( Treeable node )
+	{
+		node.setFullName(getFullName(node));
+		for( Treeable child: node.getChildNodes() )
+		{
+			fixFullNames(child);
+		}
+	}
 }
