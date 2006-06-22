@@ -17,6 +17,7 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.util.Pair;
 
 public class TreeFactory
 {
@@ -150,5 +151,30 @@ public class TreeFactory
 		}
 		
 		return new NameBasedTreeableComparator();
+	}
+
+	public static Pair<String,String> getAppropriateFormsetAndViewNames( Treeable node )
+	{
+		if( node instanceof Geography )
+		{
+			return new Pair<String,String>("Main Views","NewGeography");
+		}
+
+		if( node instanceof GeologicTimePeriod )
+		{
+			return new Pair<String,String>("Main Views","NewGeologicTimePeriod");
+		}
+
+		if( node instanceof Location )
+		{
+			return new Pair<String,String>("Main Views","NewLocation");
+		}
+
+		if( node instanceof Taxon )
+		{
+			return new Pair<String,String>("Main Views","NewTaxon");
+		}
+		
+		return null;
 	}
 }
