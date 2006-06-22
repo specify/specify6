@@ -49,6 +49,11 @@ public class TreeDataListModel extends AbstractListModel
 		showChildren(root);
 	}
 	
+	public Treeable getRoot()
+	{
+		return root;
+	}
+
 	public TreeDefinitionIface getTreeDef()
 	{
 		return this.treeDef;
