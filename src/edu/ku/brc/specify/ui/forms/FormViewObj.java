@@ -1211,29 +1211,31 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                     {
     
                         Object[] values = UIHelper.getFieldValues(cellField, dataObj, dg);
-                        String   format = cellField.getFormat();
-                        if (isNotEmpty(format))
+                        if( values != null && values.length > 0 )
                         {
-                            setDataIntoUIComp(comp, UIHelper.getFormattedValue(values, cellField.getFormat()), defaultValue);
-    
-                        } else
-                        {
-                            if (cellField.getFieldNames().length > 1)
-                            {
-                                throw new RuntimeException("No Format but mulitple fields were specified for["+cellField.getName()+"]");
-                            }
-                            
-                            if (isTextFieldPerMode)
-                            {
-                                setDataIntoUIComp(comp, values != null && values[0] != null ? values[0].toString() : "", defaultValue);
-                                
-                            } else
-                            {
-                                setDataIntoUIComp(comp, values == null ? null : values[0], defaultValue);
-                            }
-                            
-                        }
-    
+                        	String   format = cellField.getFormat();
+                        	if (isNotEmpty(format))
+                        	{
+                        		setDataIntoUIComp(comp, UIHelper.getFormattedValue(values, cellField.getFormat()), defaultValue);
+                        		
+                        	} else
+                        	{
+                        		if (cellField.getFieldNames().length > 1)
+                        		{
+                        			throw new RuntimeException("No Format but mulitple fields were specified for["+cellField.getName()+"]");
+                        		}
+                        		
+                        		if (isTextFieldPerMode)
+                        		{
+                        			setDataIntoUIComp(comp, values != null && values[0] != null ? values[0].toString() : "", defaultValue);
+                        			
+                        		} else
+                        		{
+                        			setDataIntoUIComp(comp, values == null ? null : values[0], defaultValue);
+                        		}
+                        		
+                        	}
+                        }    
                     }
     
                 } else if (fieldInfo.getFormCell().getType() == FormCell.CellType.subview)

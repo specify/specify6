@@ -436,7 +436,7 @@ public class ViewLoader
                 {
                     Element cellElement = (Element)cellIter.next();
                     String  cellId      = getAttr(cellElement, "id", "");
-                    String  cellName    = getAttr(cellElement, NAME, "");
+                    String  cellName    = getAttr(cellElement, NAME, cellId);
                     int     colspan     = getAttr(cellElement, "colspan", 1);
                     int     rowspan     = getAttr(cellElement, "rowspan", 1);
 

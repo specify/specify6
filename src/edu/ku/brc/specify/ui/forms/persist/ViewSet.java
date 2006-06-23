@@ -39,6 +39,7 @@ import edu.ku.brc.specify.helpers.XMLHelper;
 public class ViewSet
 {
     private static final Logger  log = Logger.getLogger(ViewSet.class);
+    private static boolean ALWAYS_LOAD = true; // XXX PREF
 
     protected String           name     = null;
     protected String           fileName = null;
@@ -90,7 +91,7 @@ public class ViewSet
      */
     protected void loadViews()
     {
-        if (views == null)
+        if ( ALWAYS_LOAD || views == null)
         {
             try
             {
