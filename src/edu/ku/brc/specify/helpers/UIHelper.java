@@ -555,7 +555,7 @@ public final class UIHelper
     }
 
     /**
-     * Returna an array of values given a FormCell definition. Note: The returned array is owned by the utility and
+     * Return an array of values given a FormCell definition. Note: The returned array is owned by the utility and
      * may be longer than the number of fields defined in the CellForm object. Any additional "slots" in the array that are used
      * are set to null;
      * @param formCell the defition of the field to get
@@ -566,7 +566,14 @@ public final class UIHelper
     public static Object[] getFieldValues(final FormCell formCell, final Object dataObj, final DataObjectGettable getter)
     {
         String[] fieldNames = formCell.getFieldNames();
-        return getFieldValues(fieldNames, dataObj, getter);
+        if( fieldNames != null && fieldNames.length != 0 )
+        {
+            return getFieldValues(fieldNames, dataObj, getter);
+        }
+        else
+        {
+        	return null;
+        }
     }
 
 
@@ -664,64 +671,67 @@ public final class UIHelper
                                      final DataObjectGettable getter,
                                      final DataObjectSettable setter)
     {
-        int inx = fieldNames.indexOf(".");
-        if (inx > -1)
-        {
-            String[] fileNameArray = StringUtils.split(fieldNames, '.');
-            Object data = dataObj;
-            for (int i=0;i<fileNameArray.length;i++)
-            {
-                String fieldName = fileNameArray[i];
-               if (i < fileNameArray.length-1)
-                {
-                     data = getter.getFieldValue(dataObj, fieldName);
-                    if (data == null)
-                    {
-                        try
-                        {
-                            PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, fieldName.trim());
-                            Class  classObj = descr.getPropertyType();
-                            Object newObj = classObj.newInstance();
-                            log.debug("New Obj ["+newObj+"] being added to ["+dataObj+"]");
-                            if (newObj != null)
-                            {
-
-                                Method method = newObj.getClass().getMethod("initialize", new Class[] {});
-                                method.invoke(newObj, new Object[] {});
-                                setter.setFieldValue(dataObj, fieldName, newObj);
-                                data = newObj;
-
-                                log.debug("Inserting New Obj ["+newObj+" at top of new DB ObjCache");
-
-                            }
-                        } catch (NoSuchMethodException ex)
-                        {
-                            ex.printStackTrace();
-
-                        } catch (IllegalAccessException ex)
-                        {
-                            ex.printStackTrace();
-
-                        } catch (InvocationTargetException ex)
-                        {
-                            ex.printStackTrace();
-
-                        } catch (InstantiationException ex)
-                        {
-                            ex.printStackTrace();
-                        }
-                    }
-                } else
-                {
-                    log.info("Data Obj ["+newData+" being added to ["+data+"]");
-                    setter.setFieldValue(data, fieldName, newData);
-                }
-            }
-        } else
-        {
-            log.info("setFieldValue -  newData ["+newData+"] fieldNames["+fieldNames+"] set into ["+dataObj+"]");
-            setter.setFieldValue(dataObj, fieldNames, newData);
-        }
+    	if( StringUtils.isNotEmpty(fieldNames) )
+    	{
+	   		int inx = fieldNames.indexOf(".");
+	        if (inx > -1)
+	        {
+	            String[] fileNameArray = StringUtils.split(fieldNames, '.');
+	            Object data = dataObj;
+	            for (int i=0;i<fileNameArray.length;i++)
+	            {
+	                String fieldName = fileNameArray[i];
+	               if (i < fileNameArray.length-1)
+	                {
+	                     data = getter.getFieldValue(dataObj, fieldName);
+	                    if (data == null)
+	                    {
+	                        try
+	                        {
+	                            PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, fieldName.trim());
+	                            Class  classObj = descr.getPropertyType();
+	                            Object newObj = classObj.newInstance();
+	                            log.debug("New Obj ["+newObj+"] being added to ["+dataObj+"]");
+	                            if (newObj != null)
+	                            {
+	
+	                                Method method = newObj.getClass().getMethod("initialize", new Class[] {});
+	                                method.invoke(newObj, new Object[] {});
+	                                setter.setFieldValue(dataObj, fieldName, newObj);
+	                                data = newObj;
+	
+	                                log.debug("Inserting New Obj ["+newObj+" at top of new DB ObjCache");
+	
+	                            }
+	                        } catch (NoSuchMethodException ex)
+	                        {
+	                            ex.printStackTrace();
+	
+	                        } catch (IllegalAccessException ex)
+	                        {
+	                            ex.printStackTrace();
+	
+	                        } catch (InvocationTargetException ex)
+	                        {
+	                            ex.printStackTrace();
+	
+	                        } catch (InstantiationException ex)
+	                        {
+	                            ex.printStackTrace();
+	                        }
+	                    }
+	                } else
+	                {
+	                    log.info("Data Obj ["+newData+" being added to ["+data+"]");
+	                    setter.setFieldValue(data, fieldName, newData);
+	                }
+	            }
+	        } else
+	        {
+	            log.info("setFieldValue -  newData ["+newData+"] fieldNames["+fieldNames+"] set into ["+dataObj+"]");
+	            setter.setFieldValue(dataObj, fieldNames, newData);
+	        }
+    	}
     }
 
     /**
