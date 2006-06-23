@@ -2655,7 +2655,7 @@ public class GenericDBConversion
     	newToOldColMap.put("TaxonTreeDefID", "TaxonomyTypeID");
     	newToOldColMap.put("TaxonTreeDefItemID", "TaxonomicUnitTypeID");
     	newToOldColMap.put("Name", "TaxonName");
-    	newToOldColMap.put("FullTaxon", "FullTaxonName");
+    	newToOldColMap.put("FullName", "FullTaxonName");
 
     	String[] ignoredFields = {"GUID"};
     	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
