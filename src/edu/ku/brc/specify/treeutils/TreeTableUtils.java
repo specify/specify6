@@ -14,6 +14,7 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.dbsupport.HibernateUtil;
 
 /**
  * This class provides many static methods that simplify the management
@@ -410,5 +411,36 @@ public class TreeTableUtils
 		{
 			fixFullNames(child);
 		}
+	}
+
+	public static void deleteNodeAndChildren( Treeable node )
+	{
+		HibernateUtil.beginTransaction();
+		
+		recursivelyDeleteNodes(node);
+		
+		HibernateUtil.commitTransaction();
+	}
+	
+	protected static void recursivelyDeleteNodes( Treeable start )
+	{
+		start.getParentNode().removeChild(start);
+
+		for( Treeable child: start.getChildNodes() )
+		{
+			recursivelyDeleteNodes(child);
+		}
+		
+		HibernateUtil.getCurrentSession().delete(start);
+	}
+	
+	public static int getDescendantCount( Treeable node )
+	{
+		int totalDescendants = 0;
+		for( Treeable child: node.getChildNodes() )
+		{
+			totalDescendants += 1 + getDescendantCount(child);
+		}
+		return totalDescendants;
 	}
 }

@@ -1,6 +1,6 @@
 /*
  * Filename:    $RCSfile: GenericDisplayDialog.java,v $
- * Author:      $Author: rods $
+ * Author:      $Author: rods, jstewart $
  * Revision:    $Revision: 1.3 $
  * Date:        $Date: 2005/10/20 12:53:02 $
  *
@@ -29,16 +29,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.log4j.Logger;
 

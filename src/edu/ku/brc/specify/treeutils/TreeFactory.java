@@ -177,4 +177,56 @@ public class TreeFactory
 		
 		return null;
 	}
+
+	public static boolean isNodeDeletable( Treeable node )
+	{
+		if( node.getParentNode() == null )
+		{
+			// this is a root node
+			return false;
+		}
+		
+		if( node instanceof Geography )
+		{
+			return isGeographyDeletable( (Geography)node );
+		}
+
+		if( node instanceof GeologicTimePeriod )
+		{
+			return isGeologicTimePeriodDeletable( (GeologicTimePeriod)node );
+		}
+
+		if( node instanceof Location )
+		{
+			return isLocationDeletable( (Location)node );
+		}
+
+		if( node instanceof Taxon )
+		{
+			return isTaxonDeletable( (Taxon)node );
+		}
+		
+		return false;
+
+	}
+	
+	protected static boolean isGeographyDeletable( Geography geo )
+	{
+		return geo.getLocalities().isEmpty();
+	}
+
+	protected static boolean isGeologicTimePeriodDeletable( GeologicTimePeriod geo )
+	{
+		return false;
+	}
+
+	protected static boolean isLocationDeletable( Location geo )
+	{
+		return false;
+	}
+
+	protected static boolean isTaxonDeletable( Taxon geo )
+	{
+		return false;
+	}
 }
