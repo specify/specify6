@@ -665,4 +665,9 @@ public class Taxon  implements java.io.Serializable,Treeable {
     }
 
     // Delete Add Methods
+    public String toString()
+    {
+    	String parentName = getParent() != null ? getParent().getName() : "none";
+    	return "Taxon " + taxonId + ": " + name + ", child of " + parentName + ", " + rankId + ", " + nodeNumber + ", " + highestChildNodeNumber;
+    }
 }

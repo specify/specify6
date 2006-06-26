@@ -12,6 +12,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.AbstractButton;
@@ -27,7 +29,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
@@ -35,11 +36,13 @@ import org.hibernate.LockMode;
 import org.hibernate.Session;
 
 import edu.ku.brc.specify.core.Taskable;
+import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.tasks.subpane.BaseSubPane;
+import edu.ku.brc.specify.treeutils.ReverseRankBasedComparator;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.specify.ui.IconManager;
@@ -71,14 +74,14 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	protected TreeDataListCellRenderer listCellRenderer;
 	protected TreeDataListHeader listHeader;
 	
-	protected Vector<Treeable> deletedNodes;
-	
 	protected JComboBox defsBox;
 	protected JButton addNodeButton;
 	protected JButton deleteNodeButton;
 	protected JButton commitTreeButton;
 	
 	protected Class treeableClass;
+	
+	protected SortedSet<Treeable> deletedNodes;
 	
     private static final Logger log = Logger.getLogger(TreeTableViewer.class);
 
@@ -99,10 +102,11 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		Session session = HibernateUtil.getCurrentSession();
 		Criteria c = session.createCriteria(treeDefClass);
 		List results = c.list();
-		
 		errorIcon = IconManager.getIcon("Error", IconManager.IconSize.Std24);
 		init(results);
 
+		deletedNodes = new TreeSet<Treeable>(new ReverseRankBasedComparator());
+		
 		HibernateUtil.closeSession();
 	}
 	
@@ -113,7 +117,6 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	 */
 	protected void init( List<TreeDefinitionIface> definitions )
 	{
-		deletedNodes = new Vector<Treeable>();
 		buttons = new Vector<AbstractButton>();
 		
 		this.uiComp = new JPanel();
@@ -270,7 +273,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 			{
 				return;
 			}
-			boolean visible = listModel.childrenAreVisible(t);
+			boolean visible = listModel.allChildrenAreVisible(t);
 			listModel.setChildrenVisible(t, !visible);
 			e.consume();
 		}
@@ -372,6 +375,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	
 	public void newNodeEntryComplete(Treeable node)
 	{
+		listModel.hideChildren(node.getParentNode());
 		node.getParentNode().addChild(node);
 		listModel.showChildren(node.getParentNode());
 	}
@@ -385,8 +389,34 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		}
 		
 		Treeable node = (Treeable)selection;
-
-		log.info("TODO: implement deleteSelection()");
+		if( TreeTableUtils.canBeDeleted(node) )
+		{
+			Treeable parent = node.getParentNode();
+			listModel.hideChildren(parent);
+			parent.removeChild(node);
+			listModel.showChildren(parent);
+			deletedNodes.add(node);
+			deleteAllDescendants(node);
+			log.info("Deleted node");
+		}
+		else
+		{
+			log.info("Selected node cannot be deleted");
+		}
+	}
+	
+	protected void deleteAllDescendants(Treeable parent)
+	{
+		List<Treeable> descendants = TreeTableUtils.getAllDescendants(parent);
+		for( Treeable node: descendants )
+		{
+			Treeable p = node.getParentNode();
+			if( p != null )
+			{
+				p.removeChild(node);
+			}
+			deletedNodes.add(node);
+		}
 	}
 	
 	public void finalizeDeleteNode( Treeable node )
@@ -404,94 +434,20 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	{
 		log.info("TODO: commit current tree structure to DB");
 		
-		//fixTreeables(listModel.getRoot());
-		return false;
-	}
-	
-	/**
-	 * Traverses the current tree structure as defined by the tree model, reassigning
-	 * the parent field in each contained Treeable item.  After that, the nodeNumber
-	 * and highestChildNodeNumber fields are updated.
-	 * 
-	 * @param rootNode the root of the current tree structure
-	 */
-	protected void fixTreeables( DefaultMutableTreeNode rootNode )
-	{
-		fixParentPointers(rootNode);
-		Treeable rootT = (Treeable)rootNode.getUserObject();
-		rootT.setNodeNumber(1);
-		fixNodeNumbers(rootNode,2);
-	}
-	
-	/**
-	 * Visits each child of the givne parent and assigns the parent field.  This
-	 * method recursively calls itself, passing in each child it encounters.
-	 * 
-	 * @param parent the tree node with which to start the recursive process
-	 */
-	protected void fixParentPointers( DefaultMutableTreeNode parent )
-	{
-		Treeable parentT = (Treeable)parent.getUserObject();
-		if( parent.isLeaf() )
+		// XXX: for testing
+		// block all but the location tree from saving changes
+		if( !listModel.getRoot().getClass().equals(Location.class) )
 		{
-			return;
+			return false;
 		}
 		
-		for( int i = 0; i < parent.getChildCount(); ++i )
-		{
-			DefaultMutableTreeNode child = (DefaultMutableTreeNode)parent.getChildAt(i);
-			Treeable childT = (Treeable)child.getUserObject();
-			childT.setParentNode(parentT);
-			fixParentPointers(child);
-		}
-	}
-	
-	/**
-	 * Walk the subtree starting with <code>parent</code>, numbering each descendant,
-	 * staring with <code>nextNodeNumber</code> for the first encountered child.
-	 * 
-	 * @param parent the node to start the process with
-	 * @param nextNodeNumber the node number to assign to the first child found
-	 * @return the next available node number
-	 */
-	protected int fixNodeNumbers( DefaultMutableTreeNode parent, int nextNodeNumber )
-	{
-		for( int i = 0; i < parent.getChildCount(); ++i )
-		{
-			DefaultMutableTreeNode child = (DefaultMutableTreeNode)parent.getChildAt(i);
-			Treeable childT = (Treeable)child.getUserObject();
-			childT.setNodeNumber(nextNodeNumber++);
-			if(child.isLeaf())
-			{
-				childT.setHighestChildNodeNumber(childT.getNodeNumber());
-				fixParentHighChildNumbers(child);
-			}
-			nextNodeNumber = fixNodeNumbers(child,nextNodeNumber);
-		}
-		return nextNodeNumber;
-	}
-	
-	/**
-	 * Walks the path from <code>child</code> up to the tree root, fixing
-	 * the highestChildNodeNumber field along the way
-	 * 
-	 * @param child the node whos ancestors should be fixed
-	 */
-	protected void fixParentHighChildNumbers( DefaultMutableTreeNode child )
-	{
-		int nodeNum = ((Treeable)child.getUserObject()).getNodeNumber();
-
-		DefaultMutableTreeNode node = child;
-		while( node.getParent() != null )
-		{
-			node = (DefaultMutableTreeNode)node.getParent();
-			Treeable t = (Treeable)node.getUserObject();
-			Integer highestSoFar = t.getHighestChildNodeNumber();
-			if( highestSoFar == null || highestSoFar < nodeNum )
-			{
-				t.setHighestChildNodeNumber(nodeNum);
-			}
-		}
+		
+		Treeable root = listModel.getRoot();
+		root.setNodeNumber(1);
+		TreeTableUtils.fixNodeNumbersFromRoot(root);
+		
+		TreeTableUtils.saveTreeStructure(root,deletedNodes);
+		return true;
 	}
 	
 	protected Map<Integer,Icon> getIconMapForClass( Class treeableClass )

@@ -3,6 +3,7 @@ package edu.ku.brc.specify.ui.treetables;
 import java.awt.FontMetrics;
 import java.util.Comparator;
 import java.util.Hashtable;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -28,8 +29,7 @@ import edu.ku.brc.util.Pair;
 public class TreeDataListModel extends AbstractListModel
 {
 	protected Vector<Treeable> visibleNodes;
-	protected Hashtable<Treeable, Boolean> childrenWereShowing;
-	protected Hashtable<Integer,Integer> rankToNodeCount;
+	protected Hashtable<Treeable,Boolean> childrenWereShowing;
 	protected TreeDefinitionIface treeDef;
     private static final Logger log = Logger.getLogger(TreeDataListModel.class);
     protected Treeable root;
@@ -39,7 +39,6 @@ public class TreeDataListModel extends AbstractListModel
 	{
 		visibleNodes = new Vector<Treeable>();
 		childrenWereShowing = new Hashtable<Treeable, Boolean>();
-		rankToNodeCount = new Hashtable<Integer, Integer>();
 		this.root = root;
 		comparator = TreeFactory.getAppropriateComparator(root);
 		
@@ -59,7 +58,7 @@ public class TreeDataListModel extends AbstractListModel
 		return this.treeDef;
 	}
 	
-	public boolean childrenAreVisible(Treeable t)
+	public boolean allChildrenAreVisible(Treeable t)
 	{
 		for(Treeable child: t.getChildNodes())
 		{
@@ -113,7 +112,7 @@ public class TreeDataListModel extends AbstractListModel
 	
 	protected void showChildren(Treeable t)
 	{
-		if( childrenAreVisible(t) )
+		if( allChildrenAreVisible(t) )
 		{
 			return;
 		}
@@ -126,7 +125,7 @@ public class TreeDataListModel extends AbstractListModel
 	
 	protected void hideChildren(Treeable t)
 	{
-		if( !childrenAreVisible(t) )
+		if( !allChildrenAreVisible(t) )
 		{
 			return;
 		}
@@ -183,7 +182,6 @@ public class TreeDataListModel extends AbstractListModel
 		if( visibleNodes.isEmpty() )
 		{
 			visibleNodes.add(t);
-			incrementRankNodeCount(t.getRankId());
 			return 0;
 		}
 		
@@ -217,7 +215,6 @@ public class TreeDataListModel extends AbstractListModel
 				// we've ventured out of our parent's descendant set
 				// we should be added just before 'node'
 				visibleNodes.insertElementAt(t, currentIndex);
-				incrementRankNodeCount(t.getRankId());
 				if( childrenWereShowing(t) )
 				{
 					showChildren(t);
@@ -229,7 +226,6 @@ public class TreeDataListModel extends AbstractListModel
 				//else if 'node' is a direct child of 'parent' and is after 't' according to the comparator,
 				// the new node ('t') should be inserted before 'node'
 				visibleNodes.insertElementAt(t, currentIndex);
-				incrementRankNodeCount(t.getRankId());
 				if( childrenWereShowing(t) )
 				{
 					showChildren(t);
@@ -240,7 +236,6 @@ public class TreeDataListModel extends AbstractListModel
 			{
 				// if there are no more nodes after this one, insert at the end
 				visibleNodes.add(t);
-				incrementRankNodeCount(t.getRankId());
 				if( childrenWereShowing(t) )
 				{
 					showChildren(t);
@@ -260,7 +255,7 @@ public class TreeDataListModel extends AbstractListModel
 			return;
 		}
 		
-		if( childrenAreVisible(t) )
+		if( allChildrenAreVisible(t) )
 		{
 			childrenWereShowing.put(t, true);
 			
@@ -274,37 +269,6 @@ public class TreeDataListModel extends AbstractListModel
 			childrenWereShowing.put(t, false);
 		}
 		visibleNodes.remove(t);
-		decrementRankNodeCount(t.getRankId());
-	}
-	
-	protected void incrementRankNodeCount( Integer rank )
-	{
-		if( rankToNodeCount.get(rank) == null )
-		{
-			rankToNodeCount.put(rank, 1);
-		}
-		else
-		{
-			int newCount = rankToNodeCount.get(rank).intValue()+1;
-			rankToNodeCount.put(rank, newCount);
-		}
-	}
-	
-	protected void decrementRankNodeCount( Integer rank )
-	{
-		if( rankToNodeCount.get(rank) == null )
-		{
-			rankToNodeCount.put(rank, 0);
-		}
-		else
-		{
-			int newCount = rankToNodeCount.get(rank).intValue()-1;
-			if( newCount < 0 )
-			{
-				newCount = 0;
-			}
-			rankToNodeCount.put(rank, newCount);
-		}		
 	}
 	
 	protected void removeNode( Treeable node )
@@ -320,7 +284,7 @@ public class TreeDataListModel extends AbstractListModel
 		// 3. reshow the children IF they were previously visible
 		
 		Treeable parent = node.getParentNode();
-		boolean prevVisible = childrenAreVisible(parent);
+		boolean prevVisible = allChildrenAreVisible(parent);
 		hideChildren(parent);
 		parent.removeChild(node);
 		if( prevVisible )
@@ -344,16 +308,29 @@ public class TreeDataListModel extends AbstractListModel
 	public SortedSet<Integer> getVisibleRanks()
 	{
 		TreeSet<Integer> usedRanks = new TreeSet<Integer>();
-		for( Entry<Integer,Integer> entry: rankToNodeCount.entrySet() )
+		for( Treeable node: visibleNodes )
 		{
-			Integer count = entry.getValue();
-			Integer rank = entry.getKey();
-			if( count != null && count.intValue() > 0 )
-			{
-				usedRanks.add(rank);
-			}
+			usedRanks.add(node.getRankId());
 		}
 		return usedRanks;
+	}
+	
+	public int getVisibleNodeCountForRank(Integer rankId)
+	{
+		if( rankId == null )
+		{
+			return 0;
+		}
+		
+		int count = 0;
+		for( Treeable node: visibleNodes )
+		{
+			if( node.getRankId().equals(rankId) )
+			{
+				++count;
+			}
+		}
+		return count;
 	}
 	
 	public Integer getLongestNamePixelLengthByRank( Integer rank, FontMetrics fm, boolean considerRankName )
@@ -368,8 +345,8 @@ public class TreeDataListModel extends AbstractListModel
 	
 	protected Pair<String,Integer> getLongestNameAndPixelLengthByRank( Integer rank, FontMetrics fm, boolean considerRankName )
 	{
-		Integer nodeCount = rankToNodeCount.get(rank);
-		if( nodeCount == null || nodeCount.intValue() == 0 )
+		int nodeCount = getVisibleNodeCountForRank(rank);
+		if( nodeCount == 0 )
 		{
 			return null;
 		}

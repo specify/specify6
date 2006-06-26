@@ -238,6 +238,6 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
         String defItemName = (String)cb.getValue();
         Treeable node = (Treeable)form.getDataObj();
         setDefItemByName(node, defItemName);
-        treeViewer.newNodeEntryComplete((Treeable)form.getDataObj());
+        treeViewer.newNodeEntryComplete(node);
     }
 }

@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
 
 import javax.swing.DefaultListCellRenderer;
@@ -179,13 +180,9 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 		Treeable st = (Treeable)value;
 		l.setText(st.getName());
 		
-//		TreeLookIcon tli = new TreeLookIcon(treeList,model,st,index);
-//		l.setIcon(tli);
-		//return l;
-
 		TreeNodeUI node = new TreeNodeUI(treeList,model,st,index,isSelected);
 		node.setOpaque(false);
-		node.setSize(list.getWidth(),list.getFixedCellHeight());
+		node.setSize(list.getWidth()*10,list.getFixedCellHeight());
 		node.setForeground(l.getForeground());
 		node.setBackground(l.getBackground());
 		return node;
@@ -196,7 +193,8 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 		rankWidthsMap.clear();
 		
 		int prevRanksWidths = 0;
-		for( Integer rank: model.getVisibleRanks() )
+		SortedSet<Integer> visibleRanks = model.getVisibleRanks();
+		for( Integer rank: visibleRanks )
 		{
 			rankWidthsMap.put(rank, prevRanksWidths);
 			
@@ -230,11 +228,12 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 		@Override
 		protected void paintComponent(Graphics g)
 		{
-			// ensure that the lengths are valid
-			if( !lengthsValid )
-			{
-				recomputeLengthPerLevel(g);
-			}
+//			// ensure that the lengths are valid
+//			if( !lengthsValid )
+//			{
+//				recomputeLengthPerLevel(list.getGraphics());
+//			}
+			recomputeLengthPerLevel(list.getGraphics());
 			
 			Graphics2D g2d = (Graphics2D)g;
 			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -254,9 +253,17 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 			Treeable parent = treeable.getParentNode();
 			if( parent != null )
 			{
-				int parentWidth = rankWidthsMap.get(parent.getRankId());
-				int childWidth = rankWidthsMap.get(child.getRankId());
-
+				Integer parentRankId = parent.getRankId();
+				Integer childRankId  = child.getRankId();
+				Integer parentWidth = rankWidthsMap.get(parentRankId);
+				Integer childWidth = rankWidthsMap.get(childRankId);
+				if( parentWidth == null || childWidth == null )
+				{
+					System.out.println("Unable to compute visual node location");
+					System.out.println("   Parent: " + parent.getName());
+					System.out.println("   Child:  " + child.getName());
+				}
+				
 				if( !model.parentHasChildrenAfterNode(parent, child) )
 				{
 					// draw an L-shape

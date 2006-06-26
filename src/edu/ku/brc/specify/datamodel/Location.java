@@ -486,4 +486,9 @@ public class Location  implements java.io.Serializable,Treeable {
     }
 
     // Delete Add Methods
+    
+    public String toString()
+    {
+    	return "Location " + locationId + ": " + name + ", child of " + getParent() + ", " + rankId + ", " + nodeNumber + ", " + highestChildNodeNumber;
+    }
 }

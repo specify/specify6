@@ -1,7 +1,12 @@
 package edu.ku.brc.specify.ui.treetables;
 
+import java.awt.AWTException;
+import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Robot;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -18,18 +23,25 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JList;
 
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.dnd.GhostActionable;
+import edu.ku.brc.specify.ui.dnd.GhostMouseInputAdapter;
 
 @SuppressWarnings("serial")
 public class TreeDataJList extends JList implements DragSourceListener,
-		DropTargetListener, DragGestureListener
+		DropTargetListener, DragGestureListener, GhostActionable
 {
 
-	static DataFlavor	localObjectFlavor;
+	protected static DataFlavor	localObjectFlavor;
 	static
 	{
 		try
@@ -42,13 +54,17 @@ public class TreeDataJList extends JList implements DragSourceListener,
 			cnfe.printStackTrace();
 		}
 	}
-	static DataFlavor[]	supportedFlavors	=
+	protected static DataFlavor[]	supportedFlavors	=
 											{ localObjectFlavor };
-	DragSource			dragSource;
-	DropTarget			dropTarget;
-	Object				dropTargetCell;
-	int					draggedIndex		= -1;
-	TreeDataListModel	treeDataModel;
+	protected DragSource			dragSource;
+	protected DropTarget			dropTarget;
+	protected Object				dropTargetCell;
+	protected int					draggedIndex		= -1;
+	protected TreeDataListModel	treeDataModel;
+	
+    protected GhostMouseInputAdapter  mouseDropAdapter = null;
+    protected List<DataFlavor>       dropFlavors  = new ArrayList<DataFlavor>();
+    protected List<DataFlavor>       dragFlavors  = new ArrayList<DataFlavor>();
 
 	public TreeDataJList( TreeDataListModel model )
 	{
@@ -59,6 +75,7 @@ public class TreeDataJList extends JList implements DragSourceListener,
 		dragSource = new DragSource();
 		dragSource.createDefaultDragGestureRecognizer(this,DnDConstants.ACTION_MOVE,this);
 		dropTarget = new DropTarget(this, this);
+		createMouseInputAdapter();
 	}
 
 	// DragGestureListener
@@ -211,5 +228,75 @@ public class TreeDataJList extends JList implements DragSourceListener,
 		{
 			return supportedFlavors;
 		}
+	}
+
+	public void doAction(GhostActionable source)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setData(Object data)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	public Object getData()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Object getDataForClass(Class classObj)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#createMouseDropAdapter()
+     */
+    public void createMouseInputAdapter()
+    {
+        mouseDropAdapter = new GhostMouseInputAdapter(UICacheManager.getGlassPane(), "action", this);
+        addMouseListener(mouseDropAdapter);
+        addMouseMotionListener(mouseDropAdapter);
+    }
+
+    /**
+     * Returns the adaptor for tracking mouse drop gestures
+     * @return Returns the adaptor for tracking mouse drop gestures
+     */
+    public GhostMouseInputAdapter getMouseInputAdapter()
+    {
+        return mouseDropAdapter;
+    }
+
+	public BufferedImage getBufferedImage()
+	{
+//		BufferedImage bi = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_ARGB);
+//		Graphics g = bi.getGraphics();
+//		this.paint(g);
+//		
+//		return bi;
+		
+		BufferedImage bi = new BufferedImage(300,45,BufferedImage.TYPE_INT_ARGB);
+		Graphics g = bi.getGraphics();
+		g.setColor(Color.LIGHT_GRAY);
+		g.drawRect(0, 0, 300, 45);
+		g.setColor(Color.BLACK);
+		g.drawString("Imagine your image here", 20, 20);
+		return bi;
+	}
+
+	public List<DataFlavor> getDropDataFlavors()
+	{
+		return dropFlavors;
+	}
+
+	public List<DataFlavor> getDragDataFlavors()
+	{
+		return dragFlavors;
 	}
 }

@@ -1,11 +1,13 @@
 package edu.ku.brc.specify.treeutils;
 
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
 
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
@@ -286,7 +288,17 @@ public class TreeTableUtils
 
 	protected static boolean locationCanBeDeleted( Location loc )
 	{
-		return false;
+		if( loc.getParent() == null )
+		{
+			// never allow deletion of a root node
+			return false;
+		}
+		
+		//XXX
+		//TODO: fix this
+		log.warn("!!! Fix this implementation !!!");
+		
+		return true;
 	}
 
 	protected static boolean taxonCanBeDeleted( Taxon taxon )
@@ -443,4 +455,47 @@ public class TreeTableUtils
 		}
 		return totalDescendants;
 	}
+
+	public static void saveTreeStructure( Treeable root, Set<Treeable> deletedNodes )
+	{
+		Session session = HibernateUtil.getCurrentSession();
+		HibernateUtil.beginTransaction();
+		saveOrUpdateTree(root,session);
+//		for( Treeable node: deletedNodes )
+//		{
+//			if( node.getParentNode() != null )
+//			{
+//				node.setParentNode(null);
+//			}
+//			session.delete(node);
+//		}
+		HibernateUtil.commitTransaction();
+	}
+	
+	public static void saveOrUpdateTree( Treeable root, Session session )
+	{
+		session.saveOrUpdate(root);
+		saveOrUpdateDescendants(root,session);
+	}
+	
+	private static void saveOrUpdateDescendants( Treeable node, Session session )
+	{
+		for( Treeable child: node.getChildNodes() )
+		{
+			session.saveOrUpdate(child);
+			saveOrUpdateDescendants(child, session);
+		}
+	}
+	
+	public static List<Treeable> getAllDescendants(Treeable node)
+	{
+		Vector<Treeable> descendants = new Vector<Treeable>();
+		for( Treeable child: node.getChildNodes() )
+		{
+			descendants.add(child);
+			descendants.addAll(getAllDescendants(child));
+		}
+		return descendants;
+	}
+
 }

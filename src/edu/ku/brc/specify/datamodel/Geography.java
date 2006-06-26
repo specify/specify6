@@ -533,4 +533,9 @@ public class Geography  implements java.io.Serializable,Treeable {
     {
         return getGeo(this, 400);
     }
+
+    public String toString()
+    {
+    	return "Geography " + geographyId + ": " + name + ", child of " + getParent() + ", " + rankId + ", " + nodeNumber + ", " + highestChildNodeNumber;
+    }
 }
