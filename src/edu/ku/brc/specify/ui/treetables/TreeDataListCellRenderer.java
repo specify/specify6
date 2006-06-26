@@ -182,7 +182,7 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 		
 		TreeNodeUI node = new TreeNodeUI(treeList,model,st,index,isSelected);
 		node.setOpaque(false);
-		node.setSize(list.getWidth()*10,list.getFixedCellHeight());
+		node.setSize(list.getWidth(),list.getFixedCellHeight());
 		node.setForeground(l.getForeground());
 		node.setBackground(l.getBackground());
 		return node;

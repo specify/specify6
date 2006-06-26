@@ -458,6 +458,7 @@ public class GeologicTimePeriod  implements java.io.Serializable,Treeable {
 	// temporary implementation of toString() for easier debugging
 	public String toString()
     {
-    	return "GeologicTimePeriod " + geologicTimePeriodId + ": " + name + ", child of " + getParent() + ", " + rankId + ", " + nodeNumber + ", " + highestChildNodeNumber;
+		String parentName = getParent() != null ? getParent().getName() : "none";
+    	return "GeologicTimePeriod " + geologicTimePeriodId + ": " + name + ", child of " + parentName + ", " + rankId + ", " + nodeNumber + ", " + highestChildNodeNumber;
     }
 }

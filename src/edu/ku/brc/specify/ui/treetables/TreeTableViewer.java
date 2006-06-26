@@ -363,7 +363,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	
 	protected void showNewTreeableForm(Treeable parent)
 	{
-		Treeable newT = TreeFactory.createNewTreeable(parent, "Some new node name");
+		Treeable newT = TreeFactory.createNewTreeable(parent, "New Node");
 		
 		String shortClassName = newT.getClass().getName();
 		String idFieldName = shortClassName.substring(0,1).toLowerCase() + shortClassName.substring(1) + "Id";
