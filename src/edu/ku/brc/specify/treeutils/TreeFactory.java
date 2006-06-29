@@ -21,6 +21,78 @@ import edu.ku.brc.util.Pair;
 
 public class TreeFactory
 {
+	@SuppressWarnings("unchecked")
+	public static TreeDefinitionIface setupNewTreeDef( Class treeNodeClass, String defName )
+	{
+		TreeDefinitionIface def = null;
+		TreeDefinitionItemIface defItem = null;
+		Treeable rootNode = null;
+		if( treeNodeClass.equals(Geography.class) )
+		{
+			def = setupNewGeographyTree(defName);
+			defItem = createNewTreeDefinitionItem(GeographyTreeDefItem.class, "Root");
+			rootNode = createNewTreeable(Geography.class, "Root");
+		}
+		else if( treeNodeClass.equals(GeologicTimePeriod.class) )
+		{
+			def = setupNewGeologicTimePeriodTree(defName);
+			defItem = createNewTreeDefinitionItem(GeologicTimePeriodTreeDefItem.class, "Root");
+			rootNode = createNewTreeable(Geography.class, "Root");
+		}
+		else if( treeNodeClass.equals(Location.class) )
+		{
+			def = setupNewLocationTree(defName);
+			defItem = createNewTreeDefinitionItem(LocationTreeDefItem.class, "Root");
+			rootNode = createNewTreeable(Geography.class, "Root");
+		}
+		else if( treeNodeClass.equals(Taxon.class) )
+		{
+			def = setupNewTaxonTree(defName);
+			defItem = createNewTreeDefinitionItem(TaxonTreeDefItem.class, "Root");
+			rootNode = createNewTreeable(Geography.class, "Root");
+		}
+
+		defItem.setTreeDefinition(def);
+		defItem.getTreeEntries().add(rootNode);
+		def.getTreeDefItems().add(defItem);
+		def.getTreeEntries().add(rootNode);
+		rootNode.setDefItem(defItem);
+		rootNode.setTreeDef(def);
+		return def;
+	}
+	
+	protected static GeographyTreeDef setupNewGeographyTree( String defName )
+	{
+		GeographyTreeDef def = new GeographyTreeDef();
+		def.initialize();
+		def.setName(defName);
+		return def;
+	}
+
+	protected static GeologicTimePeriodTreeDef setupNewGeologicTimePeriodTree( String defName )
+	{
+		GeologicTimePeriodTreeDef def = new GeologicTimePeriodTreeDef();
+		def.initialize();
+		def.setName(defName);
+		return def;
+	}
+
+	protected static LocationTreeDef setupNewLocationTree( String defName )
+	{
+		LocationTreeDef def = new LocationTreeDef();
+		def.initialize();
+		def.setName(defName);
+		return def;
+	}
+
+	protected static TaxonTreeDef setupNewTaxonTree( String defName )
+	{
+		TaxonTreeDef def = new TaxonTreeDef();
+		def.initialize();
+		def.setName(defName);
+		return def;
+	}
+
 	public static Treeable createNewTreeable( Class implementingClass, Treeable parent, String name, Integer rank )
 	{
 		Treeable t = null;
@@ -83,18 +155,22 @@ public class TreeFactory
 		if( implementingClass.equals(GeographyTreeDef.class) )
 		{
 			def = new GeographyTreeDef();
+			((GeographyTreeDef)def).initialize();
 		}
 		else if( implementingClass.equals(GeologicTimePeriodTreeDef.class) )
 		{
 			def = new GeologicTimePeriodTreeDef();
+			((GeologicTimePeriodTreeDef)def).initialize();
 		}
 		else if( implementingClass.equals(LocationTreeDef.class) )
 		{
 			def = new LocationTreeDef();			
+			((LocationTreeDef)def).initialize();
 		}
 		else if( implementingClass.equals(TaxonTreeDef.class) )
 		{
 			def = new TaxonTreeDef();
+			((TaxonTreeDef)def).initialize();
 		}
 		def.setName(name);
 		def.setRemarks(remarks);

@@ -307,6 +307,14 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 				g2d.fillRoundRect(stringX-2, 1, stringWidth+4, cellHeight-2, 8, 8);
 				g2d.setColor(list.getSelectionForeground());
 			}
+			
+			// TODO: replace this with something much more visually appealling
+			if( !treeable.getChildNodes().isEmpty() && !model.allChildrenAreVisible(treeable) )
+			{
+				g.drawString("+", stringX, stringY);
+			}
+			stringX += g.getFontMetrics().stringWidth("+");
+			
 			g.drawString(name, stringX, stringY);
 		}
 	}

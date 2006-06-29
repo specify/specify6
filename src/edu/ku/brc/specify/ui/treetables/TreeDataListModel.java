@@ -182,6 +182,11 @@ public class TreeDataListModel extends AbstractListModel
 		if( visibleNodes.isEmpty() )
 		{
 			visibleNodes.add(t);
+			if( childrenWereShowing(t) )
+			{
+				showChildren(t);
+			}
+
 			return 0;
 		}
 		
@@ -198,6 +203,11 @@ public class TreeDataListModel extends AbstractListModel
 		if( indexOfParent == visibleNodes.size()-1 )
 		{
 			visibleNodes.add(t);
+			if( childrenWereShowing(t) )
+			{
+				showChildren(t);
+			}
+
 			return visibleNodes.size()-1;
 		}
 

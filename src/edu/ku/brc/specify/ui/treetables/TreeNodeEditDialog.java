@@ -83,10 +83,11 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
 
     // UI
     protected JButton        okBtn;
+    protected JButton		 cancelBtn;
 
     protected JPanel         contentPanel;
     
-    protected TreeTableViewer treeViewer;
+    protected TreeNodeDialogCallback callback;
 
 
     /**
@@ -103,11 +104,11 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
                                 final String title,
                                 final String className,
                                 final String idFieldName,
-                                final TreeTableViewer treeViewer) throws HeadlessException
+                                final TreeNodeDialogCallback callback) throws HeadlessException
     {
         super((Frame)UICacheManager.get(UICacheManager.FRAME), title, true);
         
-        this.treeViewer = treeViewer;
+        this.callback = callback;
         
         this.className   = className;
         this.idFieldName = idFieldName;
@@ -147,10 +148,13 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
         okBtn = new JButton(getResourceString("Close"));
         okBtn.addActionListener(this);
         getRootPane().setDefaultButton(okBtn);
+        
+        cancelBtn = new JButton(getResourceString("Cancel"));
+        cancelBtn.addActionListener(this);
 
         ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
         btnBuilder.addGlue();
-        btnBuilder.addGriddedButtons(new JButton[] { okBtn });
+        btnBuilder.addGriddedButtons(new JButton[] { cancelBtn, okBtn });
 
         panel.add(btnBuilder.getPanel(), BorderLayout.SOUTH);
 
@@ -183,6 +187,10 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
     		if( item != null )
     		{
     			model.addElement(item.getName());
+    			if( dataObj.getDefItem() == item )
+    			{
+    				cb.setValue(item.getName(), null);
+    			}
     			parentDefItem = item;
     			if( item.getIsEnforced() != null  && item.getIsEnforced().booleanValue() == true )
     			{
@@ -225,8 +233,23 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
      */
     public void actionPerformed(ActionEvent e)
     {
-        // Handle clicks on the OK and Cancel buttons.
+        // Handle clicks on the OK buttons.
+    	if( e.getSource().equals(okBtn) )
+    	{
+    		okAction(e);
+    	}
+    	else if( e.getSource().equals(cancelBtn) )
+    	{
+    		cancelAction(e);
+    	}
+    	return;
+    }
+    
+    public void okAction(ActionEvent e)
+    {
+        // Handle clicks on the OK buttons.
         setVisible(false);
+        
         if( propertyChangeListener != null )
         {
         	propertyChangeListener.propertyChange(null);
@@ -238,6 +261,20 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
         String defItemName = (String)cb.getValue();
         Treeable node = (Treeable)form.getDataObj();
         setDefItemByName(node, defItemName);
-        treeViewer.newNodeEntryComplete(node);
+        callback.editCompleted(node);
+    }
+    
+    public void cancelAction(ActionEvent e)
+    {
+        setVisible(false);
+
+    	Treeable node = (Treeable)form.getDataObj();
+    	callback.editCancelled(node);
+    }
+    
+    public interface TreeNodeDialogCallback
+    {
+    	public void editCompleted(Treeable node);
+    	public void editCancelled(Treeable node);
     }
 }

@@ -147,6 +147,14 @@
 
 		<!-- Associations -->
 
+		<set name="determinations" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="TaxonID" />
+			</key>
+			<one-to-many class="edu.ku.brc.specify.datamodel.Determination" />
+		</set>
+
 		<!-- bi-directional one-to-many association to Taxon -->
 		<set name="acceptedChildren" lazy="false" inverse="true"
 			cascade="none">

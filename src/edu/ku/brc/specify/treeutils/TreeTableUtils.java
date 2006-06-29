@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.treeutils;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -256,6 +257,12 @@ public class TreeTableUtils
 	 */
 	public static boolean canBeDeleted( Treeable treeable )
 	{
+		// first of all, never allow deletion of a root node
+		if( treeable.getParentNode() == null )
+		{
+			return false;
+		}
+		
 		if( treeable instanceof Geography )
 		{
 			return geographyCanBeDeleted((Geography)treeable);
@@ -278,32 +285,69 @@ public class TreeTableUtils
 	
 	protected static boolean geographyCanBeDeleted( Geography geo )
 	{
+		boolean noLocs = geo.getLocalities().isEmpty();
+		
+		if( noLocs && allDescendantsDeletable(geo) )
+		{
+			return true;
+		}
+		
 		return false;
 	}
 
 	protected static boolean geologicTimePeriodCanBeDeleted( GeologicTimePeriod gtp )
 	{
+		boolean noStrats = gtp.getStratigraphies().isEmpty();
+		
+		if( noStrats && allDescendantsDeletable(gtp) )
+		{
+			return true;
+		}
+		
 		return false;
 	}
 
 	protected static boolean locationCanBeDeleted( Location loc )
 	{
-		if( loc.getParent() == null )
+		boolean noConts = loc.getContainers().isEmpty();
+		boolean noPreps = loc.getPreparations().isEmpty();
+		
+		if( noConts && noPreps && allDescendantsDeletable(loc) )
 		{
-			// never allow deletion of a root node
-			return false;
+			return true;
 		}
 		
-		//XXX
-		//TODO: fix this
-		log.warn("!!! Fix this implementation !!!");
-		
-		return true;
+		return false;
 	}
 
 	protected static boolean taxonCanBeDeleted( Taxon taxon )
 	{
+		boolean noCitations = taxon.getTaxonCitations().isEmpty();
+		boolean noAcceptedChildren = taxon.getAcceptedChildren().isEmpty();
+		boolean noExtRes = taxon.getExternalResources().isEmpty();
+		boolean noDeter = taxon.getDeterminations().isEmpty();
+		
+		if( noCitations && noAcceptedChildren && noExtRes && noDeter && allDescendantsDeletable(taxon) )
+		{
+			return true;
+		}
+		
 		return false;
+	}
+	
+	protected static boolean allDescendantsDeletable(Treeable parent)
+	{
+		boolean deletable = true;
+		
+		for( Treeable child: parent.getChildNodes() )
+		{
+			if( !canBeDeleted(child) )
+			{
+				return false;
+			}
+		}
+		
+		return deletable;
 	}
 	
 	/**
@@ -461,14 +505,14 @@ public class TreeTableUtils
 		Session session = HibernateUtil.getCurrentSession();
 		HibernateUtil.beginTransaction();
 		saveOrUpdateTree(root,session);
-//		for( Treeable node: deletedNodes )
-//		{
-//			if( node.getParentNode() != null )
-//			{
-//				node.setParentNode(null);
-//			}
-//			session.delete(node);
-//		}
+		for( Treeable node: deletedNodes )
+		{
+			if( node.getParentNode() != null )
+			{
+				node.setParentNode(null);
+			}
+			session.delete(node);
+		}
 		HibernateUtil.commitTransaction();
 	}
 	
@@ -498,4 +542,26 @@ public class TreeTableUtils
 		return descendants;
 	}
 
+	public static void setTimestampsToNow(Treeable node)
+	{
+		Date now = new Date();
+		node.setTimestampCreated(now);
+		node.setTimestampModified(now);
+
+		//TODO: fix this somehow
+		log.info("update this implementation");
+		String user = System.getProperty("user.name");
+		node.setLastEditedBy(user);
+	}
+	
+	public static void updateModifiedTimeAndUser(Treeable node)
+	{
+		Date now = new Date();
+		node.setTimestampModified(now);
+		
+		//TODO: fix this somehow
+		log.info("update this implementation");
+		String user = System.getProperty("user.name");
+		node.setLastEditedBy(user);
+	}
 }

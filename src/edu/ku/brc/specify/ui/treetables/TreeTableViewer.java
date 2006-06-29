@@ -36,7 +36,7 @@ import org.hibernate.LockMode;
 import org.hibernate.Session;
 
 import edu.ku.brc.specify.core.Taskable;
-import edu.ku.brc.specify.datamodel.Location;
+import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -46,6 +46,7 @@ import edu.ku.brc.specify.treeutils.ReverseRankBasedComparator;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.specify.ui.treetables.TreeNodeEditDialog.TreeNodeDialogCallback;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -64,7 +65,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	protected JPanel southPanel;
 	protected JPanel buttonPanel;
 	protected JPanel treeListPanel;
-	protected Vector<AbstractButton> buttons;
+	protected List<AbstractButton> buttons;
 	protected JLabel statusBar;
 	protected JLabel messageLabel;
 	protected Icon errorIcon;
@@ -77,11 +78,14 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	protected JComboBox defsBox;
 	protected JButton addNodeButton;
 	protected JButton deleteNodeButton;
+	protected JButton editButton;
 	protected JButton commitTreeButton;
 	
 	protected Class treeableClass;
 	
 	protected SortedSet<Treeable> deletedNodes;
+	
+	protected boolean unsavedChanges;
 	
     private static final Logger log = Logger.getLogger(TreeTableViewer.class);
 
@@ -106,6 +110,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		init(results);
 
 		deletedNodes = new TreeSet<Treeable>(new ReverseRankBasedComparator());
+		unsavedChanges = false;
 		
 		HibernateUtil.closeSession();
 	}
@@ -223,6 +228,8 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	{
 		log.debug("Successfully initialized tree editor");
 
+		defsBox.setEnabled(false);
+		
 		listModel = new TreeDataListModel(root);
 		list = new TreeDataJList(listModel);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -289,7 +296,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 				{
 					public void actionPerformed(ActionEvent ae)
 					{
-						addChildToSelection();
+						addChildToSelectedNode();
 					}
 				});
 		
@@ -298,7 +305,16 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 				{
 					public void actionPerformed(ActionEvent ae)
 					{
-						deleteSelection();
+						deleteSelectedNode();
+					}
+				});
+		
+		editButton = new JButton("Edit node");
+		editButton.addActionListener(new ActionListener()
+				{
+					public void actionPerformed(ActionEvent ae)
+					{
+						editSelectedNode();
 					}
 				});
 		
@@ -315,6 +331,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 				
 		buttons.add(addNodeButton);
 		buttons.add(deleteNodeButton);
+		buttons.add(editButton);
 		buttons.add(commitTreeButton);
 		
 		disableAllButtons();
@@ -322,6 +339,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		
 		buttonPanel.add(addNodeButton);
 		buttonPanel.add(deleteNodeButton);
+		buttonPanel.add(editButton);
 		buttonPanel.add(commitTreeButton);
 	}
 	
@@ -331,6 +349,8 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		{
 			b.setEnabled(false);
 		}
+
+		commitTreeButton.setEnabled(unsavedChanges);
 	}
 	
 	protected void enableAllButtons()
@@ -339,9 +359,11 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		{
 			b.setEnabled(true);
 		}
+		
+		commitTreeButton.setEnabled(unsavedChanges);
 	}
 
-	public void addChildToSelection()
+	public void addChildToSelectedNode()
 	{
 		Object selection = list.getSelectedValue();
 		if( selection == null )
@@ -356,21 +378,28 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 			log.info("Cannot add child node below this rank");
 			return;
 		}
-		
+
+		Treeable newT = TreeFactory.createNewTreeable(parent, "New Node");
+
 		// display a form for filling in child data
-		showNewTreeableForm(parent);
+		showNewTreeableForm(newT);
 	}
 	
-	protected void showNewTreeableForm(Treeable parent)
+	protected void showNewTreeableForm(Treeable newNode)
 	{
-		Treeable newT = TreeFactory.createNewTreeable(parent, "New Node");
-		
-		String shortClassName = newT.getClass().getName();
-		String idFieldName = shortClassName.substring(0,1).toLowerCase() + shortClassName.substring(1) + "Id";
-		Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(parent);
-		TreeNodeEditDialog editDialog = new TreeNodeEditDialog(formsNames.first, formsNames.second,"New Tree Node",shortClassName,idFieldName,this);
-		editDialog.setData(newT);
-		editDialog.setVisible(true);
+		TreeNodeDialogCallback callback = new TreeNodeDialogCallback()
+		{
+			public void editCompleted(Treeable node)
+			{
+				newNodeEntryComplete(node);
+			}
+			public void editCancelled(Treeable node)
+			{
+				newNodeEntryCancelled(node);
+			}
+		};
+
+		showEditDialog(newNode, "New Node Form", callback);
 	}
 	
 	public void newNodeEntryComplete(Treeable node)
@@ -378,9 +407,42 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		listModel.hideChildren(node.getParentNode());
 		node.getParentNode().addChild(node);
 		listModel.showChildren(node.getParentNode());
+		
+		TreeTableUtils.setTimestampsToNow(node);
+		String fullname = TreeTableUtils.getFullName(node);
+		node.setFullName(fullname);
+		
+		unsavedChanges = true;
+		commitTreeButton.setEnabled(true);
 	}
 	
-	public void deleteSelection()
+	public void newNodeEntryCancelled(Treeable node)
+	{
+		if( node == null )
+		{
+			return;
+		}
+		
+		Treeable parent = node.getParentNode();
+		if( parent != null )
+		{
+			parent.removeChild(node);
+		}
+		
+		TreeDefinitionIface def = node.getTreeDef();
+		if( def != null )
+		{
+			def.getTreeDefItems().remove(node);
+		}
+		
+		TreeDefinitionItemIface defItem = node.getDefItem();
+		if( defItem != null )
+		{
+			defItem.getTreeEntries().remove(node);
+		}
+	}
+	
+	public void deleteSelectedNode()
 	{
 		Object selection = list.getSelectedValue();
 		if( selection == null )
@@ -419,9 +481,41 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		}
 	}
 	
-	public void finalizeDeleteNode( Treeable node )
+	protected void editSelectedNode()
 	{
+		Object selection = list.getSelectedValue();
+		if( selection == null )
+		{
+			return;
+		}
 		
+		Treeable node = (Treeable)selection;
+		
+		TreeNodeDialogCallback callback = new TreeNodeDialogCallback()
+		{
+			public void editCompleted(Treeable node)
+			{
+				editSelectedNodeOK(node);
+			}
+			public void editCancelled(Treeable node)
+			{
+				editSelectedNodeCancelled(node);
+			}
+		};
+
+		showEditDialog(node, "Edit Node Values", callback);
+	}
+	
+	protected void editSelectedNodeOK(Treeable node)
+	{
+		log.info("User selected 'OK' from edit node dialog");
+		unsavedChanges = true;
+		commitTreeButton.setEnabled(true);
+	}
+	
+	protected void editSelectedNodeCancelled(Treeable node)
+	{
+		log.info("User selected 'Cancel' from edit node dialog");
 	}
 	
 	/**
@@ -432,22 +526,34 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	 */
 	public boolean commitStructureToDb()
 	{
-		log.info("TODO: commit current tree structure to DB");
-		
 		// XXX: for testing
-		// block all but the location tree from saving changes
-		if( !listModel.getRoot().getClass().equals(Location.class) )
+		// block all but the test taxon tree from saving
+		TreeDefinitionIface treeDef = listModel.getRoot().getTreeDef();
+		int treeDefId = treeDef.getTreeDefId().intValue();
+		if( !treeDef.getClass().equals(TaxonTreeDef.class) || (treeDefId != 3 && treeDefId != 4) )
 		{
+			log.info("Currently only allowing commits to DB from the test taxon tree");
 			return false;
 		}
-		
 		
 		Treeable root = listModel.getRoot();
 		root.setNodeNumber(1);
 		TreeTableUtils.fixNodeNumbersFromRoot(root);
 		
 		TreeTableUtils.saveTreeStructure(root,deletedNodes);
+		unsavedChanges = false;
+		commitTreeButton.setEnabled(false);
 		return true;
+	}
+	
+	protected void showEditDialog(Treeable node,String title,TreeNodeDialogCallback callback)
+	{
+		String shortClassName = node.getClass().getName();
+		String idFieldName = shortClassName.substring(0,1).toLowerCase() + shortClassName.substring(1) + "Id";
+		Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(node);
+		TreeNodeEditDialog editDialog = new TreeNodeEditDialog(formsNames.first,formsNames.second,title,shortClassName,idFieldName,callback);
+		editDialog.setData(node);
+		editDialog.setVisible(true);
 	}
 	
 	protected Map<Integer,Icon> getIconMapForClass( Class treeableClass )
@@ -505,12 +611,14 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		{
 			statusBar.setText(null);
 			deleteNodeButton.setEnabled(false);
+			editButton.setEnabled(false);
 			addNodeButton.setEnabled(false);
 			return;
 		}
 		
 		statusBar.setText(TreeTableUtils.getFullName(t));
 		deleteNodeButton.setEnabled(true);
+		editButton.setEnabled(true);
 		addNodeButton.setEnabled(true);
 	}
 }

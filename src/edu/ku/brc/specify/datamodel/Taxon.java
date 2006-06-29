@@ -36,13 +36,14 @@ public class Taxon  implements java.io.Serializable,Treeable {
      protected Short accepted;
      protected Integer rankId;
      protected String groupNumber;
-     private Set<Taxon> acceptedChildren;
-     private Taxon acceptedTaxon;
-     private Set<TaxonCitation> taxonCitations;
-     private TaxonTreeDef definition;
-     private TaxonTreeDefItem definitionItem;
-     private Taxon parent;
-     private Set<ExternalResource> externalResources;
+     protected Set<Taxon> acceptedChildren;
+     protected Taxon acceptedTaxon;
+     protected Set<Determination> determinations;
+     protected Set<TaxonCitation> taxonCitations;
+     protected TaxonTreeDef definition;
+     protected TaxonTreeDefItem definitionItem;
+     protected Taxon parent;
+     protected Set<ExternalResource> externalResources;
      protected Set<Taxon> children;
 
     // Constructors
@@ -87,6 +88,7 @@ public class Taxon  implements java.io.Serializable,Treeable {
         rankId = null;
         groupNumber = null;
         acceptedChildren = new HashSet<Taxon>();
+        determinations = new HashSet<Determination>();
         acceptedTaxon = null;
         taxonCitations = new HashSet<TaxonCitation>();
         definition = null;
@@ -418,7 +420,18 @@ public class Taxon  implements java.io.Serializable,Treeable {
         this.acceptedTaxon = acceptedTaxon;
     }
 
-    /**
+
+    public Set<Determination> getDeterminations()
+	{
+		return determinations;
+	}
+
+	public void setDeterminations(Set<Determination> determinations)
+	{
+		this.determinations = determinations;
+	}
+
+	/**
      * 
      */
     public Set<TaxonCitation> getTaxonCitations() {
@@ -634,23 +647,30 @@ public class Taxon  implements java.io.Serializable,Treeable {
 		child.setAcceptedTaxon(null);
 	}
 
-    // Add Methods
-
     public void addTaxonCitations(final TaxonCitation taxonCitation)
     {
         this.taxonCitations.add(taxonCitation);
         taxonCitation.setTaxon(this);
     }
 
+    public void addDetermination(final Determination determination)
+    {
+    	determinations.add(determination);
+    	determination.setTaxon(this);
+    }
+    
+    public void removeDetermination(final Determination determination)
+    {
+    	determinations.remove(determination);
+    	determination.setTaxon(null);
+    }
+    
     public void addExternalResources(final ExternalResource externalResource)
     {
         this.externalResources.add(externalResource);
         externalResource.getTaxonomy().add(this);
     }
 
-    // Done Add Methods
-
-    // Delete Methods
 
     public void removeTaxonCitations(final TaxonCitation taxonCitation)
     {
@@ -664,7 +684,6 @@ public class Taxon  implements java.io.Serializable,Treeable {
         externalResource.getTaxonomy().remove(this);
     }
 
-    // Delete Add Methods
     public String toString()
     {
     	String parentName = getParent() != null ? getParent().getName() : "none";

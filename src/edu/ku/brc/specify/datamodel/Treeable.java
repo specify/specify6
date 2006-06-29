@@ -145,4 +145,7 @@ public interface Treeable
 	
 	public Date getTimestampModified();
 	public void setTimestampModified(Date modified);
+	
+	public String getLastEditedBy();
+	public void setLastEditedBy(String user);
 }
