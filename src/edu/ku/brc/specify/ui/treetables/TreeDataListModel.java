@@ -455,4 +455,13 @@ public class TreeDataListModel extends AbstractListModel
 		HibernateUtil.closeSession();
 		showChildren(parent);
 	}
+
+	public void nodeValuesChanged(Treeable node)
+	{
+		if( visibleNodes.contains(node) )
+		{
+			int index = visibleNodes.indexOf(node);
+			fireContentsChanged(this, index, index);
+		}
+	}
 }

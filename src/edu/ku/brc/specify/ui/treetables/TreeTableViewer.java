@@ -511,6 +511,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		log.info("User selected 'OK' from edit node dialog");
 		unsavedChanges = true;
 		commitTreeButton.setEnabled(true);
+		listModel.nodeValuesChanged(node);
 	}
 	
 	protected void editSelectedNodeCancelled(Treeable node)
