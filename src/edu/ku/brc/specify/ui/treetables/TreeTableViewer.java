@@ -418,12 +418,14 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	
 	public void newNodeEntryCancelled(Treeable node)
 	{
+		Treeable parent = node.getParentNode();
+		boolean showing = listModel.allChildrenAreVisible(parent);
+		listModel.hideChildren(parent);
 		if( node == null )
 		{
 			return;
 		}
 		
-		Treeable parent = node.getParentNode();
 		if( parent != null )
 		{
 			parent.removeChild(node);
@@ -440,6 +442,8 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		{
 			defItem.getTreeEntries().remove(node);
 		}
+		
+		listModel.setChildrenVisible(parent, showing);
 	}
 	
 	public void deleteSelectedNode()

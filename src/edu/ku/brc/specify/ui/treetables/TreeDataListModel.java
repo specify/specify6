@@ -60,6 +60,11 @@ public class TreeDataListModel extends AbstractListModel
 	
 	public boolean allChildrenAreVisible(Treeable t)
 	{
+		if( t == null )
+		{
+			return false;
+		}
+		
 		for(Treeable child: t.getChildNodes())
 		{
 			if(!visibleNodes.contains(child))
