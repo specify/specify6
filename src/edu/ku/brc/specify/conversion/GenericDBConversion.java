@@ -66,6 +66,7 @@ import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
+import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
 import edu.ku.brc.specify.datamodel.PrepType;
@@ -78,6 +79,7 @@ import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.Encryption;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.tests.ObjCreatorHelper;
+import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.specify.ui.db.PickList;
 import edu.ku.brc.specify.ui.db.PickListItem;
@@ -2928,12 +2930,17 @@ public class GenericDBConversion
     	
     	Session session = HibernateUtil.getCurrentSession();
     	HibernateUtil.beginTransaction();
-
-    	LocationTreeDef locDef = new LocationTreeDef();
-    	locDef.initialize();
-    	locDef.setName("Sample location tree definition");
+    	
+    	LocationTreeDef locDef = (LocationTreeDef)TreeFactory.setupNewTreeDef(Location.class, "Sample location tree");
     	locDef.setRemarks("This definition is merely for demonstration purposes.  Consult documentation or support staff for instructions on creating one tailored for an institutions specific needs.");
     	session.save(locDef);
+    	
+    	// get the root def item
+    	LocationTreeDefItem rootItem = (LocationTreeDefItem)locDef.getTreeDefItems().iterator().next();
+    	session.save(rootItem);
+    	
+    	Location rootNode = (Location)rootItem.getTreeEntries().iterator().next();
+    	session.save(rootNode);
     	
     	LocationTreeDefItem building = new LocationTreeDefItem();
     	building.initialize();
@@ -2959,6 +2966,7 @@ public class GenericDBConversion
     	freezer.setTreeDef(locDef);
     	session.save(freezer);
     	
+    	rootItem.setChild(building);
     	building.setChild(room);
     	room.setChild(freezer);
     	

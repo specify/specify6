@@ -180,6 +180,7 @@ public class TreeFactory
 	public static TreeDefinitionItemIface createNewTreeDefItem( Class implementingClass, TreeDefinitionItemIface parent, String name )
 	{
 		TreeDefinitionItemIface t = null;
+		
 		// big switch statement on implementingClass
 		if( implementingClass.equals(GeographyTreeDefItem.class) )
 		{
@@ -197,6 +198,12 @@ public class TreeFactory
 		{
 			t = new TaxonTreeDefItem();
 		}
+		else
+		{
+			return null;
+		}
+		t.initialize();
+		
 		if( parent != null )
 		{
 			t.setParentItem(parent);

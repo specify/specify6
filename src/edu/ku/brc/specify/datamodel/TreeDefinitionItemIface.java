@@ -4,6 +4,8 @@ import java.util.Set;
 
 public interface TreeDefinitionItemIface
 {
+	public void initialize();
+	
 	public Integer getTreeDefItemId();
 	public void setTreeDefItemId(Integer id);
 	

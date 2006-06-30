@@ -27,6 +27,8 @@ import java.util.Set;
  */
 public interface Treeable
 {
+	public void initialize();
+	
 	/**
 	 * @return the ID (primary key) of this node
 	 */
