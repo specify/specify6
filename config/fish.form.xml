@@ -123,6 +123,42 @@
             </altviews>
         </view>
 
+        <view name="NewTaxon"
+            class="edu.ku.brc.specify.datamodel.Taxon"
+            resourcelabels="false">
+            <desc><![CDATA[New Taxon Node Form]]></desc>
+            <altviews>
+                <altview name="Taxon Edit" viewdef="NewTaxon" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+        <view name="NewGeography"
+            class="edu.ku.brc.specify.datamodel.Geography"
+            resourcelabels="false">
+            <desc><![CDATA[New Taxon Node Form]]></desc>
+            <altviews>
+                <altview name="Taxon Edit" viewdef="NewGeography" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+        <view name="NewGeologicTimePeriod"
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            resourcelabels="false">
+            <desc><![CDATA[New Taxon Node Form]]></desc>
+            <altviews>
+                <altview name="GeologicTimePeriod Edit" viewdef="NewGeologicTimePeriod" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+        <view name="NewLocation"
+            class="edu.ku.brc.specify.datamodel.Location"
+            resourcelabels="false">
+            <desc><![CDATA[New Taxon Node Form]]></desc>
+            <altviews>
+                <altview name="Location Edit" viewdef="NewLocation" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
     </views>
 
     <viewdefs>
@@ -790,5 +826,140 @@
             </rows>
         </viewdef>
 
+        <viewdef
+            type="form"
+            name="NewTaxon"
+            class="edu.ku.brc.specify.datamodel.Taxon"
+            gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.specify.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[New Taxon Node Form]]></desc>
+            <columnDef>p,3dlu,p,8dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="name" label="Name"/>
+                    <cell type="field" id="name" uitype="text" cols="16"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="remarks" label="Remarks"/>
+                    <cell type="field" id="remarks" uitype="textarea"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="defItemComboBox" label="Rank"/>
+                    <cell type="field" id="defItemComboBox" uitype="combobox" name=""/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="ser_num" label="TaxonomicSerialNumber"/>
+                    <cell type="field" id="ser_num" uitype="text" name="taxonomicSerialNumber"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="guid" label="GUID"/>
+                    <cell type="field" id="guid" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="commonName" label="Common Name"/>
+                    <cell type="field" id="commonName" uitype="text"/>
+                </row>
+
+                <row>
+                    <cell type="label" labelfor="author" label="Author"/>
+                    <cell type="field" id="author" uitype="text"/>
+                </row>
+
+                <row>
+                    <cell type="label" labelfor="source" label="Source"/>
+                    <cell type="field" id="source" uitype="text"/>
+                </row>
+
+                <row>
+                    <cell type="label" labelfor="evp" label="Environmental Protection Status"/>
+                    <cell type="field" id="evp" uitype="text" name="environmentalProtectionStatus"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="NewGeography"
+            class="edu.ku.brc.specify.datamodel.Geography"
+            gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.specify.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[New Geography Node Form]]></desc>
+            <columnDef>p,3dlu,p,6dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="defItemComboBox" label="Rank"/>
+                    <cell type="field" id="defItemComboBox" uitype="combobox" name=""/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="NewGeologicTimePeriod"
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.specify.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[New Geologic Time Period Node Form]]></desc>
+            <columnDef>p,3dlu,p,6dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="defItemComboBox" label="Rank"/>
+                    <cell type="field" id="defItemComboBox" uitype="combobox" name=""/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="NewLocation"
+            class="edu.ku.brc.specify.datamodel.Location"
+            gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.specify.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[New Location Node Form]]></desc>
+            <columnDef>p,3dlu,p,6dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="defItemComboBox" label="Rank"/>
+                    <cell type="field" id="defItemComboBox" uitype="combobox" name=""/>
+                </row>
+            </rows>
+        </viewdef>
+        
     </viewdefs>
 </viewset>
