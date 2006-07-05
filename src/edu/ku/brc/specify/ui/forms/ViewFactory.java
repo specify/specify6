@@ -938,7 +938,7 @@ public class ViewFactory
                     if (validator != null && addToValidator)
                     {
 
-                        validator.addUIComp(cell.getName(), compToReg == null ? compToAdd : compToReg);
+                        validator.addUIComp(cell.getId(), compToReg == null ? compToAdd : compToReg);
                     }
                     colInx += colspan + 1;
                  }
