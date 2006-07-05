@@ -34,7 +34,7 @@ import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
-import edu.ku.brc.specify.tasks.subpane.SearchFormPane;
+//import edu.ku.brc.specify.tasks.subpane.SearchFormPane;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
@@ -44,18 +44,18 @@ import edu.ku.brc.specify.ui.forms.persist.View;
 
 /**
  * This task will enable the user to create queries, save them and execute them.
- * 
+ *
  * @author rods
  *
  */
 public class QueryTask extends BaseTask
 {
     public static final String QUERY = "Search";
-    
+
     protected Vector<ToolBarDropDownBtn> tbList = new Vector<ToolBarDropDownBtn>();
     protected Vector<JComponent>          menus  = new Vector<JComponent>();
-    
-    
+
+
     /**
      * Default Constructor
      *
@@ -63,7 +63,7 @@ public class QueryTask extends BaseTask
     public QueryTask()
     {
         super(QUERY, getResourceString(QUERY));
-        
+
         // XXX Localize
         // Temporary
         NavBox navBox = new NavBox(name);
@@ -74,13 +74,13 @@ public class QueryTask extends BaseTask
         navBox.add(NavBox.createBtn(getResourceString("Geographic"), name, IconManager.IconSize.Std16));
         navBox.add(NavBox.createBtn(getResourceString("Collection Object"), name, IconManager.IconSize.Std16, new QueryAction(null, "Collection Object Search")));
         navBoxes.addElement(navBox);
-        
+
         navBox = new NavBox(getResourceString("Saved_Searches"));
         navBox.add(NavBox.createBtn("Species Counts", name, IconManager.IconSize.Std16, new QueryAction("select SpeciesName,count(tx) as SpeciesCount from (select determination.TaxonNameId, taxonname.TaxonNameID as tx, taxonname.TaxonName as SpeciesName from taxonname,determination where determination.TaxonNameId = taxonname.taxonnameid) as newTable group by tx order by SpeciesCount DESC;")));
         navBox.add(NavBox.createBtn("Picklist", name, IconManager.IconSize.Std16));
         navBoxes.addElement(navBox);
     }
-    
+
     /**
      * CReates pane and executes a query
      * @param sqlStr SQL to be executed
@@ -91,7 +91,7 @@ public class QueryTask extends BaseTask
         UICacheManager.getSubPaneMgr().addPane(sqlPane);
         sqlPane.setSQLStr(sqlStr);
         sqlPane.doQuery();
-        
+
         // XXX Example Code
         // This is an example of how to add menu items to a menu in a Toolbar Button
         /*
@@ -101,17 +101,18 @@ public class QueryTask extends BaseTask
             menus.add(new JMenuItem("Hello"));
             tb.propertyChange(null);
         }*/
-        
+
     }
-    
+
+    /*
     protected void createSearchForm(final String viewSetName, final String viewName)
     {
         View view = ViewMgr.getView(viewSetName, viewName);
         SearchFormPane searchFormPane = new SearchFormPane(view.getName(), this, viewSetName, viewName);
         UICacheManager.getSubPaneMgr().addPane(searchFormPane);
 
-    }
-    
+    }*/
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
@@ -119,11 +120,11 @@ public class QueryTask extends BaseTask
     {
         return new SQLQueryPane(name, this, false, false);
     }
-    
+
     //-------------------------------------------------------
     // Plugin Interface
     //-------------------------------------------------------
-    
+
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getToolBarItems()
@@ -131,18 +132,18 @@ public class QueryTask extends BaseTask
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        
+
         ToolBarDropDownBtn btn = createToolbarButton(name, "queryIt.gif", "search_hint", menus);
         if (tbList.size() == 0)
         {
             tbList.add(btn);
         }
         list.add(new ToolBarItemDesc(btn));
-        
+
         return list;
-        
+
     }
-    
+
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getMenuItems()
@@ -150,11 +151,11 @@ public class QueryTask extends BaseTask
     public List<MenuItemDesc> getMenuItems()
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
-        
+
         return list;
-        
+
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
      */
@@ -162,23 +163,23 @@ public class QueryTask extends BaseTask
     {
         return this.getClass();
     }
-    
+
     //--------------------------------------------------------------
     // Inner Classes
     //--------------------------------------------------------------
-    
- 
+
+
     /**
-     * 
+     *
      * @author rods
      *
      */
-    class QueryAction implements ActionListener 
+    class QueryAction implements ActionListener
     {
         private String queryStr;
         private String viewSetName;
         private String viewName;
-        
+
         public QueryAction(final String queryStr, final String viewSetName, final String viewName)
         {
             this.queryStr    = queryStr;
@@ -193,18 +194,18 @@ public class QueryTask extends BaseTask
         {
             this(null, viewSetName, viewName);
         }
-        public void actionPerformed(ActionEvent e) 
+        public void actionPerformed(ActionEvent e)
         {
             if (StringUtils.isNotEmpty(queryStr))
             {
                 createAndExecute(queryStr);
-                
+
             } else if (StringUtils.isNotEmpty(viewSetName) && StringUtils.isNotEmpty(viewName))
             {
-                createSearchForm(viewSetName, viewName);
+                //createSearchForm(viewSetName, viewName);
             }
         }
     }
-    
+
 
 }
