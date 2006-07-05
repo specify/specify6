@@ -37,7 +37,7 @@ public class TreeFactory
 		{
 			def = setupNewGeologicTimePeriodTree(defName);
 			defItem = createNewTreeDefinitionItem(GeologicTimePeriodTreeDefItem.class, "Root");
-			rootNode = createNewTreeable(Geography.class, "Root");
+			rootNode = createNewTreeable(GeologicTimePeriod.class, "Root");
 		}
 		else if( treeNodeClass.equals(Location.class) )
 		{
