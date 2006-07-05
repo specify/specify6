@@ -325,11 +325,11 @@ public class InfoRequestTask extends BaseTask
         List<String> list = new ArrayList<String>();
         
         int numItems = getCommentValueAsInt("<!-- NUM_ITEMS", content);
-        System.out.println("Num: " + numItems);
+        //System.out.println("Num: " + numItems);
         for (int i=0;i<numItems;i++)
         {
-            System.out.println("ID: " + getCommentValueAsInt("<!-- ITEM"+i, content));
-            System.out.println("Checked: " + getCommentValueAsCheck("<!-- ITEM"+i, content));
+            //System.out.println("ID: " + getCommentValueAsInt("<!-- ITEM"+i, content));
+            //System.out.println("Checked: " + getCommentValueAsCheck("<!-- ITEM"+i, content));
             if (getCommentValueAsCheck("<!-- ITEM"+i, content))
             {
                 list.add(getCommentValueAsStr("<!-- ITEM"+i, content));

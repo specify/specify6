@@ -27,7 +27,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -159,8 +158,7 @@ public class SystemSetupTask extends BaseTask
                 if (dfo.getData() == null) // null means we add a new one
                 {
                     PickList pickList = new PickList();
-                    pickList.setCreated(null); // this tells us later that it is a new object
-                    pickList.setItems(new HashSet());
+                    pickList.initialize();
                     formPane = createFormPanel(dfo.getViewSetName(), DBTableIdMgr.lookupDefaultFormNameById(dfo.getFormId()), null, pickList);
 
                 } else
@@ -188,12 +186,8 @@ public class SystemSetupTask extends BaseTask
     }
 
     /**
-     * Save a info request
-     * @param pickList the ir to be saved
-     */
-    /**
-     * Save a info request
-     * @param pickList the ir to be saved
+     * Save a ipickList
+     * @param pickList the pickList to be saved
       */
     public void savePickList(final PickList pickList)
     {
@@ -201,7 +195,6 @@ public class SystemSetupTask extends BaseTask
         //pickList.setTimestampModified(Calendar.getInstance().getTime());
 
         // save to database
-        HibernateUtil.getCurrentSession();
         HibernateUtil.beginTransaction();
         HibernateUtil.getCurrentSession().saveOrUpdate(pickList);
         HibernateUtil.commitTransaction();
@@ -210,13 +203,12 @@ public class SystemSetupTask extends BaseTask
     }
 
     /**
-     * Delete a record set
-     * @param rs the recordSet to be deleted
+     * Delete a picklist
+     * @param pickList the pickList to be deleted
      */
     protected void deletePickList(final PickList pickList)
     {
         // delete from database
-        HibernateUtil.getCurrentSession();
         HibernateUtil.beginTransaction();
         HibernateUtil.getCurrentSession().delete(pickList);
         HibernateUtil.commitTransaction();

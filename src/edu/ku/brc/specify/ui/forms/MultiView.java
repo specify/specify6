@@ -349,7 +349,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public void showView(final String name)
     {
-        System.out.println("Show["+name+"]");
+        //System.out.println("Show["+name+"]");
         // This needs to always map from the incoming name to the ID for that view
         // so first look it up by name
         Viewable viewable = viewMapByName.get(name);
@@ -392,7 +392,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                     String altViewName = altView.getName();
                     currentView.aboutToShow(false);
                     editable       = altView.getMode() == AltView.CreationMode.Edit;
-                    createWithMode =  altView.getMode();
+                    createWithMode = altView.getMode();
                     viewable = ViewFactory.createFormView(this, view, altViewName, data, createRecordSetController, createViewSwitcher);
                     if (add(viewable, altViewName))
                     {

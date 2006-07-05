@@ -21,13 +21,16 @@ package edu.ku.brc.specify.ui.forms;
 
 import static edu.ku.brc.specify.helpers.XMLHelper.getAttr;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -46,6 +49,8 @@ import edu.ku.brc.specify.ui.forms.persist.ViewSet;
 public class ViewMgr
 {
     // Statics
+    public  static final String  defaultViewSetName     = "Default";
+    
     private static final Logger  log        = Logger.getLogger(ViewMgr.class);
     private static final ViewMgr instance;
     
@@ -58,8 +63,8 @@ public class ViewMgr
     
     
     // Data Members
-    protected Hashtable<String, ViewSet> viewsHash   = new Hashtable<String, ViewSet>();
-    protected ViewSet                    coreViewSet = null;
+    protected Hashtable<String, ViewSet> viewsHash      = new Hashtable<String, ViewSet>();
+    protected ViewSet                    defaultViewSet = null;
     
     /**
      * protected Constructor
@@ -87,18 +92,35 @@ public class ViewMgr
                     String  name        = getAttr(fileElement, "name", null);
                     if (!isViewSetNameInUse(name))
                     {
-                        boolean  isCore = getAttr(fileElement, "core", false);
-                        if (coreViewSet != null && isCore)
+                        String typeStr   = getAttr(fileElement, "type", "system");
+                        String title     = getAttr(fileElement, "title", null);
+                        String fileName  = getAttr(fileElement, "file", null);
+                        String databases = getAttr(fileElement, "databases", "");
+                        String users     = getAttr(fileElement, "users", "");
+                        
+                        // these can go away once we validate the XML
+                        if (StringUtils.isEmpty(typeStr))
                         {
-                            log.error("Ignoring 'core' attribute for view ["+name+"] because there is already one set to true.");
-                            isCore = false;
+                            throw new RuntimeException("ViewSet type cannot be null!");
+                        }
+                        if (StringUtils.isEmpty(title))
+                        {
+                            throw new RuntimeException("ViewSet title cannot be null!");
+                        }                       
+                        if (StringUtils.isEmpty(fileName))
+                        {
+                            throw new RuntimeException("ViewSet file cannot be null!");
+                        } else
+                        {
+                            String path = XMLHelper.getConfigDirPath(fileName);
+                            File   file = new File(path);
+                            if (file == null || !file.exists())
+                            {
+                                throw new RuntimeException("ViewSet file cannot be found at["+path+"]");
+                            }
                         }
                         
-                        ViewSet viewSet = new ViewSet(name, getAttr(fileElement, "file", null), isCore);
-                        if (isCore)
-                        {
-                            coreViewSet = viewSet;
-                        }
+                        ViewSet viewSet = new ViewSet(ViewSet.parseType(typeStr), name, title, fileName, databases, users);
                         viewsHash.put(viewSet.getName(), viewSet);
                         
                     } else
@@ -120,15 +142,26 @@ public class ViewMgr
     }
     
     /**
+     * Sets a created viewset as the "default" view set
+     * @param name the name of the viewset to be identified as the "default" 
+     */
+    public static void setAsDefaultViewSet(final String name)
+    {
+        ViewSet viewSet = instance.viewsHash.get(name);
+        if (viewSet == null)
+        {
+            throw new RuntimeException("Couldn't find viewSet["+name+"] to make it the default.");
+        }
+        instance.defaultViewSet = viewSet;
+    }
+    
+    /**
      * This is used mostly for testing
      *
      */
     public static void clearAll()
     {
-        for (Enumeration e=instance.viewsHash.elements();e.hasMoreElements();)
-        {
-            ((ViewSet)e.nextElement()).cleanUp();           
-        }
+        reset();
         instance.viewsHash.clear();
     }
     
@@ -138,9 +171,9 @@ public class ViewMgr
      */
     public static void reset()
     {
-        for (Enumeration e=instance.viewsHash.elements();e.hasMoreElements();)
+        for (Enumeration<ViewSet> e=instance.viewsHash.elements();e.hasMoreElements();)
         {
-            ((ViewSet)e.nextElement()).cleanUp();           
+            e.nextElement().cleanUp();           
         }
     }
     
@@ -192,7 +225,7 @@ public class ViewMgr
     
     /**
      * Gets a View by ViewSet name and View Name
-     * @param viewSetName the view set name of the view
+     * @param viewSetName the view set name of the view (can be null or "default" for the current ViewSet)
      * @param viewName the name of the view
      * @return the FormView from a view set by id 
      */
@@ -200,15 +233,17 @@ public class ViewMgr
     {
         ViewSet viewSet;
         
-        if (viewSetName == null)
+        if (viewSetName == null || viewSetName.equals(defaultViewSetName))
         {
-            if (instance.coreViewSet != null)
+            if (instance.defaultViewSet != null)
             {
-                viewSet = instance.coreViewSet;
+                viewSet = instance.defaultViewSet;
+                
             } else
             {
-                log.error("Asking for 'core' ViewSet and one has not been defined!");
-                viewSet = instance.viewsHash.get(viewSetName);
+                String msg = "Asking for the 'default' ViewSet and one has not been set!";
+                log.error(msg);
+                throw new RuntimeException(msg);
             }
         } else
         {
@@ -232,13 +267,64 @@ public class ViewMgr
         return instance.viewsHash.get(viewSetName);        
     }
    
-     /**
+    /**
      * Returns a list of all the ViewSets
-     * @return Returns a list of all the ViewSets
+     * @return a list of all the ViewSets
      */
     public static List<ViewSet> getViewSets()
     {
         return Collections.list(instance.viewsHash.elements());
+    }
+    
+    /**
+     * Returns a list of all the non-System ViewSets
+     * @return a list of all the non-System ViewSets
+     */
+    public static List<ViewSet> getUserViewSets()
+    {
+        List<ViewSet> list = new ArrayList<ViewSet>();
+        
+        for (Enumeration<ViewSet> e=instance.viewsHash.elements();e.hasMoreElements();)
+        {
+            ViewSet vs = e.nextElement();
+            if (vs.getType() == ViewSet.Type.User)
+            {
+                list.add(vs);
+            }
+        }
+
+        return list;
+    }
+    
+    /**
+     * Returns a list of all the non-System ViewSets that are for this user and database
+     * @param username the username to be checked
+     * @param database the database
+     * @return a list of all the non-System ViewSets that are for this user and database
+     */
+    public static List<ViewSet> getViewSetsForUserAndDatabase(final String username, final String database)
+    {
+        List<ViewSet> list = new ArrayList<ViewSet>();
+        
+        for (Enumeration<ViewSet> e=instance.viewsHash.elements();e.hasMoreElements();)
+        {
+            ViewSet vs = e.nextElement();
+            if (vs.getType() == ViewSet.Type.User)
+            {
+                boolean userOK = StringUtils.isNotEmpty(username) && Collections.binarySearch(vs.getUsers(), username) > -1;
+                if (!userOK && vs.getUsers().size() == 1 && vs.getUsers().get(0).equalsIgnoreCase("all"))
+                {
+                    userOK = true;
+                }
+                //log.debug("["+vs.getUsers()+"]["+username+"]["+vs.getDatabases()+"]["+database+"]");
+                if (userOK && StringUtils.isNotEmpty(database) && Collections.binarySearch(vs.getDatabases(), database) > -1)
+                {
+                    list.add(vs);
+                }
+            }
+        }
+
+        return list;
     }
     
 }

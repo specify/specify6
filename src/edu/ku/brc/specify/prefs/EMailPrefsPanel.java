@@ -103,7 +103,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
         prefNode = appsNode.node("settings/email");
         if (prefNode == null)
         {
-            throw new RuntimeException("Could find pref for email!");
+            throw new RuntimeException("Could not find pref for email!");
         }
         
         createUI();

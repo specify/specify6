@@ -25,7 +25,7 @@ import java.awt.Component;
 public class ToolBarItemDesc
 {
 
-    public enum Position {Insert, Append, AppendNextToLast};
+    public enum Position {Insert, Append, AppendNextToLast}
     
     protected Component comp;
     protected Position  pos;

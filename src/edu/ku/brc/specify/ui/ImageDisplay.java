@@ -34,6 +34,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -76,10 +77,10 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
      * @param imgHeight the desired image height
      * @param isEditMode whether it is in browse mode or edit mode
      */
-    public ImageDisplay(final int imgWidth, final int imgHeight, boolean isEditMode)
+    public ImageDisplay(final int imgWidth, final int imgHeight, boolean isEditMode, boolean hasBorder)
     {
         super(new BorderLayout());
-        setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        setBorder(hasBorder ? new EtchedBorder(EtchedBorder.LOWERED) : BorderFactory.createEmptyBorder());
 
         this.isEditMode = isEditMode;
         imagePanel = new ImagePanel(imgWidth, imgHeight);

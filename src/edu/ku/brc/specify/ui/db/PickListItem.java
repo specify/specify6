@@ -19,12 +19,10 @@ public class PickListItem  implements java.io.Serializable, Comparable<PickListI
     // Constructors
 
     /** default constructor */
-    public PickListItem() {
+    public PickListItem() 
+    {
+        
     }
-
-
-
-
 
     // Property accessors
 
@@ -35,10 +33,6 @@ public class PickListItem  implements java.io.Serializable, Comparable<PickListI
         this.value = value;
         this.createdDate = createdDate;
     }
-
-
-
-
 
     /**
      *

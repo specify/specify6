@@ -28,14 +28,19 @@ import java.util.Vector;
 
 import javax.swing.JComponent;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
+import edu.ku.brc.specify.tasks.subpane.SearchFormPane;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
 import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.forms.ViewMgr;
+import edu.ku.brc.specify.ui.forms.persist.View;
 
 /**
  * This task will enable the user to create queries, save them and execute them.
@@ -67,6 +72,7 @@ public class QueryTask extends BaseTask
         navBox.add(NavBox.createBtn(getResourceString("Specimen"), name, IconManager.IconSize.Std16));
         navBox.add(NavBox.createBtn(getResourceString("Taxonomic"), name, IconManager.IconSize.Std16));
         navBox.add(NavBox.createBtn(getResourceString("Geographic"), name, IconManager.IconSize.Std16));
+        navBox.add(NavBox.createBtn(getResourceString("Collection Object"), name, IconManager.IconSize.Std16, new QueryAction(null, "Collection Object Search")));
         navBoxes.addElement(navBox);
         
         navBox = new NavBox(getResourceString("Saved_Searches"));
@@ -96,6 +102,14 @@ public class QueryTask extends BaseTask
             tb.propertyChange(null);
         }*/
         
+    }
+    
+    protected void createSearchForm(final String viewSetName, final String viewName)
+    {
+        View view = ViewMgr.getView(viewSetName, viewName);
+        SearchFormPane searchFormPane = new SearchFormPane(view.getName(), this, viewSetName, viewName);
+        UICacheManager.getSubPaneMgr().addPane(searchFormPane);
+
     }
     
     /* (non-Javadoc)
@@ -162,14 +176,33 @@ public class QueryTask extends BaseTask
     class QueryAction implements ActionListener 
     {
         private String queryStr;
+        private String viewSetName;
+        private String viewName;
         
+        public QueryAction(final String queryStr, final String viewSetName, final String viewName)
+        {
+            this.queryStr    = queryStr;
+            this.viewSetName = viewSetName;
+            this.viewName    = viewName;
+        }
         public QueryAction(final String queryStr)
         {
-            this.queryStr = queryStr;
+            this(queryStr, null, null);
+        }
+        public QueryAction(final String viewSetName, final String viewName)
+        {
+            this(null, viewSetName, viewName);
         }
         public void actionPerformed(ActionEvent e) 
         {
-            createAndExecute(queryStr);
+            if (StringUtils.isNotEmpty(queryStr))
+            {
+                createAndExecute(queryStr);
+                
+            } else if (StringUtils.isNotEmpty(viewSetName) && StringUtils.isNotEmpty(viewName))
+            {
+                createSearchForm(viewSetName, viewName);
+            }
         }
     }
     

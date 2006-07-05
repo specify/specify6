@@ -168,7 +168,7 @@ public class ChartPanel extends JPanel implements Chartable
          */
         public Dimension preferredLayoutSize(Container arg0)
         {
-        	System.out.println("preferredLayoutSize "+parentChartPanel.maxChartSize);
+        	//System.out.println("preferredLayoutSize "+parentChartPanel.maxChartSize);
         	return parentChartPanel.maxChartSize;
             //return new Dimension(preferredSize);
         }

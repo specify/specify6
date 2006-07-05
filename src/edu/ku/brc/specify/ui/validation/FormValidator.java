@@ -190,6 +190,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
             }
         }
 
+        log.debug("------------------------------------------------- Number of Rules: "+formRules.size());
         for (FormValidationRuleIFace rule : formRules)
         {
             try
@@ -202,7 +203,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
                     Component comp = getComp(rule.getId());
                     if (comp != null)
                     {
-                        log.debug(name+" comp.setEnabled("+result+") "+comp.getClass().toString());
+                        log.debug("  "+name+" comp.setEnabled("+result+") "+comp.getClass().toString());
                         comp.setEnabled(result);
                     }
 

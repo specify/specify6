@@ -182,19 +182,18 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
 
         boolean addController = mvParent != null && view.getAltViews().size() > 1;
         
-        String rowDefs = (mvParent == null ? "p" : "p:g") + (addController ? ",2px,p" : "");
+        boolean addExtraRow = addController || altView.getMode() == AltView.CreationMode.Search;
+        
+        String rowDefs = (mvParent == null ? "p" : "p:g") + (addExtraRow ? ",2px,p" : "");
 
         mainBuilder    = new PanelBuilder(new FormLayout("f:p:g", rowDefs));
         mainComp = mainBuilder.getPanel();
 
+        List<JComponent> comps = new ArrayList<JComponent>();
+        
         // We will add the switchable UI if we are mvParented to a MultiView and have multiple AltViews
         if (addController)
         {
-            controlPanel = new ControlBarPanel();
-            mainBuilder.add(controlPanel, cc.xy(1,3));
-            
-            List<JComponent> comps = new ArrayList<JComponent>();
-
             // Now we have a Special case that when when there are only two AltViews and
             // they differ only by Edit & View we hide the switching UI unless
             // we are the root MultiView. This way when switching the Root View all the other views switch
@@ -226,7 +225,9 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                 {
                     labels[inx] = av.getLabel();
                     
-                    // This is Sort of Temporary until I get it all figured out
+                    // TODO This is Sort of Temporary until I get it all figured out
+                    // But somehow we need to externalize this, possible have the AltView Definition
+                    // define its own icon
                     if (av.getMode() == AltView.CreationMode.Edit)
                     {
                         icons[inx] = IconManager.getImage("EditForm", IconManager.IconSize.Std16);
@@ -276,9 +277,25 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
             {
                 addValidationIndicator(comps);
             }
-            
-            controlPanel.addComponents(comps, false); // false -> right side
         }
+        
+        // This here because the Seach mode shouldn't be combined with other modes
+        if (altView.getMode() == AltView.CreationMode.Search)
+        {
+            saveBtn = new JButton(UICacheManager.getResourceString("Search"), IconManager.getImage("Search", IconManager.IconSize.Std16));
+            comps.add(saveBtn);
+           
+        }
+
+        if (comps.size() > 0 || addController)
+        {
+            controlPanel = new ControlBarPanel();
+            controlPanel.addComponents(comps, false); // false -> right side
+            mainBuilder.add(controlPanel, cc.xy(1, 3));
+        }
+        
+
+
         
         if (createRecordSetController)
         {
@@ -425,7 +442,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
      * Returns the definition of the form
      * @return the definition of the form
      */
-    public FormViewDef getFormView()
+    public FormViewDef getViewDef()
     {
         return formViewDef;
     }
@@ -860,16 +877,16 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
     {
         if (formValidator != null)
         {
-            System.out.println("=================================== "+formValidator.getDCNs().values().size());
+            log.debug("=================================== "+formValidator.getDCNs().values().size());
             for (DataChangeNotifier dcn : formValidator.getDCNs().values())
             {
                 FieldInfo fieldInfo = controlsById.get(dcn.getId());
                 if (dcn.isDataChanged())
                 {
-                    System.out.println("Changed Field["+fieldInfo.getName()+"]");
+                    log.debug("Changed Field["+fieldInfo.getName()+"]");
                 }
             }
-            System.out.println("===================================");
+            log.debug("===================================");
         }
     }
     
@@ -921,6 +938,16 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                 });
             }
         } 
+    }
+    
+    
+
+    /**
+     * @return the Save Button
+     */
+    public JButton getSaveBtn()
+    {
+        return saveBtn;
     }
 
     /**
@@ -978,6 +1005,21 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         if (fi != null)
         {
             return fi.getComp();
+        } else
+        {
+            throw new RuntimeException("Couldn't find FieldInfo for ID["+id+"]");
+        }
+    }
+
+     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.forms.Viewable#getLabelById(java.lang.String)
+     */
+    public JLabel getLabelFor(final String id)
+    {
+        FieldInfo fi = labels.get(id);
+        if (fi != null)
+        {
+            return (JLabel)fi.getComp();
         } else
         {
             throw new RuntimeException("Couldn't find FieldInfo for ID["+id+"]");
@@ -1258,7 +1300,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
             }
         }
         
-        System.out.println(formViewDef.getName());
+        //log.debug(formViewDef.getName());
         
         // Adjust the formValidator now that all the data is in the controls
         if (formValidator != null)
@@ -1591,20 +1633,22 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
      */
     public void wasValidated(final UIValidator validator)
     {
-        ImageIcon icon = IconManager.getImage("ValidationValid");
-        UIValidatable.ErrorType state = formValidator.getState();
-        
-        //log.debug(state);
-        
-        if (state == UIValidatable.ErrorType.Incomplete)
+        if (validationInfoBtn != null)
         {
-            icon = IconManager.getImage("ValidationWarning");
+            ImageIcon icon = IconManager.getImage("ValidationValid");
+            UIValidatable.ErrorType state = formValidator.getState();
             
-        } else if (state == UIValidatable.ErrorType.Error)
-        {
-            icon = IconManager.getImage("ValidationError");
+            if (state == UIValidatable.ErrorType.Incomplete)
+            {
+                icon = IconManager.getImage("ValidationWarning");
+                
+            } else if (state == UIValidatable.ErrorType.Error)
+            {
+                icon = IconManager.getImage("ValidationError");
+            }
+        
+            validationInfoBtn.setIcon(icon);
         }
-        validationInfoBtn.setIcon(icon);
     }
 
     //-------------------------------------------------

@@ -30,6 +30,7 @@ import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.dbsupport.ResultsPager;
+import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.tests.ObjCreatorHelper;
 
 /**
@@ -154,22 +155,29 @@ public class SpecifyDBConverter
      */
     public static void main(String args[]) throws Exception
     {
-    	HibernateUtil.initialize();
-    	
-        String oldDatabaseName = "demo_fish2";
+        String oldDatabaseName = "demo_fish2";  // Fish
+        //String oldDatabaseName = "demo_fish4";  // Accessions
+        //String oldDatabaseName = "demo_fish5";  // Cranbrook
         
-        DBConnection.setUsernamePassword("rods", "rods");
-        DBConnection.setDriver("com.mysql.jdbc.Driver");
-        DBConnection.setDBName("jdbc:mysql://localhost/fish");
-        
-        if (false)
+        String databaseName = "fish";
+        String userHome = System.getProperty("user.home");
+        if (userHome.indexOf("rods") > -1)
         {
-            GenericDBConversion conversion = new GenericDBConversion("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/"+oldDatabaseName, "rods", "rods");
-            conversion.createAndFillStatTable();
-            return;
+            databaseName = "fish";
+        }
+        
+        if (userHome.indexOf("stewart") > -1)
+        {
+            databaseName = "fish";
+        }
+        
+        // This will log us in and return true/false
+        if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/", databaseName, "rods", "rods"))
+        {
+            throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
         }
 
-        
+
         IdMapperMgr idMapperMgr = null;
         try
         {
@@ -181,7 +189,11 @@ public class SpecifyDBConverter
             boolean doConvert = true;
             if (doConvert)
             {
-                GenericDBConversion conversion = new GenericDBConversion("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/"+oldDatabaseName, "rods", "rods");
+                GenericDBConversion conversion = new GenericDBConversion("com.mysql.jdbc.Driver", 
+                                                                         "jdbc:mysql://localhost/", 
+                                                                         oldDatabaseName, 
+                                                                         "rods", 
+                                                                         "rods");
                 
                 idMapperMgr = IdMapperMgr.getInstance();
                 idMapperMgr.setDBs(conversion.getOldDBConnection(), conversion.getNewDBConnection());
@@ -243,7 +255,7 @@ public class SpecifyDBConverter
                 boolean copyUSYSTables = false;
                 if (copyUSYSTables || doAll)
                 {
-                    //conversion.convertUSYSTables();
+                    conversion.convertUSYSTables();
                 }
 
                 boolean copyTables = false;

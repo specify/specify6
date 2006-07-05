@@ -77,7 +77,6 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 import edu.ku.brc.specify.config.SpecifyConfig;
 import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.core.Taskable;
-import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.plugins.PluginMgr;
@@ -86,11 +85,13 @@ import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.StartUpTask;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.specify.ui.JStatusBar;
 import edu.ku.brc.specify.ui.MainPanel;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolbarLayoutManager;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
+import edu.ku.brc.specify.ui.forms.ViewMgr;
 import edu.ku.brc.util.FileCache;
 /**
  * Specify Main Application Class
@@ -107,7 +108,7 @@ public class Specify extends JPanel
     private static final int    PREFERRED_HEIGHT = 800;
 
     // Status Bar
-    private JTextField          statusField        = null;
+    private JStatusBar          statusField        = null;
     private JMenuBar            menuBar            = null;
     private JFrame              topFrame           = null;
     private MainPanel           mainPanel          = null;
@@ -177,19 +178,24 @@ public class Specify extends JPanel
         UICacheManager.register(UICacheManager.MAINPANE, this); // important to be done immediately
 
         initPrefs();
-
+        
+        ViewMgr.setAsDefaultViewSet("Fish Views");
+        
         // Create and throw the splash screen up. Since this will
         // physically throw bits on the screen, we need to do this
         // on the GUI thread using invokeLater.
 
-        createSplashScreen();
-        // do the following on the gui thread
-        SwingUtilities.invokeLater(new Runnable() {
-              public void run()
-              {
-                  showSplashScreen();
-              }
-        });
+        if (false)
+        {
+            createSplashScreen();
+            // do the following on the gui thread
+            SwingUtilities.invokeLater(new Runnable() {
+                  public void run()
+                  {
+                      showSplashScreen();
+                  }
+            });
+        }
 
         specifyApp = this;
 
@@ -231,10 +237,17 @@ public class Specify extends JPanel
         }
 
         log.info("Creating Database configuration ");
+        
 
-        HibernateUtil.initialize(); // This also sets up the DBConnection params for the JDBC driver
-
-        initStartUpPanels();
+        if (UIHelper.doLogin(true)) // true means do auto login if it can
+        {
+            initStartUpPanels();
+            
+        } else
+        {
+            System.exit(0);
+        }
+        
 
        /*try
        {
@@ -260,6 +273,8 @@ public class Specify extends JPanel
 
     protected void initStartUpPanels()
     {
+        PluginMgr.initializePlugins();
+
         if( !SwingUtilities.isEventDispatchThread() )
         {
             SwingUtilities.invokeLater(new Runnable()
@@ -502,7 +517,7 @@ public class Specify extends JPanel
      */
     public void hideSplash()
     {
-        if (!isApplet())
+        if (!isApplet() && splashWindow != null)
         {
             //splashScreen.hideAll();
             splashWindow.setVisible(false);
@@ -563,25 +578,12 @@ public class Specify extends JPanel
 
         mainPanel = new MainPanel();
 
-        statusField = new JTextField("");
-        statusField.setEditable(false);
+        statusField = new JStatusBar();
         UICacheManager.register(UICacheManager.STATUSBAR, statusField);
 
         add(statusField, BorderLayout.SOUTH);
 
         PluginMgr.readRegistry();
-
-        /*PluginMgr.register(new StartUpTask());
-        PluginMgr.register(new DataEntryTask());
-        PluginMgr.register(new LabelsTask());
-        PluginMgr.register(new ReportsTask());
-        PluginMgr.register(new InteractionsTask());
-        PluginMgr.register(new StatsTask());
-        PluginMgr.register(new QueryTask());
-        PluginMgr.register(new RecordSetTask());
-        PluginMgr.register(new ExpressSearchTask());
-        */
-        PluginMgr.initializePlugins();
 
 
     }
@@ -626,6 +628,15 @@ public class Specify extends JPanel
         JMenuItem mi;
 
         JMenu menu = UIHelper.createMenu(mb, "FileMenu", "FileMneu");
+        mi = UIHelper.createMenuItem(menu, "Login", "L", "Database Login", false, null);
+        mi.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        UIHelper.doLogin(false); // true means do auto login if it can
+                    }
+                });
+        menu.addSeparator();
         mi = UIHelper.createMenuItem(menu, "Exit", "x", "Exit Appication", false, null);
         mi.addActionListener(new ActionListener()
                 {

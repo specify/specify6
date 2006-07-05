@@ -66,7 +66,9 @@ import edu.ku.brc.specify.ui.ColorWrapper;
 import edu.ku.brc.specify.ui.CommandAction;
 import edu.ku.brc.specify.ui.CommandActionWrapper;
 import edu.ku.brc.specify.ui.GetSetValueIFace;
+import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.ImageDisplay;
+import edu.ku.brc.specify.ui.JStatusBar;
 import edu.ku.brc.specify.ui.UIPluginable;
 import edu.ku.brc.specify.ui.db.PickListDBAdapter;
 import edu.ku.brc.specify.ui.db.TextFieldWithInfo;
@@ -370,31 +372,14 @@ public class ViewFactory
     protected JList createList(final FormValidator validator,
                                final FormCellField cellField)
     {
-        int numRows = 15;
         String[] initArray = null;
-
-        String initStr = cellField.getInitialize();
-        if (isNotEmpty(initStr))
+        String dataStr = cellField.getProperty("data");
+        if (isNotEmpty(dataStr))
         {
-            String[] initSections = split(initStr, ";");
-            if (initSections[0].indexOf("rows=") > -1)
+            initArray = split(dataStr, ",");
+            for (int i=0;i<initArray.length;i++)
             {
-                String[] nameValPair = split(initStr, "=");
-                if (nameValPair.length == 2 && nameValPair[0].equals("rows"))
-                {
-                    numRows = Integer.parseInt(nameValPair[1]);
-                }
-                if (initSections.length == 2)
-                {
-                    initArray = split(initStr, ",");
-                    for (int i=0;i<initArray.length;i++)
-                    {
-                        initArray[i] = initArray[i].trim();
-                    }
-                }
-            } else
-            {
-                initArray = split(initSections[0], ",");
+                initArray[i] = initArray[i].trim();
             }
         }
 
@@ -406,7 +391,9 @@ public class ViewFactory
             valList.addFocusListener(dcn);
         }
         valList.setRequired(cellField.isRequired());
-        valList.setVisibleRowCount(numRows);
+        
+        valList.setVisibleRowCount(cellField.getPropertyAsInt("rows", 15));
+        
         return valList;
     }
 
@@ -452,13 +439,18 @@ public class ViewFactory
     protected ValComboBox createComboBox(final FormValidator validator,
                                          final FormCellField cellField)
     {
-
-        String[] initArray = split(cellField.getInitialize(), ",");
-        for (int i=0;i<initArray.length;i++)
+        String[] initArray = null;
+        String data = cellField.getProperty("data");
+        if (StringUtils.isNotEmpty(data))
         {
-            initArray[i] = initArray[i].trim();
+            initArray = split(data, ",");
+            for (int i=0;i<initArray.length;i++)
+            {
+                initArray[i] = initArray[i].trim();
+            }
         }
 
+        boolean     makeEditable = cellField.getPropertyAsBoolean("editable", false);
         String      pickListName = cellField.getPickListName();
         ValComboBox cbx          = null;
         if (isNotEmpty(pickListName))
@@ -467,15 +459,16 @@ public class ViewFactory
             
         } else
         {
-            cbx = initArray == null ? new ValComboBox() : new ValComboBox(initArray);
+            cbx = initArray == null || initArray.length == 0 ? new ValComboBox(makeEditable) : new ValComboBox(initArray, makeEditable);
         }
         cbx.setRequired(cellField.isRequired());
 
         if (validator != null && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
         {
             DataChangeNotifier dcn = validator.hookupComponent(cbx, cellField.getId(), cellField.isRequired(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
-            cbx.getModel().addListDataListener(dcn);
-            
+            //cbx.getModel().addListDataListener(dcn);
+            cbx.getComboBox().addActionListener(dcn);
+
             if (dcn.getValidationType() == UIValidator.Type.Focus) // returns None when no Validator
             {
                 cbx.addFocusListener(dcn);
@@ -654,8 +647,38 @@ public class ViewFactory
                         {
                             imageInEdit = editModeStr.toLowerCase().equals("true");
                         }
-
-                        ImageDisplay imgDisp = new ImageDisplay(w, h, imageInEdit);
+ 
+                        ImageDisplay imgDisp = new ImageDisplay(w, h, imageInEdit, cellField.getPropertyAsBoolean("border", true));
+                        
+                        String urlStr = cellField.getProperty("url");
+                        if (isNotEmpty(urlStr))
+                        {
+                            imgDisp.setValue(urlStr, "");
+                        } else
+                        {
+                            String name = cellField.getProperty("icon");
+                            if (isNotEmpty(name))
+                            {
+                                boolean loadIt   = true;
+                                String  iconSize = cellField.getProperty("iconsize");
+                                if (isNotEmpty(iconSize))
+                                {
+                                    IconManager.IconSize sz = IconManager.getIconSize(Integer.parseInt(iconSize), false, false);
+                                    if (sz != null)
+                                    {
+                                        imgDisp.setImage(IconManager.getImage(name, sz));
+                                        loadIt = false;
+                                    }
+                                    
+                                } 
+                                
+                                if (loadIt)
+                                {
+                                    imgDisp.setImage(IconManager.getImage(name));
+                                }
+                            }
+                        }
+                        
                         compToAdd = imgDisp;
 
                         addToValidator = false;
@@ -668,7 +691,7 @@ public class ViewFactory
                     } else if (uiType.equals("combobox"))
                     {
                         compToAdd = createComboBox(validator, cellField);
-                        addToValidator = validator == null; // might already added to validator
+                        addToValidator = validator != null; // might already added to validator
 
 
                     } else if (uiType.equals("checkbox"))
@@ -865,6 +888,12 @@ public class ViewFactory
                     compToAdd = null;
                     colInx += 2;
 
+                } else if (cell.getType() == FormCell.CellType.statusbar)
+                {
+                    compToAdd      = new JStatusBar();
+                    addControl     = true;
+                    addToValidator = false;
+                    
                 } else if (cell.getType() == FormCell.CellType.panel)
                 {
                     FormCellPanel cellPanel = (FormCellPanel)cell;
@@ -1054,7 +1083,7 @@ public class ViewFactory
 
         } catch (Exception e)
         {
-            System.err.println("buildPanel - Outer Name["+altView.getName()+"]");
+            log.error("buildPanel - Outer Name["+altView.getName()+"]");
             e.printStackTrace();
         }
         return null;
@@ -1124,6 +1153,7 @@ public class ViewFactory
                     if (data != null)
                     {
                         form.setDataObj(data);
+                        form.setDataIntoUI();
                     }
                 } else
                 {

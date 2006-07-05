@@ -30,6 +30,7 @@ import java.util.Vector;
 
 import javax.swing.ComboBoxEditor;
 import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -96,7 +97,7 @@ public class JAutoCompComboBox extends JComboBox
      * Constructor with Adapter
      * @param dbAdapter the adaptor for enabling autocomplete
      */
-    public JAutoCompComboBox(PickListDBAdapter dbAdapter)
+    public JAutoCompComboBox(final PickListDBAdapter dbAdapter)
     {
         super(dbAdapter.getList());
         
@@ -105,12 +106,25 @@ public class JAutoCompComboBox extends JComboBox
     }
     
     /**
+     * An initializer so a PickListAdaptor can be set after the control is created, and automatically makes it editable
+     * @param dbAdapter the PickListAdaptor
+     * @param makeEditable oindicates whether it is editable
+     */
+    public void init(final PickListDBAdapter dbAdapter, final boolean makeEditable)
+    {
+        setModel(new DefaultComboBoxModel(dbAdapter.getList()));
+        
+        this.dbAdapter = dbAdapter;
+        init(makeEditable);  
+    }
+    
+    /**
      * Initializes the combobox to enable the typing of values 
      * @param makeEditable indicates to make it an editable combobox
      */
-    protected void init(final boolean makeEditable)
+    public void init(final boolean makeEditable)
     {
-        if (makeEditable)
+        if (makeEditable && !this.isEditable)
         {
             this.setEditor(new BasicComboBoxEditor());
             this.setEditable(true);
@@ -154,6 +168,15 @@ public class JAutoCompComboBox extends JComboBox
         this.caseInsensitve = caseInsensitve;
     }
     
+    /**
+     * Return the PickListAdaptor
+     * @return the PickListAdaptor
+     */
+    public PickListDBAdapter getDBAdapter()
+    {
+        return dbAdapter;
+    }
+
     /* (non-Javadoc)
      * @see java.awt.Component#setBackground(java.awt.Color)
      */
@@ -172,7 +195,8 @@ public class JAutoCompComboBox extends JComboBox
     public void setSelectedIndex(int index)
     {
         super.setSelectedIndex(index);
-        if (dbAdapter != null && index > -1)
+        
+        if (textField != null && dbAdapter != null && index > -1)
         {
             Object item = getItemAt(index);
             if (item instanceof PickListItem)
@@ -323,7 +347,7 @@ public class JAutoCompComboBox extends JComboBox
         if (anEditor.getEditorComponent() instanceof JTextField)
         {
             textField = (JTextField) anEditor.getEditorComponent();
-            textField.setBackground(super.getBackground());
+            //textField.setBackground(super.getBackground());
             textField.addFocusListener(new FocusAdapter() 
             {
                 public void focusLost(FocusEvent e)

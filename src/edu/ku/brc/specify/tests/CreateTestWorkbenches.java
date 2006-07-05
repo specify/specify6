@@ -394,10 +394,14 @@ public class CreateTestWorkbenches {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
-        DBConnection.setUsernamePassword("rods", "rods");
-        DBConnection.setDriver("com.mysql.jdbc.Driver");
-        DBConnection.setDBName("jdbc:mysql://localhost/demo_fish3");
+	public static void main(String[] args) 
+    {
+        DBConnection dbConn = DBConnection.getInstance();
+        dbConn.setUsernamePassword("rods", "rods");
+        dbConn.setDriver("com.mysql.jdbc.Driver");
+        dbConn.setServer("jdbc:mysql://localhost/");
+        dbConn.setDatabaseName("demo_fish3");
+        
 		cleanWorkbenchTables();
 		createTestWorkbenchSet();	
 	}

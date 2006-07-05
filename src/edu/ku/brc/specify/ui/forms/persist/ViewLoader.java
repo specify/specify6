@@ -78,6 +78,7 @@ public class ViewLoader
     {
     }
 
+
     /**
      * Creates the view
      * @param element the element to build the View from
@@ -111,19 +112,10 @@ public class ViewLoader
                 String altName      = altElement.attributeValue(NAME);
                 String viewDefName  = altElement.attributeValue("viewdef");
                 String label        = altElement.attributeValue(LABEL);
-                String modeStr      = getAttr(altElement, "mode", "");
                 boolean isValidated = getAttr(altElement, "validated", false);
                 boolean isDefault   = getAttr(altElement, "default", false);
 
-                AltView.CreationMode mode;
-                if (isEmpty(modeStr))
-                {
-                    mode = AltView.CreationMode.None;
-
-                } else
-                {
-                    mode = modeStr.equals("edit") ? AltView.CreationMode.Edit : AltView.CreationMode.View;
-                }
+                AltView.CreationMode mode = AltView.parseMode(getAttr(altElement, "mode", ""), AltView.CreationMode.View);
 
                 ViewDef viewDef = viewDefs.get(viewDefName);
                 if (viewDef == null)
@@ -436,7 +428,7 @@ public class ViewLoader
                 {
                     Element cellElement = (Element)cellIter.next();
                     String  cellId      = getAttr(cellElement, "id", "");
-                    String  cellName    = getAttr(cellElement, NAME, cellId);
+                    String  cellName    = getAttr(cellElement, NAME, cellId); // let the name default to the id if it doesn't have a name
                     int     colspan     = getAttr(cellElement, "colspan", 1);
                     int     rowspan     = getAttr(cellElement, "rowspan", 1);
 
@@ -465,7 +457,6 @@ public class ViewLoader
                             String validationRule = getAttr(cellElement, "validation", "");
                             String initialize     = getAttr(cellElement, "initialize", "");
                             boolean isRequired    = getAttr(cellElement, "isrequired", false);
-                            boolean isEncrypted   = getAttr(cellElement, "isencrypted", false);
 
                             if (isNotEmpty(format) && isNotEmpty(formatName))
                             {
@@ -474,7 +465,7 @@ public class ViewLoader
                                 format = "";
                             }
 
-                            Hashtable<String, String> properties = null;
+                            Hashtable<String, String> properties = processInitializeString(initialize);
                             
                             String dspUIType;
                             if (uitype.equals("textarea"))
@@ -485,7 +476,6 @@ public class ViewLoader
                             {
                                 dspUIType = getAttr(cellElement, "dspuitype", "textfieldinfo");
                                 
-                                properties = processInitializeString(initialize);
                                 String fmtName = ComboBoxFromQueryFactory.getFormatName(properties.get("name"));
                                 if (isNotEmpty(fmtName))
                                 {
@@ -546,6 +536,8 @@ public class ViewLoader
                                 }
                             }
 
+                            boolean isEncrypted = getAttr(cellElement, "isencrypted", false);
+                            
                             FormCellField field = new FormCellField(FormCell.CellType.field, cellId, 
                                                                     cellName, uitype, dspUIType, format, formatName, uiFieldFormatter, isRequired,
                                                                     cols, rows, colspan, rowspan, validationType, validationRule, isEncrypted);
@@ -555,7 +547,6 @@ public class ViewLoader
                             field.setDefaultValue(getAttr(cellElement, "default", ""));
                             field.setPickListName(getAttr(cellElement, "picklist", ""));
                             field.setChangeListenerOnly(getAttr(cellElement, "changesonly", true) && !isRequired);
-                            field.setInitialize(initialize);
                             field.setProperties(properties);
 
                             cell = formRow.addCell(field);
@@ -598,6 +589,11 @@ public class ViewLoader
 
                         }
                         break;
+                        
+                        case statusbar:
+                            cell = formRow.addCell(new FormCell(FormCell.CellType.statusbar, cellId, cellName, colspan, rowspan));
+                            break;
+
                     } // switch
                     cell.setIgnoreSetGet(getAttr(cellElement, "ignore", false));
                 }

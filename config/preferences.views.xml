@@ -55,7 +55,7 @@
 				</row>
 				<row>
 					<cell type="label" name="accounttypeLabel" labelfor="accounttype" label="accounttype"/>
-					<cell type="field" uitype="combobox" name="accounttype" initialize="Not in use, POP3, IMAP"/>
+					<cell type="field" uitype="combobox" name="accounttype" initialize="data=Not in use, POP3, IMAP"/>
 				</row>
 				<row>
 					<cell type="label" name="accountnameLabel" labelfor="accountname" label="accountname"/>

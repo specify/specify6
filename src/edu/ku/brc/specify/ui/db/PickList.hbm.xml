@@ -36,39 +36,28 @@
         </meta>    
     </property>
     
+    
     <property
         name="readOnly"
         type="boolean"
-        column="readonly"
+        column="readOnly"
         not-null="true"
-        length="1"
     >
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="readonly"
-            not-null="true"
-            length="1"
-        </meta>    
     </property>
     
     <property
         name="sizeLimit"
         type="java.lang.Integer"
-        column="sizeimit"
+        column="sizeLimit"
         length="10"
     >
         <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description">
-           @hibernate.property
-            column="sizeimit"
-            length="10"
-        </meta>    
     </property>
 
 	<!-- We can't change the creation time, so map it with update="false". -->
 	<property   name="created"
-				column="CREATED"
+				column="created"
 				type="java.util.Date"
 				update="false"
 				not-null="true">

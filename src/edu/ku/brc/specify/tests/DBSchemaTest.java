@@ -71,9 +71,11 @@ public class DBSchemaTest extends TestCase
     private static final Logger log = Logger.getLogger(DBSchemaTest.class);
 
     static {
-        DBConnection.setUsernamePassword("rods", "rods");
-        DBConnection.setDriver("com.mysql.jdbc.Driver");
-        DBConnection.setDBName("jdbc:mysql://localhost/demo_fish3");
+        DBConnection dbConn = DBConnection.getInstance();
+        dbConn.setUsernamePassword("rods", "rods");
+        dbConn.setDriver("com.mysql.jdbc.Driver");
+        dbConn.setServer("jdbc:mysql://localhost/");
+        dbConn.setDatabaseName("demo_fish3");
     }
 
     protected Calendar startCal = Calendar.getInstance();
@@ -95,12 +97,12 @@ public class DBSchemaTest extends TestCase
     {
         log.info("Testing IdTableMapper");
 
-        DBConnection oldDB     = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/demo_fish2", "rods", "rods");
+        DBConnection oldDB = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/", "demo_fish2", "rods", "rods");
 
         try
         {
             IdTableMapper  idMapper = new IdTableMapper("collectionobject", "CollectionObjectID");
-            Statement stmt     = oldDB.getConnectionToDB().createStatement();
+            Statement stmt     = oldDB.createConnection().createStatement();
             ResultSet rs       = stmt.executeQuery("select CollectionObjectID from collectionobject limit 0,100");
             int       newInx   = 1;
             while (rs.next())
@@ -119,7 +121,7 @@ public class DBSchemaTest extends TestCase
 
             // Now Test Memory Approach
             idMapper = new IdTableMapper("accession", "AccessionID");
-            stmt     = oldDB.getConnectionToDB().createStatement();
+            stmt     = oldDB.createConnection().createStatement();
             rs       = stmt.executeQuery("select AccessionID from accession limit 0,100");
             newInx   = 1;
             while (rs.next())

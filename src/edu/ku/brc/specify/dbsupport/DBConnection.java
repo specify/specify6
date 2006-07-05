@@ -37,10 +37,13 @@ public class DBConnection
 {
     private static final Logger log = Logger.getLogger(DBConnection.class);
     
-    protected String dbUserid;
+    protected String dbUsername;
     protected String dbPassword;
     protected String dbDriver;
+    protected String dbServer;
     protected String dbName;
+    
+    protected String errMsg = "";
     
     // Static Data Members
     protected static final DBConnection instance = new DBConnection();
@@ -55,22 +58,32 @@ public class DBConnection
     }
     
     /**
+     * @return the error message if it was caused by an exception
+     */
+    public String getErrorMsg()
+    {
+        return this.errMsg;
+    }
+    
+    /**
      * Returns a new connection to the database from an instance of DBConnection.
      * It uses the database name, driver, username and password to connect.
      * @return the JDBC connection to the database
      */
-    public Connection getConnectionToDB()
+    public Connection createConnection()
     {
         Connection con = null;
         try
         {
             Class.forName(dbDriver); // load driver
             
-            con = DriverManager.getConnection(dbName, dbUserid, dbPassword);
+            log.debug("["+dbServer+dbName+"]["+dbUsername+"]["+dbPassword+"]");
+            con = DriverManager.getConnection(dbServer+dbName, dbUsername, dbPassword);
             
         } catch (Exception ex)
         {
-            log.error("Error in getConnection", ex);
+            //log.error("Error in getConnection", ex);
+            errMsg = ex.getMessage();
         }
         return con;
     }
@@ -88,31 +101,70 @@ public class DBConnection
     
     /**
      * Sets the user name and password
-     * @param dbUserid the username
+     * @param dbUsername the username
      * @param dbPassword the password
      */
-    public static void setUsernamePassword(final String dbUserid, final String dbPassword)
+    public void setUsernamePassword(final String dbUsername, final String dbPassword)
     {
-        instance.dbUserid   = dbUserid;
-        instance.dbPassword = dbPassword;
+        this.dbUsername   = dbUsername;
+        this.dbPassword = dbPassword;
     }
     
     /**
      * Sets the database name 
      * @param dbName the database name
      */
-    public static void setDBName(final String dbName)
+    public void setDatabaseName(final String dbName)
     {
-        instance.dbName = dbName;
+        this.dbName = dbName;
     }
     
     /**
      * Sets the driver name 
      * @param dbDriver the driver name
      */
-    public static void setDriver(final String dbDriver)
+    public void setDriver(final String dbDriver)
     {
-        instance.dbDriver = dbDriver;
+        this.dbDriver = dbDriver;
+    }
+    
+    /**
+     * Sets the dbServer name 
+     * @param dbDriver the dbServer name
+     */
+    public void setServer(final String dbServer)
+    {
+        this.dbServer = dbServer;
+        
+        if (!instance.dbServer.endsWith("/"))
+        {
+            instance.dbServer += "/";
+        }
+    }
+    
+    public String getDriver()
+    {
+        return dbDriver;
+    }
+
+    public String getServer()
+    {
+        return dbServer;
+    }
+
+    public String getDatabaseName()
+    {
+        return dbName;
+    }
+
+    public String getPassword()
+    {
+        return dbPassword;
+    }
+
+    public String getUserName()
+    {
+        return dbUsername;
     }
     
     /**
@@ -121,23 +173,29 @@ public class DBConnection
      */
     public static Connection getConnection()
     {
-        return instance.getConnectionToDB();
+        return instance.createConnection();
     }
     
     /**
      * @param dbDriver the driver name
-     * @param dbName the database name
-     * @param dbUserid the username
+     * @param dbServer the dbServer url
+     * @param dbName the database name (just the name)
+     * @param dbUsername the username
      * @param dbPassword the password
      * @return a new instance of a DBConnection
      */
-    public static DBConnection createInstance(final String dbDriver, final String dbName, final String dbUserid, final String dbPassword)
+    public static DBConnection createInstance(final String dbDriver, 
+                                              final String dbServer, 
+                                              final String dbName, 
+                                              final String dbUsername, 
+                                              final String dbPassword)
     {
         DBConnection dbConnection = new DBConnection();
-        dbConnection.dbDriver   = dbDriver;
-        dbConnection.dbName     = dbName;
-        dbConnection.dbUserid   = dbUserid;
-        dbConnection.dbPassword = dbPassword;
+        
+        dbConnection.setDriver(dbDriver);
+        dbConnection.setServer(dbServer);
+        dbConnection.setDatabaseName(dbName);
+        dbConnection.setUsernamePassword(dbUsername, dbPassword);
         
         return dbConnection;
     }

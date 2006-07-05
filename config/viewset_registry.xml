@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files>
-    <file name="Main Views"  file="fish.form.xml"/>
-    <file name="view valid"  file="form.xml"/>
-    <file name="Preferences" file="preferences.form.xml"/>
-    <file name="SystemSetup" file="system.form.xml"/>
-    <file name="Search"      file="search.form.xml"/>
+    <file type="user"   name="Fish Views"  title="Fish"         file="fish.views.xml"       databases="fish" users="all"/>
+    <file type="user"   name="Accessions"  title="Accessions"   file="accessions.views.xml" databases="accessions" users="all"/>
+    <file type="system" name="Preferences" title="Preferences"  file="preferences.views.xml"/>
+    <file type="system" name="SystemSetup" title="System Setup" file="system.views.xml"/>
+    <file type="system" name="Search"      title="Search"       file="search.views.xml"/>
 </files>

@@ -41,7 +41,7 @@ public class StatDataItem implements QueryResultsListener
      * Describes which part of the UI an individual query results data object will be placed.
      * The "Description" is the right side, the "Value" is the left side, and it can be asked to be ignored
      */
-    public enum VALUE_TYPE {Description, Value, Ignore};
+    public enum VALUE_TYPE {Description, Value, Ignore}
 
     protected String     description;
     protected String     sql;
@@ -231,7 +231,6 @@ public class StatDataItem implements QueryResultsListener
 
     public boolean isUseProgress()
     {
-        if (useProgress) System.out.println(hasData);
         return useProgress && !hasData;
     }
     

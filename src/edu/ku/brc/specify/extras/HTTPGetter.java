@@ -40,7 +40,7 @@ public class HTTPGetter implements Runnable
 
     public enum ErrorCode {
         NoError, Error, HttpError, NotDoneError, IOError, URLError
-    };
+    }
 
     protected ErrorCode status = ErrorCode.NoError;
     protected Thread    thread = null;

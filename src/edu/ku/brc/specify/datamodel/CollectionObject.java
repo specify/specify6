@@ -112,6 +112,18 @@ public class CollectionObject  implements java.io.Serializable {
         container = null;
     }
     // End Initializer
+    
+    public void initForSearch()
+    {
+        catalogSeries = new CatalogSeries();
+        catalogSeries.initialize();
+        
+        accession = new Accession();
+        accession.initialize();
+        
+        cataloger  = new Agent();
+        cataloger.initialize();
+    }
 
     // Property accessors
 

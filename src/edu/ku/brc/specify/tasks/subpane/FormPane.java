@@ -38,6 +38,7 @@ public class FormPane extends DroppableTaskPane
     protected String        cacheDesc   = null;
 
     /**
+     * Creates a form pane for a task
      * @param name the name of the pane
      * @param task the owning task
      * @param desc a description to display until a component is added to the pane
@@ -50,6 +51,7 @@ public class FormPane extends DroppableTaskPane
     }
 
     /**
+     * Creates a form pane for a task
      * @param name the name of the pane
      * @param task the owning task
      * @param viewSetName the name of the view set to use
@@ -71,8 +73,7 @@ public class FormPane extends DroppableTaskPane
         this.viewName    = viewName;
         this.data        = data;
         
-        AltView.CreationMode modeType = mode == null || !mode.equalsIgnoreCase("edit") ? AltView.CreationMode.View : AltView.CreationMode.Edit;
-        createForm(viewSetName, viewName, modeType, data, isNewForm);
+        createForm(viewSetName, viewName, AltView.parseMode(mode, AltView.CreationMode.View), data, isNewForm);
     }
 
     /**

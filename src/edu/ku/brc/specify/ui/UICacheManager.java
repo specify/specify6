@@ -295,10 +295,10 @@ public class UICacheManager
      */
     public static void displayStatusBarText(final String text)
     {
-        JTextField txtField = ((JTextField)instance.components.get(STATUSBAR));
-        if (txtField != null)
+        JStatusBar statusBar = ((JStatusBar)instance.components.get(STATUSBAR));
+        if (statusBar != null)
         {
-            txtField.setText(text == null ? "" : text);
+            statusBar.setText(text == null ? "" : text);
         }
     }
 

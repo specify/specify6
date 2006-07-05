@@ -118,7 +118,14 @@ public class TableViewObj implements Viewable
         return null;
     }
 
-
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.forms.Viewable#getLabelById(java.lang.String)
+     */
+    public JLabel getLabelFor(final String id)
+    {
+        return null;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.forms.Viewable#getControlMapping()
      */

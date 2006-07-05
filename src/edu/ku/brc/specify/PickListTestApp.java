@@ -63,7 +63,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -73,7 +72,6 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
-import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.UIHelper;
@@ -83,6 +81,7 @@ import edu.ku.brc.specify.ui.db.JAutoCompComboBox;
 import edu.ku.brc.specify.ui.db.JAutoCompTextField;
 import edu.ku.brc.specify.ui.db.PickList;
 import edu.ku.brc.specify.ui.db.PickListItem;
+import edu.ku.brc.specify.ui.validation.ValComboBoxFromQuery;
 /**
  * @author rods
  *
@@ -104,26 +103,32 @@ public class PickListTestApp
     
     public PickListTestApp()
     {
+        HibernateUtil.initialize();
+        
+        /*
         try
         {
+            
             Connection dbConnection = DBConnection.getConnection();
             Statement  dbStatement  = dbConnection.createStatement();
     
             ResultSet rs = dbStatement.executeQuery("select LocalityName from locality where localityID = 1858960246;");
-            rs.first();
-            do
+            if (rs.first())
             {
-                System.out.println(rs.getObject(1));
-                System.out.println(rs.getString(1));
-                
-            } while(rs.next());
+                do
+                {
+                    System.out.println(rs.getObject(1));
+                    System.out.println(rs.getString(1));
+                    
+                } while(rs.next());
+            }
             
             dbStatement.close();
             dbConnection.close();
         } catch (Exception ex)
         {
             ex.printStackTrace();
-        }
+        }*/
 
         /*
         Session session = HibernateUtil.getCurrentSession();
@@ -136,7 +141,7 @@ public class PickListTestApp
         session.close();
         */
         
-        
+        /*
         Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Locality.class);
         for (Object obj :  criteria.list())
         {
@@ -157,7 +162,7 @@ public class PickListTestApp
             Locality locality = (Locality)obj;
             System.out.println("getLocalityName: "+locality.getLocalityName());
         }
-        
+        */
     }
 
     
@@ -220,7 +225,7 @@ public class PickListTestApp
     
       private JPanel buildContentPane()
       {
-            FormLayout      formLayout = new FormLayout("p,1dlu,p,1dlu,p", "p,2dlu,p,2dlu,p");
+            FormLayout      formLayout = new FormLayout("p,1dlu,p,1dlu,p", "p,2dlu,p,2dlu,p,2dlu,p");
             PanelBuilder    builder    = new PanelBuilder(formLayout);
             CellConstraints cc         = new CellConstraints();
             
@@ -235,14 +240,14 @@ public class PickListTestApp
           builder.add(new JLabel(" (Editable)"), cc.xy(5,y));
           y += 2;
           
-          cb = JAutoCompComboBox.create("states", true, 50, false);
+          cb = JAutoCompComboBox.create("AccessionStatus", true, 50, false);
           
           // Create and register the key listener
           cb.setEditable(true); 
           cb.setCaseInsensitive(true);
           cb.setEnableAdditions(false);
           
-          builder.add(new JLabel("Enter State:"), cc.xy(1,y));
+          builder.add(new JLabel("Enter Status:"), cc.xy(1,y));
           builder.add(cb, cc.xy(3,y));
           builder.add(new JLabel(" (Not Editable)"), cc.xy(5,y));
           y += 2;
@@ -255,6 +260,16 @@ public class PickListTestApp
           builder.add(text, cc.xy(3,y));
           builder.add(new JLabel(" (Editable)"), cc.xy(5,y));
           y += 2;
+          
+          ValComboBoxFromQuery valCBX = new ValComboBoxFromQuery("agent", "AgentID", "LastName", "LastName", 
+                                                                 "edu.ku.brc.specify.datamodel.Agent", "agentId", "lastName", 
+                                                                 "%s", null, null, "AgentDisplay");
+          
+          builder.add(new JLabel("Enter ValCBX:"), cc.xy(1,y));
+          builder.add(valCBX, cc.xy(3,y));
+          builder.add(new JLabel(" (Editable)"), cc.xy(5,y));
+          y += 2;
+          
           builder.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
           return builder.getPanel();
           
@@ -620,9 +635,11 @@ public class PickListTestApp
      */
     public static void main(String[] args) 
     {
-        DBConnection.setUsernamePassword("rods", "rods");
-        DBConnection.setDriver("com.mysql.jdbc.Driver");
-        DBConnection.setDBName("jdbc:mysql://localhost/demo_fish3");
+        DBConnection dbConn = DBConnection.getInstance();
+        dbConn.setUsernamePassword("rods", "rods");
+        dbConn.setDriver("com.mysql.jdbc.Driver");
+        dbConn.setServer("jdbc:mysql://localhost/");
+        dbConn.setDatabaseName("demo_fish3");
         
         //buildTaxaSearch();
         

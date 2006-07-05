@@ -56,6 +56,10 @@ public class HibernateUtil {
     private static ThreadLocal<Object> threadTransaction = new ThreadLocal<Object>();
 
     private static boolean useThreadLocal = true;
+    
+    static {
+        HibernateUtil.initialize();
+    }
 
     /*
     static {
@@ -128,19 +132,14 @@ public class HibernateUtil {
      */
     public static void setHibernateLogonConfig(final Configuration config)
     {
-        String userName     = "rods";
-        String password     = "rods";
-        String hostName     = "jdbc:mysql://localhost/";
-        String databaseName = "fish";
-        String driver       = "com.mysql.jdbc.Driver";
+        DBConnection dbConn = DBConnection.getInstance();
         
-        boolean useLogonDialog = false;
-        if (useLogonDialog)
-        {
-            DatabaseLogon dl = new DatabaseLogon();
-            dl.setVisible(true);
-            // get vars from dialog
-        }
+        String userName     = dbConn.getUserName();
+        String password     = dbConn.getPassword();
+        String serverName   = dbConn.getServer();
+        String databaseName = dbConn.getDatabaseName();
+        String driver       = dbConn.getDriver();
+
         
         config.setProperty("hibernate.connection.username", userName);
         config.setProperty("hibernate.connection.password", password);
@@ -148,7 +147,7 @@ public class HibernateUtil {
         String userHome = System.getProperty("user.home");
         if (userHome.indexOf("rods") > -1)
         {
-            databaseName = "fish";
+            //databaseName = "accessions";
         }
         
         if (userHome.indexOf("stewart") > -1)
@@ -156,23 +155,19 @@ public class HibernateUtil {
         	databaseName = "fish";
         }
         
-        // Setup JDBC Connection
-        DBConnection.setUsernamePassword(userName, password);
-        DBConnection.setDriver(driver);
-        DBConnection.setDBName(hostName + databaseName);
-
+        log.info("Using database ["+serverName + databaseName+"]");
         
-        if (hostName.indexOf("mysql") != -1)
+        if (serverName.indexOf("mysql") != -1)
         {
-            config.setProperty("hibernate.connection.url", hostName + databaseName + "?useServerPrepStmts=false");//&useOldUTF8Behavior=true");
-            config.setProperty("hibernate.dialect","net.sf.hibernate.dialect.MySQLDialect");
+            config.setProperty("hibernate.connection.url", serverName + databaseName);
+            config.setProperty("hibernate.dialect","org.hibernate.dialect.MySQLDialect");
             config.setProperty("hibernate.connection.driver_class", driver);
         }  
-        else if (hostName.indexOf("inetdae7") != -1)
+        else if (serverName.indexOf("inetdae7") != -1)
         {
 
-            config.setProperty("hibernate.connection.url", hostName + "?database="+ databaseName);
-            config.setProperty("hibernate.dialect","net.sf.hibernate.dialect.SQLServerDialect");
+            config.setProperty("hibernate.connection.url", serverName + "?database="+ databaseName);
+            config.setProperty("hibernate.dialect","org.hibernate.dialect.SQLServerDialect");
             config.setProperty("hibernate.connection.driver_class","com.inet.tds.TdsDriver");
         }           
         //else if(hostName.indexOf("sqlserver")!=-1){//jdbc:inetdae7:localhost?database=KS_fish

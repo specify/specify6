@@ -32,7 +32,7 @@ import org.apache.commons.jexl.JexlContext;
 public interface FormValidationRuleIFace
 {
 
-    public enum Scope {Field, Form};
+    public enum Scope {Field, Form}
     
     /**
      * Evaluates the rule within the context

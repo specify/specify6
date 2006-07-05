@@ -18,6 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */package edu.ku.brc.specify.ui.forms.persist;
 
+ import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
 /**
  * Definition of an Alternate View which can be an "Edit", "View", "None"
  * @author rods
@@ -25,16 +27,16 @@
  */
 public class AltView
 {
-    public enum CreationMode {None, Edit, View}; 
+    public enum CreationMode {None, Edit, View, Search}
     
-    protected View  view;
-    protected String  name;
-    protected String  label;
+    protected View         view;
+    protected String       name;
+    protected String       label;
     protected CreationMode mode;
-    protected boolean validated;
-    protected boolean isDefault;
+    protected boolean      validated;
+    protected boolean      isDefault;
     
-    protected ViewDef viewDef = null;
+    protected ViewDef      viewDef = null;
 
     public AltView()
     {
@@ -107,5 +109,24 @@ public class AltView
     {
         return label;
     }
-
+    
+    public static AltView.CreationMode parseMode(final String modeStr, final AltView.CreationMode defaultMode)
+    {
+        if (isNotEmpty(modeStr))
+        {
+            if (modeStr.equalsIgnoreCase("edit"))
+            {
+                return AltView.CreationMode.Edit;
+               
+            } else if (modeStr.equalsIgnoreCase("view"))
+            {
+                return AltView.CreationMode.View;
+                
+            } if (modeStr.equalsIgnoreCase("search"))
+            {
+                return AltView.CreationMode.Search;
+            }
+        }
+        return defaultMode;
+    }
 }

@@ -66,7 +66,7 @@ public class InteractionsTask extends BaseTask
         // Temporary
         NavBox navBox = new NavBox(getResourceString("Actions"));
         navBox.add(NavBox.createBtn(getResourceString("Accession"),  "Interactions", IconManager.IconSize.Std16,
-                new CreateViewAction(this, "Main Views", "Accession", "Edit", Accession.class)));
+                new CreateViewAction(this, null, "Accession", "Edit", Accession.class)));
         navBox.add(NavBox.createBtn(getResourceString("New_Loan"),  name, IconManager.IconSize.Std16));
         navBox.add(NavBox.createBtn(getResourceString("New_Gifts"), name, IconManager.IconSize.Std16));
         navBox.add(NavBox.createBtn(getResourceString("New_Exchange"), name, IconManager.IconSize.Std16));

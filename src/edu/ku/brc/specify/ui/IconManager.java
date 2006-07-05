@@ -87,7 +87,7 @@ public class IconManager
         public void setFaded(boolean faded) { this.faded = faded; }
         public void setBlackWhite(boolean bw) { blackWhite = bw; }
 
-    };
+    }
 
     protected static final String      relativePath = "images/";
     protected static final IconManager instance     = new IconManager();
@@ -166,7 +166,7 @@ public class IconManager
         }
     }
 
-    protected static IconSize getIconSize(int size, boolean bw, boolean faded)
+    public static IconSize getIconSize(int size, boolean bw, boolean faded)
     {
         if (size != 32 && size != 24 && size != 16)
         {

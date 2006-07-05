@@ -37,7 +37,7 @@ public interface NavBoxIFace
      * Local    - Local to current User
      * SubPanel - Owned and managed by a SubPanel
      */
-    public enum Scope {Global, Local, SubPanel};
+    public enum Scope {Global, Local, SubPanel}
     
     /**
      * Returns the scope of the tab

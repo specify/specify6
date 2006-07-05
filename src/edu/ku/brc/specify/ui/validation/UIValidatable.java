@@ -30,7 +30,7 @@ import java.awt.Component;
  */
 public interface UIValidatable
 {
-    public enum ErrorType {Valid, Incomplete, Error};
+    public enum ErrorType {Valid, Incomplete, Error}
 
     /**
      * Returns the isInError.

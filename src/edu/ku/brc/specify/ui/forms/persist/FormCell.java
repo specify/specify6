@@ -30,7 +30,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class FormCell implements Comparable<FormCell>
 {
-    public enum CellType {separator, field, label, subview, command, panel};
+    public enum CellType {separator, field, label, subview, command, panel, statusbar}
 
     // Required fields
     protected CellType type;
@@ -196,17 +196,7 @@ public class FormCell implements Comparable<FormCell>
         {
             return 0;
         }
-        
-        System.out.println("compareTo["+id+"]["+obj.id+"]");
-
-        //if (id.equals(obj.id))
-        //{
-        //    return 0;
-//
-        //} else
-        //{
-           return id.compareTo(obj.id);
-        //}
+        return id.compareTo(obj.id);
     }
 
  }

@@ -60,14 +60,6 @@ public class DataGetterForObj implements DataObjectGettable
      */
     public Object getFieldValue(Object dataObj, String fieldName)
     {
-        //boolean debug = true;
-        /*if (dataObj instanceof Locality)
-        {
-            System.out.println("getLocalityName ["+((Locality)dataObj).getLocalityName()+"]");
-            debug = true;
-        }*/
-
-
         //System.out.println("["+fieldName+"]["+(dataObj != null ? dataObj.getClass().toString() : "N/A")+"]");
         Object value = null;
         if (dataObj != null)

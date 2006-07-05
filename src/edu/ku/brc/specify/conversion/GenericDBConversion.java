@@ -123,11 +123,13 @@ public class GenericDBConversion
     /**
      * "Old" means the database you want to copy "from"
      * @param oldDriver old driver
+     * @param oldServer old server name
      * @param oldDBName old database name
      * @param oldUserName old user name
      * @param oldPassword old password
      */
     public GenericDBConversion(final String oldDriver,
+                               final String oldServer,
                                final String oldDBName,
                                final String oldUserName,
                                final String oldPassword)
@@ -137,9 +139,10 @@ public class GenericDBConversion
         this.oldUserName  = oldUserName;
         this.oldPassword  = oldPassword;
         this.idMapperMgr  = IdMapperMgr.getInstance();
-        this.oldDB        = DBConnection.createInstance(oldDriver, oldDBName, oldUserName, oldPassword);
+        
+        this.oldDB        = DBConnection.createInstance(oldDriver, oldServer, oldDBName, oldUserName, oldPassword);
 
-        oldDBConn = oldDB.getConnectionToDB();
+        oldDBConn = oldDB.createConnection();
         newDBConn = DBConnection.getConnection();
     }
 
@@ -977,7 +980,7 @@ public class GenericDBConversion
             pl.setName(pickListName);
             pl.setCreated(new Date());
             pl.setItems(items);
-            pl.setReadOnly(shouldDeleteMapTables);
+            pl.setReadOnly(false);
             pl.setSizeLimit(-1);
 
 
@@ -2996,7 +2999,7 @@ public class GenericDBConversion
     	int count = 0;
 
     	// get all of the old records
-    	String sql = "SELECT RankCode, RankName from GeologicTimePeriod";
+    	String sql = "SELECT RankCode, RankName from geologictimeperiod";
     	Statement statement = oldDBConn.createStatement();
     	ResultSet oldGtpRecords = statement.executeQuery(sql);
 

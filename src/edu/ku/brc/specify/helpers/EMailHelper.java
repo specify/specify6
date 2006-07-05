@@ -62,7 +62,7 @@ public class EMailHelper
 {
     private static final Logger log  = Logger.getLogger(EMailHelper.class);
     
-    public enum AccountType {Unknown, POP3, IMAP};
+    public enum AccountType {Unknown, POP3, IMAP}
     
     public static final String POP3       = "POP3";
     public static final String IMAP       = "IMAP";

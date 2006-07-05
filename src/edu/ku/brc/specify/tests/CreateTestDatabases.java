@@ -1242,11 +1242,14 @@ public class CreateTestDatabases
 
     public static void main(String args[]) throws Exception
     {
-        DBConnection.setUsernamePassword("rods", "rods");
-        DBConnection.setDriver("com.mysql.jdbc.Driver");
-        DBConnection.setDBName("jdbc:mysql://localhost/demo_fish3");
+        DBConnection dbConn = DBConnection.getInstance();
+        dbConn.setUsernamePassword("rods", "rods");
+        dbConn.setDriver("com.mysql.jdbc.Driver");
+        dbConn.setServer("jdbc:mysql://localhost/");
+        dbConn.setDatabaseName("fish");
 
         createSingleDiscipline("Fish");
+        
         //createTwoColObjDefOneCatSeries();
         //createPlantDatabaseWithContainers("Plant");
 

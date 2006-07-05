@@ -4,6 +4,8 @@ import java.awt.Component;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JLabel;
+
 import edu.ku.brc.specify.ui.forms.persist.View;
 import edu.ku.brc.specify.ui.forms.persist.ViewDef;
 import edu.ku.brc.specify.ui.validation.FormValidator;
@@ -34,11 +36,18 @@ public interface Viewable
     public boolean isSubform();
 
     /**
-     * Returns a component by id
+     * Returns a component by id for "labelfor" attr
      * @param id the id of the component
      * @return the component
      */
     public Component getCompById(final String id);
+
+    /**
+     * Returns a label by id
+     * @param id the id of the label
+     * @return the label
+     */
+    public JLabel getLabelFor(final String id);
 
     /**
      * Returns the mapping of name to control

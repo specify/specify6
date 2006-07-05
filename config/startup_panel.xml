@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <panel>
-
+<!--
   <row>
       <box title="Task List" desccol="1" valcol="2">
 		<sql><![CDATA[Select name from workbench]]></sql>
@@ -32,11 +32,6 @@
    </row>
 
     <row>
-        <!--
-        <box title="Recent Searches" desccol="1" valcol="2">
-    		<sql><![CDATA[Select name from searches]]></sql>
-        </box>
-    -->
       <box title="Data Entry">
         <item title="Cataloged in Last 7 Days">
             <sql><statement><![CDATA[select count(*) from collectionobject where DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= TimestampCreated]]></statement></sql>
@@ -52,7 +47,8 @@
         </item>
       </box>
   </row>
-  <!--
+  -->
+  
     <row>
         <box title="Accessions Entered in the Last 3 Months" desccol="1" valcol="3" desctitle="Number" valtitle="Created">
             <sql><![CDATA[select number, accessionId, TimestampCreated From accession where DATE_SUB(CURDATE(), INTERVAL 3 MONTH) <= TimestampCreated order by TimestampCreated desc]]></sql>
@@ -78,7 +74,7 @@
     <row>
         <box type="Bar Chart" name="AccessionByDivision" colspan="3"/>
     </row>
-    -->
+    
     <!--
     <row>
         <box type="Bar Chart" name="Specimens by Country" colspan="3"/>

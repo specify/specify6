@@ -29,7 +29,7 @@ import javax.swing.Timer;
 @SuppressWarnings("serial")
 public class GhostGlassPane extends JPanel
 {
-    public enum ImagePaintMode {CENTERED, DRAG, ABSOLUTE};
+    public enum ImagePaintMode {CENTERED, DRAG, ABSOLUTE}
 
     private final int   ANIMATION_DELAY = 500;
     private final float STD_ALPHA       = 0.7f;

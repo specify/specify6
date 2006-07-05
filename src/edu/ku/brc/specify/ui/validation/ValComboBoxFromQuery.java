@@ -74,6 +74,8 @@ import edu.ku.brc.specify.ui.db.GenericSearchDialog;
 import edu.ku.brc.specify.ui.db.JComboBoxFromQuery;
 import edu.ku.brc.specify.ui.forms.DataGetterForObj;
 import edu.ku.brc.specify.ui.forms.DataObjFieldFormatMgr;
+import edu.ku.brc.specify.ui.forms.DataObjectSettable;
+import edu.ku.brc.specify.ui.forms.DataObjectSettableFactory;
 import edu.ku.brc.specify.ui.forms.MultiView;
 
 
@@ -160,6 +162,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         this.displayInfoDialogName = displayInfoDialogName;
 
         comboBox = new JComboBoxFromQuery(sql, format);
+        comboBox.setAllowNewValues(true);
         
         init(false);
     }
@@ -174,7 +177,9 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      * @param idName the POJO field name of the ID column
      * @param keyName the POJO field name of the key column
      * @param format the format specification (null is OK if displayNames is null)
-     * @param searchDialogName the name to look up to display the search dialog (from the search dialog factory)
+     * @param formatName the name of the pre-deined (user-defined) format
+     * @param searchDialogName the name to look up to display the search dialog (from the dialog factory)
+     * @param displayInfoDialogName the name to look up to display the info dialog (from the dialog factory)
      */
     public ValComboBoxFromQuery(final String tableName,
                                 final String idColumn,
@@ -201,7 +206,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         this.displayInfoDialogName = displayInfoDialogName;
 
         comboBox = new JComboBoxFromQuery(tableName, idColumn, keyColumn, displayColumn, format);
-
+        comboBox.setAllowNewValues(true);
+        
         init(false);
     }
     
@@ -356,7 +362,16 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         if (isNewObject)
         {
             Object object = UIHelper.createAndNewDataObj(classObj);
-            UIHelper.initAndAddToParent(multiView.getData(), object);
+            UIHelper.initAndAddToParent(multiView != null ? multiView.getData() : null, object);
+            frame.setData(object);
+            
+            // Now get the setter for an object and set the value they typed into the combobox and place it in
+            // the first field name
+            DataObjectSettable ds = (DataObjectSettable)DataObjectSettableFactory.get(classObj.getName(), "edu.ku.brc.specify.ui.forms.DataSetterForObj");
+            if (ds != null)
+            {
+                ds.setFieldValue(object, fieldNames[0], comboBox.getTextField().getText());
+            }
             frame.setData(object);
             
         } else

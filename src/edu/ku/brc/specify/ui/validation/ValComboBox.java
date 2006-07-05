@@ -75,46 +75,46 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     protected boolean isNew      = false;
 
     protected JAutoCompComboBox comboBox;
-    protected String                  defaultValue = null;
+    protected String            defaultValue = null;
 
 
     /**
      * Constructor
      */
-    public ValComboBox()
+    public ValComboBox(boolean editable)
     {
         comboBox = new JAutoCompComboBox();
-        init(false);
+        init(editable);
     }
 
     /**
      * Constructor
      * @param arg0 with a model
      */
-    public ValComboBox(ComboBoxModel arg0)
+    public ValComboBox(ComboBoxModel arg0, boolean editable)
     {
         comboBox = new JAutoCompComboBox(arg0);
-        init(false);
+        init(editable);
     }
 
     /**
      * Constructor
      * @param arg0 object array of items
      */
-    public ValComboBox(Object[] arg0)
+    public ValComboBox(Object[] arg0, boolean editable)
     {
         comboBox = new JAutoCompComboBox(arg0);
-        init(false);
+        init(editable);
     }
 
     /**
      * Constructor
      * @param arg0 vector of items
      */
-    public ValComboBox(Vector<?> arg0)
+    public ValComboBox(Vector<?> arg0, boolean editable)
     {
         comboBox = new JAutoCompComboBox(arg0);
-        init(false);
+        init(editable);
     }
 
     /**
@@ -126,12 +126,20 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         comboBox = new JAutoCompComboBox(dbAdapter);
         init(true);
     }
+    
+    public void init(final PickListDBAdapter dbAdapter)
+    {
+        comboBox = new JAutoCompComboBox(dbAdapter);
+        init(true);
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.db.JAutoCompComboBox#init(boolean)
      */
     public void init(final boolean makeEditable)
     {
+        comboBox.init(makeEditable);
+        
         if (defaultTextBGColor == null)
         {
             defaultTextBGColor = (new JTextField()).getBackground();
@@ -170,6 +178,15 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         {
             comboBox.addFocusListener(focusAdapter);
         }
+    }
+    
+    /* (non-Javadoc)
+     * @see java.awt.Component#setEnabled(boolean)
+     */
+    public void setEnabled(boolean enabled)
+    {
+        super.setEnabled(enabled);
+        comboBox.setEnabled(enabled);
     }
 
     /**
@@ -210,12 +227,31 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     }
 
     /**
-     * Returns the combo box
-     * @return the combo box
+     * Returns the combobox
+     * @return the combobox
      */
     public JAutoCompComboBox getComboBox()
     {
         return comboBox;
+    }
+    
+    /**
+     * Helper function that indicates whether the control has text or not
+     * @return whether the control has text or not
+     */
+    public boolean hasText()
+    {
+        return comboBox.getTextField() != null ? comboBox.getTextField().getText().length() > 0 : comboBox.getSelectedIndex() > -1;
+    }
+    
+    /**
+     * Helper function that returns true if an item is selected or the text field is not empty
+     * @return true if an item is selected or the text field is not empty
+     */
+    public boolean isNotEmpty()
+    {
+        System.out.println((comboBox.getSelectedIndex() > -1) +"  "+ hasText()+"  "+comboBox.getSelectedItem());
+        return comboBox.getSelectedIndex() > -1 || hasText();
     }
     
     /* (non-Javadoc)

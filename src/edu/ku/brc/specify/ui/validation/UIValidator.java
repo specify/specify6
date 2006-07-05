@@ -41,7 +41,7 @@ import org.apache.log4j.Logger;
  */
 public class UIValidator 
 {
-    public enum Type {None, Focus, Changed, OK};
+    public enum Type {None, Focus, Changed, OK}
 
     private static final Logger log = Logger.getLogger(UIValidator.class);
 
@@ -110,7 +110,7 @@ public class UIValidator
      */
     public void setAsNew(boolean isNew)
     {
-        System.out.println(">>>>" + (type != Type.OK ? "NOT OK" : "OK")+"  "+this.comp);
+        //log.debug(">>>>" + (type != Type.OK ? "NOT OK" : "OK")+"  "+this.comp);
         if (uiv != null && type != Type.OK)
         {
             uiv.setAsNew(isNew);

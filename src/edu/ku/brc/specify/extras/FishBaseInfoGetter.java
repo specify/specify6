@@ -44,7 +44,7 @@ import edu.ku.brc.specify.ui.UICacheManager;
  */
 public class FishBaseInfoGetter extends HTTPGetter
 {
-    public enum InfoType {Summary, Image, Thumbnail, PictureList};
+    public enum InfoType {Summary, Image, Thumbnail, PictureList}
 
     protected FishBaseInfoGetterListener consumer;
 

@@ -21,10 +21,11 @@
 package edu.ku.brc.specify;
 
 
+import java.lang.ref.WeakReference;
+
+import com.apple.eawt.Application;
 import com.apple.eawt.ApplicationAdapter;
 import com.apple.eawt.ApplicationEvent;
-import com.apple.eawt.Application;
-import java.lang.ref.WeakReference;
 
 /**
  * Needed for Mac Integration

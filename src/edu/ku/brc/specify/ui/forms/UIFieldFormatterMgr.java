@@ -38,7 +38,7 @@ import edu.ku.brc.specify.prefs.PrefsCache;
  */
 public class UIFieldFormatterMgr
 {
-    public enum FieldType {numeric, alphanumeric, alpha, separator};
+    public enum FieldType {numeric, alphanumeric, alpha, separator}
 
     private static final Logger log = Logger.getLogger(UIFieldFormatterMgr.class);
     protected static UIFieldFormatterMgr instance = new UIFieldFormatterMgr();
@@ -110,7 +110,7 @@ public class UIFieldFormatterMgr
                             type  = FieldType.valueOf(typeStr);
                         } catch (Exception ex)
                         {
-                            System.out.println("["+typeStr+"]"+ex.toString());
+                            log.error("["+typeStr+"]"+ex.toString());
                         }
                         fields.add(new FormatterField(type, size, value));
                     }

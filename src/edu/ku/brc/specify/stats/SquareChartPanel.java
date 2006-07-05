@@ -67,7 +67,6 @@ public class SquareChartPanel extends ChartPanel
 
     public void setBounds(int x, int y, int width, int height)
     {
-        System.out.println(width+"  "+ height);
         super.setBounds(x, y, width, height);
     }
 

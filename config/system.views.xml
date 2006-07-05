@@ -14,12 +14,12 @@
             
         </view>
         
-        <view name="DatabaseLogon"
+        <view name="DatabaseLogin"
             class="java.util.Hashtable"
             resourcelabels="false">
             <desc><![CDATA[Database Login]]></desc>
             <altviews>
-                <altview name="DatabaseLogon" viewdef="DatabaseLogon" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="DatabaseLogin" viewdef="DatabaseLogin" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -109,42 +109,42 @@
         
         <viewdef
             type="form"
-            name="DatabaseLogon"
+            name="DatabaseLoginOld"
             class="java.util.Hashtable"
             gettable="edu.ku.brc.specify.ui.forms.DataGetterForHashMap"
             settable="edu.ku.brc.specify.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[Database Logon]]></desc>
             <enableRules>
-                <rule name="getDBs"><![CDATA[username.isNotEmpty() && password.isNotEmpty() && servers.getComboBox().getSelectedIndex() > -1]]></rule>
+                <rule name="login"><![CDATA[username.isNotEmpty() && password.isNotEmpty() && servers.getComboBox().getSelectedIndex() > -1  && databases.getComboBox().getSelectedIndex() > -1]]></rule>
                 <!-- <rule name="databases"><![CDATA[items.getSelectedIndex() != -1]]></rule> -->
             </enableRules>
-            <columnDef>p,3dlu,p,3dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <columnDef>p,3dlu,p,3dlu,p:g</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
                 <row>
-                    <cell type="separator" label="Specify Login" colspan="5"/>
+                    <cell type="field" id="image" uitype="image" initialize="edit=false"/>
+                    <cell type="separator" label="Specify Login" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="username" label="Username"/>
-                    <cell type="field" id="username" name="Username" uitype="text"/>
+                    <cell type="field" id="username" name="Username" uitype="text" isrequired="true" valtype="Changed"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="password" label="Password"/>
-                    <cell type="field" id="password" name="password" uitype="password"/>
+                    <cell type="field" id="password" name="password" uitype="password" isrequired="true" valtype="Changed"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="databases" label="Databases"/>
-                    <cell type="field" id="databases" name="databases" uitype="combobox"/>
-                    <cell type="command" id="getDBs" name="getDBs" label="Get Databases" commandtype="" action="" ignore="true"/>
+                    <cell type="field" id="databases" name="databases" uitype="combobox" initialize="editable=true" isrequired="true" valtype="Changed"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="servers" label="Servers"/>
-                    <cell type="field" id="servers" name="servers" uitype="combobox"/>
+                    <cell type="field" id="servers" name="servers" uitype="combobox" initialize="editable=true" isrequired="true" valtype="Changed"/>
                 </row>
                 <row>
-                    <cell type="panel" id="btnPanel" name="btnPanel" paneltype="buttonbar" colspan="5">
+                    <cell type="panel" id="btnPanel" name="btnPanel" paneltype="buttonbar" colspan="3">
                         <rows>
                             <row>
                                 <cell type="command" id="login" name="login" label="Login" commandtype="" action="" ignore="true"/>
@@ -153,6 +153,78 @@
                         </rows>
                     </cell>
                 </row>                
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="DatabaseLogin"
+            class="java.util.Hashtable"
+            gettable="edu.ku.brc.specify.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.specify.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[Database Logon]]></desc>
+            <enableRules>
+                <rule name="login"><![CDATA[username.isNotEmpty() && password.isNotEmpty() && servers.isNotEmpty() && databases.isNotEmpty() && views.isNotEmpty()]]></rule>
+                <rule name="rememberuser"><![CDATA[!autologin.isSelected()]]></rule>
+                <!-- <rule name="databases"><![CDATA[items.getSelectedIndex() != -1]]></rule> -->
+            </enableRules>
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>                
+                <row>
+                    <cell type="field" id="image" uitype="image" initialize="edit=false;border=false;icon=SpecifyLargeIcon"/>
+                    <cell type="panel" id="uipanel" name="uipanel" coldef="p,3dlu,max(220px;p)" rowdef="p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p">
+                        <rows>
+                            <row>
+                                <cell type="separator" label="Specify Login" colspan="3"/>
+                            </row>
+                            <row>
+                                <cell type="label" labelfor="username" label="Username"/>
+                                <cell type="field" id="username" name="Username" uitype="text" isrequired="true" valtype="Changed"/>
+                            </row>
+                            <row>
+                                <cell type="label" labelfor="password" label="Password"/>
+                                <cell type="field" id="password" name="password" uitype="password" isencrypted="true" isrequired="true" valtype="Changed"/>
+                            </row>
+                            <row>
+                                <cell type="label" labelfor="databases" label="Databases"/>
+                                <cell type="field" id="databases" name="databases" uitype="combobox" initialize="editable=true" isrequired="true" valtype="Changed"/>
+                            </row>
+                            <row>
+                                <cell type="label" labelfor="views" label="Form Set"/>
+                                <cell type="field" id="views" name="views" uitype="combobox" isrequired="true" valtype="Changed"/>
+                            </row>
+                            <row>
+                                <cell type="label" labelfor="servers" label="Servers"/>
+                                <cell type="field" id="servers" name="servers" uitype="combobox" initialize="editable=true" isrequired="true" valtype="Changed"/>
+                            </row>
+                            <row>
+                                <cell type="label" labelfor="rememberuser" label=""/>
+                                <cell type="field" id="rememberuser" name="rememberuser" label="Remember Username" uitype="checkbox"/>
+                            </row>
+                            <row>
+                                <cell type="label" labelfor="autologin" label=""/>
+                                <cell type="field" id="autologin" name="autologin" label="Automatically Login" uitype="checkbox"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+                <row>
+                    <cell type="panel" id="btnPanel" name="btnPanel" paneltype="buttonbar" colspan="3">
+                        <rows>
+                            <row>
+                                <cell type="command" id="login" name="login" label="Login" commandtype="" action="" ignore="true"/>
+                                <cell type="command" id="cancel" name="cancel" label="Cancel" commandtype="" action="" ignore="true"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+                <row>
+                    <cell type="statusbar" id="statusbar" name="statusbar" colspan="3"/>
+                </row>                
+                
             </rows>
         </viewdef>
         

@@ -43,7 +43,7 @@ import edu.ku.brc.specify.helpers.XMLHelper;
  */
 public class ExpressResultsTableInfo
 {
-    public enum LOAD_TYPE {Building, Viewing, Both};
+    public enum LOAD_TYPE {Building, Viewing, Both}
 
     protected LOAD_TYPE                 loadType;
 

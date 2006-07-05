@@ -43,6 +43,8 @@ import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserGroup;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -59,12 +61,17 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeCellRenderer;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -101,7 +108,6 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.dbsupport.DBConnection;
-import edu.ku.brc.specify.dbsupport.DatabaseLogon;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.EMailHelper;
 import edu.ku.brc.specify.helpers.UIHelper;
@@ -111,6 +117,7 @@ import edu.ku.brc.specify.tests.CreateTestDatabases;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.specify.tests.forms.TestDataSubObj;
 import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.db.DatabaseLogin;
 import edu.ku.brc.specify.ui.forms.MultiView;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
 import edu.ku.brc.specify.ui.forms.Viewable;
@@ -148,8 +155,9 @@ public class FormEditor
 
     public FormEditor()
     {
-
-        HibernateUtil.initialize(); // This also sets up the DBConnection params for the JDBC driver
+        ViewMgr.setAsDefaultViewSet("Fish Views");
+        
+        //HibernateUtil.initialize(); // This also sets up the DBConnection params for the JDBC driver
     }
 
     /**
@@ -310,7 +318,7 @@ public class FormEditor
             for (Object obj : list)
             {
                 DataType dataType = (DataType)obj;
-                System.out.println(dataType.getName());
+                //System.out.println(dataType.getName());
                 retDataType = dataType;
                 break;
             }
@@ -405,15 +413,12 @@ public class FormEditor
             } else
             */
 
-            if (currViewSetName.equals("Main Views") && currViewName.equals("Accession"))
+            if (currViewSetName.equals("Fish Views") && currViewName.equals("Accession"))
             {
                 boolean doDB = true;
                 if (doDB)
                 {
                     Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setMaxResults(10);
-                    Session s = HibernateUtil.getCurrentSession();
-                    System.out.println("!!!!! "+HibernateUtil.getCurrentSession());
-                    
                     //Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Accession.class).setFetchMode(Accession.class.getName(), FetchMode.DEFAULT).setMaxResults(300);
                     java.util.List list = criteria.list();//session.find("from collev");
                     dataObj = list;
@@ -432,7 +437,7 @@ public class FormEditor
             }
 
 
-            if (currViewSetName.equals("Main Views") && currViewName.equals("FishBase"))
+            if (currViewSetName.equals("Fish Views") && currViewName.equals("FishBase"))
             {
                 try
                 {
@@ -447,7 +452,7 @@ public class FormEditor
             }
 
 
-            if (currViewSetName.equals("Main Views") && currViewName.equals("Collection Object"))
+            if (currViewSetName.equals("Fish Views") && currViewName.equals("Collection Object"))
             {
 
 
@@ -462,7 +467,7 @@ public class FormEditor
                     for (Object obj : list)
                     {
                         Accession accession = (Accession)obj;
-                        System.out.println(accession.getAccessionId());
+                        //System.out.println(accession.getAccessionId());
                     }
                 }
 
@@ -475,7 +480,7 @@ public class FormEditor
 
 
                     java.util.List data = criteria.list();
-                    System.out.println("Items Returned: "+data.size());
+                    //System.out.println("Items Returned: "+data.size());
 
                     dataObj = data;
                 }
@@ -505,7 +510,7 @@ public class FormEditor
                         InfoRequest infoReq = (InfoRequest)obj;
                         JXPathContext context = JXPathContext.newContext(infoReq);
 
-                        System.out.println(context.getValue(""));
+                        //System.out.println(context.getValue(""));
                     }
 
                 }*/
@@ -591,6 +596,10 @@ public class FormEditor
            //UIManager.setLookAndFeel(new PlasticLookAndFeel());
            //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
            //UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+           
+           UIHelper.doLogin(true); // true means do auto login if it can
+
+
        }
        catch (Exception e)
        {
@@ -664,10 +673,10 @@ public class FormEditor
         //currViewName      = "Collection Object";
 
         currViewName      = "FishBase";
-        currViewSetName =   "Main Views";
+        currViewSetName =   "Fish Views";
 
         currViewName      = "Accession";
-        currViewSetName =   "Main Views";
+        currViewSetName =   "Fish Views";
 
         View view = ViewMgr.getView(currViewSetName, currViewName);
 
@@ -743,7 +752,7 @@ public class FormEditor
         dlg.setContentPane(pane);
         dlg.pack();
         dlg.doLayout();
-        System.out.println(dlg.getPreferredSize());
+        //System.out.println(dlg.getPreferredSize());
         dlg.setPreferredSize(dlg.getPreferredSize());
         dlg.setSize(dlg.getPreferredSize());
         UIHelper.centerAndShow(dlg);
@@ -847,7 +856,7 @@ public class FormEditor
     
     public void testLogin()
     {
-        DatabaseLogon dl = new DatabaseLogon();
+        DatabaseLogin dl = new DatabaseLogin();
         UIHelper.centerAndShow(dl);
     }
 
@@ -866,12 +875,90 @@ public class FormEditor
                 formEditor.initialize();
                 //formEditor.testLogin();
                 
-                formEditor.startup();
+                //formEditor.startup();
+                
+                //formEditor.startup2();
                 
             }
       });
 
         
+    }
+    
+    public void startup2()
+    {
+        new SimpleTree();
+    }
+    
+    public class SimpleTree extends JFrame {
+      
+        public SimpleTree() {
+          super("Creating a Simple JTree");
+          //WindowUtilities.setNativeLookAndFeel();
+          //addWindowListener(new ExitListener());
+          Container content = getContentPane();
+          Object[] hierarchy =
+            { "javax.swing",
+              "javax.swing.border",
+              "javax.swing.colorchooser",
+              "javax.swing.event",
+              "javax.swing.filechooser",
+              new Object[] { "javax.swing.plaf",
+                             "javax.swing.plaf.basic",
+                             "javax.swing.plaf.metal",
+                             "javax.swing.plaf.multi" },
+              "javax.swing.table",
+              new Object[] { "javax.swing.text",
+                             new Object[] { "javax.swing.text.html",
+                                            "javax.swing.text.html.parser" },
+                             "javax.swing.text.rtf" },
+              "javax.swing.tree",
+              "javax.swing.undo" };
+          DefaultMutableTreeNode root = processHierarchy(hierarchy);
+          JTree tree = new JTree(root);
+          tree.setShowsRootHandles(false);
+          tree.putClientProperty("JTree.lineStyle", "None");
+          tree.setCellRenderer(new MyTreeCellRenderer());
+          content.add(new JScrollPane(tree), BorderLayout.CENTER);
+          setSize(275, 300);
+          setVisible(true);
+        }
+
+        /** Small routine that will make node out of the first entry
+         *  in the array, then make nodes out of subsequent entries
+         *  and make them child nodes of the first one. The process is
+         *  repeated recursively for entries that are arrays.
+         */
+          
+        private DefaultMutableTreeNode processHierarchy(Object[] hierarchy) {
+          DefaultMutableTreeNode node =
+            new DefaultMutableTreeNode(hierarchy[0]);
+          DefaultMutableTreeNode child;
+          for(int i=1; i<hierarchy.length; i++) {
+            Object nodeSpecifier = hierarchy[i];
+            if (nodeSpecifier instanceof Object[])  // Ie node with children
+              child = processHierarchy((Object[])nodeSpecifier);
+            else
+              child = new DefaultMutableTreeNode(nodeSpecifier); // Ie Leaf
+            node.add(child);
+          }
+          return(node);
+        }
+      }
+    
+    class MyTreeCellRenderer extends JLabel implements TreeCellRenderer
+    {
+        public Component getTreeCellRendererComponent(JTree tree,
+                                               Object value,
+                                               boolean selected,
+                                               boolean expanded,
+                                               boolean leaf,
+                                               int row,
+                                               boolean hasFocus)
+        {
+            setText(value.toString());
+            return this;
+        }
     }
 
 }

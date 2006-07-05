@@ -384,11 +384,12 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
                     if (etrb != null && !e.getValueIsAdjusting())
                     {
                         recordSet = etrb.getRecordSet(false);
+                        /*
                         for (Object obj : recordSet.getItems())
                         {
                             RecordSetItem rsi = (RecordSetItem)obj;
                             System.out.println(rsi.getRecordId());
-                        }
+                        }*/
 
                     } else
                     {

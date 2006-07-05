@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<viewset name="Main Views" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<viewset name="Fish Views" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <views>
         <view name="CollectionObject"
@@ -10,6 +10,17 @@
             <altviews>
                 <altview name="Collection Object View" viewdef="Collection Object" label="View" mode="view" validated="false"/>
                 <altview name="Collection Object Edit" viewdef="Collection Object" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+            
+        </view>
+        
+        <view name="Collection Object Search"
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
+            resourcelabels="false"
+            >
+            <desc><![CDATA[The Collection Object Search form.]]></desc>
+            <altviews>
+                <altview name="Collection Object Search" viewdef="Collection Object Search" label="Search" mode="search" validated="false" default="true"/>
             </altviews>
             
         </view>
@@ -122,7 +133,7 @@
                 <altview name="FishBase" viewdef="FishBase" label="View" mode="view" validated="false" default="true"/>
             </altviews>
         </view>
-
+        
         <view name="NewTaxon"
             class="edu.ku.brc.specify.datamodel.Taxon"
             resourcelabels="false">
@@ -131,7 +142,7 @@
                 <altview name="Taxon Edit" viewdef="NewTaxon" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
-
+        
         <view name="NewGeography"
             class="edu.ku.brc.specify.datamodel.Geography"
             resourcelabels="false">
@@ -140,7 +151,7 @@
                 <altview name="Taxon Edit" viewdef="NewGeography" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
-
+        
         <view name="NewGeologicTimePeriod"
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
             resourcelabels="false">
@@ -149,7 +160,7 @@
                 <altview name="GeologicTimePeriod Edit" viewdef="NewGeologicTimePeriod" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
-
+        
         <view name="NewLocation"
             class="edu.ku.brc.specify.datamodel.Location"
             resourcelabels="false">
@@ -158,7 +169,6 @@
                 <altview name="Location Edit" viewdef="NewLocation" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
-        
     </views>
 
     <viewdefs>
@@ -290,7 +300,7 @@
     		<rows>
     <!--			 <row>
                     <cell type="label" labelfor="preparationMethod" label="Prep Method"/>
-    				<cell type="field" uitype="combobox" name="preparationMethod" initialize="EtOH, Skeleton, Tissue, Clear Stained, X-Ray, Misc"/>
+    				<cell type="field" uitype="combobox" name="preparationMethod" initialize="data=EtOH, Skeleton, Tissue, Clear Stained, X-Ray, Misc"/>
 
                     <cell type="label" labelfor="subNumber" label="Sub No"/>
     				<cell type="field" name="subNumber"/>
@@ -326,7 +336,7 @@
                     <cell type="field" id="5" name="attrs.size"/>
 
     				<cell type="label" labelfor="6" label="Sex"/>
-                    <cell type="field" id="6" uitype="combobox" name="attrs.sex" initialize="Unknown, Male, Female"/>
+                    <cell type="field" id="6" uitype="combobox" name="attrs.sex" initialize="data=Unknown, Male, Female"/>
     			</row>
 
     			<!--
@@ -390,7 +400,7 @@
                     <cell type="field" id="3" name="type" uitype="combobox" picklist="AccessionType" isrequired="true" valtype="Changed"/>
 
                     <cell type="label" labelfor="4" label="Division"/>
-                    <cell type="field" id="4" name="text1" uitype="combobox" initialize="Botany,Entomology,Herpetology,Ichthyology,Invertebrate Paleo,Invertebrate Zoology,Mammalogy,Ornithology,Paleobotany,Vertebrate Paleo" isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="4" name="text1" uitype="combobox" initialize="data=Botany,Entomology,Herpetology,Ichthyology,Invertebrate Paleo,Invertebrate Zoology,Mammalogy,Ornithology,Paleobotany,Vertebrate Paleo" isrequired="true" valtype="Changed"/>
 
                 </row>
                 <row>
@@ -477,7 +487,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Title"/>
-                    <cell type="field" id="1" name="title" uitype="combobox" picklistx="AgentTitle" initialize="Asst. Director, Curator, Mr., Mrs., Ms., Dr." valtype="Changed"/> <!-- Needs to be a PickList -->
+                    <cell type="field" id="1" name="title" uitype="combobox" picklistx="AgentTitle" initialize="data=Asst. Director, Curator, Mr., Mrs., Ms., Dr." valtype="Changed"/> <!-- Needs to be a PickList -->
                     <cell type="label" labelfor="2" label="Title"/>
                     <cell type="field" id="2" name="jobTitle" uitype="text" cols="20"/>
                 </row>
@@ -528,7 +538,7 @@
                     <cell type="field" id="2" name="permitNumber" uitype="text" isrequired="true"/>
 
                     <cell type="label" labelfor="3" label="Type"/>
-                    <cell type="field" id="3" name="type" uitype="combobox" initialize="N/A, CITES, State, Federal, International"/>
+                    <cell type="field" id="3" name="type" uitype="combobox" initialize="data=N/A, CITES, State, Federal, International"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4" label="Issued By"/>
@@ -825,7 +835,72 @@
                 </row>
             </rows>
         </viewdef>
+        
+        
+        <viewdef
+            type="form"
+            name="Collection Object Search"
+            class="java.util.Hashtable"
+            gettable="edu.ku.brc.specify.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.specify.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The Collection Object form.]]></desc>
+            <enableRules/>
+            
+            <columnDef>120px,3dlu,p,3dlu,120px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="KU Fish" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Catalog Number"/>
+                    <cell type="field" id="1" name="catalogNumber"/>
+                    
+                    <cell type="label" labelfor="2" label="Catalog Series"/>
+                    <cell type="field" uitype="text" id="2" name="catalogSeries_seriesName"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Accession #"/>
+                    <cell type="field" id="3" name="accession_number"  uitype="formattedtext" uifieldformatter="AccessionNumber"/>
+                    
+                    <cell type="label" labelfor="4" label="Cataloger"/>
+                    <cell type="field" id="4" name="cataloger" uitype="text" />
+                    
+                    <cell type="label" labelfor="5" label="Date"/>
+                    <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date"/>
+                </row>
+                <!--
+                <row>
+                    <cell type="separator" label="Determination" colspan="12"/>
+                </row>
+                
+                <row>
+                    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12"/>
+                </row>
+                
+                <row>
+                    <cell type="separator" label="Locality" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Field No"/>
+                    <cell type="field" id="7" name="fieldNumber"/>
+                    
+                    <cell type="label" labelfor="8" label="Locality"/>
+                    <cell type="field" id="8" name="collectingEvent.locality.localityName" cols="41" colspan="6"/>
+                </row>
+                
+                <row>
+                    <cell type="separator" label="Preparations" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="Preparation" id="9" name="preparations" colspan="12"/>
+                </row>
+    -->
 
+            </rows>
+        </viewdef>
         <viewdef
             type="form"
             name="NewTaxon"
@@ -862,24 +937,24 @@
                     <cell type="label" labelfor="commonName" label="Common Name"/>
                     <cell type="field" id="commonName" uitype="text"/>
                 </row>
-
+                
                 <row>
                     <cell type="label" labelfor="author" label="Author"/>
                     <cell type="field" id="author" uitype="text"/>
                 </row>
-
+                
                 <row>
                     <cell type="label" labelfor="source" label="Source"/>
                     <cell type="field" id="source" uitype="text"/>
                 </row>
-
+                
                 <row>
                     <cell type="label" labelfor="evp" label="Environmental Protection Status"/>
                     <cell type="field" id="evp" uitype="text" name="environmentalProtectionStatus"/>
                 </row>
             </rows>
         </viewdef>
-
+        
         <viewdef
             type="form"
             name="NewGeography"
@@ -906,7 +981,7 @@
                 </row>
             </rows>
         </viewdef>
-
+        
         <viewdef
             type="form"
             name="NewGeologicTimePeriod"
@@ -933,7 +1008,7 @@
                 </row>
             </rows>
         </viewdef>
-
+        
         <viewdef
             type="form"
             name="NewLocation"
@@ -959,7 +1034,7 @@
                     <cell type="field" id="defItemComboBox" uitype="combobox" name=""/>
                 </row>
             </rows>
-        </viewdef>
-        
+        </viewdef>        
+
     </viewdefs>
 </viewset>

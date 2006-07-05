@@ -43,7 +43,8 @@ import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.helpers.UIHelper;
 
 /**
- *
+ * A set of basic utilities that used almost exclusively for converting old Database schemas to the new schema
+ * 
  * @author rods
  *
  */
@@ -185,7 +186,7 @@ public class BasicSQLUtils
         {
             Connection connection = dbConn != null ? dbConn : DBConnection.getConnection();
 
-            count = deleteAllRecordsFromTable(DBConnection.getConnection(), tableName);
+            count = deleteAllRecordsFromTable(dbConn, tableName);
 
             if (dbConn == null)
             {

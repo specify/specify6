@@ -24,6 +24,8 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * This represents all the information about a cell in the form.
  * @author rods
@@ -50,7 +52,6 @@ public class FormCellField extends FormCell
 
     protected String   validationType = "";
     protected String   validationRule = "";
-    protected String   initialize     = "";
 
     protected boolean  isTextField    = false;
     protected boolean  isDSPTextField = false;
@@ -149,6 +150,38 @@ public class FormCellField extends FormCell
         return null;
     }
 
+    public int getPropertyAsInt(final String name, final int defVal)
+    {
+        if (properties != null)
+        {
+            String str = properties.get(name);
+            if (StringUtils.isNotEmpty(str))
+            {
+                return Integer.parseInt(str);
+            }
+        } else
+        {
+            return defVal;
+        }
+        return -1;
+    }
+
+    public boolean getPropertyAsBoolean(final String name, final boolean defVal)
+    {
+        if (properties != null)
+        {
+            String str = properties.get(name);
+            if (StringUtils.isNotEmpty(str))
+            {
+                return str.equalsIgnoreCase("true");
+            }
+        } else
+        {
+            return defVal;
+        }
+        return false;
+    }
+
     public int getCols()
     {
         return cols;
@@ -192,16 +225,6 @@ public class FormCellField extends FormCell
     public void setFormatName(String formatName)
     {
         this.formatName = formatName;
-    }
-
-    public String getInitialize()
-    {
-        return initialize;
-    }
-
-    public void setInitialize(String initialize)
-    {
-        this.initialize = initialize;
     }
 
     public boolean isEncrypted()

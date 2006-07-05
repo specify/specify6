@@ -297,8 +297,11 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         localityMapper.setCurrentLoc(localities.get(0));
         localityMapper.setCurrentLocColor(Color.RED);
 
-        // XXX DEMO  (Main Views is Hard Coded and shouldn't be)
-        View view = ViewMgr.getView("Main Views", "LocalityMapper");
+        // XXX DEMO  (Hard Coded 'null' means everyone would have one which may not be true)
+        // "null" ViewSet name means it should use the default
+        View view = ViewMgr.getView(null, "LocalityMapper");
+        
+        // WHERE's the ERROR checking !
         multiView = new MultiView(null, view, AltView.CreationMode.View, false, false);
         multiView.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(138,128,128)),
                             BorderFactory.createEmptyBorder(4, 4, 4, 4)));
@@ -547,7 +550,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         	if (getter.getImage() != null)
         	{
                 imageURLMap.put(genus+" "+species, getter.getImageURL());
-                System.out.println("["+genus+" "+species+"]["+getter.getImageURL()+"]");
+                //System.out.println("["+genus+" "+species+"]["+getter.getImageURL()+"]");
         		map.put(species, getter.getImage());
         	}
         	cleanUp();

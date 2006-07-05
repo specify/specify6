@@ -224,7 +224,7 @@ public class KeyholeMarkupGenerator
 			if( speciesToImageURLHash != null )
 			{
 				String imgSrc = speciesToImageURLHash.get(taxonomicName);
-                System.out.println("["+taxonomicName+"]["+imgSrc+"]");
+                //System.out.println("["+taxonomicName+"]["+imgSrc+"]");
 				if( imgSrc != null )
 				{
 					sb.append("<td><img src=\"");

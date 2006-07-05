@@ -158,6 +158,16 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
     {
         super.setText(isEncrypted ? Encryption.decrypt(text) : text);
     }
+    
+    /**
+     * Return the text without encryption (whether encrytption is turned on or not)
+     * @return the text without encryption (whether encrytption is turned on or not)
+     */
+    public String getPasswordText()
+    {
+        return new String(super.getPassword());
+    }
+
 
     /* (non-Javadoc)
      * @see javax.swing.text.JTextComponent#getText()
@@ -165,7 +175,7 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
     public String getText()
     {
         String text = new String(super.getPassword());
-        return isEncrypted ? Encryption.encrypt(text) : text;
+        return text.length() == 0 ? "" : isEncrypted ? Encryption.encrypt(text) : text;
     }
     
     public boolean isEncrypted()

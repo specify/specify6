@@ -21,9 +21,13 @@ package edu.ku.brc.specify.ui.forms.persist;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
@@ -41,9 +45,15 @@ public class ViewSet
     private static final Logger  log = Logger.getLogger(ViewSet.class);
     private static boolean ALWAYS_LOAD = true; // XXX PREF
 
-    protected String           name     = null;
-    protected String           fileName = null;
-    protected boolean          isCore   = false;
+    public enum Type {System, User}
+    
+    protected Type             type      = Type.User;
+    protected String           name      = null;
+    protected String           title     = null;
+    protected String           fileName  = null;
+    protected List<String>     databases = new ArrayList<String>();
+    protected List<String>     users     = new ArrayList<String>();
+    
     protected Hashtable<String, View>    views    = null;
     protected Hashtable<String, ViewDef> viewDefs = new Hashtable<String, ViewDef>();
     
@@ -58,16 +68,46 @@ public class ViewSet
 
     /**
      * Constructor 
+     * @param type indicates that is contains the core set of forms that 
+     *             can be referred in other places with specifying the viewset name
      * @param name name of view set
+     * @param title human readable title (short description)
      * @param fileName the filename it came from
-     * @param isCore indicates that is contains the core set of forms that 
-     *          can be referred in other places with specifying the viewset name
+     * @param fileName the filename it came from
+     * @param fileName the filename it came from
      */
-    public ViewSet(final String name, final String fileName, boolean isCore)
+    public ViewSet(final Type type, 
+                   final String name, 
+                   final String title, 
+                   final String fileName,
+                   final String databases,
+                   final String users)
     {
+        this.type     = type;
         this.name     = name;
+        this.title    = title;
         this.fileName = fileName;
-        this.isCore   = isCore;
+        
+        String[] items = StringUtils.split(databases, ",");
+        Collections.addAll(this.databases, items);
+        
+        items = StringUtils.split(users, ",");
+        Collections.addAll(this.users, items);
+    }
+    
+    /**
+     * Parse for the type and converts it to the Enum
+     * @param typeStr the type
+     * @return the enum of the type
+     */
+    public static Type parseType(final String typeStr)
+    {
+        if (typeStr.equalsIgnoreCase("user"))
+        {
+            return Type.User;
+        }
+                
+        return Type.System;
     }
 
     /**
@@ -158,6 +198,14 @@ public class ViewSet
     }
 
     /**
+     * @return the type of ViewSet it is 
+     */
+    public Type getType()
+    {
+        return type;
+    }
+
+    /**
      * Sets the name
      * @param name the name of the viewset
      */
@@ -167,12 +215,36 @@ public class ViewSet
     }
 
     /**
+     * @return the title 
+     */
+    public String getTitle()
+    {
+        return title;
+    }
+
+    /**
      * Indicates that is contains the core set of forms that can be referred in other places with specifying the viewset name
      * @return that is contains the core set of forms that can be referred in other places with specifying the viewset name
      */
-    public boolean isCore()
+    public boolean isSystem()
     {
-        return isCore;
+        return type == Type.System;
+    }
+
+    /**
+     * @return a list of databases that the view works with
+     */
+    public List<String> getDatabases()
+    {
+        return databases;
+    }
+
+    /**
+     * @return a list of users that can use this form
+     */
+    public List<String> getUsers()
+    {
+        return users;
     }
 
     /**

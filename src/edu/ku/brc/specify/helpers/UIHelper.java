@@ -10,6 +10,8 @@ import java.awt.event.KeyEvent;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,7 +34,9 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.prefs.PrefsCache;
+import edu.ku.brc.specify.ui.db.DatabaseLogin;
 import edu.ku.brc.specify.ui.dnd.GhostDataAggregatable;
 import edu.ku.brc.specify.ui.forms.DataObjectGettable;
 import edu.ku.brc.specify.ui.forms.DataObjectSettable;
@@ -40,7 +44,7 @@ import edu.ku.brc.specify.ui.forms.persist.FormCell;
 
 public final class UIHelper
 {
-    public enum OSTYPE {Unknown, Windows, MacOSX, Linux};
+    public enum OSTYPE {Unknown, Windows, MacOSX, Linux}
 
     // Static Data Members
     protected static final Logger   log      = Logger.getLogger(UIHelper.class);
@@ -199,7 +203,7 @@ public final class UIHelper
                 value = ((Double)valObj).floatValue();
             } else
             {
-                System.out.println("getFloat - Class type is "+valObj.getClass().getName());
+                log.error("getFloat - Class type is "+valObj.getClass().getName());
             }
         } else
         {
@@ -227,7 +231,7 @@ public final class UIHelper
                 value = ((Double)valObj).doubleValue();
             } else
             {
-                System.out.println("getDouble - Class type is "+valObj.getClass().getName());
+                log.error("getDouble - Class type is "+valObj.getClass().getName());
             }
         } else
         {
@@ -255,7 +259,7 @@ public final class UIHelper
                 value = ((Double)valObj).intValue();
             } else
             {
-                System.out.println("getInt - Class type is "+valObj.getClass().getName());
+                log.error("getInt - Class type is "+valObj.getClass().getName());
             }
         } else
         {
@@ -273,7 +277,7 @@ public final class UIHelper
                 return (String)valObj;
             } else
             {
-                System.out.println("getString - Class type is "+valObj.getClass().getName()+" should be String");
+                log.error("getString - Class type is "+valObj.getClass().getName()+" should be String");
             }
         } else
         {
@@ -297,11 +301,11 @@ public final class UIHelper
                     return false;
                 } else
                 {
-                    System.out.println("getBoolean - value is not 'true' or 'false'");
+                    log.error("getBoolean - value is not 'true' or 'false'");
                 }
             } else
             {
-                System.out.println("getBoolean - Class type is "+valObj.getClass().getName()+" should be String");
+                log.error("getBoolean - Class type is "+valObj.getClass().getName()+" should be String");
             }
         } else
         {
@@ -615,6 +619,36 @@ public final class UIHelper
 
         return false;
     }
+    
+     /**
+      * intializes the data object for searching
+     * @param dataObj 
+     * @return true is successful, false if error
+     */
+    public static boolean initForSearch(final Object dataObj)
+    {
+        try
+        {
+            Method method = dataObj.getClass().getMethod("initForSearch", new Class[] {});
+            method.invoke(dataObj, new Object[] {});
+
+            return true;
+
+        } catch (NoSuchMethodException ex)
+        {
+            ex.printStackTrace();
+
+        } catch (IllegalAccessException ex)
+        {
+            ex.printStackTrace();
+
+        } catch (InvocationTargetException ex)
+        {
+            ex.printStackTrace();
+        }
+
+        return false;
+    }
 
     /**
       * Creates a new data object and initializes it
@@ -772,6 +806,81 @@ public final class UIHelper
     public static List<String> createList()
     {
         return new ArrayList<String>();
+    }
+    
+    //-------------------------------------------------------
+    //-- Helpers for logging into the database
+    //-------------------------------------------------------
+    
+    /**
+     * Tries to login using the supplied params
+     * @param dbDriver the driver (a package/class name)
+     * @param dbServer the server (i.e. jdbc:mysql://localhost/)
+     * @param dbName the name of the database
+     * @param dbUsername the user name
+     * @param dbPassword the password
+     * @return true if logged in, false if not
+     */
+    public static boolean tryLogin(final String dbDriver, 
+                                   final String dbServer, 
+                                   final String dbName, 
+                                   final String dbUsername, 
+                                   final String dbPassword)
+    {
+        DBConnection dbConn = DBConnection.getInstance();
+        dbConn.setUsernamePassword(dbUsername, dbPassword);
+        dbConn.setDriver(dbDriver);
+        dbConn.setServer(dbServer);
+        dbConn.setDatabaseName(dbName);
+        
+        Connection connection = dbConn.createConnection();
+        if (connection != null)
+        {
+            try
+            {
+                connection.close();
+                
+            } catch (SQLException ex)
+            {
+                
+            }
+            return true;
+            
+        } else
+        {
+            return false;
+        }  
+    }
+    
+    /**
+     * Tries to do the login, if doAutoLogin is set to true it will try without displaying a dialog
+     * and if the login fails then it will display the dialog
+     * @param doAutoLogin whether to try to utomatically log the user in
+     * @return true if loged in, false if not
+     */
+    public static boolean doLogin(final boolean doAutoLogin)
+    {
+       
+        DatabaseLogin loginDlg = new DatabaseLogin();
+        if (doAutoLogin && loginDlg.doingAutoLogin())
+        {
+            boolean loginError = tryLogin(loginDlg.getDriverName(), 
+                                          loginDlg.getServerName(), 
+                                          loginDlg.getDatabaseName(), 
+                                          loginDlg.getUserName(), 
+                                          loginDlg.getPassword());
+            if (loginError)
+            {
+                loginDlg.setVisible(true);
+                return !loginDlg.isCancelled();
+            }
+            
+        } else 
+        {
+            loginDlg.setVisible(true);
+            return !loginDlg.isCancelled();
+        }
+        return false;
     }
 
 }

@@ -116,7 +116,7 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
     protected void createColorPanelWindow()
     {
         // build popup window
-        System.out.println(getDialog(this));
+        //System.out.println(getDialog(this));
         
         Dialog parentDlg = getDialog(this);
         if (parentDlg != null)
@@ -246,7 +246,6 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
             {
                 public void actionPerformed(ActionEvent evt) 
                 {
-                    System.out.println("Here!");
                     hidePopup();
                     selectColor(((JButton)evt.getSource()).getBackground());
                 }
@@ -260,7 +259,6 @@ public class ColorChooser extends JButton implements AncestorListener, GetSetVal
                             itself,
                             "Choose Color",
                             itself.getBackground());
-                    System.out.println(newColor);
                     if (newColor != null)
                     {
                         selectColor(newColor);

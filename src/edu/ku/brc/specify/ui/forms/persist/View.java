@@ -102,7 +102,7 @@ public class View implements Comparable<View>
         }
         
         // OK, so we need to use the AltView that is the opposite of the 
-        // of the defulat AltView's edit mode.
+        // of the default AltView's edit mode.
         for (AltView av : altViews)
         {
             if (!av.isDefault() && av.getViewDefName().equals(defAltView.getViewDefName()))

@@ -182,16 +182,10 @@ public class DataEntryTask extends BaseTask
 
         String defaultFormName = DBTableIdMgr.lookupDefaultFormNameById(recordSet.getTableId());
 
-        //FormView formView = ViewMgr.getView("Main Views", tableId);
-
         Query query = DBTableIdMgr.getQueryForTable(recordSet);
-        java.util.List list = query.list();
-
-        System.out.println(query.toString());
-        System.out.println("ResultSet: "+list.size());
-
-        // XXX Hard Coded ViewSet Name
-        return new FormPane(name, task, "Main Views", defaultFormName, null, query.list(), false);
+        
+        // "null" ViewSet name means it should use the default
+        return new FormPane(name, task, null, defaultFormName, null, query.list(), false);
 
     }
 

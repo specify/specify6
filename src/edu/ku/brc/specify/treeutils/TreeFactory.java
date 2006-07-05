@@ -43,13 +43,13 @@ public class TreeFactory
 		{
 			def = setupNewLocationTree(defName);
 			defItem = createNewTreeDefinitionItem(LocationTreeDefItem.class, "Root");
-			rootNode = createNewTreeable(Geography.class, "Root");
+			rootNode = createNewTreeable(Location.class, "Root");
 		}
 		else if( treeNodeClass.equals(Taxon.class) )
 		{
 			def = setupNewTaxonTree(defName);
 			defItem = createNewTreeDefinitionItem(TaxonTreeDefItem.class, "Root");
-			rootNode = createNewTreeable(Geography.class, "Root");
+			rootNode = createNewTreeable(Taxon.class, "Root");
 		}
 
 		defItem.setTreeDefinition(def);

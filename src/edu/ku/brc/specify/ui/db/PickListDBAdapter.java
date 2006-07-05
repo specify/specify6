@@ -46,17 +46,26 @@ public class PickListDBAdapter
     
     
     /**
+     * Protected Default constructor derving subclasses 
+     */
+    protected PickListDBAdapter()
+    {
+        pickList = new PickList();
+        pickList.initialize();
+    }
+    
+    /**
      * Constructor with a unique name
      * @param name the name of the picklist
      * @param createWhenNotFound indicates whether to automatically create the picklist when the name is not found,
      */
     public PickListDBAdapter(final String name, final boolean createWhenNotFound)
     {
-        pickList = getPickListItem(name);
+        pickList = getPickList(name);
         
         if (pickList != null)
         {
-             for (Object obj : pickList.getItems())
+            for (Object obj : pickList.getItems())
             {
                 items.add((PickListItem)obj); 
             }
@@ -69,7 +78,7 @@ public class PickListDBAdapter
              pickList = new PickList();
              pickList.setCreated(new Date());
              pickList.setName(name);
-             pickList.setItems(new HashSet());
+             pickList.setItems(new HashSet<PickListItem>());
              
          } else 
          {
@@ -80,12 +89,12 @@ public class PickListDBAdapter
     /**
      * Gets the PickList Item from the Database
      * @param name the name of the picklist to get
-     * @return the picklist item
+     * @return the picklist
      */
-    protected PickList getPickListItem(final String name)
+    protected PickList getPickList(final String name)
     {
-        PickList pickList = null;
-        Session  session  = null;
+        PickList pkList  = null;
+        Session  session = null;
         try
         {
             session = HibernateUtil.getSessionFactory().openSession();
@@ -94,7 +103,7 @@ public class PickListDBAdapter
 	        List items = criteria.list();
 	        if (items != null && items.size() > 0)
 	        {
-                pickList = (PickList)items.get(0);
+                pkList = (PickList)items.get(0);
 	        }
 	        
         } catch (Exception e)
@@ -106,7 +115,7 @@ public class PickListDBAdapter
              session.close();
         }
         
-        return pickList;
+        return pkList;
         
     }
     
@@ -144,7 +153,6 @@ public class PickListDBAdapter
      * @param value although currently no supported we may want to display one text string but save a different one
      * @return returns the new PickListItem
      */
-    @SuppressWarnings("unchecked")
     public PickListItem addItem(final String title, final String value)
     {
         // this should never happen!
@@ -153,7 +161,7 @@ public class PickListDBAdapter
             throw new RuntimeException("Trying to add an item to a readonly picklist ["+pickList.getName()+"]");
         }
         
-        int sizeLimit = 50; // arbitrary size could be a pref (XXX PREF)
+        int     sizeLimit = 50; // arbitrary size could be a pref (XXX PREF)
         Integer sizeLimitInt = pickList.getSizeLimit();
         if (sizeLimitInt != null)
         {

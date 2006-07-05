@@ -171,7 +171,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
         });
 
         String viewName = "test";
-        String name = "Main Views";
+        String name = null; // use the default
 
         formView = ViewMgr.getView(name, viewName);
         if (formView != null)
@@ -257,7 +257,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
      */
     public void addSearchResults(final ExpressResultsTableInfo tableInfo, final Hits hits)
     {
-        System.out.println(tableInfo.getTitle()+"  "+tableInfo.getTableId() + "  " + tableId);
+        //System.out.println(tableInfo.getTitle()+"  "+tableInfo.getTableId() + "  " + tableId);
         if (Integer.parseInt(tableInfo.getTableId()) == tableId)
         {
             recordSet = null;
@@ -281,7 +281,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
                             for (Object obj : recordSet.getItems())
                             {
                                 RecordSetItem rsi = (RecordSetItem)obj;
-                                System.out.println(rsi.getRecordId());
+                                //System.out.println(rsi.getRecordId());
                             }
 
                         } else

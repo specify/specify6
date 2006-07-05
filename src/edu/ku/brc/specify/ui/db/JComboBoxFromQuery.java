@@ -57,6 +57,8 @@ public class JComboBoxFromQuery extends JComboBox
     protected JTextField           tf               = null;
     protected boolean              foundMatch       = false;
     protected boolean              ignoreFocus      = false;
+    protected boolean              allowNewValues   = false;
+    
     protected DefaultComboBoxModel model;
     protected Vector<Integer>      idList           = new Vector<Integer>();
     protected Vector<String>       list             = new Vector<String>();
@@ -142,6 +144,17 @@ public class JComboBoxFromQuery extends JComboBox
     public void setCaseInsensitive(final boolean caseInsensitve)
     {
         this.caseInsensitve = caseInsensitve;
+    }
+    
+
+    public boolean isAllowNewValues()
+    {
+        return allowNewValues;
+    }
+
+    public void setAllowNewValues(boolean allowNewValues)
+    {
+        this.allowNewValues = allowNewValues;
     }
 
     /* (non-Javadoc)
@@ -241,12 +254,16 @@ public class JComboBoxFromQuery extends JComboBox
         // When not doing "additions" ...
         // At this point there was no match so "if" there had been one before there isn't now
         // so remove the last character typed and check to see if there is a match again.
-        if (len > 0)
+        if (!allowNewValues)
         {
-            tf.setText(s.substring(0, len-1));
-            lookForMatch();
-            return;
-        }
+            if (len > 0)
+            {
+                tf.setText(s.substring(0, len-1));
+                lookForMatch();
+                return;
+            }
+        } 
+       
         foundMatch = false;        
     }
 
@@ -462,8 +479,12 @@ public class JComboBoxFromQuery extends JComboBox
                     {
                         fillBox(textStr);
                     }
-                    lookForMatch();
-                    oldLength = tf.getText().length();
+                    
+                    if (!allowNewValues || textStr.length() <= searchStopLength)
+                    {
+                        lookForMatch();
+                        oldLength = tf.getText().length();
+                    }
                 }
             });
         }
