@@ -19,8 +19,26 @@ import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.util.Pair;
 
+/**
+ * A factory class for creating instances of the Treeable, TreeDefinitionIface, and TreeDefinitionItemIface interfaces.
+ * The class also contains factory methods for creating appropriate comparators for comparing Treeables.  Also
+ * included are some methods for determining if a given Treeable instance is deletable based on type-specific
+ * business rules.
+ * 
+ * @author jstewart
+ *
+ */
 public class TreeFactory
 {
+	/**
+	 * Creates a new tree whos nodes will be of type <code>treeNodeClass</code>.  A new
+	 * <code>TreeDefinitionIface</code>, <code>TreeDefinitionItemIface</code>, and <code>Treeable</code>
+	 * node are all created.
+	 * 
+	 * @param treeNodeClass the node class of the new tree
+	 * @param defName the name of the new tree definition
+	 * @return the new <code>TreeDefinitionIface</code> instance
+	 */
 	@SuppressWarnings("unchecked")
 	public static TreeDefinitionIface setupNewTreeDef( Class treeNodeClass, String defName )
 	{
@@ -61,6 +79,12 @@ public class TreeFactory
 		return def;
 	}
 	
+	/**
+	 * Create, initialize, and name a new GeographyTreeDef instance.
+	 * 
+	 * @param defName the name to give the new instance
+	 * @return the new definition instance
+	 */
 	protected static GeographyTreeDef setupNewGeographyTree( String defName )
 	{
 		GeographyTreeDef def = new GeographyTreeDef();
@@ -69,6 +93,12 @@ public class TreeFactory
 		return def;
 	}
 
+	/**
+	 * Create, initialize, and name a new GeologicTimePeriodTreeDef instance.
+	 * 
+	 * @param defName the name to give the new instance
+	 * @return the new definition instance
+	 */
 	protected static GeologicTimePeriodTreeDef setupNewGeologicTimePeriodTree( String defName )
 	{
 		GeologicTimePeriodTreeDef def = new GeologicTimePeriodTreeDef();
@@ -77,6 +107,12 @@ public class TreeFactory
 		return def;
 	}
 
+	/**
+	 * Create, initialize, and name a new LocationTreeDef instance.
+	 * 
+	 * @param defName the name to give the new instance
+	 * @return the new definition instance
+	 */
 	protected static LocationTreeDef setupNewLocationTree( String defName )
 	{
 		LocationTreeDef def = new LocationTreeDef();
@@ -85,6 +121,12 @@ public class TreeFactory
 		return def;
 	}
 
+	/**
+	 * Create, initialize, and name a new TaxonTreeDef instance.
+	 * 
+	 * @param defName the name to give the new instance
+	 * @return the new definition instance
+	 */
 	protected static TaxonTreeDef setupNewTaxonTree( String defName )
 	{
 		TaxonTreeDef def = new TaxonTreeDef();
@@ -93,6 +135,16 @@ public class TreeFactory
 		return def;
 	}
 
+	/**
+	 * Creates a new Treeable instance of the given <code>implementingClass</code> having the given parent, name,
+	 * and rank.
+	 * 
+	 * @param implementingClass the class of the node to be created
+	 * @param parent the parent of the new node
+	 * @param name the name of the new node
+	 * @param rank the rank of the new node
+	 * @return the new Treeable node instance
+	 */
 	public static Treeable createNewTreeable( Class implementingClass, Treeable parent, String name, Integer rank )
 	{
 		Treeable t = null;
@@ -132,22 +184,56 @@ public class TreeFactory
 		return t;
 	}
 	
+	/**
+	 * Creates a new Treeable node instance having the given parent and name.
+	 * 
+	 * @param parent the parent of the new node
+	 * @param name the name of the new node
+	 * @see TreeFactory.#createNewTreeabe(Class,Treeable,String,Integer)
+	 * @return the new Treeable node instance
+	 */
 	public static Treeable createNewTreeable( Treeable parent, String name )
 	{
 		Integer rank = TreeTableUtils.getRankOfChildren(parent);
 		return createNewTreeable( parent.getClass(), parent, name, rank );
 	}
 	
+	/**
+	 * Creates a new Treeable node instance having the given parent and name.
+	 * 
+	 * @param parent the parent of the new node
+	 * @param name the name of the new node
+	 * @see TreeFactory.#createNewTreeabe(Class,Treeable,String,Integer)
+	 * @return the new Treeable node instance
+	 */
 	public static Treeable createNewTreeable( Class implementingClass, String name )
 	{
 		return createNewTreeable(implementingClass,null,name,null);
 	}
 
+	/**
+	 * Creates a new Treeable node instance having the given parent, name and rank.
+	 * 
+	 * @param parent the parent of the new node
+	 * @param name the name of the new node
+	 * @param rankId the rank of the new node
+	 * @see TreeFactory.#createNewTreeabe(Class,Treeable,String,Integer)
+	 * @return the new Treeable node instance
+	 */
 	public static Treeable createNewTreeable( Treeable parent, String name, Integer rankId )
 	{
 		return createNewTreeable( parent.getClass(), parent, name, rankId );
 	}
 	
+	/**
+	 * Creates a new Treeable node instance having the given parent, name and rank.
+	 * 
+	 * @param implementingClass the implementation class of the new node
+	 * @param name the name of the new node
+	 * @param remarks the remarks for the new node
+	 * @see TreeFactory.#createNewTreeabe(Class,Treeable,String,Integer)
+	 * @return the new node instance
+	 */
 	public static TreeDefinitionIface createNewTreeDef( Class implementingClass, String name, String remarks )
 	{
 		TreeDefinitionIface def = null;
