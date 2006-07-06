@@ -29,7 +29,6 @@ import java.util.prefs.Preferences;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;

@@ -43,8 +43,6 @@ import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserGroup;
 import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -61,22 +59,16 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeCellRenderer;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 
@@ -117,7 +109,8 @@ import edu.ku.brc.specify.tests.CreateTestDatabases;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.specify.tests.forms.TestDataSubObj;
 import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.db.DatabaseLogin;
+import edu.ku.brc.specify.ui.db.DatabaseLoginDlg;
+import edu.ku.brc.specify.ui.db.DatabaseLoginListener;
 import edu.ku.brc.specify.ui.forms.MultiView;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
 import edu.ku.brc.specify.ui.forms.Viewable;
@@ -130,7 +123,7 @@ import edu.ku.brc.specify.ui.forms.persist.View;
  * @author rods
  *
  */
-public class FormEditor
+public class FormEditor implements DatabaseLoginListener
 {
     private static final Logger log = Logger.getLogger(FormEditor.class);
 
@@ -157,7 +150,6 @@ public class FormEditor
     {
         ViewMgr.setAsDefaultViewSet("Fish Views");
         
-        //HibernateUtil.initialize(); // This also sets up the DBConnection params for the JDBC driver
     }
 
     /**
@@ -462,13 +454,15 @@ public class FormEditor
                 boolean skip = false;
                 if (skip)
                 {
+                    /*
                     Query q = HibernateUtil.getCurrentSession().createQuery("from accession in class Accession where accession.accessionId in (74,68262114,508322272)");
                     java.util.List list = q.list();
                     for (Object obj : list)
                     {
                         Accession accession = (Accession)obj;
-                        //System.out.println(accession.getAccessionId());
+                        System.out.println(accession.getAccessionId());
                     }
+                    */
                 }
 
 
@@ -597,7 +591,9 @@ public class FormEditor
            //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
            //UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
            
-           UIHelper.doLogin(true); // true means do auto login if it can
+           
+           // Note: This is asynchronous
+           UIHelper.doLogin(false, false, this); // true means do auto login if it can, second true means use dialog
 
 
        }
@@ -854,10 +850,27 @@ public class FormEditor
         return mi;
     }
     
+    /**
+     * 
+     */
     public void testLogin()
     {
-        DatabaseLogin dl = new DatabaseLogin();
+        DatabaseLoginDlg dl = new DatabaseLoginDlg(this);
         UIHelper.centerAndShow(dl);
+    }
+    
+    //---------------------------------------------------------
+    // DatabaseLoginListener Interface
+    //---------------------------------------------------------
+    
+    public void loggedIn()
+    {
+        startup();
+    }
+    
+    public void cancelled()
+    {
+        System.exit(0);
     }
 
 
@@ -872,93 +885,12 @@ public class FormEditor
             public void run()
             {
                 FormEditor formEditor = new FormEditor();
-                formEditor.initialize();
-                //formEditor.testLogin();
-                
-                //formEditor.startup();
-                
-                //formEditor.startup2();
-                
+                formEditor.initialize();    
             }
       });
 
         
     }
-    
-    public void startup2()
-    {
-        new SimpleTree();
-    }
-    
-    public class SimpleTree extends JFrame {
-      
-        public SimpleTree() {
-          super("Creating a Simple JTree");
-          //WindowUtilities.setNativeLookAndFeel();
-          //addWindowListener(new ExitListener());
-          Container content = getContentPane();
-          Object[] hierarchy =
-            { "javax.swing",
-              "javax.swing.border",
-              "javax.swing.colorchooser",
-              "javax.swing.event",
-              "javax.swing.filechooser",
-              new Object[] { "javax.swing.plaf",
-                             "javax.swing.plaf.basic",
-                             "javax.swing.plaf.metal",
-                             "javax.swing.plaf.multi" },
-              "javax.swing.table",
-              new Object[] { "javax.swing.text",
-                             new Object[] { "javax.swing.text.html",
-                                            "javax.swing.text.html.parser" },
-                             "javax.swing.text.rtf" },
-              "javax.swing.tree",
-              "javax.swing.undo" };
-          DefaultMutableTreeNode root = processHierarchy(hierarchy);
-          JTree tree = new JTree(root);
-          tree.setShowsRootHandles(false);
-          tree.putClientProperty("JTree.lineStyle", "None");
-          tree.setCellRenderer(new MyTreeCellRenderer());
-          content.add(new JScrollPane(tree), BorderLayout.CENTER);
-          setSize(275, 300);
-          setVisible(true);
-        }
 
-        /** Small routine that will make node out of the first entry
-         *  in the array, then make nodes out of subsequent entries
-         *  and make them child nodes of the first one. The process is
-         *  repeated recursively for entries that are arrays.
-         */
-          
-        private DefaultMutableTreeNode processHierarchy(Object[] hierarchy) {
-          DefaultMutableTreeNode node =
-            new DefaultMutableTreeNode(hierarchy[0]);
-          DefaultMutableTreeNode child;
-          for(int i=1; i<hierarchy.length; i++) {
-            Object nodeSpecifier = hierarchy[i];
-            if (nodeSpecifier instanceof Object[])  // Ie node with children
-              child = processHierarchy((Object[])nodeSpecifier);
-            else
-              child = new DefaultMutableTreeNode(nodeSpecifier); // Ie Leaf
-            node.add(child);
-          }
-          return(node);
-        }
-      }
     
-    class MyTreeCellRenderer extends JLabel implements TreeCellRenderer
-    {
-        public Component getTreeCellRendererComponent(JTree tree,
-                                               Object value,
-                                               boolean selected,
-                                               boolean expanded,
-                                               boolean leaf,
-                                               int row,
-                                               boolean hasFocus)
-        {
-            setText(value.toString());
-            return this;
-        }
-    }
-
 }

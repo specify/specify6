@@ -23,8 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -36,7 +38,11 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.prefs.PrefsCache;
-import edu.ku.brc.specify.ui.db.DatabaseLogin;
+import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.db.DatabaseLoginDlg;
+import edu.ku.brc.specify.ui.db.DatabaseLoginListener;
+import edu.ku.brc.specify.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.specify.ui.dnd.GhostDataAggregatable;
 import edu.ku.brc.specify.ui.forms.DataObjectGettable;
 import edu.ku.brc.specify.ui.forms.DataObjectSettable;
@@ -858,29 +864,76 @@ public final class UIHelper
      * @param doAutoLogin whether to try to utomatically log the user in
      * @return true if loged in, false if not
      */
-    public static boolean doLogin(final boolean doAutoLogin)
+    public static void doLogin(final boolean doAutoLogin, 
+                               final boolean useDialog, 
+                               final DatabaseLoginListener listener)
     {
-       
-        DatabaseLogin loginDlg = new DatabaseLogin();
-        if (doAutoLogin && loginDlg.doingAutoLogin())
+        // NOTE: These prefs are taken from DatabaseLoginPanel
+        Preferences appsNode = UICacheManager.getAppPrefs();
+        Preferences prefNode = appsNode.node("login");
+        
+        String usernameStr  = prefNode.get("username", "");
+        String password     = Encryption.decrypt(prefNode.get("password", ""));
+        String driverStr    = prefNode.get("driver", "com.mysql.jdbc.Driver"); // XXX HARD CODED VALUE!
+        String serversStr   = prefNode.get("servers_selected", "");
+        String databasesStr = prefNode.get("databases_selected", "");
+                   
+        boolean doLogin = true;
+        if (doAutoLogin && prefNode.getBoolean("autologin", false))
         {
-            boolean loginError = tryLogin(loginDlg.getDriverName(), 
-                                          loginDlg.getServerName(), 
-                                          loginDlg.getDatabaseName(), 
-                                          loginDlg.getUserName(), 
-                                          loginDlg.getPassword());
-            if (loginError)
+            boolean loginOK = tryLogin(driverStr, serversStr, databasesStr, usernameStr, password);
+            if (loginOK)
             {
-                loginDlg.setVisible(true);
-                return !loginDlg.isCancelled();
+                doLogin = false;
+                if (listener != null)
+                {
+                    listener.loggedIn();
+                }
             }
-            
-        } else 
+        } 
+         
+        //doLogin = true; // testing
+        
+        if (doLogin)
         {
-            loginDlg.setVisible(true);
-            return !loginDlg.isCancelled();
+            if (useDialog)
+            {
+                DatabaseLoginDlg dlg = new DatabaseLoginDlg(listener);
+                UIHelper.centerAndShow(dlg);
+                
+            } else
+            {
+                class DBListener implements DatabaseLoginListener
+                {
+                    protected JFrame                frame;
+                    protected DatabaseLoginListener frameDBListener;
+                    
+                    public DBListener(JFrame frame, DatabaseLoginListener frameDBListener)
+                    {
+                        this.frame = frame;
+                        this.frameDBListener = frameDBListener;
+                    }
+                    public void loggedIn()
+                    {
+                        frame.setVisible(false);
+                        frameDBListener.loggedIn();
+                    }
+                    
+                    public void cancelled()
+                    {
+                        frame.setVisible(false);
+                        frameDBListener.cancelled();
+                    }
+                }
+            
+                JFrame frame = new JFrame(getResourceString("logintitle"));
+                frame.setContentPane(new DatabaseLoginPanel(new DBListener(frame, listener)));
+                frame.setIconImage(IconManager.getIcon("AppIcon", IconManager.IconSize.Std16).getImage());
+                
+                frame.pack();
+                UIHelper.centerAndShow(frame);
+            }
         }
-        return false;
     }
 
 }

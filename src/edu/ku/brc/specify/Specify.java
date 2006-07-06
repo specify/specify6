@@ -55,7 +55,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
@@ -90,6 +89,7 @@ import edu.ku.brc.specify.ui.MainPanel;
 import edu.ku.brc.specify.ui.SubPaneIFace;
 import edu.ku.brc.specify.ui.ToolbarLayoutManager;
 import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.specify.ui.db.DatabaseLoginListener;
 import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
 import edu.ku.brc.util.FileCache;
@@ -99,7 +99,7 @@ import edu.ku.brc.util.FileCache;
  * @author Rod Spears <rods@ku.edu>
  */
 @SuppressWarnings("serial")
-public class Specify extends JPanel
+public class Specify extends JPanel implements DatabaseLoginListener
 {
     private static final Logger log = Logger.getLogger(Specify.class);
 
@@ -179,8 +179,6 @@ public class Specify extends JPanel
 
         initPrefs();
         
-        ViewMgr.setAsDefaultViewSet("Fish Views");
-        
         // Create and throw the splash screen up. Since this will
         // physically throw bits on the screen, we need to do this
         // on the GUI thread using invokeLater.
@@ -237,40 +235,15 @@ public class Specify extends JPanel
         }
 
         log.info("Creating Database configuration ");
+
+        UIHelper.doLogin(true, false, this); // true means do auto login if it can, second bool means use dialog instead of frame
+
         
-
-        if (UIHelper.doLogin(true)) // true means do auto login if it can
-        {
-            initStartUpPanels();
-            
-        } else
-        {
-            System.exit(0);
-        }
-        
-
-       /*try
-       {
-
-            SwingUtilities.invokeLater(new Runnable()
-                    {
-                        public void run()
-                        {
-                            validate();
-                            hideSplash();
-
-                            add(mainPanel, BorderLayout.CENTER);
-                            ContextMgr.getTaskByClass(StartUpTask.class).requestContext();
-                            showApp();
-                        }
-                    });
-
-        } catch (Exception e)
-        {
-            log.error("Error",e);
-        }*/
     }
 
+    /**
+     * 
+     */
     protected void initStartUpPanels()
     {
         PluginMgr.initializePlugins();
@@ -633,7 +606,19 @@ public class Specify extends JPanel
                 {
                     public void actionPerformed(ActionEvent ae)
                     {
-                        UIHelper.doLogin(false); // true means do auto login if it can
+                        class DBListener implements DatabaseLoginListener
+                        {
+                            public void loggedIn()
+                            {
+                                
+                            }
+                            
+                            public void cancelled()
+                            {
+                            }
+                        }
+
+                        UIHelper.doLogin(false, true, new DBListener()); // true means do auto login if it can, second bool means use dialog instead of frame
                     }
                 });
         menu.addSeparator();
@@ -829,6 +814,29 @@ public class Specify extends JPanel
           }
         });
     }
+    
+    //---------------------------------------------------------
+    // DatabaseLoginListener Interface
+    //---------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.db.DatabaseLoginListener#loggedIn()
+     */
+    public void loggedIn()
+    {
+        ViewMgr.setAsDefaultViewSet("Fish Views");
+        
+        initStartUpPanels();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.db.DatabaseLoginListener#cancelled()
+     */
+    public void cancelled()
+    {
+        System.exit(0);
+    }
+
 
     // *******************************************************
     // *****************   Static Methods  *******************

@@ -19,9 +19,6 @@
  */
 package edu.ku.brc.specify.ui.db;
 
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
-
-import java.awt.Color;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
@@ -30,11 +27,7 @@ import java.util.Vector;
 
 import javax.swing.ComboBoxEditor;
 import javax.swing.ComboBoxModel;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.swing.plaf.basic.BasicComboBoxEditor;
 import javax.swing.text.BadLocationException;
 /**
  * An editable JComboBox that enables auto-completion which is supported through PickList/PickListItem. 
@@ -45,19 +38,8 @@ import javax.swing.text.BadLocationException;
  *
  */
 @SuppressWarnings("serial")
-public class JAutoCompComboBox extends JComboBox
+public class JAutoCompComboBox extends JEditComboBox
 {
-    protected int                caretPos        = 0;
-    protected boolean            enableAdditions = true;
-    protected boolean            caseInsensitve  = true;
-
-    protected JTextField         textField       = null;
-    protected boolean            foundMatch      = false;
-    protected boolean            ignoreFocus     = false;
-    protected boolean            askBeforeSave   = false;
-    
-    protected PickListDBAdapter  dbAdapter       = null;
-
     /**
      * Constructor
      */
@@ -100,95 +82,9 @@ public class JAutoCompComboBox extends JComboBox
     public JAutoCompComboBox(final PickListDBAdapter dbAdapter)
     {
         super(dbAdapter.getList());
-        
-        this.dbAdapter = dbAdapter;
-        init(true);
     }
     
-    /**
-     * An initializer so a PickListAdaptor can be set after the control is created, and automatically makes it editable
-     * @param dbAdapter the PickListAdaptor
-     * @param makeEditable oindicates whether it is editable
-     */
-    public void init(final PickListDBAdapter dbAdapter, final boolean makeEditable)
-    {
-        setModel(new DefaultComboBoxModel(dbAdapter.getList()));
-        
-        this.dbAdapter = dbAdapter;
-        init(makeEditable);  
-    }
     
-    /**
-     * Initializes the combobox to enable the typing of values 
-     * @param makeEditable indicates to make it an editable combobox
-     */
-    public void init(final boolean makeEditable)
-    {
-        if (makeEditable && !this.isEditable)
-        {
-            this.setEditor(new BasicComboBoxEditor());
-            this.setEditable(true);
-            setSelectedIndex(-1);  
-        }
-    }
-    
-    /**
-     * Returns the text field when it is editable
-     * @return the text field when it is editable
-     */
-    public JTextField getTextField()
-    {
-        return textField;
-    }
-    
-    /**
-     * Sets whether new items can be added
-     * @param enableAdditions indicates items can be added
-     */
-    public void setEnableAdditions(final boolean enableAdditions)
-    {
-        this.enableAdditions = enableAdditions;
-    }
-
-    /**
-     * Sets whether to ask via a dialog if a value should be added
-     * @param askBeforeSave indicates it should ask
-     */
-    public void setAskBeforeSave(final boolean askBeforeSave)
-    {
-        this.askBeforeSave = askBeforeSave;
-    }
-    
-    /**
-     * Sets wehether the searches for the items are case insensitive or not
-     * @param caseInsensitve
-     */
-    public void setCaseInsensitive(final boolean caseInsensitve)
-    {
-        this.caseInsensitve = caseInsensitve;
-    }
-    
-    /**
-     * Return the PickListAdaptor
-     * @return the PickListAdaptor
-     */
-    public PickListDBAdapter getDBAdapter()
-    {
-        return dbAdapter;
-    }
-
-    /* (non-Javadoc)
-     * @see java.awt.Component#setBackground(java.awt.Color)
-     */
-    public void setBackground(Color bgColor)
-    {
-        super.setBackground(bgColor);
-        if (textField != null)
-        {
-            textField.setBackground(bgColor);
-        }
-    }
-
     /* (non-Javadoc)
      * @see javax.swing.JComboBox#setSelectedIndex(int)
      */
@@ -201,80 +97,11 @@ public class JAutoCompComboBox extends JComboBox
             Object item = getItemAt(index);
             if (item instanceof PickListItem)
             {
-    	        textField.setText(((PickListItem)item).getTitle());
-    	        textField.setSelectionEnd(caretPos + textField.getText().length());
-    	        textField.moveCaretPosition(caretPos);
+                textField.setText(((PickListItem)item).getTitle());
+                textField.setSelectionEnd(caretPos + textField.getText().length());
+                textField.moveCaretPosition(caretPos);
             }
         }
-    }
-    
-    /**
-     * It may or may not ask if it can add, and then it adds the new item
-     * @param strArg the string that is to be added
-     * @return whether it was added
-     */
-    protected boolean askToAdd(String strArg)
-    {
-        if (ignoreFocus)
-        {
-            return false;
-        }
-        
-        if (isNotEmpty(strArg))
-        {
-            ignoreFocus = true;
-            
-            // XXX I18N
-	        if (!askBeforeSave || JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, 
-                                                            "Add new value `"+strArg+"` to the list?", "Add New Item", JOptionPane.YES_NO_OPTION))
-	        {
-                PickListItem pli;
-	            if (dbAdapter != null)
-	            {
-                    pli = dbAdapter.addItem(strArg, strArg);
-	            } else
-                {
-                    pli = new PickListItem(strArg, strArg, null); // this is ok because the items will not be saved.
-                }
-                this.addItem(pli);
-                this.setSelectedItem(pli);
-                
-	            ignoreFocus = false;
-                
-	            return true;
-	        }
-            ignoreFocus = false;            
-        }
-        return false;
-    }
-    
-    /**
-     * Check to see if it can add the the item that is in the combobox'es testfield
-     */
-    protected void addNewItemFromTextField()
-    {
-        if (getSelectedIndex() != -1) // accepting value and setting the selection to null 
-        {
-            textField.setSelectionStart(0);
-            textField.setSelectionEnd(0);
-            textField.moveCaretPosition(0);
-            
-        } else
-        {
-            // Need to add a new value
-            if (enableAdditions)
-            {
-	            if (askToAdd(textField.getText()))
-	            {
-	                textField.setSelectionStart(0);
-	                textField.setSelectionEnd(0);
-	                textField.moveCaretPosition(0);	                                    
-	            } else 
-	            {
-	                textField.setText("");
-	            }
-            }
-        }        
     }
     
     /**
@@ -411,15 +238,6 @@ public class JAutoCompComboBox extends JComboBox
                 }
             });
         }
-    }
-    
-    /**
-     * Returns whether the ComboBox has a PickList Adapter
-     * @return true if it has a dbAdapter
-     */
-    public boolean hasAdapter()
-    {
-        return this.dbAdapter != null;
     }
     
     /**

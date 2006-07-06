@@ -76,6 +76,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
      * @param imgWidth the desired image width
      * @param imgHeight the desired image height
      * @param isEditMode whether it is in browse mode or edit mode
+     * @param hasBorder whether it has a border
      */
     public ImageDisplay(final int imgWidth, final int imgHeight, boolean isEditMode, boolean hasBorder)
     {
@@ -88,6 +89,24 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
     }
 
     /**
+     * Constructor with ImageIcon
+     * @param imgIcon the icon to be displayed
+     * @param isEditMode whether it is in browse mode or edit mode
+     * @param hasBorder whether it has a border
+     */
+    public ImageDisplay(final ImageIcon imgIcon, boolean isEditMode, boolean hasBorder)
+    {
+        super(new BorderLayout());
+        setBorder(hasBorder ? new EtchedBorder(EtchedBorder.LOWERED) : BorderFactory.createEmptyBorder());
+
+        this.isEditMode = isEditMode;
+        imagePanel = new ImagePanel(imgIcon.getIconWidth(), imgIcon.getIconHeight());
+        createUI();
+        
+        setImage(imgIcon);
+    }
+
+    /**
      *
      */
     protected void createUI()
@@ -95,11 +114,10 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
         PanelBuilder    builder = new PanelBuilder(new FormLayout("f:p:g" + (isEditMode ? ",2px,p" : ""), "p"));
         CellConstraints cc      = new CellConstraints();
 
-
         builder.add(imagePanel, cc.xy(1,1));
 
-       if (isEditMode)
-       {
+        if (isEditMode)
+        {
            ImageIcon icon = IconManager.getImage("EditIcon", IconManager.IconSize.NonStd);
 
            editBtn = new JButton(icon);
