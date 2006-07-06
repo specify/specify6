@@ -1,6 +1,7 @@
 package edu.ku.brc.specify.ui.treetables;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -225,6 +226,18 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 			this.selected = selected;
 		}
 		
+		@Override
+		public Dimension getPreferredSize()
+		{
+			Graphics2D g2d = (Graphics2D)getGraphics();
+			String name = treeable.getName();
+			int stringX = rankWidthsMap.get(treeable.getRankId()) + whitespace;
+			int stringWidth = g2d.getFontMetrics().stringWidth(name);
+			
+			return new Dimension(stringX+stringWidth,list.getFixedCellHeight());
+		}
+		
+
 		@Override
 		protected void paintComponent(Graphics g)
 		{
