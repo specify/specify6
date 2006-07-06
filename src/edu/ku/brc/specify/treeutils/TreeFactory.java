@@ -189,7 +189,7 @@ public class TreeFactory
 	 * 
 	 * @param parent the parent of the new node
 	 * @param name the name of the new node
-	 * @see TreeFactory.#createNewTreeabe(Class,Treeable,String,Integer)
+	 * @see TreeFactory#createNewTreeable(Class,Treeable,String,Integer)
 	 * @return the new Treeable node instance
 	 */
 	public static Treeable createNewTreeable( Treeable parent, String name )
@@ -201,9 +201,9 @@ public class TreeFactory
 	/**
 	 * Creates a new Treeable node instance having the given parent and name.
 	 * 
-	 * @param parent the parent of the new node
+	 * @param implementingClass the implementation class for the new node
 	 * @param name the name of the new node
-	 * @see TreeFactory.#createNewTreeabe(Class,Treeable,String,Integer)
+	 * @see TreeFactory#createNewTreeable(Class,Treeable,String,Integer)
 	 * @return the new Treeable node instance
 	 */
 	public static Treeable createNewTreeable( Class implementingClass, String name )
@@ -217,7 +217,7 @@ public class TreeFactory
 	 * @param parent the parent of the new node
 	 * @param name the name of the new node
 	 * @param rankId the rank of the new node
-	 * @see TreeFactory.#createNewTreeabe(Class,Treeable,String,Integer)
+	 * @see TreeFactory#createNewTreeable(Class,Treeable,String,Integer)
 	 * @return the new Treeable node instance
 	 */
 	public static Treeable createNewTreeable( Treeable parent, String name, Integer rankId )
@@ -231,7 +231,7 @@ public class TreeFactory
 	 * @param implementingClass the implementation class of the new node
 	 * @param name the name of the new node
 	 * @param remarks the remarks for the new node
-	 * @see TreeFactory.#createNewTreeabe(Class,Treeable,String,Integer)
+	 * @see TreeFactory#createNewTreeable(Class,Treeable,String,Integer)
 	 * @return the new node instance
 	 */
 	public static TreeDefinitionIface createNewTreeDef( Class implementingClass, String name, String remarks )
@@ -263,6 +263,15 @@ public class TreeFactory
 		return def;
 	}
 	
+	/**
+	 * Creates a new <code>TreeDefinitionItemIface</code> instance of the class <code>implementingClass</code>.
+	 * The new item has the given parent and name.
+	 * 
+	 * @param implementingClass the implementation class of the item instance
+	 * @param parent the items parent
+	 * @param name the name of the item
+	 * @return the new def item
+	 */
 	public static TreeDefinitionItemIface createNewTreeDefItem( Class implementingClass, TreeDefinitionItemIface parent, String name )
 	{
 		TreeDefinitionItemIface t = null;
@@ -301,16 +310,39 @@ public class TreeFactory
 		return t;
 	}
 	
+	/**
+	 * Creates a new <code>TreeDefinitionItemIface</code> instance.  The new item has the given parent and name.
+	 * 
+	 * @param parent the items parent
+	 * @param name the name of the item
+	 * @see TreeFactory#createNewTreeDefItem(Class, TreeDefinitionItemIface, String)
+	 * @return the new def item
+	 */
 	public static TreeDefinitionItemIface createNewTreeDefinitionItem( TreeDefinitionItemIface parent, String name )
 	{
 		return createNewTreeDefItem(parent.getClass(),parent,name );
 	}
 	
+	/**
+	 * Creates a new <code>TreeDefinitionItemIface</code> instance.  The new item has the given parent and name.
+	 * 
+	 * @param implementingClass the implementation class of the item instance
+	 * @param name the name of the item
+	 * @see TreeFactory#createNewTreeDefItem(Class, TreeDefinitionItemIface, String)
+	 * @return the new def item
+	 */
 	public static TreeDefinitionItemIface createNewTreeDefinitionItem( Class implementingClass, String name )
 	{
 		return createNewTreeDefItem(implementingClass,null,name);
 	}
 
+	/**
+	 * Find and return a <code>java.util.Comparator</code> appropriate for comparing <code>Treeable</code> objects
+	 * having the same implementation class as the given node.
+	 * 
+	 * @param node a node of the class tobe compared
+	 * @return a <code>Comparator</code> capable of properly comparing nodes of the same class as <code>node</code>
+	 */
 	public static Comparator<Treeable> getAppropriateComparator( Treeable node )
 	{
 		Class nodeClass = node.getClass();
@@ -322,80 +354,35 @@ public class TreeFactory
 		return new NameBasedTreeableComparator();
 	}
 
+	/**
+	 * Find and return the names of the formset and view for editing tree nodes of the same class
+	 * as the given <code>Treeable</code>.
+	 * 
+	 * @param node a node of the class to be edited using the returned formset and view
+	 * @return a {@link edu.ku.brc.util.Pair<String,String>} containing the formset and view names
+	 */
 	public static Pair<String,String> getAppropriateFormsetAndViewNames( Treeable node )
 	{
 		if( node instanceof Geography )
 		{
-			return new Pair<String,String>("Main Views","NewGeography");
+			return new Pair<String,String>("Fish Views","NewGeography");
 		}
 
 		if( node instanceof GeologicTimePeriod )
 		{
-			return new Pair<String,String>("Main Views","NewGeologicTimePeriod");
+			return new Pair<String,String>("Fish Views","NewGeologicTimePeriod");
 		}
 
 		if( node instanceof Location )
 		{
-			return new Pair<String,String>("Main Views","NewLocation");
+			return new Pair<String,String>("Fish Views","NewLocation");
 		}
 
 		if( node instanceof Taxon )
 		{
-			return new Pair<String,String>("Main Views","NewTaxon");
+			return new Pair<String,String>("Fish Views","NewTaxon");
 		}
 		
 		return null;
-	}
-
-	public static boolean isNodeDeletable( Treeable node )
-	{
-		if( node.getParentNode() == null )
-		{
-			// this is a root node
-			return false;
-		}
-		
-		if( node instanceof Geography )
-		{
-			return isGeographyDeletable( (Geography)node );
-		}
-
-		if( node instanceof GeologicTimePeriod )
-		{
-			return isGeologicTimePeriodDeletable( (GeologicTimePeriod)node );
-		}
-
-		if( node instanceof Location )
-		{
-			return isLocationDeletable( (Location)node );
-		}
-
-		if( node instanceof Taxon )
-		{
-			return isTaxonDeletable( (Taxon)node );
-		}
-		
-		return false;
-
-	}
-	
-	protected static boolean isGeographyDeletable( Geography geo )
-	{
-		return geo.getLocalities().isEmpty();
-	}
-
-	protected static boolean isGeologicTimePeriodDeletable( GeologicTimePeriod geo )
-	{
-		return false;
-	}
-
-	protected static boolean isLocationDeletable( Location geo )
-	{
-		return false;
-	}
-
-	protected static boolean isTaxonDeletable( Taxon geo )
-	{
-		return false;
 	}
 }

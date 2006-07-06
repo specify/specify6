@@ -35,11 +35,11 @@ public class GeologicTimePeriodComparator implements Comparator<Treeable>
 	 * <code>compareGTPs(o1,o2)</code> is called.  Otherwise, the objects are compared
 	 * based on the values returned by calls to <code>getName()</code>.
 	 * 
-	 * @param o1 a Treeable object
-	 * @param o2 a Treeable object
-	 * @return -1, 0, or 1 if o1 is less than, equal to, or greater than o2, respectively
-	 * 
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+	 * {@inheritDoc}
+	 * @param o1 a {@link Treeable} object
+	 * @param o2 a {@link Treeable} object
+	 * @return -1, 0, or 1 if <code>o1</code> is less than, equal to, or greater than <code>o2</code>, respectively
 	 */
 	public int compare(Treeable o1, Treeable o2)
 	{

@@ -20,22 +20,41 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 
 /**
- * This class provides many static methods that simplify the management
- * of tree-structured table data.  Many of the methods are used in
+ * Provides many static methods that simplify the management of
+ * tree-structured table data.  Many of the methods are used in
  * determining if business rules are being properly enforced.
  * 
  * @author jstewart
- *
  */
 public class TreeTableUtils
 {
+    /**
+     * A <code>Logger</code> object used for all log messages eminating from
+     * this class.
+     */
     protected static final Logger log = Logger.getLogger(TreeTableUtils.class);
 
+	/**
+	 * An indicator that node full names should start with highest order
+	 * nodes and continue to the lowest order nodes.
+	 * @see #REVERSE
+	 */
 	public static final int FORWARD = 1;
+	/**
+	 * An indicator that node full names should start with lowest order
+	 * nodes and continue to the highest order nodes.
+	 * @see #FORWARD
+	 */
 	public static final int REVERSE = -1;
 	
 	//TODO: move these to prefs
 	//XXX: pref
+	/**
+	 * Determines the proper full name direction for the given class.
+	 * 
+	 * @param treeableClass the {@link Class} to inspect
+	 * @return {@link #FORWARD} or {@link #REVERSE}
+	 */
 	public static int getFullNameDirection( Class treeableClass )
 	{
 		if( treeableClass.equals(Geography.class) )
@@ -60,6 +79,13 @@ public class TreeTableUtils
 	
 	//TODO: move these to prefs
 	//XXX: pref
+	/**
+	 * Determines the proper separator string to put between node
+	 * names in full names for the given class.
+	 * 
+	 * @param treeableClass the class for which to return the separator string
+	 * @return the separator string
+	 */
 	public static String getFullNameSeparator( Class treeableClass )
 	{
 		if( treeableClass.equals(Geography.class) )
@@ -82,6 +108,15 @@ public class TreeTableUtils
 		return " ";
 	}
 	
+	/**
+	 * Generates the 'full name' of a node using the <code>IsInFullName</code> field from the tree
+	 * definition items and following the parent pointer until we hit the root node.  Also used
+	 * in the process is a "direction indicator" for the tree determining whether the name
+	 * should start with the higher nodes and work down to the given node or vice versa.
+	 * 
+	 * @param node the node to get the full name for
+	 * @return the full name
+	 */
 	public static String getFullName( Treeable node )
 	{
 		Vector<String> parts = new Vector<String>();
@@ -135,6 +170,8 @@ public class TreeTableUtils
 	}
 	
 	/**
+	 * Gets the rank of the next lower tree level.
+	 * 
 	 * @param item the node to examine
 	 * @return the rank of children of this node, or null if no children are allowed by the node's tree definition
 	 */
@@ -147,11 +184,7 @@ public class TreeTableUtils
 		}
 
 		// Tree def items are NOT lazy loaded, so we don't need to setup a HBM session
-		//Session session = HibernateUtil.getCurrentSession();
-		//session.lock(defItem, LockMode.NONE);
 		TreeDefinitionItemIface childDefItem = defItem.getChildItem();
-		//Hibernate.initialize(childDefItem);
-		//HibernateUtil.closeSession();
 
 		if( childDefItem == null )
 		{
@@ -162,8 +195,10 @@ public class TreeTableUtils
 	}
 	
 	/**
+	 * Determines if children are allowed for the given node.
+	 * 
 	 * @param item the node to examine
-	 * @return true if children are allowed as defined by the node's tree definition, false otherwise
+	 * @return <code>true</code> if children are allowed as defined by the node's tree definition, false otherwise
 	 */
 	public static boolean childrenAllowed( Treeable item )
 	{
@@ -171,6 +206,9 @@ public class TreeTableUtils
 	}
 	
 	/**
+	 * Finds the index of <code>newChild</code> within the <code>parent</code>'s set
+	 * of child nodes.
+	 * 
 	 * @param parent the parent node of the new child
 	 * @param newChild the new child node
 	 * @return the index in the array of parent's current children at which to insert newChild
@@ -205,6 +243,14 @@ public class TreeTableUtils
 		}
 	}
 
+	/**
+	 * Returns the <code>TreeDefinitionItemIface</code> object associated with the given
+	 * <code>TreeDefinitionIface</code> object and having the given rank.
+	 * 
+	 * @param treeDef the associated tree definition
+	 * @param rank the rank of the returned def item
+	 * @return the definition item
+	 */
 	@SuppressWarnings("unchecked")
     public static TreeDefinitionItemIface getDefItemByRank( TreeDefinitionIface treeDef, Integer rank )
 	{
@@ -219,6 +265,14 @@ public class TreeTableUtils
 		return null;
 	}
 	
+	/**
+	 * Returns the highest rank allowed as a parent of the given <code>Treeable</code> object.  This
+	 * is determined using the <code>isEnforced</code> field of the associated
+	 * <code>TreeDefinitionItemIface</code> objects.
+	 * 
+	 * @param t the node
+	 * @return the highest rank value allowed for a parent
+	 */
 	public static Integer getHighestAllowableParentRank( Treeable t )
 	{
 		// if this item represents the tree root level, return null
@@ -237,23 +291,29 @@ public class TreeTableUtils
 		}
 	}
 	
+	/**
+	 * Determines if reparenting the given <code>Treeable</code> node to is possible
+	 * without violating any business rules.
+	 * 
+	 * @param node the node to reparent
+	 * @param newParent the prospective new parent
+	 * @return <code>true</code> is no business rules would be violated
+	 */
 	public static boolean isReparentAllowed( Treeable node, Treeable newParent )
 	{
-		if( newParent.getRankId().intValue() < node.getHighestChildNodeNumber().intValue() )
-		{
-			return true;
-		}
-		
-		return false;
+		//TODO: implement this
+		//XXX
+		log.info("TODO: provide implementation");
+		return true;
 	}
 	
 	/**
 	 * Determines if the given Treeable can be deleted.  This method checks wether or not
 	 * the given Treeable is referenced by any foreign key contraints.  If no FKs are
-	 * currently referring to this node, true is returned.
+	 * currently referring to this node, <code>true</code> is returned.
 	 * 
 	 * @param treeable the node to examine
-	 * @return true if it has no FK contraints barring it from deletion, false otherwise
+	 * @return <code>true</code> if it has no FK contraints barring it from deletion, false otherwise
 	 */
 	public static boolean canBeDeleted( Treeable treeable )
 	{
@@ -283,6 +343,15 @@ public class TreeTableUtils
 		return false;
 	}
 	
+	/**
+	 * Determines if the given Geography can be deleted.  This method checks wether or not
+	 * the given Treeable is referenced by any foreign key contraints.  If no FKs are
+	 * currently referring to this node, <code>true</code> is returned.
+	 * 
+	 * @see #canBeDeleted(Treeable)
+	 * @param geo the node to check
+	 * @return <code>true</code> if deletable
+	 */
 	protected static boolean geographyCanBeDeleted( Geography geo )
 	{
 		boolean noLocs = geo.getLocalities().isEmpty();
@@ -295,6 +364,15 @@ public class TreeTableUtils
 		return false;
 	}
 
+	/**
+	 * Determines if the given GeologicTimePeriod can be deleted.  This method checks wether or not
+	 * the given Treeable is referenced by any foreign key contraints.  If no FKs are
+	 * currently referring to this node, <code>true</code> is returned.
+	 * 
+	 * @see #canBeDeleted(Treeable)
+	 * @param gtp the node to check
+	 * @return <code>true</code> if deletable
+	 */
 	protected static boolean geologicTimePeriodCanBeDeleted( GeologicTimePeriod gtp )
 	{
 		boolean noStrats = gtp.getStratigraphies().isEmpty();
@@ -307,6 +385,15 @@ public class TreeTableUtils
 		return false;
 	}
 
+	/**
+	 * Determines if the given Location can be deleted.  This method checks wether or not
+	 * the given Treeable is referenced by any foreign key contraints.  If no FKs are
+	 * currently referring to this node, <code>true</code> is returned.
+	 * 
+	 * @see #canBeDeleted(Treeable)
+	 * @param loc the node to check
+	 * @return <code>true</code> if deletable
+	 */
 	protected static boolean locationCanBeDeleted( Location loc )
 	{
 		boolean noConts = loc.getContainers().isEmpty();
@@ -320,6 +407,15 @@ public class TreeTableUtils
 		return false;
 	}
 
+	/**
+	 * Determines if the given Taxon can be deleted.  This method checks wether or not
+	 * the given Treeable is referenced by any foreign key contraints.  If no FKs are
+	 * currently referring to this node, <code>true</code> is returned.
+	 * 
+	 * @see #canBeDeleted(Treeable)
+	 * @param taxon the node to check
+	 * @return <code>true</code> if deletable
+	 */
 	protected static boolean taxonCanBeDeleted( Taxon taxon )
 	{
 		boolean noCitations = taxon.getTaxonCitations().isEmpty();
@@ -335,6 +431,15 @@ public class TreeTableUtils
 		return false;
 	}
 	
+
+	/**
+	 * Determines if all descendants of the given node can be successfully
+	 * deleted without violating any business rules.
+	 * 
+	 * @see #canBeDeleted(Treeable)
+	 * @param parent the root of the subtree to inspect
+	 * @return <code>true</code> if all descendants are deletable
+	 */
 	protected static boolean allDescendantsDeletable(Treeable parent)
 	{
 		boolean deletable = true;
@@ -350,6 +455,7 @@ public class TreeTableUtils
 		return deletable;
 	}
 	
+
 	/**
 	 * Determines if the child node can be reparented to newParent while not
 	 * violating any of the business rules.  Currently, the only rule on
@@ -359,7 +465,7 @@ public class TreeTableUtils
 	 * @param child the node to be reparented
 	 * @param newParent the prospective new parent node
 	 * 
-	 * @return true if the action will not violate any reparenting rules, false otherwise
+	 * @return <code>true</code> if the action will not violate any reparenting rules, false otherwise
 	 */
 	public static boolean canChildBeReparentedToNode( Treeable child, Treeable newParent )
 	{
@@ -380,6 +486,13 @@ public class TreeTableUtils
 		return false;
 	}
 	
+	/**
+	 * Returns the next highest rank in the tree that is enforced by the
+	 * tree definition.
+	 * 
+	 * @param node the node to find the next highest enforced rank for
+	 * @return the next highest rank
+	 */
 	public static Integer getRankOfNextHighestEnforcedLevel( Treeable node )
 	{
 		TreeDefinitionItemIface defItem = node.getDefItem();
@@ -395,8 +508,11 @@ public class TreeTableUtils
 		return null;
 	}
 
+
 	/**
-	 * @param node 
+	 * Counts the number of nodes from <code>node</code> to the root.
+	 * 
+	 * @param node the node to inspect
 	 * @return the number of nodes on the path from node (exclusive) to the root (inclusive if root!=node)
 	 */
 	public static int numberOfNodesToRoot( Treeable node )
@@ -416,22 +532,25 @@ public class TreeTableUtils
 		return count;
 	}
 	
+
 	/**
-	 * @param t the possible descendant node
-	 * @param s the possible ancestor node
-	 * @return true if t is a descendant of s
+	 * Determines if <code>low</code> is a descendant of <code>high</code>.
+	 * 
+	 * @param low the possible descendant node
+	 * @param high the possible ancestor node
+	 * @return <code>true</code> if <code>low</code> is a descendant of <code>high</code>
 	 */
-	public static boolean nodeIsDescendantOfNode( Treeable t, Treeable s )
+	public static boolean nodeIsDescendantOfNode( Treeable low, Treeable high )
 	{
-		if( t==null || s==null )
+		if( low==null || high==null )
 		{
 			throw new NullPointerException();
 		}
 		
-		Treeable i = t.getParentNode();
+		Treeable i = low.getParentNode();
 		while( i != null )
 		{
-			if( i == s )
+			if( i == high )
 			{
 				return true;
 			}
@@ -447,6 +566,7 @@ public class TreeTableUtils
 	 * must already be set.
 	 * 
 	 * @param root the top of the tree to be renumbered
+	 * @return the highest node number value present in the subtree rooted at <code>root</code>
 	 */
 	public static int fixNodeNumbersFromRoot( Treeable root )
 	{
@@ -459,7 +579,14 @@ public class TreeTableUtils
 		root.setHighestChildNodeNumber(nextNodeNumber);
 		return nextNodeNumber;
 	}
+	
 
+
+	/**
+	 * Fixes the fullname for the given node and all of its descendants.
+	 * 
+	 * @param node the root of the subtree to fix
+	 */
 	public static void fixFullNames( Treeable node )
 	{
 		node.setFullName(getFullName(node));
@@ -468,7 +595,14 @@ public class TreeTableUtils
 			fixFullNames(child);
 		}
 	}
+	
 
+
+	/**
+	 * Deletes the given node and all of its descendants from the persistent store.
+	 * 
+	 * @param node the root of the subtree to delete
+	 */
 	public static void deleteNodeAndChildren( Treeable node )
 	{
 		HibernateUtil.beginTransaction();
@@ -478,6 +612,15 @@ public class TreeTableUtils
 		HibernateUtil.commitTransaction();
 	}
 	
+	
+
+	/**
+	 * Deletes the given node and all of its descendants from the persistent store.
+	 * This method simply locates all of the nodes, detaches each from its parent
+	 * and children, and calls {@link Session#delete(Object)} on the node.
+	 * 
+	 * @param start the root of the subtree to delete
+	 */
 	protected static void recursivelyDeleteNodes( Treeable start )
 	{
 		start.getParentNode().removeChild(start);
@@ -490,6 +633,13 @@ public class TreeTableUtils
 		HibernateUtil.getCurrentSession().delete(start);
 	}
 	
+
+	/**
+	 * Returns the number of proper descendants for node.
+	 * 
+	 * @param node the node to count descendants for
+	 * @return the number of proper descendants
+	 */
 	public static int getDescendantCount( Treeable node )
 	{
 		int totalDescendants = 0;
@@ -500,6 +650,14 @@ public class TreeTableUtils
 		return totalDescendants;
 	}
 
+
+	/**
+	 * Persists the current subtree structure, rooted at <code>root</code> to the
+	 * persistent store.  Also deletes all nodes found in <code>deletedNodes</code>.
+	 * 
+	 * @param root the root of the subtree to save
+	 * @param deletedNodes the <code>Set</code> of nodes to delete
+	 */
 	public static void saveTreeStructure( Treeable root, Set<Treeable> deletedNodes )
 	{
 		Session session = HibernateUtil.getCurrentSession();
@@ -516,12 +674,30 @@ public class TreeTableUtils
 		HibernateUtil.commitTransaction();
 	}
 	
+
+	/**
+	 * Persists the current subtree structure, rooted at <code>root</code> to the
+	 * persistent store, using the given <code>Session</code>.
+	 * 
+	 * @see #saveTreeStructure(Treeable, Set)
+	 * @param root the root of the subtree to save
+	 * @param session the {@link Session} to use when persisting
+	 */
 	public static void saveOrUpdateTree( Treeable root, Session session )
 	{
 		session.saveOrUpdate(root);
 		saveOrUpdateDescendants(root,session);
 	}
 	
+
+	/**
+	 * Persists the subtree structures rooted at the children of <code>node</code> to the
+	 * persistent store, using the given <code>Session</code>.
+	 * 
+	 * @see #saveTreeStructure(Treeable, Set)
+	 * @param node the ancestor for which to save all descendants
+	 * @param session the {@link Session} to use when persisting
+	 */
 	private static void saveOrUpdateDescendants( Treeable node, Session session )
 	{
 		for( Treeable child: node.getChildNodes() )
@@ -531,6 +707,13 @@ public class TreeTableUtils
 		}
 	}
 	
+
+	/**
+	 * Returns a <code>List</code> of all descendants of the given <code>node</code>.
+	 * 
+	 * @param node the ancestor node to examine
+	 * @return all descendants of <code>node</code>
+	 */
 	public static List<Treeable> getAllDescendants(Treeable node)
 	{
 		Vector<Treeable> descendants = new Vector<Treeable>();
@@ -542,6 +725,14 @@ public class TreeTableUtils
 		return descendants;
 	}
 
+
+	/**
+	 * Updates the created and modified timestamps to now.  Also
+	 * updates the <code>lastEditedBy</code> field to the current
+	 * value of the <code>user.name</code> system property.
+	 * 
+	 * @param node the node to update
+	 */
 	public static void setTimestampsToNow(Treeable node)
 	{
 		Date now = new Date();
@@ -554,6 +745,14 @@ public class TreeTableUtils
 		node.setLastEditedBy(user);
 	}
 	
+
+	/**
+	 * Updates the modified timestamp to now.  Also updates the
+	 * <code>lastEditedBy</code> field to the current value
+	 * of the <code>user.name</code> system property.
+	 * 
+	 * @param node the node to update
+	 */
 	public static void updateModifiedTimeAndUser(Treeable node)
 	{
 		Date now = new Date();
