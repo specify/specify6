@@ -15,8 +15,11 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 
 /**
- * @author jstewart
+ * Provides for a local file cache of <code>File</code>s, binary data
+ * in the form of <code>byte[]</code>s, and web resources or URLs.
  *
+ * @version %I% %G%
+ * @author jstewart
  */
 public class FileCache
 {
@@ -28,37 +31,37 @@ public class FileCache
     private static String defaultPath = System.getProperty("java.io.tmpdir");
 
 	/**
-	 * The HttpClient used for grabbing web resources
+	 * The HttpClient used for grabbing web resources.
 	 */
 	protected HttpClient httpClient;
 	
 	/**
-	 * The directory to use for cached files and the mapping files
+	 * The directory to use for cached files and the mapping files.
 	 */
 	protected File cacheDir;
 
 	/**
-	 * The name of the mapping file
+	 * The name of the mapping file.
 	 */
 	protected String mappingFilename;
 	
 	/**
-	 * The prefix to be added to all cache filenames
+	 * The prefix to be added to all cache filenames.
 	 */
 	protected String prefix;
 	
 	/**
-	 * The suffix to be added to all cache filenames
+	 * The suffix to be added to all cache filenames.
 	 */
 	protected String suffix;
 	
 	/**
-	 * A Hashtable mapping from a "handle" to the name of the cached file it refers to
+	 * A Hashtable mapping from a "handle" to the name of the cached file it refers to.
 	 */
 	protected Properties handleToFilenameHash;
 	
 	/**
-	 * A Hashtable mapping from a "handle" to the last access time of the cached file it refers to
+	 * A Hashtable mapping from a "handle" to the last access time of the cached file it refers to.
 	 */
 	protected Properties handleToAccessTimeHash;
 	
@@ -101,6 +104,9 @@ public class FileCache
 	}
 
 	/**
+	 * Constructs a FileCache having the given cache directory and mapping
+	 * filename.
+	 * 
 	 * @param dir the directory in which to place the cached files and the mapping files
 	 * @param mappingFilename the name of the mapping file, not including path
 	 * @throws IOException if the given directory doesn't exist
@@ -143,7 +149,10 @@ public class FileCache
 	}
 
 	/**
-	 * @return Returns the prefix.
+	 * Returns the prefix prepended to all cache files.
+	 * 
+	 * @see #setPrefix(String)
+	 * @return the prefix
 	 */
 	public String getPrefix()
 	{
@@ -151,7 +160,10 @@ public class FileCache
 	}
 
 	/**
-	 * @param prefix The prefix to set.
+	 * Sets the prefix prepended to all cache files.
+	 * 
+	 * @see #getPrefix()
+	 * @param prefix the prefix
 	 */
 	public void setPrefix(String prefix)
 	{
@@ -159,7 +171,10 @@ public class FileCache
 	}
 
 	/**
-	 * @return Returns the suffix.
+	 * Returns the suffix appended to all cache files.
+	 * 
+	 * @see #setSuffix(String)
+	 * @return the suffix
 	 */
 	public String getSuffix()
 	{
@@ -167,7 +182,10 @@ public class FileCache
 	}
 
 	/**
-	 * @param suffix The suffix to set.
+	 * Sets the suffix appended to all cache files.
+	 * 
+	 * @see #getSuffix()
+	 * @param suffix the suffix
 	 */
 	public void setSuffix(String suffix)
 	{
@@ -175,8 +193,10 @@ public class FileCache
 	}
 
 	/**
-	 * Get the max cache size.  Only enforced if enforceMaxSize is set to true.
+	 * Get the max cache size.  Only enforced if
+	 * <code>enforceMaxSize</code> is set to true.
 	 * 
+	 * @see #setMaxCacheSize(int)
 	 * @return the cache size limit, in kilobytes (using 1 kilobyte = 1000 bytes)
 	 */
 	public int getMaxCacheSize()
@@ -185,8 +205,10 @@ public class FileCache
 	}
 
 	/**
-	 * Set the max cache size.  Only enforced if enforceMaxSize is set to true.
+	 * Set the max cache size.  Only enforced if
+	 * <code>enforceMaxSize</code> is set to true.
 	 * 
+	 * @see #getMaxCacheSize()
 	 * @param kilobytes the new cache size limit, in kilobytes (using 1 kilobyte = 1000 bytes)
 	 */
 	public void setMaxCacheSize(int kilobytes)
@@ -195,7 +217,11 @@ public class FileCache
 	}
 
 	/**
-	 * @param value whether or not to enforce the cache size limit
+	 * Sets the flag signalling whether or not to enforce the
+	 * cache size limit.
+	 * 
+	 * @see #getEnforceMaxCacheSize()
+	 * @param value the flag value
 	 */
 	public void setEnforceMaxCacheSize( boolean value )
 	{
@@ -203,7 +229,11 @@ public class FileCache
 	}
 
 	/**
-	 * @return whether or not to enforce the cache size limit
+	 * Gets the flag signalling whether or not to enforce the
+	 * cache size limit.
+	 * 
+	 * @see #setEnforceMaxCacheSize(boolean)
+	 * @return the flag value
 	 */
 	public boolean getEnforceMaxCacheSize()
 	{
@@ -211,6 +241,8 @@ public class FileCache
 	}
 
 	/**
+	 * Sets the cache path to be used in case one is not supplied during construction.
+	 * 
 	 * @param defaultPath the default cache path to use if a path is not supplied to a constructor
 	 */
 	public static void setDefaultPath(String defaultPath)
@@ -268,7 +300,9 @@ public class FileCache
 	}
 
 	/**
-	 * @return the name of the access time file
+	 * Returns the filename for the access times file.
+	 * 
+	 * @return the name of the access times file
 	 */
 	protected String getAccessTimeFilename()
 	{
@@ -313,6 +347,9 @@ public class FileCache
 	}
 
 	/**
+	 * Save the mapping file to the cache directory.  This is required in order for
+	 * a cache to 'survive' application shutdown and restart.
+	 * 
 	 * @throws IOException an error occurred while writing the handleToFilenameHash
 	 * 			contents to the mapping file
 	 */
@@ -338,6 +375,12 @@ public class FileCache
 	}
 
 	/**
+	 * Save the access times file to the cache directory.  This is not required
+	 * in order for a cache to 'survive' application shutdown and restart.  However,
+	 * for the cache to correctly delete the least recently used item when the cache
+	 * exceeds its maximum size (if set and enforced), the access times file must
+	 * also 'survive' application shutdown and restart.
+	 * 
 	 * @throws IOException an error occurred while writing the handleToAccessTimeHash
 	 * 			contents to the mapping file
 	 */
@@ -357,6 +400,8 @@ public class FileCache
 	}
 
 	/**
+	 * Creates a new <code>File</code> in which cached data can be stored.
+	 * 
 	 * @return a newly created cache file
 	 * @throws IOException an I/O error occurred while creating a new cache file object
 	 */
@@ -410,6 +455,8 @@ public class FileCache
 	}
 
 	/**
+	 * Cache <code>item</code> using the given key for retrieval.
+	 * 
 	 * @param key the "handle" used to retrieve this cached data item in the future
 	 * @param item the File to be cached
 	 */
@@ -431,6 +478,8 @@ public class FileCache
 	}
 
 	/**
+	 * Purge the cached item with the given filename.
+	 * 
 	 * @param filename the name of the cache file to be deleted
 	 */
 	protected void removeCacheItem( String filename )
@@ -526,9 +575,9 @@ public class FileCache
 	 * Retrieve and cache the web resource located at the given URL.
 	 * 
 	 * @param url the URL to the web resource to cache
-	 * @return a handle to the cached resource
 	 * @throws HttpException a network error occurred while grabbing the web resource
 	 * @throws IOException an error occurred while writing the resource to a cache file
+	 * @return a handle to the cached resource
 	 */
 	public String cacheWebResource( String url ) throws HttpException, IOException
 	{
@@ -542,7 +591,9 @@ public class FileCache
 	 * 
 	 * @param key the handle used for retrieval of the cached resource
 	 * @param url the URL to the web resource to cache
+	 * 
 	 * @throws HttpException a network error occurred while grabbing the web resource
+	 * 
 	 * @throws IOException an error occurred while writing the resource to a cache file
 	 */
 	public void cacheWebResource( String key, String url ) throws HttpException, IOException
@@ -607,75 +658,77 @@ public class FileCache
 	}
 
 	/**
-	 * @return the current size of the cache in bytes
+	 * Returns the current size (in bytes) of the cache.
+	 * 
+	 * @return the current size
 	 */
 	public long getCurrentCacheSize()
 	{
 		return totalCacheSize;
 	}
 
-	public static void main(String[] args) throws IOException
-	{
-		FileCache fc = new FileCache("AAAATEST-cache-map.xml");
-		fc.setPrefix("AAAATEST");
-		// set max size to 10 KB
-		fc.setMaxCacheSize(1000);
-		fc.setEnforceMaxCacheSize(true);
-
-		log.info("Current cache size: " + fc.getCurrentCacheSize());
-
-		// a little File caching test
-		File fileFile = fc.getCacheFile("kmloutput.kml");
-		if( fileFile == null )
-		{
-			log.info("Cached file not found.");
-			String fileKey = fc.cacheFile(new File("C:\\Documents and Settings\\jstewart\\Desktop\\kmloutput.kml"));
-			log.info("Cached kmloutput.kml under key value " + fileKey);
-		}
-		else
-		{
-			log.info("Found cached file under " + fileFile.getAbsolutePath());
-		}
-
-		log.info("Current cache size: " + fc.getCurrentCacheSize());
-
-		// a little web resource caching test
-		File urlFile = fc.getCacheFile("http://www.google.com/");
-		if( urlFile == null )
-		{
-			log.info("Cached web resource not found.");
-			String urlKey = fc.cacheWebResource("http://www.google.com/");
-			log.info("Cached http://www.google.com/ under key value " + urlKey);
-		}
-		else
-		{
-			log.info("Found cached web resource under " + urlFile.getAbsolutePath());
-		}
-
-		log.info("Current cache size: " + fc.getCurrentCacheSize());
-
-		// a little data caching test
-		File dataFile = fc.getCacheFile("31a55ff8-763b-4ee6-92e8-485c29f8a937");
-		if( dataFile == null )
-		{
-			log.info("Cached data not found.");
-			Random r = new Random();
-			int count = r.nextInt(100000);
-			StringBuilder sb = new StringBuilder();
-			for( int i = 0; i < count; ++i )
-			{
-				sb.append("X");
-			}
-			String dataKey = fc.cacheData(sb.toString().getBytes());
-			log.info("Cached data bytes under key value " + dataKey);
-		}
-		else
-		{
-			log.info("Found cached data under " + dataFile.getAbsolutePath());
-		}
-
-		log.info("Current cache size: " + fc.getCurrentCacheSize());
-
-		fc.saveCacheMapping();
-	}
+//	public static void main(String[] args) throws IOException
+//	{
+//		FileCache fc = new FileCache("AAAATEST-cache-map.xml");
+//		fc.setPrefix("AAAATEST");
+//		// set max size to 10 KB
+//		fc.setMaxCacheSize(1000);
+//		fc.setEnforceMaxCacheSize(true);
+//
+//		log.info("Current cache size: " + fc.getCurrentCacheSize());
+//
+//		// a little File caching test
+//		File fileFile = fc.getCacheFile("kmloutput.kml");
+//		if( fileFile == null )
+//		{
+//			log.info("Cached file not found.");
+//			String fileKey = fc.cacheFile(new File("C:\\Documents and Settings\\jstewart\\Desktop\\kmloutput.kml"));
+//			log.info("Cached kmloutput.kml under key value " + fileKey);
+//		}
+//		else
+//		{
+//			log.info("Found cached file under " + fileFile.getAbsolutePath());
+//		}
+//
+//		log.info("Current cache size: " + fc.getCurrentCacheSize());
+//
+//		// a little web resource caching test
+//		File urlFile = fc.getCacheFile("http://www.google.com/");
+//		if( urlFile == null )
+//		{
+//			log.info("Cached web resource not found.");
+//			String urlKey = fc.cacheWebResource("http://www.google.com/");
+//			log.info("Cached http://www.google.com/ under key value " + urlKey);
+//		}
+//		else
+//		{
+//			log.info("Found cached web resource under " + urlFile.getAbsolutePath());
+//		}
+//
+//		log.info("Current cache size: " + fc.getCurrentCacheSize());
+//
+//		// a little data caching test
+//		File dataFile = fc.getCacheFile("31a55ff8-763b-4ee6-92e8-485c29f8a937");
+//		if( dataFile == null )
+//		{
+//			log.info("Cached data not found.");
+//			Random r = new Random();
+//			int count = r.nextInt(100000);
+//			StringBuilder sb = new StringBuilder();
+//			for( int i = 0; i < count; ++i )
+//			{
+//				sb.append("X");
+//			}
+//			String dataKey = fc.cacheData(sb.toString().getBytes());
+//			log.info("Cached data bytes under key value " + dataKey);
+//		}
+//		else
+//		{
+//			log.info("Found cached data under " + dataFile.getAbsolutePath());
+//		}
+//
+//		log.info("Current cache size: " + fc.getCurrentCacheSize());
+//
+//		fc.saveCacheMapping();
+//	}
 }
