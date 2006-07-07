@@ -1,5 +1,5 @@
 /* Filename:    $RCSfile: MapGrabber.java,v $
- * Author:      $Author: rods $
+ * Author:      $Author: jstewart $
  * Revision:    $Revision: 1.1 $
  * Date:        $Date: 2006/05/01 19:59:54 $
  *
@@ -34,18 +34,20 @@ import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.util.FileCache;
 
 /**
- * Grabs Map from the KU Map Server (SPNHC Demo)
+ * Grabs a Map from a web-based mapping service.
  * 
- * @author rods
- *
+ * @author jstewart
  */
 public class MapGrabber
 {
+	/** Logger for all log messages emitted from this class. */
 	private static final Logger log = Logger.getLogger(MapGrabber.class);
+
+	/** HttpClient used for grabbing maps using HTTP. */
+	protected HttpClient httpClient;
+
 	// setup some default values
 	// TODO: remove these from any final versions
-
-	protected HttpClient httpClient;
 
 //	// Aimee's server
 //	protected String host = "129.237.201.104";
@@ -53,28 +55,46 @@ public class MapGrabber
 //	protected String layers = "bmng";
 
 	// NASA server
+	/** The map server host. */
 	protected String host = "mapus.jpl.nasa.gov";
+	/** URL path and parameters for the map service. */
 	protected String defaultPathAndParams = "/wms.cgi?request=GetMap&srs=EPSG:4326&format=image/png&styles=visual";
+	/** Value of the map service layers parameter. */
 	protected String layers = "global_mosaic";
 
+	/** Southernmost latitude of interest. */
 	protected double minLat = -90;
+	/** Westernmost longitude of interest. */
 	protected double minLong = -180;
+	/** Northernmost latitude of interest. */
 	protected double maxLat = 90;
+	/** Easternmost longitude of interest. */
 	protected double maxLong = 180;
+	/** Maximum height of returned map (in pixels). */
 	protected Integer maxHeight = null;
+	/** Maximum width of returned map (in pixels). */
 	protected Integer maxWidth = null;
+	/** Maximum height of returned map if caller doesn't specify one. */
 	protected int defaultMaxHeight = 2048;
+	/** Maximum width of returned map if caller doesn't specify one. */
 	protected int defaultMaxWidth = 2048;
 
+	/** FileCache for caching retrieved maps. */
 	protected static FileCache imageCache = UICacheManager.getLongTermFileCache();
 
+	/**
+	 * Constructs a <code>MapGrabber</code> using all default parameters.
+	 */
 	public MapGrabber()
 	{
 		httpClient = new HttpClient();
 	}
 
 	/**
-	 * @return Returns the host.
+	 * Returns the mapping host.
+	 * 
+	 * @see #setHost(String)
+	 * @return the host
 	 */
 	public String getHost()
 	{
@@ -82,7 +102,10 @@ public class MapGrabber
 	}
 
 	/**
-	 * @param host The host to set.
+	 * Sets the mapping host.
+	 * 
+	 * @see #getHost()
+	 * @param host the host
 	 */
 	public void setHost(String host)
 	{
@@ -90,7 +113,10 @@ public class MapGrabber
 	}
 
 	/**
-	 * @return Returns the layers.
+	 * Returns the layers string used in the map request to the server.
+	 * 
+	 * @see #setLayers(String)
+	 * @return the layers string
 	 */
 	public String getLayers()
 	{
@@ -98,7 +124,10 @@ public class MapGrabber
 	}
 
 	/**
-	 * @param layers The layers to set.
+	 * Sets the layers string used in the map request to the server.
+	 * 
+	 * @see #getLayers()
+	 * @param layers the layers string
 	 */
 	public void setLayers(String layers)
 	{
@@ -106,7 +135,10 @@ public class MapGrabber
 	}
 
 	/**
-	 * @return Returns the maxHeight.
+	 * Returns the max map height.
+	 * 
+	 * @see #setMaxHeight(Integer)
+	 * @return the max map height
 	 */
 	public Integer getMaxHeight()
 	{
@@ -114,7 +146,10 @@ public class MapGrabber
 	}
 
 	/**
-	 * @param maxHeight The maxHeight to set.
+	 * Sets the max map height the grabber should return.
+	 * 
+	 * @see #getMaxHeight()
+	 * @param height the max height
 	 */
 	public void setMaxHeight(Integer height)
 	{
@@ -126,7 +161,10 @@ public class MapGrabber
 	}
 
 	/**
-	 * @return Returns the maxWidth.
+	 * Returns the max map width.
+	 * 
+	 * @see #setMaxWidth(Integer)
+	 * @return the max map width
 	 */
 	public Integer getMaxWidth()
 	{
@@ -134,7 +172,10 @@ public class MapGrabber
 	}
 
 	/**
-	 * @param maxWidth The maxWidth to set.
+	 * Sets the max map width the grabber should return.
+	 * 
+	 * @see #getMaxWidth()
+	 * @param width the max map width
 	 */
 	public void setMaxWidth(Integer width)
 	{
@@ -145,32 +186,48 @@ public class MapGrabber
 		this.maxWidth = width;
 	}
 
+
 	/**
-	 * @return Returns the maxLat.
+	 * Returns the northernmost latitude of the map.
+	 * 
+	 * @see #setMaxLat(double)
+	 * @return the Easternmore latitude
 	 */
 	public double getMaxLat()
 	{
 		return maxLat;
 	}
 
+
 	/**
-	 * @param maxLat The maxLat to set.
+	 * Sets the northernmost latitude on the map.
+	 * 
+	 * @see #getMaxLat()
+	 * @param maxLat the Easternmost latitude
 	 */
 	public void setMaxLat(double maxLat)
 	{
 		this.maxLat = maxLat;
 	}
 
+
 	/**
-	 * @return Returns the maxLong.
+	 * Returns the easternmost latitude of the map.
+	 * 
+	 * @see #setMaxLong(double)
+	 * @return the Northernmost latitude
 	 */
 	public double getMaxLong()
 	{
 		return maxLong;
 	}
 
+
 	/**
-	 * @param maxLong The maxLong to set.
+	 * Sets the easternmost latitude of the map.
+	 * 
+	 * @see #getMaxLong()
+	 * @param maxLong the Northernmost latitude
 	 */
 	public void setMaxLong(double maxLong)
 	{
@@ -178,15 +235,22 @@ public class MapGrabber
 	}
 
 	/**
-	 * @return Returns the minLat.
+	 * Returns the southernmost latitude of the map.
+	 * 
+	 * @see #setMinLat(double)
+	 * @return the Westernmost latitude
 	 */
 	public double getMinLat()
 	{
 		return minLat;
 	}
 
+
 	/**
-	 * @param minLat The minLat to set.
+	 * Sets the southernmost latitude of the map.
+	 * 
+	 * @see #getMinLat()
+	 * @param minLat the Westernmost latitude
 	 */
 	public void setMinLat(double minLat)
 	{
@@ -194,7 +258,10 @@ public class MapGrabber
 	}
 
 	/**
-	 * @return Returns the minLong.
+	 * Returns the westernmost longitude of the map.
+	 * 
+	 * @see #setMinLong(double)
+	 * @return the Southernmost longitude
 	 */
 	public double getMinLong()
 	{
@@ -202,22 +269,41 @@ public class MapGrabber
 	}
 
 	/**
-	 * @param minLong The minLong to set.
+	 * Sets the westernmost longitude of the map.
+	 * 
+	 * @see #getMinLong()
+	 * @param minLong the Southernmost longitude
 	 */
 	public void setMinLong(double minLong)
 	{
 		this.minLong = minLong;
 	}
 
-
 	/**
-	 * @param defaultPathAndParams sets new path and params
+	 * Sets the default URL path and params for the mapping web service.
+	 * 
+	 * @param defaultPathAndParams the URL path and params
 	 */
 	public void setDefaultPathAndParams(String defaultPathAndParams)
     {
         this.defaultPathAndParams = defaultPathAndParams;
     }
 
+    /**
+     * Provides a convenience method.  Calling this method results in calls to
+     * {@link #setMaxWidth(Integer)} and {@link #setMaxHeight(Integer)} followed
+     * by a call to {@link #getMap()}.
+     * 
+     * @see #getMap()
+     * @see #setMaxWidth(Integer)
+     * @see #setMaxHeight(Integer)
+     * 
+     * @param width the max map width
+     * @param height the max map height
+     * @return a map image
+     * @throws HttpException if network errors occur while grabbing map from service
+     * @throws IOException if network errors occur while grabbing map from service
+     */
     public Image getMap(Integer width,
 						Integer height)
 		throws HttpException, IOException
@@ -227,6 +313,23 @@ public class MapGrabber
 		return getMap();
 	}
 
+    /**
+     * Provides a convenience method.  Calling this method results in calls to
+     * setters for the various fields associated with the parameters followed
+     * by a call to {@link #getMap()}.
+     * 
+     * @see #getMap()
+     * 
+     * @param width the max map width
+     * @param height the max map height
+     * @param minLat the min map latitude
+     * @param minLong the min map longitude
+     * @param maxLat the max map latitude
+     * @param maxLong the max map longitude
+     * @return a map image
+     * @throws HttpException if network errors occur while grabbing map from service
+     * @throws IOException if network errors occur while grabbing map from service
+     */
 	public Image getMap(Integer width,
 						Integer height,
 						int minLat,
@@ -244,6 +347,11 @@ public class MapGrabber
 		return getMap();
 	}
 
+	/**
+	 * Returns the ratio latitude range : longitude range.
+	 * 
+	 * @return the ratio
+	 */
 	protected double getLatLongRatio()
 	{
 		double longRange = maxLong - minLong;
@@ -251,6 +359,11 @@ public class MapGrabber
 		return (double)(latRange/longRange);
 	}
 
+	/**
+	 * Calculates the appropriate width and height of a map (before grabbing it)
+	 * based on the values of maxWidth, maxHeight, minLat, minLong, maxLat, and
+	 * maxLong.  The values of maxHeight and maxWidth are modified appropriately.
+	 */
 	protected void calcWidthAndHeight()
 	{
 		double longSpread = maxLong - minLong;
@@ -272,6 +385,13 @@ public class MapGrabber
 		}
 	}
 
+	/**
+	 * Retrieves a map from the web service.
+	 * 
+	 * @return a map image
+     * @throws HttpException if network errors occur while grabbing map from service
+     * @throws IOException if network errors occur while grabbing map from service
+	 */
 	public Image getMap() throws HttpException, IOException
 	{
 		log.debug("Entering MapGrabber.getMap()");

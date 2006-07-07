@@ -2600,7 +2600,7 @@ public class GenericDBConversion
     		int rowsUpdated = newDbStmt.executeUpdate(sqlUpdate.toString());
     		log.info(rowsUpdated + " rows updated");
     		
-    		StringBuilder fullNameUpdate = new StringBuilder("UPDATE taxontreedefitem SET IsInFullName=TRUE WHERE TaxonTreeDefID="+treeDefId+" AND Name IN ('Genus','Species')");
+    		StringBuilder fullNameUpdate = new StringBuilder("UPDATE taxontreedefitem SET IsInFullName=TRUE WHERE TaxonTreeDefID="+treeDefId+" AND Name IN ('Genus','Species','Subspecies','Variety','Subvariety','Forma','Subforma')");
     		log.info(fullNameUpdate);
     		
     		rowsUpdated = newDbStmt.executeUpdate(fullNameUpdate.toString());
@@ -2648,6 +2648,9 @@ public class GenericDBConversion
     	}
     }
 
+    /**
+     * 
+     */
     public void copyTaxonRecords()
     {
     	BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "taxon");
@@ -2680,6 +2683,9 @@ public class GenericDBConversion
     	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
     }
 
+    /**
+     * @return
+     */
     @SuppressWarnings("unchecked")
 	public GeographyTreeDef createStandardGeographyDefinitionAndItems()
     {
@@ -2781,6 +2787,10 @@ public class GenericDBConversion
         //BasicSQLUtils.setShowMappingError(showMappingErrors);
    }
     
+    /**
+     * @param treeDef
+     * @throws SQLException
+     */
     public void convertGeography(GeographyTreeDef treeDef) throws SQLException
     {
     	// empty out any pre-existing records
@@ -2887,6 +2897,12 @@ public class GenericDBConversion
     	return prevLevelGeo;
     }
     
+    /**
+     * @param name
+     * @param parent
+     * @param session
+     * @return
+     */
     protected Geography buildGeoLevel( String name, Geography parent, Session session )
     {
     	if( name == null )

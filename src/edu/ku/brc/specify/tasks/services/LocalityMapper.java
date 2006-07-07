@@ -1,23 +1,3 @@
-/* Filename:    $RCSfile: LocalityMapper.java,v $
- * Author:      $Author: rods $
- * Revision:    $Revision: 1.1 $
- * Date:        $Date: 2006/05/01 19:59:54 $
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-
 package edu.ku.brc.specify.tasks.services;
 
 import java.awt.Color;
@@ -47,64 +27,97 @@ import edu.ku.brc.specify.ui.SimpleCircleIcon;
 import edu.ku.brc.util.Pair;
 
 /**
- * Maps several Localities (SPNHC Demo)
+ * Maps a grouping of <code>Locality</code> objects.
  *
- * @author rods
+ * @author jstewart
  *
  */
 public class LocalityMapper implements TimingTarget
 {
+	/** Logger for all messages emitted from this class. */
 	private static final Logger       log					= Logger.getLogger(LocalityMapper.class);
+	/** List of <code>Locality</code> objects to be mapped. */
 	protected List<Locality>	localities;
+	/** A member of <code>localities</code> to be considered the 'current' item. */
 	protected Locality			currentLoc;
+	/** Labels to apply to the members of <code>localities</code>. */
 	protected List<String>		labels;
+	/** Pixel locations of markers to apply to members of <code>localities</code>. */
 	protected List<Point>		markerLocations;
+	/** <code>MapGrabber</code> that provides the basic map images. */
 	protected MapGrabber		mapGrabber;
-	// the actual bounds of the collecting localities
+	/** Smallest latitude in the set of localities. */
 	protected double			minLat;
+	/** Largest latitude in the set of localities. */
 	protected double			maxLat;
+	/** Smallest longitude in the set of localities. */
 	protected double			minLong;
+	/** Largest longitude in the set of localities. */
 	protected double			maxLong;
-	// the bounds of the map after including a 5% buffer region
+	/** Smallest latitude in the set of localities after adding a 5% buffer region. */
 	protected double			mapMinLat;
+	/** Largest latitude in the set of localities after adding a 5% buffer region. */
 	protected double			mapMaxLat;
+	/** Smallest longitude in the set of localities after adding a 5% buffer region. */
 	protected double			mapMinLong;
+	/** Largest longitude in the set of localities after adding a 5% buffer region. */
 	protected double			mapMaxLong;
+	/** Range of latitude covered by the map. */
 	protected double			mapLatRange;
+	/** Range of longitude convered by the map. */
 	protected double			mapLongRange;
+	/** Ratio of image pixels to latitude degrees. */
 	protected double			pixelPerLatRatio;
+	/** Ratio of image pixels to longitude degrees. */
 	protected double			pixelPerLongRatio;
+	/** Maximum width of retrieved maps. */
 	protected Integer			maxMapWidth;
+	/** Maximum height of retrieved maps. */
 	protected Integer			maxMapHeight;
+	/** Actual width of a retrieved map. */
 	protected int				mapWidth;
+	/** Actual height of a retrieved map. */
 	protected int				mapHeight;
+	/** The most recent screen coordinate used for painting the map. */
 	protected int				mostRecentPaintedX;
+	/** The most recent screen coordinate used for painting the map. */
 	protected int				mostRecentPaintedY;
 
-	// an icon for the little marker dots
-	// this icon will get repainted in each location
+	/** Icon to use for painting localities on the map. */
 	protected SimpleCircleIcon	marker;
-	// this icon will be painted on whichever marker is considered current
-	// by using a separate Icon for the current one, we can later decide
-	// to not only customize the icon color for the current locality, but
-	// also the entire Icon (using a diff shape, etc)
+	/** Icon to use for painting the 'current' locality on the map. */
 	protected SimpleCircleIcon	currentLocMarker;
-	// some configuration of the image
+	/** Toggle switch for enabling/disabling arrow painting between localities. */
 	protected boolean			showArrows;
+	/** Toggle switch for enabling/disabling arrow animating between localities. */
 	protected boolean			showArrowAnimations	= true;
+	/** Toggle switch for enabling/disabling label display near localities. */
 	protected boolean			showLabels;
+	/** Color of the arrows. */
 	protected Color				arrowColor;
+	/** Color of the lables. */
 	protected Color				labelColor;
+	/** Indicates if an animation is currently in progress. */
 	protected boolean			animationInProgress	= false;
+	/** Percentage of animation that is completed. */
 	protected float				percent;
+	/** Animation manager. */
 	protected TimingController	animator;
+	/** Start locality of the current animation. */
 	protected Locality			animStartLoc;
+	/** End locality of the current animation. */
 	protected Locality			animEndLoc;
-	// the cached information
+	/** An <code>Icon</code> of the map. */
 	protected Icon				mapIcon;
+    /** ??? Rod? ???*/
     protected Icon             overlayIcon = null;
+	/** Indicator as to whether the currently cached map image is still valid. */
 	protected boolean			cacheValid;
 
+
+	/**
+	 * Constructs an instance using default parameters.
+	 */
 	public LocalityMapper()
 	{
 		minLat = -90;
@@ -142,6 +155,12 @@ public class LocalityMapper implements TimingTarget
 		animator.setDeceleration(0.45f);
 	}
 
+	
+	/**
+	 * Constructs an instance to map the given set of localities.
+	 * 
+	 * @param localities a set of localities to map
+	 */
 	public LocalityMapper(List<Locality> localities)
 	{
 		this();
@@ -157,6 +176,14 @@ public class LocalityMapper implements TimingTarget
 		recalculateBoundingBox();
 	}
 
+	
+	/**
+	 * Constructs an instance to map the given localities and
+	 * applying the given lables.
+	 * 
+	 * @param localities the localities to map
+	 * @param labels the labels to display
+	 */
 	public LocalityMapper(List<Locality> localities, List<String> labels)
 	{
 		this();
@@ -170,15 +197,20 @@ public class LocalityMapper implements TimingTarget
 	}
 
 	/**
-	 * @return Returns the animator.
+	 * Attach another <code>TimingTarget</code> to the underlying animator.
+	 * 
+	 * @param target the new <code>TimingTarget</code>
 	 */
-	public TimingController getAnimator()
+	public void addTimingTarget(TimingTarget target)
 	{
-		return animator;
+		animator.addTarget(target);
 	}
 
 	/**
-	 * @return Returns the currentLoc.
+	 * Returns the 'current' locality.
+	 * 
+	 * @see #setCurrentLoc(Locality)
+	 * @return the 'current' locality
 	 */
 	public Locality getCurrentLoc()
 	{
@@ -186,8 +218,10 @@ public class LocalityMapper implements TimingTarget
 	}
 
 	/**
-	 * @param currentLoc
-	 *            The currentLoc to set.
+	 * Sets the 'current' locality.
+	 * 
+	 * @see #getCurrentLoc()
+	 * @param currentLoc the 'current' locality
 	 */
 	public void setCurrentLoc(Locality currentLoc)
 	{
@@ -235,6 +269,13 @@ public class LocalityMapper implements TimingTarget
 		this.currentLoc = currentLoc;
 	}
 
+	
+	/**
+	 * Adds a locality and label to the set to be mapped/displayed.
+	 * 
+	 * @param loc the locality
+	 * @param label the label
+	 */
 	public void addLocalityAndLabel(Locality loc, String label)
 	{
 		localities.add(loc);
@@ -274,6 +315,12 @@ public class LocalityMapper implements TimingTarget
 		createBoundingBoxBufferRegion();
 	}
 
+	
+	/**
+	 * Removes a locality (and associated label) from the set to be mapped/displayed. 
+	 * 
+	 * @param loc the locality
+	 */
 	public void removeLocalityAndLabel(Locality loc)
 	{
 		int index = localities.indexOf(loc);
@@ -291,7 +338,10 @@ public class LocalityMapper implements TimingTarget
 	}
 
 	/**
-	 * @return Returns the arrowColor.
+	 * Returns the arrowColor.
+	 *
+	 * @see #setArrowColor(Color)
+	 * @return the arrowColor
 	 */
 	public Color getArrowColor()
 	{
@@ -299,8 +349,10 @@ public class LocalityMapper implements TimingTarget
 	}
 
 	/**
-	 * @param arrowColor
-	 *            The arrowColor to set.
+	 * Sets the arrowColor.
+	 *
+	 * @see #getArrowColor()
+	 * @param arrowColor the arrowColor
 	 */
 	public void setArrowColor(Color arrowColor)
 	{
@@ -308,50 +360,109 @@ public class LocalityMapper implements TimingTarget
 	}
 
 	/**
-	 * @return Returns the dotColor.
+	 * Returns the mapHeight.
+	 *
+	 * @see #setMapHeight(int)
+	 * @return the mapHeight
 	 */
-	public Color getDotColor()
+	public int getMapHeight()
 	{
-		return marker.getColor();
+		return mapHeight;
 	}
 
 	/**
-	 * @param dotColor
-	 *            The dotColor to set.
+	 * Returns the mapWidth.
+	 *
+	 * @see #setMapWidth(int)
+	 * @return the mapWidth
 	 */
-	public void setDotColor(Color dotColor)
+	public int getMapWidth()
 	{
-		marker.setColor(dotColor);
+		return mapWidth;
 	}
 
 	/**
-	 * @return Returns the currentLocColor.
+	 * Returns the labelColor.
+	 *
+	 * @see #setLabelColor(Color)
+	 * @return the labelColor
 	 */
-	public Color getCurrentLocColor()
+	public Color getLabelColor()
 	{
-		return currentLocMarker.getColor();
+		return labelColor;
 	}
 
 	/**
-	 * @param currentLocColor
-	 *            The currentLocColor to set.
+	 * Sets the labelColor.
+	 *
+	 * @see #getLabelColor()
+	 * @param labelColor the labelColor
 	 */
-	public void setCurrentLocColor(Color currentLocColor)
+	public void setLabelColor(Color labelColor)
 	{
-		currentLocMarker.setColor(currentLocColor);
+		this.labelColor = labelColor;
 	}
 
 	/**
+	 * Returns the maxMapHeight.
+	 *
+	 * @see #setMaxMapHeight(Integer)
+	 * @return the maxMapHeight
+	 */
+	public Integer getMaxMapHeight()
+	{
+		return maxMapHeight;
+	}
+
+	/**
+	 * Sets the maxMapHeight.
+	 *
+	 * @see #getMaxMapHeight()
+	 * @param maxMapHeight the maxMapHeight
+	 */
+	public void setMaxMapHeight(Integer maxMapHeight)
+	{
+		this.maxMapHeight = maxMapHeight;
+	}
+
+	/**
+	 * Returns the maxMapWidth.
+	 *
+	 * @see #setMaxMapWidth(Integer)
+	 * @return the maxMapWidth
+	 */
+	public Integer getMaxMapWidth()
+	{
+		return maxMapWidth;
+	}
+
+	/**
+	 * Sets the maxMapWidth.
+	 *
+	 * @see #getMaxMapWidth()
+	 * @param maxMapWidth the maxMapWidth
+	 */
+	public void setMaxMapWidth(Integer maxMapWidth)
+	{
+		this.maxMapWidth = maxMapWidth;
+	}
+
+	/**
+	 * Returns the showArrowAnimations.
+	 *
+	 * @see #setShowArrowAnimations(boolean)
 	 * @return the showArrowAnimations
 	 */
-	public boolean getShowArrowAnimations()
+	public boolean isShowArrowAnimations()
 	{
 		return showArrowAnimations;
 	}
 
 	/**
-	 * @param showArrowAnimations
-	 *            the showArrowAnimations to set
+	 * Sets the showArrowAnimations.
+	 *
+	 * @see #getShowArrowAnimations()
+	 * @param showArrowAnimations the showArrowAnimations
 	 */
 	public void setShowArrowAnimations(boolean showArrowAnimations)
 	{
@@ -359,16 +470,87 @@ public class LocalityMapper implements TimingTarget
 	}
 
 	/**
-	 * @return Returns the dotSize.
+	 * Returns the showArrows.
+	 *
+	 * @see #setShowArrows(boolean)
+	 * @return the showArrows
+	 */
+	public boolean isShowArrows()
+	{
+		return showArrows;
+	}
+
+	/**
+	 * Sets the showArrows.
+	 *
+	 * @see #getShowArrows()
+	 * @param showArrows the showArrows
+	 */
+	public void setShowArrows(boolean showArrows)
+	{
+		this.showArrows = showArrows;
+	}
+
+	/**
+	 * Returns the showLabels.
+	 *
+	 * @see #setShowLabels(boolean)
+	 * @return the showLabels
+	 */
+	public boolean isShowLabels()
+	{
+		return showLabels;
+	}
+
+	/**
+	 * Sets the showLabels.
+	 *
+	 * @see #getShowLabels()
+	 * @param showLabels the showLabels
+	 */
+	public void setShowLabels(boolean showLabels)
+	{
+		this.showLabels = showLabels;
+	}
+
+	/**
+	 * Returns the color of the 'current' locality marker.
+	 *
+	 * @see #setCurrentLocColor(Color)
+	 * @return the color
+	 */
+	public Color getCurrentLocColor()
+	{
+		return currentLocMarker.getColor();
+	}
+
+	/**
+	 * Sets the color of the 'current' locality marker.
+	 *
+	 * @see #getCurrentLocColor()
+	 * @param currentLocColor the color
+	 */
+	public void setCurrentLocColor(Color currentLocColor)
+	{
+		currentLocMarker.setColor(currentLocColor);
+	}
+
+	/**
+	 * Gets the size of the locality marker dot.
+	 *
+	 * @see #setDotSize(int)
+	 * @return the size
 	 */
 	public int getDotSize()
 	{
 		return marker.getSize();
 	}
-
+	
 	/**
-	 * @param dotSize
-	 *            The dotSize to set.
+	 * Sets the size of the locality marker dot.
+	 *
+	 * @see #getDotSize()
+	 * @param dotSize the size
 	 */
 	public void setDotSize(int dotSize)
 	{
@@ -377,111 +559,44 @@ public class LocalityMapper implements TimingTarget
 	}
 
 	/**
-	 * @return Returns the labelColor.
+	 * Returns the color of the locality marker icon.
+	 *
+	 * @see edu.ku.brc.specify.ui.SimpleCircleIcon#getColor()
+	 * @see #setDotColor(Color)
+	 * @return the color
 	 */
-	public Color getLabelColor()
+	public Color getDotColor()
 	{
-		return labelColor;
+		return marker.getColor();
 	}
 
 	/**
-	 * @param labelColor
-	 *            The labelColor to set.
+	 * Sets the color of the locality marker icon.
+	 *
+	 * @see edu.ku.brc.specify.ui.SimpleCircleIcon#setColor(java.awt.Color)
+	 * @see #getDotColor();
+	 * @param color the color
 	 */
-	public void setLabelColor(Color labelColor)
+	public void setDotColor(Color color)
 	{
-		this.labelColor = labelColor;
+		marker.setColor(color);
 	}
 
 	/**
-	 * @return Returns the showArrows.
+	 * Returns the pixel locations of the markers.
+	 *
+	 * @return the <code>List</code> of marker locations
 	 */
-	public boolean getShowArrows()
-	{
-		return showArrows;
-	}
-
-	/**
-	 * @param showArrows
-	 *            The showArrows to set.
-	 */
-	public void setShowArrows(boolean showArrows)
-	{
-		this.showArrows = showArrows;
-	}
-
-	/**
-	 * @return Returns the showLabels.
-	 */
-	public boolean getShowLabels()
-	{
-		return showLabels;
-	}
-
-	/**
-	 * @param showLabels
-	 *            The showLabels to set.
-	 */
-	public void setShowLabels(boolean showLabels)
-	{
-		this.showLabels = showLabels;
-	}
-
-	/**
-	 * @return Returns the maxMapHeight.
-	 */
-	public Integer getMaxMapHeight()
-	{
-		return maxMapHeight;
-	}
-
-	/**
-	 * @param maxMapHeight
-	 *            The maxMapHeight to set.
-	 */
-	public void setMaxMapHeight(Integer maxMapHeight)
-	{
-		this.maxMapHeight = maxMapHeight;
-	}
-
-	/**
-	 * @return Returns the maxMapWidth.
-	 */
-	public Integer getMaxMapWidth()
-	{
-		return maxMapWidth;
-	}
-
-	/**
-	 * @param maxMapWidth
-	 *            The maxMapWidth to set.
-	 */
-	public void setMaxMapWidth(Integer maxMapWidth)
-	{
-		this.maxMapWidth = maxMapWidth;
-	}
-
-	/**
-	 * @return Returns the mapHeight.
-	 */
-	public int getMapHeight()
-	{
-		return mapHeight;
-	}
-
-	/**
-	 * @return Returns the mapWidth.
-	 */
-	public int getMapWidth()
-	{
-		return mapWidth;
-	}
-
 	public List<Point> getMarkerLocations()
 	{
 		return markerLocations;
 	}
 
+	/**
+	 * Zooms the current map by the given percentage.
+	 *
+	 * @param percentZoom the zoom ratio
+	 */
 	public void zoom(float percentZoom)
 	{
 		if( percentZoom==1||percentZoom<=0 )
@@ -500,6 +615,12 @@ public class LocalityMapper implements TimingTarget
 		mapMaxLat -= latChange;
 	}
 
+	/**
+	 * Pans the current map the given number of degrees in each direction.
+	 *
+	 * @param latChange the amount of pan in the N/S direction
+	 * @param longChange the amount of pan in the E/W direction
+	 */
 	public void pan(double latChange, double longChange)
 	{
 		cacheValid = false;
@@ -526,6 +647,15 @@ public class LocalityMapper implements TimingTarget
 		mapMaxLong += longChange;
 	}
 
+	/**
+	 * Determines if the given map bounding box is valid.
+	 *
+	 * @param minLat min lat
+	 * @param minLong min long
+	 * @param maxLat max lat
+	 * @param maxLong max long
+	 * @return true if valid
+	 */
 	protected boolean boxIsValid(double minLat, double minLong, double maxLat, double maxLong)
 	{
 		if( -90<=minLat&&minLat<maxLat&&maxLat<=90 )
@@ -538,6 +668,14 @@ public class LocalityMapper implements TimingTarget
 		return false;
 	}
 
+	/**
+	 * Sets the map bounding box.
+	 *
+	 * @param minLat min lat
+	 * @param minLong min long
+	 * @param maxLat max lat
+	 * @param maxLong max long
+	 */
 	public void setBoundingBox(double minLat, double minLong, double maxLat, double maxLong)
 	{
 		if( !boxIsValid(minLat,minLong,maxLat,maxLong) )
@@ -552,6 +690,13 @@ public class LocalityMapper implements TimingTarget
 		mapMaxLong = maxLong;
 	}
 
+	/**
+	 * Gets the lat/long of a locality.  If the locality specifies a bounding box,
+	 * the center of the box is returned.
+	 *
+	 * @param loc the locality
+	 * @return the lat/long
+	 */
 	private Pair<Double, Double> getLatLong(Locality loc)
 	{
 		Double lat1 = loc.getLatitude1();
@@ -565,6 +710,15 @@ public class LocalityMapper implements TimingTarget
 		return new Pair<Double, Double>(lat1,long1);
 	}
 
+	/**
+	 * Returns the center of the bounding box described by the parameters.
+	 *
+	 * @param lat1 a latitude
+	 * @param lat2 a latitude
+	 * @param long1 a longitude
+	 * @param long2 a longitude
+	 * @return the lat/long center of the bounding box
+	 */
 	private Pair<Double, Double> centerOfBBox(Double lat1, Double lat2, Double long1, Double long2)
 	{
 		Pair<Double, Double> center = new Pair<Double, Double>();
@@ -573,6 +727,11 @@ public class LocalityMapper implements TimingTarget
 		return center;
 	}
 
+	/**
+	 * Returns the lat/long ratio of the current map parameters.
+	 *
+	 * @return the ratio
+	 */
 	protected double getLatLongRatio()
 	{
 		double longRange = maxLong-minLong;
@@ -580,6 +739,10 @@ public class LocalityMapper implements TimingTarget
 		return latRange/longRange;
 	}
 
+	/**
+	 * Calculates the proper bounding box to enclose the current set of
+	 * localities.
+	 */
 	protected void recalculateBoundingBox()
 	{
 		cacheValid = false;
@@ -624,6 +787,10 @@ public class LocalityMapper implements TimingTarget
 		createBoundingBoxBufferRegion();
 	}
 
+	/**
+	 * Increases the size of the current bounding box in order to create
+	 * a 5% size buffer.
+	 */
 	protected void createBoundingBoxBufferRegion()
 	{
 		// make sure we have a 5% buffer around the edge of the map
@@ -645,6 +812,21 @@ public class LocalityMapper implements TimingTarget
 		mapMaxLong = Math.min(180,maxLong+longSpread*bufferFactor);
 	}
 
+	/**
+	 * Configures the {@link MapGrabber} with the given parameters and requests
+	 * a new map.
+	 *
+	 * @param host the map service host
+	 * @param defaultPathAndParams the URL path and default parameters
+	 * @param layers the map layers
+	 * @param minLat min map lat
+	 * @param minLong min map long
+	 * @param maxLat max map lat
+	 * @param maxLong max map long
+	 * @return the map image
+	 * @throws HttpException a network error occurred while grabbing a new map
+	 * @throws IOException a network error occurred while grabbing a new map
+	 */
 	protected Image getMapFromService(final String host,
                                       final String defaultPathAndParams,
                                       final String layers,
@@ -668,6 +850,12 @@ public class LocalityMapper implements TimingTarget
 		return mapGrabber.getMap();
 	}
 
+	/**
+	 * Finds the pixel location on the map of the given locality.
+	 *
+	 * @param loc the locality
+	 * @return the pixel location
+	 */
 	protected Point determinePixelCoordsOfLocality(Locality loc)
 	{
 		Pair<Double, Double> latLong = getLatLong(loc);
@@ -678,6 +866,13 @@ public class LocalityMapper implements TimingTarget
 		return new Point((int) x,(int) y);
 	}
 
+	/**
+	 * Determines if a given pixel location falls on the map icon.
+	 *
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @return true if (x,y) is on the map icon
+	 */
 	protected boolean pointIsOnMapIcon(int x, int y)
 	{
 		if( mostRecentPaintedX>x||mostRecentPaintedX+mapWidth<x )
@@ -691,6 +886,13 @@ public class LocalityMapper implements TimingTarget
 		return true;
 	}
 
+	/**
+	 * Returns the lat/long associated with the given pixel location.
+	 *
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @return the lat/long
+	 */
 	public Pair<Double, Double> getLatLongForPointOnMapIcon(int x, int y)
 	{
 		if( !pointIsOnMapIcon(x,y) )
@@ -708,6 +910,12 @@ public class LocalityMapper implements TimingTarget
 		return new Pair<Double, Double>(lat,lon);
 	}
 
+	/**
+	 * Starts a thread to grab a new map.  When the process succeeds
+	 * or fails, <code>callback</code> will be notified.
+	 *
+	 * @param callback the object to notify when completed
+	 */
 	public void getMap(final MapperListener callback)
 	{
 		Thread mapGrabberThread = new Thread("Mapper Grabber")
@@ -729,6 +937,14 @@ public class LocalityMapper implements TimingTarget
 		mapGrabberThread.start();
 	}
 
+	/**
+	 * Grabs a new map from the web service and appropriately adorns it
+	 * with labels and markers.
+	 *
+	 * @return a map image as an icon
+	 * @throws HttpException a network error occurred while grabbing the map from the service
+	 * @throws IOException a network error occurred while grabbing the map from the service
+	 */
 	protected Icon grabNewMap() throws HttpException, IOException
 	{
 		if( !cacheValid )
@@ -873,29 +1089,63 @@ public class LocalityMapper implements TimingTarget
 		return icon;
 	}
 
+	/**
+	 * Sets the initial state of animation related fields.  This is
+	 * called by the TimingController just before an animation begins.
+	 *
+	 * @see org.jdesktop.animation.timing.TimingTarget#begin()
+	 */
 	public void begin()
 	{
 		this.percent = 0;
 		this.animationInProgress = true;
 	}
 
+	/**
+	 * Sets the finalized state of animation related fields.  This is
+	 * called by the TimingController just after an animation ends.
+	 *
+	 * @see org.jdesktop.animation.timing.TimingTarget#end()
+	 */
 	public void end()
 	{
 		this.animationInProgress = false;
 	}
 
-	public void timingEvent(long arg0, long arg1, float percentDone)
+	/**
+	 * Provides callback method for animation progress notifications.
+	 *
+	 * @see org.jdesktop.animation.timing.TimingTarget#timingEvent(long, long, float)
+	 * @param cycleElapsedTime the total time in milliseconds elapsed in the current <code>Cycle</code>
+	 * @param totalElapsedTime the total time in milliseconds elapsed since the start of the first cycle
+	 * @param percentDone the fraction of completion between the start and end of the current cycle. Note that on reversing cycles (<code>Envelope.RepeatBehavior.REVERSE</code>) the fraction decreases from 1.0 to 0 on backwards-running cycles.
+	 */
+	public void timingEvent(long cycleElapsedTime, long totalElapsedTime, float percentDone)
 	{
 		this.percent = percentDone;
 	}
 
-	// -----------------------------------------------------------------
-	// Inner Class / Interface
-	// -----------------------------------------------------------------
+	/**
+	 * Defines requirements for objects that receive callbacks from a 
+	 * <code>LocalityMapper</code> instance about the state of the map
+	 * generation process.
+	 * 
+	 * @author jstewart
+	 */
 	public interface MapperListener
 	{
+		/**
+		 * Signals that a map was successfully retrieved.
+		 * 
+		 * @param map the map
+		 */
 		public void mapReceived(Icon map);
 
+		/**
+		 * Signals that an exception occurred while grabbing map.
+		 * 
+		 * @param e the <code>Exception</code> that occurred during map grabbing operations
+		 */
 		public void exceptionOccurred(Exception e);
 	}
 }

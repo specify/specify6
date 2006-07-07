@@ -18,14 +18,10 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class Pair<F,S> implements Serializable
 {
-	/**
-	 * The first value in the <code>Pair</code>.
-	 */
+	/** The first value in the <code>Pair</code>. */
 	public F first = null;
 	
-	/**
-	 * The second value in the <code>Pair</code>.
-	 */
+	/** The second value in the <code>Pair</code>. */
 	public S second = null;
 	
 	/**

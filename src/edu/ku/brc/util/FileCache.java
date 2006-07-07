@@ -30,55 +30,37 @@ public class FileCache
 	private static String defaultSuffix = ".cache";
     private static String defaultPath = System.getProperty("java.io.tmpdir");
 
-	/**
-	 * The HttpClient used for grabbing web resources.
-	 */
+	/** HttpClient used for grabbing web resources. */
 	protected HttpClient httpClient;
 	
-	/**
-	 * The directory to use for cached files and the mapping files.
-	 */
+	/** Directory to use for cached files and the mapping files. */
 	protected File cacheDir;
 
-	/**
-	 * The name of the mapping file.
-	 */
+	/** Name of the mapping file. */
 	protected String mappingFilename;
 	
-	/**
-	 * The prefix to be added to all cache filenames.
-	 */
+	/** Prefix to be added to all cache filenames. */
 	protected String prefix;
 	
-	/**
-	 * The suffix to be added to all cache filenames.
-	 */
+	/** Suffix to be added to all cache filenames. */
 	protected String suffix;
 	
-	/**
-	 * A Hashtable mapping from a "handle" to the name of the cached file it refers to.
-	 */
+	/** Hashtable mapping from a "handle" to the name of the cached file it refers to. */
 	protected Properties handleToFilenameHash;
 	
-	/**
-	 * A Hashtable mapping from a "handle" to the last access time of the cached file it refers to.
-	 */
+	/** Hashtable mapping from a "handle" to the last access time of the cached file it refers to. */
 	protected Properties handleToAccessTimeHash;
 	
 	/**
-	 * The maximum size of the file cache in kilobytes (using 1 kilobyte = 1000 bytes).
+	 * Maximum size of the file cache in kilobytes (using 1 kilobyte = 1000 bytes).
 	 * This value is only enforced if enforceMaxSize is set to true.
 	 */
 	protected int maxCacheKb;
 	
-	/**
-	 * A boolean determining whether or not to enforce the cache size limit.
-	 */
+	/** A boolean determining whether or not to enforce the cache size limit. */
 	protected boolean enforceMaxSize;
 	
-	/**
-	 * The current total size of the cache, in bytes.
-	 */
+	/** The current total size of the cache, in bytes. */
 	protected long totalCacheSize;
 
 	/**
@@ -591,9 +573,7 @@ public class FileCache
 	 * 
 	 * @param key the handle used for retrieval of the cached resource
 	 * @param url the URL to the web resource to cache
-	 * 
 	 * @throws HttpException a network error occurred while grabbing the web resource
-	 * 
 	 * @throws IOException an error occurred while writing the resource to a cache file
 	 */
 	public void cacheWebResource( String key, String url ) throws HttpException, IOException

@@ -17,9 +17,7 @@ package edu.ku.brc.util;
 @SuppressWarnings("serial")
 public class Triple<F,S,T> extends Pair<F,S>
 {
-	/**
-	 * The third object in the triple.
-	 */
+	/** The third object in the triple. */
 	public T third;
 	
 	/**

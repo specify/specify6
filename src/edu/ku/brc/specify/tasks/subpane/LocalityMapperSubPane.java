@@ -142,11 +142,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
 
         progressLabel.setText("Loading Locality Data and Maps...");
 
-        TimingController mapAnimator = localityMapper.getAnimator();
-        if( mapAnimator != null )
-        {
-        	mapAnimator.addTarget(this);
-        }
+        localityMapper.addTimingTarget(this);
 
         setBackground(Color.WHITE);
 

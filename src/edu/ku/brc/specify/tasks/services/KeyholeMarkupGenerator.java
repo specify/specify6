@@ -1,23 +1,3 @@
-/* Filename:    $RCSfile: WorkbenchTask.java,v $
- * Author:      $Author: rods $
- * Revision:    $Revision: 1.1 $
- * Date:        $Date: 2006/05/01 19:59:54 $
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-
 package edu.ku.brc.specify.tasks.services;
 
 import java.io.BufferedWriter;
@@ -44,40 +24,66 @@ import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.util.Pair;
 
 /**
- * Creates Google Earth KML for the LocalityMapper (SPNHC Demo)
- * 
- * @author rods
+ * Creates Google Earth KML for the LocalityMapper.
  *
+ * @author jstewart
+ * @version %I% %G%
  */
 public class KeyholeMarkupGenerator
 {
+	/** Logger used to emit any messages from this class. */
 	private static final Logger log = Logger.getLogger(KeyholeMarkupGenerator.class);
 
+	/** Standard XML file type declaration. */
 	protected static String XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+	/** Keyhole Markup Language namespace declaration. */
 	protected static String KML_NAMESPACE_DECL = "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n";
 
+	/** <code>CollectingEvents</code> to map in the KML output. */
 	protected List<CollectingEvent> events;
+	/** Labels to apply to the events mapped. */
 	protected List<String> labels;
 
-	protected Hashtable<String,String> speciesToImageURLHash;
+	/** A mapping from a species name to a URL with a species image. */
+	protected Hashtable<String,String> speciesToImageMapper;
 
+	/**
+	 * Constructs a new KML generator object.
+	 */
 	public KeyholeMarkupGenerator()
 	{
 		events = new Vector<CollectingEvent>();
 		labels = new Vector<String>();
 	}
 
+	/**
+	 * Adds a collecting event to the set to be mapped.
+	 *
+	 * @param ce the event
+	 * @param label the label for the event
+	 */
 	public void addCollectingEvent( CollectingEvent ce, String label )
 	{
 		events.add(ce);
 		labels.add(label);
 	}
 
-	public void setSpeciesToImageMapper( Hashtable<String,String> mapper )
+	/**
+	 * Sets the speciesToImageMapper.
+	 *
+	 * @param speciesToImageMapper the mapping <code>Hashtable</code>
+	 */
+	public void setSpeciesToImageMapper(Hashtable<String, String> speciesToImageMapper)
 	{
-		this.speciesToImageURLHash = mapper;
+		this.speciesToImageMapper = speciesToImageMapper;
 	}
 
+	/**
+	 * Write the KML out to a file.
+	 *
+	 * @param filename the name of the output file
+	 * @throws IOException a file I/O exception occurred
+	 */
 	public void outputToFile( String filename ) throws IOException
 	{
 		BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
@@ -97,6 +103,11 @@ public class KeyholeMarkupGenerator
 		writer.close();
 	}
 
+	/**
+	 * Builds an XML chunk describing the path from the first locality to the last.
+	 *
+	 * @return an XML string
+	 */
 	protected String generatePathForLocalities()
 	{
 		StringBuilder sb = new StringBuilder("<Placemark>\n");
@@ -118,6 +129,13 @@ public class KeyholeMarkupGenerator
 		return sb.toString();
 	}
 
+	/**
+	 * Generates a KML chunk describing the given collecting event.
+	 *
+	 * @param ce the event
+	 * @param label the label for the event
+	 * @return the KML string
+	 */
 	protected String generatePlacemark( CollectingEvent ce, String label )
 	{
 		// get all of the important information
@@ -221,9 +239,9 @@ public class KeyholeMarkupGenerator
 			sb.append("\">");
 			sb.append("ad</a></td>\n");
 
-			if( speciesToImageURLHash != null )
+			if( speciesToImageMapper != null )
 			{
-				String imgSrc = speciesToImageURLHash.get(taxonomicName);
+				String imgSrc = speciesToImageMapper.get(taxonomicName);
                 //System.out.println("["+taxonomicName+"]["+imgSrc+"]");
 				if( imgSrc != null )
 				{
@@ -260,131 +278,5 @@ public class KeyholeMarkupGenerator
 
 		log.debug("Generated placemark:\n " + sb.toString() );
 		return sb.toString();
-	}
-
-	/**
-	 * @param args
-	 * @throws IOException
-	 */
-	public static void main(String[] args) throws IOException
-	{
-		KeyholeMarkupGenerator kmlGen = new KeyholeMarkupGenerator();
-
-		Session s = HibernateUtil.getCurrentSession();
-		Query q = s.createQuery("from collectingevent in class CollectingEvent where collectingevent.collectingEventId in (1,2,3,4,5,6)");
-		List events = q.list();
-		for( int i = 0; i < events.size(); i++ )
-		{
-			CollectingEvent ce = (CollectingEvent)events.get(i);
-			kmlGen.addCollectingEvent(ce, Integer.toString(i));
-		}
-
-		Hashtable<String,String> testMap = new Hashtable<String, String>();
-		testMap.put("girardi Notropis", "http://www.google.com/intl/en/images/logo.gif");
-		kmlGen.setSpeciesToImageMapper(testMap);
-
-//		double[] locationArray = {
-//				39.0657, -95.4181,
-//				37.8156, -98.7656,
-//				37.3069, -98.3925,
-////				29.9233, -99.0597,
-//				37.2778, -98.5738,
-//				38.0367, -97.8029,
-//				38.6725, -96.4566,
-//				38.9493, -95.1403,
-////				29.9650, -99.2344,
-////				37.3455, -95.5311
-//		};
-//
-//		String[] taxa = {
-//				"Polyodon", "spathula",
-//				"Lepisosteus", "oculatus",
-//				"Ctenopharyngodon", "idella",
-//				"Ictalurus", "furcatus",
-//				"Ictalurus", "punctatus",
-//				"Oncorhynchus", "mykiss",
-//				"Lepomis", "macrochirus",
-//				"Micropterus", "salmoides",
-//				"Pomoxis", "nigromaculatus",
-//				"Sander", "vitreus"
-//		};
-//
-//		String[] agentNames = {
-//				"Andy Bentley",
-//				"Rod Spears",
-//				"Joshua Stewart",
-//				"UPS Guy",
-//				"Freud"
-//		};
-//
-//		Agent[] agents = new Agent[agentNames.length];
-//
-//		Calendar c = Calendar.getInstance();
-//		Random r = new Random();
-//
-//		for( int i = 0; i < agentNames.length; ++i )
-//		{
-//			Agent a = new Agent();
-//			a.initialize();
-//			a.setName(agentNames[i]);
-//			agents[i] = a;
-//		}
-//
-//		CollectionObject[] objects = new CollectionObject[taxa.length/2];
-//
-//		for( int i = 0; i < taxa.length; i+=2 )
-//		{
-//			Taxon genus = new Taxon();
-//			genus.initialize();
-//			genus.setName(taxa[i]);
-//			Taxon species = new Taxon();
-//			species.initialize();
-//			species.setName(taxa[i+1]);
-//			species.setParent(genus);
-//			Determination d = new Determination();
-//			d.initialize();
-//			d.setTaxon(species);
-//			d.setIsCurrent(true);
-//			CollectionObject o = new CollectionObject();
-//			o.initialize();
-//			o.getDeterminations().add(d);
-//			objects[i/2] = o;
-//		}
-//
-//		for( int i = 0; i < locationArray.length; i+=2 )
-//		{
-//			CollectingEvent ce = new CollectingEvent();
-//			ce.initialize();
-//
-//			// set the times
-//			ce.setStartDate(c);
-//			ce.setEndDate(c);
-//
-//			// set the location
-//			Locality loc = new Locality();
-//			loc.initialize();
-//			loc.setLatitude1(locationArray[i]);
-//			loc.setLongitude1(locationArray[i+1]);
-//			ce.setLocality(loc);
-//
-//			// set the agents
-//			for( int j = 0; j < agents.length; ++j )
-//			{
-//				if( r.nextBoolean() )
-//				{
-//					Collectors coll = new Collectors();
-//					coll.initialize();
-//					coll.setAgent(agents[j]);
-//					ce.getCollectors().add(coll);
-//				}
-//			}
-//
-//			// setup the collection objects
-//			ce.getCollectionObjects().add(objects[i/2]);
-//
-//			kmlGen.addCollectingEvent(ce,Integer.toString(i/2));
-//		}
-
-		kmlGen.outputToFile("C:\\Documents and Settings\\jstewart\\Desktop\\kmloutput.kml");
 	}
 }
