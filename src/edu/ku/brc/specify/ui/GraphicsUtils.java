@@ -9,8 +9,16 @@ import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 
+/**
+ * Provides simple utility functions for drawing circles, arrows, etc.  Some
+ * of the code included here was taken from 
+ * http://forum.java.sun.com/thread.jspa?threadID=378460&tstart=135.
+ * 
+ * @author jstewart
+ */
 public class GraphicsUtils
 {
+	/** <code>RenderingHints</code> used to turn on anti-aliased drawing. */
 	protected static RenderingHints hints;
 	
 	static
@@ -21,7 +29,11 @@ public class GraphicsUtils
 	}
 	
 	/**
-	 * @param g the Graphics context to draw in
+	 * Draws a circle using the given graphics context, centered at <code>(x,y)</code>,
+	 * having the given diameter.
+	 * 
+	 * @see #fillCircle(Graphics, int, int, int)
+	 * @param g the graphics context to draw in
 	 * @param x the x coordinate for the center of the circle
 	 * @param y the y coordinate for the center of the circle
 	 * @param diameter the diameter of the circle
@@ -33,7 +45,11 @@ public class GraphicsUtils
 	}
 
 	/**
-	 * @param g the Graphics context to draw in
+	 * Draws a filled circle using the given graphics context, centered at <code>(x,y)</code>,
+	 * having the given diameter.
+	 * 
+	 * @see #drawCircle(Graphics, int, int, int)
+	 * @param g the graphics context to draw in
 	 * @param x the x coordinate for the center of the circle
 	 * @param y the y coordinate for the center of the circle
 	 * @param diameter the diameter of the circle
@@ -45,9 +61,13 @@ public class GraphicsUtils
 	}
 
 	/**
-	 * @param g the Graphics context to draw in
-	 * @param x the x coordinate for center of the String
-	 * @param y the y coordinate for center of the String
+	 * Draws the given <code>String</code>, centered at <code>(x,y)</code>, using
+	 * the given graphics context.
+	 * 
+	 * @param s the string
+	 * @param g the graphics context to draw in
+	 * @param x the x coordinate for center of the <code>String</code>
+	 * @param y the y coordinate for center of the <code>String</code>
 	 */
 	public static void drawCenteredString( String s, Graphics g, int x, int y )
 	{
@@ -60,16 +80,16 @@ public class GraphicsUtils
 	}
 
 	/**
-	 * Code stolen from http://forum.java.sun.com/thread.jspa?threadID=378460&tstart=135
+	 * Draws an arrow from <code>(xCenter,yCenter)</code> to <code>(x,y)</code>.
+	 * Code stolen from http://forum.java.sun.com/thread.jspa?threadID=378460&tstart=135.
 	 * 
-	 * 
-	 * 
-	 * @param g2d
-	 * @param xCenter
-	 * @param yCenter
-	 * @param x
-	 * @param y
-	 * @param stroke
+	 * @param g the graphics context to draw in
+	 * @param headSize the size of the arrow head
+	 * @param xCenter the x-coord of the arrow tail
+	 * @param yCenter the y-coord of the arrow tail
+	 * @param x the x-coord of the arrow head's tip
+	 * @param y the y-coord of the arrow head's tip
+	 * @param stroke the <code>Stroke</code> to use
 	 */
 	public static void drawArrow(Graphics g, int xCenter, int yCenter, int x, int y, int headSize, float stroke)
 	{
@@ -93,6 +113,15 @@ public class GraphicsUtils
 		g2d.setStroke(origStroke);
 	}
 
+	/**
+	 * Calculates the location of a point that is a given percentage of the distance
+	 * from <code>start</code> to <code>end</code>.
+	 * 
+	 * @param start the start of the line
+	 * @param end the end of the line
+	 * @param percent the percentage distance
+	 * @return the point
+	 */
 	public static Point getPointAlongLine( Point start, Point end, float percent )
 	{
 		int x = start.x + (int)(percent * (float)(end.x-start.x));
@@ -100,16 +129,39 @@ public class GraphicsUtils
 		return new Point(x,y);
 	}
 
+	/**
+	 * Calculates the distance from <code>a</code> to <code>b</code>.
+	 *
+	 * @param a a point
+	 * @param b a point
+	 * @return the distance (in pixel units)
+	 */
 	public static double distance( Point a, Point b)
 	{
 		return Math.sqrt(Math.pow(a.x-b.x, 2) + Math.pow(a.y-b.y, 2));
 	}
 	
+	/**
+	 * Returns the value of <code>len * Math.cos(dir)</code>.
+ 	 * Code stolen from http://forum.java.sun.com/thread.jspa?threadID=378460&tstart=135.
+	 *
+	 * @param len the length
+	 * @param dir the angle in radians
+	 * @return the result
+	 */
 	private static int yCor(int len, double dir)
 	{
 		return (int) (len * Math.cos(dir));
 	}
 
+	/**
+	 * Returns the value of <code>len * Math.sin(dir)</code>.
+	 * Code stolen from http://forum.java.sun.com/thread.jspa?threadID=378460&tstart=135.
+	 *
+	 * @param len the length
+	 * @param dir the angle in radians
+	 * @return the result
+	 */
 	private static int xCor(int len, double dir)
 	{
 		return (int) (len * Math.sin(dir));
