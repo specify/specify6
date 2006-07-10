@@ -78,13 +78,12 @@ import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.treeutils.TreeTableUtils;
 
 public class ObjCreatorHelper
 {
     protected static Calendar startCal = Calendar.getInstance();
     protected static Session  session = null;
-
-
 
     public static Session getSession()
     {
@@ -301,14 +300,6 @@ public class ObjCreatorHelper
         return collector;
     }
 
-    /**
-     * Creates a CollectionObject
-     * @param catalogNumber catalogNumber
-     * @param cataloger cataloger
-     * @param catalogSeries catalogSeries
-     * @param colObjDef catalogSeries
-     * @return CollectionObject
-     */
     public static CollectionObject createCollectionObject(final float            catalogNumber,
                                                           final String           fieldNumber,
                                                           final Accession        accession,
@@ -366,7 +357,6 @@ public class ObjCreatorHelper
         return colObj;
     }
 
-
     public static Determination createDetermination(final CollectionObject collectionObject,
                                                        final Agent            determiner,
                                                        final Taxon            taxon,
@@ -399,6 +389,13 @@ public class ObjCreatorHelper
 
     }
 
+    /**
+     * Create a <code>GeographyTreeDef</code> with the given name.  The object is also
+     * persisted with a call to {@link #saveOrUpdate(Object)}.
+     * 
+     * @param name tree def name
+     * @return the geography tree def
+     */
     public static GeographyTreeDef createGeographyTreeDef(final String name)
     {
         GeographyTreeDef gtd = new GeographyTreeDef();
@@ -409,6 +406,16 @@ public class ObjCreatorHelper
         return gtd;
     }
 
+    /**
+     * Creates a <code>GeographyTreeDefItem</code> using the given values.  The object is also
+     * persisted with a call to {@link #saveOrUpdate(Object)}.
+     * 
+     * @param parent the parent node
+     * @param gtd the associated definition object
+     * @param name the name of the item
+     * @param rankId the rank of the itme
+     * @return the new item
+     */
     @SuppressWarnings("unchecked")
 	public static GeographyTreeDefItem createGeographyTreeDefItem(final GeographyTreeDefItem parent,
 																final GeographyTreeDef gtd,
@@ -430,6 +437,16 @@ public class ObjCreatorHelper
         return gtdi;
     }
 
+    /**
+     * Creates a new <code>Geography</code> object using the given values.  The object is also
+     * persisted with a call to {@link #saveOrUpdate(Object)}.
+     * 
+     * @param gtd the associated definition
+     * @param parent the parent node
+     * @param name the name of the node
+     * @param rankId the rank of the node
+     * @return the new node
+     */
     @SuppressWarnings("unchecked")
 	public static Geography createGeography(final GeographyTreeDef gtd,
                                             final Geography parent,
@@ -441,13 +458,15 @@ public class ObjCreatorHelper
     {
         Geography geography = new Geography();
         geography.initialize();
-        //geography.setAbbrev(abbrev);
         geography.setDefinition(gtd);
         geography.setName(name);
-        //geography.setHighestChildNodeNumber(highNode);
-        //geography.setNodeNumber(nodeNum);
         geography.setParent(parent);
         geography.setRankId(rankId);
+        GeographyTreeDefItem defItem = (GeographyTreeDefItem)TreeTableUtils.getDefItemByRank(gtd,rankId);
+        if( defItem != null )
+        {
+        	geography.setDefinitionItem(defItem);
+        }
         if (gtd != null)
         {
             gtd.getTreeEntries().add(geography);
@@ -457,24 +476,13 @@ public class ObjCreatorHelper
         return geography;
     }
 
-
-
-    public static Locality createLocality(final String name, final Geography geo)
-    {
-        Locality locality = new Locality();
-        locality.initialize();
-
-        locality.setLocalityName(name);
-        locality.setGeography(geo);
-        locality.setTimestampModified(new Date());
-
-        if (session != null)
-        {
-            session.saveOrUpdate(locality);
-        }
-        return locality;
-    }
-
+    /**
+     * Create a <code>LocationTreeDef</code> with the given name.  The object is also
+     * persisted with a call to {@link #saveOrUpdate(Object)}.
+     * 
+     * @param name tree def name
+     * @return the location tree def
+     */
     public static LocationTreeDef createLocationTreeDef(final String name)
     {
         LocationTreeDef ltd = new LocationTreeDef();
@@ -485,6 +493,16 @@ public class ObjCreatorHelper
         return ltd;
     }
 
+    /**
+     * Creates a <code>LocationTreeDefItem</code> using the given values.  The object is also
+     * persisted with a call to {@link #saveOrUpdate(Object)}.
+     * 
+     * @param parent the parent node
+     * @param ltd the associated definition object
+     * @param name the name of the item
+     * @param rankId the rank of the itme
+     * @return the new item
+     */
     @SuppressWarnings("unchecked")
 	public static LocationTreeDefItem createLocationTreeDefItem(final LocationTreeDefItem parent,
 																final LocationTreeDef ltd,
@@ -506,6 +524,16 @@ public class ObjCreatorHelper
         return ltdi;
     }
 
+    /**
+     * Creates a new <code>Location</code> object using the given values.  The object is also
+     * persisted with a call to {@link #saveOrUpdate(Object)}.
+     * 
+     * @param ltd the associated definition
+     * @param parent the parent node
+     * @param name the name of the node
+     * @param rankId the rank of the node
+     * @return the new node
+     */
     @SuppressWarnings("unchecked")
 	public static Location createLocation(final LocationTreeDef ltd,
                                           final Location parent,
@@ -517,13 +545,15 @@ public class ObjCreatorHelper
     {
         Location location = new Location();
         location.initialize();
-
-        //location.setAbbrev(abbrev);
         location.setDefinition(ltd);
         location.setName(name);
-        //location.setHighestChildNodeNumber(highNode);
-        //location.setNodeNumber(nodeNum);
         location.setParent(parent);
+        LocationTreeDefItem defItem = (LocationTreeDefItem)TreeTableUtils.getDefItemByRank(ltd,rankId);
+        if( defItem != null )
+        {
+        	location.setDefinitionItem(defItem);
+        }
+
         location.setRankId(rankId);
         if (ltd != null)
         {
@@ -534,6 +564,13 @@ public class ObjCreatorHelper
         return location;
     }
 
+    /**
+     * Create a <code>GeologicTimePeriodTreeDef</code> with the given name.  The object is also
+     * persisted with a call to {@link #saveOrUpdate(Object)}.
+     * 
+     * @param name tree def name
+     * @return the geologic time period tree def
+     */
     public static GeologicTimePeriodTreeDef createGeologicTimePeriodTreeDef(final String name)
     {
         GeologicTimePeriodTreeDef gtp = new GeologicTimePeriodTreeDef();
@@ -544,9 +581,19 @@ public class ObjCreatorHelper
         return gtp;
     }
 
+    /**
+     * Creates a <code>GeologicTimePeriodTreeDefItem</code> using the given values.  The object is also
+     * persisted with a call to {@link #saveOrUpdate(Object)}.
+     * 
+     * @param parent the parent node
+     * @param gtptd the associated definition object
+     * @param name the name of the item
+     * @param rankId the rank of the itme
+     * @return the new item
+     */
     @SuppressWarnings("unchecked")
 	public static GeologicTimePeriodTreeDefItem createGeologicTimePeriodTreeDefItem(final GeologicTimePeriodTreeDefItem parent,
-                                                                                    final GeologicTimePeriodTreeDef gltptd,
+                                                                                    final GeologicTimePeriodTreeDef gtptd,
                                                                                     final String name,
                                                                                     final int rankId)
     {
@@ -555,16 +602,26 @@ public class ObjCreatorHelper
         gtdi.setName(name);
         gtdi.setParent(parent);
         gtdi.setRankId(rankId);
-        gtdi.setGeologicTimePeriodTreeDef(gltptd);
-        if( gltptd != null )
+        gtdi.setGeologicTimePeriodTreeDef(gtptd);
+        if( gtptd != null )
         {
-        	gltptd.getTreeDefItems().add(gtdi);
+        	gtptd.getTreeDefItems().add(gtdi);
         }
 
         saveOrUpdate(gtdi);
         return gtdi;
     }
 
+    /**
+     * Creates a new <code>GeologicTimePeriod</code> object using the given values.  The object is also
+     * persisted with a call to {@link #saveOrUpdate(Object)}.
+     * 
+     * @param gtptd the associated definition
+     * @param parent the parent node
+     * @param name the name of the node
+     * @param rankId the rank of the node
+     * @return the new node
+     */
     @SuppressWarnings("unchecked")
 	public static GeologicTimePeriod createGeologicTimePeriod(final GeologicTimePeriodTreeDef gtptd,
                                                               final GeologicTimePeriod parent,
@@ -577,16 +634,102 @@ public class ObjCreatorHelper
         gtp.setDefinition(gtptd);
         gtp.setName(name);
         gtp.setParent(parent);
+        GeologicTimePeriodTreeDefItem defItem = (GeologicTimePeriodTreeDefItem)TreeTableUtils.getDefItemByRank(gtptd,rankId);
+        if( defItem != null )
+        {
+        	gtp.setDefinitionItem(defItem);
+        }
         gtp.setRankId(rankId);
         if (gtptd != null)
         {
             gtptd.getTreeEntries().add(gtp);
         }
-
         saveOrUpdate(gtp);
         return gtp;
     }
 
+    /**
+     * Create a <code>TaxonTreeDef</code> with the given name.  The object is also
+     * persisted with a call to {@link #saveOrUpdate(Object)}.
+     * 
+     * @param name tree def name
+     * @return the taxon tree def
+     */
+    public static TaxonTreeDef createTaxonTreeDef(final String name)
+    {
+        TaxonTreeDef ttd = new TaxonTreeDef();
+        ttd.initialize();
+        ttd.setName(name);
+        return ttd;
+    }
+
+    /**
+     * Creates a <code>TaxonTreeDefItem</code> using the given values.  The object is also
+     * persisted with a call to {@link #saveOrUpdate(Object)}.
+     * 
+     * @param parent the parent node
+     * @param ttd the associated definition object
+     * @param name the name of the item
+     * @param rankId the rank of the itme
+     * @return the new item
+     */
+    @SuppressWarnings("unchecked")
+	public static TaxonTreeDefItem createTaxonTreeDefItem(final TaxonTreeDefItem parent,
+                                                          final TaxonTreeDef ttd,
+                                                          final String name,
+                                                          final int rankId)
+    {
+        TaxonTreeDefItem ttdi = new TaxonTreeDefItem();
+        ttdi.initialize();
+        ttdi.setName(name);
+        ttdi.setParent(parent);
+        ttdi.setRankId(rankId);
+        ttdi.setTreeDef(ttd);
+        if( ttd != null )
+        {
+        	ttd.getTreeDefItems().add(ttdi);
+        }
+
+        saveOrUpdate(ttdi);
+        return ttdi;
+    }
+
+    /**
+     * Creates a new <code>Taxon</code> object using the given values.  The object is also
+     * persisted with a call to {@link #saveOrUpdate(Object)}.
+     * 
+     * @param ttd the associated definition
+     * @param parent the parent node
+     * @param name the name of the node
+     * @param rankId the rank of the node
+     * @return the new node
+     */
+    @SuppressWarnings("unchecked")
+	public static Taxon createTaxon(final TaxonTreeDef ttd,
+                                      final Taxon parent,
+                                      final String name,
+                                      final int rankId)
+    {
+        Taxon taxon = new Taxon();
+        taxon.initialize();
+        taxon.setDefinition(ttd);
+        taxon.setName(name);
+        taxon.setParent(parent);
+        TaxonTreeDefItem defItem = (TaxonTreeDefItem)TreeTableUtils.getDefItemByRank(ttd,rankId);
+        if( defItem != null )
+        {
+        	taxon.setDefinitionItem(defItem);
+        }
+        taxon.setRankId(rankId);
+        if (ttd != null)
+        {
+            ttd.getTreeEntries().add(taxon);
+        }
+
+        saveOrUpdate(taxon);
+        return taxon;
+    }
+    
     public static Preparation createPreparation(final PrepType         prepType,
                                                 final Agent            preparedBy,
                                                 final CollectionObject colObj,
@@ -618,6 +761,22 @@ public class ObjCreatorHelper
         return prep;
     }
 
+    public static Locality createLocality(final String name, final Geography geo)
+    {
+        Locality locality = new Locality();
+        locality.initialize();
+
+        locality.setLocalityName(name);
+        locality.setGeography(geo);
+        locality.setTimestampModified(new Date());
+
+        if (session != null)
+        {
+            session.saveOrUpdate(locality);
+        }
+        return locality;
+    }
+
     public static PreparationAttr createPreparationAttr(final AttributeDef attrDef,
                                                         final Preparation prep,
                                                         final String strVal,
@@ -646,63 +805,6 @@ public class ObjCreatorHelper
         }
         return prepAttr;
     }
-
-    public static TaxonTreeDef createTaxonTreeDef(final String name)
-    {
-        TaxonTreeDef ttd = new TaxonTreeDef();
-        ttd.initialize();
-        ttd.setName(name);
-        return ttd;
-    }
-
-    @SuppressWarnings("unchecked")
-	public static TaxonTreeDefItem createTaxonTreeDefItem(final TaxonTreeDefItem parent,
-                                                          final TaxonTreeDef ttd,
-                                                          final String name,
-                                                          final int rankId)
-    {
-        TaxonTreeDefItem ttdi = new TaxonTreeDefItem();
-        ttdi.initialize();
-        ttdi.setName(name);
-        ttdi.setParent(parent);
-        ttdi.setRankId(rankId);
-        ttdi.setTreeDef(ttd);
-        if( ttd != null )
-        {
-        	ttd.getTreeDefItems().add(ttdi);
-        }
-
-        saveOrUpdate(ttdi);
-        return ttdi;
-    }
-
-    @SuppressWarnings("unchecked")
-	public static Taxon createTaxon(final TaxonTreeDef ttd,
-                                      final Taxon parent,
-                                      //final String abbrev,
-                                      final String name,
-                                      //final int highNode,
-                                      //final int nodeNum,
-                                      final int rankId)
-    {
-        Taxon taxon = new Taxon();
-        taxon.initialize();
-        //taxon.setAbbrev(abbrev);
-        taxon.setDefinition(ttd);
-        taxon.setName(name);
-        //taxon.setHighestChildNodeNumber(highNode);
-        //taxon.setNodeNumber(nodeNum);
-        taxon.setParent(parent);
-        taxon.setRankId(rankId);
-        if (ttd != null)
-        {
-            ttd.getTreeEntries().add(taxon);
-        }
-
-        saveOrUpdate(taxon);
-        return taxon;
-    }
-
 
     public static Address createAddress(final Agent agent,
                                         final String address1,
@@ -733,8 +835,6 @@ public class ObjCreatorHelper
         return address;
     }
 
-
-
     public static Permit createPermit(final String permitNumber,
                                       final String type,
                                       final Calendar issuedDate,
@@ -759,7 +859,6 @@ public class ObjCreatorHelper
         return permit;
     }
     //-----------------------------------------------------------
-
 
     public static Accession createAccession(final String type,
                                             final String status,
@@ -822,7 +921,6 @@ public class ObjCreatorHelper
         }
         return accessionauthorizations;
     }
-
 
     public static Agent createAgent(final Byte agentType,
                                     final String firstName,
@@ -1723,7 +1821,6 @@ public class ObjCreatorHelper
         return otheridentifier;
     }
 
-
     public static PrepType createPrepType(final String name)
     {
         PrepType preptype = new PrepType();
@@ -1981,7 +2078,6 @@ public class ObjCreatorHelper
         return stratigraphy;
     }
 
-
     public static TaxonCitation createTaxonCitation(final ReferenceWork referenceWork,
                                                     final Taxon taxon)
     {
@@ -2017,7 +2113,6 @@ public class ObjCreatorHelper
     		session.saveOrUpdate(transientObject);
     	}
     }
-    
     
     public static Workbench createWorkbench(
     		final String name,
