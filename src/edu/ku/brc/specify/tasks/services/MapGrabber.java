@@ -186,7 +186,6 @@ public class MapGrabber
 		this.maxWidth = width;
 	}
 
-
 	/**
 	 * Returns the northernmost latitude of the map.
 	 * 
@@ -197,7 +196,6 @@ public class MapGrabber
 	{
 		return maxLat;
 	}
-
 
 	/**
 	 * Sets the northernmost latitude on the map.
@@ -210,7 +208,6 @@ public class MapGrabber
 		this.maxLat = maxLat;
 	}
 
-
 	/**
 	 * Returns the easternmost latitude of the map.
 	 * 
@@ -221,7 +218,6 @@ public class MapGrabber
 	{
 		return maxLong;
 	}
-
 
 	/**
 	 * Sets the easternmost latitude of the map.
@@ -244,7 +240,6 @@ public class MapGrabber
 	{
 		return minLat;
 	}
-
 
 	/**
 	 * Sets the southernmost latitude of the map.
