@@ -16,30 +16,68 @@ import org.jdesktop.animation.timing.Envelope;
 import org.jdesktop.animation.timing.TimingController;
 import org.jdesktop.animation.timing.TimingTarget;
 
+// commented out (along with included code) to eliminate the project dependancy on filters JAR
 //import com.jhlabs.image.TwirlFilter;
 
+/**
+ * Creates a JPanel to display an animated swirling of an image.
+ *
+ * @author jstewart
+ * @version %I% %G%
+ */
 @SuppressWarnings("serial")
 public class ImageSwirlPanel extends JPanel implements TimingTarget {
+    /** The original image. */
     protected BufferedImage original;
+    /** The original image's width. */
     protected int origWidth;
+    /** The original image's height. */
     protected int origHeight;
+    /** The animation controller. */
     protected TimingController timingController;
+    /** Frames of the animation. */
     protected BufferedImage[] frames;
+    /** The duration of the animation (in ms). */
     protected int duration;
-    protected int index;
+    /** The current frame of the animation. */
+    protected int frame;
 
+    /**
+     * Creates a new panel to display a swirl animation using the given image file,
+     * frame count, and duration.
+     *
+     * @param imageFilename the original image file
+     * @param frameCount the number of frames to render
+     * @param duration the duration of the animation (in ms)
+     */
     public ImageSwirlPanel( String imageFilename, int frameCount, int duration ) {
         ImageIcon imageIcon = new ImageIcon(imageFilename);
         init(imageIcon,frameCount,duration);
     }
 
+    /**
+     * Creates a new panel to display a swirl animation using the given image file,
+     * frame count, and duration.
+     *
+     * @param image the original image
+     * @param frameCount the number of frames to render
+     * @param duration the duration of the animation (in ms)
+     */
     public ImageSwirlPanel( Image image, int frameCount, int duration ) {
         ImageIcon imageIcon = new ImageIcon(image);
         init(imageIcon,frameCount,duration);
     }
 
+    /**
+     * Does all of the real work of creating the frames and setting up the
+     * animation controller.
+     *
+     * @param icon the original image as an icon
+     * @param frameCount the number of frames
+     * @param duration the duration of the animation
+     */
     private void init(ImageIcon icon, int frameCount, int duration) {
-        index = 0;//frameCount - 1;
+        frame = 0;//frameCount - 1;
         frames = new BufferedImage[frameCount];
         this.duration = duration;
 
@@ -56,8 +94,8 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
         for( int i = 1; i < frames.length; ++i ) {
             frames[i] = new BufferedImage(origWidth,origHeight,BufferedImage.TYPE_INT_ARGB);
         }
-        /*
 
+        /* Commented out to eliminate the project dependancy for the filters JAR file
         // initialize the filter
         TwirlFilter filter = new TwirlFilter();
         filter.setRadius(origWidth/2);
@@ -71,16 +109,7 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
             filter.setAngle(angle);
             filter.filter(frames[i-1],frames[i]);
         }
-  */    
-
-//        OpacityFilter filter = new OpacityFilter();
-//        filter.setOpacity(0);
-//        for( int i = 1; i < frames.length; ++i ) {
-//            int opacity = 255 - (int)((float)((float)i/(float)(frames.length-1)) * 255);
-//            System.out.println(opacity);
-//            filter.setOpacity(opacity);
-//            filter.filter(original,frames[i]);
-//        }
+        */
 
         //setup the animation Cycle
         int resolution = 0;
@@ -97,51 +126,100 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
         timingController = new TimingController(cycle,env,this);
     }
 
-    // run the animation
+    /**
+     * Starts the animation.
+     * 
+     * @see TimingController#start()
+     */
     public void startAnimation() {
         timingController.start();
     }
 
-    public void setIndex(int index)
-    {
-        this.index = index;
-    }
+    /**
+	 * Returns the current frame number.
+	 *
+	 * @see #setFrame(int)
+	 * @return the frame number
+	 */
+	public int getFrame()
+	{
+		return frame;
+	}
 
-    public int getIndex()
-    {
-        return this.index;
-    }
+	/**
+	 * Sets the current frame number.
+	 *
+	 * @see #getFrame()
+	 * @param frame the frame number
+	 */
+	public void setFrame(int frame)
+	{
+		this.frame = frame;
+	}
 
-        /* (non-Javadoc)
-         * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
-         */
+	/**
+     * Paints the current frame of the swirling image.
+     *
+     * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+     * @param g the graphics context
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        int i = frames.length - 1 - index;
+        int i = frames.length - 1 - frame;
         g.drawImage(frames[i], 0,0, getBackground(), this);
     }
 
+    /**
+     * Does nothing.  This is called by the TimingController before
+     * the animation begins.
+     *
+     * @see org.jdesktop.animation.timing.TimingTarget#begin()
+     */
     public void begin() {
     }
 
+    /**
+     * Does nothing.  This is called by the TimingController after
+     * the animation ends.
+     *
+     * @see org.jdesktop.animation.timing.TimingTarget#end()
+     */
     public void end() {
     }
 
-    // modify the index appropraitely for the percent of the animation that is complete
+    /**
+     * Calculates and sets the frame number of the current frame based on the value
+     * of <code>percent</code> and the frame count passed to the constructor.
+     *
+     * @see org.jdesktop.animation.timing.TimingTarget#timingEvent(long, long, float)
+     * @param cycleElapsedTime elapsed time in this cycle of the animation
+     * @param totalElapsedTime total elapsed animation time
+     * @param percent the percentage of the current cycle that has elapsed
+     */
     public void timingEvent(long cycleElapsedTime, long totalElapsedTime, float percent) {
-        index = Math.min((int)(frames.length * percent),frames.length-1);
+        frame = Math.min((int)(frames.length * percent),frames.length-1);
         repaint();
     }
 
+    /**
+     * Overrides {@link javax.swing.JComponent#getPreferredSize()} to always
+     * return the height and width of <code>original</code>.
+     *
+     * @see javax.swing.JComponent#getPreferredSize()
+     * @return the size of <code>original</code>
+     */
     public Dimension getPreferredSize()
     {
         return new Dimension(origWidth, origHeight);
     }
 
     /**
-     * @param args
-     * @throws InterruptedException
+     * A <code>main</code> method for testing the panel.  Always uses a file named
+     * <code><i>$USERHOME</i>/Desktop/splashfish.png</code>, 20 frames, and 1500 ms duration.
+     *
+     * @param args the argument string (unused)
+     * @throws InterruptedException if the animation controller is interrupted
      */
     public static void main(String[] args) throws InterruptedException {
     	String homedir = System.getProperty("user.home");
