@@ -3,11 +3,9 @@ package edu.ku.brc.specify.ui.treetables;
 import java.awt.FontMetrics;
 import java.util.Comparator;
 import java.util.Hashtable;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 import javax.swing.AbstractListModel;
 

@@ -18,16 +18,12 @@ import javax.swing.JPanel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-import org.apache.log4j.Logger;
-
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.ui.IconManager;
 
 @SuppressWarnings("serial")
 public class TreeDataListCellRenderer extends DefaultListCellRenderer implements ListDataListener
 {
-    private static final Logger log = Logger.getLogger(TreeDataListCellRenderer.class);
-
 	protected TreeDataListModel model;
 	protected JList list;
 	protected boolean lengthsValid;
@@ -241,12 +237,11 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 		@Override
 		protected void paintComponent(Graphics g)
 		{
-//			// ensure that the lengths are valid
-//			if( !lengthsValid )
-//			{
-//				recomputeLengthPerLevel(list.getGraphics());
-//			}
-			recomputeLengthPerLevel(list.getGraphics());
+			// ensure that the lengths are valid
+			if( !lengthsValid )
+			{
+				recomputeLengthPerLevel(list.getGraphics());
+			}
 			
 			Graphics2D g2d = (Graphics2D)g;
 			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -304,10 +299,6 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 				child = parent;
 				parent = child.getParentNode();
 			}
-			
-			// paint the open/close icon
-//			Icon icon = open ? getOpen() : getClosed();
-//			icon.paintIcon(c, g, x+width-icon.getIconWidth(), y+cellHeight);
 			
 			// draw the string name of the node
 			String name = treeable.getName();
