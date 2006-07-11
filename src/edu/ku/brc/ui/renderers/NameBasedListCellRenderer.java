@@ -12,7 +12,7 @@ import edu.ku.brc.specify.datamodel.Geography;
 
 /**
  * Provides a facility for producing components appropriate for rendering the cells
- * of a list.  If the objects being rendered have a <code>getName()<code> method that
+ * of a list.  If the objects being rendered have a <code>getName()</code> method that
  * returns a <code>String</code>, then that method is used to provide text for the
  * cell components.  Otherwise, the {@link Object#toString()} method is used.
  *
