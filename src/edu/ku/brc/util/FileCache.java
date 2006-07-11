@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.Properties;
-import java.util.Random;
 import java.util.UUID;
 
 import org.apache.commons.httpclient.HttpClient;
