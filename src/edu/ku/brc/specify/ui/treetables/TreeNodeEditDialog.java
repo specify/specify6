@@ -27,7 +27,6 @@ import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -59,7 +58,7 @@ import edu.ku.brc.specify.ui.validation.ValComboBox;
  * and then the search definition it is to use to do the search and display the results as a table in the dialog. The resulting class is to be passed in
  * on construction so the results of the search can actually yield a Hibernate object.
  *
- * @author rods
+ * @author rods, jstewart
  *
  */
 @SuppressWarnings("serial")
@@ -75,8 +74,6 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
     protected Viewable       form;
     protected List<String>   fieldNames;
     
-    protected PropertyChangeListener propertyChangeListener = null;
-
     // Members needed for creating results
     protected String         className;
     protected String         idFieldName;
@@ -91,7 +88,7 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
 
 
     /**
-     * Constructs a taxon node edit dialog from form info
+     * Constructs a {@link Treeable} node edit dialog from form info
      * @param viewSetName the viewset name
      * @param viewName the form name from the viewset
      * @param title the title (should be already localized before passing in)
@@ -120,10 +117,6 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
         this.setModal(false);
     }
 
-    /**
-     * Creates the Default UI
-     *
-     */
     protected void createUI(final String viewSetName,
                             final String viewName,
                             final String title)
@@ -163,16 +156,8 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
     }
     
     /**
-     * Set a listener to know when the dialog is closed
-     * @param propertyChangeListener the listener
-     */
-    public void setCloseListener(final PropertyChangeListener propertyChangeListener)
-    {
-        this.propertyChangeListener = propertyChangeListener;
-    }
-    
-    /**
-     * Sets data into the dialog
+     * Sets data into the dialog.
+     * 
      * @param dataObj the data object
      */
     public void setData(final Treeable dataObj)
@@ -228,9 +213,6 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
     	}
     }
 
-    /* (non-Javadoc)
-     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-     */
     public void actionPerformed(ActionEvent e)
     {
         // Handle clicks on the OK buttons.
@@ -249,12 +231,6 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
     {
         // Handle clicks on the OK buttons.
         setVisible(false);
-        
-        if( propertyChangeListener != null )
-        {
-        	propertyChangeListener.propertyChange(null);
-            propertyChangeListener = null;
-        }
         
         form.getDataFromUI();
         ValComboBox cb = (ValComboBox)form.getCompById(DEF_ITEM_CB_ID);

@@ -1,4 +1,4 @@
-package edu.ku.brc.specify.ui.treetables;
+package edu.ku.brc.ui;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -26,17 +26,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JList;
+import javax.swing.ListModel;
 
-import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.dnd.GhostActionable;
 import edu.ku.brc.specify.ui.dnd.GhostMouseInputAdapter;
 
+/**
+ * A custom {@link JList} with enhanced drag and drop features.
+ *
+ * @author jstewart
+ * @version %I% %G%
+ */
 @SuppressWarnings("serial")
 public class TreeDataJList extends JList implements DragSourceListener,
 		DropTargetListener, DragGestureListener, GhostActionable
 {
 
+	/** A static handle to <code>DataFlavor.javaJVMLocalObjectMimeType</code>. */
 	protected static DataFlavor	localObjectFlavor;
 	static
 	{
@@ -50,22 +57,36 @@ public class TreeDataJList extends JList implements DragSourceListener,
 			cnfe.printStackTrace();
 		}
 	}
+	/** A static array holding only {@link #localObjectFlavor}. */
 	protected static DataFlavor[]	supportedFlavors	=
 											{ localObjectFlavor };
+	/** */
 	protected DragSource			dragSource;
+	/** */
 	protected DropTarget			dropTarget;
+	/** */
 	protected Object				dropTargetCell;
+	/** */
 	protected int					draggedIndex		= -1;
-	protected TreeDataListModel	treeDataModel;
+	/** */
+	protected ListDragDropCallback	dragDropCallback;
 	
+    /** */
     protected GhostMouseInputAdapter  mouseDropAdapter = null;
+    /** */
     protected List<DataFlavor>       dropFlavors  = new ArrayList<DataFlavor>();
+    /** */
     protected List<DataFlavor>       dragFlavors  = new ArrayList<DataFlavor>();
 
-	public TreeDataJList( TreeDataListModel model )
+	/**
+	 * 
+	 *
+	 * @param model
+	 */
+	public TreeDataJList( ListModel model, ListDragDropCallback dragDropCallback )
 	{
 		super(model);
-		this.treeDataModel = model;
+		this.dragDropCallback = dragDropCallback;
 		
 		this.setFixedCellHeight(this.getFont().getSize()*2);
 		dragSource = new DragSource();
@@ -74,7 +95,12 @@ public class TreeDataJList extends JList implements DragSourceListener,
 		createMouseInputAdapter();
 	}
 
-	// DragGestureListener
+	/**
+	 *
+	 *
+	 * @see java.awt.dnd.DragGestureListener#dragGestureRecognized(java.awt.dnd.DragGestureEvent)
+	 * @param dge
+	 */
 	public void dragGestureRecognized(DragGestureEvent dge)
 	{
 		System.out.println("dragGestureRecognized");
@@ -89,7 +115,12 @@ public class TreeDataJList extends JList implements DragSourceListener,
 		dragSource.startDrag(dge, Cursor.getDefaultCursor(), trans, this);
 	}
 
-	// DragSourceListener events
+	/**
+	 *
+	 *
+	 * @see java.awt.dnd.DragSourceListener#dragDropEnd(java.awt.dnd.DragSourceDropEvent)
+	 * @param dsde
+	 */
 	public void dragDropEnd(DragSourceDropEvent dsde)
 	{
 		System.out.println("dragDropEnd()");
@@ -98,23 +129,52 @@ public class TreeDataJList extends JList implements DragSourceListener,
 		repaint();
 	}
 
+	/**
+	 *
+	 *
+	 * @see java.awt.dnd.DragSourceListener#dragEnter(java.awt.dnd.DragSourceDragEvent)
+	 * @param dsde
+	 */
 	public void dragEnter(DragSourceDragEvent dsde)
 	{
 	}
 
+	/**
+	 *
+	 *
+	 * @see java.awt.dnd.DragSourceListener#dragExit(java.awt.dnd.DragSourceEvent)
+	 * @param dse
+	 */
 	public void dragExit(DragSourceEvent dse)
 	{
 	}
 
+	/**
+	 *
+	 *
+	 * @see java.awt.dnd.DragSourceListener#dragOver(java.awt.dnd.DragSourceDragEvent)
+	 * @param dsde
+	 */
 	public void dragOver(DragSourceDragEvent dsde)
 	{
 	}
 
+	/**
+	 *
+	 *
+	 * @see java.awt.dnd.DragSourceListener#dropActionChanged(java.awt.dnd.DragSourceDragEvent)
+	 * @param dsde
+	 */
 	public void dropActionChanged(DragSourceDragEvent dsde)
 	{
 	}
 
-	// DropTargetListener events
+	/**
+	 *
+	 *
+	 * @see java.awt.dnd.DropTargetListener#dragEnter(java.awt.dnd.DropTargetDragEvent)
+	 * @param dtde
+	 */
 	public void dragEnter(DropTargetDragEvent dtde)
 	{
 		System.out.println("dragEnter");
@@ -128,10 +188,22 @@ public class TreeDataJList extends JList implements DragSourceListener,
 
 	}
 
+	/**
+	 *
+	 *
+	 * @see java.awt.dnd.DropTargetListener#dragExit(java.awt.dnd.DropTargetEvent)
+	 * @param dte
+	 */
 	public void dragExit(DropTargetEvent dte)
 	{
 	}
 
+	/**
+	 *
+	 *
+	 * @see java.awt.dnd.DropTargetListener#dragOver(java.awt.dnd.DropTargetDragEvent)
+	 * @param dtde
+	 */
 	public void dragOver(DropTargetDragEvent dtde)
 	{
 		// figure out which cell it's over, no drag to self
@@ -146,6 +218,12 @@ public class TreeDataJList extends JList implements DragSourceListener,
 		repaint();
 	}
 
+	/**
+	 *
+	 *
+	 * @see java.awt.dnd.DropTargetListener#drop(java.awt.dnd.DropTargetDropEvent)
+	 * @param dtde
+	 */
 	public void drop(DropTargetDropEvent dtde)
 	{
 		System.out.println("drop()!");
@@ -179,11 +257,9 @@ public class TreeDataJList extends JList implements DragSourceListener,
 					+ " before target");
 			System.out.println("insert at "
 					+ (sourceBeforeTarget ? index - 1 : index));
-			Object draggedObj = treeDataModel.getElementAt(draggedIndex);
-			Object dropObj = treeDataModel.getElementAt(index);
-			Treeable dragNode = (Treeable)draggedObj;
-			Treeable dropNode = (Treeable)dropObj;
-			treeDataModel.reparent(dragNode,dropNode);
+			Object draggedObj = getModel().getElementAt(draggedIndex);
+			Object dropObj = getModel().getElementAt(index);
+			dragDropCallback.dropOccurred(draggedObj,dropObj);
 			dropped = true;
 		}
 		catch( Exception e )
@@ -192,20 +268,49 @@ public class TreeDataJList extends JList implements DragSourceListener,
 		}
 		dtde.dropComplete(dropped);
 	}
+	
 
+	/**
+	 *
+	 *
+	 * @see java.awt.dnd.DropTargetListener#dropActionChanged(java.awt.dnd.DropTargetDragEvent)
+	 * @param dtde
+	 */
 	public void dropActionChanged(DropTargetDragEvent dtde)
 	{
 	}
 
+	
+	/**
+	 *
+	 *
+	 * @author jstewart
+	 * @version %I% %G%
+	 */
 	class RJLTransferable implements Transferable
 	{
+		/** */
 		Object	object;
 
+		/**
+		 *
+		 *
+		 * @param o
+		 */
 		public RJLTransferable(Object o)
 		{
 			object = o;
 		}
 
+		/**
+		 *
+		 *
+		 * @see java.awt.datatransfer.Transferable#getTransferData(java.awt.datatransfer.DataFlavor)
+		 * @param df
+		 * @return
+		 * @throws UnsupportedFlavorException
+		 * @throws IOException
+		 */
 		public Object getTransferData(DataFlavor df)
 				throws UnsupportedFlavorException, IOException
 		{
@@ -215,43 +320,77 @@ public class TreeDataJList extends JList implements DragSourceListener,
 				throw new UnsupportedFlavorException(df);
 		}
 
+		/**
+		 *
+		 *
+		 * @see java.awt.datatransfer.Transferable#isDataFlavorSupported(java.awt.datatransfer.DataFlavor)
+		 * @param df
+		 * @return
+		 */
 		public boolean isDataFlavorSupported(DataFlavor df)
 		{
 			return (df.equals(localObjectFlavor));
 		}
 
+		/**
+		 *
+		 *
+		 * @see java.awt.datatransfer.Transferable#getTransferDataFlavors()
+		 * @return
+		 */
 		public DataFlavor[] getTransferDataFlavors()
 		{
 			return supportedFlavors;
 		}
 	}
 
+	/**
+	 *
+	 *
+	 * @see edu.ku.brc.specify.ui.dnd.GhostActionable#doAction(edu.ku.brc.specify.ui.dnd.GhostActionable)
+	 * @param source
+	 */
 	public void doAction(GhostActionable source)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
+	/**
+	 *
+	 *
+	 * @see edu.ku.brc.specify.ui.dnd.GhostActionable#setData(java.lang.Object)
+	 * @param data
+	 */
 	public void setData(Object data)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
+	/**
+	 *
+	 *
+	 * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getData()
+	 * @return
+	 */
 	public Object getData()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/**
+	 *
+	 *
+	 * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getDataForClass(java.lang.Class)
+	 * @param classObj
+	 * @return
+	 */
 	public Object getDataForClass(Class classObj)
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#createMouseDropAdapter()
+    /**
+     *
+     *
+     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#createMouseInputAdapter()
      */
     public void createMouseInputAdapter()
     {
@@ -269,6 +408,12 @@ public class TreeDataJList extends JList implements DragSourceListener,
         return mouseDropAdapter;
     }
 
+	/**
+	 *
+	 *
+	 * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getBufferedImage()
+	 * @return
+	 */
 	public BufferedImage getBufferedImage()
 	{
 //		BufferedImage bi = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_ARGB);
@@ -281,16 +426,28 @@ public class TreeDataJList extends JList implements DragSourceListener,
 		Graphics g = bi.getGraphics();
 		g.setColor(Color.LIGHT_GRAY);
 		g.drawRect(0, 0, 300, 45);
-		g.setColor(Color.BLACK);
-		g.drawString("Imagine your image here", 20, 20);
+		g.setColor(Color.BLUE);
+		g.drawString("TODO: implement this", 20, 20);
 		return bi;
 	}
 
+	/**
+	 *
+	 *
+	 * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getDropDataFlavors()
+	 * @return
+	 */
 	public List<DataFlavor> getDropDataFlavors()
 	{
 		return dropFlavors;
 	}
 
+	/**
+	 *
+	 *
+	 * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getDragDataFlavors()
+	 * @return
+	 */
 	public List<DataFlavor> getDragDataFlavors()
 	{
 		return dragFlavors;

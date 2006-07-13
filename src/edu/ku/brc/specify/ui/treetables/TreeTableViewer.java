@@ -6,11 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -18,14 +14,15 @@ import java.util.Vector;
 
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -47,6 +44,10 @@ import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.treetables.TreeNodeEditDialog.TreeNodeDialogCallback;
+import edu.ku.brc.ui.ListDragDropCallback;
+import edu.ku.brc.ui.TreeDataJList;
+import edu.ku.brc.ui.listeners.ScrollBarLinkingListener;
+import edu.ku.brc.ui.renderers.NameBasedListCellRenderer;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -54,72 +55,66 @@ import edu.ku.brc.util.Pair;
  * JTree-based view/editor for tree-based data tables.  It should work
  * with any tree of objects implementing the Treeable interface and defined
  * by an object implementing the TreeDefinitionIface interface.
- * 
- * @author jstewart
- */
-/**
- *
  *
  * @author jstewart
- *
  */
 @SuppressWarnings("serial")
-public class TreeTableViewer extends BaseSubPane implements ListSelectionListener
+public class TreeTableViewer extends BaseSubPane implements ListSelectionListener, ListDragDropCallback
 {
-	/** The main UI component */
+	/** The top-level UI component. */
 	protected JPanel uiComp;
 
-	/** North section container */
+	/** North section container. */
 	protected JPanel northPanel;
-	/** South section container */
+	/** South section container. */
 	protected JPanel southPanel;
-	/** Button container */
+	/** Button container. */
 	protected JPanel buttonPanel;
-	/** Tree widget container */
+	/** Tree widget container. */
 	protected JPanel treeListPanel;
-	/** Collection of all the buttons on the widget */
+	/** Collection of all the buttons on the widget. */
 	protected List<AbstractButton> buttons;
-	/** Status message display widget */
+	/** Status message display widget. */
 	protected JLabel statusBar;
-	/** Info message display widget */
+	/** Info message display widget. */
 	protected JLabel messageLabel;
-	/** An icon signifying that an error has occurred */
+	/** An icon signifying that an error has occurred. */
 	protected Icon errorIcon;
 	
-	/** Model holding all <code>Treeable</code> nodes */
+	/** Model holding all <code>Treeable</code> nodes. */
 	protected TreeDataListModel listModel;
-	/** The tree display widget */
+	/** The tree display widget. */
 	protected TreeDataJList list;
-	/** Cell renderer for displaying individual nodes in the tree */
+	/** Cell renderer for displaying individual nodes in the tree. */
 	protected TreeDataListCellRenderer listCellRenderer;
-	/** A header for the tree, displaying the names of the visible levels */
+	/** A header for the tree, displaying the names of the visible levels. */
 	protected TreeDataListHeader listHeader;
 	
-	/** Tree selection widget */
+	/** Tree selection widget. */
 	protected JComboBox defsBox;
-	/** Button for adding new nodes */
+	/** Button for adding new nodes. */
 	protected JButton addNodeButton;
-	/** Button for deleting nodes */
+	/** Button for deleting nodes. */
 	protected JButton deleteNodeButton;
-	/** Button for editing nodes */
+	/** Button for editing nodes. */
 	protected JButton editButton;
-	/** Button for committing current tree structure to disk */
+	/** Button for committing current tree structure to disk. */
 	protected JButton commitTreeButton;
 	
-	/** Implementation class of <code>Treeable</code> nodes */
+	/** Implementation class of <code>Treeable</code> nodes. */
 	protected Class treeableClass;
 	
-	/** Collection of all nodes deleted by user that have not yet been deleted from persistent store (DB) */
+	/** Collection of all nodes deleted by user that have not yet been deleted from persistent store (DB). */
 	protected SortedSet<Treeable> deletedNodes;
 	
-	/** Inidicator of unsaved changes in tree structure/contents */
+	/** Inidicator of unsaved changes in tree structure/contents. */
 	protected boolean unsavedChanges;
 	
-    /** Logger for all messages emitted */
+    /** Logger for all messages emitted. */
     private static final Logger log = Logger.getLogger(TreeTableViewer.class);
 
 	/**
-	 * Build a TreeTableViewer to view/edit the data found
+	 * Build a TreeTableViewer to view/edit the data found.
 	 * 
 	 * @param treeDefClass a Class object representing the DB table to find definitions in
 	 * @param name a String name for this viewer/editor
@@ -169,7 +164,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		Vector<Object> defs = new Vector<Object>(definitions);
 		defs.add(0, "Choose a tree definition");
 		defsBox = new JComboBox(defs);
-		defsBox.setRenderer(new TreeDefListCellRenderer());
+		defsBox.setRenderer(new NameBasedListCellRenderer());
 		defsBox.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -200,9 +195,10 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	}
 
 	/**
+	 * Initialize the tree display component with the tree defined by the given
+	 * {@link TreeDefinitionIface}.
 	 *
-	 *
-	 * @param treeDef
+	 * @param treeDef the tree definition
 	 */
 	protected synchronized void initTreeList( final TreeDefinitionIface treeDef )
 	{
@@ -258,9 +254,10 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	}
 	
 	/**
+	 * Performs finalization work after {@link #initTreeList(TreeDefinitionIface)}
+	 * successfully initializes a new tree display.
 	 *
-	 *
-	 * @param root
+	 * @param root the root node of the new tree
 	 */
 	protected synchronized void initTreeListSucess( Treeable root )
 	{
@@ -269,7 +266,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		defsBox.setEnabled(false);
 		
 		listModel = new TreeDataListModel(root);
-		list = new TreeDataJList(listModel);
+		list = new TreeDataJList(listModel,this);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		listCellRenderer = new TreeDataListCellRenderer(list,listModel);
 		list.setCellRenderer(listCellRenderer);
@@ -285,10 +282,19 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		});
 
 		treeListPanel = new JPanel(new BorderLayout());
-		JScrollPane scroll = new JScrollPane(list);
-		scroll.setAutoscrolls(true);
-		treeListPanel.add(scroll, BorderLayout.CENTER);
-		treeListPanel.add(listHeader, BorderLayout.NORTH);
+		JScrollPane bodyScroll = new JScrollPane(list);
+		bodyScroll.setAutoscrolls(true);
+		treeListPanel.add(bodyScroll, BorderLayout.CENTER);
+		
+		JScrollPane headerScroll = new JScrollPane(listHeader);
+		headerScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+		headerScroll.setAutoscrolls(true);
+		
+		ScrollBarLinkingListener linkingListener = new ScrollBarLinkingListener();
+		linkingListener.addScrollBar(bodyScroll.getHorizontalScrollBar());
+		linkingListener.addScrollBar(headerScroll.getHorizontalScrollBar());
+		
+		treeListPanel.add(headerScroll, BorderLayout.NORTH);
 
 		uiComp.remove(messageLabel);
 		uiComp.add(treeListPanel, BorderLayout.CENTER);
@@ -300,9 +306,10 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	}
 	
 	/**
+	 * Performs finalization work after {@link #initTreeList(TreeDefinitionIface)}
+	 * fails to initialize a new tree display.
 	 *
-	 *
-	 * @param failureMessage
+	 * @param failureMessage a string containing info about the reason for failure
 	 */
 	protected synchronized void initTreeListFailure( String failureMessage )
 	{
@@ -316,9 +323,10 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	}
 	
 	/**
+	 * Performs all duties related to processing mouse events on the
+	 * tree display.
 	 *
-	 *
-	 * @param e
+	 * @param e a mouse event
 	 */
 	protected void handleMouseEvent( MouseEvent e )
 	{
@@ -337,7 +345,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	}
 	
 	/**
-	 * Build the JPanel to hold the control buttons
+	 * Builds the button panel and all contained buttons.
 	 */
 	protected void setupButtonPanel()
 	{
@@ -394,8 +402,9 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	}
 	
 	/**
-	 *
-	 *
+	 * Disables all buttons in the button panel with the exception of
+	 * {@link #commitTreeButton} which is enabled or disabled based on the
+	 * value of {@link #unsavedChanges}.
 	 */
 	protected void disableAllButtons()
 	{
@@ -407,9 +416,11 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		commitTreeButton.setEnabled(unsavedChanges);
 	}
 	
+
 	/**
-	 *
-	 *
+	 * Enables all buttons in the button panel with the exception of
+	 * {@link #commitTreeButton} which is enabled or disabled based on the
+	 * value of {@link #unsavedChanges}.
 	 */
 	protected void enableAllButtons()
 	{
@@ -423,8 +434,9 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 
 
 	/**
-	 *
-	 *
+	 * Displays data entry form for creating a new node that will be
+	 * a child of the selected node.  A new child is only permanently
+	 * created if the user chooses to procede with the data entry.
 	 */
 	public void addChildToSelectedNode()
 	{
@@ -448,10 +460,11 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		showNewTreeableForm(newT);
 	}
 	
+
 	/**
+	 * Display the data entry form for creating a new node.
 	 *
-	 *
-	 * @param newNode
+	 * @param newNode the new node for which the user must enter data
 	 */
 	protected void showNewTreeableForm(Treeable newNode)
 	{
@@ -470,10 +483,15 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		showEditDialog(newNode, "New Node Form", callback);
 	}
 	
+
 	/**
+	 * Peforms finalization of new node creation.  This method
+	 * serves as a callback to the data entry form for when
+	 * a user presses the 'OK' button on the form.  The new node
+	 * is only made persistent if the user then selects to commit
+	 * the tree structure to the DB.
 	 *
-	 *
-	 * @param node
+	 * @param node the new node
 	 */
 	public void newNodeEntryComplete(Treeable node)
 	{
@@ -489,10 +507,13 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		commitTreeButton.setEnabled(true);
 	}
 	
+
 	/**
+	 * Cancels new node creation process.  This method serves
+	 * as a callback to the data entry form for when the user
+	 * presses the 'Cancel' button on the form.
 	 *
-	 *
-	 * @param node
+	 * @param node the new node that was in the process of being created
 	 */
 	public void newNodeEntryCancelled(Treeable node)
 	{
@@ -524,6 +545,12 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		listModel.setChildrenVisible(parent, showing);
 	}
 	
+
+	/**
+	 * Deletes the currently selected node and all descendants if and
+	 * only if it is determined possible without violating any business
+	 * rules.
+	 */
 	public void deleteSelectedNode()
 	{
 		Object selection = list.getSelectedValue();
@@ -549,6 +576,13 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		}
 	}
 	
+	
+	/**
+	 * Deletes all descendants of the given node.  Deletion is only persisted
+	 * if the user then chooses to commit the modified tree structure to the DB.
+	 *
+	 * @param parent the node for which to delete all descendant nodes
+	 */
 	protected void deleteAllDescendants(Treeable parent)
 	{
 		List<Treeable> descendants = TreeTableUtils.getAllDescendants(parent);
@@ -563,6 +597,10 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		}
 	}
 	
+
+	/**
+	 * Display a form for editing the data in the currently selected node.
+	 */
 	protected void editSelectedNode()
 	{
 		Object selection = list.getSelectedValue();
@@ -588,6 +626,14 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		showEditDialog(node, "Edit Node Values", callback);
 	}
 	
+
+	/**
+	 * Performs finalization of node data editing process.  This
+	 * method also signals the tree display widget to update its
+	 * view.
+	 *
+	 * @param node the node being edited
+	 */
 	protected void editSelectedNodeOK(Treeable node)
 	{
 		log.info("User selected 'OK' from edit node dialog");
@@ -596,11 +642,19 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		listModel.nodeValuesChanged(node);
 	}
 	
+
+	/**
+	 * Performs cleanup tasks after the user cancels a node data
+	 * editing process.
+	 *
+	 * @param node the node that was being edited
+	 */
 	protected void editSelectedNodeCancelled(Treeable node)
 	{
 		log.info("User selected 'Cancel' from edit node dialog");
 	}
 	
+
 	/**
 	 * Commit the current tree structure to the database.  This also reassigns the nodeNumber
 	 * and highestChildNodeNumber fields to be consistent with the current tree layout.
@@ -629,6 +683,14 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		return true;
 	}
 	
+
+	/**
+	 * Display the form for editing node data.
+	 *
+	 * @param node the node being edited
+	 * @param title the title of the dialog window
+	 * @param callback the 'complete' and 'cancel' callbacks for the 'OK' and 'Cancel' buttons
+	 */
 	protected void showEditDialog(Treeable node,String title,TreeNodeDialogCallback callback)
 	{
 		String shortClassName = node.getClass().getName();
@@ -639,54 +701,26 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		editDialog.setVisible(true);
 	}
 	
-	protected Map<Integer,Icon> getIconMapForClass( Class treeableClass )
-	{
-		// TODO: implement this with some sort of runtime settings thingy
-		
-		Hashtable<Integer, Icon> iconMap = new Hashtable<Integer, Icon>();
-		
-		return iconMap;
-	}
 	
-	protected Map<String,Icon> getNameIconMapForClass( Class treeableClass )
-	{
-		Hashtable<String,Icon> iconMap = new Hashtable<String,Icon>();
-		
-		File flagDir = new File("C:\\Documents and Settings\\jstewart\\Desktop\\svg flags\\PNG");
-		File[] flagFiles = flagDir.listFiles(new FilenameFilter()
-				{
-					public boolean accept(File dir, String name)
-					{
-						if( name.endsWith(".png") )
-						{
-								return true;
-						}
-						return false;
-					}
-				});
-		
-		if( flagFiles == null )
-		{
-			flagFiles = new File[0];
-		}
-		
-		for( File flagFile: flagFiles )
-		{
-			System.out.println(flagFile);
-			String countryName = flagFile.getName().replace('_', ' ');
-			countryName = countryName.substring(0,countryName.length()-4);
-			countryName = countryName.toLowerCase();
-			iconMap.put(countryName, new ImageIcon(flagFile.getAbsolutePath()));
-		}
 
-		return iconMap;
-	}
-	
+	/**
+	 * Returns the top-level UI component of the tree viewer.
+	 *
+	 * @see edu.ku.brc.specify.tasks.subpane.BaseSubPane#getUIComponent()
+	 * @return the top-level UI component
+	 */
 	public JComponent getUIComponent()
 	{
 		return uiComp;
 	}
 
+	/**
+	 * Updates the status bar text to display the full name of the currently
+	 * selected nodes and updates the enabled/disabled status of the buttons.
+	 *
+	 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
+	 * @param e a selection event on the tree display
+	 */
 	public void valueChanged(ListSelectionEvent e)
 	{
 		Treeable t = (Treeable)list.getSelectedValue();
@@ -703,5 +737,28 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		deleteNodeButton.setEnabled(true);
 		editButton.setEnabled(true);
 		addNodeButton.setEnabled(true);
+	}
+
+	/**
+	 * Reparents <code>dragged</code> to <code>droppedOn</code> by calling
+	 * {@link TreeDataListModel#reparent(Treeable, Treeable)}.
+	 *
+	 * @see edu.ku.brc.ui.ListDragDropCallback#dropOccurred(java.lang.Object, java.lang.Object)
+	 * @param dragged the dragged tree node
+	 * @param droppedOn the node the dragged node was dropped onto
+	 */
+	public void dropOccurred( Object dragged, Object droppedOn )
+	{
+		if( !(dragged instanceof Treeable && droppedOn instanceof Treeable) )
+		{
+			log.warn("Ignoring drag and drop of unhandled types of objects");
+			return;
+		}
+		
+		boolean changed = listModel.reparent((Treeable)dragged,(Treeable)droppedOn);
+		if( changed )
+		{
+			unsavedChanges = true;
+		}
 	}
 }

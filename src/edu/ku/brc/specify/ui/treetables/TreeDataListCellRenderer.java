@@ -20,6 +20,7 @@ import javax.swing.event.ListDataListener;
 
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.ui.TreeDataJList;
 
 @SuppressWarnings("serial")
 public class TreeDataListCellRenderer extends DefaultListCellRenderer implements ListDataListener
@@ -253,6 +254,7 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 			int midCell = cellHeight/2;
 			
 			// TODO: draw the alternating color background
+			// use index%2 for this
 			
 			// determine if this node has more peer nodes below it
 			// if not, draw an L-shape
