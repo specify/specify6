@@ -101,6 +101,9 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	/** Button for committing current tree structure to disk. */
 	protected JButton commitTreeButton;
 	
+	protected JButton viewSubtreeButton;
+	protected JButton showWholeTreeButton;
+	
 	/** Implementation class of <code>Treeable</code> nodes. */
 	protected Class treeableClass;
 	
@@ -145,8 +148,6 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	 */
 	protected void init( List<TreeDefinitionIface> definitions )
 	{
-		buttons = new Vector<AbstractButton>();
-		
 		this.uiComp = new JPanel();
 		uiComp.setLayout(new BorderLayout());
 
@@ -384,21 +385,44 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 						commitStructureToDb();
 					}
 				});
+
+		viewSubtreeButton = new JButton("Subtree");
+		viewSubtreeButton.addActionListener(new ActionListener()
+				{
+					public void actionPerformed(ActionEvent ae)
+					{
+						showSubtreeOfSelection();
+					}
+				});
+
+		showWholeTreeButton = new JButton("View Whole Tree");
+		showWholeTreeButton.addActionListener(new ActionListener()
+				{
+					public void actionPerformed(ActionEvent ae)
+					{
+						showWholeTree();
+					}
+				});
 		
-		buttonPanel = new JPanel();
-				
+		buttons = new Vector<AbstractButton>();
 		buttons.add(addNodeButton);
 		buttons.add(deleteNodeButton);
 		buttons.add(editButton);
 		buttons.add(commitTreeButton);
+		buttons.add(viewSubtreeButton);
+		buttons.add(showWholeTreeButton);
 		
 		disableAllButtons();
 		commitTreeButton.setEnabled(true);
+		showWholeTreeButton.setEnabled(true);
 		
+		buttonPanel = new JPanel();
 		buttonPanel.add(addNodeButton);
 		buttonPanel.add(deleteNodeButton);
 		buttonPanel.add(editButton);
 		buttonPanel.add(commitTreeButton);
+		buttonPanel.add(viewSubtreeButton);
+		buttonPanel.add(showWholeTreeButton);
 	}
 	
 	/**
@@ -683,6 +707,23 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		return true;
 	}
 	
+	public void showSubtreeOfSelection()
+	{
+		Object selection = list.getSelectedValue();
+		if( selection == null )
+		{
+			return;
+		}
+		
+		Treeable node = (Treeable)selection;
+
+		listModel.setVisibleRoot(node);
+	}
+	
+	public void showWholeTree()
+	{
+		listModel.setVisibleRoot(listModel.getRoot());
+	}
 
 	/**
 	 * Display the form for editing node data.
@@ -730,6 +771,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 			deleteNodeButton.setEnabled(false);
 			editButton.setEnabled(false);
 			addNodeButton.setEnabled(false);
+			viewSubtreeButton.setEnabled(false);
 			return;
 		}
 		
@@ -737,6 +779,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		deleteNodeButton.setEnabled(true);
 		editButton.setEnabled(true);
 		addNodeButton.setEnabled(true);
+		viewSubtreeButton.setEnabled(true);
 	}
 
 	/**

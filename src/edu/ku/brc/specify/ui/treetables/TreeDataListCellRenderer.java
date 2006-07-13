@@ -261,7 +261,7 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 			// if so, draw a T-shape
 			Treeable child = treeable;
 			Treeable parent = treeable.getParentNode();
-			if( parent != null )
+			if( child != model.getVisibleRoot() && parent != null )
 			{
 				Integer parentRankId = parent.getRankId();
 				Integer childRankId  = child.getRankId();
@@ -289,7 +289,7 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 			}
 			
 			// draw the downward lines from ancestors to descendants renderered below this node
-			while( parent != null )
+			while( child != model.getVisibleRoot() && parent != null )
 			{
 				if( model.parentHasChildrenAfterNode(parent, child) )
 				{

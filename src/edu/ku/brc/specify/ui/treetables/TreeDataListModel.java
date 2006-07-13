@@ -31,6 +31,7 @@ public class TreeDataListModel extends AbstractListModel
 	protected TreeDefinitionIface treeDef;
     private static final Logger log = Logger.getLogger(TreeDataListModel.class);
     protected Treeable root;
+    protected Treeable visibleRoot;
     protected Comparator<Treeable> comparator;
 
 	public TreeDataListModel( Treeable root )
@@ -38,6 +39,7 @@ public class TreeDataListModel extends AbstractListModel
 		visibleNodes = new Vector<Treeable>();
 		childrenWereShowing = new Hashtable<Treeable, Boolean>();
 		this.root = root;
+		this.visibleRoot = root;
 		comparator = TreeFactory.getAppropriateComparator(root);
 		
 		treeDef = root.getTreeDef();
@@ -51,6 +53,11 @@ public class TreeDataListModel extends AbstractListModel
 		return root;
 	}
 
+	public Treeable getVisibleRoot()
+	{
+		return visibleRoot;
+	}
+	
 	public TreeDefinitionIface getTreeDef()
 	{
 		return this.treeDef;
@@ -466,5 +473,13 @@ public class TreeDataListModel extends AbstractListModel
 			int index = visibleNodes.indexOf(node);
 			fireContentsChanged(this, index, index);
 		}
+	}
+
+	public void setVisibleRoot(Treeable node)
+	{
+		setNodeVisible(visibleRoot,false);
+		visibleRoot = node;
+		makeNodeVisible(visibleRoot);
+		showChildren(visibleRoot);
 	}
 }
