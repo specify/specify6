@@ -6,7 +6,7 @@ package edu.ku.brc.ui;
  * @author jstewart
  * @version %I% %G%
  */
-public interface ListDragDropCallback
+public interface DragDropCallback
 {
 	/**
 	 * Performs all tasks required by the event of <code>dragged</code>

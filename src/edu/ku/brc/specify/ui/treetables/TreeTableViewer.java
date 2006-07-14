@@ -44,7 +44,7 @@ import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.treetables.TreeNodeEditDialog.TreeNodeDialogCallback;
-import edu.ku.brc.ui.ListDragDropCallback;
+import edu.ku.brc.ui.DragDropCallback;
 import edu.ku.brc.ui.TreeDataJList;
 import edu.ku.brc.ui.listeners.ScrollBarLinkingListener;
 import edu.ku.brc.ui.renderers.NameBasedListCellRenderer;
@@ -59,7 +59,7 @@ import edu.ku.brc.util.Pair;
  * @author jstewart
  */
 @SuppressWarnings("serial")
-public class TreeTableViewer extends BaseSubPane implements ListSelectionListener, ListDragDropCallback
+public class TreeTableViewer extends BaseSubPane implements ListSelectionListener, DragDropCallback
 {
 	/** The top-level UI component. */
 	protected JPanel uiComp;
@@ -786,7 +786,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	 * Reparents <code>dragged</code> to <code>droppedOn</code> by calling
 	 * {@link TreeDataListModel#reparent(Treeable, Treeable)}.
 	 *
-	 * @see edu.ku.brc.ui.ListDragDropCallback#dropOccurred(java.lang.Object, java.lang.Object)
+	 * @see edu.ku.brc.ui.DragDropCallback#dropOccurred(java.lang.Object, java.lang.Object)
 	 * @param dragged the dragged tree node
 	 * @param droppedOn the node the dragged node was dropped onto
 	 */

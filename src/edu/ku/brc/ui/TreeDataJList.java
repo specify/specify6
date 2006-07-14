@@ -69,7 +69,7 @@ public class TreeDataJList extends JList implements DragSourceListener,
 	/** */
 	protected int					draggedIndex		= -1;
 	/** */
-	protected ListDragDropCallback	dragDropCallback;
+	protected DragDropCallback	dragDropCallback;
 	
     /** */
     protected GhostMouseInputAdapter  mouseDropAdapter = null;
@@ -83,7 +83,7 @@ public class TreeDataJList extends JList implements DragSourceListener,
 	 *
 	 * @param model
 	 */
-	public TreeDataJList( ListModel model, ListDragDropCallback dragDropCallback )
+	public TreeDataJList( ListModel model, DragDropCallback dragDropCallback )
 	{
 		super(model);
 		this.dragDropCallback = dragDropCallback;
@@ -427,7 +427,7 @@ public class TreeDataJList extends JList implements DragSourceListener,
 		g.setColor(Color.LIGHT_GRAY);
 		g.drawRect(0, 0, 300, 45);
 		g.setColor(Color.BLUE);
-		g.drawString("TODO: implement this", 20, 20);
+		g.drawString("TODO: implement this.  draggedIndex = " + draggedIndex, 20, 20);
 		return bi;
 	}
 

@@ -221,6 +221,11 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 			this.treeable = treeable;
 			this.index = index;
 			this.selected = selected;
+			
+			if( list.getFont() != null )
+			{
+				this.setFont(list.getFont());
+			}
 		}
 		
 		@Override
