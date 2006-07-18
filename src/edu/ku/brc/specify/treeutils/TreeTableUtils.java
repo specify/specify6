@@ -265,6 +265,19 @@ public class TreeTableUtils
 		return null;
 	}
 	
+	public static TreeDefinitionItemIface getDefItemByName( TreeDefinitionIface treeDef, String name )
+	{
+		Set<TreeDefinitionItemIface> defItems = (Set<TreeDefinitionItemIface>)treeDef.getTreeDefItems();
+		for( TreeDefinitionItemIface item: defItems )
+		{
+			if( item.getName().equals(name) )
+			{
+				return item;
+			}
+		}
+		return null;
+	}
+	
 	/**
 	 * Returns the highest rank allowed as a parent of the given <code>Treeable</code> object.  This
 	 * is determined using the <code>isEnforced</code> field of the associated
@@ -289,22 +302,6 @@ public class TreeTableUtils
 				return defItem.getRankId();
 			}
 		}
-	}
-	
-	/**
-	 * Determines if reparenting the given <code>Treeable</code> node to is possible
-	 * without violating any business rules.
-	 * 
-	 * @param node the node to reparent
-	 * @param newParent the prospective new parent
-	 * @return <code>true</code> is no business rules would be violated
-	 */
-	public static boolean isReparentAllowed( Treeable node, Treeable newParent )
-	{
-		//TODO: implement this
-		//XXX
-		log.info("TODO: provide implementation");
-		return true;
 	}
 	
 	/**
@@ -469,6 +466,11 @@ public class TreeTableUtils
 	 */
 	public static boolean canChildBeReparentedToNode( Treeable child, Treeable newParent )
 	{
+		if( nodeIsDescendantOfNode(newParent,child) )
+		{
+			return false;
+		}
+		
 		Integer nextEnforcedRank = getRankOfNextHighestEnforcedLevel(child);
 		if( nextEnforcedRank == null )
 		{
