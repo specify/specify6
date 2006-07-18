@@ -21,6 +21,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.ui.GraphicsUtils;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.ui.TreeDataJList;
+import edu.ku.brc.util.Pair;
 
 @SuppressWarnings("serial")
 public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListener
@@ -29,7 +30,9 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 	protected JList list;
 	protected TreeNodeUI nodeUI;
 	protected boolean lengthsValid;
-	protected SortedMap<Integer, Integer> rankWidthsMap;
+	protected SortedMap<Integer,Pair<Integer,Integer>> rankBoundsMap;
+	protected int leadTextOffset;
+	protected int tailTextOffset;
 	
 	// amount of space between tree-lines and name of node
 	protected int whitespace;
@@ -47,6 +50,9 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 		bgs[0] = new Color(202,238,255);
 		bgs[1] = new Color(151,221,255);
 		
+		leadTextOffset = 24;
+		tailTextOffset = 8;
+		
 		nodeUI = new TreeNodeUI(list,listModel);
 		
 		this.whitespace = 5;
@@ -55,7 +61,7 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 		model.addListDataListener(this);
 		lengthsValid = false;
 		
-		rankWidthsMap = new TreeMap<Integer, Integer>();
+		rankBoundsMap = new TreeMap<Integer, Pair<Integer,Integer>>();
 
 		open   = IconManager.getIcon("Down",    IconManager.IconSize.Std16);
 		closed = IconManager.getIcon("Forward", IconManager.IconSize.Std16);
@@ -70,22 +76,64 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 		return nodeUI;
 	}
 	
+	public Pair<Integer,Integer> getTextBoundsForRank(Integer rank)
+	{
+		if( rank == null )
+		{
+			return null;
+		}
+		
+		Pair<Integer,Integer> textBounds = new Pair<Integer,Integer>();
+		Pair<Integer,Integer> bounds = rankBoundsMap.get(rank);
+		if( bounds == null )
+		{
+			return null;
+		}
+		
+		textBounds.first = bounds.first + leadTextOffset;
+		textBounds.second = bounds.second - tailTextOffset;
+		
+		return textBounds;
+	}
+	
+	public Pair<Integer,Integer> getAnchorBoundsForRank(Integer rank)
+	{
+		if( rank == null )
+		{
+			return null;
+		}
+		
+		Pair<Integer,Integer> anchorBounds = new Pair<Integer,Integer>();
+		Pair<Integer,Integer> bounds = rankBoundsMap.get(rank);
+		if( bounds == null )
+		{
+			return null;
+		}
+		
+		anchorBounds.first = bounds.first;
+		anchorBounds.second = bounds.first + leadTextOffset;
+		
+		return anchorBounds;
+	}
+	
 	protected void recomputeLengthPerLevel( Graphics g )
 	{
-		rankWidthsMap.clear();
+		rankBoundsMap.clear();
 		
-		int prevRanksWidths = 0;
+		int prevRankEnd = 0;
 		SortedSet<Integer> visibleRanks = model.getVisibleRanks();
 		for( Integer rank: visibleRanks )
 		{
-			rankWidthsMap.put(rank, prevRanksWidths);
-			
+			Pair<Integer,Integer> bounds = new Pair<Integer, Integer>();
+			bounds.setFirst(prevRankEnd);
+
 			Integer longestStringLength = model.getLongestNamePixelLengthByRank(rank,g.getFontMetrics(),true);
 			if( longestStringLength != null )
 			{
-				int spacerWidth = g.getFontMetrics().stringWidth("XXX");
-				prevRanksWidths += longestStringLength.intValue() + spacerWidth;
+				bounds.setSecond(prevRankEnd + longestStringLength + leadTextOffset + tailTextOffset);
 			}
+			rankBoundsMap.put(rank,bounds);
+			prevRankEnd = bounds.second;
 		}
 		
 		lengthsValid = true;
@@ -125,12 +173,8 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 				recomputeLengthPerLevel(list.getGraphics());
 			}
 
-			Graphics2D g2d = (Graphics2D)getGraphics();
-			String name = treeable.getName();
-			int stringX = rankWidthsMap.get(treeable.getRankId()) + whitespace;
-			int stringWidth = g2d.getFontMetrics().stringWidth(name);
-			
-			return new Dimension(stringX+stringWidth,list.getFixedCellHeight());
+			int width = rankBoundsMap.get(treeable.getRankId()).second;
+			return new Dimension(width,list.getFixedCellHeight());
 		}
 		
 		/**
@@ -203,6 +247,9 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 			// draw the downward lines from ancestors to descendants renderered below this node
 			drawTreeLinesToLowerNodes(g);
 			
+			// draw the open/close icon
+			drawOpenClosedIcon(g);
+			
 			// draw the string name of the node
 			drawNodeString(g);
 		}
@@ -212,65 +259,43 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 			Color orig = g.getColor();
 			int cellHeight = list.getFixedCellHeight();
 
-			SortedSet<Integer> visibleRanks = model.getVisibleRanks();
 			int i = 0;
-			Integer prevRank = null;
-			for( Integer rank: visibleRanks )
+			for( Integer rank: rankBoundsMap.keySet() )
 			{
-				if( prevRank == null )
-				{
-					prevRank = rank;
-					continue;
-				}
-				
-				int startX = rankWidthsMap.get(prevRank);
-				int endX = rankWidthsMap.get(rank);
-				
-				g.setColor(bgs[i]);
-				g.fillRect(startX,0,endX,cellHeight);
+				Pair<Integer,Integer> startEnd = rankBoundsMap.get(rank);
+				g.setColor(bgs[i%2]);
+				g.fillRect(startEnd.first,0,startEnd.second,cellHeight);
 				++i;
-				i%=2;
-				prevRank = rank;
 			}
-			
-			g.setColor(bgs[i]);
-			int startX = rankWidthsMap.get(prevRank);
-			g.fillRect(startX,0,list.getWidth(),cellHeight);
 			
 			g.setColor(orig);
 		}
 		
 		private void drawNodeAnchors(Graphics g)
 		{
-			Treeable child = treeable;
+			Treeable node = treeable;
 			Treeable parent = treeable.getParentNode();
 			int cellHeight = list.getFixedCellHeight();
 			int midCell = cellHeight/2;
 
-			if( child != model.getVisibleRoot() && parent != null )
+			if( node != model.getVisibleRoot() && parent != null )
 			{
-				Integer parentRankId = parent.getRankId();
-				Integer childRankId  = child.getRankId();
-				Integer parentWidth = rankWidthsMap.get(parentRankId);
-				Integer childWidth = rankWidthsMap.get(childRankId);
-				if( parentWidth == null || childWidth == null )
-				{
-					System.out.println("Unable to compute visual node location");
-					System.out.println("   Parent: " + parent.getName());
-					System.out.println("   Child:  " + child.getName());
-				}
+				Integer parentRank = parent.getRankId();
+				Integer rank  = node.getRankId();
+				Pair<Integer,Integer> parentAnchorBounds = getAnchorBoundsForRank(parentRank);
+				Pair<Integer,Integer> nodeAnchorBounds = getAnchorBoundsForRank(rank);
 				
-				if( !model.parentHasChildrenAfterNode(parent, child) )
+				if( !model.parentHasChildrenAfterNode(parent, node) )
 				{
-					// draw an L-shape
-					g.drawLine(parentWidth+2*whitespace, 0, parentWidth+2*whitespace, midCell);
-					g.drawLine(parentWidth+2*whitespace, midCell, childWidth, midCell);
+					// draw an L-line
+					g.drawLine(parentAnchorBounds.second,0,parentAnchorBounds.second,midCell);
+					g.drawLine(parentAnchorBounds.second,midCell,nodeAnchorBounds.first,midCell);
 				}
 				else
 				{
 					// draw a T-shape
-					g.drawLine(parentWidth+2*whitespace, 0, parentWidth+2*whitespace, cellHeight);
-					g.drawLine(parentWidth+2*whitespace, midCell, childWidth, midCell);
+					g.drawLine(parentAnchorBounds.second,0,parentAnchorBounds.second,cellHeight);
+					g.drawLine(parentAnchorBounds.second,midCell,nodeAnchorBounds.first,midCell);
 				}
 			}
 		}
@@ -281,22 +306,52 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 			// if not, draw an L-shape
 			// if so, draw a T-shape
 
-			Treeable child = treeable;
+			Treeable node = treeable;
 			Treeable parent = treeable.getParentNode();
 			int cellHeight = list.getFixedCellHeight();
 
-			while( child != model.getVisibleRoot() && parent != null )
+			while( node != model.getVisibleRoot() && parent != null )
 			{
-				if( model.parentHasChildrenAfterNode(parent, child) )
+				if( model.parentHasChildrenAfterNode(parent, node) )
 				{
 					// draw the vertical line for under this parent
-					int width = rankWidthsMap.get(parent.getRankId());
-					g.drawLine(width+2*whitespace, 0, width+2*whitespace, cellHeight);
+					int width = getAnchorBoundsForRank(parent.getRankId()).second;
+					g.drawLine(width, 0, width, cellHeight);
 				}
 				
-				child = parent;
-				parent = child.getParentNode();
+				node = parent;
+				parent = node.getParentNode();
 			}
+		}
+		
+		private void drawOpenClosedIcon(Graphics g)
+		{
+			int cellHeight = list.getFixedCellHeight();
+			Pair<Integer,Integer> anchorBounds = getAnchorBoundsForRank(treeable.getRankId());
+			int anchorStartX = anchorBounds.getFirst();
+
+			// don't do anything for leaf nodes
+			if( treeable.getChildNodes().isEmpty() )
+			{
+				return;
+			}
+			
+			Icon openClose = null;
+			if( !model.allChildrenAreVisible(treeable) )
+			{
+				openClose = closed;
+			}
+			else
+			{
+				openClose = open;
+			}
+
+			// calculate offsets for icon
+			int iconWidth = openClose.getIconWidth();
+			int iconHeight = openClose.getIconHeight();
+			int widthDiff = anchorBounds.second - anchorBounds.first - iconWidth;
+			int heightDiff = cellHeight - iconHeight;
+			openClose.paintIcon(list,g,anchorStartX+(int)(.5*widthDiff),0+(int)(.5*heightDiff));
 		}
 		
 		private void drawNodeString(Graphics g)
@@ -306,24 +361,19 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 			int cellHeight = list.getFixedCellHeight();
 			String name = treeable.getName();
 			int baselineAdj = (int)(1.0/2.0*fm.getAscent() + 1.0/2.0*cellHeight);
-			int stringX = rankWidthsMap.get(treeable.getRankId()) + whitespace;
+			Pair<Integer,Integer> stringBounds = getTextBoundsForRank(treeable.getRankId());
+			int stringStartX = stringBounds.getFirst();
+			int stringEndX = stringBounds.getSecond();
+			int stringLength = stringEndX - stringStartX;
 			int stringY = baselineAdj;
-			int stringWidth = fm.stringWidth(name);
 			if( selected )
 			{
 				g2d.setColor(list.getSelectionBackground());
-				g2d.fillRoundRect(stringX-2, 1, stringWidth+4, cellHeight-2, 8, 8);
+				g2d.fillRoundRect(stringStartX-2, 1, stringLength+4, cellHeight-2, 8, 8);
 				g2d.setColor(list.getSelectionForeground());
 			}
 			
-			// TODO: replace this with something much more visually appealling
-			if( !treeable.getChildNodes().isEmpty() && !model.allChildrenAreVisible(treeable) )
-			{
-				g.drawString("+", stringX, stringY);
-			}
-			stringX += g.getFontMetrics().stringWidth("+");
-			
-			g.drawString(name, stringX, stringY);
+			g.drawString(name, stringStartX, stringY);
 		}
 	}
 	

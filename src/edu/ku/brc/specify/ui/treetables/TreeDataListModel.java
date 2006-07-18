@@ -106,12 +106,7 @@ public class TreeDataListModel extends AbstractListModel
 		}
 	}
 	
-	public void showAllNodes()
-	{
-		showDescendants(root);
-	}
-
-	protected void showDescendants( Treeable t )
+	public void showDescendants( Treeable t )
 	{
 		showChildren(t);
 		for( Treeable child: t.getChildNodes() )

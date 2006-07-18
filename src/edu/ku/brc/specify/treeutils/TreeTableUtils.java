@@ -501,7 +501,7 @@ public class TreeTableUtils
 		while( defItem.getParentItem() != null )
 		{
 			defItem = defItem.getParentItem();
-			if( defItem.getIsEnforced().booleanValue() == true )
+			if( defItem.getIsEnforced() != null && defItem.getIsEnforced().booleanValue() == true )
 			{
 				return defItem.getRankId();
 			}

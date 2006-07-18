@@ -72,7 +72,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	/** Tree widget container. */
 	protected JPanel treeListPanel;
 	/** Collection of all the buttons on the widget. */
-	protected List<AbstractButton> buttons;
+	protected List<AbstractButton> selectionSensativeButtons;
 	/** Status message display widget. */
 	protected JLabel statusBar;
 	/** Info message display widget. */
@@ -102,15 +102,13 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	
 	protected JButton viewSubtreeButton;
 	protected JButton showWholeTreeButton;
+	protected JButton showAllDescendantsButton;
 	
 	/** Implementation class of <code>Treeable</code> nodes. */
 	protected Class treeableClass;
 	
 	/** Collection of all nodes deleted by user that have not yet been deleted from persistent store (DB). */
 	protected SortedSet<Treeable> deletedNodes;
-	
-	/** Inidicator of unsaved changes in tree structure/contents. */
-	protected boolean unsavedChanges;
 	
     /** Logger for all messages emitted. */
     private static final Logger log = Logger.getLogger(TreeTableViewer.class);
@@ -135,7 +133,6 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		init(results);
 
 		deletedNodes = new TreeSet<Treeable>(new ReverseRankBasedComparator());
-		unsavedChanges = false;
 		
 		HibernateUtil.closeSession();
 	}
@@ -271,7 +268,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		listCellRenderer = new TreeDataListCellRenderer(list,listModel);
 		list.setCellRenderer(listCellRenderer);
 		list.addListSelectionListener(this);
-		listHeader = new TreeDataListHeader(list,listModel);
+		listHeader = new TreeDataListHeader(list,listModel,listCellRenderer);
 		
 		list.addMouseListener(new MouseAdapter()
 		{
@@ -351,65 +348,73 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	{
 		addNodeButton = new JButton("Add child");
 		addNodeButton.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent ae)
 				{
-					public void actionPerformed(ActionEvent ae)
-					{
-						addChildToSelectedNode();
-					}
-				});
+					addChildToSelectedNode();
+				}
+			});
 		
 		deleteNodeButton = new JButton("Delete node");
 		deleteNodeButton.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent ae)
 				{
-					public void actionPerformed(ActionEvent ae)
-					{
-						deleteSelectedNode();
-					}
-				});
+					deleteSelectedNode();
+				}
+			});
 		
 		editButton = new JButton("Edit node");
 		editButton.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent ae)
 				{
-					public void actionPerformed(ActionEvent ae)
-					{
-						editSelectedNode();
-					}
-				});
+					editSelectedNode();
+				}
+			});
 		
 		commitTreeButton = new JButton("Commit changes to DB");
 		commitTreeButton.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent ae)
 				{
-					public void actionPerformed(ActionEvent ae)
-					{
-						commitStructureToDb();
-					}
-				});
+					commitStructureToDb();
+				}
+			});
 
 		viewSubtreeButton = new JButton("Subtree");
 		viewSubtreeButton.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent ae)
 				{
-					public void actionPerformed(ActionEvent ae)
-					{
-						showSubtreeOfSelection();
-					}
-				});
+					showSubtreeOfSelection();
+				}
+			});
 
 		showWholeTreeButton = new JButton("View Whole Tree");
 		showWholeTreeButton.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent ae)
 				{
-					public void actionPerformed(ActionEvent ae)
-					{
-						showWholeTree();
-					}
-				});
+					showWholeTree();
+				}
+			});
 		
-		buttons = new Vector<AbstractButton>();
-		buttons.add(addNodeButton);
-		buttons.add(deleteNodeButton);
-		buttons.add(editButton);
-		buttons.add(commitTreeButton);
-		buttons.add(viewSubtreeButton);
-		buttons.add(showWholeTreeButton);
+		showAllDescendantsButton = new JButton("Show All Descendants");
+		showAllDescendantsButton.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent ae)
+				{
+					expandAllDescendantsOfSelection();
+				}
+			});
+		
+		selectionSensativeButtons = new Vector<AbstractButton>();
+		selectionSensativeButtons.add(addNodeButton);
+		selectionSensativeButtons.add(deleteNodeButton);
+		selectionSensativeButtons.add(editButton);
+		selectionSensativeButtons.add(viewSubtreeButton);
+		selectionSensativeButtons.add(showAllDescendantsButton);
 		
 		disableAllButtons();
 		commitTreeButton.setEnabled(true);
@@ -422,37 +427,32 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		buttonPanel.add(commitTreeButton);
 		buttonPanel.add(viewSubtreeButton);
 		buttonPanel.add(showWholeTreeButton);
+		buttonPanel.add(showAllDescendantsButton);
 	}
 	
 	/**
-	 * Disables all buttons in the button panel with the exception of
-	 * {@link #commitTreeButton} which is enabled or disabled based on the
-	 * value of {@link #unsavedChanges}.
+	 * Disables all selection sensative buttons in the button panel.
 	 */
 	protected void disableAllButtons()
 	{
-		for( AbstractButton b: buttons )
+		for( AbstractButton b: selectionSensativeButtons )
 		{
 			b.setEnabled(false);
 		}
-
-		commitTreeButton.setEnabled(unsavedChanges);
 	}
 	
 
 	/**
-	 * Enables all buttons in the button panel with the exception of
-	 * {@link #commitTreeButton} which is enabled or disabled based on the
-	 * value of {@link #unsavedChanges}.
+	 * Enables all selection sensative buttons in the button panel.
 	 */
 	protected void enableAllButtons()
 	{
-		for( AbstractButton b: buttons )
+		for( AbstractButton b: selectionSensativeButtons )
 		{
 			b.setEnabled(true);
 		}
 		
-		commitTreeButton.setEnabled(unsavedChanges);
+		showWholeTreeButton.setEnabled(true);
 	}
 
 
@@ -526,7 +526,6 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		String fullname = TreeTableUtils.getFullName(node);
 		node.setFullName(fullname);
 		
-		unsavedChanges = true;
 		commitTreeButton.setEnabled(true);
 	}
 	
@@ -660,7 +659,6 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	protected void editSelectedNodeOK(Treeable node)
 	{
 		log.info("User selected 'OK' from edit node dialog");
-		unsavedChanges = true;
 		commitTreeButton.setEnabled(true);
 		listModel.nodeValuesChanged(node);
 	}
@@ -701,7 +699,6 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		TreeTableUtils.fixNodeNumbersFromRoot(root);
 		
 		TreeTableUtils.saveTreeStructure(root,deletedNodes);
-		unsavedChanges = false;
 		commitTreeButton.setEnabled(false);
 		return true;
 	}
@@ -717,13 +714,34 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		Treeable node = (Treeable)selection;
 
 		listModel.setVisibleRoot(node);
+		
+		list.setSelectedValue(node,true);
 	}
 	
 	public void showWholeTree()
 	{
+		Object selection = list.getSelectedValue();		
+
 		listModel.setVisibleRoot(listModel.getRoot());
+		
+		if( selection != null )
+		{
+			list.setSelectedValue(selection,true);
+		}
 	}
 
+	public void expandAllDescendantsOfSelection()
+	{
+		Object selection = list.getSelectedValue();
+		if( selection == null )
+		{
+			return;
+		}
+		
+		Treeable node = (Treeable)selection;
+		listModel.showDescendants(node);
+	}
+	
 	/**
 	 * Display the form for editing node data.
 	 *
@@ -767,18 +785,12 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		if( t == null )
 		{
 			statusBar.setText(null);
-			deleteNodeButton.setEnabled(false);
-			editButton.setEnabled(false);
-			addNodeButton.setEnabled(false);
-			viewSubtreeButton.setEnabled(false);
+			disableAllButtons();
 			return;
 		}
 		
 		statusBar.setText(TreeTableUtils.getFullName(t));
-		deleteNodeButton.setEnabled(true);
-		editButton.setEnabled(true);
-		addNodeButton.setEnabled(true);
-		viewSubtreeButton.setEnabled(true);
+		enableAllButtons();
 	}
 
 	/**
@@ -809,7 +821,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		boolean changed = listModel.reparent(child,newParent);
 		if( changed )
 		{
-			unsavedChanges = true;
+			commitTreeButton.setEnabled(true);
 		}
 	}
 }

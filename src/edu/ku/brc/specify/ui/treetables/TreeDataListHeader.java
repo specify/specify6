@@ -3,12 +3,9 @@ package edu.ku.brc.specify.ui.treetables;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -19,6 +16,7 @@ import javax.swing.event.ListDataListener;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.ui.TreeDataJList;
+import edu.ku.brc.util.Pair;
 
 /**
  * A {@link JLabel} for displaying the names of columns of {@link TreeDataJList}s.
@@ -33,14 +31,8 @@ public class TreeDataListHeader extends JLabel implements Icon, ListDataListener
 	protected JList list;
 	/** The underlying data model for the list. */
 	protected TreeDataListModel model;
-	/** The width of the header label. */
-	protected int width;
-	/** The height of the header label. */
-	protected int height;
-	/** A mapping from the rank of the column to the number of leading pixels in front of its text label. */
-	protected SortedMap<Integer, Integer> rankToIconWidthMap;
-	/** Indicates if the most recent values in {@link #rankToIconWidthMap} are still valid. */
-	protected boolean sizeValid;
+	
+	protected TreeDataListCellRenderer listCellRenderer;
 	/** The label's text color. */
 	protected Color textColor;
 	
@@ -51,19 +43,20 @@ public class TreeDataListHeader extends JLabel implements Icon, ListDataListener
 	 * @param list the list
 	 * @param tdlm the list's underlying data model
 	 */
-	public TreeDataListHeader( JList list, TreeDataListModel tdlm )
+	public TreeDataListHeader( JList list, TreeDataListModel tdlm, TreeDataListCellRenderer listCellRenderer )
 	{
 		this.list = list;
+		this.model = tdlm;
+		this.listCellRenderer = listCellRenderer;
+		
+		model.addListDataListener(this);
+		
+		this.setIcon(this);
+		
 		if( list.getFont() != null )
 		{
 			this.setFont(list.getFont());
 		}
-		this.model = tdlm;
-		this.rankToIconWidthMap = new TreeMap<Integer, Integer>();
-		model.addListDataListener(this);
-		recalculateSize();
-		this.setIcon(this);
-		
 		this.setTextColor(list.getForeground());
 		this.setBackground(list.getBackground());
 	}
@@ -79,11 +72,6 @@ public class TreeDataListHeader extends JLabel implements Icon, ListDataListener
 	 */
 	public void paintIcon(Component c, Graphics g, int x, int y)
 	{
-		if( !sizeValid )
-		{
-			recalculateSize();
-		}
-
 		Graphics2D g2 = (Graphics2D)g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setColor(this.getBackground());
@@ -95,9 +83,10 @@ public class TreeDataListHeader extends JLabel implements Icon, ListDataListener
         for( Integer rank: model.getVisibleRanks() )
 		{
 			TreeDefinitionItemIface defItem = TreeTableUtils.getDefItemByRank(model.getTreeDef(), rank);
-			int xOffset = rankToIconWidthMap.get(rank);
 			g.setColor(textColor);
-			g.drawString(defItem.getName(), x+xOffset+5, y+getIconHeight()/2);
+			TreeDataListCellRenderer rend = (TreeDataListCellRenderer)list.getCellRenderer();
+			Pair<Integer,Integer> textBounds = rend.getTextBoundsForRank(rank); 
+			g.drawString(defItem.getName(),x+textBounds.first,y+getIconHeight()/2);
 		}
 	}
 
@@ -131,11 +120,7 @@ public class TreeDataListHeader extends JLabel implements Icon, ListDataListener
 	 */
 	public int getIconWidth()
 	{
-		if( !sizeValid )
-		{
-			recalculateSize();
-		}
-		return width;
+		return list.getWidth();
 	}
 
 	/**
@@ -146,102 +131,45 @@ public class TreeDataListHeader extends JLabel implements Icon, ListDataListener
 	 */
 	public int getIconHeight()
 	{
-		if( !sizeValid )
-		{
-			recalculateSize();
-		}
-		return height;
-	}
-
-	/**
-	 * Recalculates all size information from the data in the list's underlying model.
-	 */
-	protected void recalculateSize()
-	{
-		Graphics g = list.getGraphics();
-		if( g == null )
-		{
-			sizeValid = false;
-			return;
-		}
-		
-		FontMetrics fm = g.getFontMetrics();
-		if( fm == null )
-		{
-			sizeValid = false;
-			return;
-		}
-		int prevRanksWidths = 0;
-		for( Integer rank: model.getVisibleRanks() )
-		{
-			// the icon size should be equal to the sum of the lengths of the longest strings
-			// from each of the lower ranks
-			
-			rankToIconWidthMap.put(rank, prevRanksWidths);
-			
-			Integer longestStringLength = model.getLongestNamePixelLengthByRank(rank,fm,true);
-			if( longestStringLength != null )
-			{
-				int spacerWidth = g.getFontMetrics().stringWidth("XXX");
-				prevRanksWidths += longestStringLength.intValue() + spacerWidth;
-			}
-		}
-		
-		width = prevRanksWidths;
-		height = fm.getHeight()+50;
-		sizeValid = true;
-	}
-
-	/**
-	 * Invalidates the sizes and requests a recalculation of the size information.
-	 *
-	 * @see #invalidateRecalculateAndUpdate()
-	 * @see javax.swing.event.ListDataListener#intervalAdded(javax.swing.event.ListDataEvent)
-	 * @param e the triggering list date event
-	 */
-	public void intervalAdded(ListDataEvent e)
-	{
-		invalidateRecalculateAndUpdate();
-	}
-
-	/**
-	 * Invalidates the sizes and requests a recalculation of the size information.
-	 *
-	 * @see #invalidateRecalculateAndUpdate()
-	 * @see javax.swing.event.ListDataListener#intervalRemoved(javax.swing.event.ListDataEvent)
-	 * @param e the triggering list date event
-	 */
-	public void intervalRemoved(ListDataEvent e)
-	{
-		invalidateRecalculateAndUpdate();
-	}
-
-	/**
-	 * Invalidates the sizes and requests a recalculation of the size information.
-	 *
-	 * @see #invalidateRecalculateAndUpdate()
-	 * @see javax.swing.event.ListDataListener#contentsChanged(javax.swing.event.ListDataEvent)
-	 * @param e the triggering list date event
-	 */
-	public void contentsChanged(ListDataEvent e)
-	{
-		invalidateRecalculateAndUpdate();
-	}
-	
-	/**
-	 * Invalidates the sizes and requests a recalculation of the size information.
-	 * A call to {@link #repaint()} is then made.
-	 */
-	protected void invalidateRecalculateAndUpdate()
-	{
-		sizeValid=false;
-		recalculateSize();
-		this.repaint();
+		return list.getGraphics().getFontMetrics().getHeight()+50;
 	}
 
 	@Override
 	public Dimension getPreferredSize()
 	{
-		return new Dimension(list.getWidth(),height);
+		return new Dimension(list.getWidth(),list.getGraphics().getFontMetrics().getHeight()+50);
+	}
+
+	/**
+	 * Repaints the header.
+	 *
+	 * @see javax.swing.event.ListDataListener#contentsChanged(javax.swing.event.ListDataEvent)
+	 * @param e the triggering list data event
+	 */
+	public void contentsChanged(ListDataEvent e)
+	{
+		repaint();
+	}
+
+	/**
+	 * Repaints the header.
+	 *
+	 * @see javax.swing.event.ListDataListener#intervalAdded(javax.swing.event.ListDataEvent)
+	 * @param e the triggering list data event
+	 */
+	public void intervalAdded(ListDataEvent e)
+	{
+		repaint();
+	}
+
+	/**
+	 * Repaints the header.
+	 *
+	 * @see javax.swing.event.ListDataListener#intervalRemoved(javax.swing.event.ListDataEvent)
+	 * @param e the triggering list data event
+	 */
+	public void intervalRemoved(ListDataEvent e)
+	{
+		repaint();
 	}
 }
