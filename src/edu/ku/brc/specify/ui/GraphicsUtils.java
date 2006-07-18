@@ -166,4 +166,12 @@ public class GraphicsUtils
 	{
 		return (int) (len * Math.sin(dir));
 	}
+
+	public static void turnOnAntialiasedDrawing(Graphics g)
+	{
+		if(g instanceof Graphics2D)
+		{
+			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		}
+	}
 }
