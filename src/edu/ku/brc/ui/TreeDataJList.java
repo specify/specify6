@@ -236,7 +236,6 @@ public class TreeDataJList extends JList implements DragSourceListener,
 		}
 		Point dropPoint = dtde.getLocation();
 		int index = locationToIndex(dropPoint);
-		System.out.println("drop index is " + index);
 		boolean dropped = false;
 		try
 		{
@@ -247,16 +246,7 @@ public class TreeDataJList extends JList implements DragSourceListener,
 				return;
 			}
 			dtde.acceptDrop(DnDConstants.ACTION_MOVE);
-			System.out.println("accepted");
 
-			// move items - note that indicies for insert will
-			// change if [removed] source was before target
-			System.out.println("drop " + draggedIndex + " to " + index);
-			boolean sourceBeforeTarget = (draggedIndex < index);
-			System.out.println("source is" + (sourceBeforeTarget ? "" : " not")
-					+ " before target");
-			System.out.println("insert at "
-					+ (sourceBeforeTarget ? index - 1 : index));
 			Object draggedObj = getModel().getElementAt(draggedIndex);
 			Object dropObj = getModel().getElementAt(index);
 			dragDropCallback.dropOccurred(draggedObj,dropObj);
