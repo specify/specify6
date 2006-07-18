@@ -43,6 +43,7 @@ import com.jgoodies.forms.builder.ButtonBarBuilder;
 import edu.ku.brc.specify.core.NavBoxLayoutManager;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.specify.ui.UICacheManager;
 import edu.ku.brc.specify.ui.forms.MultiView;
 import edu.ku.brc.specify.ui.forms.ViewMgr;
@@ -164,7 +165,19 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
     {
     	ValComboBox cb = (ValComboBox)form.getCompById(DEF_ITEM_CB_ID);
     	DefaultComboBoxModel model = (DefaultComboBoxModel)cb.getModel();
-    	TreeDefinitionItemIface parentDefItem = dataObj.getParentNode().getDefItem();
+    	Treeable parent = dataObj.getParentNode();
+    	
+    	// if we are editing the root node, just put one def item in
+    	// the item selection box
+    	if( parent == null )
+    	{
+    		model.addElement(dataObj.getDefItem().getName());
+    		cb.setEnabled(false);
+    		form.setDataObj(dataObj);
+    		return;
+    	}
+    	
+    	TreeDefinitionItemIface parentDefItem = parent.getDefItem();
     	boolean done = false;
     	while( !done )
     	{
@@ -192,25 +205,27 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
 
     protected void setDefItemByName( Treeable node, String defItemName )
     {
-    	TreeDefinitionItemIface parentItem = node.getParentNode().getDefItem();
-    	boolean done = false;
-    	while( !done )
-    	{
-    		TreeDefinitionItemIface item = parentItem.getChildItem();
-    		if( item == null )
-    		{
-    			throw new RuntimeException("No def item by this name below parent's def item");
-    		}
-    		
-    		if( item.getName().equals(defItemName) )
-    		{
-    			node.setDefItem(item);
-    			node.setRankId(item.getRankId());
-    			done = true;
-    		}
-    		
-    		parentItem = item;
-    	}
+    	TreeDefinitionItemIface item = TreeTableUtils.getDefItemByName(node.getTreeDef(),defItemName);
+    	node.setDefItem(item);
+//    	TreeDefinitionItemIface parentItem = node.getParentNode().getDefItem();
+//    	boolean done = false;
+//    	while( !done )
+//    	{
+//    		TreeDefinitionItemIface item = parentItem.getChildItem();
+//    		if( item == null )
+//    		{
+//    			throw new RuntimeException("No def item by this name below parent's def item");
+//    		}
+//    		
+//    		if( item.getName().equals(defItemName) )
+//    		{
+//    			node.setDefItem(item);
+//    			node.setRankId(item.getRankId());
+//    			done = true;
+//    		}
+//    		
+//    		parentItem = item;
+//    	}
     }
 
     public void actionPerformed(ActionEvent e)
