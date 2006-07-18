@@ -10,11 +10,10 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.ListCellRenderer;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
@@ -24,10 +23,11 @@ import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.ui.TreeDataJList;
 
 @SuppressWarnings("serial")
-public class TreeDataListCellRenderer extends DefaultListCellRenderer implements ListDataListener
+public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListener
 {
 	protected TreeDataListModel model;
 	protected JList list;
+	protected TreeNodeUI nodeUI;
 	protected boolean lengthsValid;
 	protected SortedMap<Integer, Integer> rankWidthsMap;
 	
@@ -41,156 +41,33 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 	
 	protected Color bgs[];
 	
-	public TreeDataListCellRenderer( JList list, TreeDataListModel listModel )
+	public TreeDataListCellRenderer(JList list, TreeDataListModel listModel)
 	{
 		bgs = new Color[2];
 		bgs[0] = new Color(202,238,255);
 		bgs[1] = new Color(151,221,255);
 		
+		nodeUI = new TreeNodeUI(list,listModel);
+		
 		this.whitespace = 5;
 		this.list = list;
-		setModel(listModel);
+		model = listModel;
+		model.addListDataListener(this);
 		lengthsValid = false;
 		
 		rankWidthsMap = new TreeMap<Integer, Integer>();
 
 		open   = IconManager.getIcon("Down",    IconManager.IconSize.Std16);
 		closed = IconManager.getIcon("Forward", IconManager.IconSize.Std16);
-		
-		if(open==null)
-		{
-			open = new Icon()
-			{
-				public void paintIcon(Component c, Graphics g, int x, int y)
-				{
-					// draw a big minus sign
-					g.drawLine(x+2, y+7, x+14, y+7);
-					g.drawLine(x+2, y+8, x+14, y+8);
-				}
-
-				public int getIconWidth()
-				{
-					return 16;
-				}
-
-				public int getIconHeight()
-				{
-					return 16;
-				}
-			};
-		}
-		if(closed==null)
-		{
-			closed = new Icon()
-			{
-				public void paintIcon(Component c, Graphics g, int x, int y)
-				{
-					// draw a big plus sign
-					g.drawLine(x+2, y+7, x+14, y+7);
-					g.drawLine(x+2, y+8, x+14, y+8);
-					
-					g.drawLine(x+7, y+2, x+7, y+14);
-					g.drawLine(x+8, y+2, x+8, y+14);
-				}
-
-				public int getIconWidth()
-				{
-					return 16;
-				}
-
-				public int getIconHeight()
-				{
-					return 16;
-				}
-			};
-		}
 	}
 	
-	public void setList( JList list )
-	{
-		this.list = list;
-	}
-	
-	public JList getList()
-	{
-		return list;
-	}
-	
-	public void setModel( TreeDataListModel tdlm )
-	{
-		if( model != null )
-		{
-			model.removeListDataListener(this);
-		}
-		
-		model = tdlm;
-		if( model != null )
-		{
-			model.addListDataListener(this);
-		}
-	}
-	
-	/**
-	 * @return Returns the closed.
-	 */
-	public Icon getClosed()
-	{
-		return closed;
-	}
-
-	/**
-	 * @param closed The closed to set.
-	 */
-	public void setClosed(Icon closed)
-	{
-		this.closed = closed;
-	}
-
-	/**
-	 * @return Returns the open.
-	 */
-	public Icon getOpen()
-	{
-		return open;
-	}
-
-	/**
-	 * @param open The open to set.
-	 */
-	public void setOpen(Icon open)
-	{
-		this.open = open;
-	}
-
-	public int getWhitespace()
-	{
-		return whitespace;
-	}
-
-	public void setWhitespace(int whitespace)
-	{
-		this.whitespace = whitespace;
-	}
-
 	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
 	{
-		TreeDataJList treeList = (TreeDataJList)list;
-		if( lengthsValid == false )
-		{
-			recomputeLengthPerLevel(list.getGraphics());
-		}
-
-		JLabel l = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-		
-		Treeable st = (Treeable)value;
-		l.setText(st.getName());
-		
-		TreeNodeUI node = new TreeNodeUI(treeList,model,st,index,isSelected);
-		node.setOpaque(false);
-		node.setSize(list.getWidth(),list.getFixedCellHeight());
-		node.setForeground(l.getForeground());
-		node.setBackground(l.getBackground());
-		return node;
+		nodeUI.setTreeable((Treeable)value);
+		nodeUI.setSelected(isSelected);
+		nodeUI.setIndex(index);
+		nodeUI.setHasFocus(cellHasFocus);
+		return nodeUI;
 	}
 	
 	protected void recomputeLengthPerLevel( Graphics g )
@@ -216,35 +93,94 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 
 	public class TreeNodeUI extends JPanel
 	{
-		protected TreeDataJList list;
+		protected JList list;
 		protected TreeDataListModel model;
 		protected Treeable treeable;
 		protected int index;
 		protected boolean selected;
-		
-		public TreeNodeUI(TreeDataJList list, TreeDataListModel model, Treeable treeable, int index, boolean selected)
+		protected boolean hasFocus;
+
+		public TreeNodeUI(JList list, TreeDataListModel model)
 		{
 			this.list = list;
 			this.model = model;
-			this.treeable = treeable;
-			this.index = index;
-			this.selected = selected;
 			
 			if( list.getFont() != null )
 			{
 				this.setFont(list.getFont());
 			}
+			
+			setForeground(list.getForeground());
+			setBackground(list.getBackground());
+			setSize(list.getWidth(),list.getFixedCellHeight());
+			setOpaque(true);
 		}
 		
 		@Override
 		public Dimension getPreferredSize()
 		{
+			// ensure that the lengths are valid
+			if( !lengthsValid )
+			{
+				recomputeLengthPerLevel(list.getGraphics());
+			}
+
 			Graphics2D g2d = (Graphics2D)getGraphics();
 			String name = treeable.getName();
 			int stringX = rankWidthsMap.get(treeable.getRankId()) + whitespace;
 			int stringWidth = g2d.getFontMetrics().stringWidth(name);
 			
 			return new Dimension(stringX+stringWidth,list.getFixedCellHeight());
+		}
+		
+		/**
+		 * Sets the index.
+		 *
+		 * @param index the index
+		 */
+		public void setIndex(int index)
+		{
+			this.index = index;
+		}
+
+		/**
+		 * Sets the list.
+		 *
+		 * @param list the list
+		 */
+		public void setList(TreeDataJList list)
+		{
+			this.list = list;
+		}
+
+		/**
+		 * Sets the selected.
+		 *
+		 * @param selected the value
+		 */
+		public void setSelected(boolean selected)
+		{
+			this.selected = selected;
+		}
+
+		/**
+		 * Sets the treeable.
+		 *
+		 * @param treeable the treeable
+		 */
+		public void setTreeable(Treeable treeable)
+		{
+			this.treeable = treeable;
+		}
+
+		/**
+		 * Sets the hasFocus.
+		 *
+		 * @param hasFocus the value
+		 */
+		public void setHasFocus(boolean hasFocus)
+		{
+			this.hasFocus = hasFocus;
 		}
 
 		@Override
