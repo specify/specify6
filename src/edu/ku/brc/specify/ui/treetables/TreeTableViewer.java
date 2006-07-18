@@ -19,7 +19,6 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
@@ -798,7 +797,16 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 			return;
 		}
 		
-		boolean changed = listModel.reparent((Treeable)dragged,(Treeable)droppedOn);
+		Treeable child = (Treeable)dragged;
+		Treeable newParent = (Treeable)droppedOn;
+		
+		if( !TreeTableUtils.canChildBeReparentedToNode(child,newParent) )
+		{
+			log.info("Cannot reparent " + child.getName() + " to " + newParent.getName());
+			return;
+		}
+		
+		boolean changed = listModel.reparent(child,newParent);
 		if( changed )
 		{
 			unsavedChanges = true;

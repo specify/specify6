@@ -1,11 +1,11 @@
 package edu.ku.brc.specify.ui.treetables;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -19,6 +19,7 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.ui.GraphicsUtils;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.ui.TreeDataJList;
 
@@ -38,8 +39,14 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 	
 	protected Treeable currentTreeable;
 	
+	protected Color bgs[];
+	
 	public TreeDataListCellRenderer( JList list, TreeDataListModel listModel )
 	{
+		bgs = new Color[2];
+		bgs[0] = new Color(202,238,255);
+		bgs[1] = new Color(151,221,255);
+		
 		this.whitespace = 5;
 		this.list = list;
 		setModel(listModel);
@@ -199,7 +206,8 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 			Integer longestStringLength = model.getLongestNamePixelLengthByRank(rank,g.getFontMetrics(),true);
 			if( longestStringLength != null )
 			{
-				prevRanksWidths += longestStringLength.intValue() + 32;
+				int spacerWidth = g.getFontMetrics().stringWidth("XXX");
+				prevRanksWidths += longestStringLength.intValue() + spacerWidth;
 			}
 		}
 		
@@ -238,7 +246,6 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 			
 			return new Dimension(stringX+stringWidth,list.getFixedCellHeight());
 		}
-		
 
 		@Override
 		protected void paintComponent(Graphics g)
@@ -249,23 +256,61 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 				recomputeLengthPerLevel(list.getGraphics());
 			}
 			
-			Graphics2D g2d = (Graphics2D)g;
-			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g2d.setColor(list.getForeground());
+			GraphicsUtils.turnOnAntialiasedDrawing(g);
+			g.setColor(list.getForeground());
 			
+			// draw the alternating color background
+			drawBackgroundColors(g);
+			
+			drawNodeAnchors(g);
+			
+			// draw the downward lines from ancestors to descendants renderered below this node
+			drawTreeLinesToLowerNodes(g);
+			
+			// draw the string name of the node
+			drawNodeString(g);
+		}
+		
+		private void drawBackgroundColors(Graphics g)
+		{
+			Color orig = g.getColor();
 			int cellHeight = list.getFixedCellHeight();
-			FontMetrics fm = g.getFontMetrics();
-			int baselineAdj = (int)(1.0/2.0*fm.getAscent() + 1.0/2.0*cellHeight);
-			int midCell = cellHeight/2;
+
+			SortedSet<Integer> visibleRanks = model.getVisibleRanks();
+			int i = 0;
+			Integer prevRank = null;
+			for( Integer rank: visibleRanks )
+			{
+				if( prevRank == null )
+				{
+					prevRank = rank;
+					continue;
+				}
+				
+				int startX = rankWidthsMap.get(prevRank);
+				int endX = rankWidthsMap.get(rank);
+				
+				g.setColor(bgs[i]);
+				g.fillRect(startX,0,endX,cellHeight);
+				++i;
+				i%=2;
+				prevRank = rank;
+			}
 			
-			// TODO: draw the alternating color background
-			// use index%2 for this
+			g.setColor(bgs[i]);
+			int startX = rankWidthsMap.get(prevRank);
+			g.fillRect(startX,0,list.getWidth(),cellHeight);
 			
-			// determine if this node has more peer nodes below it
-			// if not, draw an L-shape
-			// if so, draw a T-shape
+			g.setColor(orig);
+		}
+		
+		private void drawNodeAnchors(Graphics g)
+		{
 			Treeable child = treeable;
 			Treeable parent = treeable.getParentNode();
+			int cellHeight = list.getFixedCellHeight();
+			int midCell = cellHeight/2;
+
 			if( child != model.getVisibleRoot() && parent != null )
 			{
 				Integer parentRankId = parent.getRankId();
@@ -292,8 +337,18 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 					g.drawLine(parentWidth+2*whitespace, midCell, childWidth, midCell);
 				}
 			}
-			
-			// draw the downward lines from ancestors to descendants renderered below this node
+		}
+		
+		private void drawTreeLinesToLowerNodes(Graphics g)
+		{
+			// determine if this node has more peer nodes below it
+			// if not, draw an L-shape
+			// if so, draw a T-shape
+
+			Treeable child = treeable;
+			Treeable parent = treeable.getParentNode();
+			int cellHeight = list.getFixedCellHeight();
+
 			while( child != model.getVisibleRoot() && parent != null )
 			{
 				if( model.parentHasChildrenAfterNode(parent, child) )
@@ -306,9 +361,15 @@ public class TreeDataListCellRenderer extends DefaultListCellRenderer implements
 				child = parent;
 				parent = child.getParentNode();
 			}
-			
-			// draw the string name of the node
+		}
+		
+		private void drawNodeString(Graphics g)
+		{
+			Graphics2D g2d = (Graphics2D)g;
+			FontMetrics fm = g.getFontMetrics();
+			int cellHeight = list.getFixedCellHeight();
 			String name = treeable.getName();
+			int baselineAdj = (int)(1.0/2.0*fm.getAscent() + 1.0/2.0*cellHeight);
 			int stringX = rankWidthsMap.get(treeable.getRankId()) + whitespace;
 			int stringY = baselineAdj;
 			int stringWidth = fm.stringWidth(name);
