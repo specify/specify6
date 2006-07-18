@@ -182,7 +182,8 @@ public class TreeDataListHeader extends JLabel implements Icon, ListDataListener
 			Integer longestStringLength = model.getLongestNamePixelLengthByRank(rank,fm,true);
 			if( longestStringLength != null )
 			{
-				prevRanksWidths += longestStringLength.intValue() + 32;
+				int spacerWidth = g.getFontMetrics().stringWidth("XXX");
+				prevRanksWidths += longestStringLength.intValue() + spacerWidth;
 			}
 		}
 		
