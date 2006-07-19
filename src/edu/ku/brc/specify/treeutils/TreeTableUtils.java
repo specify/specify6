@@ -833,4 +833,15 @@ public class TreeTableUtils
 		HibernateUtil.closeSession();
 		return results;
 	}
+
+	public static void fixAllDescendantFullNames(Treeable node)
+	{
+    	log.info("Updating full names for this node and all descendants");
+    	log.info("TODO: optomize this implementation if possible");
+		node.setFullName(getFullName(node));
+		for( Treeable child: getChildNodes(node) )
+		{
+			fixAllDescendantFullNames(child);
+		}
+	}
 }
