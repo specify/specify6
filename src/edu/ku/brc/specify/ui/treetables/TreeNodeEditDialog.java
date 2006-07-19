@@ -86,7 +86,8 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
     protected JPanel         contentPanel;
     
     protected TreeNodeDialogCallback callback;
-
+    
+    protected String initialName;
 
     /**
      * Constructs a {@link Treeable} node edit dialog from form info
@@ -163,6 +164,8 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
      */
     public void setData(final Treeable dataObj)
     {
+    	initialName = dataObj.getName();
+    	
     	ValComboBox cb = (ValComboBox)form.getCompById(DEF_ITEM_CB_ID);
     	DefaultComboBoxModel model = (DefaultComboBoxModel)cb.getModel();
     	Treeable parent = dataObj.getParentNode();
@@ -207,25 +210,6 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
     {
     	TreeDefinitionItemIface item = TreeTableUtils.getDefItemByName(node.getTreeDef(),defItemName);
     	node.setDefItem(item);
-//    	TreeDefinitionItemIface parentItem = node.getParentNode().getDefItem();
-//    	boolean done = false;
-//    	while( !done )
-//    	{
-//    		TreeDefinitionItemIface item = parentItem.getChildItem();
-//    		if( item == null )
-//    		{
-//    			throw new RuntimeException("No def item by this name below parent's def item");
-//    		}
-//    		
-//    		if( item.getName().equals(defItemName) )
-//    		{
-//    			node.setDefItem(item);
-//    			node.setRankId(item.getRankId());
-//    			done = true;
-//    		}
-//    		
-//    		parentItem = item;
-//    	}
     }
 
     public void actionPerformed(ActionEvent e)
@@ -248,9 +232,15 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
         setVisible(false);
         
         form.getDataFromUI();
+        
         ValComboBox cb = (ValComboBox)form.getCompById(DEF_ITEM_CB_ID);
         String defItemName = (String)cb.getValue();
         Treeable node = (Treeable)form.getDataObj();
+        
+        if( !node.getName().equals(initialName) )
+        {
+        	TreeTableUtils.fixAllDescendantFullNames(node);
+        }
         setDefItemByName(node, defItemName);
         callback.editCompleted(node);
     }
