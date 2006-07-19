@@ -8,12 +8,19 @@ import java.util.Vector;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
+import org.hibernate.LockMode;
 import org.hibernate.Session;
 
 import edu.ku.brc.specify.datamodel.Geography;
+import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
+import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.Location;
+import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -265,6 +272,7 @@ public class TreeTableUtils
 		return null;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static TreeDefinitionItemIface getDefItemByName( TreeDefinitionIface treeDef, String name )
 	{
 		Set<TreeDefinitionItemIface> defItems = (Set<TreeDefinitionItemIface>)treeDef.getTreeDefItems();
@@ -441,7 +449,7 @@ public class TreeTableUtils
 	{
 		boolean deletable = true;
 		
-		for( Treeable child: parent.getChildNodes() )
+		for( Treeable child: getChildNodes(parent) )
 		{
 			if( !canBeDeleted(child) )
 			{
@@ -573,7 +581,7 @@ public class TreeTableUtils
 	public static int fixNodeNumbersFromRoot( Treeable root )
 	{
 		int nextNodeNumber = root.getNodeNumber();
-		for( Treeable child: root.getChildNodes() )
+		for( Treeable child: getChildNodes(root) )
 		{
 			child.setNodeNumber(++nextNodeNumber);
 			nextNodeNumber = fixNodeNumbersFromRoot(child);
@@ -592,7 +600,7 @@ public class TreeTableUtils
 	public static void fixFullNames( Treeable node )
 	{
 		node.setFullName(getFullName(node));
-		for( Treeable child: node.getChildNodes() )
+		for( Treeable child: getChildNodes(node) )
 		{
 			fixFullNames(child);
 		}
@@ -627,7 +635,7 @@ public class TreeTableUtils
 	{
 		start.getParentNode().removeChild(start);
 
-		for( Treeable child: start.getChildNodes() )
+		for( Treeable child: getChildNodes(start) )
 		{
 			recursivelyDeleteNodes(child);
 		}
@@ -645,7 +653,7 @@ public class TreeTableUtils
 	public static int getDescendantCount( Treeable node )
 	{
 		int totalDescendants = 0;
-		for( Treeable child: node.getChildNodes() )
+		for( Treeable child: getChildNodes(node) )
 		{
 			totalDescendants += 1 + getDescendantCount(child);
 		}
@@ -702,7 +710,7 @@ public class TreeTableUtils
 	 */
 	private static void saveOrUpdateDescendants( Treeable node, Session session )
 	{
-		for( Treeable child: node.getChildNodes() )
+		for( Treeable child: getChildNodes(node) )
 		{
 			session.saveOrUpdate(child);
 			saveOrUpdateDescendants(child, session);
@@ -719,7 +727,7 @@ public class TreeTableUtils
 	public static List<Treeable> getAllDescendants(Treeable node)
 	{
 		Vector<Treeable> descendants = new Vector<Treeable>();
-		for( Treeable child: node.getChildNodes() )
+		for( Treeable child: getChildNodes(node) )
 		{
 			descendants.add(child);
 			descendants.addAll(getAllDescendants(child));
@@ -764,5 +772,65 @@ public class TreeTableUtils
 		log.info("update this implementation");
 		String user = System.getProperty("user.name");
 		node.setLastEditedBy(user);
+	}
+
+	public static Set<Treeable> getChildNodes(Treeable node)
+	{
+		//HibernateUtil.getCurrentSession().lock(node,LockMode.NONE);		
+		Set<Treeable> children = node.getChildNodes();
+		//children.size();
+		//HibernateUtil.closeSession();
+		return children;
+	}
+	
+	public static Class getNodeClassForTreeDef( TreeDefinitionIface treeDef )
+	{
+		if( treeDef.getClass().equals(TaxonTreeDef.class) )
+		{
+			return Taxon.class;
+		}
+		else if( treeDef.getClass().equals(GeographyTreeDef.class) )
+		{
+			return Geography.class;
+		}
+		else if( treeDef.getClass().equals(GeologicTimePeriodTreeDef.class) )
+		{
+			return GeologicTimePeriod.class;
+		}
+		else if( treeDef.getClass().equals(LocationTreeDef.class) )
+		{
+			return Location.class;
+		}
+		else
+		{
+			return null;
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static Treeable getRootNodeOfTree(TreeDefinitionIface treeDef)
+	{
+		Session s = HibernateUtil.getCurrentSession();
+		s.lock(treeDef,LockMode.NONE);
+		
+		Set<TreeDefinitionItemIface> defItems = (Set<TreeDefinitionItemIface>)treeDef.getTreeDefItems();
+		TreeDefinitionItemIface item = defItems.iterator().next();
+		while(item.getParentItem() != null)
+		{
+			item = item.getParentItem();
+		}
+		Treeable root = (Treeable)item.getTreeEntries().iterator().next();
+		
+		HibernateUtil.closeSession();
+		return root;
+	}
+
+	public static List loadAllDefsByClass(Class treeDefClass)
+	{
+		Session session = HibernateUtil.getCurrentSession();
+		Criteria c = session.createCriteria(treeDefClass);
+		List results = c.list();
+		HibernateUtil.closeSession();
+		return results;
 	}
 }
