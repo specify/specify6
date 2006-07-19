@@ -18,6 +18,7 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.specify.ui.GraphicsUtils;
 import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.ui.TreeDataJList;
@@ -215,6 +216,7 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 		public void setTreeable(Treeable treeable)
 		{
 			this.treeable = treeable;
+			this.setToolTipText(treeable.getFullName());
 		}
 
 		/**
@@ -331,7 +333,7 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 			int anchorStartX = anchorBounds.getFirst();
 
 			// don't do anything for leaf nodes
-			if( treeable.getChildNodes().isEmpty() )
+			if( TreeTableUtils.getChildNodes(treeable).isEmpty() )
 			{
 				return;
 			}
