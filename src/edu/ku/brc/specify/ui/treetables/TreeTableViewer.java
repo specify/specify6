@@ -17,6 +17,7 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+//import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -42,6 +43,8 @@ import edu.ku.brc.specify.treeutils.ReverseRankBasedComparator;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.specify.ui.IconManager;
+//import edu.ku.brc.specify.ui.UICacheManager;
+//import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
 import edu.ku.brc.specify.ui.treetables.TreeNodeEditDialog.TreeNodeDialogCallback;
 import edu.ku.brc.ui.DragDropCallback;
 import edu.ku.brc.ui.TreeDataJList;
@@ -60,9 +63,6 @@ import edu.ku.brc.util.Pair;
 @SuppressWarnings("serial")
 public class TreeTableViewer extends BaseSubPane implements ListSelectionListener, DragDropCallback
 {
-	/** The top-level UI component. */
-	protected JPanel uiComp;
-
 	/** North section container. */
 	protected JPanel northPanel;
 	/** South section container. */
@@ -110,6 +110,9 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	/** Collection of all nodes deleted by user that have not yet been deleted from persistent store (DB). */
 	protected SortedSet<Treeable> deletedNodes;
 	
+//	protected boolean busy;
+//	protected BusyComponentGlassPane glassPane;
+	
     /** Logger for all messages emitted. */
     private static final Logger log = Logger.getLogger(TreeTableViewer.class);
 
@@ -134,6 +137,11 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 
 		deletedNodes = new TreeSet<Treeable>(new ReverseRankBasedComparator());
 		
+//		busy = false;
+//		glassPane = new BusyComponentGlassPane(this,viewSubtreeButton);
+//		JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
+//		topFrame.setGlassPane(glassPane);
+
 		HibernateUtil.closeSession();
 	}
 	
@@ -144,19 +152,18 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	 */
 	protected void init( List<TreeDefinitionIface> definitions )
 	{
-		this.uiComp = new JPanel();
-		uiComp.setLayout(new BorderLayout());
+		this.setLayout(new BorderLayout());
 
 		messageLabel = new JLabel("Select a tree in the combobox above");
-		uiComp.add(messageLabel,BorderLayout.CENTER);
+		this.add(messageLabel,BorderLayout.CENTER);
 		
 		southPanel = new JPanel();
 		southPanel.setLayout(new BorderLayout());
-		uiComp.add(southPanel,BorderLayout.SOUTH);
+		this.add(southPanel,BorderLayout.SOUTH);
 
 		northPanel = new JPanel();
 		northPanel.setLayout(new BorderLayout());
-		uiComp.add(northPanel,BorderLayout.NORTH);
+		this.add(northPanel,BorderLayout.NORTH);
 		
 		Vector<Object> defs = new Vector<Object>(definitions);
 		defs.add(0, "Choose a tree definition");
@@ -173,8 +180,8 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 					
 					messageLabel.setText("Please wait while the tree is prepared");
 					messageLabel.setIcon(null);
-					uiComp.add(messageLabel);
-					uiComp.repaint();
+					add(messageLabel);
+					repaint();
 					
 					initTreeList(treeDef);
 				}
@@ -293,9 +300,9 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		
 		treeListPanel.add(headerScroll, BorderLayout.NORTH);
 
-		uiComp.remove(messageLabel);
-		uiComp.add(treeListPanel, BorderLayout.CENTER);
-		uiComp.repaint();
+		this.remove(messageLabel);
+		this.add(treeListPanel, BorderLayout.CENTER);
+		this.repaint();
 		
 		list.repaint();
 		treeListPanel.repaint();
@@ -314,8 +321,8 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		
 		messageLabel.setText(failureMessage);
 		messageLabel.setIcon(errorIcon);
-		uiComp.add(messageLabel);
-		uiComp.repaint();
+		this.add(messageLabel);
+		this.repaint();
 		return;
 	}
 	
@@ -716,6 +723,8 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		listModel.setVisibleRoot(node);
 		
 		list.setSelectedValue(node,true);
+		
+//		glassPane.setBusy(!glassPane.isBusy());
 	}
 	
 	public void showWholeTree()
@@ -769,8 +778,9 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	 */
 	public JComponent getUIComponent()
 	{
-		return uiComp;
+		return this;
 	}
+
 
 	/**
 	 * Updates the status bar text to display the full name of the currently
