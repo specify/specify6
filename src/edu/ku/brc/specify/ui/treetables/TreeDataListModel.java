@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.dbsupport.HibernateUtil;
+//import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.util.Pair;
@@ -70,7 +70,7 @@ public class TreeDataListModel extends AbstractListModel
 			return false;
 		}
 		
-		for(Treeable child: t.getChildNodes())
+		for(Treeable child: TreeTableUtils.getChildNodes(t))
 		{
 			if(!visibleNodes.contains(child))
 			{
@@ -109,7 +109,7 @@ public class TreeDataListModel extends AbstractListModel
 	public void showDescendants( Treeable t )
 	{
 		showChildren(t);
-		for( Treeable child: t.getChildNodes() )
+		for( Treeable child: TreeTableUtils.getChildNodes(t) )
 		{
 			showDescendants(child);
 		}
@@ -122,7 +122,7 @@ public class TreeDataListModel extends AbstractListModel
 			return;
 		}
 		
-		for( Treeable child: t.getChildNodes() )
+		for( Treeable child: TreeTableUtils.getChildNodes(t) )
 		{
 			setNodeVisible(child,true);
 		}
@@ -135,7 +135,7 @@ public class TreeDataListModel extends AbstractListModel
 			return;
 		}
 		
-		for( Treeable child: t.getChildNodes() )
+		for( Treeable child: TreeTableUtils.getChildNodes(t) )
 		{
 			setNodeVisible(child, false);
 		}
@@ -274,7 +274,7 @@ public class TreeDataListModel extends AbstractListModel
 		{
 			childrenWereShowing.put(t, true);
 			
-			for( Treeable child: t.getChildNodes() )
+			for( Treeable child: TreeTableUtils.getChildNodes(t) )
 			{
 				makeNodeInvisible(child);
 			}
@@ -455,9 +455,8 @@ public class TreeDataListModel extends AbstractListModel
 
 	public void addChild( Treeable child, Treeable parent )
 	{
-		HibernateUtil.attach(parent, HibernateUtil.getCurrentSession());
-		parent.addChild(child);
-		HibernateUtil.closeSession();
+		TreeTableUtils.getChildNodes(parent).add(child);
+		child.setParentNode(parent);
 		showChildren(parent);
 	}
 
