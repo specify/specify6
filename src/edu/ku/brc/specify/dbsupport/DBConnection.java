@@ -40,8 +40,10 @@ public class DBConnection
     protected String dbUsername;
     protected String dbPassword;
     protected String dbDriver;
-    protected String dbServer;
+    protected String dbProtocol;
     protected String dbName;
+    
+    protected String dbConnectionStr;
     
     protected String errMsg = "";
     
@@ -77,8 +79,8 @@ public class DBConnection
         {
             Class.forName(dbDriver); // load driver
             
-            log.debug("["+dbServer+dbName+"]["+dbUsername+"]["+dbPassword+"]");
-            con = DriverManager.getConnection(dbServer+dbName, dbUsername, dbPassword);
+            log.debug("["+dbConnectionStr+"]["+dbDriver+"]["+dbProtocol+"]["+dbUsername+"]["+dbPassword+"]");
+            con = DriverManager.getConnection(dbConnectionStr, dbUsername, dbPassword);
             
         } catch (Exception ex)
         {
@@ -129,17 +131,22 @@ public class DBConnection
     }
     
     /**
-     * Sets the dbServer name 
-     * @param dbDriver the dbServer name
+     * Sets the protocol string
+     * @param dbProtocol the protocol
      */
-    public void setServer(final String dbServer)
+    public void setProtocol(String dbProtocol)
     {
-        this.dbServer = dbServer;
-        
-        if (!instance.dbServer.endsWith("/"))
-        {
-            instance.dbServer += "/";
-        }
+        this.dbProtocol = dbProtocol;
+    }
+
+    /**
+     * Sets the fully specified path to connect to the database
+     * i.e. jdbc:mysql://localhost/fish<br>Some databases may need to construct their fully specified path.
+     * @param dbConnectionStr the full connection string
+     */
+    public void setConnectionStr(final String dbConnectionStr)
+    {
+        this.dbConnectionStr = dbConnectionStr;
     }
     
     public String getDriver()
@@ -147,28 +154,54 @@ public class DBConnection
         return dbDriver;
     }
 
-    public String getServer()
+    /**
+     * Gets the fully specified path to connect to the database
+     * i.e. jdbc:mysql://localhost/fish<br>Some databases may need to construct their fully specified path.
+     * @return the full connection string
+     */
+    public String getConnectionStr()
     {
-        return dbServer;
+        return dbConnectionStr;
     }
 
+    /**
+     * Returns the Database Name.
+     * @return the Database Name.
+     */
     public String getDatabaseName()
     {
         return dbName;
     }
 
+    /**
+     * Returns the Password.
+     * @return the Password.
+     */
     public String getPassword()
     {
         return dbPassword;
     }
 
+    /**
+     * Returns the USe Name.
+     * @return the USe Name.
+     */
     public String getUserName()
     {
         return dbUsername;
     }
     
     /**
-     * Returns a new connection to the database/. It uses the database name, driver, username and password to connect
+     * Returns the Protocol.
+     * @return the Protocol.
+     */
+    public String getProtocol()
+    {
+        return dbProtocol;
+    }
+
+    /**
+     * Returns a new connection to the database. 
      * @return the JDBC connection to the database
      */
     public static Connection getConnection()
@@ -177,15 +210,16 @@ public class DBConnection
     }
     
     /**
+     * Create a new instance.
      * @param dbDriver the driver name
-     * @param dbServer the dbServer url
+     * @param dbConnectionStr the full connection string
      * @param dbName the database name (just the name)
      * @param dbUsername the username
      * @param dbPassword the password
      * @return a new instance of a DBConnection
      */
     public static DBConnection createInstance(final String dbDriver, 
-                                              final String dbServer, 
+                                              final String dbConnectionStr, 
                                               final String dbName, 
                                               final String dbUsername, 
                                               final String dbPassword)
@@ -193,7 +227,7 @@ public class DBConnection
         DBConnection dbConnection = new DBConnection();
         
         dbConnection.setDriver(dbDriver);
-        dbConnection.setServer(dbServer);
+        dbConnection.setConnectionStr(dbConnectionStr);
         dbConnection.setDatabaseName(dbName);
         dbConnection.setUsernamePassword(dbUsername, dbPassword);
         
