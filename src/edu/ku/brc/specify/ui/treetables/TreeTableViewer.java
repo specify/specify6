@@ -710,6 +710,10 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		return true;
 	}
 	
+	/**
+	 * Sets the visibleRoot property of the tree to the currently selected node.  This provides
+	 * the ability to "zoom in" to a lower level of the tree.
+	 */
 	public void showSubtreeOfSelection()
 	{
 		Object selection = list.getSelectedValue();
@@ -727,6 +731,10 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 //		glassPane.setBusy(!glassPane.isBusy());
 	}
 	
+	/**
+	 * Sets the visibleRoot property to the actual root of the tree.  This results in the 
+	 * entire tree being made available to the user.
+	 */
 	public void showWholeTree()
 	{
 		Object selection = list.getSelectedValue();		
@@ -739,6 +747,9 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		}
 	}
 
+	/** 
+	 * Expands all of the nodes below the currently selected node.
+	 */
 	public void expandAllDescendantsOfSelection()
 	{
 		Object selection = list.getSelectedValue();
