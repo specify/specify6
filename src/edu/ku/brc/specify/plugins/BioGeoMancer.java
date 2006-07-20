@@ -75,7 +75,6 @@ import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.extras.BGMRecordTableModel;
 import edu.ku.brc.specify.extras.BioGeoMancerMapper;
-import edu.ku.brc.specify.extras.FishBaseInfoGetter;
 import edu.ku.brc.specify.extras.SwingWorker;
 import edu.ku.brc.specify.extras.BioGeoMancerMapper.MapperListener;
 import edu.ku.brc.specify.helpers.UIHelper;
@@ -88,7 +87,7 @@ import edu.ku.brc.specify.ui.IconManager;
 import edu.ku.brc.specify.ui.UIPluginable;
 
 /**
- * BioGeoMancer plugin For SPNHC Demo
+ * BioGeoMancer plugin For SPNHC Demo.
  *
  * @author rods
  *
@@ -118,7 +117,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
     protected BioGeoMancerMapper bioGeoMancerMapper = new BioGeoMancerMapper();
 
     /**
-     *
+     * Constructor.
      */
     public BioGeoMancer()
     {
@@ -126,14 +125,13 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
 
 
     /**
-     * Creates a Dialog (non-modl) that will display detail information
+     * Creates a Dialog (non-modl) that will display detail information.
      * for the object in the text field.
+     * @param domStr DOM String to be parsed
      */
     protected void createInfoFrame(final String domStr)
     {
-        //String species = taxon.getName();
-        //String genus   = taxon.getParent().getName();
-
+ 
         try
         {
             frame = new JFrame();
@@ -169,6 +167,10 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
         longitude.requestFocus();
     }
 
+    /**
+     * Called when data retrieval is complete.
+     * @param dom null when in error, not null when data was returned
+     */
     protected void setDataIntoframe(final Element dom)
     {
         SwingUtilities.invokeLater(new Runnable() {
@@ -186,13 +188,14 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
     //-- Utility Methods
     //--------------------------------------------------------
 
-   /**
-     * @param id
-     * @param country
-     * @param adm1
-     * @param adm2
-     * @param locality
-     * @return
+    /**
+     * Sends request to BioGeoMancer.
+     * @param id id
+     * @param country country
+     * @param adm1 country
+     * @param adm2 adm2
+     * @param locality locality
+     * @return always returns null
      */
     public String getBioGeoMancerResponse(final String id,
                                           final String country,
@@ -210,8 +213,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
         try
         {
             HttpClient httpClient = new HttpClient();
-            PostMethod postMethod = new PostMethod(
-                "http://130.132.27.130/cgi-bin/bgm-0.2/batch_test.pl");
+            PostMethod postMethod = new PostMethod("http://130.132.27.130/cgi-bin/bgm-0.2/batch_test.pl");
             StringBuilder strBuf = new StringBuilder(128);
             strBuf.append("\""+ id + "\",");
             strBuf.append("\""+ country + "\",");
@@ -251,9 +253,10 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
     }
 
     /**
-     * @param element
-     * @param name
-     * @return
+     * Process the DOM element.
+     * @param element element
+     * @param name element
+     * @return the data
      */
     protected String getData(final Element element, final String name)
     {
@@ -269,6 +272,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
                 return data.substring(inx+1, einx);
             }
             return data;
+            
         } else
         {
             System.out.println("****** ["+name+"] was not found.");
@@ -277,9 +281,10 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
     }
 
     /**
-     * @param element
-     * @param name
-     * @return
+     * Create data label.
+     * @param element element
+     * @param name name
+     * @return a JComponent
      */
     protected JComponent createDataLabel(final Element element, final String name)
     {
@@ -343,8 +348,9 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
 
 
     /**
-     * @param root
-     * @return
+     * Processes the document that was returned.
+     * @param root the root DOM node of the document
+     * @return a panel with the results
      */
     public JPanel processBGMDOM(Element root)
     {
@@ -498,7 +504,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
     }
 
     /**
-     * Calculates and sets the each column to it preferred size
+     * Calculates and sets the each column to it preferred size.
      * @param table the table to fix ups
      */
     public static void calcColumnWidths(JTable table)
@@ -575,31 +581,13 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
     }
 
 
-
-    //--------------------------------------------------------
-    //-- FishBaseInfoGetterListener
-    //--------------------------------------------------------
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.extras.FishBaseInfoGetterListener#infoArrived(edu.ku.brc.specify.extras.FishBaseInfoGetter)
-     */
-    public void infoArrived(FishBaseInfoGetter getter)
-    {
-        setDataIntoframe(getter.getDom());
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.extras.FishBaseInfoGetterListener#infoGetWasInError(edu.ku.brc.specify.extras.FishBaseInfoGetter)
-     */
-    public void infoGetWasInError(FishBaseInfoGetter getter)
-    {
-        setDataIntoframe(null);
-    }
-
     //--------------------------------------------------------
     //-- UIPluginable
     //--------------------------------------------------------
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.UIPluginable#initialize(java.util.Map)
+     */
     public void initialize(Map<String, String> properties)
     {
 

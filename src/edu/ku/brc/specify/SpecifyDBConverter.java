@@ -155,15 +155,15 @@ public class SpecifyDBConverter
      */
     public static void main(String args[]) throws Exception
     {
-        String oldDatabaseName = "demo_fish2";  // Fish
+        //String oldDatabaseName = "demo_fish2";  // Fish
         //String oldDatabaseName = "demo_fish4";  // Accessions
-        //String oldDatabaseName = "demo_fish5";  // Cranbrook
+        String oldDatabaseName = "demo_fish5";  // Cranbrook
         
         String databaseName = "fish";
         String userHome = System.getProperty("user.home");
         if (userHome.indexOf("rods") > -1)
         {
-            databaseName = "fish";
+            databaseName = "cranbrook";
         }
         
         if (userHome.indexOf("stewart") > -1)
@@ -172,7 +172,7 @@ public class SpecifyDBConverter
         }
         
         // This will log us in and return true/false
-        if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/", databaseName, "rods", "rods"))
+        if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", "mysql", "localhost", databaseName, "rods", "rods"))
         {
             throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
         }

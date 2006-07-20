@@ -110,7 +110,6 @@ public class CarryForwardInfo
      * Copies a field's data from the old object to the new
      * @param carryFwdData the old data object
      * @param newData the new data object
-     * @return 
      */
     public void carryForward(final Object carryFwdData, final Object newData)
     {

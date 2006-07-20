@@ -244,7 +244,7 @@ public class DataObjFieldFormatMgr
 
     /**
      * Format a data object using a named formatter
-     * @param dataObj the data object for which fields will be formatted for it
+     * @param dataObjs the array data object for which fields will be formatted for it
      * @param formatName the name of the formatter to use
      * @return the string result of the format
      */

@@ -399,7 +399,7 @@ public class CreateTestWorkbenches {
         DBConnection dbConn = DBConnection.getInstance();
         dbConn.setUsernamePassword("rods", "rods");
         dbConn.setDriver("com.mysql.jdbc.Driver");
-        dbConn.setServer("jdbc:mysql://localhost/");
+        dbConn.setConnectionStr("jdbc:mysql://localhost/");
         dbConn.setDatabaseName("demo_fish3");
         
 		cleanWorkbenchTables();

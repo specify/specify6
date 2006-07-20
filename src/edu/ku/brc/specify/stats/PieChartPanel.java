@@ -58,8 +58,7 @@ public class PieChartPanel extends ChartPanel implements QueryResultsListener, Q
 
 
     /**
-     * @param name name of pane
-     * @param task the owning task
+     * CReates a Pie Chart.
      */
     public PieChartPanel()
     {

@@ -78,7 +78,7 @@ public class DataChangeNotifier implements FocusListener,
     protected String                     cachedData     = null;
     
     /**
-     * Constructor
+     * Constructor.
      * @param id the id
      * @param comp the component
      * @param uiv the UI validator
@@ -112,7 +112,7 @@ public class DataChangeNotifier implements FocusListener,
     }
     
     /**
-     * Remove the listener
+     * Remove the listener.
      * @param dcl the listener to be removed
      */
     public void removeDataChangeListener(DataChangeListener dcl)
@@ -136,7 +136,7 @@ public class DataChangeNotifier implements FocusListener,
     }
     
     /**
-     * Returns a string value for a control to compare to see if the value has changed
+     * Returns a string value for a control to compare to see if the value has changed.
      * @param comp the component to get the value fromn
      * @return Returns a string value for a control to compare to see if the value has changed
      */
@@ -177,7 +177,7 @@ public class DataChangeNotifier implements FocusListener,
     }
     
     /**
-     * Reset it back to not having been changed and uses the current value as the new cached value
+     * Reset it back to not having been changed and uses the current value as the new cached value.
      */
     public void reset()
     {
@@ -227,6 +227,7 @@ public class DataChangeNotifier implements FocusListener,
     
 
     /**
+     * Returns the hasDataChanged.
      * @return Returns the hasDataChanged.
      */
     public boolean isDataChanged()
@@ -251,7 +252,8 @@ public class DataChangeNotifier implements FocusListener,
     }
 
     /**
-     * @param name The id to set.
+     * Sets the ID.
+     * @param id The id to set.
      */
     public void setId(String id)
     {
@@ -259,6 +261,7 @@ public class DataChangeNotifier implements FocusListener,
     }
 
     /**
+     * Returns the uiv.
      * @return Returns the uiv.
      */
     public UIValidator getUIV()
@@ -267,7 +270,7 @@ public class DataChangeNotifier implements FocusListener,
     }
     
     /**
-     * Clean up 
+     * Clean up.
      */
     public void cleanUp()
     {

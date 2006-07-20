@@ -59,7 +59,9 @@ import edu.ku.brc.specify.ui.forms.MultiView;
 
 
 /**
- * 
+ * Create a TextField with accompanying UI that enables it to display a single formatted value in the text field
+ * and then the "info" button can be pressed to display a dialog/window of the full data for the object that is in the control.
+ * See the constructr for details.
  *
  * @author rods
  *
@@ -96,7 +98,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
 
  
     /**
-     * @param sql the fully specified SQL statement with a "%s" in the string for the substitution for what the user entered
+     * Constructor.
      * @param className the Class name of the java object that represents the table
      * @param idName the POJO field name of the ID column
      * @param keyName the POJO field name of the key column
@@ -123,7 +125,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
     }
     
     /**
-     * Sets the string that is preappended to the title
+     * Sets the string that is preappended to the title.
      * @param frameTitle the string arg
      */
     public void setFrameTitle(final String frameTitle)
@@ -132,7 +134,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
     }
     
     /**
-     * Sets the MultiView parent into the control
+     * Sets the MultiView parent into the control.
      * @param multiView parent multiview
      */
     public void setMultiView(final MultiView multiView)
@@ -141,7 +143,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
     }
     
     /**
-     * Returns the text field for this control
+     * Returns the text field for this control.
      * @return the text field for this control
      */
     public JTextField getTextField()
@@ -187,7 +189,6 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
         }
 
     }
-
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.db.JAutoCompComboBox#init(boolean)
@@ -260,6 +261,9 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
     // PropertyChangeListener
     //--------------------------------------------------------
 
+    /* (non-Javadoc)
+     * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
+     */
     public void propertyChange(PropertyChangeEvent evt)
     {
         if (multiView != null)
@@ -324,7 +328,6 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
      */
     public Object getValue()
     {
-
         return textField.getText();
     }
 
@@ -332,6 +335,9 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
     // PreferenceChangeListener
     //-------------------------------------------------
 
+    /* (non-Javadoc)
+     * @see java.util.prefs.PreferenceChangeListener#preferenceChange(java.util.prefs.PreferenceChangeEvent)
+     */
     public void preferenceChange(PreferenceChangeEvent evt)
     {
         if (evt.getKey().equals("requiredfieldcolor"))

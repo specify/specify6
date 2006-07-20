@@ -41,14 +41,17 @@ import edu.ku.brc.specify.ui.UICacheManager;
 public class AppPrefs
 {
 
-    static {
-        //initialPrefs();
-    }
     
+    /**
+     * Singleton Constructor.
+     */
     protected AppPrefs()
     {
     }
     
+    /**
+     * Initialize the prefs.
+     */
     public static void initialPrefs()
     {
         UICacheManager.setRootPrefClass(Specify.class);

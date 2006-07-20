@@ -504,7 +504,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
     }
 
     /**
-     * Adds a control by name so it can be looked up later
+     * Adds a control by name so it can be looked up later.
      * @param formCell the FormCell def that describe the cell
      * @param control the control
      */
@@ -547,10 +547,11 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
 
 
     /**
-     * Adds a control by name so it can be looked up later
+     * Adds a control by name so it can be looked up later.
      * @param formCell the FormCell def that describe the cell
-     * @param control the control
+     * @param label the the label to be added
      */
+
     public void addLabel(final FormCellLabel formCell, final JLabel label)
     {
         
@@ -565,8 +566,8 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
     }
 
     /**
-     * Sets the multiview if it is owned or mvParented by it
-     * @param cbx cobobox to add a listener to
+     * Sets the multiview if it is owned or mvParented by it.
+     * @param cbx combobox to add a listener to
      */
     public void addMultiViewListener(final JComboBox cbx)
     {

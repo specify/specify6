@@ -34,20 +34,20 @@ public interface UIValidatable
 
     /**
      * Returns the isInError.
-     * @return Returns the isInError.
+     * @return the isInError.
      */
     public boolean isInError();
     
     
     /**
-     * Returns the validation state
+     * Returns the validation state.
      * @return the validation state
      */
     public ErrorType getState();
 
     /**
-     * Sets whether it is in error.
-     * @param isInError The isInError to set.
+     * Sets the validation state
+     * @param state The isInError to set.
      */
     public void setState(ErrorType state);
     
@@ -69,27 +69,26 @@ public interface UIValidatable
     public void setRequired(boolean isRequired);
 
     /**
-     * Returns whether it has changed
+     * Returns whether it has changed.
      * @return whether it has changed
      */
     public boolean isChanged();
 
     /**
-     * Sets whether it has changed
+     * Sets whether it has changed.
      * @param isChanged whether it has changed.
      */
     public void setChanged(boolean isChanged);
     
     /**
-     * Tells a control that it is new and not to validate until
-     * it has received focus
+     * Tells a control that it is new and not to validate until it has received focus.
      * @param isNew true it's new, false it is not
      */
     public void setAsNew(boolean isNew);
     
     
     /**
-     * Asks it to vaidate itself
+     * Asks it to vaidate itself.
      * @return the result of the validation
      */
     public ErrorType validateState();

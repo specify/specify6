@@ -66,7 +66,7 @@ public class ValidatedJPanel extends JPanel
     
     /**
      * Adds a component to be know by the validator
-     * @param name the name of the component
+     * @param id the id of the component
      * @param comp the component
      */
     public void addValidationComp(final String id, final Component comp)

@@ -213,9 +213,10 @@ public class PluginMgr
     }
 
     /**
-     * @param parent
-     * @param name
-     * @return
+     * Create a menu by name
+     * @param parent the parent menu item
+     * @param name the new name
+     * @return the menu element
      */
     public static MenuElement getMenuByName(final MenuElement parent, final String name)
     {
@@ -334,9 +335,9 @@ public class PluginMgr
     }
 
     /**
-     * @param name
-     * @param classObj
-     * @return
+     * Get the command definitions for a class
+     * @param classObj a class object
+     * @return the lst of commands for the class
      */
     public static List<TaskCommandDef> getCommandDefinitions(final Class classObj)
     {

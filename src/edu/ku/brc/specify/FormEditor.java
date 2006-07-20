@@ -875,7 +875,7 @@ public class FormEditor implements DatabaseLoginListener
 
 
     /**
-     * @param argsargs
+     * @param args args
      */
     public static void main(String[] args)
     {
@@ -884,6 +884,38 @@ public class FormEditor implements DatabaseLoginListener
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
+  /*              
+JCollapsiblePane cp = new JCollapsiblePane();
+
+// JCollapsiblePane can be used like any other container
+cp.setLayout(new BorderLayout());
+
+// the Controls panel with a textfield to filter the tree
+JPanel controls = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+controls.add(new JLabel("Search:"));
+controls.add(new JTextField(10));    
+controls.add(new JButton("Refresh"));
+controls.setBorder(new TitledBorder("Filters"));
+cp.add("Center", controls);
+  
+JFrame frame = new JFrame();
+frame.setLayout(new BorderLayout());
+ 
+// Put the "Controls" first
+frame.add("North", cp);
+   
+// Then the tree - we assume the Controls would somehow filter the tree
+JScrollPane scroll = new JScrollPane(new JTree());
+frame.add("Center", scroll);
+                
+// Show/hide the "Controls"
+JButton toggle = new JButton(cp.getActionMap().get(JCollapsiblePane.TOGGLE_ACTION));
+toggle.setText("Show/Hide Search Panel");
+frame.add("South", toggle);
+                
+frame.pack();
+frame.setVisible(true);
+*/
                 FormEditor formEditor = new FormEditor();
                 formEditor.initialize();    
             }

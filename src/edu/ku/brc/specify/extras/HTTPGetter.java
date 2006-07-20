@@ -76,8 +76,7 @@ public class HTTPGetter implements Runnable
      * Performs a "generic" HTTP request and fill member variable with results
      * use "getDigirResultsetStr" to get the results as a String
      *
-     * @param aURL
-     *            URL to be executaed
+     * @param url URL to be executaed
      * @return returns an error code
      */
     public byte[] doHTTPRequest(final String url)

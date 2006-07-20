@@ -371,7 +371,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
     /**
      * Adds a generic Component by name and return it
-     * @param name the logical name of the component
+     * @param id the id of the component
      * @param comp the component to add
      * @return returns the passed in component after it is registered
      */

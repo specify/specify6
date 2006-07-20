@@ -500,7 +500,7 @@ public final class UIHelper
      * Returna an array of values given a FormCell definition. Note: The returned array is owned by the utility and
      * may be longer than the number of fields defined in the CellForm object. Any additional "slots" in the array that are used
      * are set to null;
-     * @param formCell the defition of the field to get
+     * @param fieldNames the array of field name to be filled ( the array is really the path to the object)
      * @param dataObj the dataObj from which to get the data from
      * @param getter the DataObjectGettable to use to get the data
      * @return an array of values at least as long as the fielName list, but may be longer
@@ -699,11 +699,12 @@ public final class UIHelper
     }
 
     /**
-     * @param fieldNames
-     * @param dataObj
-     * @param newData
-     * @param getter
-     * @param setter
+     * Helper for setting a value into a data object using reflection
+     * @param fieldNames the field name(s)
+     * @param dataObj the data object that will get the new value
+     * @param newData the new data object
+     * @param getter the getter to use
+     * @param setter the setter to use
      */
     public static void setFieldValue(final String fieldNames,
                                      final Object dataObj,
@@ -804,11 +805,17 @@ public final class UIHelper
     //-------------------------------------------------------
     //-- Helpers for creating Lists and Maps
     //-------------------------------------------------------
+    /**
+     * @return a string map
+     */
     public static Map<String, String> createMap()
     {
         return new Hashtable<String, String>();
     }
 
+    /**
+     * @return string list
+     */
     public static List<String> createList()
     {
         return new ArrayList<String>();
@@ -819,25 +826,61 @@ public final class UIHelper
     //-------------------------------------------------------
     
     /**
+     * Constructs the full connection string for JDBC
+     * @param dbProtocol the protocol
+     * @param dbServer the server name machine or IP address
+     * @param dbName the name of the database
+     * @return the full JDBC connection string
+     */
+    public static String constructJDBCConnectionString(final String dbProtocol, 
+                                                       final String dbServer, 
+                                                       final String dbName)
+    {
+        StringBuilder strBuf = new StringBuilder(64);
+        strBuf.append("jdbc:");
+        strBuf.append(dbProtocol);
+        
+        if (isNotEmpty(dbServer))
+        {
+            strBuf.append("://");
+            strBuf.append(dbServer);
+            strBuf.append("/");
+            strBuf.append(dbName);
+            
+        } else
+        {
+            strBuf.append(":");
+            strBuf.append(dbName);
+        }
+        return strBuf.toString();
+    }
+    
+    /**
      * Tries to login using the supplied params
      * @param dbDriver the driver (a package/class name)
-     * @param dbServer the server (i.e. jdbc:mysql://localhost/)
+     * @param dbProtocol the connection type (i.e. the "mysql" portion of jdbc:mysql://localhost/)
+     * @param dbServer the server (i.e. the "localhost" portion of jdbc:mysql://localhost/)
      * @param dbName the name of the database
      * @param dbUsername the user name
      * @param dbPassword the password
      * @return true if logged in, false if not
      */
     public static boolean tryLogin(final String dbDriver, 
+                                   final String dbProtocol, 
                                    final String dbServer, 
                                    final String dbName, 
                                    final String dbUsername, 
                                    final String dbPassword)
     {
         DBConnection dbConn = DBConnection.getInstance();
+        
         dbConn.setUsernamePassword(dbUsername, dbPassword);
         dbConn.setDriver(dbDriver);
-        dbConn.setServer(dbServer);
+        dbConn.setProtocol(dbProtocol);
         dbConn.setDatabaseName(dbName);
+        
+        // TODO We may need a factory for constructing connection strings for various different databases 
+        dbConn.setConnectionStr(constructJDBCConnectionString(dbProtocol, dbServer, dbName));
         
         Connection connection = dbConn.createConnection();
         if (connection != null)
@@ -872,16 +915,17 @@ public final class UIHelper
         Preferences appsNode = UICacheManager.getAppPrefs();
         Preferences prefNode = appsNode.node("login");
         
-        String usernameStr  = prefNode.get("username", "");
-        String password     = Encryption.decrypt(prefNode.get("password", ""));
-        String driverStr    = prefNode.get("driver", "com.mysql.jdbc.Driver"); // XXX HARD CODED VALUE!
-        String serversStr   = prefNode.get("servers_selected", "");
-        String databasesStr = prefNode.get("databases_selected", "");
+        String usernameStr    = prefNode.get("username", "");
+        String password       = Encryption.decrypt(prefNode.get("password", ""));
+        String driverStr      = prefNode.get("driver", "com.mysql.jdbc.Driver"); // XXX HARD CODED VALUE!
+        String protocol       = prefNode.get("protocol", "mysql");         // XXX HARD CODED VALUE!
+        String serversStr     = prefNode.get("servers_selected", "");
+        String databasesStr   = prefNode.get("databases_selected", "");
                    
         boolean doLogin = true;
         if (doAutoLogin && prefNode.getBoolean("autologin", false))
         {
-            boolean loginOK = tryLogin(driverStr, serversStr, databasesStr, usernameStr, password);
+            boolean loginOK = tryLogin(driverStr, protocol, serversStr, databasesStr, usernameStr, password);
             if (loginOK)
             {
                 doLogin = false;
@@ -925,11 +969,15 @@ public final class UIHelper
                         frameDBListener.cancelled();
                     }
                 }
-            
-                JFrame frame = new JFrame(getResourceString("logintitle"));
-                frame.setContentPane(new DatabaseLoginPanel(new DBListener(frame, listener)));
-                frame.setIconImage(IconManager.getIcon("AppIcon", IconManager.IconSize.Std16).getImage());
+                JFrame.setDefaultLookAndFeelDecorated(false);
                 
+                JFrame frame = new JFrame(getResourceString("logintitle"));
+                DatabaseLoginPanel panel = new DatabaseLoginPanel(new DBListener(frame, listener));
+                panel.setWindow(frame);
+                frame.setContentPane(panel);
+                frame.setIconImage(IconManager.getIcon("AppIcon", IconManager.IconSize.Std16).getImage());
+                frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
                 frame.pack();
                 UIHelper.centerAndShow(frame);
             }

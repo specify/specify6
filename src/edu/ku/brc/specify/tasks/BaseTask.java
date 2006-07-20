@@ -92,12 +92,13 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
 
 
     /**
-     * Constructor
-     * @param name the name of the task (already localized)
+     * Constructor.
+     * @param name the name of the task
+     * @param title the title of the task (already localized)
      */
     public BaseTask(final String name, final String title)
     {
-        this.name = name;
+        this.name  = name;
         this.title = title;
 
         ContextMgr.register(this);
@@ -107,7 +108,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     }
 
     /**
-     * Remove self from ContextMgr
+     * Remove self from ContextMgr.
      */
     public void finalize()
     {
@@ -118,7 +119,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     }
 
      /**
-     * Helper
+     * Helper.
      * @param catName catName
      * @param imageName imageName
      * @param hint v
@@ -134,7 +135,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     }
 
     /**
-     * Helper
+     * Helper.
      * @param catName catName
      * @param imageName imageName
      * @param hint hint
@@ -162,7 +163,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     }
 
     /**
-     * Helper method to add an item to the navbox
+     * Helper method to add an item to the navbox.
      * @param navBox navBox
      * @param labelText navBox
      * @param cmdGroup navBox
@@ -213,7 +214,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     }
 
     /**
-     * Helper method to add an item to the navbox
+     * Helper method to add an item to the navbox.
      * @param navBox navBox
      * @param labelText navBox
      * @param cmdGroup navBox
@@ -231,24 +232,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     }
 
     /**
-     * Fills the list with commands btns, it also clears the list of commands to reduce memory usage.
-     *
-     * @param list the list to be filled
-     */
-    /*protected void createCommandBtns(final NavBox navBox, final List<NavBoxIFace> list)
-    {
-        if (commands != null)
-        {
-            for (TaskCommandDef tcd : commands)
-            {
-                addToNavBoxAndRegisterAsDroppable(list, navBox, NavBox.createBtn(tcd.getName(), name, IconManager.IconSize.Std16, new DisplayAction(tcd)), null);
-            }
-        }
-        commands.clear();
-    }*
-
-    /**
-     * Adds a SubPane to the Mgr and caches a pointer to it
+     * Adds a SubPane to the Mgr and caches a pointer to it.
      * @param subPane the subpane in question
      */
     protected void addSubPaneToMgr(final SubPaneIFace subPane)
@@ -263,7 +247,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     }
 
     /**
-     * Removes a SubPane from the Mgr
+     * Removes a SubPane from the Mgr.
      * @param subPane the subpane in question
      */
     protected void removeSubPaneFromMgr(final SubPaneIFace subPane)
@@ -272,7 +256,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     }
 
     /**
-     * Returns the initial pane for this task, may be a blank (empty) pane, but shouldn't null
+     * Returns the initial pane for this task, may be a blank (empty) pane, but shouldn't null.
      * @return Returns the initial pane for this task, may be a blank (empty) pane, but shouldn't null
      */
     public abstract SubPaneIFace getStarterPane();
@@ -288,7 +272,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     //-------------------------------------------------------
 
     /**
-     * Looks up a SubPane by the viewset name and form id and data
+     * Looks up a SubPane by the viewset name and form id and data.
      * @param viewSetName the view set name
      * @param viewName the form id
      * @return the subpane that matches
@@ -314,7 +298,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
 
     /**
      * Looks to see if a form already exists for this request and shows it
-     * otherwise it creates a form and add it to the SubPaneMgr
+     * otherwise it creates a form and add it to the SubPaneMgr.
      */
     protected FormPane createFormPanel(RolloverCommand roc)
     {
@@ -388,7 +372,8 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     }
 
     /**
-     * Return a NavBoxItem by title (label)
+     * Return a NavBoxItem by title (label).
+     * @param navBox to get the items from
      * @param boxName the title of the NavBoxItem
      * @return Return a NavBoxItem by title
      */
@@ -405,7 +390,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     }
 
     /**
-     * Return a NavBoxItem by title (label) from any of the NavBoxes
+     * Return a NavBoxItem by title (label) from any of the NavBoxes.
      * @param boxName the title of the NavBoxItem
      * @return Return a NavBoxItem by title
      */
@@ -429,7 +414,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     //-------------------------------------------------------
 
     /**
-     *
+     * Sets initialization to true.
      */
     public void initialize()
     {
@@ -530,6 +515,9 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     //-------------------------------------------------------
 
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.CommandListener#doCommand(edu.ku.brc.specify.ui.CommandAction)
+     */
     public void doCommand(CommandAction cmdAction)
     {
         log.error("Command sent to task ["+name+"] and was not processed.");
@@ -539,9 +527,8 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     // SubPaneMgrListener Interface
     //--------------------------------------------------------------
 
-    /**
-     * Notication that a SubPane was added to the manager
-     * @param subPane the subpane that was added
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.SubPaneMgrListener#subPaneAdded(edu.ku.brc.specify.ui.SubPaneIFace)
      */
     public void subPaneAdded(SubPaneIFace subPane)
     {
@@ -551,25 +538,21 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
         }
     }
 
-    /**
-     * Notication that a SubPane was removed from the manager
-     * @param subPane the subpane that was removed
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.SubPaneMgrListener#subPaneRemoved(edu.ku.brc.specify.ui.SubPaneIFace)
      */
     public void subPaneRemoved(SubPaneIFace subPane)
     {
         subPanes.remove(subPane);
     }
 
-
-    /**
-     * Notication that a SubPane was removed from the manager
-     * @param subPane the subpane that was removed
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.SubPaneMgrListener#subPaneShown(edu.ku.brc.specify.ui.SubPaneIFace)
      */
     public void subPaneShown(SubPaneIFace subPane)
     {
 
     }
-
 
 
     //--------------------------------------------------------------

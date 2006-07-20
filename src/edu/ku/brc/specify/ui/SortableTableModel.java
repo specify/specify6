@@ -190,7 +190,8 @@ public class SortableTableModel implements TableModel, TableModelListener
     }
 
     /**
-     * @return
+     * the sort column.
+     * @return the sort column 
      */
     public int getSortColumn()
     {

@@ -52,8 +52,8 @@ public class DropDownButtonStateful extends DropDownButton
     
     /**
      * Constructs a UI component with a label and an icon which can be clicked to execute an action
-     * @param label the text labels for the UI
-     * @param imgIcon the icon for the UI
+     * @param labels the text labels for the UI
+     * @param imgIcons the icons for the UI
      */
     public DropDownButtonStateful(final String[]    labels, 
                                   final ImageIcon[] imgIcons)

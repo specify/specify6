@@ -41,13 +41,6 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
      protected DatabaseLoginPanel    dbPanel;
      protected DatabaseLoginListener listener;
      
-    //private String[]    serverNameStrs     = {
-    //        "jdbc:mysql://localhost/", 
-    //        "jdbc:inetdae7://129.237.201.110/",
-    //        "jdbc:mysql://129.237.201.110/",
-    //        "jdbc:microsoft:sqlserver://129.237.201.110/" };                   // "jdbc:inetdae7://129.237.201.110/"};
-//
-
     /**
      * Constructor that has the form created from the view system
      */

@@ -136,39 +136,30 @@ public class HibernateUtil {
         
         String userName     = dbConn.getUserName();
         String password     = dbConn.getPassword();
-        String serverName   = dbConn.getServer();
         String databaseName = dbConn.getDatabaseName();
         String driver       = dbConn.getDriver();
 
+        String connection   = dbConn.getConnectionStr();
         
         config.setProperty("hibernate.connection.username", userName);
         config.setProperty("hibernate.connection.password", password);
         
-        String userHome = System.getProperty("user.home");
-        if (userHome.indexOf("rods") > -1)
-        {
-            //databaseName = "accessions";
-        }
+        log.info("Using database ["+connection+"]");
         
-        if (userHome.indexOf("stewart") > -1)
+        if (connection.indexOf("inetdae7") == -1)
         {
-        	databaseName = "fish";
-        }
-        
-        log.info("Using database ["+serverName + databaseName+"]");
-        
-        if (serverName.indexOf("mysql") != -1)
-        {
-            config.setProperty("hibernate.connection.url", serverName + databaseName);
+            config.setProperty("hibernate.connection.url", connection);
             config.setProperty("hibernate.dialect","org.hibernate.dialect.MySQLDialect");
             config.setProperty("hibernate.connection.driver_class", driver);
         }  
-        else if (serverName.indexOf("inetdae7") != -1)
+        else 
         {
-
-            config.setProperty("hibernate.connection.url", serverName + "?database="+ databaseName);
+            throw new RuntimeException("Connection string does not support SQLServer!");
+            
+            /*config.setProperty("hibernate.connection.url", connection + "?database="+ databaseName);
             config.setProperty("hibernate.dialect","org.hibernate.dialect.SQLServerDialect");
             config.setProperty("hibernate.connection.driver_class","com.inet.tds.TdsDriver");
+            */
         }           
         //else if(hostName.indexOf("sqlserver")!=-1){//jdbc:inetdae7:localhost?database=KS_fish
         //  config.setProperty("hibernate.connection.url",hostName + ";DatabaseName="+databaseName);

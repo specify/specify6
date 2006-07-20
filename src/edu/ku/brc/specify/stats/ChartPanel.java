@@ -127,11 +127,8 @@ public class ChartPanel extends JPanel implements Chartable
     	protected Dimension                  preferredSize = new Dimension(100,100);
     	
         /**
-         * Contructs a layout manager for layting out NavBoxes. It lays out all the NavBoxes vertically
-         * and uses the 'ySeparator' as the spacing in between the boxes. It uses borderPadding as a 'margin'
-         * aroound all the boxes
-         * @param borderPadding the margin around the boxes
-         * @param ySeparation the vertical separation inbetween the boxes.
+         * Contructs a layout manager for the ChartPanel
+         * @param parentChartPanel the margin around the boxes
          */
         public ChartLayoutManager(ChartPanel parentChartPanel)
         {

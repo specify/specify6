@@ -88,7 +88,7 @@ public class ControlBarPanel extends JPanel
 
     /**
      * Adds an array of components to the left or right side of the recordset controller
-     * @param comps the array of controls
+     * @param compsList the List of controls
      * @param onLeftSide true for the left side, false for the right side
      */
     public void addComponents(final List<JComponent> compsList, final boolean onLeftSide)

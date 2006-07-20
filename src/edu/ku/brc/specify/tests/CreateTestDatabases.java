@@ -489,7 +489,7 @@ public class CreateTestDatabases
     /**
      * Creates an array of address and hooks them up to agents
      * @param agents the agents to get addresses
-     * @return
+     * @return address array
      */
     public static Address[] createAddresses(Agent[] agents)
     {
@@ -604,7 +604,7 @@ public class CreateTestDatabases
 
     /**
      * @param agents
-     * @return
+     * @return accession array
      */
     public static Accession[] createAccessionsInMemory()
     {
@@ -1245,7 +1245,7 @@ public class CreateTestDatabases
         DBConnection dbConn = DBConnection.getInstance();
         dbConn.setUsernamePassword("rods", "rods");
         dbConn.setDriver("com.mysql.jdbc.Driver");
-        dbConn.setServer("jdbc:mysql://localhost/");
+        dbConn.setConnectionStr("jdbc:mysql://localhost/");
         dbConn.setDatabaseName("fish");
 
         createSingleDiscipline("Fish");

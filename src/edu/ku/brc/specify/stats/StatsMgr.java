@@ -134,7 +134,7 @@ public class StatsMgr
      * that comes from an instance of a class.
      * @param element the DOM element of the chart
      * @param qrProcessable the processor to take care of the results
-     * @param subPane the sub pane to be added to the UI
+     * @param chartable the chartable to be added to the UI
      * @param listener the listener who nneds to know when the query is done and all the results are available
      */
     public void createChart(final Element                 element,

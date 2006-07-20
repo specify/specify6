@@ -59,9 +59,8 @@ public class IdHashMapper implements IdMapper
     }
 
     /**
-     * @param oldConn
-     * @param tableName
-     * @param idName
+     * Create a IdHashMapper with a Table Name.
+     * @param tableName the table name
      */
     public IdHashMapper(final String tableName) throws SQLException
     {
@@ -72,13 +71,14 @@ public class IdHashMapper implements IdMapper
     }
 
     /**
-     * @param name
-     * @param sql
+     * Create a IdHashMapper with a table name an SQL that is used to do the mapping
+     * @param tableName the table name
+     * @param sql the sql
      * @throws SQLException
      */
-    public IdHashMapper(final String name, final String sql) throws SQLException
+    public IdHashMapper(final String tableName, final String sql) throws SQLException
     {
-        this(name);
+        this(tableName);
         
         this.sql = sql;
     }

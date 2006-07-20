@@ -48,8 +48,9 @@ public class FormValidatorInfo extends JPanel implements ValidationListener
     protected FormValidator          formValidator;
 
     /**
-     * @param name
-     * @param viewable
+     * CReate a FormValidator.
+     * @param name the name of the validator (mostly for debug purposes)
+     * @param formViewObj the FormViewObj that will be validated
      */
     public FormValidatorInfo(final String name, final FormViewObj formViewObj)
     {
@@ -67,7 +68,7 @@ public class FormValidatorInfo extends JPanel implements ValidationListener
     }
     
     /**
-     * Unregisters the panel from the validator 
+     * Unregisters the panel from the validator .
      */
     public void cleanUp()
     {

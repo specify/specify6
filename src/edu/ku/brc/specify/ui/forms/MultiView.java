@@ -143,7 +143,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
     
     /**
-     * Shows Parent Form's Context Menu
+     * Shows Parent Form's Context Menu.
      * @param e the mouse event
      */
     protected void showContextMenu(MouseEvent e)
@@ -167,7 +167,10 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         }
     }
     
-    
+    /**
+     * Called to indicate acceptence of CarryForward setup.
+     * @param accept true accept, false denied
+     */
     public void acceptCarryForwardSetup(final boolean accept)
     {
         if (carryForwardSetup != null)
@@ -189,7 +192,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
     
     /**
-     * Adds child view
+     * Adds child view.
      * @param mv add child view
      */
     public void addChild(final MultiView mv)
@@ -199,7 +202,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     
     /**
      * Asks the Viewable to get the data from the UI and transfer the changes (really all the fields) to
-     * the DB object 
+     * the DB object.
      */
     public void getDataFromUI()
     {
@@ -214,7 +217,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
-     * Returns the View (the definition)
+     * Returns the View (the definition).
      * @return the View (the definition)
      */
     public View getView()
@@ -223,7 +226,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
-     * Returns all the Multiview children
+     * Returns all the Multiview children.
      * @return all the Multiview children
      */
     public List<MultiView> getKids()
@@ -232,7 +235,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
-     *
+     * Called to tell current view it is about to be shown or hidden.
+     * @param show true - shown, false - hidden
      */
     public void aboutToShow(final boolean show)
     {
@@ -262,9 +266,9 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
-     * Creates the Default Viewable for this view (it chooses the "default" ViewDef
+     * Creates the Default Viewable for this view (it chooses the "default" ViewDef.
      * @param createRecordSetController indicates that a RecordSet Contoller should be created
-    * @param createViewSwitcher can be used to make sure that the multiview switcher is not created
+     * @param createViewSwitcher can be used to make sure that the multiview switcher is not created
      * @return return the default Viewable (ViewDef)
      */
     protected Viewable createDefaultViewable(final boolean createRecordSetController,
@@ -295,7 +299,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
 
     /**
-     * Returns the name of the view for the MultiView
+     * Returns the name of the view for the MultiView.
      * @return the name of the view for the MultiView
      */
     public String getViewName()
@@ -304,7 +308,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
-     * Adds a viewable to the MultiView
+     * Adds a viewable to the MultiView.
      * @param viewable the viewablew to be added
      * @return true if it was added, false if name conflicts
      */
@@ -325,6 +329,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
+     * Adds a form validator.
      * @param validator
      */
     public void addFormValidator(final FormValidator validator)
@@ -335,7 +340,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
-     * Show the AltView
+     * Show the AltView.
      * @param altView show the AltView
      */
     public void showView(final AltView altView)
@@ -344,7 +349,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
-     * Show the component by name
+     * Show the component by name.
      * @param name the registered name of the component
      */
     public void showView(final String name)
@@ -429,7 +434,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
-     * Returns the MultiView's mvParent
+     * Returns the MultiView's mvParent.
      * @return the MultiView's mvParent
      */
     public MultiView getMultiViewParent()
@@ -438,7 +443,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
-     * Return whether the MultiView is in Edit Mode
+     * Return whether the MultiView is in Edit Mode.
      * @return whether the MultiView is in Edit Mode
      */
     public boolean isEditable()
@@ -447,7 +452,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
-     * Return whether the MultiView's CreateMode (may be null, true or false) meaning don't assume it will always be non-null
+     * Return whether the MultiView's CreateMode (may be null, true or false) meaning don't assume it will always be non-null.
      * @return whether the MultiView's CreateMode (may be null, true or false)
      */
     public AltView.CreationMode getCreateWithMode()
@@ -456,7 +461,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
-     * Sets the Data Object into the View
+     * Sets the Data Object into the View.
      * @param data the data object
      */
     public void setData(Object data)
@@ -466,7 +471,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
-     * Returns  the data object for this form
+     * Returns  the data object for this form.
      * @return the data object for this form
      */
     public Object getData()
@@ -479,7 +484,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
-     * Returns whether all the validation of this form and child forms is OK
+     * Returns whether all the validation of this form and child forms is OK.
      * @return whether all the validation of this form and child forms is OK
      */
     protected boolean isAllValidationOK()
@@ -498,7 +503,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     
 
     /**
-     * Sets the dataObj of the parent, this is need to add new child node from subforms
+     * Sets the dataObj of the parent, this is need to add new child node from subforms.
      * @param parentDataObj the dataObj of the parent
      */
     public void setParentDataObj(Object parentDataObj)
@@ -512,7 +517,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
 
     /**
-     * Returns the dataObj of of the parent
+     * Returns the dataObj of of the parent.
      * @return the dataObj of of the parent
      */
     public Object getParentDataObj()
@@ -522,7 +527,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     
     
     /**
-     * Returns whether this MulitView is the very top MultiView which typically contains the save UI
+     * Returns whether this MulitView is the very top MultiView which typically contains the save UI.
      * @return whether this MulitView is the very top MultiView
      */
     public boolean isRoot()
@@ -532,7 +537,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     
   
     /**
-     * Registers "display" window for display "sub object" information
+     * Registers "display" window for display "sub object" information.
      * @param frame the frame to be added 
      */
     public void registerDisplayFrame(final GenericDisplayFrame frame)
@@ -545,7 +550,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
     
     /**
-     * Unregsters a frame from the MultiView list of sub-frames
+     * Unregsters a frame from the MultiView list of sub-frames.
      * @param frame the frame to be unregistered (removed)
      */
     public void unregisterDisplayFrame(final GenericDisplayFrame frame)
@@ -558,7 +563,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
     
     /**
-     * Shows or hides all the DisplayFrame attached to this MultiView
+     * Shows or hides all the DisplayFrame attached to this MultiView.
      * @param show true - show, false - hide
      */
     public void showDisplayFrames(final boolean show)
@@ -574,8 +579,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     
 
     /**
-     * Returns the current
-     * @return
+     * Returns the current view.
+     * @return the current view
      */
     public Viewable getCurrentView()
     {

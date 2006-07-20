@@ -38,7 +38,7 @@ import edu.ku.brc.specify.ui.validation.ValTextField;
 
 /**
  * This is a JPanel that contains a JTextField abd a Button that enables the user to browser for a file
- * and sets the the file and path into the text field
+ * and sets the the file and path into the text field.
  *
  * @author rods
  *
@@ -50,7 +50,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
     protected JButton    browseBtn;
 
     /**
-     * Constructor
+     * Constructor.
      * @param value the value is set into the text field using "toString"
      * @param cols the number of columns for the text field
      */
@@ -63,7 +63,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
     }
 
     /**
-     * Constructor
+     * Constructor.
      * @param textField the text field to use (most likely is a ValTextField)
      */
     public BrowseBtnPanel(JTextField textField)
@@ -75,7 +75,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
    }
 
     /**
-     * CReates the UI and figures out whether it needs to create a JTextField or use the one it was given
+     * Creates the UI and figures out whether it needs to create a JTextField or use the one it was given.
      * @param value the value for the new TextField
      * @param cols the number of columns for the new TextField
      */
@@ -99,6 +99,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
     }
 
     /**
+     * The text field.
      * @return the text field
      */
     public JTextField getTextField()
@@ -147,12 +148,17 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
     // Inner Class
     //---------------------------------------------------------
 
+    /**
+     * Action used to pop up the File Dialog.
+     * @author rods
+     *
+     */
     public class BrowseAction implements ActionListener
     {
         private JTextField textField;
 
         /**
-         * Constructor with Commandaction
+         * Constructor with CommandAction.
          * @param textField the text control of the Browse Action
          */
         public BrowseAction(final JTextField textField)

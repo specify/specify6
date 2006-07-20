@@ -58,9 +58,7 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
     private QueryResultsHandlerIFace   handler = null;
 
     /**
-     * Creates a BarChart pane with a name and a reference to the taskable that started it
-     * @param name the name of the BarChart
-     * @param task the starting task
+     * Creates a BarChart.
      */
     public BarChartPanel()
     {

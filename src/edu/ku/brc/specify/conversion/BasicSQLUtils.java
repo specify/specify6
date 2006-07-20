@@ -424,8 +424,7 @@ public class BasicSQLUtils
 
     /**
      * Fills the list with FieldMetaData objects for each field in the table
-     * @param connection the connection
-     * @param tableName the table name
+     * @param rsmd the resultset's meta data
      * @param fieldList the list to be filled with field/type objects (FieldMetaData)
      */
     public static void getFieldMetaDataFromSchema(final ResultSetMetaData rsmd,

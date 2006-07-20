@@ -45,14 +45,14 @@ public class IdMapperMgr
     protected Hashtable<String, IdHashMapper> idMappers = new Hashtable<String, IdHashMapper>();
     
     /**
-     * Constructor
+     * Constructor.
      */
     public IdMapperMgr()
     {
     }
     
     /**
-     * Sets up the DBConnection for all the mappers (This is a Required Step before using it)
+     * Sets up the DBConnection for all the mappers (This is a Required Step before using it).
      * @param oldConn the old connection
      * @param newConn the new connection
      */
@@ -63,10 +63,10 @@ public class IdMapperMgr
     }
 
     /**
-     * Create a Table Mapper
-     * @param tableName
-     * @param idName
-     * @param sql
+     * Create a Table Mapper with name, id and SQL.
+     * @param tableName the table name
+     * @param idName the id (primary key)
+     * @param sql the SQL used to do the mapping
      * @return the IdHashMapper object
      */
     public IdTableMapper addTableMapper(final String tableName, final String idName, final String sql) throws SQLException
@@ -91,9 +91,11 @@ public class IdMapperMgr
     }
     
     /**
-     * @param tableName
-     * @param idName
-     * @return the IdHashMapper object
+     * Creates a mapper with name and id.
+     * @param tableName the name of the table
+     * @param idName the id (primary key)
+     * @return the same Mapper that was passed in
+     * @throws SQLException
      */
     public IdTableMapper addTableMapper(final String tableName, final String idName)  throws SQLException
     {
@@ -101,12 +103,13 @@ public class IdMapperMgr
     }
     
     /**
-     * Creates a Hash mapper with pre-installed SQL
-     * @param name
-     * @param sql
-     * @return the IdHashMapper object
+     * Creates a Hash mapper with pre-installed SQL.
+     * @param tableName the name of the mapper
+     * @param sql the sql used to create the map
+     * @return the new mapper
+     * @throws SQLException
      */
-    public IdHashMapper addHashMapper(final String name, final String sql) throws SQLException
+    public IdHashMapper addHashMapper(final String tableName, final String sql) throws SQLException
     {
         if (oldConn == null || newConn == null)
         {
@@ -114,22 +117,23 @@ public class IdMapperMgr
             
         }
         
-        IdHashMapper idMapper = new IdHashMapper(name.toLowerCase(), sql);
+        IdHashMapper idMapper = new IdHashMapper(tableName.toLowerCase(), sql);
         idMappers.put(idMapper.getName(), idMapper);
         return idMapper;
     }
     
     /**
-     * Creates a Hash mapper
-     * @param name
+     * Creates a Hash mapper.
+     * @param tableName the tableName of the mapper
      * @return the IdHashMapper object
      */
-    public IdHashMapper addHashMapper(final String name) throws SQLException
+    public IdHashMapper addHashMapper(final String tableName) throws SQLException
     {
-        return addHashMapper(name, null);
+        return addHashMapper(tableName, null);
     }
     
     /**
+     * Return  the old connection.
      * @return the old connection
      */
     public Connection getOldConnection()
@@ -138,6 +142,7 @@ public class IdMapperMgr
     }
 
     /**
+     * Returns the new connection.
      * @return the new connection
      */
     public Connection getNewConnection()
@@ -146,8 +151,9 @@ public class IdMapperMgr
     }
 
     /**
-     * @param tableName
-     * @param idName
+     * Get a mapper by name and id.
+     * @param tableName the table name
+     * @param idName the id
      * @return the IdHashMapper object
      */
     public IdMapper get(final String tableName, final String idName)
@@ -156,8 +162,8 @@ public class IdMapperMgr
     }
     
     /**
+     * Get a mapper by name.
      * @param name
-     * @param idName
      * @return the IdHashMapper object
      */
     public IdMapper get(final String name)
@@ -166,10 +172,11 @@ public class IdMapperMgr
     }
     
     /**
-     * @param fkTableName
-     * @param fkIdName
-     * @param tableName
-     * @param idName
+     * Map a foreigh key.
+     * @param fkTableName foreign key table name to be mapped from
+     * @param fkIdName foreign key id to be mapped from
+     * @param tableName table name to be mapped to
+     * @param idName id to be mapped to
      */
     public void mapForeignKey(final String fkTableName, 
                               final String fkIdName, 
@@ -189,7 +196,7 @@ public class IdMapperMgr
     }
     
     /**
-     * 
+     * Cleanup map.
      */
     public void cleanup() throws SQLException
     {
@@ -201,6 +208,7 @@ public class IdMapperMgr
     }
     
     /**
+     * Return the singleton of the Mapper Manager.
      * @return IdMapperMgr instance
      */
     public static IdMapperMgr getInstance()

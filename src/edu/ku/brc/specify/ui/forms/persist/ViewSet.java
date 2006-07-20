@@ -58,7 +58,7 @@ public class ViewSet
     protected Hashtable<String, ViewDef> viewDefs = new Hashtable<String, ViewDef>();
     
     /**
-     * Default Constructor
+     * Default Constructor.
      *
      */
     public ViewSet()
@@ -67,14 +67,14 @@ public class ViewSet
 
 
     /**
-     * Constructor 
+     * Constructor. 
      * @param type indicates that is contains the core set of forms that 
      *             can be referred in other places with specifying the viewset name
      * @param name name of view set
      * @param title human readable title (short description)
-     * @param fileName the filename it came from
-     * @param fileName the filename it came from
-     * @param fileName the filename it came from
+     * @param fileName the filename of the ViewSet
+     * @param databases the databases it can be used with
+     * @param users the users that can access it
      */
     public ViewSet(final Type type, 
                    final String name, 
@@ -96,7 +96,7 @@ public class ViewSet
     }
     
     /**
-     * Parse for the type and converts it to the Enum
+     * Parse for the type and converts it to the Enum.
      * @param typeStr the type
      * @return the enum of the type
      */
@@ -111,7 +111,7 @@ public class ViewSet
     }
 
     /**
-     * Cleans up intneral data 
+     * Cleans up intneral data.
      */
     public void cleanUp()
     {
@@ -127,7 +127,7 @@ public class ViewSet
     }
     
     /**
-     * Loads the view from the file
+     * Loads the view from the file.
      */
     protected void loadViews()
     {
@@ -149,7 +149,7 @@ public class ViewSet
     }
     
     /**
-     * Gets view
+     * Gets a view by name.
      * @param name name of view to be retrieved
      * @return the view or null if it isn't found 
      */
@@ -161,7 +161,7 @@ public class ViewSet
     }
 
     /**
-     * Get the views. It loads them if they have not been loaded yet.
+     * Get all the views. It loads them if they have not been loaded yet.
      * @return the vector of all the view in the ViewSet
      */
     public Map<String, View> getViews()
@@ -171,7 +171,7 @@ public class ViewSet
     }
 
     /**
-     * Sets the Views
+     * Sets the Views.
      * @param views the vector of new views
      */
     public void setViews(final Hashtable<String, View> views)
@@ -180,7 +180,7 @@ public class ViewSet
     }
 
     /**
-     * Sets the ViewDefs
+     * Sets the ViewDefs.
      * @param viewDefs the vector of new views
      */
     public void setViewDefs(final Hashtable<String, ViewDef> viewDefs)
@@ -189,7 +189,7 @@ public class ViewSet
     }
 
     /**
-     * Gets the name
+     * Gets the name.
      * @return the name of the viewset
      */
     public String getName()
@@ -198,6 +198,7 @@ public class ViewSet
     }
 
     /**
+     * Returns the type of ViewSet it is.
      * @return the type of ViewSet it is 
      */
     public Type getType()
@@ -206,7 +207,7 @@ public class ViewSet
     }
 
     /**
-     * Sets the name
+     * Sets the name.
      * @param name the name of the viewset
      */
     public void setName(final String name)
@@ -215,6 +216,7 @@ public class ViewSet
     }
 
     /**
+     * Returns the title.
      * @return the title 
      */
     public String getTitle()
@@ -223,7 +225,7 @@ public class ViewSet
     }
 
     /**
-     * Indicates that is contains the core set of forms that can be referred in other places with specifying the viewset name
+     * Indicates that is contains the core set of forms that can be referred in other places with specifying the viewset name.
      * @return that is contains the core set of forms that can be referred in other places with specifying the viewset name
      */
     public boolean isSystem()
@@ -232,6 +234,7 @@ public class ViewSet
     }
 
     /**
+     * Returns a list of databases that the view works with.
      * @return a list of databases that the view works with
      */
     public List<String> getDatabases()
@@ -240,6 +243,7 @@ public class ViewSet
     }
 
     /**
+     * Returns a list of users that can use this form.
      * @return a list of users that can use this form
      */
     public List<String> getUsers()
@@ -248,7 +252,7 @@ public class ViewSet
     }
 
     /**
-     * Load an XML View File from a stream if the ViewSet is not unique than it throws and exception
+     * Load an XML View File from a stream if the ViewSet is not unique than it throws and exception.
      * @param fileInputStream a file input stream to read the DOM4J from
      * @throws Exception on various errors
      */

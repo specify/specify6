@@ -31,29 +31,43 @@ import javax.swing.JComponent;
  * 
  * @author Rod Spears
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * Currently Not Used
  */
 public class ActionChangedListener implements PropertyChangeListener
 {
    private Vector<JComponent> items = new Vector<JComponent>(); 
     
-    public ActionChangedListener(JComponent aUIComp)
+    /**
+     * Constructor
+     * @param uiComp the component
+     */
+    public ActionChangedListener(JComponent uiComp)
     {
         super();
-        add(aUIComp);
+        add(uiComp);
     }
     
-    public void add(JComponent aUIComp)
+    /**
+     * Add the component
+     * @param uiComp the component
+     */
+    public void add(JComponent uiComp)
     {
-        items.addElement(aUIComp);
+        items.addElement(uiComp);
     }
     
-    public void remove(JComponent aUIComp)
+    /**
+     * Remove the component
+     * @param uiComp the component
+     */
+    public void remove(JComponent uiComp)
     {
-        items.removeElement(aUIComp);
+        items.removeElement(uiComp);
     }
     
+    /* (non-Javadoc)
+     * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
+     */
     public void propertyChange(PropertyChangeEvent e)
     {
         for (JComponent comp : items)

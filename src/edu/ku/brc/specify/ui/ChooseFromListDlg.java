@@ -66,7 +66,7 @@ public class ChooseFromListDlg extends JDialog implements ActionListener
     protected ImageIcon      icon   = null;
     
     /**
-     * Constructor 
+     * Constructor.
      * @param title the title of the dialog
      * @param items the list to be selected from
      * @throws HeadlessException
@@ -82,7 +82,7 @@ public class ChooseFromListDlg extends JDialog implements ActionListener
     }
 
     /**
-     * Constructor 
+     * Constructor.
      * @param title the title of the dialog
      * @param items the list to be selected from
      * @param icon the icon to be displayed in front of each entry in the list
@@ -101,7 +101,7 @@ public class ChooseFromListDlg extends JDialog implements ActionListener
     }
 
     /**
-     * 
+     * Create the UI for the dialog.
      *
      */
     protected void createUI(final String title)
