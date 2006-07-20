@@ -21,7 +21,6 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.specify.ui.GraphicsUtils;
 import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.ui.TreeDataJList;
 import edu.ku.brc.util.Pair;
 
 @SuppressWarnings("serial")
@@ -64,8 +63,8 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 		
 		rankBoundsMap = new TreeMap<Integer, Pair<Integer,Integer>>();
 
-		open   = IconManager.getIcon("Down",    IconManager.IconSize.Std16);
-		closed = IconManager.getIcon("Forward", IconManager.IconSize.Std16);
+		open   = IconManager.getIcon("Down",    IconManager.IconSize.NonStd);
+		closed = IconManager.getIcon("Forward", IconManager.IconSize.NonStd);
 	}
 	
 	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
@@ -193,7 +192,7 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 		 *
 		 * @param list the list
 		 */
-		public void setList(TreeDataJList list)
+		public void setList(JList list)
 		{
 			this.list = list;
 		}
