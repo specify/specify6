@@ -15,11 +15,11 @@ import javax.swing.event.ListDataListener;
 
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.treeutils.TreeTableUtils;
-import edu.ku.brc.ui.TreeDataJList;
 import edu.ku.brc.util.Pair;
 
 /**
- * A {@link JLabel} for displaying the names of columns of {@link TreeDataJList}s.
+ * A {@link JLabel} for displaying the names of columns of lists displaying data in
+ * {@link TreeDataListModel}s.
  *
  * @author jstewart
  * @version %I% %G%
