@@ -33,13 +33,14 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.WorkbenchPane;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.SubPaneIFace;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UICacheManager;
 
@@ -111,7 +112,7 @@ public class WorkbenchTask extends BaseTask
     		{
     			File csvFile = jfc.getSelectedFile();
     			log.debug("Importing field notebook: " + csvFile.getAbsolutePath() );
-    			UICacheManager.getSubPaneMgr().addPane(new WorkbenchPane("Field Notebook Import", this, jfc.getSelectedFile()));
+    			SubPaneMgr.getInstance().addPane(new WorkbenchPane("Field Notebook Import", this, jfc.getSelectedFile()));
     		}
         } else
         {
@@ -144,7 +145,7 @@ public class WorkbenchTask extends BaseTask
             {
                 String filename = dialog.getDirectory() + curFile;
 
-                UICacheManager.getSubPaneMgr().addPane(new WorkbenchPane("Field Notebook Import", this, new File(filename)));
+                SubPaneMgr.getInstance().addPane(new WorkbenchPane("Field Notebook Import", this, new File(filename)));
             }
 
         }

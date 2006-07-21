@@ -59,6 +59,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jdesktop.animation.timing.TimingTarget;
 
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.prefs.PrefsCache;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -68,7 +69,6 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.extras.FishBaseInfoGetter;
 import edu.ku.brc.specify.extras.FishBaseInfoGetterListener;
 import edu.ku.brc.specify.extras.SwingWorker;
-import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.tasks.services.KeyholeMarkupGenerator;
 import edu.ku.brc.specify.tasks.services.LocalityMapper;
 import edu.ku.brc.ui.IconManager;

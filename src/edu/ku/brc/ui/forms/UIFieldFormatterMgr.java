@@ -23,8 +23,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.af.prefs.PrefsCache;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.prefs.PrefsCache;
 
 /**
  * The Format Manager; reads in all the formats from XML

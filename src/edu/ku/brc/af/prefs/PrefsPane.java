@@ -12,66 +12,64 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.prefs;
+package edu.ku.brc.af.prefs;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
+import java.awt.Color;
 import java.awt.Component;
-import java.awt.Image;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.prefs.Preferences;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.ui.RolloverCommand;
-import edu.ku.brc.ui.ToolbarLayoutManager;
 import edu.ku.brc.ui.UICacheManager;
 
 /**
- * This class simply reads all the prefs and constructs a toolbar with the various icons.
+ * 
+ * This class creates a grid of Preferences icon (commands) where each icon will dispay a panel.
+ * It creates a row (or section) for each grouping of preferences and then makes sure all the columns and rows are aligned.
+ * (Currently not in use)
  * 
  * @author rods
  *
  */
 @SuppressWarnings("serial")
-public class PrefsToolbar extends JPanel
+public class PrefsPane extends JPanel
 {
-    private static final Logger log = Logger.getLogger(PrefsToolbar.class);
+    private static final Logger log = Logger.getLogger(PrefsPane.class);
     
     public static final String NAME        = "name";
     public static final String TITLE       = "title";
     public static final String PANEL_CLASS = "panelClass";
     public static final String ICON_PATH   = "iconPath";
            
-    protected Preferences                appsNode = UICacheManager.getAppPrefs();
-    protected PrefMainPanel              mainPanel;
-    protected int                        iconSize     = 24;  // XXX PREF (Possible???)
+    protected Preferences   appsNode = UICacheManager.getAppPrefs();
+    protected PrefMainPanel mainPanel;
     
     /**
-     * COnstructor
-     */
-    /**
-     * Constructor with the main panel so the icon know how to show their pane
      * 
-     * @param mainPanel the main pane that houses all the preference panes
      */
-    public PrefsToolbar(final PrefMainPanel mainPanel)
+    public PrefsPane(final PrefMainPanel mainPanel)
     {
-        super(new ToolbarLayoutManager(2,5));
+        super();
         
         this.mainPanel = mainPanel;
-        
+        setLayout(new PrefsPaneLayoutManager());
         init();
-        
     }
 
     /**
-     * Initializes the toolbar with all the icon from all the diffrent groups or sections
+     * 
      */
     protected void init()
     {
@@ -83,8 +81,22 @@ public class PrefsToolbar extends JPanel
         
         try
         {
+            Color gray = new Color(230,230,230);
+            int   delta = 8;
+            Color lighter = new Color(gray.getRed()+delta, gray.getRed()+delta, gray.getRed()+delta);
+            
             // First Get Main Categories
+            Font newFont = null;
             String[] childrenNames = appPrefs.childrenNames();
+            System.out.println("Keys: "+childrenNames.length);
+            System.out.println("childrenNames: "+appPrefs.childrenNames().length);
+            
+            for (String name : childrenNames)
+            {
+                System.out.println("Section: "+name);
+            }
+            
+            int row = 0;
             for (String sectionName : childrenNames)
             {
                 Preferences section = appPrefs.node(sectionName);
@@ -94,23 +106,35 @@ public class PrefsToolbar extends JPanel
                     boolean isAppPref = section.getBoolean("isApp", false);
                     if (isAppPref)
                     {
-                        loadSectionPrefs(section);
+                        PrefPanelRow rowPanel = new PrefPanelRow(getResourceString(title));
+                        if (newFont == null)
+                        {
+                            Font font = rowPanel.getTitle().getFont();
+                            newFont = new Font(font.getFontName(), Font.BOLD, font.getSize()+1);
+                        }
+                        rowPanel.getTitle().setFont(newFont);
+                        
+                        loadSectionPrefs(section, rowPanel);
+                        
+                        rowPanel.setBackground((row % 2 == 0) ? lighter : gray);
+                        add(rowPanel);
+                        row++;
                     }
                 }
             }
-            
+
         } catch (Exception ex)
         {
-            ex.printStackTrace();
             throw new RuntimeException(ex);
         }
     }
     
     /**
-     * Loads a Section or grouping of Prefs
-     * @param parentPref the parent pref which is the groups or section
+     * @param parentPref
+     * @param rowPanel
      */
-    protected void loadSectionPrefs(final Preferences parentPref)
+    protected void loadSectionPrefs(final Preferences parentPref, 
+                                    final PrefPanelRow rowPanel)
     {
         try
         {
@@ -126,31 +150,33 @@ public class PrefsToolbar extends JPanel
                 if (title != null && panelClass != null && iconPath != null)
                 {
                     ImageIcon icon = new ImageIcon(new URL(iconPath));
-                    if (icon.getIconWidth() > iconSize || icon.getIconHeight() > iconSize)
-                    {
-                        icon = new ImageIcon(icon.getImage().getScaledInstance(iconSize, iconSize, Image.SCALE_SMOOTH));  
-                    }
                     if (icon == null)
                     {
                         log.error("Icon was created - path["+iconPath+"]");
                     }
                     
-                    RolloverCommand btn = new RolloverCommand(getResourceString(title), icon);
+                    JButton btn = new JButton(getResourceString(title), icon);
+                    btn.setHorizontalTextPosition(JLabel.CENTER);
+                    btn.setVerticalTextPosition(JLabel.BOTTOM);
+                    btn.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+                    btn.setBorderPainted(false);
                     btn.setOpaque(false);
-                    btn.setVerticalLayout(true);
                     
                     try
                     {
                         Class panelClassObj = Class.forName(panelClass);
                         Component comp = (Component)panelClassObj.newInstance(); 
-                        mainPanel.addPanel(title, comp);
-                        
-                        add(btn.getUIComponent());
+                        if (!mainPanel.addPanel(title, comp))
+                        {
+                            log.error("The Class ["+panelClass+"] couldn't loaded into prefs because it doesn't implement the proper interfaces");
+                        } else
+                        {
+                            rowPanel.add(btn);
+                        }
                         
                     } catch (Exception ex)
                     {
                         log.error(ex); // XXX FIXME
-                        ex.printStackTrace();
                     }
                     btn.addActionListener(new ShowAction(title)); 
                 }
@@ -162,16 +188,12 @@ public class PrefsToolbar extends JPanel
         }
     }
     
-    /**
-     * Show a panel by name
-     * @param panelName the name of the panel to be shown
-     */
     protected void showPanel(final String panelName)
     {
         mainPanel.showPanel(panelName);
+        
     }
-
-
+    
     //--------------------------------------------------------------
     // Inner Classes
     //--------------------------------------------------------------
@@ -179,7 +201,7 @@ public class PrefsToolbar extends JPanel
  
     /**
      * 
-     * Command for showing a pref pane
+     * @author rods
      *
      */
     class ShowAction implements ActionListener 

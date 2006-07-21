@@ -36,7 +36,7 @@
 		<property name="cache.use_query_cache">true</property>
 
 		<!-- Specify mapping files. -->
-		<mapping resource="edu/ku/brc/specify/ui/db/PickList.hbm.xml"/>
+		<mapping resource="edu/ku/brc/ui/db/PickList.hbm.xml"/>
 
 
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/RecordSet.hbm.xml"/>

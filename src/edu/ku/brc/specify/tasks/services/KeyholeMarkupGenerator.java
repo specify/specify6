@@ -11,10 +11,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
-import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Collectors;

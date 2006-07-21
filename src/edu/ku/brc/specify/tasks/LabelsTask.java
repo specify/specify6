@@ -48,6 +48,8 @@ import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
+import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -60,7 +62,6 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconListCellRenderer;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
-import edu.ku.brc.ui.SubPaneIFace;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
@@ -186,7 +187,7 @@ public class LabelsTask extends BaseTask
     public void doLabels(final String name, final String title, final RecordSet recordSet)
     {
         LabelsPane labelsPane = new LabelsPane(title, this);
-        UICacheManager.addSubPane(labelsPane);
+        SubPaneMgr.getInstance().addPane(labelsPane);
         labelsPane.createReport(name, recordSet);
 
     }

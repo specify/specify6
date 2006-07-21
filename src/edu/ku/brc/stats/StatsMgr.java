@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.core.ContextMgr;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.tasks.StatsTask;
 import edu.ku.brc.af.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.dbsupport.CustomQuery;
@@ -25,7 +26,6 @@ import edu.ku.brc.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.ViewMgr;
 import edu.ku.brc.ui.forms.persist.View;
 
@@ -305,7 +305,7 @@ public class StatsMgr
                 //System.out.println(sqlStr);
                 queryPane.setSQLStr(sqlStr);
                 queryPane.doQuery();
-                UICacheManager.addSubPane(queryPane);
+                SubPaneMgr.getInstance().addPane(queryPane);
 
             } else
             {

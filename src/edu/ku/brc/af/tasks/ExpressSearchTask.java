@@ -53,6 +53,8 @@ import org.dom4j.Element;
 
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBoxIFace;
+import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.tasks.subpane.ExpressSearchIndexerPane;
 import edu.ku.brc.af.tasks.subpane.ExpressSearchResultsPane;
 import edu.ku.brc.af.tasks.subpane.ExpressSearchResultsPaneIFace;
@@ -62,7 +64,6 @@ import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.SubPaneIFace;
 import edu.ku.brc.ui.UICacheManager;
 /**
  * This task will enable the user to index there database and preform express searches
@@ -181,7 +182,7 @@ public class ExpressSearchTask extends BaseTask
     public void showIndexerPane()
     {
         ExpressSearchIndexerPane expressSearchIndexerPane = new ExpressSearchIndexerPane(this);
-        UICacheManager.getSubPaneMgr().addPane(expressSearchIndexerPane);
+        SubPaneMgr.getInstance().addPane(expressSearchIndexerPane);
     }
 
     /**
@@ -196,7 +197,7 @@ public class ExpressSearchTask extends BaseTask
             ExpressSearchResultsPane expressSearchPane = new ExpressSearchResultsPane(searchTerm, this);
             if (doQuery(lucenePath, analyzer, searchText, badSearchColor, tables, expressSearchPane))
             {
-                UICacheManager.getSubPaneMgr().addPane(expressSearchPane);
+                SubPaneMgr.getInstance().addPane(expressSearchPane);
             } else
             {
                 UICacheManager.displayLocalizedStatusBarText("NoExpressSearchResults");

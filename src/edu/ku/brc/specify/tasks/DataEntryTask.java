@@ -27,6 +27,8 @@ import org.hibernate.Query;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxIFace;
+import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.FormPane;
@@ -43,9 +45,7 @@ import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.SubPaneIFace;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.ViewMgr;
 import edu.ku.brc.ui.forms.persist.View;
 
@@ -122,7 +122,7 @@ public class DataEntryTask extends BaseTask
     {
         View view = ViewMgr.getView(viewSetName, viewName);
         FormPane formPane = new FormPane(view.getName(), task, viewSetName, viewName, mode, data, isNewForm);
-        UICacheManager.getSubPaneMgr().addPane(formPane);
+        SubPaneMgr.getInstance().addPane(formPane);
     }
 
     /**
@@ -141,7 +141,7 @@ public class DataEntryTask extends BaseTask
             if (data != null && data.size() > 0)
             {
                 FormPane formPane = new FormPane(view.getName(), task, view.getViewSetName(), view.getName(), mode, data.get(0), false);
-                UICacheManager.getSubPaneMgr().addPane(formPane);
+                SubPaneMgr.getInstance().addPane(formPane);
 
             } else
             {
@@ -165,7 +165,7 @@ public class DataEntryTask extends BaseTask
     public void openTreeEditor(final Class treeableClass, final String name)
     {
     	TreeTableViewer ttv = new TreeTableViewer(treeableClass,name,this);
-    	UICacheManager.getSubPaneMgr().addPane(ttv);
+    	SubPaneMgr.getInstance().addPane(ttv);
     }
 
     /**

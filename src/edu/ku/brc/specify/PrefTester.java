@@ -41,9 +41,9 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
+import edu.ku.brc.af.prefs.PrefMainPanel;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.prefs.PrefMainPanel;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 

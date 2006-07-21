@@ -66,6 +66,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.af.tasks.ExpressSearchTask;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -634,7 +635,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         closeBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                UICacheManager.getSubPaneMgr().closeCurrent();
+                SubPaneMgr.getInstance().closeCurrent();
             }
         });
 

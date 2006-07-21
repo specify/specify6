@@ -31,7 +31,7 @@ import javax.swing.event.DocumentListener;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.specify.prefs.PrefsCache;
+import edu.ku.brc.af.prefs.PrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UICacheManager;

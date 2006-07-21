@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.tasks.subpane.StatsPane;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
@@ -35,7 +36,6 @@ import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.stats.StatsMgr;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.SubPaneIFace;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 /**
  * The StatsTask is responsible gettng and displaying all various idfferent kinds of stats

@@ -9,7 +9,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
-import org.hibernate.Hibernate;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 

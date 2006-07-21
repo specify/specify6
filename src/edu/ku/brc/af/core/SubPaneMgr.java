@@ -12,7 +12,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.ui;
+package edu.ku.brc.af.core;
 
 import java.awt.Component;
 import java.util.ArrayList;
@@ -23,13 +23,14 @@ import java.util.List;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import edu.ku.brc.af.core.ContextMgr;
+import edu.ku.brc.ui.ExtendedTabbedPane;
 
 @SuppressWarnings("serial")
 public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
 {
-    protected enum NotificationType {Added, Removed, Shown};
+    private static final SubPaneMgr instance = new SubPaneMgr();
     
+    protected enum NotificationType {Added, Removed, Shown};
     // Static Data Members
     //private static final Logger log = Logger.getLogger(SubPaneMgr.class);
     
@@ -43,12 +44,26 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      * 
      * 
      */
-    public SubPaneMgr()
+    protected SubPaneMgr()
     {
         // This way we notifications that the tabs have changed
         addChangeListener(this);
     }
     
+    /**
+     * Returns the reference to the singleton
+     * @return the reference to the singleton
+     */
+    public static SubPaneMgr getInstance()
+    {
+        return instance;
+    }
+    
+    /**
+     * Get the name of the tab sans the colon
+     * @param name the current name
+     * @return the "base" name
+     */
     protected String getNameWithoutColon(final String name)
     {
         int inx = name.indexOf(':');

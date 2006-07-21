@@ -1,4 +1,4 @@
-package edu.ku.brc.specify.prefs;
+package edu.ku.brc.af.prefs;
 
 import edu.ku.brc.ui.validation.FormValidator;
 

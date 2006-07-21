@@ -35,6 +35,7 @@ import org.hibernate.LockMode;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
+import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -44,7 +45,6 @@ import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.RolloverCommand;
-import edu.ku.brc.ui.SubPaneIFace;
 import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UICacheManager;
 /**

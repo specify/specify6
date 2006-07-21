@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxIFace;
+import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -32,7 +33,6 @@ import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.SubPaneIFace;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.forms.persist.View;
 

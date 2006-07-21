@@ -7,6 +7,8 @@ import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.prefs.PrefsPanelIFace;
+import edu.ku.brc.af.prefs.PrefsSavable;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.ViewMgr;

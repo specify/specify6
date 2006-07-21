@@ -35,7 +35,7 @@ import javax.swing.ListModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import edu.ku.brc.specify.prefs.PrefsCache;
+import edu.ku.brc.af.prefs.PrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UICacheManager;

@@ -12,19 +12,35 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.prefs;
+package edu.ku.brc.af.core;
 
 /**
- * Preference Panes need to implment this if they are to save their preferences
+ * Interface to notify folks when an SubPaneIFace is added or removed from the manager.
+ * The most important notification is when a SubPane is closed and the task can be notified.
  * 
  * @author rods
  *
  */
-public interface PrefsSavable
-{    
+public interface SubPaneMgrListener
+{
     /**
-     * Indicates the prefs should be saved (like now)
+     * Notication that a SubPane was added to the manager
+     * @param subPane the subpane that was added
      */
-    public void savePrefs();
+    public void subPaneAdded(SubPaneIFace subPane);
+    
+    /**
+     * Notication that a SubPane was removed from the manager
+     * @param subPane the subpane that was removed
+     */
+    public void subPaneRemoved(SubPaneIFace subPane);
+    
+    
+    /**
+     * Notication that a SubPane was removed from the manager
+     * @param subPane the subpane that was removed
+     */
+    public void subPaneShown(SubPaneIFace subPane);
+    
     
 }

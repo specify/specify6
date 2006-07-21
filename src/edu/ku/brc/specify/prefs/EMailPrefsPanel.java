@@ -36,6 +36,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.prefs.PrefsPanelIFace;
+import edu.ku.brc.af.prefs.PrefsSavable;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;

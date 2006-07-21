@@ -32,6 +32,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.StatsPane;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
@@ -39,9 +41,7 @@ import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageSwirlPanel;
-import edu.ku.brc.ui.SubPaneIFace;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.UICacheManager;
 
 /**
  * This task will enable the user to create queries, save them and execute them.
@@ -77,8 +77,8 @@ public class StartUpTask extends BaseTask
     public void createStartUpStatPanel()
     {
         StatsPane statPane = new StatsPane(title, this, "startup_panel.xml", true, null);
-        UICacheManager.getSubPaneMgr().removePane(blankPanel);
-        UICacheManager.getSubPaneMgr().addPane(statPane);
+        SubPaneMgr.getInstance().removePane(blankPanel);
+        SubPaneMgr.getInstance().addPane(statPane);
         blankPanel = null;
     }
 
@@ -179,9 +179,9 @@ public class StartUpTask extends BaseTask
 
     protected void switchToDemoStart()
     {
-        UICacheManager.getSubPaneMgr().removePane(UICacheManager.getSubPaneMgr().getCurrentSubPane());
+        SubPaneMgr.getInstance().removePane(SubPaneMgr.getInstance().getCurrentSubPane());
         blankPanel = new DemoPane("", this, "", this);
-        UICacheManager.getSubPaneMgr().addPane(blankPanel);
+        SubPaneMgr.getInstance().addPane(blankPanel);
     }
 
 
@@ -232,8 +232,8 @@ public class StartUpTask extends BaseTask
     // XXX For Demo only
     protected void swapPanes()
     {
-        UICacheManager.getSubPaneMgr().addPane(statPane);
-        UICacheManager.getSubPaneMgr().removePane(blankPanel);
+        SubPaneMgr.getInstance().addPane(statPane);
+        SubPaneMgr.getInstance().removePane(blankPanel);
     }
 
     class DemoPane extends SimpleDescPane

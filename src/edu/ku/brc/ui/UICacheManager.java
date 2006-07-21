@@ -69,7 +69,6 @@ public class UICacheManager
     protected ResourceBundle resourceBundle = null;
     protected String         resourceName   = "resources";
 
-    protected SubPaneMgr     subPaneMgr     = null;
     protected Class          rootPrefClass   = null;
 
     protected FileCache      longTermCache = null;
@@ -310,33 +309,6 @@ public class UICacheManager
         displayStatusBarText(localizedStr);
 
 
-    }
-
-    /**
-     * Convience method for adding a subpane to the subpane manager
-     * @param subPane the sub pane to be added
-     */
-    public static void addSubPane(SubPaneIFace subPane)
-    {
-        getSubPaneMgr().addPane(subPane);
-    }
-
-    /**
-     *
-     * @return the sub pane manager
-     */
-    public static SubPaneMgr getSubPaneMgr()
-    {
-        return instance.subPaneMgr;
-    }
-
-    /**
-     *
-     * @param subPaneMgr
-     */
-    public static void setSubPaneMgr(SubPaneMgr subPaneMgr)
-    {
-        instance.subPaneMgr = subPaneMgr;
     }
 
     /**

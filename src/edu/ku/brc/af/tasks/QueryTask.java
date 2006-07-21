@@ -26,16 +26,13 @@ import javax.swing.JComponent;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
-//import edu.ku.brc.specify.tasks.subpane.SearchFormPane;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.SubPaneIFace;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.UICacheManager;
-import edu.ku.brc.ui.forms.ViewMgr;
-import edu.ku.brc.ui.forms.persist.View;
 
 /**
  * This task will enable the user to create queries, save them and execute them.
@@ -83,7 +80,7 @@ public class QueryTask extends BaseTask
     public void createAndExecute(final String sqlStr)
     {
         SQLQueryPane sqlPane = new SQLQueryPane(name, this, false, false);//true, true);
-        UICacheManager.getSubPaneMgr().addPane(sqlPane);
+        SubPaneMgr.getInstance().addPane(sqlPane);
         sqlPane.setSQLStr(sqlStr);
         sqlPane.doQuery();
 
@@ -104,7 +101,7 @@ public class QueryTask extends BaseTask
     {
         View view = ViewMgr.getView(viewSetName, viewName);
         SearchFormPane searchFormPane = new SearchFormPane(view.getName(), this, viewSetName, viewName);
-        UICacheManager.getSubPaneMgr().addPane(searchFormPane);
+        SubPaneMgr.getInstance().addPane(searchFormPane);
 
     }*/
 

@@ -68,19 +68,20 @@ import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.af.core.ContextMgr;
+import edu.ku.brc.af.core.MainPanel;
+import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.prefs.PrefMainPanel;
 import edu.ku.brc.af.tasks.ExpressSearchTask;
 import edu.ku.brc.af.tasks.StartUpTask;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyConfig;
 import edu.ku.brc.specify.plugins.PluginMgr;
-import edu.ku.brc.specify.prefs.PrefMainPanel;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
-import edu.ku.brc.ui.MainPanel;
-import edu.ku.brc.ui.SubPaneIFace;
 import edu.ku.brc.ui.ToolbarLayoutManager;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
@@ -286,7 +287,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             System.out.println(glassPane.getLocation()+" "+size);
             /*
 
-            SubPaneMgr sbm = UICacheManager.getSubPaneMgr();
+            SubPaneMgr sbm = SubPaneMgr.getInstance();
             Point      pp       = new Point(0,0);
             SwingUtilities.convertPointToScreen(pp, sbm);
             SwingUtilities.convertPointFromScreen(pp, mainPanel);*/
@@ -689,7 +690,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 {
                     public void actionPerformed(ActionEvent ae)
                     {
-                        UICacheManager.getSubPaneMgr().closeCurrent();
+                        SubPaneMgr.getInstance().closeCurrent();
                     }
                 });*/
 
@@ -698,7 +699,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 {
                     public void actionPerformed(ActionEvent ae)
                     {
-                        UICacheManager.getSubPaneMgr().closeAll();
+                        SubPaneMgr.getInstance().closeAll();
                     }
                 });
 

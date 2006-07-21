@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
-//import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.util.Pair;

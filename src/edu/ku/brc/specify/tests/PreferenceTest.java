@@ -12,8 +12,8 @@ import junit.framework.TestCase;
 import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.prefs.PrefsCache;
 import edu.ku.brc.specify.Specify;
-import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;

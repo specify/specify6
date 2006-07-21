@@ -35,6 +35,9 @@ import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
+import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.SubPaneMgr;
+import edu.ku.brc.af.core.SubPaneMgrListener;
 import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
@@ -48,10 +51,7 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
-import edu.ku.brc.ui.SubPaneIFace;
-import edu.ku.brc.ui.SubPaneMgrListener;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.dnd.GhostActionable;
 
 /**
@@ -98,7 +98,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
 
         ContextMgr.register(this);
 
-        UICacheManager.getSubPaneMgr().addListener(this);
+        SubPaneMgr.getInstance().addListener(this);
 
     }
 
@@ -108,7 +108,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     public void finalize()
     {
         ContextMgr.unregister(this);
-        UICacheManager.getSubPaneMgr().removeListener(this);
+        SubPaneMgr.getInstance().removeListener(this);
 
 
     }
@@ -234,10 +234,10 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     {
         //if (isSuperClassOf(subPane, subPaneClassFilter))
         //{
-        //    UICacheManager.getSubPaneMgr().addPane(subPane);
+        //    SubPaneMgr.getInstance().addPane(subPane);
         //}
 
-        UICacheManager.getSubPaneMgr().addPane(subPane);
+        SubPaneMgr.getInstance().addPane(subPane);
 
     }
 
@@ -247,7 +247,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
      */
     protected void removeSubPaneFromMgr(final SubPaneIFace subPane)
     {
-        UICacheManager.getSubPaneMgr().removePane(subPane);
+        SubPaneMgr.getInstance().removePane(subPane);
     }
 
     /**
@@ -319,7 +319,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
             fp = getFormPane(viewsetName, viewName, data);
             if (fp != null)
             {
-                UICacheManager.getSubPaneMgr().showPane(fp.getName());
+                SubPaneMgr.getInstance().showPane(fp.getName());
 
             } else
             {
@@ -362,7 +362,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
 
         } else if (cnt > 0)  // wierd we should always find something
         {
-            UICacheManager.getSubPaneMgr().removePane(fp);
+            SubPaneMgr.getInstance().removePane(fp);
         }
     }
 
@@ -442,7 +442,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     {
         ContextMgr.requestContext(this);
 
-        UICacheManager.getSubPaneMgr().addPane(getStarterPane());
+        SubPaneMgr.getInstance().addPane(getStarterPane());
     }
 
     //-------------------------------------------------------
