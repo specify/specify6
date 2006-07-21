@@ -13,7 +13,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.af.tasks.subpane;
+package edu.ku.brc.specify.tasks.subpane;
 
 import static edu.ku.brc.helpers.UIHelper.centerAndShow;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
@@ -40,6 +40,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
+import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
 import edu.ku.brc.specify.ui.db.SaveRecordSetDlg;
@@ -258,7 +259,7 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
     //-----------------------------------------------------
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.SQLExecutionListener#exectionDone(edu.ku.brc.specify.dbsupport.SQLExecutionProcessor, java.sql.ResultSet)
+     * @see edu.ku.brc.af.dbsupport.SQLExecutionListener#exectionDone(edu.ku.brc.af.dbsupport.SQLExecutionProcessor, java.sql.ResultSet)
      */
     public void exectionDone(final SQLExecutionProcessor process, final java.sql.ResultSet resultSet)
     {
@@ -287,7 +288,7 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.SQLExecutionListener#executionError(edu.ku.brc.specify.dbsupport.SQLExecutionProcessor, java.lang.Exception)
+     * @see edu.ku.brc.af.dbsupport.SQLExecutionListener#executionError(edu.ku.brc.af.dbsupport.SQLExecutionProcessor, java.lang.Exception)
      */
     public void executionError(final SQLExecutionProcessor process, final Exception ex)
     {

@@ -73,7 +73,7 @@ public class NavBox extends JPanel implements NavBoxIFace
     
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.core.NavBoxIFace#setScope(edu.ku.brc.specify.core.NavBoxIFace.Scope)
+     * @see edu.ku.brc.af.core.NavBoxIFace#setScope(edu.ku.brc.af.core.NavBoxIFace.Scope)
      */
     public void setScope(final NavBoxIFace.Scope scope)
     {
@@ -98,7 +98,7 @@ public class NavBox extends JPanel implements NavBoxIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.core.NavBoxIFace#getUIComponent()
+     * @see edu.ku.brc.af.core.NavBoxIFace#getUIComponent()
      */
     public JComponent getUIComponent()
     {
@@ -106,7 +106,7 @@ public class NavBox extends JPanel implements NavBoxIFace
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.core.NavBoxIFace#getItems()
+     * @see edu.ku.brc.af.core.NavBoxIFace#getItems()
      */
     public List<NavBoxItemIFace> getItems()
     {
@@ -227,7 +227,7 @@ public class NavBox extends JPanel implements NavBoxIFace
     
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.core.NavBoxIFace#setMgr(edu.ku.brc.specify.core.NavBoxMgr)
+     * @see edu.ku.brc.af.core.NavBoxIFace#setMgr(edu.ku.brc.af.core.NavBoxMgr)
      */
     public void setMgr(NavBoxMgr mgr)
     {

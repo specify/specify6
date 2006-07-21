@@ -12,7 +12,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.af.tasks.subpane;
+package edu.ku.brc.specify.tasks.subpane;
 
 
 import static edu.ku.brc.helpers.UIHelper.createDuplicateJGoodiesDef;
@@ -67,8 +67,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.tasks.ExpressResultsTableInfo;
-import edu.ku.brc.af.tasks.ExpressSearchTask;
+import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.PairsMultipleQueryResultsHandler;
 import edu.ku.brc.dbsupport.QueryResultsContainer;
@@ -76,6 +75,9 @@ import edu.ku.brc.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.helpers.DiskFileFilter;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
+import edu.ku.brc.specify.tasks.ExpressSearchTask;
+import edu.ku.brc.specify.tasks.ExpressResultsTableInfo.LOAD_TYPE;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UICacheManager;

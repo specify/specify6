@@ -70,7 +70,7 @@ public class BarChartPane extends ChartPane implements QueryResultsListener, Que
     
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.core.Taskable#getIcon()
+     * @see edu.ku.brc.af.core.Taskable#getIcon()
      */
     public Icon getIcon()
     {
@@ -83,7 +83,7 @@ public class BarChartPane extends ChartPane implements QueryResultsListener, Que
     
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.QueryResultsProcessable#setHandler()
+     * @see edu.ku.brc.af.dbsupport.QueryResultsProcessable#setHandler()
      */
     public void setHandler(final QueryResultsHandlerIFace handler)
     {
@@ -92,7 +92,7 @@ public class BarChartPane extends ChartPane implements QueryResultsListener, Que
     
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.QueryResultsProcessable#getHandler()
+     * @see edu.ku.brc.af.dbsupport.QueryResultsProcessable#getHandler()
      */
     public QueryResultsHandlerIFace getHandler()
     {
@@ -126,7 +126,7 @@ public class BarChartPane extends ChartPane implements QueryResultsListener, Que
     
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.QueryResultsListener#allResultsBack()
+     * @see edu.ku.brc.af.dbsupport.QueryResultsListener#allResultsBack()
      */
     public synchronized void allResultsBack()
     {
@@ -164,7 +164,7 @@ public class BarChartPane extends ChartPane implements QueryResultsListener, Que
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.QueryResultsListener#resultsInError(edu.ku.brc.specify.dbsupport.QueryResultsContainer)
+     * @see edu.ku.brc.af.dbsupport.QueryResultsListener#resultsInError(edu.ku.brc.af.dbsupport.QueryResultsContainer)
      */
     public void resultsInError(final QueryResultsContainer qrc)
     {

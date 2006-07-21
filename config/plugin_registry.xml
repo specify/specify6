@@ -20,7 +20,7 @@
 	    </plugin>
 	    <plugin class="edu.ku.brc.specify.tasks.InteractionsTask"/>
 	    <plugin class="edu.ku.brc.af.tasks.StatsTask"/>
-	    <plugin class="edu.ku.brc.af.tasks.QueryTask"/>
+	    <plugin class="edu.ku.brc.specify.tasks.QueryTask"/>
         <plugin class="edu.ku.brc.specify.tasks.RecordSetTask">
 	    	<service command="Save" tableid="1" tooltip="CreateRecordSetTT"/>
             <service command="Save" tableid="7" tooltip="CreateRecordSetTT"/>
@@ -31,7 +31,7 @@
 	    </plugin>
 	    <plugin class="edu.ku.brc.specify.tasks.SystemSetupTask"/>
 		<plugin class="edu.ku.brc.specify.tasks.WorkbenchTask"/>
-	    <plugin class="edu.ku.brc.af.tasks.ExpressSearchTask"/>
+	    <plugin class="edu.ku.brc.specify.tasks.ExpressSearchTask"/>
 
 	</core>
 	<external/>

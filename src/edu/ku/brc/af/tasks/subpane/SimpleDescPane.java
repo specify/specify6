@@ -13,7 +13,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.specify.tasks.subpane;
+package edu.ku.brc.af.tasks.subpane;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -26,7 +26,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 
 /**
  * A default pane for display a simple label telling what it is suppose to do

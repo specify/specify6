@@ -39,16 +39,16 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.NavBoxLayoutManager;
-import edu.ku.brc.af.tasks.ExpressResultsTableInfo;
-import edu.ku.brc.af.tasks.ExpressSearchTask;
-import edu.ku.brc.af.tasks.subpane.ExpressSearchResultsPaneIFace;
-import edu.ku.brc.af.tasks.subpane.ExpressTableResults;
-import edu.ku.brc.af.tasks.subpane.ExpressTableResultsBase;
-import edu.ku.brc.af.tasks.subpane.ExpressTableResultsHitsCache;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
+import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
+import edu.ku.brc.specify.tasks.ExpressSearchTask;
+import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
+import edu.ku.brc.specify.tasks.subpane.ExpressTableResults;
+import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase;
+import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsHitsCache;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.db.GenericSearchDialog;
 import edu.ku.brc.ui.forms.ViewFactory;
@@ -87,7 +87,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
     protected Color          badSearchColor = new Color(255,235,235);
 
     protected Hashtable<String, ExpressResultsTableInfo> tables = null;
-    ExpressTableResultsBase  etrb;
+    protected ExpressTableResultsBase  etrb;
 
     protected int            tableId        = -1;
     protected RecordSet      recordSet      = null;

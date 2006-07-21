@@ -22,13 +22,13 @@ import java.util.Vector;
 import org.hibernate.Query;
 
 import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.plugins.MenuItemDesc;
+import edu.ku.brc.af.plugins.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
+import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.plugins.MenuItemDesc;
-import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.LocalityMapperSubPane;
-import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 /**

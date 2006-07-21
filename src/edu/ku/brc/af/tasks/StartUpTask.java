@@ -36,9 +36,9 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.StatsPane;
-import edu.ku.brc.specify.plugins.MenuItemDesc;
-import edu.ku.brc.specify.plugins.ToolBarItemDesc;
-import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.af.plugins.MenuItemDesc;
+import edu.ku.brc.af.plugins.ToolBarItemDesc;
+import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageSwirlPanel;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
@@ -91,7 +91,7 @@ public class StartUpTask extends BaseTask
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
+     * @see edu.ku.brc.af.core.BaseTask#getStarterPane()
      */
     public SubPaneIFace getStarterPane()
     {
@@ -191,7 +191,7 @@ public class StartUpTask extends BaseTask
 
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getToolBarItems()
+     * @see edu.ku.brc.af.plugins.TaskPluginable#getToolBarItems()
      */
     public List<ToolBarItemDesc> getToolBarItems()
     {
@@ -210,7 +210,7 @@ public class StartUpTask extends BaseTask
 
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getMenuItems()
+     * @see edu.ku.brc.af.plugins.TaskPluginable#getMenuItems()
      */
     public List<MenuItemDesc> getMenuItems()
     {
@@ -221,7 +221,7 @@ public class StartUpTask extends BaseTask
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
+     * @see edu.ku.brc.af.plugins.TaskPluginable#getTaskClass()
      */
     public Class getTaskClass()
     {

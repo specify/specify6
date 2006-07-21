@@ -51,7 +51,7 @@ public class ChartPane extends BaseSubPane implements Chartable
     }
        
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.Chartable#setTitle(java.lang.String)
+     * @see edu.ku.brc.af.tasks.subpane.Chartable#setTitle(java.lang.String)
      */
     public void setTitle(final String title)
     {
@@ -59,7 +59,7 @@ public class ChartPane extends BaseSubPane implements Chartable
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.Chartable#setXAxis(java.lang.String)
+     * @see edu.ku.brc.af.tasks.subpane.Chartable#setXAxis(java.lang.String)
      */
     public void setXAxis(final String title)
     {
@@ -67,7 +67,7 @@ public class ChartPane extends BaseSubPane implements Chartable
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.Chartable#setYAxis(java.lang.String)
+     * @see edu.ku.brc.af.tasks.subpane.Chartable#setYAxis(java.lang.String)
      */
     public void setYAxis(final String title)
     {
@@ -75,7 +75,7 @@ public class ChartPane extends BaseSubPane implements Chartable
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.Chartable#setVertical(boolean)
+     * @see edu.ku.brc.af.tasks.subpane.Chartable#setVertical(boolean)
      */
     public void setVertical(boolean isVertical)
     {

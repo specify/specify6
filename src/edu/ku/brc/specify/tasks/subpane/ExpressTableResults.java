@@ -13,15 +13,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.af.tasks.subpane;
+package edu.ku.brc.specify.tasks.subpane;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
+import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.ui.UICacheManager;
 
 /**

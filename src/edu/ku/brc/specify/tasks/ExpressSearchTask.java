@@ -12,7 +12,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.af.tasks;
+package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
@@ -55,14 +55,15 @@ import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.tasks.subpane.ExpressSearchIndexerPane;
-import edu.ku.brc.af.tasks.subpane.ExpressSearchResultsPane;
-import edu.ku.brc.af.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.plugins.MenuItemDesc;
-import edu.ku.brc.specify.plugins.ToolBarItemDesc;
+import edu.ku.brc.af.plugins.MenuItemDesc;
+import edu.ku.brc.af.plugins.ToolBarItemDesc;
+import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.specify.tasks.RecordSetTask;
-import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.specify.tasks.subpane.ExpressSearchIndexerPane;
+import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPane;
+import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 /**
@@ -100,7 +101,7 @@ public class ExpressSearchTask extends BaseTask
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.core.Taskable#initialize()
+     * @see edu.ku.brc.af.core.Taskable#initialize()
      */
     public void initialize()
     {
@@ -405,7 +406,7 @@ public class ExpressSearchTask extends BaseTask
     //-------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
+     * @see edu.ku.brc.af.core.BaseTask#getStarterPane()
      */
     @Override
     public SubPaneIFace getStarterPane()
@@ -415,7 +416,7 @@ public class ExpressSearchTask extends BaseTask
     
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.core.Taskable#getNavBoxes()
+     * @see edu.ku.brc.af.core.Taskable#getNavBoxes()
      */
     public java.util.List<NavBoxIFace> getNavBoxes()
     {
@@ -438,7 +439,7 @@ public class ExpressSearchTask extends BaseTask
     //-------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getToolBarItems()
+     * @see edu.ku.brc.af.plugins.TaskPluginable#getToolBarItems()
      */
     @Override
     public List<ToolBarItemDesc> getToolBarItems()
@@ -505,7 +506,7 @@ public class ExpressSearchTask extends BaseTask
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getMenuItems()
+     * @see edu.ku.brc.af.plugins.TaskPluginable#getMenuItems()
      */
     @Override
     public List<MenuItemDesc> getMenuItems()
@@ -514,7 +515,7 @@ public class ExpressSearchTask extends BaseTask
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
+     * @see edu.ku.brc.af.plugins.TaskPluginable#getTaskClass()
      */
     public Class getTaskClass()
     {

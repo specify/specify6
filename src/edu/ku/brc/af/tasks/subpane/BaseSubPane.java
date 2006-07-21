@@ -100,7 +100,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     //----------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.SubPaneIFace#getTitle()
+     * @see edu.ku.brc.af.ui.SubPaneIFace#getTitle()
      */
     public String getTitle()
     {
@@ -108,7 +108,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.SubPaneIFace#getIcon()
+     * @see edu.ku.brc.af.ui.SubPaneIFace#getIcon()
      */
     public Icon getIcon()
     {
@@ -132,7 +132,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.SubPaneIFace#getUIComponent()
+     * @see edu.ku.brc.af.ui.SubPaneIFace#getUIComponent()
      */
     public JComponent getUIComponent()
     {
@@ -140,7 +140,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.SubPaneIFace#getTask()
+     * @see edu.ku.brc.af.ui.SubPaneIFace#getTask()
      */
     public Taskable getTask()
     {

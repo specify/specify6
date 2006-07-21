@@ -13,7 +13,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.af.tasks.subpane;
+package edu.ku.brc.specify.tasks.subpane;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,9 +24,9 @@ import javax.swing.table.AbstractTableModel;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Hits;
 
-import edu.ku.brc.af.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
+import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.ui.UICacheManager;
 
 /**

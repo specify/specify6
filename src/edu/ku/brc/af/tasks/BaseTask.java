@@ -43,9 +43,9 @@ import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.specify.plugins.MenuItemDesc;
-import edu.ku.brc.specify.plugins.TaskPluginable;
-import edu.ku.brc.specify.plugins.ToolBarItemDesc;
+import edu.ku.brc.af.plugins.MenuItemDesc;
+import edu.ku.brc.af.plugins.TaskPluginable;
+import edu.ku.brc.af.plugins.ToolBarItemDesc;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -258,7 +258,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
 
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getTaskClass()
+     * @see edu.ku.brc.af.plugins.TaskPluginable#getTaskClass()
      */
     public abstract Class getTaskClass();
 
@@ -418,7 +418,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
 
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.core.Taskable#getNavBoxes()
+     * @see edu.ku.brc.af.core.Taskable#getNavBoxes()
      */
     public java.util.List<NavBoxIFace> getNavBoxes()
     {
@@ -428,7 +428,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
 
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.core.Taskable#getIcon()
+     * @see edu.ku.brc.af.core.Taskable#getIcon()
      */
     public Icon getIcon()
     {
@@ -436,7 +436,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.core.Taskable#requestContext()
+     * @see edu.ku.brc.af.core.Taskable#requestContext()
      */
     public void requestContext()
     {
@@ -451,7 +451,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
 
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getToolBarItems()
+     * @see edu.ku.brc.af.plugins.TaskPluginable#getToolBarItems()
      */
     public String getName()
     {
@@ -460,7 +460,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
 
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.core.Taskable#getTitle()
+     * @see edu.ku.brc.af.core.Taskable#getTitle()
      */
     public String getTitle()
     {
@@ -469,19 +469,19 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
 
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getToolBarItems()
+     * @see edu.ku.brc.af.plugins.TaskPluginable#getToolBarItems()
      */
     public abstract List<ToolBarItemDesc> getToolBarItems();
 
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#getMenuItems()
+     * @see edu.ku.brc.af.plugins.TaskPluginable#getMenuItems()
      */
     public abstract List<MenuItemDesc> getMenuItems();
 
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#installPrefs()
+     * @see edu.ku.brc.af.plugins.TaskPluginable#installPrefs()
      */
     public void installPrefs()
     {
@@ -489,7 +489,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#removePrefs()
+     * @see edu.ku.brc.af.plugins.TaskPluginable#removePrefs()
      */
     public void removePrefs()
     {
@@ -497,7 +497,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.TaskPluginable#initialize(java.util.List)
+     * @see edu.ku.brc.af.plugins.TaskPluginable#initialize(java.util.List)
      */
     public void initialize(List<TaskCommandDef> cmds)
     {
@@ -511,7 +511,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
 
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.CommandListener#doCommand(edu.ku.brc.specify.ui.CommandAction)
+     * @see edu.ku.brc.af.ui.CommandListener#doCommand(edu.ku.brc.af.ui.CommandAction)
      */
     public void doCommand(CommandAction cmdAction)
     {
@@ -523,7 +523,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     //--------------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.SubPaneMgrListener#subPaneAdded(edu.ku.brc.specify.ui.SubPaneIFace)
+     * @see edu.ku.brc.af.ui.SubPaneMgrListener#subPaneAdded(edu.ku.brc.af.ui.SubPaneIFace)
      */
     public void subPaneAdded(SubPaneIFace subPane)
     {
@@ -534,7 +534,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.SubPaneMgrListener#subPaneRemoved(edu.ku.brc.specify.ui.SubPaneIFace)
+     * @see edu.ku.brc.af.ui.SubPaneMgrListener#subPaneRemoved(edu.ku.brc.af.ui.SubPaneIFace)
      */
     public void subPaneRemoved(SubPaneIFace subPane)
     {
@@ -542,7 +542,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.SubPaneMgrListener#subPaneShown(edu.ku.brc.specify.ui.SubPaneIFace)
+     * @see edu.ku.brc.af.ui.SubPaneMgrListener#subPaneShown(edu.ku.brc.af.ui.SubPaneIFace)
      */
     public void subPaneShown(SubPaneIFace subPane)
     {
