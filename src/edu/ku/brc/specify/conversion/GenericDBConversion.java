@@ -675,8 +675,9 @@ public class GenericDBConversion
 
 
     /**
-     * @param userName
-     * @return
+     * Create a default user.
+     * @param userName the user name
+     * @return the record id
      */
     public int createDefaultUser(final String userName)
     {
@@ -745,9 +746,9 @@ public class GenericDBConversion
 
 
     /**
-     * @param conn
-     * @param taxonomyTypeName
-     * @return
+     * Create a data type.
+     * @param taxonomyTypeName the name
+     * @return the ID (record id) of the data type
      */
     public int createDataType(final String taxonomyTypeName)
     {
@@ -798,9 +799,8 @@ public class GenericDBConversion
     }
 
     /**
-     * Converts an old USYS table to a PickList
-     * @param usysTableName old table name
-     * @param pickListName new pciklist name
+     * Converts Object Defs.
+     * @param specifyUserId
      * @return true on success, false on failure
      */
     public boolean convertCollectionObjectDefs(final int specifyUserId)
@@ -934,7 +934,7 @@ public class GenericDBConversion
     }
 
     /**
-     * Converts an old USYS table to a PickList
+     * Converts an old USYS table to a PickList.
      * @param usysTableName old table name
      * @param pickListName new pciklist name
      * @return true on success, false on failure
@@ -1067,7 +1067,7 @@ public class GenericDBConversion
     }
 
     /**
-     * Converts all the USYS tables to PickLists
+     * Converts all the USYS tables to PickLists.
      * @return true on success, false on failure
      */
     public boolean convertUSYSTables()
@@ -1117,7 +1117,7 @@ public class GenericDBConversion
 
 
     /**
-     * Creates a map from a String Preparation Type to its ID in the table
+     * Creates a map from a String Preparation Type to its ID in the table.
      * @return map of name to PrepType
      */
     public Map<String, PrepType> createPreparationTypesFromUSys()
@@ -1182,8 +1182,9 @@ public class GenericDBConversion
    }
 
     /**
-     * @param name
-     * @return
+     * Convert the column name
+     * @param name the name
+     * @return the converted name
      */
     protected String convertColumnName(final String name)
     {
