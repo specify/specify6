@@ -15,8 +15,8 @@
 
 package edu.ku.brc.specify.stats;
 
-import static edu.ku.brc.specify.helpers.UIHelper.getInt;
-import static edu.ku.brc.specify.helpers.UIHelper.getString;
+import static edu.ku.brc.helpers.UIHelper.getInt;
+import static edu.ku.brc.helpers.UIHelper.getString;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import javax.swing.Icon;

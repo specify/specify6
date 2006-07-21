@@ -66,9 +66,9 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
+import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.db.JAutoCompComboBox;

@@ -44,7 +44,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
-import edu.ku.brc.specify.helpers.UIHelper;
+import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.dnd.DndDeletable;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostGlassPane;

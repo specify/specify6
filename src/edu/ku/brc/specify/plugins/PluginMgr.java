@@ -38,11 +38,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.helpers.UIHelper;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.core.ServiceInfo;
 import edu.ku.brc.specify.core.TaskCommandDef;
-import edu.ku.brc.specify.helpers.UIHelper;
-import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;

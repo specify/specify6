@@ -26,8 +26,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.exceptions.ConfigurationException;
-import edu.ku.brc.specify.helpers.XMLHelper;
 
 /**
  * Class that manages all the forms for a given view set (which is read from a single file)

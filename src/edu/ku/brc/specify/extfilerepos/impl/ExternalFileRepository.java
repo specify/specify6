@@ -19,9 +19,9 @@ import java.util.NoSuchElementException;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.helpers.AskForDirectory;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.extfilerepos.ExternalFileRepositoryIFace;
-import edu.ku.brc.specify.helpers.AskForDirectory;
 
 /**
  * Implementation of the ExternalFileRepositoryIFace for a local directory/disk based external repository

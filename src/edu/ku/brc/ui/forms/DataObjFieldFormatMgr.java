@@ -22,7 +22,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
-import edu.ku.brc.specify.helpers.XMLHelper;
+import edu.ku.brc.helpers.XMLHelper;
 
 /**
  * @author rods

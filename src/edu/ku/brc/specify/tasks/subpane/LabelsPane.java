@@ -35,11 +35,11 @@ import net.sf.jasperreports.view.JRViewer;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.DBTableIdMgr;
-import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.ui.UICacheManager;
 
 

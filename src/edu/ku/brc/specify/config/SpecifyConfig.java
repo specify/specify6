@@ -25,8 +25,8 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.helpers.AskForDirectory;
 import edu.ku.brc.specify.extfilerepos.impl.ExternalFileRepository;
-import edu.ku.brc.specify.helpers.AskForDirectory;
 
 /**
  * This class is responsible for reading and writing all application specific properties to and from the "specify/properties" file.

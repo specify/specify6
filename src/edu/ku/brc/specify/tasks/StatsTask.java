@@ -27,8 +27,8 @@ import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.core.NavBox;
-import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.stats.StatsMgr;

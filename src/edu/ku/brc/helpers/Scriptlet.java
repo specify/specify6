@@ -26,7 +26,7 @@
  * Bucharest, ROMANIA
  * Email: teodord@users.sourceforge.net
  */
-package edu.ku.brc.specify.helpers;
+package edu.ku.brc.helpers;
 
 import java.text.DecimalFormat;
 

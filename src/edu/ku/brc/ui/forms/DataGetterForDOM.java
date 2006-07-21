@@ -17,7 +17,7 @@ package edu.ku.brc.ui.forms;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import edu.ku.brc.specify.helpers.XMLHelper;
+import edu.ku.brc.helpers.XMLHelper;
 
 /**
  * Class to get values from a DOM Document.

@@ -32,7 +32,7 @@ import javax.swing.text.Document;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.specify.helpers.Encryption;
+import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;

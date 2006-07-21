@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.ui.forms;
 
-import static edu.ku.brc.specify.helpers.XMLHelper.getAttr;
+import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,8 +30,8 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.exceptions.ConfigurationException;
-import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewSet;
 

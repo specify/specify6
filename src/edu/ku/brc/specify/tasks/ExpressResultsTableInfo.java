@@ -15,7 +15,7 @@
 
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.specify.helpers.UIHelper.getBoolean;
+import static edu.ku.brc.helpers.UIHelper.getBoolean;
 
 import java.awt.Color;
 import java.util.Hashtable;
@@ -27,8 +27,8 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.exceptions.ConfigurationException;
-import edu.ku.brc.specify.helpers.XMLHelper;
 
 /**
  * Hold information about the subset of returns results. Each Express Search can return results from several different

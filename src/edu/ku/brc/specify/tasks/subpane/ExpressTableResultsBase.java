@@ -39,10 +39,10 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.core.ServiceInfo;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.ui.CloseButton;
 import edu.ku.brc.ui.CommandAction;

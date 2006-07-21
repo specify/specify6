@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane;
 
-import edu.ku.brc.specify.helpers.UIHelper;
+import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.dnd.GhostDataAggregatable;
 
 /**

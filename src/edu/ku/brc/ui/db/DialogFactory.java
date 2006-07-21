@@ -14,8 +14,8 @@
  */
 package edu.ku.brc.ui.db;
 
-import static edu.ku.brc.specify.helpers.XMLHelper.getAttr;
-import static edu.ku.brc.specify.helpers.XMLHelper.readFileToDOM4J;
+import static edu.ku.brc.helpers.XMLHelper.getAttr;
+import static edu.ku.brc.helpers.XMLHelper.readFileToDOM4J;
 
 import java.io.FileInputStream;
 import java.util.Hashtable;
@@ -24,8 +24,8 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.exceptions.ConfigurationException;
-import edu.ku.brc.specify.helpers.XMLHelper;
 /**
  * This class reads in dialog definitions from dialog_defs.xml, there are two types of dialog: "search" and "display".
  * Certain UI components use this factory to create dialogs for searching or displaying child objects.

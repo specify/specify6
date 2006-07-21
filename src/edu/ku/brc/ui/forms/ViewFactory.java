@@ -53,7 +53,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.specify.helpers.BrowserLauncher;
+import edu.ku.brc.helpers.BrowserLauncher;
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.ui.BrowseBtnPanel;
 import edu.ku.brc.ui.ColorChooser;

@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.prefs;
 
-import static edu.ku.brc.specify.helpers.UIHelper.createDuplicateJGoodiesDef;
+import static edu.ku.brc.helpers.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
@@ -36,7 +36,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.specify.helpers.UIHelper;
+import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;

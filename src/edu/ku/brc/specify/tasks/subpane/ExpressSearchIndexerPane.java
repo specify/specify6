@@ -15,9 +15,9 @@
 package edu.ku.brc.specify.tasks.subpane;
 
 
-import static edu.ku.brc.specify.helpers.UIHelper.createDuplicateJGoodiesDef;
-import static edu.ku.brc.specify.helpers.UIHelper.getInt;
-import static edu.ku.brc.specify.helpers.UIHelper.getString;
+import static edu.ku.brc.helpers.UIHelper.createDuplicateJGoodiesDef;
+import static edu.ku.brc.helpers.UIHelper.getInt;
+import static edu.ku.brc.helpers.UIHelper.getString;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
@@ -66,13 +66,13 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.helpers.DiskFileFilter;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.PairsMultipleQueryResultsHandler;
 import edu.ku.brc.specify.dbsupport.QueryResultsContainer;
 import edu.ku.brc.specify.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.specify.dbsupport.QueryResultsListener;
-import edu.ku.brc.specify.helpers.DiskFileFilter;
-import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.ui.IconManager;

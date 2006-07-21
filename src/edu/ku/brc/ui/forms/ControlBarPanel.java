@@ -25,7 +25,7 @@ import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.specify.helpers.UIHelper;
+import edu.ku.brc.helpers.UIHelper;
 
 /**
  * A panel at the bottom of a form that is divided into 3 sections,
