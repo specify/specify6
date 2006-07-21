@@ -30,12 +30,12 @@ import javax.swing.JMenuItem;
 
 import org.hibernate.Criteria;
 
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.core.NavBoxItemIFace;
 import edu.ku.brc.specify.core.NavBoxMgr;
-import edu.ku.brc.specify.dbsupport.DBTableIdMgr;
-import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.DroppableFormObject;

@@ -18,6 +18,10 @@ package edu.ku.brc.specify.dbsupport;
 import java.util.Calendar;
 import java.util.Vector;
 
+import edu.ku.brc.dbsupport.CustomQuery;
+import edu.ku.brc.dbsupport.QueryResultsContainer;
+import edu.ku.brc.dbsupport.QueryResultsDataObj;
+
 /**
  * Custom Query for calculating the how many items were calculated for each year
  *

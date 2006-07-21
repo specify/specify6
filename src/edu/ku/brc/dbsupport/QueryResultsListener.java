@@ -13,21 +13,28 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.specify.dbsupport;
+package edu.ku.brc.dbsupport;
 
 /**
- * Custom Queries know how to vend a collection of QueryResultsContainers that need to be processed
+ * These methods are called when the results are done being processed. allResultsBack is called when they are done, and 
+ * resultsInError as soon as one error occurs, the listener will not be notified again of other errors.
  * 
  * @author rods
  * 
  */
-public interface CustomQuery
+public interface QueryResultsListener
 {
 
     /**
-     * Return a collection QueryResultsContainers that need to be processed
-     * @return Return a collection QueryResultsContainers that need to be processed
+     * Notifies the consumer that all the results are back
+     *
      */
-    public java.util.List<QueryResultsContainer> getQueryDefinition();
+    public void allResultsBack();
+    
+    /**
+     * Notifies the consumer that an error occurred
+     *
+     */
+    public void resultsInError(final QueryResultsContainer qrc);
     
 }

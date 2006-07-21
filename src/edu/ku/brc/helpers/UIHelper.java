@@ -50,7 +50,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.specify.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;

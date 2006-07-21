@@ -13,7 +13,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.specify.dbsupport;
+package edu.ku.brc.dbsupport;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

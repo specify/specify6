@@ -13,8 +13,8 @@ import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.layout.CellConstraints;
 
-import edu.ku.brc.specify.dbsupport.SQLExecutionListener;
-import edu.ku.brc.specify.dbsupport.SQLExecutionProcessor;
+import edu.ku.brc.dbsupport.SQLExecutionListener;
+import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 
 /**
  *

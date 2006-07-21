@@ -13,7 +13,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.specify.dbsupport;
+package edu.ku.brc.dbsupport;
 
 /**
  * A class that describes where the the desired piece of data is located (row/col) in the results set 

@@ -24,7 +24,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 
-import edu.ku.brc.specify.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.HibernateUtil;
 
 /**
  * This is an adaptor class that supports all the necessary functions for supporting a PickList

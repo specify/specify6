@@ -1,4 +1,4 @@
-package edu.ku.brc.specify.dbsupport;
+package edu.ku.brc.dbsupport;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;

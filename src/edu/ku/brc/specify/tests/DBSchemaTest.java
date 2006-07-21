@@ -31,6 +31,8 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 
+import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.IdTableMapper;
 import edu.ku.brc.specify.datamodel.Agent;
@@ -56,8 +58,6 @@ import edu.ku.brc.specify.datamodel.PreparationAttr;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.UserGroup;
-import edu.ku.brc.specify.dbsupport.DBConnection;
-import edu.ku.brc.specify.dbsupport.HibernateUtil;
 
 /**
  * Tests for the Schema.

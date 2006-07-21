@@ -21,8 +21,8 @@ import java.util.Vector;
 
 import org.hibernate.Query;
 
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.LocalityMapperSubPane;

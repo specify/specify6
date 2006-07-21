@@ -13,28 +13,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.specify.dbsupport;
+package edu.ku.brc.dbsupport;
 
 /**
- * These methods are called when the results are done being processed. allResultsBack is called when they are done, and 
- * resultsInError as soon as one error occurs, the listener will not be notified again of other errors.
+ * Simple factory for created customer queries. Since this is just instatiating a class we probably don't need it.
  * 
  * @author rods
  * 
  */
-public interface QueryResultsListener
+public class CustomQueryFactory
 {
 
-    /**
-     * Notifies the consumer that all the results are back
-     *
-     */
-    public void allResultsBack();
     
-    /**
-     * Notifies the consumer that an error occurred
-     *
-     */
-    public void resultsInError(final QueryResultsContainer qrc);
-    
+    public static CustomQuery createCustomQuery(final String className) throws ClassNotFoundException, IllegalAccessException, InstantiationException
+    {
+        Object customQuery = Class.forName(className).newInstance();
+        if (customQuery instanceof CustomQuery)
+        {
+            return (CustomQuery)customQuery;
+        }
+        throw new RuntimeException("Requested class ["+className+"] does not support the CustomQuery interface!");
+    }
 }

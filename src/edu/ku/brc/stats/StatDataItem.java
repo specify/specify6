@@ -17,10 +17,10 @@ package edu.ku.brc.stats;
 import java.awt.Color;
 import java.util.Vector;
 
-import edu.ku.brc.specify.dbsupport.QueryResultsContainer;
-import edu.ku.brc.specify.dbsupport.QueryResultsDataObj;
-import edu.ku.brc.specify.dbsupport.QueryResultsListener;
-import edu.ku.brc.specify.dbsupport.QueryResultsSerializedGetter;
+import edu.ku.brc.dbsupport.QueryResultsContainer;
+import edu.ku.brc.dbsupport.QueryResultsDataObj;
+import edu.ku.brc.dbsupport.QueryResultsListener;
+import edu.ku.brc.dbsupport.QueryResultsSerializedGetter;
 
 /**
  * A Single Statitem that creates a QueryResultsContainer and then gets the result and displays it.

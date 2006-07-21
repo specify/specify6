@@ -13,6 +13,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
@@ -24,7 +25,6 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.dbsupport.HibernateUtil;
 
 /**
  * Provides many static methods that simplify the management of

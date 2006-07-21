@@ -17,6 +17,10 @@ package edu.ku.brc.specify.dbsupport;
 
 import java.util.Vector;
 
+import edu.ku.brc.dbsupport.CustomQuery;
+import edu.ku.brc.dbsupport.QueryResultsContainer;
+import edu.ku.brc.dbsupport.QueryResultsDataObj;
+
 /**
  * Custom Query for calculating web stats for Visitors (SPNHC Demo)
  *

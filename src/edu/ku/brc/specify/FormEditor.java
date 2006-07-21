@@ -73,6 +73,8 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
+import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.helpers.XMLHelper;
@@ -96,8 +98,6 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.UserGroup;
-import edu.ku.brc.specify.dbsupport.DBConnection;
-import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.prefs.PrefMainPanel;
 import edu.ku.brc.specify.tests.CreateTestDatabases;
 import edu.ku.brc.specify.tests.forms.TestDataObj;

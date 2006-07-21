@@ -14,13 +14,13 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Collectors;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Taxon;
-import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.util.Pair;
 
 /**

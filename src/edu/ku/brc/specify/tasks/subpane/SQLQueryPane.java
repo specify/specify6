@@ -37,9 +37,9 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.dbsupport.SQLExecutionListener;
+import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.core.Taskable;
-import edu.ku.brc.specify.dbsupport.SQLExecutionListener;
-import edu.ku.brc.specify.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.db.ResultSetTableModel;
 import edu.ku.brc.ui.db.ResultSetTableModelDM;

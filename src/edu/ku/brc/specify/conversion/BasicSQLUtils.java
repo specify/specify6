@@ -33,8 +33,8 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.helpers.UIHelper;
-import edu.ku.brc.specify.dbsupport.DBConnection;
 
 /**
  * A set of basic utilities that used almost exclusively for converting old Database schemas to the new schema

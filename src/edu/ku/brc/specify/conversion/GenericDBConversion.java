@@ -47,6 +47,8 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 
+import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.specify.datamodel.AttributeDef;
@@ -70,8 +72,6 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
-import edu.ku.brc.specify.dbsupport.DBConnection;
-import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.tests.ObjCreatorHelper;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeTableUtils;

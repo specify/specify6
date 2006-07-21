@@ -12,27 +12,29 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-package edu.ku.brc.specify.dbsupport;
+package edu.ku.brc.dbsupport;
 
 /**
- * Interface that supports it processing through a QueryResultsHandlerIFace
+ * Interface to notify the object that a query has completed. When it finishes successfully the resulset gets passed back.
+ * when it finishes in error the exception gets passed as a parameter.
  * 
  * @author rods
  *
  */
-public interface QueryResultsProcessable
+public interface SQLExecutionListener
 {
     /**
-     * Sets the handler into the object
-     * @param handler the new handler
+     * Notification that the process is done and has finished without exception
+     * @param process the calling processor
+     * @param resultSet the resultset of the query
      */
-    public void setHandler(final QueryResultsHandlerIFace handler);
+    public void exectionDone(final SQLExecutionProcessor process, final java.sql.ResultSet resultSet);
     
     /**
-     * Returns the current handler used to get the results and process them
-     * @return Returns the current handler used to get the results and process them
+     * Notification that the process was done and completed with an exception
+     * @param process the calling processor
+     * @param ex the exception of what went wrong
      */
-    public QueryResultsHandlerIFace getHandler();
+    public void executionError(final SQLExecutionProcessor process, final Exception ex);
     
 }

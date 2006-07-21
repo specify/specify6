@@ -13,34 +13,31 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.specify.dbsupport;
+package edu.ku.brc.dbsupport;
 
 import java.util.List;
 import java.util.Vector;
 
 /**
- * This class processes a collection container and places all the results in a collection. It makes it easy to process them in a single collection
- * instead of having to understand how to traverse multiple QRCs and QRCDOs.
+ * This class processes a single container and places all the results in a collection
  * (This class morphed so it is missed named)
  * 
  * @author rods
  *
  */
-
-public class PairsMultipleQueryResultsHandler implements QueryResultsHandlerIFace
+public class PairsSingleQueryResultsHandler implements QueryResultsHandlerIFace
 {
-    private QueryResultsGetter                    getter   = null;
-    private java.util.List<QueryResultsContainer> qrcs     = null;
-    private QueryResultsListener                  listener = null;
-    
+    private QueryResultsGetter    getter    = null;
+    private QueryResultsContainer container = null;
+    private QueryResultsListener  listener  = null;
+
     /**
-     * 
      * Default Constructor
+     *
      */
-    public PairsMultipleQueryResultsHandler()
+    public PairsSingleQueryResultsHandler()
     {
     }
-    
     
     //-------------------------------------------
     // QueryResultsHandlerIFace
@@ -51,60 +48,49 @@ public class PairsMultipleQueryResultsHandler implements QueryResultsHandlerIFac
      */
     public void init(final QueryResultsListener listener, final java.util.List<QueryResultsContainer> list)
     {
-        this.listener = listener;
-        qrcs          = list; // XXX should we copy to the list instead of just wacking it??
+        throw new RuntimeException("PairsSingleQueryResultsHandler can't handle more than one QueryResultsContainer!");
     }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#init(edu.ku.brc.specify.dbsupport.QueryResultsListener, edu.ku.brc.specify.dbsupport.QueryResultsContainer)
      */
-    public void init(final QueryResultsListener listener, final QueryResultsContainer qrc)
+    public void init(final QueryResultsListener listener, final QueryResultsContainer container)
     {
         this.listener = listener;
-        if (qrcs == null)
-        {
-            qrcs = new Vector<QueryResultsContainer>();
-        } else
-        {
-            qrcs.clear(); // XXX do more clean up
-        }
-        qrcs.add(qrc);
+        this.container = container;   
     }
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#startUp()
      */
-    public synchronized void startUp()
+    public void startUp()
     {
-        getter = new QueryResultsGetter(listener);
-        getter.add(qrcs);// this needs to be done after everything has been added to the qrc in the qrcs
+       getter = new QueryResultsGetter(listener);   
+       getter.add(container); // this needs to be done after everything has been added to the container
+                              // by adding it, it starts the processing
     }
-     
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#cleanUp()
      */
     public void cleanUp()
     {
-        getter = null;
-        qrcs.clear(); 
+        listener = null;
+        container.clear();
+        container = null;
     }
-
-    
+   
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace#getDataObjects()
      */
     public List<Object> getDataObjects()
     {
         Vector<Object> list = new Vector<Object>();
-        for (QueryResultsContainer qrc : qrcs)
-        {
-            java.util.List<QueryResultsDataObj> qrdos = qrc.getQueryResultsDataObjs();
-            for (int i=0;i<qrdos.size();i++)
-            {         
-                list.add(qrdos.get(i).getResult());
-            }
-
-        }        
+        java.util.List<QueryResultsDataObj> qrdos = container.getQueryResultsDataObjs();
+        for (int i=0;i<qrdos.size();i++)
+        {         
+            list.add(qrdos.get(i).getResult());
+        }
         return list;
     }
     

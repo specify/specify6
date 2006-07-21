@@ -13,25 +13,21 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.specify.dbsupport;
+package edu.ku.brc.dbsupport;
 
 /**
- * Simple factory for created customer queries. Since this is just instatiating a class we probably don't need it.
+ * Custom Queries know how to vend a collection of QueryResultsContainers that need to be processed
  * 
  * @author rods
  * 
  */
-public class CustomQueryFactory
+public interface CustomQuery
 {
 
+    /**
+     * Return a collection QueryResultsContainers that need to be processed
+     * @return Return a collection QueryResultsContainers that need to be processed
+     */
+    public java.util.List<QueryResultsContainer> getQueryDefinition();
     
-    public static CustomQuery createCustomQuery(final String className) throws ClassNotFoundException, IllegalAccessException, InstantiationException
-    {
-        Object customQuery = Class.forName(className).newInstance();
-        if (customQuery instanceof CustomQuery)
-        {
-            return (CustomQuery)customQuery;
-        }
-        throw new RuntimeException("Requested class ["+className+"] does not support the CustomQuery interface!");
-    }
 }

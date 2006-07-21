@@ -4,7 +4,7 @@ import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.specify.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.HibernateUtil;
 /**
  * This is a helper class that is used for initializing data for testing 
  *

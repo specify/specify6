@@ -25,11 +25,11 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
 
-import edu.ku.brc.specify.dbsupport.QueryResultsContainer;
-import edu.ku.brc.specify.dbsupport.QueryResultsGetter;
-import edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace;
-import edu.ku.brc.specify.dbsupport.QueryResultsListener;
-import edu.ku.brc.specify.dbsupport.QueryResultsProcessable;
+import edu.ku.brc.dbsupport.QueryResultsContainer;
+import edu.ku.brc.dbsupport.QueryResultsGetter;
+import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
+import edu.ku.brc.dbsupport.QueryResultsListener;
+import edu.ku.brc.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.ui.IconManager;
 
 /**

@@ -32,12 +32,12 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.dbsupport.QueryResultsContainer;
+import edu.ku.brc.dbsupport.QueryResultsGetter;
+import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
+import edu.ku.brc.dbsupport.QueryResultsListener;
+import edu.ku.brc.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.specify.core.Taskable;
-import edu.ku.brc.specify.dbsupport.QueryResultsContainer;
-import edu.ku.brc.specify.dbsupport.QueryResultsGetter;
-import edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace;
-import edu.ku.brc.specify.dbsupport.QueryResultsListener;
-import edu.ku.brc.specify.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.ui.IconManager;
 
 /**

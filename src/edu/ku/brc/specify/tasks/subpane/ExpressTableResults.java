@@ -17,9 +17,9 @@ package edu.ku.brc.specify.tasks.subpane;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.dbsupport.SQLExecutionListener;
+import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.dbsupport.SQLExecutionListener;
-import edu.ku.brc.specify.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.db.ResultSetTableModelDM;

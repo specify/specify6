@@ -31,13 +31,13 @@ import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.core.NavBoxIFace;
 import edu.ku.brc.specify.core.NavBoxItemIFace;
 import edu.ku.brc.specify.core.TaskCommandDef;
 import edu.ku.brc.specify.core.Taskable;
-import edu.ku.brc.specify.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.TaskPluginable;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;

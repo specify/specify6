@@ -50,9 +50,9 @@ import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.UIHelper;
-import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.extras.SwingWorker;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;

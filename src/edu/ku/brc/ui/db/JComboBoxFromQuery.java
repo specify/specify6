@@ -34,7 +34,7 @@ import javax.swing.text.BadLocationException;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.specify.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DBConnection;
 
 /**
  * Auto Complete ComboxBox filled from a query, the setValue and getValue should use Hibernate Objects from that table

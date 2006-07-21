@@ -6,8 +6,8 @@ import java.awt.BorderLayout;
 import java.util.List;
 import java.util.Set;
 
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.core.Taskable;
-import edu.ku.brc.specify.dbsupport.DBTableIdMgr;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.forms.MultiView;
