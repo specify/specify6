@@ -36,11 +36,11 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.core.Taskable;
-import edu.ku.brc.specify.stats.BarChartPanel;
-import edu.ku.brc.specify.stats.StatDataItem;
-import edu.ku.brc.specify.stats.StatGroupTable;
-import edu.ku.brc.specify.stats.StatGroupTableFromQuery;
-import edu.ku.brc.specify.stats.StatsMgr;
+import edu.ku.brc.stats.BarChartPanel;
+import edu.ku.brc.stats.StatDataItem;
+import edu.ku.brc.stats.StatGroupTable;
+import edu.ku.brc.stats.StatGroupTableFromQuery;
+import edu.ku.brc.stats.StatsMgr;
 
 /**
  * A class that loads a page of statistics from an XML description

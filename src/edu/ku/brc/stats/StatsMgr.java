@@ -1,4 +1,4 @@
-package edu.ku.brc.specify.stats;
+package edu.ku.brc.stats;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
