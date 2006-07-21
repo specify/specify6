@@ -67,11 +67,11 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
+import edu.ku.brc.af.core.ContextMgr;
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyConfig;
-import edu.ku.brc.specify.core.ContextMgr;
-import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.plugins.PluginMgr;
 import edu.ku.brc.specify.prefs.PrefMainPanel;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;

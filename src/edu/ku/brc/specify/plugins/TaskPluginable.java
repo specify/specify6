@@ -17,7 +17,7 @@ package edu.ku.brc.specify.plugins;
 
 import java.util.List;
 
-import edu.ku.brc.specify.core.TaskCommandDef;
+import edu.ku.brc.af.core.TaskCommandDef;
 /**
  * An interface for describing how a plugin can be registered into the UI and begin to provide service.
  *

@@ -15,7 +15,7 @@
 package edu.ku.brc.specify.tasks.subpane;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
-import edu.ku.brc.specify.core.Taskable;
+import edu.ku.brc.af.core.Taskable;
 
 /**
  * This base class implements the Chartable interface 

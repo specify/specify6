@@ -23,7 +23,7 @@ import java.util.List;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import edu.ku.brc.specify.core.ContextMgr;
+import edu.ku.brc.af.core.ContextMgr;
 
 @SuppressWarnings("serial")
 public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener

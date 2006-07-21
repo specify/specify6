@@ -34,8 +34,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.stats.BarChartPanel;
 import edu.ku.brc.stats.StatDataItem;
 import edu.ku.brc.stats.StatGroupTable;

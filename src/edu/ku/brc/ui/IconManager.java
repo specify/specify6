@@ -30,8 +30,8 @@ import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.exceptions.ConfigurationException;
 
 /**
  * Caches icon in three sizes (32, 24, 16)

@@ -55,8 +55,8 @@ import javax.swing.event.MouseInputAdapter;
 
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 
+import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.helpers.UIHelper;
-import edu.ku.brc.specify.core.NavBoxItemIFace;
 import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.DndDeletable;
 import edu.ku.brc.ui.dnd.GhostActionable;

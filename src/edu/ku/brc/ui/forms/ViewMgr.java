@@ -30,8 +30,8 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.exceptions.ConfigurationException;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewSet;
 

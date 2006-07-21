@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.dbsupport.CustomQuery;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.PairsMultipleQueryResultsHandler;
@@ -20,7 +21,6 @@ import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.tasks.StatsTask;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.ui.CommandAction;

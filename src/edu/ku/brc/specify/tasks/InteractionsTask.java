@@ -21,9 +21,9 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.specify.core.ContextMgr;
-import edu.ku.brc.specify.core.NavBox;
-import edu.ku.brc.specify.core.NavBoxIFace;
+import edu.ku.brc.af.core.ContextMgr;
+import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.plugins.MenuItemDesc;

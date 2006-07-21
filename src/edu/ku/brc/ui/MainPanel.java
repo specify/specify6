@@ -18,7 +18,7 @@ import javax.swing.JComponent;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
-import edu.ku.brc.specify.core.NavBoxMgr;
+import edu.ku.brc.af.core.NavBoxMgr;
 
 /**
  * The MainPanel contains a splitter that divdes the window into two parts, the NavBox area and the TabbedPane area.<br><br>

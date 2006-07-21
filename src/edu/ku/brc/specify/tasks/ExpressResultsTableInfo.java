@@ -27,8 +27,8 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.exceptions.ConfigurationException;
 
 /**
  * Hold information about the subset of returns results. Each Express Search can return results from several different

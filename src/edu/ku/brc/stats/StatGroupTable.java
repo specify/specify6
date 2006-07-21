@@ -47,7 +47,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.specify.core.ContextMgr;
+import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.specify.tasks.StatsTask;
 import edu.ku.brc.ui.CurvedBorder;
 import edu.ku.brc.ui.IconManager;

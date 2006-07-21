@@ -34,7 +34,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
-import edu.ku.brc.specify.exceptions.ConfigurationException;
+import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.ui.forms.UIFieldFormatterMgr;
 import edu.ku.brc.ui.forms.UIFieldFormatterMgr.Formatter;
 import edu.ku.brc.ui.validation.ComboBoxFromQueryFactory;

@@ -40,12 +40,12 @@ import javax.mail.Store;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 
+import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.NavBoxItemIFace;
+import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.EMailHelper;
-import edu.ku.brc.specify.core.NavBox;
-import edu.ku.brc.specify.core.NavBoxItemIFace;
-import edu.ku.brc.specify.core.NavBoxMgr;
 import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.plugins.MenuItemDesc;

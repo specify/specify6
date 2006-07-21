@@ -12,7 +12,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.core;
+package edu.ku.brc.af.core;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,7 +21,7 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
-import edu.ku.brc.specify.exceptions.ConfigurationException;
+import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.ui.Trash;
 
 /**

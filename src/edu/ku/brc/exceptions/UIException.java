@@ -12,43 +12,32 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.core;
 
-import java.util.Map;
+package edu.ku.brc.exceptions;
+
 
 /**
- * Class that defines a command that is issued by UI components in a Task's SubPane or from the side bar.
- * These commands are typically serviced by the task itself.
+ * This exception is used to mark (fatal) failures in infrastructure and system code.
  *
- * @author rods
- *
+ * @author Christian Bauer <christian@hibernate.org>
  */
-public class TaskCommandDef
+@SuppressWarnings("serial")
+public class UIException extends RuntimeException 
 {
-    protected String iconName;
-    protected String name;
-    protected Map<String, String> params;
-
-    public TaskCommandDef(final String name, final String iconName, final Map<String, String> params)
-    {
-        this.iconName = iconName;
-        this.name = name;
-        this.params = params;
+    //private static final long serialVersionUID = 0;
+    
+    public UIException() {
     }
 
-    public String getIconName()
-    {
-        return iconName;
+    public UIException(String message) {
+        super(message);
     }
 
-    public String getName()
-    {
-        return name;
+    public UIException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public Map<String, String> getParams()
-    {
-        return params;
+    public UIException(Throwable cause) {
+        super(cause);
     }
-
 }

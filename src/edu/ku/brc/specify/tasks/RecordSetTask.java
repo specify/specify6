@@ -32,10 +32,10 @@ import javax.swing.JOptionPane;
 import org.hibernate.Criteria;
 import org.hibernate.LockMode;
 
+import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.NavBoxItemIFace;
+import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.core.NavBox;
-import edu.ku.brc.specify.core.NavBoxItemIFace;
-import edu.ku.brc.specify.core.NavBoxMgr;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;

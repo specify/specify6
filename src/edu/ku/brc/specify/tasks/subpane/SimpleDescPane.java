@@ -25,7 +25,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import edu.ku.brc.specify.core.Taskable;
+import edu.ku.brc.af.core.Taskable;
 
 /**
  * A default pane for display a simple label telling what it is suppose to do

@@ -51,9 +51,9 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.store.FSDirectory;
 import org.dom4j.Element;
 
+import edu.ku.brc.af.core.ContextMgr;
+import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.core.ContextMgr;
-import edu.ku.brc.specify.core.NavBoxIFace;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchIndexerPane;

@@ -24,8 +24,8 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.exceptions.ConfigurationException;
 /**
  * This class reads in dialog definitions from dialog_defs.xml, there are two types of dialog: "search" and "display".
  * Certain UI components use this factory to create dialogs for searching or displaying child objects.

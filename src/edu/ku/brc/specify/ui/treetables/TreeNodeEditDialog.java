@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
-import edu.ku.brc.specify.core.NavBoxLayoutManager;
+import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeTableUtils;

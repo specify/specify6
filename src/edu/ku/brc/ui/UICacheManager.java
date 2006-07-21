@@ -28,7 +28,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.specify.exceptions.UIException;
+import edu.ku.brc.exceptions.UIException;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.util.FileCache;
 

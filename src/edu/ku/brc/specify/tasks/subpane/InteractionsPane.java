@@ -15,7 +15,7 @@
 
 package edu.ku.brc.specify.tasks.subpane;
 
-import edu.ku.brc.specify.core.Taskable;
+import edu.ku.brc.af.core.Taskable;
 
 /**
  * This pane will be responsible for creating form for Gift/Exchanges and loans. We may end up

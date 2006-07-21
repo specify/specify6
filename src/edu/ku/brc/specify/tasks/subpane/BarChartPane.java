@@ -32,11 +32,11 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.dbsupport.QueryResultsContainer;
 import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.dbsupport.QueryResultsProcessable;
-import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.ui.IconManager;
 
 

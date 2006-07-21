@@ -17,8 +17,8 @@ package edu.ku.brc.specify.tasks;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.helpers.UIHelper;
-import edu.ku.brc.specify.core.Taskable;
 
 /**
  * @author rods

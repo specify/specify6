@@ -32,8 +32,8 @@ import org.hibernate.Criteria;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;

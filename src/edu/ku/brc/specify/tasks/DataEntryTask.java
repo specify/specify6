@@ -24,11 +24,11 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 
+import edu.ku.brc.af.core.ContextMgr;
+import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.NavBoxIFace;
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.specify.core.ContextMgr;
-import edu.ku.brc.specify.core.NavBox;
-import edu.ku.brc.specify.core.NavBoxIFace;
-import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;

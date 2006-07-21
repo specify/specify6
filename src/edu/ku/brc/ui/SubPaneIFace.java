@@ -17,7 +17,7 @@ package edu.ku.brc.ui;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 
-import edu.ku.brc.specify.core.Taskable;
+import edu.ku.brc.af.core.Taskable;
 
 /**
  * 
