@@ -15,7 +15,7 @@
 
 package edu.ku.brc.specify.tasks.subpane;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -44,14 +44,14 @@ import edu.ku.brc.specify.core.ServiceInfo;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
-import edu.ku.brc.specify.ui.CloseButton;
-import edu.ku.brc.specify.ui.CommandAction;
-import edu.ku.brc.specify.ui.CommandDispatcher;
-import edu.ku.brc.specify.ui.GradiantButton;
-import edu.ku.brc.specify.ui.GradiantLabel;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.TriangleButton;
-import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
+import edu.ku.brc.ui.CloseButton;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.GradiantButton;
+import edu.ku.brc.ui.GradiantLabel;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.TriangleButton;
+import edu.ku.brc.ui.db.ResultSetTableModelDM;
 
 /**
  * This is a single set of of results and is derived from a query where all the record numbers where

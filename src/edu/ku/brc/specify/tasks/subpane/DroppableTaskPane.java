@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.ku.brc.specify.core.Taskable;
-import edu.ku.brc.specify.ui.dnd.GhostActionable;
-import edu.ku.brc.specify.ui.dnd.GhostMouseInputAdapter;
+import edu.ku.brc.ui.dnd.GhostActionable;
+import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 
 /**
  * A Task SubPane that can have forms (DroppableFormObject) dropped onto it so it can display a form
@@ -82,13 +82,13 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
     //-----------------------------------------------
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#doAction(edu.ku.brc.specify.ui.dnd.GhostActionable)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#doAction(edu.ku.brc.ui.dnd.GhostActionable)
      */
     public abstract void doAction(GhostActionable src);
 
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#setData(java.lang.Object)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#setData(java.lang.Object)
      */
     public void setData(final Object data)
     {
@@ -96,7 +96,7 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getData()
+     * @see edu.ku.brc.ui.dnd.GhostActionable#getData()
      */
     public Object getData()
     {
@@ -104,7 +104,7 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getDataForClass(java.lang.Class)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#getDataForClass(java.lang.Class)
      */
     public Object getDataForClass(Class classObj)
     {
@@ -113,7 +113,7 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
 
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#createMouseDropAdapter()
+     * @see edu.ku.brc.ui.dnd.GhostActionable#createMouseDropAdapter()
      */
     public void createMouseInputAdapter()
     {
@@ -130,7 +130,7 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getBufferedImage()
+     * @see edu.ku.brc.ui.dnd.GhostActionable#getBufferedImage()
      */
     public BufferedImage getBufferedImage() 
     {
@@ -138,7 +138,7 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getDataFlavor()
+     * @see edu.ku.brc.ui.dnd.GhostActionable#getDataFlavor()
      */
     public List<DataFlavor> getDropDataFlavors()
     {
@@ -146,7 +146,7 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getDragDataFlavors()
+     * @see edu.ku.brc.ui.dnd.GhostActionable#getDragDataFlavors()
      */
     public List<DataFlavor> getDragDataFlavors()
     {

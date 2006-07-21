@@ -16,7 +16,7 @@ package edu.ku.brc.specify.prefs;
 
 import java.util.prefs.Preferences;
 
-import edu.ku.brc.specify.ui.forms.DataObjectGettable;
+import edu.ku.brc.ui.forms.DataObjectGettable;
 
 /**
  * This knows how to get a field's value from a POJO.<br><br>
@@ -40,7 +40,7 @@ public class PrefsGettableImpl implements DataObjectGettable
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.forms.DataObjectGettable#getFieldValue(java.lang.Object, java.lang.String)
+     * @see edu.ku.brc.ui.forms.DataObjectGettable#getFieldValue(java.lang.Object, java.lang.String)
      */
     public Object getFieldValue(Object dataObj, String fieldName) 
     {

@@ -105,7 +105,7 @@ public class DatamodelWriter {
 		hash.put("edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem", 82);
         
         //hash.put("edu.ku.brc.specify.datamodel.InfoRequest",80);
-        hash.put("edu.ku.brc.specify.ui.db.PickList",500);
+        hash.put("edu.ku.brc.ui.db.PickList",500);
 		
         //Integer i = hash.get( "edu.ku.brc.specify.datamodel.CollectionsdObject");
         //.out.println(i.toString());

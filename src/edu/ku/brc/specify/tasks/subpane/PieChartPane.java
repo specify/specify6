@@ -17,7 +17,7 @@ package edu.ku.brc.specify.tasks.subpane;
 
 import static edu.ku.brc.specify.helpers.UIHelper.getInt;
 import static edu.ku.brc.specify.helpers.UIHelper.getString;
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -38,7 +38,7 @@ import edu.ku.brc.specify.dbsupport.QueryResultsGetter;
 import edu.ku.brc.specify.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.specify.dbsupport.QueryResultsListener;
 import edu.ku.brc.specify.dbsupport.QueryResultsProcessable;
-import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.ui.IconManager;
 
 /**
  * Creates a pane that can listener for Query Results and then create a Pie Chart

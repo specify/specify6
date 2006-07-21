@@ -25,7 +25,7 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.util.FileCache;
 
 /**

@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.prefs;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.BorderLayout;
@@ -46,9 +46,9 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.validation.DataChangeListener;
-import edu.ku.brc.specify.ui.validation.DataChangeNotifier;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.validation.DataChangeListener;
+import edu.ku.brc.ui.validation.DataChangeNotifier;
 
 
 /**
@@ -368,7 +368,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
     //-----------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.specify.ui.validation.DataChangeNotifier)
+     * @see edu.ku.brc.ui.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.ui.validation.DataChangeNotifier)
      */
     public void dataChanged(String name, Component comp, DataChangeNotifier dcn)
     {

@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.util.List;
 import java.util.Vector;
@@ -23,9 +23,9 @@ import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.SubPaneIFace;
-import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.SubPaneIFace;
+import edu.ku.brc.ui.ToolBarDropDownBtn;
 
 /**
  * This task will enable a user to create, and view reports.

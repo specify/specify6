@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.FileDialog;
 import java.awt.Frame;
@@ -36,11 +36,11 @@ import edu.ku.brc.specify.core.NavBox;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.WorkbenchPane;
-import edu.ku.brc.specify.ui.CommandDispatcher;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.SubPaneIFace;
-import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
-import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.SubPaneIFace;
+import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
  * PLaceholder for additional work

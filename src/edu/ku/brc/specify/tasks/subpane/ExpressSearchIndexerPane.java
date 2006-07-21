@@ -18,7 +18,7 @@ package edu.ku.brc.specify.tasks.subpane;
 import static edu.ku.brc.specify.helpers.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.specify.helpers.UIHelper.getInt;
 import static edu.ku.brc.specify.helpers.UIHelper.getString;
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.BorderLayout;
@@ -75,10 +75,10 @@ import edu.ku.brc.specify.helpers.DiskFileFilter;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.RolloverCommand;
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.forms.persist.FormViewDef;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.forms.persist.FormViewDef;
 
 /**
  * A pane enables the user to see (and control) the indexing process for express search.<BR>

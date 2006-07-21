@@ -28,7 +28,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.core.Taskable;
-import edu.ku.brc.specify.ui.SubPaneIFace;
+import edu.ku.brc.ui.SubPaneIFace;
 
 /**
  * Class that implements the SubPanelIFace interface which enables derived classes to participate in the main pane.

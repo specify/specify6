@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
@@ -42,13 +42,13 @@ import edu.ku.brc.specify.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.specify.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.specify.tasks.subpane.FormPane;
 import edu.ku.brc.specify.tasks.subpane.PickListProcessor;
-import edu.ku.brc.specify.ui.CommandAction;
-import edu.ku.brc.specify.ui.CommandDispatcher;
-import edu.ku.brc.specify.ui.RolloverCommand;
-import edu.ku.brc.specify.ui.SubPaneIFace;
-import edu.ku.brc.specify.ui.Trash;
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.db.PickList;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.ui.SubPaneIFace;
+import edu.ku.brc.ui.Trash;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.db.PickList;
 
 
 

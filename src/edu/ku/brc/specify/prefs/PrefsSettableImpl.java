@@ -17,8 +17,8 @@ package edu.ku.brc.specify.prefs;
 import java.awt.Color;
 import java.util.prefs.Preferences;
 
-import edu.ku.brc.specify.ui.ColorWrapper;
-import edu.ku.brc.specify.ui.forms.DataObjectSettable;
+import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.forms.DataObjectSettable;
 
 /**
  * Class that implements the DataObjectSettable for preferences
@@ -35,7 +35,7 @@ public class PrefsSettableImpl implements DataObjectSettable
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.forms.DataObjectSettable#setFieldValue(java.lang.Object, java.lang.String, java.lang.Object)
+     * @see edu.ku.brc.ui.forms.DataObjectSettable#setFieldValue(java.lang.Object, java.lang.String, java.lang.Object)
      */
     public void setFieldValue(Object dataObj, String fieldName, Object data)
     {

@@ -21,7 +21,7 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.specify.ui.CommandAction;
+import edu.ku.brc.ui.CommandAction;
 
 /**
  * Manages the task context of the UI. The task context is controlled by what tab is visible in the main pane

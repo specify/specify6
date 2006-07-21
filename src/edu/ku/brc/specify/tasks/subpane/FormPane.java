@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.tasks.subpane;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.util.List;
@@ -8,14 +8,14 @@ import java.util.Set;
 
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.dbsupport.DBTableIdMgr;
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.dnd.GhostActionable;
-import edu.ku.brc.specify.ui.forms.MultiView;
-import edu.ku.brc.specify.ui.forms.ViewFactory;
-import edu.ku.brc.specify.ui.forms.ViewMgr;
-import edu.ku.brc.specify.ui.forms.Viewable;
-import edu.ku.brc.specify.ui.forms.persist.AltView;
-import edu.ku.brc.specify.ui.forms.persist.View;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.dnd.GhostActionable;
+import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.ViewFactory;
+import edu.ku.brc.ui.forms.ViewMgr;
+import edu.ku.brc.ui.forms.Viewable;
+import edu.ku.brc.ui.forms.persist.AltView;
+import edu.ku.brc.ui.forms.persist.View;
 
 /**
  * A class that can display a form, it is dervied from DroppableTaskPane which means objects can be
@@ -100,7 +100,7 @@ public class FormPane extends DroppableTaskPane
     //-----------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#doAction(edu.ku.brc.specify.ui.dnd.GhostActionable)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#doAction(edu.ku.brc.ui.dnd.GhostActionable)
      */
     public void doAction(GhostActionable src)
     {
@@ -242,7 +242,7 @@ public class FormPane extends DroppableTaskPane
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getData()
+     * @see edu.ku.brc.ui.dnd.GhostActionable#getData()
      */
     public Object getData()
     {

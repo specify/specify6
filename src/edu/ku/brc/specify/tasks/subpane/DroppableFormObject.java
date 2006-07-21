@@ -15,7 +15,7 @@
 package edu.ku.brc.specify.tasks.subpane;
 
 import edu.ku.brc.specify.helpers.UIHelper;
-import edu.ku.brc.specify.ui.dnd.GhostDataAggregatable;
+import edu.ku.brc.ui.dnd.GhostDataAggregatable;
 
 /**
  * This Clads enables both data and the associated form information to be dropped.
@@ -63,7 +63,7 @@ public class DroppableFormObject implements GhostDataAggregatable
     //-- GhostDataAggregatable Interface
     //-------------------------------------------------
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.dnd.GhostDataAggregatable#getDataForClass(java.lang.Class)
+     * @see edu.ku.brc.ui.dnd.GhostDataAggregatable#getDataForClass(java.lang.Class)
      */
     public Object getDataForClass(Class classObj)
     {

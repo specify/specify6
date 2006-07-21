@@ -38,8 +38,8 @@ import org.jdesktop.animation.timing.TimingController;
 import org.jdesktop.animation.timing.TimingTarget;
 
 import edu.ku.brc.specify.tasks.services.MapGrabber;
-import edu.ku.brc.specify.ui.GraphicsUtils;
-import edu.ku.brc.specify.ui.SimpleCircleIcon;
+import edu.ku.brc.ui.GraphicsUtils;
+import edu.ku.brc.ui.SimpleCircleIcon;
 import edu.ku.brc.util.Pair;
 
 /**

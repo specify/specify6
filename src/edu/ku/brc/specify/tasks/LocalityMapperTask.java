@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.util.List;
 import java.util.Vector;
@@ -27,9 +27,9 @@ import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.LocalityMapperSubPane;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
-import edu.ku.brc.specify.ui.CommandAction;
-import edu.ku.brc.specify.ui.CommandDispatcher;
-import edu.ku.brc.specify.ui.SubPaneIFace;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.SubPaneIFace;
 /**
  * The LocalityMapperTask is responsible gettng and displaying all various idfferent kinds of stats
  *

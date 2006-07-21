@@ -2,7 +2,7 @@ package edu.ku.brc.specify.tests.forms;
 
 import java.util.Set;
 
-import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.ui.IconManager;
 
 public class TestDataObj
 {

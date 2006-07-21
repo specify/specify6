@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
@@ -54,20 +54,20 @@ import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.LabelsPane;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
-import edu.ku.brc.specify.ui.CommandAction;
-import edu.ku.brc.specify.ui.CommandDispatcher;
-import edu.ku.brc.specify.ui.IconListCellRenderer;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.RolloverCommand;
-import edu.ku.brc.specify.ui.SubPaneIFace;
-import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
-import edu.ku.brc.specify.ui.Trash;
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.db.ChooseRecordSetDlg;
-import edu.ku.brc.specify.ui.dnd.DataActionEvent;
-import edu.ku.brc.specify.ui.dnd.GhostActionable;
-import edu.ku.brc.specify.ui.dnd.GhostActionableDropManager;
-import edu.ku.brc.specify.ui.dnd.GhostMouseInputAdapter;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.IconListCellRenderer;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.ui.SubPaneIFace;
+import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.Trash;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.db.ChooseRecordSetDlg;
+import edu.ku.brc.ui.dnd.DataActionEvent;
+import edu.ku.brc.ui.dnd.GhostActionable;
+import edu.ku.brc.ui.dnd.GhostActionableDropManager;
+import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 
 /**
  * A task to manage Labels and response to Label Commands

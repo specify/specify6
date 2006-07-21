@@ -26,8 +26,8 @@ import javax.swing.SwingConstants;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.core.Taskable;
-import edu.ku.brc.specify.ui.CsvTableModel;
-import edu.ku.brc.specify.ui.JustifiedTableCellRenderer;
+import edu.ku.brc.ui.CsvTableModel;
+import edu.ku.brc.ui.JustifiedTableCellRenderer;
 
 /**
  * PLaceholder for Workbench Pane

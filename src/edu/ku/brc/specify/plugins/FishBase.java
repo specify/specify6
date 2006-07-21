@@ -39,13 +39,13 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.extras.FishBaseInfoGetter;
 import edu.ku.brc.specify.extras.FishBaseInfoGetterListener;
 import edu.ku.brc.specify.prefs.PrefsCache;
-import edu.ku.brc.specify.ui.ColorWrapper;
-import edu.ku.brc.specify.ui.GetSetValueIFace;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.UIPluginable;
-import edu.ku.brc.specify.ui.db.DialogFactory;
-import edu.ku.brc.specify.ui.db.GenericDisplayFrame;
-import edu.ku.brc.specify.ui.forms.MultiView;
+import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIPluginable;
+import edu.ku.brc.ui.db.DialogFactory;
+import edu.ku.brc.ui.db.GenericDisplayFrame;
+import edu.ku.brc.ui.forms.MultiView;
 
 /**
  * FishBase plugin For SPNHC Demo

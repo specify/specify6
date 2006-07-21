@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.helpers;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Insets;
@@ -52,15 +52,15 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.prefs.PrefsCache;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.db.DatabaseLoginDlg;
-import edu.ku.brc.specify.ui.db.DatabaseLoginListener;
-import edu.ku.brc.specify.ui.db.DatabaseLoginPanel;
-import edu.ku.brc.specify.ui.dnd.GhostDataAggregatable;
-import edu.ku.brc.specify.ui.forms.DataObjectGettable;
-import edu.ku.brc.specify.ui.forms.DataObjectSettable;
-import edu.ku.brc.specify.ui.forms.persist.FormCell;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.db.DatabaseLoginDlg;
+import edu.ku.brc.ui.db.DatabaseLoginListener;
+import edu.ku.brc.ui.db.DatabaseLoginPanel;
+import edu.ku.brc.ui.dnd.GhostDataAggregatable;
+import edu.ku.brc.ui.forms.DataObjectGettable;
+import edu.ku.brc.ui.forms.DataObjectSettable;
+import edu.ku.brc.ui.forms.persist.FormCell;
 
 public final class UIHelper
 {

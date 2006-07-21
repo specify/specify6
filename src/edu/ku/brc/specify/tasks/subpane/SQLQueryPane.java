@@ -16,7 +16,7 @@
 package edu.ku.brc.specify.tasks.subpane;
 
 import static edu.ku.brc.specify.helpers.UIHelper.centerAndShow;
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -40,10 +40,10 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.dbsupport.SQLExecutionListener;
 import edu.ku.brc.specify.dbsupport.SQLExecutionProcessor;
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.db.ResultSetTableModel;
-import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
-import edu.ku.brc.specify.ui.db.SaveRecordSetDlg;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.db.ResultSetTableModel;
+import edu.ku.brc.ui.db.ResultSetTableModelDM;
+import edu.ku.brc.ui.db.SaveRecordSetDlg;
 /**
  * A pane with a text field for entring in a query and then the results are displayed in a table.
  * 

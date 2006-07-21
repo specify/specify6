@@ -20,7 +20,7 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.specify.ui.forms.ViewMgr;
+import edu.ku.brc.ui.forms.ViewMgr;
 
 public class TestFormFactory extends TestCase
 {

@@ -35,11 +35,11 @@ import javax.swing.ListModel;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import edu.ku.brc.specify.tasks.SystemSetupTask;
-import edu.ku.brc.specify.ui.CommandAction;
-import edu.ku.brc.specify.ui.CommandDispatcher;
-import edu.ku.brc.specify.ui.db.PickList;
-import edu.ku.brc.specify.ui.db.PickListItem;
-import edu.ku.brc.specify.ui.forms.Viewable;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.db.PickList;
+import edu.ku.brc.ui.db.PickListItem;
+import edu.ku.brc.ui.forms.Viewable;
 
 /**
  * The process for the pick list "editor" form

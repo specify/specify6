@@ -14,9 +14,9 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.prefs.PrefsCache;
-import edu.ku.brc.specify.ui.ColorWrapper;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
  * Tests the Preferences and Preferences cache

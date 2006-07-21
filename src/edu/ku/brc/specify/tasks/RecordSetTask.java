@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Component;
@@ -40,12 +40,12 @@ import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
-import edu.ku.brc.specify.ui.CommandAction;
-import edu.ku.brc.specify.ui.CommandDispatcher;
-import edu.ku.brc.specify.ui.RolloverCommand;
-import edu.ku.brc.specify.ui.SubPaneIFace;
-import edu.ku.brc.specify.ui.Trash;
-import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.ui.SubPaneIFace;
+import edu.ku.brc.ui.Trash;
+import edu.ku.brc.ui.UICacheManager;
 /**
  * Takes care of offering up record sets, updating, deleteing and creating them.
  *

@@ -31,7 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import edu.ku.brc.specify.helpers.XMLHelper;
-import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
  * @author rods

@@ -30,9 +30,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import edu.ku.brc.specify.ui.CurvedBorder;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.RolloverCommand;
+import edu.ku.brc.ui.CurvedBorder;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.RolloverCommand;
 
 /**
  * This organized NavBoxItemIFace object in a vertical layout (via a layout manager)

@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.ui.treetables;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
@@ -38,13 +38,13 @@ import edu.ku.brc.specify.core.NavBoxLayoutManager;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeTableUtils;
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.forms.MultiView;
-import edu.ku.brc.specify.ui.forms.ViewMgr;
-import edu.ku.brc.specify.ui.forms.Viewable;
-import edu.ku.brc.specify.ui.forms.persist.AltView;
-import edu.ku.brc.specify.ui.forms.persist.View;
-import edu.ku.brc.specify.ui.validation.ValComboBox;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.ViewMgr;
+import edu.ku.brc.ui.forms.Viewable;
+import edu.ku.brc.ui.forms.persist.AltView;
+import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.validation.ValComboBox;
 
 /**
  * Comments must be updated.  Most of this code, including comments, was taken from GenericDisplayDialog.java

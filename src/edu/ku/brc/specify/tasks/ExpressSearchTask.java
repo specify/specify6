@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Color;
@@ -60,9 +60,9 @@ import edu.ku.brc.specify.tasks.subpane.ExpressSearchIndexerPane;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPane;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.SubPaneIFace;
-import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.SubPaneIFace;
+import edu.ku.brc.ui.UICacheManager;
 /**
  * This task will enable the user to index there database and preform express searches
  *

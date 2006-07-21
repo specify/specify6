@@ -23,11 +23,11 @@ import edu.ku.brc.specify.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.tasks.StatsTask;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
-import edu.ku.brc.specify.ui.CommandAction;
-import edu.ku.brc.specify.ui.CommandDispatcher;
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.forms.ViewMgr;
-import edu.ku.brc.specify.ui.forms.persist.View;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.forms.ViewMgr;
+import edu.ku.brc.ui.forms.persist.View;
 
 public class StatsMgr
 {

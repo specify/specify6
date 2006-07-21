@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
@@ -54,12 +54,12 @@ import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.specify.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.specify.tasks.subpane.FormPane;
-import edu.ku.brc.specify.ui.CommandAction;
-import edu.ku.brc.specify.ui.CommandDispatcher;
-import edu.ku.brc.specify.ui.RolloverCommand;
-import edu.ku.brc.specify.ui.SubPaneIFace;
-import edu.ku.brc.specify.ui.Trash;
-import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.ui.SubPaneIFace;
+import edu.ku.brc.ui.Trash;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
  * Takes care of offering up record sets, updating, deleteing and creating them.

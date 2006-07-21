@@ -34,7 +34,7 @@ import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPreparationAttr;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createSpecifyUser;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createTaxonTreeDef;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserGroup;
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -102,14 +102,14 @@ import edu.ku.brc.specify.prefs.PrefMainPanel;
 import edu.ku.brc.specify.tests.CreateTestDatabases;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.specify.tests.forms.TestDataSubObj;
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.db.DatabaseLoginDlg;
-import edu.ku.brc.specify.ui.db.DatabaseLoginListener;
-import edu.ku.brc.specify.ui.forms.MultiView;
-import edu.ku.brc.specify.ui.forms.ViewMgr;
-import edu.ku.brc.specify.ui.forms.Viewable;
-import edu.ku.brc.specify.ui.forms.persist.AltView;
-import edu.ku.brc.specify.ui.forms.persist.View;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.db.DatabaseLoginDlg;
+import edu.ku.brc.ui.db.DatabaseLoginListener;
+import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.ViewMgr;
+import edu.ku.brc.ui.forms.Viewable;
+import edu.ku.brc.ui.forms.persist.AltView;
+import edu.ku.brc.ui.forms.persist.View;
 
 /**
  * The stand alone part of the FormEditor (this is a prototype at the moment that is used for viewing forms)

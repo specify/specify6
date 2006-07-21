@@ -22,8 +22,8 @@ import org.jdesktop.animation.timing.TimingController;
 import org.jdesktop.animation.timing.TimingTarget;
 
 import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.specify.ui.GraphicsUtils;
-import edu.ku.brc.specify.ui.SimpleCircleIcon;
+import edu.ku.brc.ui.GraphicsUtils;
+import edu.ku.brc.ui.SimpleCircleIcon;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -561,7 +561,7 @@ public class LocalityMapper implements TimingTarget
 	/**
 	 * Returns the color of the locality marker icon.
 	 *
-	 * @see edu.ku.brc.specify.ui.SimpleCircleIcon#getColor()
+	 * @see edu.ku.brc.ui.SimpleCircleIcon#getColor()
 	 * @see #setDotColor(Color)
 	 * @return the color
 	 */
@@ -573,7 +573,7 @@ public class LocalityMapper implements TimingTarget
 	/**
 	 * Sets the color of the locality marker icon.
 	 *
-	 * @see edu.ku.brc.specify.ui.SimpleCircleIcon#setColor(java.awt.Color)
+	 * @see edu.ku.brc.ui.SimpleCircleIcon#setColor(java.awt.Color)
 	 * @see #getDotColor();
 	 * @param color the color
 	 */

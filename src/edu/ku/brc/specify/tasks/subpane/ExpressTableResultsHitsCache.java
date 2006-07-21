@@ -27,7 +27,7 @@ import org.apache.lucene.search.Hits;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
-import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
  * This is a single set of of results and is derived from a query where all the record numbers where

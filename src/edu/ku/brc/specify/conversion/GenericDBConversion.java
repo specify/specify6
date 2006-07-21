@@ -75,8 +75,8 @@ import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.tests.ObjCreatorHelper;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeTableUtils;
-import edu.ku.brc.specify.ui.db.PickList;
-import edu.ku.brc.specify.ui.db.PickListItem;
+import edu.ku.brc.ui.db.PickList;
+import edu.ku.brc.ui.db.PickListItem;
 import edu.ku.brc.util.Pair;
 
 /**

@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,9 +34,9 @@ import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.stats.StatsMgr;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.specify.tasks.subpane.StatsPane;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.SubPaneIFace;
-import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.SubPaneIFace;
+import edu.ku.brc.ui.ToolBarDropDownBtn;
 /**
  * The StatsTask is responsible gettng and displaying all various idfferent kinds of stats
  *

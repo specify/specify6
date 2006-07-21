@@ -13,7 +13,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */package edu.ku.brc.specify.plugins;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -76,10 +76,10 @@ import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.tasks.services.MapGrabber;
-import edu.ku.brc.specify.ui.ColorWrapper;
-import edu.ku.brc.specify.ui.GetSetValueIFace;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.UIPluginable;
+import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIPluginable;
 
 /**
  * BioGeoMancer plugin For SPNHC Demo.

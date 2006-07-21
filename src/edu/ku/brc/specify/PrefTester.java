@@ -44,8 +44,8 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.helpers.XMLHelper;
 import edu.ku.brc.specify.prefs.PrefMainPanel;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
  * The stand alone part of the FormEditor (this is a prototype at the moment that is used for viewing forms) 

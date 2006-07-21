@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.stats;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -49,10 +49,10 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.core.ContextMgr;
 import edu.ku.brc.specify.tasks.StatsTask;
-import edu.ku.brc.specify.ui.CurvedBorder;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.SortableJTable;
-import edu.ku.brc.specify.ui.SortableTableModel;
+import edu.ku.brc.ui.CurvedBorder;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.SortableJTable;
+import edu.ku.brc.ui.SortableTableModel;
 
 /**
  * Class to manage an entire group of StatItems where each StatItem gets its own data from a unique query.

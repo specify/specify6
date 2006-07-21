@@ -15,7 +15,7 @@
 
 package edu.ku.brc.specify.plugins;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.split;
 
 import java.awt.Component;
@@ -43,9 +43,9 @@ import edu.ku.brc.specify.core.ServiceInfo;
 import edu.ku.brc.specify.core.TaskCommandDef;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.helpers.XMLHelper;
-import edu.ku.brc.specify.ui.CommandAction;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UICacheManager;
 
 public class PluginMgr
 {

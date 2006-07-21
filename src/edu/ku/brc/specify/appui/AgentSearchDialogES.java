@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.appui;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.BorderLayout;
@@ -49,12 +49,12 @@ import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResults;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsHitsCache;
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.db.GenericSearchDialog;
-import edu.ku.brc.specify.ui.forms.ViewFactory;
-import edu.ku.brc.specify.ui.forms.ViewMgr;
-import edu.ku.brc.specify.ui.forms.Viewable;
-import edu.ku.brc.specify.ui.forms.persist.View;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.db.GenericSearchDialog;
+import edu.ku.brc.ui.forms.ViewFactory;
+import edu.ku.brc.ui.forms.ViewMgr;
+import edu.ku.brc.ui.forms.Viewable;
+import edu.ku.brc.ui.forms.persist.View;
 
 /**
  * NOTE: Thiks is an example of how to do the Search dialog usin express search instead of a regular search.

@@ -22,7 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
 import edu.ku.brc.specify.exceptions.ConfigurationException;
-import edu.ku.brc.specify.ui.Trash;
+import edu.ku.brc.ui.Trash;
 
 /**
  * A singleton that manages a list of NavBoxIFace items. The NavBoxIFace are layed out using a manager 

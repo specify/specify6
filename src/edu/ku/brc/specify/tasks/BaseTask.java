@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,16 +43,16 @@ import edu.ku.brc.specify.plugins.TaskPluginable;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.specify.tasks.subpane.FormPane;
-import edu.ku.brc.specify.ui.CommandAction;
-import edu.ku.brc.specify.ui.CommandDispatcher;
-import edu.ku.brc.specify.ui.CommandListener;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.RolloverCommand;
-import edu.ku.brc.specify.ui.SubPaneIFace;
-import edu.ku.brc.specify.ui.SubPaneMgrListener;
-import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.dnd.GhostActionable;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CommandListener;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.ui.SubPaneIFace;
+import edu.ku.brc.ui.SubPaneMgrListener;
+import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.dnd.GhostActionable;
 
 /**
  * Abstract class to provide a base level of functionality for implementing a task.

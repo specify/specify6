@@ -18,8 +18,8 @@ import java.util.Hashtable;
 
 import javax.swing.ImageIcon;
 
-import edu.ku.brc.specify.ui.CommandAction;
-import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.IconManager;
 
 /**
  * This class desrcibes a service that can be provided by a task for a specific type of data. 

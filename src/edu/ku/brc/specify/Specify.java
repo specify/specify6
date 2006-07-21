@@ -16,7 +16,7 @@
 package edu.ku.brc.specify;
 
 import static edu.ku.brc.specify.helpers.UIHelper.centerAndShow;
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -77,15 +77,15 @@ import edu.ku.brc.specify.prefs.PrefMainPanel;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.StartUpTask;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.JStatusBar;
-import edu.ku.brc.specify.ui.MainPanel;
-import edu.ku.brc.specify.ui.SubPaneIFace;
-import edu.ku.brc.specify.ui.ToolbarLayoutManager;
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.db.DatabaseLoginListener;
-import edu.ku.brc.specify.ui.dnd.GhostGlassPane;
-import edu.ku.brc.specify.ui.forms.ViewMgr;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.MainPanel;
+import edu.ku.brc.ui.SubPaneIFace;
+import edu.ku.brc.ui.ToolbarLayoutManager;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.db.DatabaseLoginListener;
+import edu.ku.brc.ui.dnd.GhostGlassPane;
+import edu.ku.brc.ui.forms.ViewMgr;
 import edu.ku.brc.util.FileCache;
 /**
  * Specify Main Application Class
@@ -814,7 +814,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     //---------------------------------------------------------
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.db.DatabaseLoginListener#loggedIn()
+     * @see edu.ku.brc.ui.db.DatabaseLoginListener#loggedIn()
      */
     public void loggedIn()
     {
@@ -824,7 +824,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.db.DatabaseLoginListener#cancelled()
+     * @see edu.ku.brc.ui.db.DatabaseLoginListener#cancelled()
      */
     public void cancelled()
     {

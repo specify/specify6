@@ -7,12 +7,12 @@ import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.forms.ViewFactory;
-import edu.ku.brc.specify.ui.forms.ViewMgr;
-import edu.ku.brc.specify.ui.forms.Viewable;
-import edu.ku.brc.specify.ui.forms.persist.View;
-import edu.ku.brc.specify.ui.validation.FormValidator;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.forms.ViewFactory;
+import edu.ku.brc.ui.forms.ViewMgr;
+import edu.ku.brc.ui.forms.Viewable;
+import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.validation.FormValidator;
 
 /**
  * This panel will handle all the various options for formatting of data.

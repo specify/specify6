@@ -15,7 +15,7 @@
 package edu.ku.brc.specify;
 
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -70,12 +70,12 @@ import edu.ku.brc.specify.dbsupport.DBConnection;
 import edu.ku.brc.specify.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.helpers.UIHelper;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.db.JAutoCompComboBox;
-import edu.ku.brc.specify.ui.db.JAutoCompTextField;
-import edu.ku.brc.specify.ui.db.PickList;
-import edu.ku.brc.specify.ui.db.PickListItem;
-import edu.ku.brc.specify.ui.validation.ValComboBoxFromQuery;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.db.JAutoCompComboBox;
+import edu.ku.brc.ui.db.JAutoCompTextField;
+import edu.ku.brc.ui.db.PickList;
+import edu.ku.brc.ui.db.PickListItem;
+import edu.ku.brc.ui.validation.ValComboBoxFromQuery;
 /**
  * @author rods
  *

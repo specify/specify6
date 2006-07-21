@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.helpers;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.io.File;
@@ -45,7 +45,7 @@ import org.apache.log4j.Logger;
 
 import com.sun.mail.smtp.SMTPTransport;
 
-import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
  * Sends an email with optional attachment

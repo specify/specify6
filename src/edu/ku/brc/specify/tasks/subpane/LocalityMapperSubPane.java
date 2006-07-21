@@ -15,7 +15,7 @@
 
 package edu.ku.brc.specify.tasks.subpane;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -70,17 +70,17 @@ import edu.ku.brc.specify.extras.SwingWorker;
 import edu.ku.brc.specify.prefs.PrefsCache;
 import edu.ku.brc.specify.tasks.services.KeyholeMarkupGenerator;
 import edu.ku.brc.specify.tasks.services.LocalityMapper;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.ImageDisplay;
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.forms.ControlBarPanel;
-import edu.ku.brc.specify.ui.forms.FormViewObj;
-import edu.ku.brc.specify.ui.forms.MultiView;
-import edu.ku.brc.specify.ui.forms.ResultSetController;
-import edu.ku.brc.specify.ui.forms.ResultSetControllerListener;
-import edu.ku.brc.specify.ui.forms.ViewMgr;
-import edu.ku.brc.specify.ui.forms.persist.AltView;
-import edu.ku.brc.specify.ui.forms.persist.View;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.ImageDisplay;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.forms.ControlBarPanel;
+import edu.ku.brc.ui.forms.FormViewObj;
+import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.ResultSetController;
+import edu.ku.brc.ui.forms.ResultSetControllerListener;
+import edu.ku.brc.ui.forms.ViewMgr;
+import edu.ku.brc.ui.forms.persist.AltView;
+import edu.ku.brc.ui.forms.persist.View;
 
 /**
  * A default pane for display a simple label telling what it is suppose to do

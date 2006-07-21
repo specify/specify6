@@ -68,7 +68,7 @@ public class DBTableIdMgr
             instance.hash.put(10,   new TableInfo(10, "edu.ku.brc.specify.datamodel.CollectingEvent", "collectingevent", "collectingEventId", "CollectingEvent"));
             
             instance.hash.put(80,  new TableInfo(80, "edu.ku.brc.specify.datamodel.InfoRequest", "inforequest", "infoRequestID", "InfoRequest"));
-            instance.hash.put(500, new TableInfo(500, "edu.ku.brc.specify.ui.db.PickList", "picklist", "picklist_id", "PickList"));
+            instance.hash.put(500, new TableInfo(500, "edu.ku.brc.ui.db.PickList", "picklist", "picklist_id", "PickList"));
 
         } catch (Exception ex)
         {

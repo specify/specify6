@@ -21,9 +21,9 @@ import java.text.SimpleDateFormat;
 import org.apache.commons.lang.time.FastDateFormat;
 
 import edu.ku.brc.specify.prefs.PrefsCache;
-import edu.ku.brc.specify.ui.ColorWrapper;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
  * One stop shopping for prefs, this is the one place that initializes all the prefs for any Specify application

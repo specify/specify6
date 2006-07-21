@@ -28,9 +28,8 @@ import java.util.List;
 import javax.swing.JList;
 import javax.swing.ListModel;
 
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.dnd.GhostActionable;
-import edu.ku.brc.specify.ui.dnd.GhostMouseInputAdapter;
+import edu.ku.brc.ui.dnd.GhostActionable;
+import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 
 /**
  * A custom {@link JList} with enhanced drag and drop features.
@@ -337,7 +336,7 @@ public class TreeDataJList extends JList implements DragSourceListener,
 	/**
 	 *
 	 *
-	 * @see edu.ku.brc.specify.ui.dnd.GhostActionable#doAction(edu.ku.brc.specify.ui.dnd.GhostActionable)
+	 * @see edu.ku.brc.ui.dnd.GhostActionable#doAction(edu.ku.brc.ui.dnd.GhostActionable)
 	 * @param source
 	 */
 	public void doAction(GhostActionable source)
@@ -347,7 +346,7 @@ public class TreeDataJList extends JList implements DragSourceListener,
 	/**
 	 *
 	 *
-	 * @see edu.ku.brc.specify.ui.dnd.GhostActionable#setData(java.lang.Object)
+	 * @see edu.ku.brc.ui.dnd.GhostActionable#setData(java.lang.Object)
 	 * @param data
 	 */
 	public void setData(Object data)
@@ -357,7 +356,7 @@ public class TreeDataJList extends JList implements DragSourceListener,
 	/**
 	 *
 	 *
-	 * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getData()
+	 * @see edu.ku.brc.ui.dnd.GhostActionable#getData()
 	 * @return
 	 */
 	public Object getData()
@@ -368,7 +367,7 @@ public class TreeDataJList extends JList implements DragSourceListener,
 	/**
 	 *
 	 *
-	 * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getDataForClass(java.lang.Class)
+	 * @see edu.ku.brc.ui.dnd.GhostActionable#getDataForClass(java.lang.Class)
 	 * @param classObj
 	 * @return
 	 */
@@ -380,7 +379,7 @@ public class TreeDataJList extends JList implements DragSourceListener,
     /**
      *
      *
-     * @see edu.ku.brc.specify.ui.dnd.GhostActionable#createMouseInputAdapter()
+     * @see edu.ku.brc.ui.dnd.GhostActionable#createMouseInputAdapter()
      */
     public void createMouseInputAdapter()
     {
@@ -401,7 +400,7 @@ public class TreeDataJList extends JList implements DragSourceListener,
 	/**
 	 *
 	 *
-	 * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getBufferedImage()
+	 * @see edu.ku.brc.ui.dnd.GhostActionable#getBufferedImage()
 	 * @return
 	 */
 	public BufferedImage getBufferedImage()
@@ -424,7 +423,7 @@ public class TreeDataJList extends JList implements DragSourceListener,
 	/**
 	 *
 	 *
-	 * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getDropDataFlavors()
+	 * @see edu.ku.brc.ui.dnd.GhostActionable#getDropDataFlavors()
 	 * @return
 	 */
 	public List<DataFlavor> getDropDataFlavors()
@@ -435,7 +434,7 @@ public class TreeDataJList extends JList implements DragSourceListener,
 	/**
 	 *
 	 *
-	 * @see edu.ku.brc.specify.ui.dnd.GhostActionable#getDragDataFlavors()
+	 * @see edu.ku.brc.ui.dnd.GhostActionable#getDragDataFlavors()
 	 * @return
 	 */
 	public List<DataFlavor> getDragDataFlavors()

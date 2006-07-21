@@ -15,7 +15,7 @@
 
 package edu.ku.brc.specify.tasks.subpane;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -32,7 +32,7 @@ import edu.ku.brc.specify.core.NavBoxLayoutManager;
 import edu.ku.brc.specify.core.NavBoxMgr;
 import edu.ku.brc.specify.core.Taskable;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
-import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.ui.IconManager;
 
 /**
  * A pane with a text field for entring in a query and then the results are displayed in a table.

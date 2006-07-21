@@ -15,7 +15,7 @@
 package edu.ku.brc.specify.prefs;
 
 import static edu.ku.brc.specify.helpers.UIHelper.createDuplicateJGoodiesDef;
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -37,16 +37,16 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.helpers.UIHelper;
-import edu.ku.brc.specify.ui.CommandAction;
-import edu.ku.brc.specify.ui.CommandDispatcher;
-import edu.ku.brc.specify.ui.CommandListener;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.forms.ViewFactory;
-import edu.ku.brc.specify.ui.forms.ViewMgr;
-import edu.ku.brc.specify.ui.forms.Viewable;
-import edu.ku.brc.specify.ui.forms.persist.View;
-import edu.ku.brc.specify.ui.validation.FormValidator;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CommandListener;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.forms.ViewFactory;
+import edu.ku.brc.ui.forms.ViewMgr;
+import edu.ku.brc.ui.forms.Viewable;
+import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.validation.FormValidator;
 
 /**
  * Preference Panel for setting EMail Preferences.

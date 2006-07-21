@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -37,11 +37,11 @@ import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.specify.tasks.subpane.StatsPane;
-import edu.ku.brc.specify.ui.IconManager;
-import edu.ku.brc.specify.ui.ImageSwirlPanel;
-import edu.ku.brc.specify.ui.SubPaneIFace;
-import edu.ku.brc.specify.ui.ToolBarDropDownBtn;
-import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.ImageSwirlPanel;
+import edu.ku.brc.ui.SubPaneIFace;
+import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
  * This task will enable the user to create queries, save them and execute them.

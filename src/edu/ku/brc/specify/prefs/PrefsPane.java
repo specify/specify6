@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.prefs;
 
-import static edu.ku.brc.specify.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -32,7 +32,7 @@ import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
  * 

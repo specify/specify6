@@ -22,8 +22,8 @@ import java.util.prefs.Preferences;
 
 import org.apache.commons.lang.ArrayUtils;
 
-import edu.ku.brc.specify.ui.ColorWrapper;
-import edu.ku.brc.specify.ui.UICacheManager;
+import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
  * Creates and maintains a cache of preference entries that listen for changes to the preferences so they can always be up-to-date

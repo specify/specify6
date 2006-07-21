@@ -19,8 +19,8 @@ import javax.swing.event.ListDataListener;
 
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeTableUtils;
-import edu.ku.brc.specify.ui.GraphicsUtils;
-import edu.ku.brc.specify.ui.IconManager;
+import edu.ku.brc.ui.GraphicsUtils;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.util.Pair;
 
 @SuppressWarnings("serial")
