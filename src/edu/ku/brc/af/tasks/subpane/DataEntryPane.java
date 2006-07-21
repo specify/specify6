@@ -12,21 +12,34 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.tasks.subpane;
+
+package edu.ku.brc.af.tasks.subpane;
+
+//import org.apache.log4j.Logger;
+//import org.apache.commons.logging.LogFactory;
+
+import edu.ku.brc.af.core.Taskable;
 
 /**
- * Objects implementing this interface can be used by the FormPane to perform processing
+ * This pane will be responsible for creating forms
  * 
  * @author rods
- *
+ * 
  */
-public interface FormProcessor
+@SuppressWarnings("serial")
+public class DataEntryPane extends BaseSubPane
 {
+    //private static final Logger log = Logger.getLogger(DataEntryPane.class);
 
     /**
-     * The form pane that the process will work on. This enables it to have access to the UI components.
-     * @param formPane the form pane
+     * 
+     *
      */
-    public void setViewable(final FormPane formPane); 
+    public DataEntryPane(final String name, 
+                         final Taskable task)
+    {
+        super(name, task);
+        
+    }
     
 }

@@ -13,7 +13,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.specify.tasks.subpane;
+package edu.ku.brc.af.tasks.subpane;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
@@ -41,9 +41,9 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.ServiceInfo;
+import edu.ku.brc.af.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.ui.CloseButton;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;

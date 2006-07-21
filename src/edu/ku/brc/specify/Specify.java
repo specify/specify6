@@ -69,13 +69,13 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.tasks.ExpressSearchTask;
+import edu.ku.brc.af.tasks.StartUpTask;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyConfig;
 import edu.ku.brc.specify.plugins.PluginMgr;
 import edu.ku.brc.specify.prefs.PrefMainPanel;
-import edu.ku.brc.specify.tasks.ExpressSearchTask;
-import edu.ku.brc.specify.tasks.StartUpTask;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;

@@ -12,7 +12,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.tasks;
+package edu.ku.brc.af.tasks;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
@@ -26,9 +26,9 @@ import javax.swing.JComponent;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
-import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
 //import edu.ku.brc.specify.tasks.subpane.SearchFormPane;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.SubPaneIFace;

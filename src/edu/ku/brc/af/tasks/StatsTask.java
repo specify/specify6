@@ -12,7 +12,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.tasks;
+package edu.ku.brc.af.tasks;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
@@ -28,11 +28,11 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.tasks.subpane.StatsPane;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;
-import edu.ku.brc.specify.tasks.subpane.StatsPane;
 import edu.ku.brc.stats.StatsMgr;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.SubPaneIFace;

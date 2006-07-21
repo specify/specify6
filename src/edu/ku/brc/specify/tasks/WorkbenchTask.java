@@ -33,6 +33,7 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.WorkbenchPane;

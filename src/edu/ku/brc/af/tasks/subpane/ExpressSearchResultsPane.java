@@ -13,7 +13,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.specify.tasks.subpane;
+package edu.ku.brc.af.tasks.subpane;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
@@ -31,7 +31,7 @@ import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
+import edu.ku.brc.af.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.ui.IconManager;
 
 /**

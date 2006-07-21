@@ -26,6 +26,7 @@ import javax.swing.SwingConstants;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.ui.CsvTableModel;
 import edu.ku.brc.ui.JustifiedTableCellRenderer;
 

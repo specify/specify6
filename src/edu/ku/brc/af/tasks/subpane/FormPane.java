@@ -1,4 +1,4 @@
-package edu.ku.brc.specify.tasks.subpane;
+package edu.ku.brc.af.tasks.subpane;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 

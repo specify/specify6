@@ -33,12 +33,12 @@ import org.hibernate.LockMode;
 import org.hibernate.Session;
 
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.tasks.subpane.BaseSubPane;
 import edu.ku.brc.specify.treeutils.ReverseRankBasedComparator;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeTableUtils;
@@ -784,7 +784,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	/**
 	 * Returns the top-level UI component of the tree viewer.
 	 *
-	 * @see edu.ku.brc.specify.tasks.subpane.BaseSubPane#getUIComponent()
+	 * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#getUIComponent()
 	 * @return the top-level UI component
 	 */
 	public JComponent getUIComponent()

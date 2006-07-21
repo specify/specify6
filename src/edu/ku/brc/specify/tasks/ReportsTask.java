@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Vector;
 
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.specify.plugins.MenuItemDesc;
 import edu.ku.brc.specify.plugins.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.SimpleDescPane;

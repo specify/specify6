@@ -12,34 +12,43 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+package edu.ku.brc.af.tasks.subpane;
 
-package edu.ku.brc.specify.tasks.subpane;
-
-//import org.apache.log4j.Logger;
-//import org.apache.commons.logging.LogFactory;
-
-import edu.ku.brc.af.core.Taskable;
 
 /**
- * This pane will be responsible for creating forms
+ * Interface that enables chart speciic informations to be set
  * 
  * @author rods
  * 
  */
-@SuppressWarnings("serial")
-public class DataEntryPane extends BaseSubPane
+public interface Chartable
 {
-    //private static final Logger log = Logger.getLogger(DataEntryPane.class);
 
     /**
-     * 
-     *
+     * Sets the title of the chart
+     * @param title the title
      */
-    public DataEntryPane(final String name, 
-                         final Taskable task)
-    {
-        super(name, task);
-        
-    }
+    public void setTitle(final String title);
     
+    /**
+     * Sets the X Axis label if applicable
+     * @param title the title
+     */
+    public void setXAxis(final String title);
+    
+    /**
+     * Sets the Y Axis label if applicable
+     * @param title the title
+     */
+    public void setYAxis(final String title);
+    
+    /** 
+     * Set whether the chart is vertical or horizontal (vertical is the default)
+     * @param isVertical true if vertical 
+     */
+    public void setVertical(boolean isVertical);
+    
+
+
+
 }

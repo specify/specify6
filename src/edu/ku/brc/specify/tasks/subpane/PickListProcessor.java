@@ -34,6 +34,8 @@ import javax.swing.ListModel;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import edu.ku.brc.af.tasks.subpane.FormPane;
+import edu.ku.brc.af.tasks.subpane.FormProcessor;
 import edu.ku.brc.specify.tasks.SystemSetupTask;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;

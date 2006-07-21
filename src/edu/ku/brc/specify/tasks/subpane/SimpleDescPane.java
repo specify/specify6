@@ -26,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 
 /**
  * A default pane for display a simple label telling what it is suppose to do

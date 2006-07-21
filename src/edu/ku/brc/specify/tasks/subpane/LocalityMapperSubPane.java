@@ -59,6 +59,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jdesktop.animation.timing.TimingTarget;
 
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;

@@ -16,6 +16,7 @@
 package edu.ku.brc.specify.tasks.subpane;
 
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 
 /**
  * The future reports pane
