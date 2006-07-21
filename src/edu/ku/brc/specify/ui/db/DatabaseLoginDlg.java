@@ -50,7 +50,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
         
         setTitle(getResourceString("logintitle"));
         
-        dbPanel = new DatabaseLoginPanel(this);
+        dbPanel = new DatabaseLoginPanel(this, true);
         setContentPane(dbPanel);
         
         setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));

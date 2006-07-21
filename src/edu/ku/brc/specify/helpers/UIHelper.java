@@ -972,7 +972,7 @@ public final class UIHelper
                 JFrame.setDefaultLookAndFeelDecorated(false);
                 
                 JFrame frame = new JFrame(getResourceString("logintitle"));
-                DatabaseLoginPanel panel = new DatabaseLoginPanel(new DBListener(frame, listener));
+                DatabaseLoginPanel panel = new DatabaseLoginPanel(new DBListener(frame, listener), false);
                 panel.setWindow(frame);
                 frame.setContentPane(panel);
                 frame.setIconImage(IconManager.getIcon("AppIcon", IconManager.IconSize.Std16).getImage());

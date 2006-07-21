@@ -43,6 +43,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang.StringUtils;
@@ -121,15 +123,17 @@ public class DatabaseLoginPanel extends JPanel
 
     /**
      * Constructor that has the form created from the view system
+     * @param dbListener listener to the panel (usually the frame or dialog)
+     * @param isDlg whether the parent is a dialog (false mean JFrame)
      */
-    public DatabaseLoginPanel(final DatabaseLoginListener dbListener)
+    public DatabaseLoginPanel(final DatabaseLoginListener dbListener, final boolean isDlg)
     {
         this.dbListener = dbListener;
         
         Preferences appsNode = UICacheManager.getAppPrefs();
         prefNode = appsNode.node("login");
         
-        createUI();
+        createUI(isDlg);
 
     }
     
@@ -169,8 +173,9 @@ public class DatabaseLoginPanel extends JPanel
     
     /**
      * Creates the UI for the login and hooks up any listeners
+     * @param isDlg whether the parent is a dialog (false mean JFrame)
      */
-    protected void createUI()
+    protected void createUI(final boolean isDlg)
     {
 
         // First create the controls and hook up listeners
@@ -207,6 +212,11 @@ public class DatabaseLoginPanel extends JPanel
         addFocusListenerForTextComp(password);
         addFocusListenerForTextComp(driver);
         addFocusListenerForTextComp(protocol);
+        
+        addKeyListenerForTextComp(username, !isDlg);
+        addKeyListenerForTextComp(password, !isDlg);
+        addKeyListenerForTextComp(driver, !isDlg);
+        addKeyListenerForTextComp(protocol, !isDlg);
         
         autoLoginCBX.setSelected(prefNode.getBoolean("autologin", false));
         rememberUsernameCBX.setSelected(prefNode.getBoolean("rememberuser", false));
@@ -355,11 +365,62 @@ public class DatabaseLoginPanel extends JPanel
     }
     
     /**
+     * Creates a Document listener so the UI is updated when the doc changes
+     * @param textField the text field to be changed
+     */
+    protected void addDocListenerForTextComp(final JTextComponent textField)
+    {
+        textField.getDocument().addDocumentListener(new DocumentListener() 
+        {
+            public void changedUpdate(DocumentEvent e)
+            {
+                updateUIControls();  
+            }
+            public void insertUpdate(DocumentEvent e)
+            {
+                updateUIControls();  
+            }
+            public void removeUpdate(DocumentEvent e)
+            {
+                updateUIControls();
+            }
+        });
+    }
+
+    /**
+     * Creates a Document listener so the UI is updated when the doc changes
+     * @param textField the text field to be changed
+     */
+    protected void addKeyListenerForTextComp(final JTextComponent textField, final boolean checkForRet)
+    {
+        class KeyAdp extends KeyAdapter
+        {
+            private boolean checkForRet = false;
+            public KeyAdp(final boolean checkForRet)
+            {
+                this.checkForRet = checkForRet;
+            }
+            public void keyPressed(KeyEvent e)
+            {
+                updateUIControls();
+                if (checkForRet && e.getKeyCode() == KeyEvent.VK_ENTER)
+                {
+                    doLogin(); 
+                }
+            }  
+        }
+        textField.addKeyListener(new KeyAdp(checkForRet));
+    }
+
+    
+    /**
      * Enables or disables the UI based of the values of the controls. The Login button doesn't become
      * enabled unless everything is filled in. It also expands the "Extra" options if any of them are missing a value
      */
     protected void updateUIControls()
     {
+        if (extraPanel == null) return; // if this is null then we should skip all the checks because nothing is created
+        
         boolean shouldEnable = StringUtils.isNotEmpty(username.getText()) && 
                                 StringUtils.isNotEmpty(new String(password.getPassword())) && 
                                 servers.getSelectedIndex() != -1 && 
