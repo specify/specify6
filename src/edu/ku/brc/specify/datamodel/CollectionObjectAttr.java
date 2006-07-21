@@ -2,6 +2,8 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.Date;
 
+import edu.ku.brc.dbsupport.AttributeIFace;
+
 
 
 

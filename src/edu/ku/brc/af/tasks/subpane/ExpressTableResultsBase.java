@@ -44,6 +44,8 @@ import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.af.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.RecordSetItem;
+import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
 import edu.ku.brc.ui.CloseButton;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -51,7 +53,6 @@ import edu.ku.brc.ui.GradiantButton;
 import edu.ku.brc.ui.GradiantLabel;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.TriangleButton;
-import edu.ku.brc.ui.db.ResultSetTableModelDM;
 
 /**
  * This is a single set of of results and is derived from a query where all the record numbers where
@@ -365,6 +366,25 @@ public abstract class ExpressTableResultsBase extends JPanel
 
         rs.setTableId(Integer.parseInt(tableInfo.getTableId()));
         return rs;
+    }
+    
+    /**
+     * Returns a list of recordIds
+     * @param returnAll indicates whether all the records should be returned if nothing was selected
+     * @return a list of recordIds
+     */
+    public List<Integer> getListOfIds(final boolean returnAll)
+    {
+        List<Integer> list = new ArrayList<Integer>();
+        RecordSet rs = getRecordSet(returnAll);
+        if (rs != null)
+        {
+            for (RecordSetItem rsi : rs.getItems())
+            {
+                list.add(Integer.parseInt(rsi.getRecordId()));
+            }
+        }
+        return list;
     }
 
     /**

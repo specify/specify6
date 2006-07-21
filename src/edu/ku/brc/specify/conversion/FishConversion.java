@@ -28,7 +28,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.specify.datamodel.AttributeIFace;
+import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.PrepType;
 

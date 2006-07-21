@@ -27,7 +27,6 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -44,7 +43,6 @@ import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
-import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.ui.dnd.DndDeletable;
 
 /**
@@ -58,9 +56,6 @@ public class TrashCanDlg extends JDialog implements ActionListener, ListSelectio
 {
     // Static Data Members
     private static final Logger log = Logger.getLogger(TrashCanDlg.class);
-
-    
-    private final static ImageIcon icon = IconManager.getImage(RecordSetTask.RECORD_SET, IconManager.IconSize.Std16);
 
     // Data Members
     protected JButton        restoreBtn;
@@ -107,7 +102,7 @@ public class TrashCanDlg extends JDialog implements ActionListener, ListSelectio
             };
             
             list = new JList(listModel);
-            list.setCellRenderer(new IconListCellRenderer(icon)); // icon comes from the base class (it's probably size 16)
+            list.setCellRenderer(new DndDeletableListCellRenderer()); // icon comes from the base class (it's probably size 16)
             list.setVisibleRowCount(10);
             list.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent e) {

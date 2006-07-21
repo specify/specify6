@@ -1,4 +1,4 @@
-package edu.ku.brc.specify.extras;
+package edu.ku.brc.helpers;
 import javax.swing.SwingUtilities;
 
 /**

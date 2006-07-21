@@ -64,8 +64,6 @@ import edu.ku.brc.af.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.af.tasks.subpane.ExpressTableResults;
 import edu.ku.brc.af.tasks.subpane.ExpressTableResultsBase;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.ViewMgr;
@@ -113,7 +111,7 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
     protected ExpressResultsTableInfo  tableInfo;
     protected ExpressTableResultsBase  etrb;
 
-    protected RecordSet      recordSet      = null;
+    protected List<Integer>  idList      = null;
     protected String         sqlStr;
 
     protected Hashtable<String, Object> dataMap = new Hashtable<String, Object>();
@@ -294,7 +292,7 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
      */
     protected void updateUI()
     {
-        okBtn.setEnabled(recordSet != null && recordSet.getItems().size() == 1);
+        okBtn.setEnabled(idList != null && idList.size() == 1);
         
     }
 
@@ -327,19 +325,19 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
      */
     public Object getSelectedObject()
     {
-        if (!isCancelled && recordSet != null && recordSet.getItems().size() > 0)
+        if (!isCancelled && idList != null && idList.size() > 0)
         {
-            RecordSetItem item = (RecordSetItem)recordSet.getItems().iterator().next();
+            Integer id = idList.get(0);
             try
             {
-                log.debug("getSelectedObject class["+className+"] idFieldName["+idFieldName+"] id["+item.getRecordId()+"]");
+                log.debug("getSelectedObject class["+className+"] idFieldName["+idFieldName+"] id["+id+"]");
                 
                 Class classObj = Class.forName(className);
                 SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
                 Session session = sessionFactory.openSession();
                
                 Criteria criteria = session.createCriteria(classObj);
-                criteria.add(Expression.eq(idFieldName, Integer.parseInt(item.getRecordId())));
+                criteria.add(Expression.eq(idFieldName, id));
                 java.util.List list = criteria.list();
                 session.close();
                 
@@ -360,11 +358,11 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#addSearchResults(edu.ku.brc.specify.tasks.ExpressResultsTableInfo, org.apache.lucene.search.Hits)
+     * @see edu.ku.brc.af.tasks.subpane.ExpressSearchResultsPaneIFace#addSearchResults(edu.ku.brc.af.tasks.ExpressResultsTableInfo, org.apache.lucene.search.Hits)
      */
     public void addSearchResults(final ExpressResultsTableInfo tableInfo, final Hits hits)
     {
-        recordSet = null;
+        idList = null;
         
         updateUI();
 
@@ -377,17 +375,11 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
                 {
                     if (etrb != null && !e.getValueIsAdjusting())
                     {
-                        recordSet = etrb.getRecordSet(false);
-                        /*
-                        for (Object obj : recordSet.getItems())
-                        {
-                            RecordSetItem rsi = (RecordSetItem)obj;
-                            System.out.println(rsi.getRecordId());
-                        }*/
+                        idList = etrb.getListOfIds(false);
 
                     } else
                     {
-                        recordSet = null;
+                        idList = null;
                     }
                     updateUI();
                 }});
@@ -405,7 +397,7 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
 
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#removeTable(edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase)
+     * @see edu.ku.brc.af.tasks.subpane.ExpressSearchResultsPaneIFace#removeTable(edu.ku.brc.af.tasks.subpane.ExpressTableResultsBase)
      */
     public void removeTable(ExpressTableResultsBase table)
     {
@@ -420,7 +412,7 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#revalidateScroll()
+     * @see edu.ku.brc.af.tasks.subpane.ExpressSearchResultsPaneIFace#revalidateScroll()
      */
     public void revalidateScroll()
     {

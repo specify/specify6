@@ -1178,7 +1178,7 @@ public class ViewFactory
         }
         
         /* (non-Javadoc)
-         * @see edu.ku.brc.specify.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
+         * @see edu.ku.brc.af.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
          */
         public void setValue(Object value, String defaultValue)
         {
@@ -1208,7 +1208,7 @@ public class ViewFactory
         }
         
         /* (non-Javadoc)
-         * @see edu.ku.brc.specify.ui.GetSetValueIFace#getValue()
+         * @see edu.ku.brc.af.ui.GetSetValueIFace#getValue()
          */
         public Object getValue()
         {

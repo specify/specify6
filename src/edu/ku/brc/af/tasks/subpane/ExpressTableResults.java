@@ -21,8 +21,8 @@ import edu.ku.brc.af.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
 import edu.ku.brc.ui.UICacheManager;
-import edu.ku.brc.ui.db.ResultSetTableModelDM;
 
 /**
  * This is a single set of of results and is derived from a query where all the record numbers where

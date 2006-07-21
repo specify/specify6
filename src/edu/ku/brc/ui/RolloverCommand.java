@@ -459,7 +459,7 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     //-----------------------------------------------
 
    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.core.NavBoxItemIFace#getUIComponent()
+     * @see edu.ku.brc.af.core.NavBoxItemIFace#getUIComponent()
      */
     public JComponent getUIComponent()
     {
@@ -467,7 +467,7 @@ public class RolloverCommand extends JPanel implements NavBoxItemIFace, GhostAct
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.core.NavBoxItemIFace#getTitle()
+     * @see edu.ku.brc.af.core.NavBoxItemIFace#getTitle()
      */
     public String getTitle()
     {

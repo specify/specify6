@@ -40,10 +40,10 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
+import edu.ku.brc.specify.ui.db.ResultSetTableModel;
+import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
+import edu.ku.brc.specify.ui.db.SaveRecordSetDlg;
 import edu.ku.brc.ui.UICacheManager;
-import edu.ku.brc.ui.db.ResultSetTableModel;
-import edu.ku.brc.ui.db.ResultSetTableModelDM;
-import edu.ku.brc.ui.db.SaveRecordSetDlg;
 /**
  * A pane with a text field for entring in a query and then the results are displayed in a table.
  * 

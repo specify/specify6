@@ -30,6 +30,7 @@ import javax.swing.ImageIcon;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import edu.ku.brc.helpers.HTTPGetter;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.UICacheManager;
 

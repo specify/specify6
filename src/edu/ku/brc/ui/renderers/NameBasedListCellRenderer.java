@@ -8,7 +8,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 
-import edu.ku.brc.specify.datamodel.Geography;
 
 /**
  * Provides a facility for producing components appropriate for rendering the cells
@@ -68,27 +67,4 @@ public class NameBasedListCellRenderer extends DefaultListCellRenderer
 		return l;
 	}
 
-	/**
-	 * Tests the implementation of {@link NameBasedListCellRenderer}.
-	 *
-	 * @param args the argument string (unused)
-	 */
-	public static void main(String[] args)
-	{
-		Geography a = new Geography();
-		a.initialize();
-		a.setName("A");
-		
-		Geography b = new Geography();
-		b.initialize();
-		b.setName("B");
-		
-		JList l = new JList(new Object[]{a,b});
-		l.setCellRenderer(new NameBasedListCellRenderer());
-		JFrame f = new JFrame();
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.setSize(200,200);
-		f.add(l);
-		f.setVisible(true);
-	}
 }

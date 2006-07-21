@@ -23,7 +23,7 @@ import java.util.Set;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.specify.datamodel.AttributeIFace;
+import edu.ku.brc.dbsupport.AttributeIFace;
 
 
 /**

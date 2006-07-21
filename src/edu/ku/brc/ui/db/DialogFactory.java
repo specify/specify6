@@ -26,6 +26,7 @@ import org.dom4j.Element;
 
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.XMLHelper;
+
 /**
  * This class reads in dialog definitions from dialog_defs.xml, there are two types of dialog: "search" and "display".
  * Certain UI components use this factory to create dialogs for searching or displaying child objects.
@@ -53,12 +54,12 @@ public class DialogFactory
 /*
         dialogs.put("AgentSearch", new DialogInfo("Search", "AgenSearch", "AgentAddressSearch",
                 getResourceString("AgentSearchTitle"),
-                "edu.ku.brc.specify.datamodel.Agent",
+                "edu.ku.brc.af.datamodel.Agent",
                 "agentId"));
 
         dialogs.put("PermitSearch", new DialogInfo("Search", "PermitSearch", "PermitSearch",
                 getResourceString("PermitSearchTitle"),
-                "edu.ku.brc.specify.datamodel.Permit",
+                "edu.ku.brc.af.datamodel.Permit",
                 "permitId"));
                 */
         init();

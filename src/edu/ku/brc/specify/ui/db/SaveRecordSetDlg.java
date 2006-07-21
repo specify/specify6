@@ -1,4 +1,4 @@
-package edu.ku.brc.ui.db;
+package edu.ku.brc.specify.ui.db;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 

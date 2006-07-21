@@ -1,5 +1,7 @@
-package edu.ku.brc.specify.datamodel;
+package edu.ku.brc.dbsupport;
 import java.util.Date;
+
+import edu.ku.brc.specify.datamodel.AttributeDef;
 
 public interface AttributeIFace
 {

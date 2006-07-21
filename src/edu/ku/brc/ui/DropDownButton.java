@@ -342,7 +342,7 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.DropDownButton#getPopMenuSize()
+     * @see edu.ku.brc.af.ui.DropDownButton#getPopMenuSize()
      */
     protected int getPopMenuSize()
     {
