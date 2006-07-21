@@ -191,7 +191,7 @@ public class StartUpTask extends BaseTask
 
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.af.plugins.TaskPluginable#getToolBarItems()
+     * @see edu.ku.brc.af.plugins2.TaskPluginable#getToolBarItems()
      */
     public List<ToolBarItemDesc> getToolBarItems()
     {
@@ -210,7 +210,7 @@ public class StartUpTask extends BaseTask
 
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.af.plugins.TaskPluginable#getMenuItems()
+     * @see edu.ku.brc.af.plugins2.TaskPluginable#getMenuItems()
      */
     public List<MenuItemDesc> getMenuItems()
     {
@@ -221,7 +221,7 @@ public class StartUpTask extends BaseTask
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.plugins.TaskPluginable#getTaskClass()
+     * @see edu.ku.brc.af.plugins2.TaskPluginable#getTaskClass()
      */
     public Class getTaskClass()
     {

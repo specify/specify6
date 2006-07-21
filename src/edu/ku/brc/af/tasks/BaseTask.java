@@ -258,7 +258,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
 
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.plugins.TaskPluginable#getTaskClass()
+     * @see edu.ku.brc.af.plugins2.TaskPluginable#getTaskClass()
      */
     public abstract Class getTaskClass();
 
@@ -451,7 +451,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
 
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.af.plugins.TaskPluginable#getToolBarItems()
+     * @see edu.ku.brc.af.plugins2.TaskPluginable#getToolBarItems()
      */
     public String getName()
     {
@@ -469,19 +469,19 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
 
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.af.plugins.TaskPluginable#getToolBarItems()
+     * @see edu.ku.brc.af.plugins2.TaskPluginable#getToolBarItems()
      */
     public abstract List<ToolBarItemDesc> getToolBarItems();
 
     /*
      *  (non-Javadoc)
-     * @see edu.ku.brc.af.plugins.TaskPluginable#getMenuItems()
+     * @see edu.ku.brc.af.plugins2.TaskPluginable#getMenuItems()
      */
     public abstract List<MenuItemDesc> getMenuItems();
 
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.plugins.TaskPluginable#installPrefs()
+     * @see edu.ku.brc.af.plugins2.TaskPluginable#installPrefs()
      */
     public void installPrefs()
     {
@@ -489,7 +489,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.plugins.TaskPluginable#removePrefs()
+     * @see edu.ku.brc.af.plugins2.TaskPluginable#removePrefs()
      */
     public void removePrefs()
     {
@@ -497,7 +497,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.plugins.TaskPluginable#initialize(java.util.List)
+     * @see edu.ku.brc.af.plugins2.TaskPluginable#initialize(java.util.List)
      */
     public void initialize(List<TaskCommandDef> cmds)
     {
