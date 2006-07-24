@@ -28,9 +28,8 @@ import java.util.List;
 import javax.swing.JList;
 import javax.swing.ListModel;
 
-import edu.ku.brc.specify.ui.UICacheManager;
-import edu.ku.brc.specify.ui.dnd.GhostActionable;
-import edu.ku.brc.specify.ui.dnd.GhostMouseInputAdapter;
+import edu.ku.brc.ui.dnd.GhostActionable;
+import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 
 /**
  * A custom {@link JList} with enhanced drag and drop features.

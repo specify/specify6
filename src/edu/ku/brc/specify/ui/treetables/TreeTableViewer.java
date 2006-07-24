@@ -43,8 +43,8 @@ import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.specify.ui.treetables.TreeNodeEditDialog.TreeNodeDialogCallback;
 import edu.ku.brc.ui.DragDropCallback;
+import edu.ku.brc.ui.GhostDropJList;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.TreeDataJList;
 import edu.ku.brc.ui.listeners.ScrollBarLinkingListener;
 import edu.ku.brc.ui.renderers.NameBasedListCellRenderer;
 import edu.ku.brc.util.Pair;
@@ -80,7 +80,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	/** Model holding all <code>Treeable</code> nodes. */
 	protected TreeDataListModel listModel;
 	/** The tree display widget. */
-	protected TreeDataJList list;
+	protected GhostDropJList list;
 	/** Cell renderer for displaying individual nodes in the tree. */
 	protected TreeDataListCellRenderer listCellRenderer;
 	/** A header for the tree, displaying the names of the visible levels. */
@@ -267,7 +267,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		defsBox.setEnabled(false);
 		
 		listModel = new TreeDataListModel(root);
-		list = new TreeDataJList(listModel,this);
+		list = new GhostDropJList(listModel,this);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		listCellRenderer = new TreeDataListCellRenderer(list,listModel);
 		list.setCellRenderer(listCellRenderer);
