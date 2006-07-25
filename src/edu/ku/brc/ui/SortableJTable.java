@@ -28,6 +28,8 @@ import edu.ku.brc.ui.SortableTableModel.SortableTableHeaderCellRenderer;
 
 /**
  * Wraps the JTable so it can always provide the corrent model, which in this case is the "deleegate model".
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

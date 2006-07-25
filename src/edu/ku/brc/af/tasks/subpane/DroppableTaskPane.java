@@ -29,6 +29,8 @@ import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 
 /**
  * A Task SubPane that can have forms (DroppableFormObject) dropped onto it so it can display a form
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

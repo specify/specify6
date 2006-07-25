@@ -35,7 +35,9 @@ import edu.ku.brc.ui.validation.FormValidator;
 import edu.ku.brc.ui.validation.UIValidator;
 import edu.ku.brc.ui.validation.ValidationListener;
 
-/**
+/*
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

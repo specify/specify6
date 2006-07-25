@@ -90,7 +90,9 @@ import edu.ku.brc.ui.forms.ViewMgr;
 import edu.ku.brc.util.FileCache;
 /**
  * Specify Main Application Class
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author Rod Spears <rods@ku.edu>
  */
 @SuppressWarnings("serial")

@@ -48,7 +48,9 @@ import edu.ku.brc.util.FileCache;
  * This class is repsonsible for displaying an image in a confined panel. The sizes that are passed in at constructoin time are
  * the maximum sizes of the display area. The IMafeDisplay will resize the image approriately to fit within this size and it will
  * keep the image proportional.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

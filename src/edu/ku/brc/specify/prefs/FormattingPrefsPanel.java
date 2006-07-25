@@ -18,6 +18,8 @@ import edu.ku.brc.ui.validation.FormValidator;
 
 /**
  * This panel will handle all the various options for formatting of data.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

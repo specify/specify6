@@ -83,9 +83,29 @@ import edu.ku.brc.util.Pair;
  * This class is used for copying over the and creating all the tables that are not specify to any one collection.
  * This assumes that the "static" data members of DBConnection have been set up with the new Database's
  * driver, name, user and password. This is created with the old Database's driver, name, user and password.
+ *
+ * @code_status Unknown (auto-generated)
+ * 
+ * @author rods
+ *
  */
 public class GenericDBConversion
 {
+    public enum TableType 
+    {
+        CollectingEvent(0),
+        CollectionObject(1),
+        ExternalResource(2),
+        Preparation(3);
+        
+        TableType(final int ord)
+        { 
+            this.ord = (short)ord;
+        }
+        private short ord;
+        public short getType() { return ord; }
+    }
+    
     protected static final Logger log = Logger.getLogger(GenericDBConversion.class);
 
     protected static StringBuilder strBuf   = new StringBuilder("");
@@ -1581,7 +1601,7 @@ public class GenericDBConversion
 
                         attrDef.setDataType(dataType);
                         attrDef.setCollectionObjDef(colObjDef);
-                        attrDef.setTableType(AttributeIFace.TableType.CollectionObject.getType());
+                        attrDef.setTableType(GenericDBConversion.TableType.CollectionObject.getType());
 
                         attrDefs.put(md.getName(), attrDef);
                         //attrDefs.setTimestampCreated(new Date());

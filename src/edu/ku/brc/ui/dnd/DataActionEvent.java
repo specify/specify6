@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 /**
  * 
  * An ActionEvent that can carry a data object with it
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

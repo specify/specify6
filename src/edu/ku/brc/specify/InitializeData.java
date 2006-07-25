@@ -7,7 +7,9 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.dbsupport.HibernateUtil;
 /**
  * This is a helper class that is used for initializing data for testing 
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author Rod Spears <rods@ku.edu>
  */
 public class InitializeData 

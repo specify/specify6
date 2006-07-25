@@ -38,6 +38,8 @@ import edu.ku.brc.helpers.UIHelper;
 
 /**
  * A set of basic utilities that used almost exclusively for converting old Database schemas to the new schema
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

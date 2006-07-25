@@ -27,7 +27,9 @@ import edu.ku.brc.ui.UICacheManager;
  * This dialog simply wraps the DatabaseLoginPanel
  * 
  *  NOTE: This dialog can only be closed for two reasons: 1) A valid login, 2) It was cancelled by the user.
- *  
+ * 
+ * @code_status Unknown (auto-generated)
+ * 
  * @author rods
  *
  */

@@ -22,6 +22,8 @@ import edu.ku.brc.ui.forms.DataObjectSettable;
 
 /**
  * Class that implements the DataObjectSettable for preferences
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

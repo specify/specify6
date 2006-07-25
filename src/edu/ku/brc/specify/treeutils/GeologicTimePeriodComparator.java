@@ -7,6 +7,8 @@ import edu.ku.brc.specify.datamodel.Treeable;
 
 /**
  * A class used to compare Treeable objects for use in sorting sibling nodes.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author jstewart
  */

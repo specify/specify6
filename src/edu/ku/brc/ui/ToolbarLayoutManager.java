@@ -25,6 +25,8 @@ import java.util.Vector;
 /**
  * The layout manager for laying out the toolbar in a horizontal fashion ONLY. 
  * This is a prototype layout manager, more work needs to be done.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

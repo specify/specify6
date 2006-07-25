@@ -26,7 +26,9 @@ import org.dom4j.io.SAXReader;
 
 /**
  * An XML Helper, this currently is for w3c DOM, probably won't need this since we will be switch to DOM4J
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author Rod Spears
  */
 public class XMLHelper

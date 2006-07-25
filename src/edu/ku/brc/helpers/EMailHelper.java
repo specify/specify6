@@ -49,7 +49,9 @@ import edu.ku.brc.ui.UICacheManager;
 
 /**
  * Sends an email with optional attachment
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author Rod Spears <rods@ku.edu>
  */
 

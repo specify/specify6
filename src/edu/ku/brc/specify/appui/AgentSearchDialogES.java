@@ -63,7 +63,9 @@ import edu.ku.brc.ui.forms.persist.View;
  * find thinkgs they just entered)
  *
  * I am leaving this checked in for a while
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

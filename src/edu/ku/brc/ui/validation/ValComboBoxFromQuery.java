@@ -83,7 +83,9 @@ import edu.ku.brc.ui.forms.MultiView;
  * need to be addressed laster.<br><br>
  * The search looks like this:<br>
  * select distinct lastName,firstName,AgentID from agent where lower(lastName) like 's%' order by lastName asc
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

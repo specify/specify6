@@ -21,6 +21,8 @@ import javax.swing.JComponent;
 /**
  * Describes a Navigation Box (container) of objects. The objects can be commands, queries, 
  * recordsets, anything that can be shown and acts or acts upon.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

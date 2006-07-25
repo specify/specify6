@@ -17,6 +17,8 @@ package edu.ku.brc.ui;
 /**
  * This interface enables any object to "play nice" within the form system. This way the machinery can always get and set values.
  * (NOTE: this fires a Property change event "setValue")
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

@@ -54,7 +54,9 @@ import edu.ku.brc.ui.validation.DataChangeNotifier;
 /**
  *
  * This is the main content panel of the Dialog. It is also responsible for animating the resizing
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

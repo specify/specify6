@@ -26,7 +26,9 @@ import org.apache.log4j.Logger;
 /**
  * Constructs a an object to execute an SQL staement and then notify the listener and it is done. Any exception in the
  * SQL processing are passed back to the listener instead of being thrown. This class is running in its own thread.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  */
 public class SQLExecutionProcessor implements Runnable

@@ -52,6 +52,8 @@ import com.jgoodies.forms.layout.FormLayout;
  * XXX NOTE: This only drops menu down and doesn't check for where it is on the screen
  * 
  * (Adpated from an example by santhosh kumar)
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  * @author  santhosh kumar - santhosh@in.fiorano.com 

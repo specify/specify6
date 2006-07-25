@@ -14,6 +14,12 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
+/*
+ * @code_status Unknown (auto-generated)
+ **
+ * @author rods
+ *
+ */
 public class FormCellCommand extends FormCellSeparator
 {
     protected String commandType;

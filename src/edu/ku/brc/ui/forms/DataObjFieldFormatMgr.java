@@ -24,7 +24,9 @@ import org.dom4j.Element;
 
 import edu.ku.brc.helpers.XMLHelper;
 
-/**
+/*
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

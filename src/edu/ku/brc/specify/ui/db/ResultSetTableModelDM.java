@@ -26,6 +26,8 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
 
 /**
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

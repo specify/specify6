@@ -19,6 +19,8 @@ import java.util.Hashtable;
 /**
  * This class is responsible for creating and caching objects that implment the DataGettabable interface.<br>
  * The cache is to support reuse by any number forms that will need it.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

@@ -17,6 +17,8 @@ package edu.ku.brc.dbsupport;
 /**
  * Interface to notify the object that a query has completed. When it finishes successfully the resulset gets passed back.
  * when it finishes in error the exception gets passed as a parameter.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

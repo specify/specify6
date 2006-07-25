@@ -17,6 +17,8 @@ package edu.ku.brc.dbsupport;
 
 /**
  * Simple factory for created customer queries. Since this is just instatiating a class we probably don't need it.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  * 

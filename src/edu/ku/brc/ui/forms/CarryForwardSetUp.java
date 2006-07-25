@@ -51,6 +51,8 @@ import edu.ku.brc.ui.dnd.ShadowFactory;
  * Then we enable the user to click anywhere on a field and have it added as a field for Carry Forward. This gets 
  * all the CF info from the FormViewObj so it can tell it whether a field has been added or removed form the 
  * Carry Forward info.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

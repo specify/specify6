@@ -24,6 +24,12 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+/*
+ * @code_status Unknown (auto-generated)
+ **
+ * @author rods
+ *
+ */
 @SuppressWarnings("serial")
 public class GenericFrame extends JFrame 
 {

@@ -12,6 +12,8 @@ import javax.swing.SwingUtilities;
  * doAction on the setination GhostActionale
  * 
  * (Adpated from Romain Guy's Glass Pane Drag Photo Demo)
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  * @author Romain Guy <romain.guy@mac.com>

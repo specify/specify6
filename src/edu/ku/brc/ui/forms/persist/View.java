@@ -17,11 +17,14 @@ package edu.ku.brc.ui.forms.persist;
 import java.util.List;
 import java.util.Vector;
 
+/*
+ * @code_status Unknown (auto-generated)
+ **
+ * @author rods
+ *
+ */
 public class View implements Comparable<View>
 {
-    
-    
-    //private static final Logger log = Logger.getLogger(View.class);
     
     protected String               viewSetName;
     protected String               name;

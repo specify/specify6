@@ -40,6 +40,8 @@ import edu.ku.brc.ui.UICacheManager;
 
 /**
  * A JTextControl that implements UIValidatable for participating in validation
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

@@ -34,7 +34,9 @@ import edu.ku.brc.ui.validation.ValTextField;
 /**
  * This is a JPanel that contains a JTextField abd a Button that enables the user to browser for a file
  * and sets the the file and path into the text field.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

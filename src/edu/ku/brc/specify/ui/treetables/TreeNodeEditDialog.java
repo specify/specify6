@@ -52,7 +52,9 @@ import edu.ku.brc.ui.validation.ValComboBox;
  * This is a "generic" or more specifically "configurable" search dialog class. This enables you to specify a form to be used to enter the search criteria
  * and then the search definition it is to use to do the search and display the results as a table in the dialog. The resulting class is to be passed in
  * on construction so the results of the search can actually yield a Hibernate object.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods, jstewart
  *
  */

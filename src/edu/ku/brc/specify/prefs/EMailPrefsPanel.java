@@ -54,6 +54,8 @@ import edu.ku.brc.ui.validation.FormValidator;
  * Preference Panel for setting EMail Preferences.
  *  
  * This also includes a method that kicks off a dialog on a thread to check to make sure all the email settings are correct.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

@@ -37,7 +37,9 @@ import javax.swing.JOptionPane;
 
 /**
  * Taken from the Web (Bare Bones Launcher). This is a cross platform approach for launching browsers from java Apps
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

@@ -37,7 +37,9 @@ import edu.ku.brc.ui.forms.persist.ViewSet;
 
 /**
  * Reads the Form Registry. The forms are loaded when needed and onlu one ViewSet can be the "core" ViewSet which is where most of the forms
- * reside. This could also be thought of as the "default" set of forms.
+ * reside. This could also be thought of as the "default" set of forms
+ * @code_status Unknown (auto-generated)
+ *.
  * @author rods
  *
  */

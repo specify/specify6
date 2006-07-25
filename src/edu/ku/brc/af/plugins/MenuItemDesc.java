@@ -17,11 +17,24 @@ package edu.ku.brc.af.plugins;
 
 import javax.swing.MenuElement;
 
+/**
+ * Describes a menu item for a plugin.<br> The path is a string with "/" separator describes the menuitem path from the root.
+ * 
+ * @code_status Complete
+ * 
+ * @author rods
+ *
+ */
 public class MenuItemDesc
 {
     protected MenuElement menuItem;
     protected String      menuPath;
     
+    /**
+     * Construct the info oject with the menuitem component
+     * @param menuItem the menuitem
+     * @param menuPath the path to the item
+     */
     public MenuItemDesc(final MenuElement menuItem, final String menuPath)
     {
         this.menuItem = menuItem;

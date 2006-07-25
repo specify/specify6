@@ -31,7 +31,9 @@ import edu.ku.brc.specify.extfilerepos.impl.ExternalFileRepository;
 /**
  * This class is responsible for reading and writing all application specific properties to and from the "specify/properties" file.
  * This class is a singleton
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author Rod Spears <rods@ku.edu>
  */
 public class SpecifyConfig

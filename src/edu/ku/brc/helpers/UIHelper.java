@@ -62,6 +62,14 @@ import edu.ku.brc.ui.forms.DataObjectGettable;
 import edu.ku.brc.ui.forms.DataObjectSettable;
 import edu.ku.brc.ui.forms.persist.FormCell;
 
+/**
+ * A Helper class that has a very wide array of misc methods for helping out. (Is that meaningless or what?)
+ * 
+ * @code_status Code Freeze
+ * 
+ * @author rods
+ *
+ */
 public final class UIHelper
 {
     public enum OSTYPE {Unknown, Windows, MacOSX, Linux}

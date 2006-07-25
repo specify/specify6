@@ -24,7 +24,9 @@ import javax.swing.table.TableModel;
  * This was quickly implemented for the SPNHC Demo
  *
  * This is a special table model for the DioGeoMancer Table in the dialog
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

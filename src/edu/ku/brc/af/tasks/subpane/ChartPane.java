@@ -20,6 +20,8 @@ import edu.ku.brc.af.core.Taskable;
 /**
  * This base class implements the Chartable interface 
  * that enables derived classes to easily accept and have access to information needed to decorate or describe the chart.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

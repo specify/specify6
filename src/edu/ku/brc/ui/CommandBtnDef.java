@@ -14,6 +14,12 @@
  */
 package edu.ku.brc.ui;
 
+/*
+ * @code_status Unknown (auto-generated)
+ **
+ * @author rods
+ *
+ */
 public class CommandBtnDef
 {
 

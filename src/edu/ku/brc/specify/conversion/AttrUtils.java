@@ -23,7 +23,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
-import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
@@ -33,7 +32,9 @@ import edu.ku.brc.specify.datamodel.PreparationAttr;
 
 /**
  * Class to assist in creating the various different types of attributes (Habitat, Biological, Preparation)
- *  
+ * 
+ * @code_status Unknown (auto-generated)
+ * 
  * @author rods
  *
  */
@@ -88,7 +89,7 @@ public class AttrUtils
      * @return xxxx
      */
     public static List<AttributeDef> loadAttrDefs(final CollectionObjDef colObjDef,
-                                              final AttributeIFace.TableType tableType, 
+                                              final GenericDBConversion.TableType tableType, 
                                               final PrepType prepType, 
                                               final String[] attrNames, 
                                               final short[]  dataTypes)

@@ -19,6 +19,8 @@ import edu.ku.brc.ui.dnd.GhostDataAggregatable;
 
 /**
  * This Clads enables both data and the associated form information to be dropped.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

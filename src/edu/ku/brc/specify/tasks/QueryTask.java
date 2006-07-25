@@ -37,7 +37,9 @@ import edu.ku.brc.ui.ToolBarDropDownBtn;
 
 /**
  * This task will enable the user to create queries, save them and execute them.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

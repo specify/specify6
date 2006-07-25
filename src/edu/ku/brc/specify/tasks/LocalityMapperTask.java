@@ -33,7 +33,9 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 /**
  * The LocalityMapperTask is responsible gettng and displaying all various idfferent kinds of stats
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

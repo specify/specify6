@@ -26,6 +26,8 @@ import java.util.List;
  * Manages all IdMappers and provides a way to provide foreign key mappinggs for columns in other tables. 
  * The Class requires a connection to the "Old" database which is where the "from" IDs will come from and a 
  * connection to the "new" database which is where all the tables will be created.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

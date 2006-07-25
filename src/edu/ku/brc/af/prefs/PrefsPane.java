@@ -39,6 +39,8 @@ import edu.ku.brc.ui.UICacheManager;
  * This class creates a grid of Preferences icon (commands) where each icon will dispay a panel.
  * It creates a row (or section) for each grouping of preferences and then makes sure all the columns and rows are aligned.
  * (Currently not in use)
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

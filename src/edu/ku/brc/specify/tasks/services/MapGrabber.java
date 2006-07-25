@@ -30,6 +30,8 @@ import edu.ku.brc.util.FileCache;
 
 /**
  * Grabs a Map from a web-based mapping service.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author jstewart
  */

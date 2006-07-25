@@ -34,6 +34,8 @@ import edu.ku.brc.ui.UICacheManager;
 
 /**
  * This class simply reads all the prefs and constructs a toolbar with the various icons.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

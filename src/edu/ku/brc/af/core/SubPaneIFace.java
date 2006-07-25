@@ -22,6 +22,8 @@ import javax.swing.JComponent;
  * 
  * An interface for all pane that want to participate in the "main" panel of the UI. SubPaneIFace are managed by the SubPaneMgr.
  * It is common for panes implementing the SubPaneIFace to be created by Taskables.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

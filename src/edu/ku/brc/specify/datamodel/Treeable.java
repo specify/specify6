@@ -22,6 +22,8 @@ import java.util.Set;
  * Treeable object.  For example, if setTreeDef(TreeDefinitionIface)
  * is called on a Taxon object, but the argument given is an instance of
  * GeographyTreeDef, an IllegalArgumentException will be thrown.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author jstewart
  */

@@ -18,7 +18,9 @@ package edu.ku.brc.ui.forms;
  /**
   * Interface that enables access to a sequential list of data objects. Each data object represents a record or row.
   * Individual field data can be accessed also.
-  * 
+  *
+ * @code_status Unknown (auto-generated)
+ * 
   * @author rods
   *
   */

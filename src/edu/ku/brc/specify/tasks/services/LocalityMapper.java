@@ -28,7 +28,9 @@ import edu.ku.brc.util.Pair;
 
 /**
  * Maps a grouping of <code>Locality</code> objects.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author jstewart
  *
  */

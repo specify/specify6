@@ -17,7 +17,9 @@ package edu.ku.brc.stats;
 
 /**
  * Interface that enables chart speciic informations to be set
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

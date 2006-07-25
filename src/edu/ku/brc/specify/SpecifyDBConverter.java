@@ -35,6 +35,11 @@ import edu.ku.brc.specify.tests.ObjCreatorHelper;
 
 /**
  * Create more sample data, letting Hibernate persist it for us.
+ *
+ * @code_status Unknown (auto-generated)
+ * 
+ * @author rods
+ *
  */
 public class SpecifyDBConverter
 {

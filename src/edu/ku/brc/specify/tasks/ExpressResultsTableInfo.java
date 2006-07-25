@@ -32,7 +32,9 @@ import edu.ku.brc.helpers.XMLHelper;
 
 /**
  * Hold information about the subset of returns results. Each Express Search can return results from several different
- * DB tables of information. This information is constructed from an XML descrption
+ * DB tables of information. This information is constructed from an XML descrptio
+ * @code_status Unknown (auto-generated)
+ *n
  * @author rods
  *
  */

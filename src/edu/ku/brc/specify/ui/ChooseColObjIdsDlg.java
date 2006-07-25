@@ -51,6 +51,8 @@ import edu.ku.brc.ui.UICacheManager;
 
 /**
  * XXX (NOT USED RIGHT NOW)
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

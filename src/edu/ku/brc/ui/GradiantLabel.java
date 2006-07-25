@@ -32,6 +32,8 @@ import javax.swing.border.EmptyBorder;
  * A renderer need to be created so VectorLabel and GradiantLabel can share all the code.
 * 
  * (Adapted from the book SwingHacks)
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  * @author Chris Adamson

@@ -22,7 +22,9 @@ import edu.ku.brc.util.Pair;
 
 /**
  * Creates Google Earth KML for the LocalityMapper.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author jstewart
  * @version %I% %G%
  */

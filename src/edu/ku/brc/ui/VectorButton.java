@@ -34,7 +34,9 @@ import javax.swing.JLabel;
  * A renderer need to be created so VectorLabel and VectorButton can share all the code.
 *
  * (Adapted from the book SwingHacks)
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  * @author Chris Adamson
  * @author Joshua Marinacci

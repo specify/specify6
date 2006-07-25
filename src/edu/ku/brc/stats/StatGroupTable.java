@@ -58,7 +58,9 @@ import edu.ku.brc.ui.SortableTableModel;
  * Class to manage an entire group of StatItems where each StatItem gets its own data from a unique query.
  * This class represents a logical 'group' of statistics. The statistic items do not effect each other.
  * This is a simple class that is mostly used for layoing out the group in a vertial fashion.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

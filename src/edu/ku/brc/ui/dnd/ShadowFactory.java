@@ -90,6 +90,8 @@ import java.util.HashMap;
  * you can easily repaint the component when needed.</p>
  * <h2>Threading Issues</h2>
  * <p><code>ShadowFactory</code> is not guaranteed to be thread-safe.</p>
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author Romain Guy <romain.guy@mac.com>
  * @author Sebastien Petrucci <sebastien_petrucci@yahoo.fr>

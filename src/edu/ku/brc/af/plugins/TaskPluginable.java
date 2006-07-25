@@ -18,12 +18,15 @@ package edu.ku.brc.af.plugins;
 import java.util.List;
 
 import edu.ku.brc.af.core.TaskCommandDef;
+
 /**
  * An interface for describing how a plugin can be registered into the UI and begin to provide service.
  *
  * External plugins should make sure the call <i>initialize</i> after they install themselves, or they can call
  * PluginMgr.initilize();
  *
+ * @code_status Complete
+ *  
  * @author rods
  *
  */

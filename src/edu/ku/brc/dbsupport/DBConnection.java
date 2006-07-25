@@ -24,6 +24,8 @@ import org.apache.log4j.Logger;
  * A singleton that remembers all the information needed for creating a Database connection. 
  * After setting the necessary parameters you can ask it for a connection at anytime.<br><br>
  * Also, has a factory method for creating instances so users can connect to more than one database ata time.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

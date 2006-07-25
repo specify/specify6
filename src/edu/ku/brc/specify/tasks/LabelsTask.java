@@ -73,7 +73,9 @@ import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 
 /**
  * A task to manage Labels and response to Label Commands
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

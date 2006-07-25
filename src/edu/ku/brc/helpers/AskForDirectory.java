@@ -22,7 +22,9 @@ import javax.swing.JOptionPane;
 
 /**
  * Implementation of the ExternalFileRepositoryIFace for a local directory/disk based external repository
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author Rod Spears <rods@ku.edu>
  */
 public class AskForDirectory

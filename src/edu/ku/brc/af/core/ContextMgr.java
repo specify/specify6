@@ -29,7 +29,9 @@ import edu.ku.brc.ui.CommandAction;
  * they are unregistered the NavBoxes are removed
  *
  * Status: Finished
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

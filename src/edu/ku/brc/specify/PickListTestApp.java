@@ -76,7 +76,9 @@ import edu.ku.brc.ui.db.JAutoCompTextField;
 import edu.ku.brc.ui.db.PickList;
 import edu.ku.brc.ui.db.PickListItem;
 import edu.ku.brc.ui.validation.ValComboBoxFromQuery;
-/**
+/*
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

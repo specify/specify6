@@ -6,6 +6,8 @@ import javax.swing.JPanel;
 
 /**
  * Preference Panel for setting the UI Preferences.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

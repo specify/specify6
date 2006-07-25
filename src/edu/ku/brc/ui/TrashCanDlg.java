@@ -47,6 +47,8 @@ import edu.ku.brc.ui.dnd.DndDeletable;
 
 /**
  * This dialoig enables the user to view the contents of the trash can. It can be used to send commands to have the items recovered.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

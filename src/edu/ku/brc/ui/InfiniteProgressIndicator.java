@@ -51,7 +51,9 @@ import javax.swing.JComponent;
  * message and its font can be changed at runtime. Changing the
  * font can be done using <code>setFont()</code> and
  * <code>setForeground()</code>.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author Romain Guy
  * @version 1.0
  */

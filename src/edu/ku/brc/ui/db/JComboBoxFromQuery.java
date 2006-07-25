@@ -38,6 +38,8 @@ import edu.ku.brc.dbsupport.DBConnection;
 
 /**
  * Auto Complete ComboxBox filled from a query, the setValue and getValue should use Hibernate Objects from that table
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

@@ -23,6 +23,8 @@ package edu.ku.brc.dbsupport;
  * to start the query process and then collect the results and return them as a list of Objects.
  * 
  * (NOTE: I removed a method to pass back a list of QueryResultsContainers, we may need ot add this back)
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *     

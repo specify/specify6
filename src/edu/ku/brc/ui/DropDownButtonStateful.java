@@ -32,6 +32,8 @@ import javax.swing.border.EmptyBorder;
  * Creates a panel containing an icon and button with a focus "ring" when the mouse is hovering; and it is "stateful"
  * because the buttons toggles between 2 or more states by clicking on the main button. Or you can switch states by selecting
  * a "state" from the list.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author Rod Spears
  *

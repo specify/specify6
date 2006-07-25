@@ -25,6 +25,8 @@ import javax.swing.table.TableColumnModel;
 
 /**
  * A listener of clicks on the table column headers.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

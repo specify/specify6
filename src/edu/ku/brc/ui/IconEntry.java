@@ -22,6 +22,8 @@ import edu.ku.brc.ui.IconManager.IconSize;
 
 /**
  * An entry in the IconCacheManager
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

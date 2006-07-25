@@ -21,7 +21,11 @@ import java.util.Set;
 /**
  * A pickList of items. A pcikList can be readonly or have a set number of items where the oldest items "falls off" the queue
  * and it reaches it's limit.
- *     
+ *    
+ * @code_status Unknown (auto-generated)
+ * 
+ * @author rods
+ *
  */
 @SuppressWarnings("serial")
 public class PickList implements java.io.Serializable

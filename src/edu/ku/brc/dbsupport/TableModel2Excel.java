@@ -30,7 +30,9 @@ import org.apache.poi.hssf.util.HSSFColor;
 
 /**
  * Helper that converts a Swing TableModel to an MS-Excel Spreadsheet
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author Rod Spears <rods@ku.edu>
  */
 

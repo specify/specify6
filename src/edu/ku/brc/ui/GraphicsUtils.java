@@ -13,6 +13,8 @@ import java.awt.Stroke;
  * Provides simple utility functions for drawing circles, arrows, etc.  Some
  * of the code included here was taken from 
  * http://forum.java.sun.com/thread.jspa?threadID=378460&tstart=135.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author jstewart
  */

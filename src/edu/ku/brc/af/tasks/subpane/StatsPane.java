@@ -44,7 +44,9 @@ import edu.ku.brc.stats.StatsMgr;
 
 /**
  * A class that loads a page of statistics from an XML description
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

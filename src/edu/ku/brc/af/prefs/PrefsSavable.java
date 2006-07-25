@@ -16,6 +16,8 @@ package edu.ku.brc.af.prefs;
 
 /**
  * Preference Panes need to implment this if they are to save their preferences
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

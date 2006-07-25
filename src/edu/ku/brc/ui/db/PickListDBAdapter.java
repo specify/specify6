@@ -28,6 +28,8 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 
 /**
  * This is an adaptor class that supports all the necessary functions for supporting a PickList
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

@@ -24,6 +24,8 @@ import edu.ku.brc.util.Pair;
  * The class also contains factory methods for creating appropriate comparators for comparing Treeables.  Also
  * included are some methods for determining if a given Treeable instance is deletable based on type-specific
  * business rules.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author jstewart
  *

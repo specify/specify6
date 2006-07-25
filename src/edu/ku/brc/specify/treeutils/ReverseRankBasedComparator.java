@@ -7,6 +7,8 @@ import edu.ku.brc.specify.datamodel.Treeable;
 /**
  * A compartor to be used in reverse sorting <code>Treeable</code> objects
  * based on their ranks.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author jstewart
  */

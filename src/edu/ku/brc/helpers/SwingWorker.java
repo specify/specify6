@@ -13,7 +13,14 @@ import javax.swing.SwingUtilities;
  * You must now invoke start() on the SwingWorker after
  * creating it.
  */
-public abstract class SwingWorker {
+/*
+ * @code_status Unknown (auto-generated)
+ **
+ * @author Sun Microsystems
+ *
+ */
+public abstract class SwingWorker 
+{
     private Object value;  // see getValue(), setValue()
 
     /** 

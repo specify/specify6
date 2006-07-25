@@ -33,7 +33,9 @@ import edu.ku.brc.af.core.Taskable;
 /**
  * Class that implements the SubPanelIFace interface which enables derived classes to participate in the main pane.
  * It also adds the progress indicator and it provide.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

@@ -41,7 +41,9 @@ import org.hibernate.cfg.Environment;
  * and the Hibernate Annotations library on the classpath. Change the single
  * commented line in the source to make it compile and run on older JDKs with
  * XML mapping files only.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author christian@hibernate.org
  */
 public class HibernateUtil {

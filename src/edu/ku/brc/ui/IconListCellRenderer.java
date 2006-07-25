@@ -23,6 +23,8 @@ import javax.swing.ListCellRenderer;
 
 /**
  * Renders a list item with an icon to the left of the text
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

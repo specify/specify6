@@ -16,6 +16,8 @@ package edu.ku.brc.ui.forms;
 
 /**
  * Interface that enables objects to listen for changes to the current record of a record set
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

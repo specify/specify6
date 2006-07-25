@@ -42,7 +42,9 @@ import edu.ku.brc.ui.IconManager;
 
 /**
  * Creates a pane that can listener for Query Results and then create a Pie Chart
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

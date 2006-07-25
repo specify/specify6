@@ -14,7 +14,9 @@ import javax.swing.JList;
  * of a list.  If the objects being rendered have a <code>getName()</code> method that
  * returns a <code>String</code>, then that method is used to provide text for the
  * cell components.  Otherwise, the {@link Object#toString()} method is used.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author jstewart
  * @version %I% %G%
  */

@@ -51,7 +51,9 @@ import edu.ku.brc.ui.forms.MultiView;
 
 /**
  * FishBase plugin For SPNHC Demo
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

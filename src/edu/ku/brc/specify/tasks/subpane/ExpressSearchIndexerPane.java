@@ -92,7 +92,9 @@ import edu.ku.brc.ui.forms.persist.FormViewDef;
  * NOTE: XXX The indexing of the database needs to be abstracted out to be able to run "headless"<br>
  * That way we could run it on a server. The idea is that the UI would be accessed via a proxy
  * and the headless could be a "do nothing stub".
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

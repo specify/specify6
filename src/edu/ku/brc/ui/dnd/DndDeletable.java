@@ -21,6 +21,8 @@ import edu.ku.brc.ui.CommandAction;
 /**
  * Interface for object that can be dropped into the trash, it makes the object responsible 
  * for knowing how to get itself deleted, instead of someone else.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

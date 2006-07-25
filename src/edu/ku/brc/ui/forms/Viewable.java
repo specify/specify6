@@ -27,6 +27,8 @@ import edu.ku.brc.ui.validation.FormValidator;
 /**
  * A Viewable is typically a Form or a Table (not a JTable) of a data object or obects. Some of the methods are specifically for forms
  * and do not apply to tables.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

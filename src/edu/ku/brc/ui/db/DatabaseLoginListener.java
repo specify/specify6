@@ -16,6 +16,8 @@ package edu.ku.brc.ui.db;
 
 /**
  * This interface is used to notify listeners of a successful login or when thethe dialog is cancelled.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

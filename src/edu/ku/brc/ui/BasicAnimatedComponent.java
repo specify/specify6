@@ -14,6 +14,12 @@ import org.jdesktop.animation.timing.TimingController;
 import org.jdesktop.animation.timing.Envelope.EndBehavior;
 import org.jdesktop.animation.timing.Envelope.RepeatBehavior;
 
+/*
+ * @code_status Unknown (auto-generated)
+ **
+ * @author jstewart
+ *
+ */
 @SuppressWarnings("serial")
 public class BasicAnimatedComponent extends AnimationComponent
 {

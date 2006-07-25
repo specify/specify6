@@ -52,6 +52,8 @@ import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 
 /**
  * Implements a "trash can" for deleting and recovering RecordSets, labels etc.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

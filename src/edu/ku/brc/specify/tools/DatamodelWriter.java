@@ -18,7 +18,9 @@ import edu.ku.brc.specify.tools.datamodelparser.Field;
 import edu.ku.brc.specify.tools.datamodelparser.Relationship;
 import edu.ku.brc.specify.tools.datamodelparser.Table;
 
-/**
+/*
+ * @code_status Unknown (auto-generated)
+ **
  * @author megkumin
  *
  */

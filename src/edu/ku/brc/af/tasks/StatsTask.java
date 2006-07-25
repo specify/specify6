@@ -39,7 +39,9 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 /**
  * The StatsTask is responsible gettng and displaying all various idfferent kinds of stats
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

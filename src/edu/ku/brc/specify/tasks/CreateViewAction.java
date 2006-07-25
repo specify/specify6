@@ -20,7 +20,9 @@ import java.awt.event.ActionListener;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.helpers.UIHelper;
 
-/**
+/*
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

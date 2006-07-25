@@ -51,7 +51,9 @@ import edu.ku.brc.ui.UICacheManager;
 
 /**
  * Choose a record set from the a list from the database
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

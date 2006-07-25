@@ -21,7 +21,9 @@ package edu.ku.brc.ui.forms;
  * <li>The data object may be a resultset (list of objects) and each row may be a field.</li>
  * <li>The data object may be a XML document and the field name may be a XPath to the data.</li></ul>
  * <br>
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

@@ -20,7 +20,9 @@ import edu.ku.brc.ui.forms.persist.View;
 /**
  * A class that can display a form, it is dervied from DroppableTaskPane which means objects can be
  * dropped on it as long as the data is a instanceof DroppableFormObject
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

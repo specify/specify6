@@ -34,7 +34,9 @@ import edu.ku.brc.helpers.HTTPGetter;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.UICacheManager;
 
-/**
+/*
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

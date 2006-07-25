@@ -21,6 +21,8 @@ import java.util.Vector;
  * This class contains a collection of QueryResultsContainers (each has their own SQL statement) and it creates
  * SQLExecutionProcessors for each Container and has them execute all the Queries in parallel. If one returns an error
  * then the listener is notified immediately, otherwise the listener is notified when they all complete.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

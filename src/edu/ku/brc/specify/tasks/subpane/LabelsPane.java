@@ -46,6 +46,8 @@ import edu.ku.brc.ui.UICacheManager;
 
 /**
  * This class will display Label previews and may eventually hold a labels editor
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  * 

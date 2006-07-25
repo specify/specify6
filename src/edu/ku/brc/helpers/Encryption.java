@@ -31,7 +31,9 @@ import org.apache.log4j.Logger;
  * This will encrypt and decrypt strings. I added a couple of helper methods for getting to and from an array of bytes to a string.
  * THis is mostly needed so passwords are not stored in clear text.<br><br>
  * This was taken from a news group on www.codecomments.com I changed it a little for our needs.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author chris (some guy on the web)
  * @author rods
  *

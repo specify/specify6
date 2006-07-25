@@ -15,6 +15,8 @@ import edu.ku.brc.ui.UICacheManager;
 /**
  * Class for making sure the image gets drawn on the glass pane while the image gets dragged on the glass pane
  * (Adpated from Romain Guy's Glass Pane Drag Photo Demo)
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  * @author Romain Guy <romain.guy@mac.com>

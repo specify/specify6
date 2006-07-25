@@ -29,6 +29,8 @@ import edu.ku.brc.specify.datamodel.Treeable;
  * Provides many static methods that simplify the management of
  * tree-structured table data.  Many of the methods are used in
  * determining if business rules are being properly enforced.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author jstewart
  */

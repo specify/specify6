@@ -90,7 +90,9 @@ import edu.ku.brc.ui.validation.ValidationListener;
 /**
  * Implmentation of the Viewable interface for the ui and this derived class is for handling Form's Only (not tables)
  *
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

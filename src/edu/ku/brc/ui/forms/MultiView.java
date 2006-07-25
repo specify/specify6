@@ -49,7 +49,9 @@ import edu.ku.brc.ui.validation.ValidationListener;
  * Upon creation the agrument "createWithMode" tells the creation mechanism whether to look for and obey the "View" vs "Edit" modeness.
  * Meaning that if we have a view with subview and they (or some of them) have both a n Edit View and a non-Edit View,
  * all the subview will be cerated as either view or edit form accoring to the parent's mode.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

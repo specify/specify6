@@ -23,7 +23,9 @@ package edu.ku.brc.specify.conversion;
 /**
  * A Database Hashtable that is for mapping one integer to another.
  * This is usually utilitized for ID mappings
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

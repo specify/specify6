@@ -26,6 +26,8 @@ import edu.ku.brc.ui.IconManager;
  * The data is specified by the "tableId" number which also corresponds to a Hibernate Java POJO.
  * Services are mapped to a table ID because not all service can act on all tables.<br><br>
  * The service info MUST be able to provide icons in the standard sizes of 32, 24, and 16.<br>
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

@@ -23,6 +23,8 @@ import javax.swing.Action;
 import javax.swing.JComponent;
 
 /**
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author Rod Spears
  *

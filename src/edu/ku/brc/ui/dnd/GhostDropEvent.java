@@ -6,6 +6,8 @@ import java.awt.Point;
 /**
  * 
  * (Adpated from Romain Guy's Glass Pane Drag Photo Demo)
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  * @author Romain Guy <romain.guy@mac.com>

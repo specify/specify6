@@ -31,6 +31,8 @@ import edu.ku.brc.ui.forms.Viewable;
 /**
  * This JPanel contains a Table display for all the controls that are Incomplete or in Error on a form or subform.
  * It is a list of the FormValidator and updates on each change, so it is best to put this in a modal dialog
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

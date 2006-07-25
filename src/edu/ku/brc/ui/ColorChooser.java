@@ -42,6 +42,8 @@ import javax.swing.event.AncestorListener;
 
 /**
  * Toolbar button derived from DropDownBtn, this provides a way to set menu items
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

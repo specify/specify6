@@ -25,7 +25,9 @@ import edu.ku.brc.specify.extfilerepos.ExternalFileRepositoryIFace;
 
 /**
  * Implementation of the ExternalFileRepositoryIFace for a local directory/disk based external repository
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author Rod Spears <rods@ku.edu>
  */
 public class ExternalFileRepository implements ExternalFileRepositoryIFace

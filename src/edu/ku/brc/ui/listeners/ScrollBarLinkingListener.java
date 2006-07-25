@@ -15,7 +15,9 @@ import javax.swing.JScrollPane;
 
 /**
  * Provides a generic way to link the movement of a set of JScrollbars.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author jstewart
  * @version %I% %G%
  */

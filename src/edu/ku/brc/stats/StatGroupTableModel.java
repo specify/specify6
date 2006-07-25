@@ -19,6 +19,14 @@ import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
 
+/**
+ * This Model class is for stats that are returned with in group. So each line in the stats group is a StatDataItem.
+ * 
+ * @code_status Complete
+ * 
+ * @author rods
+ *
+ */
 @SuppressWarnings("serial")
 public class StatGroupTableModel extends AbstractTableModel
 {

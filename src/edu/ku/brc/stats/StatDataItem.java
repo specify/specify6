@@ -25,7 +25,9 @@ import edu.ku.brc.dbsupport.QueryResultsSerializedGetter;
 /**
  * A Single Statitem that creates a QueryResultsContainer and then gets the result and displays it.
  * It is capable of getting both the descriptive part (label) and the the value.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

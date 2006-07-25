@@ -40,7 +40,9 @@ import edu.ku.brc.util.FileCache;
  * You <i>SHOULD</i> set the RECENTFRAME ui component when you are in a dialog and then any error dialogs
  * can be parented to your dialog. But if you set it you MUST set it back to null. (NOte if you forget it will always return
  * the TOPFRAME, but don't rely on this)
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

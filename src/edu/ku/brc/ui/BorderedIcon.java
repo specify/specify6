@@ -6,6 +6,12 @@ import java.awt.Graphics;
 
 import javax.swing.Icon;
 
+/*
+ * @code_status Unknown (auto-generated)
+ **
+ * @author rods
+ *
+ */
 public class BorderedIcon implements Icon
 {
 	protected Icon image;

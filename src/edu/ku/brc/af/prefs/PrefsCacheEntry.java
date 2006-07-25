@@ -21,7 +21,9 @@ import java.util.prefs.Preferences;
 /**
  * Represents an entry in the cache of a single simple string pref that is always up-to-date because
  * it listens for changes.
- *   
+ *  
+ * @code_status Unknown (auto-generated)
+ * 
  * @author rods
  *
  */

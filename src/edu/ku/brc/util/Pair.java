@@ -8,7 +8,9 @@ import java.io.Serializable;
  * NOTE: the data members of this class are public for ease of access.
  * This is not a code encapsulation problem.
  * 
- * @see Triple
+ * @see Tripl
+ * @code_status Unknown (auto-generated)
+ *e
  * @author jstewart
  * @version %I% %G%
  *

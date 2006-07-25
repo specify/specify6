@@ -64,6 +64,8 @@ import edu.ku.brc.ui.UICacheManager;
 
 /**
  * Takes care of offering up record sets, updating, deleteing and creating them.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

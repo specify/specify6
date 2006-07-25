@@ -27,7 +27,9 @@ import org.apache.log4j.Logger;
 /**
  * This is a Database Table Hashtable. It doesn't support the the entire Map interface just
  * "get" and "put"
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

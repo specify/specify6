@@ -22,6 +22,8 @@ import java.util.Vector;
  * This class processes a collection container and places all the results in a collection. It makes it easy to process them in a single collection
  * instead of having to understand how to traverse multiple QRCs and QRCDOs.
  * (This class morphed so it is missed named)
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

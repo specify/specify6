@@ -23,7 +23,9 @@ import edu.ku.brc.dbsupport.SQLExecutionProcessor;
  * own query and the usually just the right hand side comes from the query, although the
  * description part can come from the query also. With this class you describe whcih columns in the resultset
  * that the description and value (left and right) comes from.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

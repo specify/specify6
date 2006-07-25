@@ -22,7 +22,9 @@ import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 
-/**
+/*
+ * @code_status Unknown (auto-generated)
+ **
  * @author megkumin
  *
  */

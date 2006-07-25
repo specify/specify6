@@ -16,7 +16,9 @@
  import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 /**
- * Definition of an Alternate View which can be an "Edit", "View", "None"
+ * Definition of an Alternate View which can be an "Edit", "View", "None
+ * @code_status Unknown (auto-generated)
+ *"
  * @author rods
  *
  */

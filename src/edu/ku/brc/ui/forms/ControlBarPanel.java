@@ -30,7 +30,9 @@ import edu.ku.brc.helpers.UIHelper;
 /**
  * A panel at the bottom of a form that is divided into 3 sections,
  * the middle section is reserved for the record controller UI
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

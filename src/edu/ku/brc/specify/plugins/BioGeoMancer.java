@@ -83,7 +83,9 @@ import edu.ku.brc.ui.UIPluginable;
 
 /**
  * BioGeoMancer plugin For SPNHC Demo.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

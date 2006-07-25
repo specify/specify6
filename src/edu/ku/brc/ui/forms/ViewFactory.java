@@ -94,7 +94,9 @@ import edu.ku.brc.ui.validation.ValidatedJPanel;
 
 /**
  * Creates FormViewObj object that implment the Viewable interface.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

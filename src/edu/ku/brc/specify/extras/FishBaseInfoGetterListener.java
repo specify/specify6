@@ -16,7 +16,9 @@
 package edu.ku.brc.specify.extras;
 
 /**
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

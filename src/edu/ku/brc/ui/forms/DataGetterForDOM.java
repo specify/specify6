@@ -21,6 +21,8 @@ import edu.ku.brc.helpers.XMLHelper;
 
 /**
  * Class to get values from a DOM Document.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author Rod Spears
  */

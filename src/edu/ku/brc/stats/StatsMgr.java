@@ -29,6 +29,15 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.forms.ViewMgr;
 import edu.ku.brc.ui.forms.persist.View;
 
+/**
+ * This class reads in the statistics.xml file and then enables others to ask for a statistic by name.
+ * A "statistic" describes the SQL needed to produce the stat and then what columns should be used to get the specific results.
+ * 
+ * @code_status Complete
+ * 
+ * @author rods
+ *
+ */
 public class StatsMgr
 {
 
@@ -47,11 +56,10 @@ public class StatsMgr
 
 
     /**
-     * 
+     * Singleton Constructor.
      */
     protected StatsMgr()
     {
-        
         try
         {
             statDOM  = XMLHelper.readDOMFromConfigDir("statistics.xml"); // Describes each Statistic, its SQL and how it is to be displayed
@@ -64,7 +72,7 @@ public class StatsMgr
     }
     
     /**
-     * Returns the DOM element for a named Statistic
+     * Returns the DOM element for a named Statistic.
      * @param name the name of the statistic
      * @return DOM Element or null if not found
      */
@@ -99,7 +107,7 @@ public class StatsMgr
     }
 
     /**
-     * Fills the ChartPanel with any extra desxcription information
+     * Fills the ChartPanel with any extra desxcription information.
      * @param chartPane the chart pane to be augmented
      */
     protected void fillWithChartInfo(final Element element, final Chartable chartable)
@@ -116,7 +124,7 @@ public class StatsMgr
     }
 
     /**
-     * Helper method for adding row/col desc and values to a container
+     * Helper method for adding row/col desc and values to a container.
      * @param qrc the QueryResultsContainer that will be added to
      * @param descRow the textual description's row position
      * @param descCol the textual description's column position
@@ -196,9 +204,11 @@ public class StatsMgr
                 } catch (ClassNotFoundException ex)
                 {
                     log.error(ex); // XXX what should we do here?
+                    
                 } catch (IllegalAccessException ex)
                 {
                     log.error(ex); // XXX what should we do here?
+                    
                 } catch (InstantiationException ex)
                 {
                     log.error(ex); // XXX what should we do here?
@@ -212,7 +222,7 @@ public class StatsMgr
     }
 
     /**
-     * Dispatches a request to show a Form
+     * Dispatches a request to show a Form.
      * @param domElement the DOM element that contains the info we need to display the form
      */
     protected void createView(final Element domElement, final String idStr)
@@ -232,7 +242,7 @@ public class StatsMgr
     }
 
     /**
-     * Looks up statName and creates the appropriate SubPane
+     * Looks up statName and creates the appropriate SubPane.
      * @param statName the name of the stat to be displayed
      */
     protected JPanel createStatPaneInternal(final String statName)
@@ -317,7 +327,7 @@ public class StatsMgr
     }
     
     /**
-     * Looks up statName and creates the appropriate SubPane
+     * Looks up statName and creates the appropriate SubPane.
      * @param statName the name of the stat to be displayed
      */
     public static JPanel createStatPane(final String statName)

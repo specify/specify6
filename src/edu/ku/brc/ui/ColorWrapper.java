@@ -21,6 +21,8 @@ import org.apache.log4j.Logger;
 
 /**
  * A class to wrap a Color object so it can be mutable easily 
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

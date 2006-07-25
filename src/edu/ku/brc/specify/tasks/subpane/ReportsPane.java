@@ -20,6 +20,8 @@ import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 
 /**
  * The future reports pane
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

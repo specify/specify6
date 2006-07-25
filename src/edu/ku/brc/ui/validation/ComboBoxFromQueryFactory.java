@@ -20,7 +20,9 @@ import edu.ku.brc.ui.db.TextFieldWithInfo;
 
 /**
  * This factory knows how to create AutoComplete Comboboxes that get their data from a query.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

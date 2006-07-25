@@ -57,7 +57,9 @@ import edu.ku.brc.ui.dnd.GhostActionable;
 /**
  * Abstract class to provide a base level of functionality for implementing a task.
  * It fully implements Taskable and partially implements TaskPluginable.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

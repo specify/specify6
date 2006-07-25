@@ -40,7 +40,9 @@ import org.apache.log4j.Logger;
  * disabling any of the controls depending on the state of other "named" controls.
  * Both UI Controls and thier labels are registered by name. When a component is disabledits
  * label can also be disabled.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

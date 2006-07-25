@@ -19,6 +19,8 @@ import java.awt.Component;
 
 /**
  * Interface for validatable components.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

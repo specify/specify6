@@ -38,6 +38,13 @@ import org.dom4j.Node;
 
 import edu.ku.brc.specify.config.SpecifyConfig;
 
+/**
+ *
+ * @code_status Unknown (auto-generated)
+ * 
+ * @author rods
+ *
+ */
 @SuppressWarnings("serial")
 public class PropertyViewer extends JPanel
 {

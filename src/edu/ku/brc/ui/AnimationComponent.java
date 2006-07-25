@@ -11,6 +11,12 @@ import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.Envelope.EndBehavior;
 import org.jdesktop.animation.timing.Envelope.RepeatBehavior;
 
+/*
+ * @code_status Unknown (auto-generated)
+ **
+ * @author jstewart
+ *
+ */
 public abstract class AnimationComponent extends JComponent implements TimingTarget
 {
 	protected Cycle cycle;

@@ -20,6 +20,8 @@ import java.util.Vector;
 
 /**
  * This represents a layout panel (JPanel) that supports JGoodies layout
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

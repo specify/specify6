@@ -21,7 +21,9 @@ import java.util.Hashtable;
 
 import javax.swing.filechooser.FileFilter;
 
-/**
+/*
+ * @code_status Unknown (auto-generated)
+ **
  * @author Rod Spears
  * 
  * Adapted from the Swing JFileChooser demo and the ExampleFileFilter file

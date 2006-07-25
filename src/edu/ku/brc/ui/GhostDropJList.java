@@ -33,7 +33,9 @@ import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 
 /**
  * A custom {@link JList} with enhanced drag and drop features.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author jstewart
  * @version %I% %G%
  */

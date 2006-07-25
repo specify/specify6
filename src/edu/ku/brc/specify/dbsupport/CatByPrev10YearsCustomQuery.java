@@ -24,7 +24,9 @@ import edu.ku.brc.dbsupport.QueryResultsDataObj;
 
 /**
  * Custom Query for calculating the how many items were calculated for each year
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

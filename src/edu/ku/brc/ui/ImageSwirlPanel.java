@@ -21,7 +21,9 @@ import org.jdesktop.animation.timing.TimingTarget;
 
 /**
  * Creates a JPanel to display an animated swirling of an image.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author jstewart
  * @version %I% %G%
  */

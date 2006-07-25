@@ -27,6 +27,8 @@ import edu.ku.brc.ui.Trash;
 /**
  * A singleton that manages a list of NavBoxIFace items. The NavBoxIFace are layed out using a manager 
  * which typically lays them out in a vertical fashion. A Taskable object vends one or more NavBoxes.
+ *
+ * @code_status Unknown (auto-generated)
  * 
   * @author rods
  *

@@ -29,6 +29,8 @@ import javax.swing.JLabel;
  * dimensions of all the cells in the entire panel.
  * 
  * (Currently not in use)
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

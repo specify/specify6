@@ -30,7 +30,9 @@ import edu.ku.brc.dbsupport.AttributeIFace;
  * This knows how to get a field's value from a POJO.<br><br>
  * Implementation idea: We may need to cache the method objects,
  * and then the factory will want to create a different object per class that will be using this)
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

@@ -62,7 +62,9 @@ import edu.ku.brc.specify.datamodel.UserGroup;
 /**
  * Tests for the Schema.
  * REMEMBER: Call made to "ObjCreatorHelper" do not commit, but calls made to "CreateTestDatabases" do
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

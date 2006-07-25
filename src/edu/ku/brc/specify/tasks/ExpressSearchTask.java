@@ -68,7 +68,9 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 /**
  * This task will enable the user to index there database and preform express searches
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

@@ -17,15 +17,26 @@ package edu.ku.brc.af.plugins;
 
 import java.awt.Component;
 
+/**
+ * Describes a Toolbar item for a plugin.
+ *
+ * @code_status Unknown (auto-generated)
+ * 
+ * @author rods
+ *
+ */
 public class ToolBarItemDesc
 {
-
     public enum Position {Insert, Append, AppendNextToLast}
     
     protected Component comp;
     protected Position  pos;
     protected int       index;
     
+    /**
+     * Constructs a toolbar item desc with the component that will be placed in the toolbar.
+     * @param comp the component
+     */
     public ToolBarItemDesc(Component comp)
     {
         this.comp = comp;
@@ -33,6 +44,12 @@ public class ToolBarItemDesc
         this.index = -1;
     }
 
+    /**
+     * Constructs a toolbar item desc with the component that will be placed in the toolbar and gives its position.
+     * @param comp the component
+     * @param pos the position in the toolbar or related to the other items
+     * @param index the index of where to place the item
+     */
     public ToolBarItemDesc(Component comp, Position pos, int index)
     {
         this.comp = comp;
@@ -40,31 +57,54 @@ public class ToolBarItemDesc
         this.index = index;
     }
 
+    /**
+     * @return the component
+     */
     public Component getComp()
     {
         return comp;
     }
 
+    /**
+     * Sets the comp.
+     * @param comp the comp
+     */
     public void setComp(Component comp)
     {
         this.comp = comp;
     }
 
+    /**
+     * Returns the index.
+     * @return the index
+     */
     public int getIndex()
     {
         return index;
     }
 
+    /**
+     * Sets the index.
+     * @param index
+     */
     public void setIndex(int index)
     {
         this.index = index;
     }
 
+    /**
+     * Returns the poistion.
+     * @return the position
+     */
     public Position getPos()
     {
         return pos;
     }
 
+    /**
+     * Sets the position.
+     * @param pos the position
+     */
     public void setPos(Position pos)
     {
         this.pos = pos;

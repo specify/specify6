@@ -30,6 +30,8 @@ import edu.ku.brc.ui.UICacheManager;
  * <br><br>
  * ColorWrapper and SimpleDateFormat object can be registered into the cache and their mutal value will always be up to date, this saves
  * the consumer from having to go get them each time.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

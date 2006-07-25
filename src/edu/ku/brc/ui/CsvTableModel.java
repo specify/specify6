@@ -11,6 +11,12 @@ import javax.swing.table.TableModel;
 
 import org.apache.commons.lang.StringUtils;
 
+/*
+ * @code_status Unknown (auto-generated)
+ **
+ * @author rods
+ *
+ */
 public class CsvTableModel implements TableModel
 {
 	protected Vector<TableModelListener> listeners;

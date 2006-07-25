@@ -17,6 +17,8 @@ package edu.ku.brc.dbsupport;
 
 /**
  * Interface that supports it processing through a QueryResultsHandlerIFace
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

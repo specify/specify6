@@ -68,7 +68,9 @@ import edu.ku.brc.ui.UICacheManager;
  *  <BR><BR>
  *  The "extra" portion of the dialog that is initially hidden is for configuring the driver (the fully specified
  *  class name of the driver) and the protocol for the JDBC connection string.
- *  
+ * 
+ * @code_status Unknown (auto-generated)
+ * 
  * @author rods
  *
  */

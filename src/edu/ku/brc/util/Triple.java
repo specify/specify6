@@ -6,7 +6,9 @@ package edu.ku.brc.util;
  * NOTE: the data members of this class are public for ease of access.
  * This is not a code encapsulation problem.
  *
- * @see Pair
+ * @see Pai
+ * @code_status Unknown (auto-generated)
+ *r
  * @author jstewart
  * @version %I% %G%
  * 

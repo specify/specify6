@@ -58,7 +58,9 @@ import edu.ku.brc.ui.forms.MultiView;
  * Create a TextField with accompanying UI that enables it to display a single formatted value in the text field
  * and then the "info" button can be pressed to display a dialog/window of the full data for the object that is in the control.
  * See the constructr for details.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

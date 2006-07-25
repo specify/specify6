@@ -32,6 +32,8 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  * This is a statusbar component. It currently enables a progressbar to be show and 
  * hidden when "indeterminate" is turned on and off
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

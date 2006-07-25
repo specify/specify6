@@ -27,6 +27,8 @@ import javax.swing.JTextField;
 /**
  * An auto-complete text field which is supported through PickList/PickListItem.
  * The searches in the list can be case-sensitive or insensitive
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

@@ -30,7 +30,9 @@ import org.apache.log4j.Logger;
 
 /**
  *  Validates a single UI Component the component is to be referred to in the validation script as "obj"
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

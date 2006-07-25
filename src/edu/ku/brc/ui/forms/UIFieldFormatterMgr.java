@@ -27,7 +27,9 @@ import edu.ku.brc.af.prefs.PrefsCache;
 import edu.ku.brc.helpers.XMLHelper;
 
 /**
- * The Format Manager; reads in all the formats from XML
+ * The Format Manager; reads in all the formats from XM
+ * @code_status Unknown (auto-generated)
+ *L
  * @author rods
  *
  */

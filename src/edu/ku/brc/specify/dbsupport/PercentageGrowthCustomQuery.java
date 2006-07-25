@@ -23,6 +23,8 @@ import edu.ku.brc.dbsupport.QueryResultsDataObj;
 
 /**
  * A custom query for creating percentage of growth for each year
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

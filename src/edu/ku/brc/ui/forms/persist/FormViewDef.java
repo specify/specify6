@@ -19,6 +19,12 @@ import java.util.Map;
 import java.util.Vector;
 
 
+/*
+ * @code_status Unknown (auto-generated)
+ **
+ * @author rods
+ *
+ */
 public class FormViewDef extends ViewDef
 {
     protected String        columnDef = "";

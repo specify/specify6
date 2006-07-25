@@ -22,7 +22,9 @@ import javax.swing.Icon;
 /**
  * Interface for any task in the system, most of the methods are "getters" that
  * enable the Task to play nice within the system.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

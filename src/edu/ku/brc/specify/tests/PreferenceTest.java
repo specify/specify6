@@ -20,6 +20,8 @@ import edu.ku.brc.ui.UICacheManager;
 
 /**
  * Tests the Preferences and Preferences cache
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

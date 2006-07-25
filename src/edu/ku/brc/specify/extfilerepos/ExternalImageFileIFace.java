@@ -19,7 +19,9 @@ import java.awt.Dimension;
 
 /**
  * Interface representing an Image file in the repository
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author Rod Spears <rods@ku.edu>
  */
 

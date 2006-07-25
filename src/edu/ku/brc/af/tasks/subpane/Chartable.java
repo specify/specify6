@@ -17,6 +17,8 @@ package edu.ku.brc.af.tasks.subpane;
 
 /**
  * Interface that enables chart speciic informations to be set
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  * 

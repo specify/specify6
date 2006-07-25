@@ -29,7 +29,9 @@ import edu.ku.brc.af.core.Taskable;
 
 /**
  * A default pane for display a simple label telling what it is suppose to do
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

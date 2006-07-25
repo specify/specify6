@@ -8,6 +8,8 @@ import javax.swing.Icon;
 
 /**
  * A simple icon composed solely of a circle.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author jstewart
  * @version %I% %G%

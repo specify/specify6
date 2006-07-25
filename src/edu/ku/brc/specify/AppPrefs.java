@@ -28,6 +28,8 @@ import edu.ku.brc.ui.UICacheManager;
 /**
  * One stop shopping for prefs, this is the one place that initializes all the prefs for any Specify application
  * 
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

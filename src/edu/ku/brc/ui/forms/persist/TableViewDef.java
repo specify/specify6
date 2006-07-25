@@ -17,7 +17,9 @@ package edu.ku.brc.ui.forms.persist;
 import java.util.List;
 import java.util.Vector;
 
-/**
+/*
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

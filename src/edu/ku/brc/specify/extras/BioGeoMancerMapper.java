@@ -44,7 +44,9 @@ import edu.ku.brc.util.Pair;
 
 /**
  * This was for the SPNHC Demo. This class really needs to be derived from a generic class like LocalityMapper
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

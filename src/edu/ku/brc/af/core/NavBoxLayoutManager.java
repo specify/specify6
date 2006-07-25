@@ -26,7 +26,9 @@ import edu.ku.brc.ui.Trash;
 
 /**
  * The layout manager for laying out NavBoxes in a vertical fashion (only)
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

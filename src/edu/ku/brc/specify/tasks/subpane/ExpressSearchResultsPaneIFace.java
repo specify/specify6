@@ -21,6 +21,8 @@ import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 
 /**
  * Interface for objects that can display the results of a search.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

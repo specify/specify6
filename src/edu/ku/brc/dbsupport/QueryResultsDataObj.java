@@ -18,6 +18,8 @@ package edu.ku.brc.dbsupport;
 /**
  * A class that describes where the the desired piece of data is located (row/col) in the results set 
  * and whether it has been processed, meaning: does it have it's value yet?
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

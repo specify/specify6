@@ -47,6 +47,15 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 
+/**
+ * Manages all the plugins as described in the plugin registry. 
+ * The plugins are read in and then created. Their toolbar items and menu items areinserted into the UI.
+ * 
+ * @code_status Beta
+ * 
+ * @author rods
+ *
+ */
 public class PluginMgr
 {
 
@@ -102,7 +111,7 @@ public class PluginMgr
 
     /**
      * Unregisters a plugin from the application
-     * @param plugin
+     * @param plugin the plugin to be installed
      */
     public static void unregister(final TaskPluginable plugin)
     {

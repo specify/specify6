@@ -52,7 +52,9 @@ import edu.ku.brc.ui.forms.UIFieldFormatterMgr;
  * A JTextField (wrapped inside a JPanel) that provides for "formatted" input. The format "mask" is define in XML
  * via the UIFieldFormatterMgr class. This is idea for text fields that have a standard size and a specific format (i.e. Dates)
  * The mask enables the "fields" and separators to be specifically defined.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

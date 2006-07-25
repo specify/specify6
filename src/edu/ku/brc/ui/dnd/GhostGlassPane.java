@@ -20,7 +20,9 @@ import javax.swing.Timer;
  * Implements a transparent glass pane for the app so images can be dragged across
  *
  * (Adpated from Romain Guy's Glass Pane Drag Photo Demo)
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  * @author Romain Guy <romain.guy@mac.com>
  * @author S�bastien Petrucci <sebastien_petrucci@yahoo.fr>*

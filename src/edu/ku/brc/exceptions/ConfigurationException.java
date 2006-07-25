@@ -18,7 +18,9 @@ package edu.ku.brc.exceptions;
 
 /**
  * This exception is used to mark (fatal) failures in the initialization and configuration
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author Rod Spears <rods@ku.edu>
  */
 @SuppressWarnings("serial")

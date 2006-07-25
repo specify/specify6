@@ -20,6 +20,8 @@ import java.util.Vector;
 /**
  * Processes a list of QueryResultsContainer objects (Note: Each QueryResultsContainer contains an SQL statement)
  * in serialized fashion;
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

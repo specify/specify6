@@ -18,7 +18,9 @@ import javax.swing.JComponent;
 
 /**
  * Interface of an item to be organized by a NavBox
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

@@ -25,15 +25,21 @@ import javax.swing.event.ChangeListener;
 
 import edu.ku.brc.ui.ExtendedTabbedPane;
 
+/**
+ * Manages all the SubPanes that are in the main Tabbed pane. It notifies listeners when SubPanes are added, removed or Shown.
+ * 
+ * @code_status Complete
+ * 
+ * @author rods
+ *
+ */
 @SuppressWarnings("serial")
 public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
 {
     private static final SubPaneMgr instance = new SubPaneMgr();
     
     protected enum NotificationType {Added, Removed, Shown};
-    // Static Data Members
-    //private static final Logger log = Logger.getLogger(SubPaneMgr.class);
-    
+     
     // Data Members
     protected Hashtable<String, SubPaneIFace> panes = new Hashtable<String, SubPaneIFace>();   
     protected SubPaneIFace currentPane = null;
@@ -41,7 +47,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     protected List<SubPaneMgrListener> listeners = new ArrayList<SubPaneMgrListener>();
     
     /**
-     * 
+     * Singleton Constructor
      * 
      */
     protected SubPaneMgr()
@@ -75,7 +81,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     }
     
     /**
-     * Counts up all the same kind of windows
+     * Counts up all the same kind of windows.
      * @param name the name of the SubPanel
      * @return the count of the same kind of panes
      */
@@ -98,7 +104,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     }
     
     /**
-     * Adds the sub pane and return the same one it added
+     * Adds the sub pane and return the same one it added.
      * @param pane the pane to be added
      * @return the same pane
      */
@@ -141,7 +147,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     }
     
     /**
-     * Removes a pane 
+     * Removes a pane.
      * @param pane the pane to be remoped
      * @return the same pane as the one removed
      */
@@ -158,7 +164,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     }
     
     /**
-     * Show (makes visible) the pane by name
+     * Show (makes visible) the pane by name.
      * @param name the name of the pane to be shown
      * @return the pane that is now shown
       */
@@ -186,7 +192,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     }
     
     /**
-     * Returns a SubPane for the UI component that it represents
+     * Returns a SubPane for the UI component that it represents.
      * @param comp the component to be looked up
      * @return Returns a SubPane for the UI component that it represents
      */
@@ -204,8 +210,8 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     }
     
     /**
-     * 
-     * @return Return the current sub pane
+     * Returns the current sub pane.
+     * @return the current sub pane.
      */
     public SubPaneIFace getCurrentSubPane()
     {
@@ -213,7 +219,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     }
     
     /**
-     * Returns a sub pane at an index
+     * Returns a sub pane at an index.
      * @param index the indes of the sub pane
      * @return Returns a sub pane at an index
      */
@@ -223,7 +229,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     }
     
     /**
-     * Removes all the Tabs
+     * Removes all the Tabs.
      *
      */
     public void closeAll()
@@ -243,7 +249,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     }
     
     /**
-     * Removes the current tab
+     * Removes the current tab.
      */
     public void closeCurrent()
     {
@@ -253,7 +259,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     }
     
     /**
-     * Adds listener of changes (adds and removes) of SubPaneIFaces to the manager
+     * Adds listener of changes (adds and removes) of SubPaneIFaces to the manager.
      * @param l the listener
      */
     public void addListener(final SubPaneMgrListener l)
@@ -262,7 +268,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     }
     
     /**
-     * Removes listener
+     * Removes listener.
      * @param l the listener
      */
     public void removeListener(final SubPaneMgrListener l)
@@ -271,7 +277,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     }
     
     /**
-     * Notifies listeners when something happens to a subpane
+     * Notifies listeners when something happens to a subpane.
      * @param type the type of notification
      * @param subPane the subpane it happened to
      */
@@ -329,7 +335,5 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             ContextMgr.requestContext(null);
         }       
     }
-    
-    
-
+ 
 }

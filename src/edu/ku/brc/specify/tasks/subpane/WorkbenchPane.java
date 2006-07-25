@@ -32,7 +32,9 @@ import edu.ku.brc.ui.JustifiedTableCellRenderer;
 
 /**
  * PLaceholder for Workbench Pane
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

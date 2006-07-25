@@ -19,7 +19,9 @@ import static org.apache.commons.lang.StringUtils.split;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * This represents all the information about a cell in the form.
+ * This represents all the information about a cell in the form
+ * @code_status Unknown (auto-generated)
+ *.
  * @author rods
  *
  */

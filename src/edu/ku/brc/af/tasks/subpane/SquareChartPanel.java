@@ -22,7 +22,9 @@ import org.jfree.chart.JFreeChart;
 /**
  * Simple derived class from ChartPanel that enables the Chart to always be a square instead of being stretched.
  * At this time it always sets the width to the height.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

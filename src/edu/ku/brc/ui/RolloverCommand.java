@@ -67,7 +67,9 @@ import edu.ku.brc.ui.dnd.ShadowFactory;
  *
  * Creates a panel containing an icon and button with a focus "ring" when the mouse is hovering.
  * This class is used mostly in NavBoxes
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author Rod Spears
  *
  */

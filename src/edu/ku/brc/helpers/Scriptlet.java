@@ -33,7 +33,9 @@ import java.text.DecimalFormat;
 import net.sf.jasperreports.engine.JRDefaultScriptlet;
 import net.sf.jasperreports.engine.JRScriptletException;
 
-/**
+/*
+ * @code_status Unknown (auto-generated)
+ **
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id: Scriptlet.java,v 1.7 2005/04/04 15:18:41 teodord Exp $
  */

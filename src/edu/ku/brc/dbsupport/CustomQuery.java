@@ -17,6 +17,8 @@ package edu.ku.brc.dbsupport;
 
 /**
  * Custom Queries know how to vend a collection of QueryResultsContainers that need to be processed
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  * 

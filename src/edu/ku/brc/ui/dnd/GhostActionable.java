@@ -5,6 +5,8 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 
 /**
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

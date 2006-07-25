@@ -37,7 +37,9 @@ import edu.ku.brc.ui.IconManager;
 
 /**
  * A pane with a text field for entring in a query and then the results are displayed in a table.
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

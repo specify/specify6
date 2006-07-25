@@ -24,6 +24,8 @@ import javax.swing.JPanel;
  * 
  * One row (or section) of the prefs when it is laaid out in a grid  
  * (Currently not in use)
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

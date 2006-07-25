@@ -49,6 +49,8 @@ import edu.ku.brc.ui.GetSetValueIFace;
 /**
  * Implements several listener interfaces and listens for the various types of notifications
  * to figure out if the component has changed.
+ *
+ * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *

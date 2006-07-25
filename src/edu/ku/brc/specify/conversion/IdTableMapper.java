@@ -25,7 +25,9 @@ import org.apache.log4j.Logger;
 
 /**
  * Manages the mapping of old primary key ID to new sequenial ones
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */

@@ -6,6 +6,12 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
+/*
+ * @code_status Unknown (auto-generated)
+ **
+ * @author rods
+ *
+ */
 public class JustifiedTableCellRenderer extends DefaultTableCellRenderer
 {
 	protected int	alignment;

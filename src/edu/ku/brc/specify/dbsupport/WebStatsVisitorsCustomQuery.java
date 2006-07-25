@@ -23,7 +23,9 @@ import edu.ku.brc.dbsupport.QueryResultsDataObj;
 
 /**
  * Custom Query for calculating web stats for Visitors (SPNHC Demo)
- *
+ 
+ * @code_status Unknown (auto-generated)
+ **
  * @author rods
  *
  */
