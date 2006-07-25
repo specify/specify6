@@ -14,6 +14,10 @@ import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.AltView;
 
+/**
+ * @author rods
+ *
+ */
 public class SearchFormPane extends FormPane
 {
     private static final Logger log  = Logger.getLogger(SearchFormPane.class);

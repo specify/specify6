@@ -171,14 +171,15 @@ public class PrefsCache
         String prefVal;
         try
         {
-            //for (String s : prefNode.keys())
-            //{
-            //    System.out.println("["+s+"]");
-            //}
+            System.out.println("--------");
+            for (String s : prefNode.keys())
+            {
+                System.out.println("["+s+"]");
+            }
             if (!ArrayUtils.contains(prefNode.keys(), attrName))
             {
                     prefNode.put(attrName, defValue);
-                    prefNode.flush();
+                    //prefNode.flush();
                     
                 prefVal = defValue;
             }  else

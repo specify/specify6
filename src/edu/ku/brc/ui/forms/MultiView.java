@@ -33,7 +33,7 @@ import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.ui.db.GenericDisplayFrame;
+import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.validation.DataChangeListener;
@@ -79,7 +79,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     
     protected List<MultiView>              kids            = new ArrayList<MultiView>();
     
-    protected List<GenericDisplayFrame>    displayFrames   = null;
+    protected List<ViewBasedDisplayIFace>      displayFrames   = null;
 
     // Temp
     protected MultiView                    thisObj          = null;
@@ -535,11 +535,11 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      * Registers "display" window for display "sub object" information.
      * @param frame the frame to be added 
      */
-    public void registerDisplayFrame(final GenericDisplayFrame frame)
+    public void registerDisplayFrame(final ViewBasedDisplayIFace frame)
     {
         if (displayFrames == null)
         {
-            displayFrames  = new ArrayList<GenericDisplayFrame>();
+            displayFrames  = new ArrayList<ViewBasedDisplayIFace>();
         }
         displayFrames.add(frame);
     }
@@ -548,7 +548,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      * Unregsters a frame from the MultiView list of sub-frames.
      * @param frame the frame to be unregistered (removed)
      */
-    public void unregisterDisplayFrame(final GenericDisplayFrame frame)
+    public void unregisterDisplayFrame(final ViewBasedDisplayIFace frame)
     {
         if (displayFrames != null)
         {
@@ -565,9 +565,9 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         if (displayFrames != null)
         {
-            for (GenericDisplayFrame frame : displayFrames)
+            for (ViewBasedDisplayIFace frame : displayFrames)
             {
-                frame.setVisible(show);
+                frame.showDisplay(show);
             }
         }
     }

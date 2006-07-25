@@ -58,6 +58,9 @@ import edu.ku.brc.ui.TriangleButton;
  * This is a single set of of results and is derived from a query where all the record numbers where
  * supplied as an "in" clause.
  *
+ * 
+ * @code_status Code Freeze
+ * 
  * @author rods
  *
  */

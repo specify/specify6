@@ -77,7 +77,6 @@ import edu.ku.brc.helpers.DiskFileFilter;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
-import edu.ku.brc.specify.tasks.ExpressResultsTableInfo.LOAD_TYPE;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UICacheManager;

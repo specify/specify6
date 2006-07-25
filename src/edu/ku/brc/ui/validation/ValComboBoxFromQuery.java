@@ -63,9 +63,9 @@ import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
-import edu.ku.brc.ui.db.DialogFactory;
-import edu.ku.brc.ui.db.GenericDisplayFrame;
-import edu.ku.brc.ui.db.GenericSearchDialog;
+import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
+import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
+import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.db.JComboBoxFromQuery;
 import edu.ku.brc.ui.forms.DataGetterForObj;
 import edu.ku.brc.ui.forms.DataObjFieldFormatMgr;
@@ -94,7 +94,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                                             PreferenceChangeListener, 
                                                             PropertyChangeListener
 {
-    protected static final Logger log = Logger.getLogger(ValComboBoxFromQuery.class);
+    protected static final Logger log                = Logger.getLogger(ValComboBoxFromQuery.class);
     
     protected static ColorWrapper valtextcolor       = null;
     protected static ColorWrapper requiredfieldcolor = null;
@@ -124,7 +124,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected String             displayInfoDialogName;
     protected String             frameTitle = null;
     
-    protected GenericDisplayFrame frame      = null;
+    protected ViewBasedDisplayIFace   frame      = null;
     protected MultiView           multiView  = null;
     
     protected List<FocusListener> focusListeners = new ArrayList<FocusListener>();
@@ -205,7 +205,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         
         init(false);
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.Component#requestFocus()
      */
@@ -320,13 +320,12 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    GenericSearchDialog dlg = DialogFactory.createSearchDialog(searchDialogName);
-                    dlg.setVisible(true);
+                    ViewBasedSearchDialogIFace dlg = UICacheManager.getViewbasedFactory().createSearchDialog(searchDialogName);
+                    dlg.getDialog().setVisible(true);
                     if (!dlg.isCancelled())
                     {
                         setValue(dlg.getSelectedObject(), null);
                     }
-    
                 }
             });
         }
@@ -352,8 +351,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     protected void createEditFrame(final boolean isNewObject)
     {
-        frame = DialogFactory.createDisplayDialog(displayInfoDialogName, frameTitle, isNewObject) ;
-        
+        frame = UICacheManager.getViewbasedFactory().createDisplay(displayInfoDialogName, frameTitle, isNewObject, ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME);
         if (isNewObject)
         {
             Object object = UIHelper.createAndNewDataObj(classObj);
@@ -374,8 +372,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             frame.setData(dataObj);
         }
         frame.setCloseListener(this);
-        
-        frame.setVisible(true);
+        frame.showDisplay(true);
         
         if (multiView != null)
         {

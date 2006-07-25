@@ -38,15 +38,17 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
-import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
 import edu.ku.brc.specify.ui.db.SaveRecordSetDlg;
 import edu.ku.brc.ui.UICacheManager;
 /**
  * A pane with a text field for entring in a query and then the results are displayed in a table.
+ * 
+ * @code_status Alpha
  * 
  * @author rods
  *
@@ -73,7 +75,10 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
     
     /**
      * Default Constructor
-     *
+     * @param name the name of the pane
+     * @param task the owning task
+     * @param hideSQLField whether to hide the user editable text field that used to enter a query
+     * @param hideBtnPanel whether to hide the button panel
      */
     public SQLQueryPane(final String name, 
                         final Taskable task, 
@@ -275,7 +280,8 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setHorizontalAlignment(JLabel.CENTER);
         TableModel model = table.getModel();
-        for (int i=0;i<model.getColumnCount();i++) {
+        for (int i=0;i<model.getColumnCount();i++) 
+        {
             TableColumn column = table.getColumn(model.getColumnName(i));
             column.setCellRenderer(renderer);
         }

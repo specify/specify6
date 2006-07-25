@@ -20,14 +20,17 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
+import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
 import edu.ku.brc.ui.UICacheManager;
 
 /**
  * This is a single set of of results and is derived from a query where all the record numbers where
  * supplied as an "in" clause.
  *
+ * 
+ * @code_status Code Freeze
+ * 
  * @author rods
  *
  */
@@ -39,7 +42,7 @@ public class ExpressTableResults extends ExpressTableResultsBase implements SQLE
 
     // Data Members
     protected SQLExecutionProcessor sqlExecutor;
-    protected java.sql.ResultSet resultSet;
+    protected java.sql.ResultSet    resultSet;
 
     /**
      * Constructor of a results "table" which is really a panel

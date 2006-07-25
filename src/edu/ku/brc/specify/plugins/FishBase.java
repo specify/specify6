@@ -24,6 +24,7 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
@@ -42,9 +43,10 @@ import edu.ku.brc.specify.extras.FishBaseInfoGetterListener;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIPluginable;
-import edu.ku.brc.ui.db.DialogFactory;
-import edu.ku.brc.ui.db.GenericDisplayFrame;
+import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
+import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.MultiView;
 
 /**
@@ -60,8 +62,8 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
     protected JButton             infoBtn    = null;
     protected JProgressBar        progress   = null;
 
-    protected GenericDisplayFrame frame      = null;
-    protected MultiView           multiView  = null;
+    protected ViewBasedDisplayIFace frame      = null;
+    protected MultiView             multiView  = null;
 
     protected FishBaseInfoGetter getter;
 
@@ -82,10 +84,10 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
         String species = taxon.getName();
         String genus   = taxon.getParent().getName();
 
-        frame = DialogFactory.createDisplayDialog("FishBase", "Fish Base Information", false); // false means View mode
+        frame = UICacheManager.getViewbasedFactory().createDisplay("FishBase", "Fish Base Information", false, ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME); // false means View mode
         frame.setCloseListener(this);
         frame.setData(null);
-        frame.setVisible(true);
+        frame.showDisplay(true);
 
         multiView = frame.getMultiView();
 
@@ -97,7 +99,11 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
             progress.setIndeterminate(true);
             progress.setValue(50);
         }
-        frame.setIconImage(IconManager.getIcon("FishBase", IconManager.IconSize.Std16).getImage());
+        
+        if (frame instanceof JFrame)
+        {
+            ((JFrame)frame).setIconImage(IconManager.getIcon("FishBase", IconManager.IconSize.Std16).getImage());
+        }
 
         if (getter == null)
         {

@@ -1,4 +1,4 @@
- package edu.ku.brc.ui.db;
+package edu.ku.brc.ui.db;
 
 import java.util.Date;
 

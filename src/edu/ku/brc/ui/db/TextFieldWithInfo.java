@@ -48,6 +48,7 @@ import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.ui.forms.DataGetterForObj;
 import edu.ku.brc.ui.forms.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.MultiView;
@@ -64,8 +65,8 @@ import edu.ku.brc.ui.forms.MultiView;
 @SuppressWarnings("serial")
 public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, PreferenceChangeListener, PropertyChangeListener
 {
-    protected static final Logger log = Logger.getLogger(TextFieldWithInfo.class);
-    
+    protected static final Logger log                 = Logger.getLogger(TextFieldWithInfo.class);
+   
     protected static ColorWrapper valtextcolor       = null;
     protected static ColorWrapper requiredfieldcolor = null;
 
@@ -88,8 +89,8 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
     protected Object             dataObj     = null;
     protected String             frameTitle = null;
     
-    protected GenericDisplayFrame frame      = null;
-    protected MultiView           multiView  = null;
+    protected ViewBasedDisplayIFace  frame      = null;
+    protected MultiView          multiView  = null;
 
  
     /**
@@ -152,10 +153,10 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
      */
     protected void createInfoFrame()
     {
-        frame = DialogFactory.createDisplayDialog(displayInfoDialogName, frameTitle, false); // false means View mode
+        frame = UICacheManager.getViewbasedFactory().createDisplay(displayInfoDialogName, frameTitle, false, ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME); // false means View mode
         frame.setCloseListener(this);
         frame.setData(dataObj);
-        frame.setVisible(true);
+        frame.showDisplay(true);
         
         if (multiView != null)
         {

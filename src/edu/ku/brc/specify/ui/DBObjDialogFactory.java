@@ -12,7 +12,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.ui.db;
+package edu.ku.brc.specify.ui;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 import static edu.ku.brc.helpers.XMLHelper.readFileToDOM4J;
@@ -26,21 +26,30 @@ import org.dom4j.Element;
 
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
+import edu.ku.brc.ui.db.ViewBasedDisplayFrame;
+import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
+import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 
 /**
- * This class reads in dialog definitions from dialog_defs.xml, there are two types of dialog: "search" and "display".
- * Certain UI components use this factory to create dialogs for searching or displaying child objects.
+ * This class is the implementation for the ViewBasedDialogFactoryIFace interface for the entire application.
+ * <BR><BR>
+ * This class reads in dialog/frame definitions from dialog_defs.xml, there are two types of dialog: "search" and "display".
+ * Certain UI components use this factory to create dialogs (model or non-model) for searching or displaying child objects.
+ * <BR><BR>
  * For example, the TextWithInfo or the ComboBoxFromQuery has buttons that enables the user to pop up a dialog for displaying the current object in the control,
  * or to pop up a search dialog for locating (more precisely the object they desire.
  *
+ * @code_status Beta
+ * 
  * @author rods
  *
  */
-public class DialogFactory
+public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
 {
-    private static final Logger  log        = Logger.getLogger(DialogFactory.class);
+    private static final Logger  log             = Logger.getLogger(DBObjDialogFactory.class);
 
-    protected static DialogFactory instance = new DialogFactory();
+    protected static DBObjDialogFactory instance = new DBObjDialogFactory();
 
     protected Hashtable<String, DialogInfo> searchDialogs = new Hashtable<String, DialogInfo>();
     protected Hashtable<String, DialogInfo> dialogs       = new Hashtable<String, DialogInfo>();
@@ -48,7 +57,7 @@ public class DialogFactory
     /**
      * Protected Constructor
      */
-    protected  DialogFactory()
+    protected  DBObjDialogFactory()
     {
         // These will eventually be defined in an XML file.
 /*
@@ -109,52 +118,59 @@ public class DialogFactory
         }
     }
 
-
-    /**
-     * Creates a new GenericSearchDialog by name
-     * @param name the name of the GenericSearchDialog to return
-     * @return a GenericSearchDialog by name
+    //----------------------------------------------------------
+    // ViewBasedDialogFactoryIFace interface
+    //----------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.ViewBasedDialogFactoryIFace#createSearchDialog(java.lang.String)
      */
-    public static GenericSearchDialog createSearchDialog(final String name)
+    public ViewBasedSearchDialogIFace createSearchDialog(final String name)
     {
         DialogInfo info =  instance.searchDialogs.get(name);
         if (info != null)
         {
-            return new GenericSearchDialog(info.getViewSetName(),
-                                             info.getViewName(),
-                                             info.getDialogName(),
-                                             info.getTitle(),
-                                             info.getClassName(),
-                                             info.getIdFieldName()
-                                             );
+            return new DBObjSearchDialog(info.getViewSetName(),
+                                         info.getViewName(),
+                                         info.getDialogName(),
+                                         info.getTitle(),
+                                         info.getClassName(),
+                                         info.getIdFieldName()
+                                         );
         } else
         {
-            throw new RuntimeException("Couldn't create GenericSearchDialog by name["+name+"]");
+            throw new RuntimeException("Couldn't create object implementing ViewBasedSearchDialogIFace by name["+name+"]");
         }
     }
 
-    /**
-     * Creates a new GenericSearchDialog by name
-     * @param name the name of the GenericSearchDialog to return
-     * @return a GenericSearchDialog by name
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.ViewBasedDialogFactoryIFace#createDisplay(java.lang.String, java.lang.String, boolean, boolean)
      */
-    public static GenericDisplayFrame createDisplayDialog(final String name,
-                                                          final String frameTitle,
-                                                          final boolean isEdit)
+    public ViewBasedDisplayIFace createDisplay(final String  name,
+                                           final String  frameTitle,
+                                           final boolean isEdit,
+                                           final FRAME_TYPE type)
     {
         DialogInfo info =  instance.dialogs.get(name);
         if (info != null)
         {
-            return new GenericDisplayFrame(info.getViewSetName(),
-                                            info.getViewName(),
-                                            info.getDialogName(),
-                                            frameTitle,
-                                            info.getClassName(),
-                                            info.getIdFieldName(),
-                                            isEdit);
+            if (type == ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME)
+            {
+                return new ViewBasedDisplayFrame(info.getViewSetName(),
+                                                info.getViewName(),
+                                                info.getDialogName(),
+                                                frameTitle,
+                                                info.getClassName(),
+                                                info.getIdFieldName(),
+                                                isEdit);
+            } else
+            {
+                throw new RuntimeException("Need to implement the Dialog version for the factory.");
+            }
         } else
         {
-            throw new RuntimeException("Couldn't create GenericDisplayFrame by name["+name+"]");
+            throw new RuntimeException("Couldn't create ViewBasedDisplayFrame by name["+name+"]");
         }
     }
 

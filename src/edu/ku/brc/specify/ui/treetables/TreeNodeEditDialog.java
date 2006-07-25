@@ -47,7 +47,7 @@ import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.validation.ValComboBox;
 
 /**
- * Comments must be updated.  Most of this code, including comments, was taken from GenericDisplayDialog.java
+ * Comments must be updated.  Most of this code, including comments, was taken from DBObjDisplayDialog.java
  * 
  * This is a "generic" or more specifically "configurable" search dialog class. This enables you to specify a form to be used to enter the search criteria
  * and then the search definition it is to use to do the search and display the results as a table in the dialog. The resulting class is to be passed in

@@ -47,6 +47,8 @@ import edu.ku.brc.util.FileCache;
 public class UICacheManager
 {
     // Static Data Members
+    protected static final String MISSING_FACTORY_MSG = "The object has not been set for the ViewBasedDialogFactoryIFace. This class can be used without first setting a factory implementing this interface.";
+
     public static final String FRAME     = "frame";
     public static final String MENUBAR   = "menubar";
     public static final String TOOLBAR   = "toolbar";
@@ -75,6 +77,8 @@ public class UICacheManager
     protected FileCache      shortTermCache = null;
 
     protected String         defaultWorkingPath = System.getProperty("user.home") + File.separator + "Specify";
+    
+    protected ViewBasedDialogFactoryIFace viewbasedFactory = null; 
 
     /**
      * Default private constructor for singleton
@@ -237,6 +241,28 @@ public class UICacheManager
     public static String getResourceString(final String key)
     {
         return instance.getResourceStringInternal(key);
+    }
+
+    /**
+     * Returns the ViewBasedFacory for the application
+     * @return the ViewBasedFacory for the application
+     */
+    public static ViewBasedDialogFactoryIFace getViewbasedFactory()
+    {
+        if (UICacheManager.getViewbasedFactory() == null)
+        {
+            throw new RuntimeException(MISSING_FACTORY_MSG);
+        }
+        return instance.viewbasedFactory;
+    }
+
+    /**
+     * Sets the ViewBasedFacory for the application
+     * @param viewbasedFactory the factory
+     */
+    public static void setViewbasedFactory(ViewBasedDialogFactoryIFace viewbasedFactory)
+    {
+        instance.viewbasedFactory = viewbasedFactory;
     }
 
     /**

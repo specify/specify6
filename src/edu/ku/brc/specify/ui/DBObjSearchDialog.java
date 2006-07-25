@@ -12,7 +12,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.ui.db;
+package edu.ku.brc.specify.ui;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
@@ -65,6 +65,7 @@ import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResults;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.ViewMgr;
 import edu.ku.brc.ui.forms.Viewable;
@@ -75,13 +76,16 @@ import edu.ku.brc.ui.forms.persist.View;
  * and then the search definition it is to use to do the search and display the results as a table in the dialog. The resulting class is to be passed in
  * on construction so the results of the search can actually yield a Hibernate object.
  *
+ *
+ * @code_status Beta
+ * 
  * @author rods
  *
  */
 @SuppressWarnings("serial")
-public class GenericSearchDialog extends JDialog implements ActionListener, ExpressSearchResultsPaneIFace
+public class DBObjSearchDialog extends JDialog implements ActionListener, ExpressSearchResultsPaneIFace, ViewBasedSearchDialogIFace
 {
-    private static final Logger log  = Logger.getLogger(GenericSearchDialog.class);
+    private static final Logger log  = Logger.getLogger(DBObjSearchDialog.class);
 
     // Form Stuff
     protected View           formView = null;
@@ -126,12 +130,12 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
      * @param idFieldName the name of the field in the clas that is the primary key which is filled in from the search table id
      * @throws HeadlessException an exception
      */
-    public GenericSearchDialog(final String viewSetName, 
-                               final String viewName, 
-                               final String searchName,
-                               final String title,
-                               final String className,
-                               final String idFieldName) throws HeadlessException
+    public DBObjSearchDialog(final String viewSetName, 
+                             final String viewName, 
+                             final String searchName,
+                             final String title,
+                             final String className,
+                             final String idFieldName) throws HeadlessException
     {
         super((Frame)UICacheManager.get(UICacheManager.FRAME), title, true);
         
@@ -310,53 +314,6 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
         searchBtn.setEnabled(enabled);
     }
     
-    /**
-     * Returns whether the dialog was cancelled
-     * @return whether the dialog was cancelled
-     */
-    public boolean isCancelled()
-    {
-        return isCancelled;
-    }
-    
-    /**
-     * Return the selected object 
-     * @return the selected object 
-     */
-    public Object getSelectedObject()
-    {
-        if (!isCancelled && idList != null && idList.size() > 0)
-        {
-            Integer id = idList.get(0);
-            try
-            {
-                log.debug("getSelectedObject class["+className+"] idFieldName["+idFieldName+"] id["+id+"]");
-                
-                Class classObj = Class.forName(className);
-                SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
-                Session session = sessionFactory.openSession();
-               
-                Criteria criteria = session.createCriteria(classObj);
-                criteria.add(Expression.eq(idFieldName, id));
-                java.util.List list = criteria.list();
-                session.close();
-                
-                if (list.size() == 1)
-                {
-                    return list.get(0);
-                } else
-                {
-                    throw new RuntimeException("Why would more than one object be found in GenericSearchDialog?");
-                }
-            } catch (Exception ex)
-            {
-                log.error(ex);
-            }
-
-        }
-        return null;
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.subpane.ExpressSearchResultsPaneIFace#addSearchResults(edu.ku.brc.af.tasks.ExpressResultsTableInfo, org.apache.lucene.search.Hits)
      */
@@ -429,5 +386,63 @@ public class GenericSearchDialog extends JDialog implements ActionListener, Expr
         isCancelled = e.getSource() == cancelBtn;
         setVisible(false);
     }
+    
+    //------------------------------------------------------------
+    //-- ViewBasedDisplayIFace Interface
+    //------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.ViewBasedSearchDialogIFace#getDialog()
+     */
+    public JDialog getDialog()
+    {
+        return this;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.ViewBasedSearchDialogIFace#isCancelled()
+     */
+    public boolean isCancelled()
+    {
+        return isCancelled;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.ViewBasedSearchDialogIFace#getSelectedObject()
+     */
+    public Object getSelectedObject()
+    {
+        if (!isCancelled && idList != null && idList.size() > 0)
+        {
+            Integer id = idList.get(0);
+            try
+            {
+                log.debug("getSelectedObject class["+className+"] idFieldName["+idFieldName+"] id["+id+"]");
+                
+                Class classObj = Class.forName(className);
+                SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+                Session session = sessionFactory.openSession();
+               
+                Criteria criteria = session.createCriteria(classObj);
+                criteria.add(Expression.eq(idFieldName, id));
+                java.util.List list = criteria.list();
+                session.close();
+                
+                if (list.size() == 1)
+                {
+                    return list.get(0);
+                } else
+                {
+                    throw new RuntimeException("Why would more than one object be found in DBObjSearchDialog?");
+                }
+            } catch (Exception ex)
+            {
+                log.error(ex);
+            }
+
+        }
+        return null;
+    }
+
 
 }
