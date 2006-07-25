@@ -197,7 +197,7 @@ public class DatabaseLoginPanel extends JPanel
         
         forwardImgIcon = IconManager.getImage("Forward");
         downImgIcon    = IconManager.getImage("Down");
-        extraBtn = new JCheckBox("More", forwardImgIcon);
+        extraBtn       = new JCheckBox("More", forwardImgIcon);
         
         // Extra
         driver  = new JTextField(20);
@@ -212,6 +212,9 @@ public class DatabaseLoginPanel extends JPanel
         addKeyListenerForTextComp(password, !isDlg);
         addKeyListenerForTextComp(driver, !isDlg);
         addKeyListenerForTextComp(protocol, !isDlg);
+        
+        addKeyListenerForTextComp(databases.getTextField(), !isDlg);
+        addKeyListenerForTextComp(servers.getTextField(), !isDlg);
         
         autoLoginCBX.setSelected(prefNode.getBoolean("autologin", false));
         rememberUsernameCBX.setSelected(prefNode.getBoolean("rememberuser", false));
@@ -418,8 +421,8 @@ public class DatabaseLoginPanel extends JPanel
         
         boolean shouldEnable = StringUtils.isNotEmpty(username.getText()) && 
                                 StringUtils.isNotEmpty(new String(password.getPassword())) && 
-                                servers.getSelectedIndex() != -1 && 
-                                databases.getSelectedIndex() != -1;
+                                (servers.getSelectedIndex() != -1 || StringUtils.isNotEmpty(servers.getTextField().getText()) && 
+                                (databases.getSelectedIndex() != -1 || StringUtils.isNotEmpty(databases.getTextField().getText())));
         
         if (StringUtils.isEmpty(driver.getText()))
         {
