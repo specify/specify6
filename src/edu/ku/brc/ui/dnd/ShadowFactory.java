@@ -93,7 +93,7 @@ import java.util.HashMap;
  *
  * @code_status Unknown (auto-generated)
  * 
- * @author Romain Guy <romain.guy@mac.com>
+ * @author Romain Guy
  * @author Sebastien Petrucci <sebastien_petrucci@yahoo.fr>
  */
 

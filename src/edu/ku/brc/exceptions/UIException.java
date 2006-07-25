@@ -21,7 +21,7 @@ package edu.ku.brc.exceptions;
  
  * @code_status Unknown (auto-generated)
  **
- * @author Christian Bauer <christian@hibernate.org>
+ * @author rods
  */
 @SuppressWarnings("serial")
 public class UIException extends RuntimeException 

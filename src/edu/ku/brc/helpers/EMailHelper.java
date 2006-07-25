@@ -52,7 +52,7 @@ import edu.ku.brc.ui.UICacheManager;
  
  * @code_status Unknown (auto-generated)
  **
- * @author Rod Spears <rods@ku.edu>
+ * @author rods <rods@ku.edu>
  */
 
 public class EMailHelper

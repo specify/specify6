@@ -21,7 +21,7 @@ package edu.ku.brc.exceptions;
  
  * @code_status Unknown (auto-generated)
  **
- * @author Rod Spears <rods@ku.edu>
+ * @author rods <rods@ku.edu>
  */
 @SuppressWarnings("serial")
 public class ConfigurationException extends RuntimeException 

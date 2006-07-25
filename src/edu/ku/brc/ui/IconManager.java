@@ -38,7 +38,7 @@ import edu.ku.brc.helpers.XMLHelper;
  
  * @code_status Unknown (auto-generated)
  **
- * @author Rod Spears
+ * @author rods
  *
  */
 public class IconManager

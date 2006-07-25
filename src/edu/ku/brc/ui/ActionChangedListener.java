@@ -26,7 +26,7 @@ import javax.swing.JComponent;
  *
  * @code_status Unknown (auto-generated)
  * 
- * @author Rod Spears
+ * @author rods
  *
  * Currently Not Used
  */

@@ -24,7 +24,7 @@ import edu.ku.brc.specify.datamodel.Agent;
  
  * @code_status Unknown (auto-generated)
  **
- * @author Rod Spears <rods@ku.edu>
+ * @author rods <rods@ku.edu>
  */
 
 public interface ExternalFileRepositoryIFace

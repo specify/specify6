@@ -28,7 +28,7 @@ import edu.ku.brc.specify.extfilerepos.ExternalFileRepositoryIFace;
  
  * @code_status Unknown (auto-generated)
  **
- * @author Rod Spears <rods@ku.edu>
+ * @author rods <rods@ku.edu>
  */
 public class ExternalFileRepository implements ExternalFileRepositoryIFace
 {

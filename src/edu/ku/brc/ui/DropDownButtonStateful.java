@@ -35,7 +35,7 @@ import javax.swing.border.EmptyBorder;
  *
  * @code_status Unknown (auto-generated)
  * 
- * @author Rod Spears
+ * @author rods
  *
  */
 @SuppressWarnings("serial")

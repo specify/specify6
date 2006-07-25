@@ -70,7 +70,7 @@ import edu.ku.brc.ui.dnd.ShadowFactory;
  
  * @code_status Unknown (auto-generated)
  **
- * @author Rod Spears
+ * @author rods
  *
  */
 @SuppressWarnings("serial")
