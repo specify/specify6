@@ -24,8 +24,6 @@ import edu.ku.brc.util.Pair;
  * The class also contains factory methods for creating appropriate comparators for comparing Treeables.  Also
  * included are some methods for determining if a given Treeable instance is deletable based on type-specific
  * business rules.
- *
- * @code_status Unknown (auto-generated)
  * 
  * @author jstewart
  *
@@ -228,13 +226,12 @@ public class TreeFactory
 	}
 	
 	/**
-	 * Creates a new Treeable node instance having the given parent, name and rank.
+	 * Creates a new tree definition instance having the given parent, name and rank.
 	 * 
-	 * @param implementingClass the implementation class of the new node
-	 * @param name the name of the new node
-	 * @param remarks the remarks for the new node
-	 * @see TreeFactory#createNewTreeable(Class,Treeable,String,Integer)
-	 * @return the new node instance
+	 * @param implementingClass the implementation class of the nodes in the new tree
+	 * @param name the name of the new tree
+	 * @param remarks the remarks for the new definition
+	 * @return the new definition
 	 */
 	public static TreeDefinitionIface createNewTreeDef( Class implementingClass, String name, String remarks )
 	{

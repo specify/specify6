@@ -85,7 +85,7 @@ public class TreeDataListModel extends AbstractListModel
 			return false;
 		}
 		
-		for(Treeable child: TreeTableUtils.getChildNodes(t))
+		for(Treeable child: t.getChildNodes())
 		{
 			if(!visibleNodes.contains(child))
 			{
@@ -124,7 +124,7 @@ public class TreeDataListModel extends AbstractListModel
 	public void showDescendants( Treeable t )
 	{
 		showChildren(t);
-		for( Treeable child: TreeTableUtils.getChildNodes(t) )
+		for( Treeable child: t.getChildNodes() )
 		{
 			showDescendants(child);
 		}
@@ -137,7 +137,7 @@ public class TreeDataListModel extends AbstractListModel
 			return;
 		}
 		
-		for( Treeable child: TreeTableUtils.getChildNodes(t) )
+		for( Treeable child: t.getChildNodes() )
 		{
 			setNodeVisible(child,true);
 		}
@@ -150,7 +150,7 @@ public class TreeDataListModel extends AbstractListModel
 			return;
 		}
 		
-		for( Treeable child: TreeTableUtils.getChildNodes(t) )
+		for( Treeable child: t.getChildNodes() )
 		{
 			setNodeVisible(child, false);
 		}
@@ -289,7 +289,7 @@ public class TreeDataListModel extends AbstractListModel
 		{
 			childrenWereShowing.put(t, true);
 			
-			for( Treeable child: TreeTableUtils.getChildNodes(t) )
+			for( Treeable child: t.getChildNodes() )
 			{
 				makeNodeInvisible(child);
 			}
@@ -340,7 +340,8 @@ public class TreeDataListModel extends AbstractListModel
 		TreeSet<Integer> usedRanks = new TreeSet<Integer>();
 		for( Treeable node: visibleNodes )
 		{
-			usedRanks.add(node.getRankId());
+			Integer rank = node.getRankId();
+			usedRanks.add(rank);
 		}
 		return usedRanks;
 	}
@@ -470,7 +471,7 @@ public class TreeDataListModel extends AbstractListModel
 
 	public void addChild( Treeable child, Treeable parent )
 	{
-		TreeTableUtils.getChildNodes(parent).add(child);
+		parent.addChild(child);
 		child.setParentNode(parent);
 		showChildren(parent);
 	}

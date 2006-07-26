@@ -8,19 +8,15 @@ import java.util.Vector;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
-import org.hibernate.LockMode;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
-import edu.ku.brc.dbsupport.HibernateUtil;
+//import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.Geography;
-import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
-import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.Location;
-import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.Taxon;
-import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -29,8 +25,6 @@ import edu.ku.brc.specify.datamodel.Treeable;
  * Provides many static methods that simplify the management of
  * tree-structured table data.  Many of the methods are used in
  * determining if business rules are being properly enforced.
- *
- * @code_status Unknown (auto-generated)
  * 
  * @author jstewart
  */
@@ -140,9 +134,9 @@ public class TreeTableUtils
 			
 			parent = parent.getParentNode();
 		}
-		
-		int direction = TreeTableUtils.getFullNameDirection(node.getClass());
-		String sep = TreeTableUtils.getFullNameSeparator(node.getClass());
+		Class implClass = node.getClass();
+		int direction = TreeTableUtils.getFullNameDirection(implClass);
+		String sep = TreeTableUtils.getFullNameSeparator(implClass);
 		
 		StringBuilder fullName = new StringBuilder(parts.size() * 10);
 		
@@ -360,6 +354,7 @@ public class TreeTableUtils
 	 */
 	protected static boolean geographyCanBeDeleted( Geography geo )
 	{
+		// force all collections to be loaded
 		boolean noLocs = geo.getLocalities().isEmpty();
 		
 		if( noLocs && allDescendantsDeletable(geo) )
@@ -381,6 +376,7 @@ public class TreeTableUtils
 	 */
 	protected static boolean geologicTimePeriodCanBeDeleted( GeologicTimePeriod gtp )
 	{
+		// force all collections to be loaded
 		boolean noStrats = gtp.getStratigraphies().isEmpty();
 		
 		if( noStrats && allDescendantsDeletable(gtp) )
@@ -402,6 +398,7 @@ public class TreeTableUtils
 	 */
 	protected static boolean locationCanBeDeleted( Location loc )
 	{
+		// force all collections to be loaded
 		boolean noConts = loc.getContainers().isEmpty();
 		boolean noPreps = loc.getPreparations().isEmpty();
 		
@@ -424,6 +421,7 @@ public class TreeTableUtils
 	 */
 	protected static boolean taxonCanBeDeleted( Taxon taxon )
 	{
+		// force all collections to be loaded
 		boolean noCitations = taxon.getTaxonCitations().isEmpty();
 		boolean noAcceptedChildren = taxon.getAcceptedChildren().isEmpty();
 		boolean noExtRes = taxon.getExternalResources().isEmpty();
@@ -450,7 +448,7 @@ public class TreeTableUtils
 	{
 		boolean deletable = true;
 		
-		for( Treeable child: getChildNodes(parent) )
+		for( Treeable child: parent.getChildNodes() )
 		{
 			if( !canBeDeleted(child) )
 			{
@@ -582,7 +580,7 @@ public class TreeTableUtils
 	public static int fixNodeNumbersFromRoot( Treeable root )
 	{
 		int nextNodeNumber = root.getNodeNumber();
-		for( Treeable child: getChildNodes(root) )
+		for( Treeable child: root.getChildNodes() )
 		{
 			child.setNodeNumber(++nextNodeNumber);
 			nextNodeNumber = fixNodeNumbersFromRoot(child);
@@ -601,49 +599,11 @@ public class TreeTableUtils
 	public static void fixFullNames( Treeable node )
 	{
 		node.setFullName(getFullName(node));
-		for( Treeable child: getChildNodes(node) )
+		for( Treeable child: node.getChildNodes() )
 		{
 			fixFullNames(child);
 		}
 	}
-	
-
-
-	/**
-	 * Deletes the given node and all of its descendants from the persistent store.
-	 * 
-	 * @param node the root of the subtree to delete
-	 */
-	public static void deleteNodeAndChildren( Treeable node )
-	{
-		HibernateUtil.beginTransaction();
-		
-		recursivelyDeleteNodes(node);
-		
-		HibernateUtil.commitTransaction();
-	}
-	
-	
-
-	/**
-	 * Deletes the given node and all of its descendants from the persistent store.
-	 * This method simply locates all of the nodes, detaches each from its parent
-	 * and children, and calls {@link Session#delete(Object)} on the node.
-	 * 
-	 * @param start the root of the subtree to delete
-	 */
-	protected static void recursivelyDeleteNodes( Treeable start )
-	{
-		start.getParentNode().removeChild(start);
-
-		for( Treeable child: getChildNodes(start) )
-		{
-			recursivelyDeleteNodes(child);
-		}
-		
-		HibernateUtil.getCurrentSession().delete(start);
-	}
-	
 
 	/**
 	 * Returns the number of proper descendants for node.
@@ -654,13 +614,12 @@ public class TreeTableUtils
 	public static int getDescendantCount( Treeable node )
 	{
 		int totalDescendants = 0;
-		for( Treeable child: getChildNodes(node) )
+		for( Treeable child: node.getChildNodes() )
 		{
 			totalDescendants += 1 + getDescendantCount(child);
 		}
 		return totalDescendants;
 	}
-
 
 	/**
 	 * Persists the current subtree structure, rooted at <code>root</code> to the
@@ -669,10 +628,9 @@ public class TreeTableUtils
 	 * @param root the root of the subtree to save
 	 * @param deletedNodes the <code>Set</code> of nodes to delete
 	 */
-	public static void saveTreeStructure( Treeable root, Set<Treeable> deletedNodes )
+	public static void saveTreeStructure( Treeable root, Set<Treeable> deletedNodes, Session session )
 	{
-		Session session = HibernateUtil.getCurrentSession();
-		HibernateUtil.beginTransaction();
+		Transaction tx = session.beginTransaction();
 		saveOrUpdateTree(root,session);
 		for( Treeable node: deletedNodes )
 		{
@@ -682,7 +640,15 @@ public class TreeTableUtils
 			}
 			session.delete(node);
 		}
-		HibernateUtil.commitTransaction();
+		try
+		{
+			tx.commit();
+		}
+		catch( HibernateException he )
+		{
+			log.error("Failed to save tree state to DB",he);
+			tx.rollback();
+		}
 	}
 	
 
@@ -711,7 +677,7 @@ public class TreeTableUtils
 	 */
 	private static void saveOrUpdateDescendants( Treeable node, Session session )
 	{
-		for( Treeable child: getChildNodes(node) )
+		for( Treeable child: node.getChildNodes() )
 		{
 			session.saveOrUpdate(child);
 			saveOrUpdateDescendants(child, session);
@@ -728,7 +694,7 @@ public class TreeTableUtils
 	public static List<Treeable> getAllDescendants(Treeable node)
 	{
 		Vector<Treeable> descendants = new Vector<Treeable>();
-		for( Treeable child: getChildNodes(node) )
+		for( Treeable child: node.getChildNodes() )
 		{
 			descendants.add(child);
 			descendants.addAll(getAllDescendants(child));
@@ -775,45 +741,9 @@ public class TreeTableUtils
 		node.setLastEditedBy(user);
 	}
 
-	public static Set<Treeable> getChildNodes(Treeable node)
-	{
-		//HibernateUtil.getCurrentSession().lock(node,LockMode.NONE);		
-		Set<Treeable> children = node.getChildNodes();
-		//children.size();
-		//HibernateUtil.closeSession();
-		return children;
-	}
-	
-	public static Class getNodeClassForTreeDef( TreeDefinitionIface treeDef )
-	{
-		if( treeDef.getClass().equals(TaxonTreeDef.class) )
-		{
-			return Taxon.class;
-		}
-		else if( treeDef.getClass().equals(GeographyTreeDef.class) )
-		{
-			return Geography.class;
-		}
-		else if( treeDef.getClass().equals(GeologicTimePeriodTreeDef.class) )
-		{
-			return GeologicTimePeriod.class;
-		}
-		else if( treeDef.getClass().equals(LocationTreeDef.class) )
-		{
-			return Location.class;
-		}
-		else
-		{
-			return null;
-		}
-	}
-	
 	@SuppressWarnings("unchecked")
 	public static Treeable getRootNodeOfTree(TreeDefinitionIface treeDef)
 	{
-		Session s = HibernateUtil.getCurrentSession();
-		s.lock(treeDef,LockMode.NONE);
-		
 		Set<TreeDefinitionItemIface> defItems = (Set<TreeDefinitionItemIface>)treeDef.getTreeDefItems();
 		TreeDefinitionItemIface item = defItems.iterator().next();
 		while(item.getParentItem() != null)
@@ -822,17 +752,7 @@ public class TreeTableUtils
 		}
 		Treeable root = (Treeable)item.getTreeEntries().iterator().next();
 		
-		HibernateUtil.closeSession();
 		return root;
-	}
-
-	public static List loadAllDefsByClass(Class treeDefClass)
-	{
-		Session session = HibernateUtil.getCurrentSession();
-		Criteria c = session.createCriteria(treeDefClass);
-		List results = c.list();
-		HibernateUtil.closeSession();
-		return results;
 	}
 
 	public static void fixAllDescendantFullNames(Treeable node)
@@ -840,7 +760,7 @@ public class TreeTableUtils
     	log.info("Updating full names for this node and all descendants");
     	log.info("TODO: optomize this implementation if possible");
 		node.setFullName(getFullName(node));
-		for( Treeable child: getChildNodes(node) )
+		for( Treeable child: node.getChildNodes() )
 		{
 			fixAllDescendantFullNames(child);
 		}

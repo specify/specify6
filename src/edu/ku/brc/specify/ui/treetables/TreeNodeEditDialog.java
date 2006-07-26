@@ -136,7 +136,7 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
         panel.add(multiView, BorderLayout.NORTH);
         contentPanel = new JPanel(new NavBoxLayoutManager(0,2));
 
-        okBtn = new JButton(getResourceString("Close"));
+        okBtn = new JButton(getResourceString("OK"));
         okBtn.addActionListener(this);
         getRootPane().setDefaultButton(okBtn);
         
@@ -177,6 +177,7 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
     	}
     	
     	TreeDefinitionItemIface parentDefItem = parent.getDefItem();
+    	TreeDefinitionItemIface defaultItem = null;
     	boolean done = false;
     	while( !done )
     	{
@@ -188,16 +189,21 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
     			{
     				cb.setValue(item.getName(), null);
     			}
-    			parentDefItem = item;
-    			if( item.getIsEnforced() != null  && item.getIsEnforced().booleanValue() == true )
+    			if( item.getIsEnforced() != null && item.getIsEnforced().booleanValue() == true )
     			{
+    				defaultItem = item;
     				done = true;
     			}
+    			parentDefItem = item;
     		}
     		else
     		{
     			done = true;
     		}
+    	}
+    	if(dataObj.getDefItem()==null && defaultItem!=null)
+    	{
+    		cb.setValue(defaultItem.getName(),null);
     	}
         form.setDataObj(dataObj);
     }
@@ -206,6 +212,7 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
     {
     	TreeDefinitionItemIface item = TreeTableUtils.getDefItemByName(node.getTreeDef(),defItemName);
     	node.setDefItem(item);
+    	node.setRankId(item.getRankId());
     }
 
     public void actionPerformed(ActionEvent e)

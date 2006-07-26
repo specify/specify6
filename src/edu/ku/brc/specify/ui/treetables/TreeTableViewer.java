@@ -16,12 +16,12 @@ package edu.ku.brc.specify.ui.treetables;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -42,7 +42,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
-import org.hibernate.LockMode;
 import org.hibernate.Session;
 
 import edu.ku.brc.af.core.Taskable;
@@ -57,7 +56,6 @@ import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.specify.ui.treetables.TreeNodeEditDialog.TreeNodeDialogCallback;
 import edu.ku.brc.ui.DragDropCallback;
-import edu.ku.brc.ui.GhostDropJList;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.listeners.ScrollBarLinkingListener;
 import edu.ku.brc.ui.renderers.NameBasedListCellRenderer;
@@ -74,7 +72,7 @@ import edu.ku.brc.util.Pair;
  * @author jstewart
  */
 @SuppressWarnings("serial")
-public class TreeTableViewer extends BaseSubPane implements ListSelectionListener, DragDropCallback
+public class TreeTableViewer extends BaseSubPane implements ListSelectionListener, DragDropCallback, MouseListener
 {
 	/** North section container. */
 	protected JPanel northPanel;
@@ -96,7 +94,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	/** Model holding all <code>Treeable</code> nodes. */
 	protected TreeDataListModel listModel;
 	/** The tree display widget. */
-	protected GhostDropJList list;
+	protected TreeDataGhostDropJList list;
 	/** Cell renderer for displaying individual nodes in the tree. */
 	protected TreeDataListCellRenderer listCellRenderer;
 	/** A header for the tree, displaying the names of the visible levels. */
@@ -128,7 +126,9 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	
     /** Logger for all messages emitted. */
     private static final Logger log = Logger.getLogger(TreeTableViewer.class);
-
+    
+    protected Session treeViewerSession;
+    
 	/**
 	 * Build a TreeTableViewer to view/edit the data found.
 	 * 
@@ -142,11 +142,20 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 							final Taskable task )
 	{
 		super(name,task);
-		Session session = HibernateUtil.getCurrentSession();
-		Criteria c = session.createCriteria(treeDefClass);
-		List results = c.list();
+		
+		treeViewerSession = (HibernateUtil.getSessionFactory()).openSession();
+
+		Criteria crit = treeViewerSession.createCriteria(treeDefClass);
+		List results = crit.list();
+		Vector<TreeDefinitionIface> defs = new Vector<TreeDefinitionIface>(results.size());
+		for( Object o: results )
+		{
+			TreeDefinitionIface def = (TreeDefinitionIface)o;
+			defs.add(def);
+		}
+
 		errorIcon = IconManager.getIcon("Error", IconManager.IconSize.Std24);
-		init(results);
+		init(defs);
 
 		deletedNodes = new TreeSet<Treeable>(new ReverseRankBasedComparator());
 		
@@ -154,8 +163,6 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 //		glassPane = new BusyComponentGlassPane(this,viewSubtreeButton);
 //		JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
 //		topFrame.setGlassPane(glassPane);
-
-		HibernateUtil.closeSession();
 	}
 	
 	/**
@@ -224,11 +231,9 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		{
 			public void run()
 			{
-				Session session = HibernateUtil.getCurrentSession();
-				session.lock(treeDef, LockMode.NONE);
+				final Treeable root = TreeTableUtils.getRootNodeOfTree(treeDef);
 				
-				Set treeNodes = treeDef.getTreeEntries();
-				if (treeNodes.isEmpty())
+				if(root == null)
 				{
 					// do the failure callback on the Swing thread
 					SwingUtilities.invokeLater(new Runnable()
@@ -241,26 +246,12 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 					return;
 				}
 				
-				// grab a node and walk to the root
-				Treeable node = (Treeable)treeNodes.iterator().next();
-				while( node.getParentNode() != null )
-				{
-					node = node.getParentNode();
-				}
-				
-				// now 'node' should be the root node of the tree
-				final Treeable root = node;
-				HibernateUtil.closeSession();
-
 				// do the success callback on the Swing thread
 				SwingUtilities.invokeLater(new Runnable()
 				{
 					public void run()
 					{
-						Session session = HibernateUtil.getCurrentSession();
-						session.lock(root,LockMode.NONE);
 						initTreeListSucess(root);
-						HibernateUtil.closeSession();
 					}
 				});
 			}
@@ -283,20 +274,14 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		defsBox.setEnabled(false);
 		
 		listModel = new TreeDataListModel(root);
-		list = new GhostDropJList(listModel,this);
+		//list = new GhostDropJList(listModel,this);
+		list = new TreeDataGhostDropJList(listModel,this);
+		list.addMouseListener(this);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		listCellRenderer = new TreeDataListCellRenderer(list,listModel);
 		list.setCellRenderer(listCellRenderer);
 		list.addListSelectionListener(this);
 		listHeader = new TreeDataListHeader(list,listModel,listCellRenderer);
-		
-		list.addMouseListener(new MouseAdapter()
-		{
-			public void mouseClicked( MouseEvent e )
-			{
-				handleMouseEvent(e);
-			}
-		});
 
 		treeListPanel = new JPanel(new BorderLayout());
 		JScrollPane bodyScroll = new JScrollPane(list);
@@ -338,29 +323,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		this.repaint();
 		return;
 	}
-	
-	/**
-	 * Performs all duties related to processing mouse events on the
-	 * tree display.
-	 *
-	 * @param e a mouse event
-	 */
-	protected void handleMouseEvent( MouseEvent e )
-	{
-		int clickCount = e.getClickCount();
-		if( clickCount == 2 )
-		{
-			Treeable t = (Treeable)list.getSelectedValue();
-			if( t == null )
-			{
-				return;
-			}
-			boolean visible = listModel.allChildrenAreVisible(t);
-			listModel.setChildrenVisible(t, !visible);
-			e.consume();
-		}
-	}
-	
+		
 	/**
 	 * Builds the button panel and all contained buttons.
 	 */
@@ -497,7 +460,13 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 			return;
 		}
 
-		Treeable newT = TreeFactory.createNewTreeable(parent, "New Node");
+		Treeable newT = TreeFactory.createNewTreeable(parent.getClass(),"New Node");
+
+		// only set the parent pointer to point 'upstream'
+		// if it also points 'downstream' from the parent,
+		// the renderer will try to render the new node immediately
+		newT.setParentNode(parent);
+		newT.setTreeDef(parent.getTreeDef());
 
 		// display a form for filling in child data
 		showNewTreeableForm(newT);
@@ -536,17 +505,22 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	 *
 	 * @param node the new node
 	 */
+	@SuppressWarnings("unchecked")
 	public void newNodeEntryComplete(Treeable node)
 	{
+		// set the 'downstream' pointers from the parent and parent def items
+		
 		listModel.hideChildren(node.getParentNode());
 		node.getParentNode().addChild(node);
-		listModel.showChildren(node.getParentNode());
+		node.getDefItem().getTreeEntries().add(node);
 		
 		TreeTableUtils.setTimestampsToNow(node);
 		String fullname = TreeTableUtils.getFullName(node);
 		node.setFullName(fullname);
 		
 		commitTreeButton.setEnabled(true);
+
+		listModel.showChildren(node.getParentNode());
 	}
 	
 
@@ -559,18 +533,12 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	 */
 	public void newNodeEntryCancelled(Treeable node)
 	{
-		Treeable parent = node.getParentNode();
-		boolean showing = listModel.allChildrenAreVisible(parent);
-		listModel.hideChildren(parent);
 		if( node == null )
 		{
 			return;
 		}
-		
-		if( parent != null )
-		{
-			parent.removeChild(node);
-		}
+
+		node.setParentNode(null);
 		
 		TreeDefinitionIface def = node.getTreeDef();
 		if( def != null )
@@ -583,8 +551,6 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		{
 			defItem.getTreeEntries().remove(node);
 		}
-		
-		listModel.setChildrenVisible(parent, showing);
 	}
 	
 
@@ -651,7 +617,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 			return;
 		}
 		
-		Treeable node = (Treeable)selection;
+		final Treeable node = (Treeable)selection;
 		
 		TreeNodeDialogCallback callback = new TreeNodeDialogCallback()
 		{
@@ -678,7 +644,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	 */
 	protected void editSelectedNodeOK(Treeable node)
 	{
-		log.info("User selected 'OK' from edit node dialog");
+		log.info("User selected 'OK' from edit node dialog: ");
 		commitTreeButton.setEnabled(true);
 		listModel.nodeValuesChanged(node);
 	}
@@ -718,7 +684,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		root.setNodeNumber(1);
 		TreeTableUtils.fixNodeNumbersFromRoot(root);
 		
-		TreeTableUtils.saveTreeStructure(root,deletedNodes);
+		TreeTableUtils.saveTreeStructure(root,deletedNodes,treeViewerSession);
 		commitTreeButton.setEnabled(false);
 		return true;
 	}
@@ -741,6 +707,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		
 		list.setSelectedValue(node,true);
 		
+		// test code
 //		glassPane.setBusy(!glassPane.isBusy());
 	}
 	
@@ -788,6 +755,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		String idFieldName = shortClassName.substring(0,1).toLowerCase() + shortClassName.substring(1) + "Id";
 		Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(node);
 		TreeNodeEditDialog editDialog = new TreeNodeEditDialog(formsNames.first,formsNames.second,title,shortClassName,idFieldName,callback);
+		editDialog.setModal(true);
 		editDialog.setData(node);
 		editDialog.setVisible(true);
 	}
@@ -797,7 +765,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	/**
 	 * Returns the top-level UI component of the tree viewer.
 	 *
-	 * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#getUIComponent()
+	 * @see edu.ku.brc.specify.tasks.subpane.BaseSubPane#getUIComponent()
 	 * @return the top-level UI component
 	 */
 	public JComponent getUIComponent()
@@ -823,6 +791,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 			return;
 		}
 		
+		System.out.println("Selection changed: " + t.getName());
 		statusBar.setText(TreeTableUtils.getFullName(t));
 		enableAllButtons();
 	}
@@ -857,5 +826,104 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		{
 			commitTreeButton.setEnabled(true);
 		}
+	}
+
+	/**
+	 *
+	 *
+	 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
+	 * @param e
+	 */
+	public void mouseClicked(MouseEvent e)
+	{
+		Point p = e.getPoint();
+		int index = list.locationToIndex(p);
+		if(index==-1)
+		{
+			return;
+		}
+		Treeable t = (Treeable)listModel.getElementAt(index);
+		Integer rank = t.getRankId();
+		Pair<Integer,Integer> anchorBounds = listCellRenderer.getAnchorBoundsForRank(rank);
+		Pair<Integer,Integer> textBounds = listCellRenderer.getTextBoundsForRank(rank);
+		
+		if( anchorBounds.first < p.x && p.x < anchorBounds.second )
+		{
+			// mouse press is on anchor area
+			boolean visible = listModel.allChildrenAreVisible(t);
+			listModel.setChildrenVisible(t, !visible);
+		}
+		else if( textBounds.first < p.x && p.x < textBounds.second )
+		{
+			// mouse press is on text area
+			if( e.getClickCount() == 2 )
+			{
+				boolean visible = listModel.allChildrenAreVisible(t);
+				listModel.setChildrenVisible(t, !visible);
+			}
+		}
+		else
+		{
+			e.consume();
+		}
+	}
+
+	/**
+	 *
+	 *
+	 * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
+	 * @param e
+	 */
+	public void mouseEntered(MouseEvent e)
+	{
+	}
+
+	/**
+	 *
+	 *
+	 * @see java.awt.event.MouseListener#mouseExited(java.awt.event.MouseEvent)
+	 * @param e
+	 */
+	public void mouseExited(MouseEvent e)
+	{
+	}
+
+	/**
+	 *
+	 *
+	 * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
+	 * @param e
+	 */
+	public void mousePressed(MouseEvent e)
+	{
+		Point p = e.getPoint();
+		int index = list.locationToIndex(p);
+		if(index==-1)
+		{
+			return;
+		}
+		Treeable t = (Treeable)listModel.getElementAt(index);
+		Integer rank = t.getRankId();
+		Pair<Integer,Integer> textBounds = listCellRenderer.getTextBoundsForRank(rank);
+		
+		if( textBounds.first < p.x && p.x < textBounds.second )
+		{
+			this.list.setClickOnText(true);
+			// mouse press is on text area
+		}
+		else
+		{
+			this.list.setClickOnText(false);
+		}
+	}
+
+	/**
+	 *
+	 *
+	 * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
+	 * @param e
+	 */
+	public void mouseReleased(MouseEvent e)
+	{
 	}
 }
