@@ -13,7 +13,7 @@
     </outofdate>
     <index>
 	    <sql>
-	        <![CDATA[Select collectionobject.CollectionObjectID, collectionobject.CatalogNumber, collectionobject.CatalogedDate, taxon.FullTaxon From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TaxonID = determination.TaxonID]]>
+	        <![CDATA[Select collectionobject.CollectionObjectID, collectionobject.CatalogNumber, collectionobject.CatalogedDate, taxon.FullName From collectionobject Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID Inner Join taxon ON taxon.TaxonID = determination.TaxonID]]>
 	    </sql>
 	    <cols>
 	       <col>1</col>
@@ -30,7 +30,7 @@
             <caption col="CollectionObjectID" text="CollectionObjectID" visible="false"/>
             <caption col="CatalogNumber" text="Catalog Number"/>
             <caption col="CatalogedDate" text="Cataloged Date"/>
-            <caption col="FullTaxon" text="Taxon Name"/>
+            <caption col="FullName" text="Taxon Name"/>
         </captions>
         <recordset tabletype="1" col="1"/>
 	</detailView>
@@ -259,7 +259,7 @@
 	    <sql>
 	        <![CDATA[Select
  collectionobject.CollectionObjectID,
- taxon.FullTaxon,
+ taxon.FullName,
  taxon.CommonName,
  agent.LastName,
  agent.FirstName
@@ -280,7 +280,7 @@
     <detailView icon="Agent">
 	    <sql>
 	        <![CDATA[select * from (Select
- taxon.FullTaxon,
+ taxon.FullName,
  taxon.CommonName,
  agent.LastName,
  agent.FirstName,
@@ -294,7 +294,7 @@
 	    </sql>
         <captions>
             <caption col="CollectionObjectCatalogID" text="ID" visible="false"/>
-            <caption col="TaxonName" text="TaxonName"/>
+            <caption col="TaxonName" text="Taxon Name"/>
             <caption col="CommonName" text="Common Name"/>
             <caption col="LastName" text="Last Name"/>
             <caption col="FirstName" text="First Name"/>

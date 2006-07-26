@@ -54,6 +54,8 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     {
         // This way we notifications that the tabs have changed
         addChangeListener(this);
+        
+        setOpaque(true); // this is so the tabs are painted correctly against the BG color of the TabbedPane
     }
     
     /**

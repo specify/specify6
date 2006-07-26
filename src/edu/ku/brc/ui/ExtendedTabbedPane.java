@@ -26,27 +26,41 @@ public class ExtendedTabbedPane extends JTabbedPane
     protected boolean   isOver     = false;
     protected ExtendedTabbedPane itself;
     
+    /**
+     * Constructor.
+     */
     public ExtendedTabbedPane()
     {
         super();
         init();
     }
 
+    /**
+     * Constructor.
+     * @param tabPlacement
+     */
     public ExtendedTabbedPane(int tabPlacement)
     {
         super(tabPlacement);
         init();
     }
 
+    /**
+     * @param tabPlacement
+     * @param tabLayoutPolicy
+     */
     public ExtendedTabbedPane(int tabPlacement, int tabLayoutPolicy)
     {
         super(tabPlacement, tabLayoutPolicy);
         init();
     }
     
+    /**
+     * 
+     */
     protected void init()
     {
-        setBackground(Color.WHITE);
+        //setBackground(Color.WHITE);
         
         itself = this;
         
@@ -89,12 +103,22 @@ public class ExtendedTabbedPane extends JTabbedPane
         
     }
     
+    /**
+     * 
+     */
     protected void closeCurrent()
     {
         
         this.remove(this.getSelectedComponent());
     }
     
+    /**
+     * @param g
+     * @param x
+     * @param y
+     * @param w
+     * @param h
+     */
     protected void drawCloser(final Graphics g, final int x, final int y, final int w, final int h)
     {
         closerRect.setBounds(x, y, w, h);
@@ -103,6 +127,9 @@ public class ExtendedTabbedPane extends JTabbedPane
         g.drawLine(x+w, y, x, y+h);
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.Component#paint(java.awt.Graphics)
+     */
     public void paint(Graphics g)
     {
         super.paint(g);

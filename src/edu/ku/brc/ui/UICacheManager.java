@@ -251,7 +251,7 @@ public class UICacheManager
      */
     public static ViewBasedDialogFactoryIFace getViewbasedFactory()
     {
-        if (UICacheManager.getViewbasedFactory() == null)
+        if (instance.viewbasedFactory == null)
         {
             throw new RuntimeException(MISSING_FACTORY_MSG);
         }
