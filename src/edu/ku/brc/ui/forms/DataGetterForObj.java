@@ -88,9 +88,9 @@ public class DataGetterForObj implements DataObjectGettable
                                 {
                                    return asg.getStrValue();
 
-                                } else if (asg.getDefinition().getDataType() == AttributeIFace.FieldType.MemoType.getType())
-                                {
-                                    return asg.getStrValue();
+                                //} else if (asg.getDefinition().getDataType() == AttributeIFace.FieldType.MemoType.getType())
+                                //{
+                                //    return asg.getStrValue();
 
                                 } else if (asg.getDefinition().getDataType() == AttributeIFace.FieldType.IntegerType.getType())
                                 {
