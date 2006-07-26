@@ -30,7 +30,7 @@ import edu.ku.brc.ui.CommandAction;
  *
  * Status: Finished
  
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  **
  * @author rods
  *
@@ -67,7 +67,7 @@ public class ContextMgr
     }
 
     /**
-     * Request for a change in context
+     * Request for a change in context.
      * @param task the task requesting the context
      */
     public static void requestContext(Taskable task)
@@ -90,7 +90,7 @@ public class ContextMgr
     }
 
     /**
-     * Registers a task
+     * Registers a task.
      * @param task the task to be register
      */
     public static void register(Taskable task)
@@ -113,7 +113,7 @@ public class ContextMgr
     }
 
     /**
-     * Returns a task by a given name
+     * Returns a task by a given name.
      * @param name name of task to be returned
      * @return Returns a task by a given name
      */
@@ -137,7 +137,7 @@ public class ContextMgr
     }
 
     /**
-     * Returns a task by a given Class
+     * Returns a task by a given Class.
      * @param theClass the class of task to be returned
      * @return Returns a task by a given Class
      */
@@ -161,7 +161,7 @@ public class ContextMgr
     }
 
     /**
-     * Register a service for other UI components to use
+     * Register a service for other UI components to use.
      * @param name the name of the service
      * @param tableId the table ID that the service is provided for
      * @param command the command to be sent
@@ -169,7 +169,11 @@ public class ContextMgr
      * @param tooltip the tooltip text for any UI
      * @return a service info object that provide the service
      */
-    public static ServiceInfo registerService(final String name, final int tableId, final CommandAction command, final Taskable task, final String tooltip)
+    public static ServiceInfo registerService(final String name, 
+                                              final int tableId, 
+                                              final CommandAction command, 
+                                              final Taskable task, 
+                                              final String tooltip)
     {
         ServiceInfo serviceInfo = new ServiceInfo(name, tableId, command, task, tooltip);
         instance.services.put(serviceInfo.getHashKey(), serviceInfo);

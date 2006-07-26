@@ -23,7 +23,7 @@ import javax.swing.JTabbedPane;
  * The MainPanel contains a splitter that divdes the window into two parts, the NavBox area and the TabbedPane area.<br><br>
  * The NavBox area is managed by the NavBoxMgr and the Sub pane area is managed by the SubPaneMgr.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -59,7 +59,7 @@ public class MainPanel extends JSplitPane
     }
     
     /**
-     * Enables the tab place to be set externally (like from prefs)
+     * Enables the tab place to be set externally (like from prefs).
      * @param placement the placement of the tabs Top, Bottom, Left or Right (SwingConstants)
      */
     public void setTabPlacement(int placement)
@@ -68,30 +68,34 @@ public class MainPanel extends JSplitPane
     }
     
     /**
-     * Adds a panel to the tab control and then the panel is asked to regiester all of it's Command tabs
-     * @param comp the component being added
-     * @return the same panel
+     * Adds a panel to the tab control and then the panel is asked to regiester all of it's Command tabs.
+     * @param subpanel the component being added
+     * @return the same subpanel
      */
-    public JComponent addSubPanel(SubPaneIFace comp)
+    public JComponent addSubPanel(final SubPaneIFace subpanel)
     {
-        subPaneMgr.addPane(comp);
+        subPaneMgr.addPane(subpanel);
         
         navBoxMgr.invalidate();
         subPaneMgr.invalidate();
 
-        return comp.getUIComponent();
+        return subpanel.getUIComponent();
     }
     
     /**
-     * Removes a Panel from the Tab control, the Panel is then asked to un register it's Command Tabs (boxes)
-     * @param comp
+     * Removes a Panel from the Tab control, the Panel is then asked to un register it's Command Tabs (boxes).
+     * @param subpanel the subpanel to be removed
      */
-    public void removeSubPanel(SubPaneIFace comp)
+    public void removeSubPanel(final SubPaneIFace subpanel)
     {
-        subPaneMgr.removePane(comp);
+        subPaneMgr.removePane(subpanel);
     }
     
-    public void showPane(String name)
+    /**
+     * Show subpane by name
+     * @param name the name of the subpane
+     */
+    public void showPane(final String name)
     {
         subPaneMgr.showPane(name);
     }

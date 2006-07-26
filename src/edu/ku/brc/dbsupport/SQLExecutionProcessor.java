@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
  * Constructs a an object to execute an SQL staement and then notify the listener and it is done. Any exception in the
  * SQL processing are passed back to the listener instead of being thrown. This class is running in its own thread.
  
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  **
  * @author rods
  */
@@ -44,7 +44,7 @@ public class SQLExecutionProcessor implements Runnable
     protected boolean              isAutoCloseConnection = true;
 
     /**
-     * Constructs a an object to execute an SQL staement and then notify the listener
+     * Constructs a an object to execute an SQL staement and then notify the listener.
      * @param listener the listener
      * @param sqlStr the SQL statement to be executed.
      */
@@ -55,7 +55,7 @@ public class SQLExecutionProcessor implements Runnable
     }
 
     /**
-     * Constructs a an object to execute an SQL staement and then notify the listener
+     * Constructs a an object to execute an SQL staement and then notify the listener.
      * @param listener the listener
      * @param sqlStr the SQL statement to be executed.
      */
@@ -79,13 +79,13 @@ public class SQLExecutionProcessor implements Runnable
      * Sets whether the connection and statement should be automatically close.
      * @param isAutoCloseConnection true - auto close, false do not auto close
      */
-    public void setAutoCloseConnection(boolean isAutoCloseConnection)
+    public void setAutoCloseConnection(final boolean isAutoCloseConnection)
     {
         this.isAutoCloseConnection = isAutoCloseConnection;
     }
 
     /**
-     * trim the string of all whitespace and tabs
+     * trim the string of all whitespace and tabs.
      * @param str the string to be trimmed
      * @return returns trimmed string
      */
@@ -95,7 +95,7 @@ public class SQLExecutionProcessor implements Runnable
     }
 
     /**
-     * Sets a new SQL string
+     * Sets a new SQL string.
      * @param sqlStr the SQL string
      */
     public void setSqlStr(String sqlStr)
@@ -104,7 +104,7 @@ public class SQLExecutionProcessor implements Runnable
     }
 
     /**
-     * Close the DB Connection for this SQL statement
+     * Close the DB Connection for this SQL statement.
      *
      */
     public void close()
@@ -130,7 +130,7 @@ public class SQLExecutionProcessor implements Runnable
      }
 
     /**
-     * Close the DB Connection for this SQL statement
+     * Close the DB Connection for this SQL statement.
      *
      */
     public void closeStatement()
@@ -150,7 +150,7 @@ public class SQLExecutionProcessor implements Runnable
      }
 
     /**
-     * Starts the thread to make the SQL call
+     * Starts the thread to make the SQL call.
      *
      */
     public void start()
@@ -160,7 +160,7 @@ public class SQLExecutionProcessor implements Runnable
     }
 
     /**
-     * Stops the thread making the call
+     * Stops the thread making the call.
      *
      */
     public synchronized void stop()
@@ -174,7 +174,7 @@ public class SQLExecutionProcessor implements Runnable
     }
 
     /**
-     * Creates a connection, makes the call and returns the results
+     * Creates a connection, makes the call and returns the results.
      */
     public void run()
     {
@@ -228,14 +228,11 @@ public class SQLExecutionProcessor implements Runnable
     }
 
     /**
-     *
-     * @return the java.sqlConnection object
+     * Returns the java.sql.Connection object.
+     * @return the java.sql.Connection object.
      */
     public Connection getDbConnection()
     {
         return dbConnection;
     }
-
-
-
 }

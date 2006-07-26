@@ -21,7 +21,7 @@ import edu.ku.brc.af.core.Taskable;
  * This base class implements the Chartable interface 
  * that enables derived classes to easily accept and have access to information needed to decorate or describe the chart.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -38,6 +38,11 @@ public class ChartPane extends BaseSubPane implements Chartable
     protected String  yAxisTitle  = "";
     protected boolean isVertical  = true;
     
+    /**
+     * A generic Chart Pane contructor.
+     * @param name the name of the subpane
+     * @param task the owning task
+     */
     public ChartPane(final String name, 
                      final Taskable task)
     {

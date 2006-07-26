@@ -18,7 +18,7 @@ package edu.ku.brc.dbsupport;
 /**
  * Interface that supports it processing through a QueryResultsHandlerIFace
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -26,14 +26,14 @@ package edu.ku.brc.dbsupport;
 public interface QueryResultsProcessable
 {
     /**
-     * Sets the handler into the object
+     * Sets the handler into the object.
      * @param handler the new handler
      */
     public void setHandler(final QueryResultsHandlerIFace handler);
     
     /**
-     * Returns the current handler used to get the results and process them
-     * @return Returns the current handler used to get the results and process them
+     * Returns the current handler used to get the results and process them.
+     * @return the current handler used to get the results and process them
      */
     public QueryResultsHandlerIFace getHandler();
     

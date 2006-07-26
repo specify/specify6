@@ -41,9 +41,9 @@ import edu.ku.brc.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.ui.IconManager;
 
 /**
- * Creates a pane that can listener for Query Results and then create a Pie Chart
+ * Creates a pane that can listener for Query Results and then create a Pie Chart.
  
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  **
  * @author rods
  *
@@ -63,6 +63,7 @@ public class PieChartPane extends ChartPane implements QueryResultsListener, Que
 
 
     /**
+     * Constructor.
      * @param name name of pane
      * @param task the owning task
      */
@@ -203,8 +204,4 @@ public class PieChartPane extends ChartPane implements QueryResultsListener, Que
     {
 
     }
-
-
-
-
 }

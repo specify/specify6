@@ -14,7 +14,6 @@ import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.tasks.StatsTask;
 import edu.ku.brc.dbsupport.CustomQuery;
-import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.PairsMultipleQueryResultsHandler;
 import edu.ku.brc.dbsupport.PairsSingleQueryResultsHandler;
 import edu.ku.brc.dbsupport.QueryResultsContainer;
@@ -136,6 +135,24 @@ public class StatsMgr
         qrc.add(new QueryResultsDataObj(descRow, descCol));
         qrc.add(new QueryResultsDataObj(valueRow, valueCol));
     }
+    
+    /**
+     * Creates a custom class instance
+     * @param className
+     * @return
+     * @throws ClassNotFoundException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
+    public static CustomQuery createCustomQuery(final String className) throws ClassNotFoundException, IllegalAccessException, InstantiationException
+    {
+        Object customQuery = Class.forName(className).newInstance();
+        if (customQuery instanceof CustomQuery)
+        {
+            return (CustomQuery)customQuery;
+        }
+        throw new RuntimeException("Requested class ["+className+"] does not support the CustomQuery interface!");
+    }
 
     /**
      * Creates a chart from an XML definition. The query may be defined in the XML so it could be a custom query
@@ -194,7 +211,7 @@ public class StatsMgr
             {
                 try
                 {
-                    CustomQuery                      customQuery   = CustomQueryFactory.createCustomQuery(sqlElement.attributeValue("className"));
+                    CustomQuery                      customQuery   = createCustomQuery(sqlElement.attributeValue("className"));
                     PairsMultipleQueryResultsHandler multiplePairs = new PairsMultipleQueryResultsHandler();
                     qrProcessable.setHandler(multiplePairs);
 

@@ -19,9 +19,9 @@ import java.util.Map;
 /**
  * Class that defines a command that is issued by UI components in a Task's SubPane or from the side bar.
  * These commands are typically serviced by the task itself.
- 
- * @code_status Unknown (auto-generated)
- **
+ *
+ * @code_status Complete
+ *
  * @author rods
  *
  */
@@ -31,6 +31,12 @@ public class TaskCommandDef
     protected String name;
     protected Map<String, String> params;
 
+    /**
+     * Constructs a TaskCommand Definition.
+     * @param name the name of the command
+     * @param iconName the icon for the command (to be looked up in the IconManager by name)
+     * @param params a Hash Map of parameters
+     */
     public TaskCommandDef(final String name, final String iconName, final Map<String, String> params)
     {
         this.iconName = iconName;

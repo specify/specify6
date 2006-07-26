@@ -18,9 +18,12 @@ import java.util.Date;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 
 /**
- * Datamodel classes that represent Attributes for must implement this interface.
+ * Datamodel classes that represent Attributes for must implement this interface. 
+ * An attribute object can hold a single value of a certain type. The type of the value is defined
+ * by the AttributeDef object. The database class "should" enfore setting the correct type of value.
+ * For example, if the AttributeDef indicates the value is a string then it should only allow a string to be set.
  * 
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -34,8 +37,9 @@ public interface AttributeIFace
         FloatType(1),
         DoubleType(2),
         BooleanType(3),
-        StringType(4),
-        MemoType(5);
+        StringType(4);
+        //MemoType(5); // XXX Not sure if we can really support memo types (currently most of the attr tables do not)
+        //             // we should probably remove this or figure out how to enforce it.
         
         FieldType(final int ord)
         { 
@@ -48,32 +52,106 @@ public interface AttributeIFace
 
 
     /**
-     * 
+     * Returns the record id.
+     * @return the record id
      */
     public Integer getAttrId();
     
-    public void setAttrId(Integer attrId);
-    
+    /**
+     * Sets the record id.
+     * @param attrId
+     */
+    public void setAttrId(Integer attrId);  
 
+    /**
+     * Returns that if it is a string, otherwise null
+     * @return a value if it is a string, otherwise null
+     */
     public String getStrValue();
     
+    /**
+     * Sest the value as a string value.
+     * @param strValue the string value to be set
+     */
     public void setStrValue(String strValue);
     
+    /**
+     * Returns the value if it is a Int value.
+     * @return the Bool value
+     */
+    public Integer getIntValue();
+    
+    /**
+     * Sets the value to a Int value.
+     * @param value the Int value
+     */
+    public void setIntValue(Integer value);
+    
+    /**
+     * Returns the value if it is a Float value.
+     * @return the int value
+     */
+    public Float getFloatValue();
+    
+    /**
+     * Sets the value to a Float value.
+     * @param value the Float value
+     */
+    public void setFloatValue(Float value);
+    
+   /**
+     * Returns the value if it is a Bool value.
+     * @return the Bool value
+     */
+    public Boolean getBoolValue();
+    
+    /**
+     * Sets the value to a Bool value.
+     * @param value the Bool value
+     */
+    public void setBoolValue(Boolean value);
+    
 
+    /**
+     * Returns the value if it is a double value.
+     * @return the double value
+     */
     public Double getDblValue();
     
-    public void setDblValue(Double dblValue);
+     /**
+     * Sets the value to a double value.
+     * @param value the double value
+     */
+    public void setDblValue(Double value);
     
 
+    /**
+     * @return
+     */
     public Date getTimestampCreated();
     
+    /**
+     * @param timestampCreated
+     */
     public void setTimestampCreated(Date timestampCreated);
     
 
+    /**
+     * Returns the timestamp of the record (could be null for a new object).
+     * @return the timestamp of the record (could be null for a new object)
+     */
     public Date getTimestampModified();
     
+    /**
+     * Sets the timestamp.
+     * @param timestampModified the timestamp value
+     */
     public void setTimestampModified(Date timestampModified);
 
 
+    /**
+     * Returns the definition of the attribute
+     * @return the definition of the attribute
+     */
     public AttributeDef getDefinition();
 }

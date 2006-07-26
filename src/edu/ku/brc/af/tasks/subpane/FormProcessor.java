@@ -15,9 +15,9 @@
 package edu.ku.brc.af.tasks.subpane;
 
 /**
- * Objects implementing this interface can be used by the FormPane to perform processing
+ * Objects implementing this interface can be used by the FormPane to perform processing.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *

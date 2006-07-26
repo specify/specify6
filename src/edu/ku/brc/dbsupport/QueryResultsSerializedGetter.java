@@ -21,16 +21,13 @@ import java.util.Vector;
  * Processes a list of QueryResultsContainer objects (Note: Each QueryResultsContainer contains an SQL statement)
  * in serialized fashion;
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
  */
 public class QueryResultsSerializedGetter implements SQLExecutionListener
 {
-    // Static Data Members
-    // private static final Logger log = Logger.getLogger(QueryResultsSerializedGetter.class);
-    
     // Data Members
     protected SQLExecutionProcessor         sqlProc;
     protected Vector<QueryResultsContainer> qrcs        = new Vector<QueryResultsContainer>();
@@ -42,7 +39,7 @@ public class QueryResultsSerializedGetter implements SQLExecutionListener
     protected int                           currentProcessingIndex;
 
     /**
-     * Constructs a QueryResultsSerializedGetter for parallel processing
+     * Constructs a QueryResultsSerializedGetter for parallel processing.
      * @param listener the listener to be notified
      */
     public QueryResultsSerializedGetter(final QueryResultsListener listener)
@@ -52,7 +49,7 @@ public class QueryResultsSerializedGetter implements SQLExecutionListener
     }
     
     /**
-     * Constructs a QueryResultsSerializedGetter with option to specify what type of processing
+     * Constructs a QueryResultsSerializedGetter with option to specify what type of processing.
      * @param listener the listener to be notified
      * @param isSerialized indicates the type of processing to be done false - parallel, false - serialized
      */
@@ -62,7 +59,7 @@ public class QueryResultsSerializedGetter implements SQLExecutionListener
     }
     
     /**
-     * Adds a QueryResultsContainer and starts its execution on a separate thread 
+     * Adds a QueryResultsContainer and starts its execution on a separate thread.
      * @param qrc the container to be executed
      */
     public void add(final QueryResultsContainer qrc)
@@ -71,7 +68,7 @@ public class QueryResultsSerializedGetter implements SQLExecutionListener
     }
     
     /**
-     * Adds a QueryResultsContainer and starts its execution on a separate thread 
+     * Adds a QueryResultsContainer and starts its execution on a separate thread.
      * @param qrcs the collection of containers to be executed
      */
     public void add(final List<QueryResultsContainer> qrcs)
@@ -82,7 +79,7 @@ public class QueryResultsSerializedGetter implements SQLExecutionListener
     }
    
     /**
-     * Creates a SQLExec for the QueryResultsContainer and starts it up
+     * Creates a SQLExec for the QueryResultsContainer and starts it up.
      * @param qrc the container to be executed
      */
     protected void startContainer(final QueryResultsContainer qrc)
@@ -99,7 +96,7 @@ public class QueryResultsSerializedGetter implements SQLExecutionListener
     
     /**
      * Adds a QueryResultsContainer and starts its execution on a separate thread when startProcessing is true
-     * this will throw a runtime exception if the process is started twice
+     * this will throw a runtime exception if the process is started twice.
      * @param qrc the container to be executed
      * @param startProcessing true - starts processing, false - don't start processing yet
      */
@@ -122,7 +119,7 @@ public class QueryResultsSerializedGetter implements SQLExecutionListener
     }
     
     /**
-     * Returns a list of QueryResultsContainers
+     * Returns a list of QueryResultsContainers.
      * @return Returns a list of QueryResultsContainers
      */
     public List<QueryResultsContainer> getQueryResultsContainers()
@@ -132,7 +129,7 @@ public class QueryResultsSerializedGetter implements SQLExecutionListener
     
     /**
      * 
-     * Clears all data structures
+     * Clears all data structures.
      */
     public void clear()
     {

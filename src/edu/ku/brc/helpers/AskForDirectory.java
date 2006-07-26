@@ -25,7 +25,7 @@ import javax.swing.JOptionPane;
  
  * @code_status Unknown (auto-generated)
  **
- * @author rods <rods@ku.edu>
+ * @author rods
  */
 public class AskForDirectory
 {

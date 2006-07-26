@@ -24,7 +24,7 @@ package edu.ku.brc.dbsupport;
  * 
  * (NOTE: I removed a method to pass back a list of QueryResultsContainers, we may need ot add this back)
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *     
@@ -37,7 +37,7 @@ public interface QueryResultsHandlerIFace
     
     /**
      * Initializes the handler with a listener and a list of containers. The listener is notified when all the results
-     * are ready. (Note: Each QueryResultsContainer contains the SQL statement need to fill the attached QueryResuoltsDataObjects)
+     * are ready. (Note: Each QueryResultsContainer contains the SQL statement need to fill the attached QueryResuoltsDataObjects).
      * @param listener the listener to be notified
      * @param list the list of QueryResultsContainers to be queried for
      */
@@ -45,14 +45,14 @@ public interface QueryResultsHandlerIFace
     
     /**
       * Initializes the handler with a listener and a list of containers. The listener is notified when all the results
-     * are ready. (Note: Each QueryResultsContainer contains the SQL statement need to fill the attached QueryResuoltsDataObjects)
+     * are ready. (Note: Each QueryResultsContainer contains the SQL statement need to fill the attached QueryResuoltsDataObjects).
      * @param listener the listener to be notified
      * @param qrc the single container
      */
     public void init(final QueryResultsListener listener, final QueryResultsContainer qrc);
      
     /**
-     * This tells the handler to issue the Queries and wait for the results
+     * This tells the handler to issue the Queries and wait for the results.
      *
      */
     public void startUp();
@@ -63,7 +63,7 @@ public interface QueryResultsHandlerIFace
     
 
      /**
-      * This tells the handler to clean up any leftover data structure that are not longer needed
+      * This tells the handler to clean up any leftover data structure that are not longer needed.
       *
       */
      public void cleanUp();
@@ -71,18 +71,18 @@ public interface QueryResultsHandlerIFace
      /**
       * Returns the list of data Objects (String, Long, Float, Double, Ineger, etc.) from the one or more queries.
       * The order of the list is the same as the order of the QueryResultsContainer and it childeren (A flatten tree 
-      * processed left to right)
+      * processed left to right).
       * @return Returns the list of data Objects (String, Long, Float, Double, Ineger, etc.) from the one or more queries.
       * The order of the list is the same as the order of the QueryResultsContainer and it childeren (A flatten tree 
-      * processed left to right)
+      * processed left to right).
       */
      public java.util.List<Object> getDataObjects();
      
      /**
       * Returns true if the handler considers all the results to be in 'pairs' for example: name/value, 
-      * where the name is a string and the value can be any Numeric object
+      * where the name is a string and the value can be any Numeric object.
       * @return Return true if the handler considers all the results to be in 'pairs' for example: name/value, 
-      * where the name is a string and the value can be any Numeric object
+      * where the name is a string and the value can be any Numeric object.
       */
      public boolean isPairs();
     

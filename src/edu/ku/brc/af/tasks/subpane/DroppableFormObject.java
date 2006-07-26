@@ -18,9 +18,9 @@ import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.dnd.GhostDataAggregatable;
 
 /**
- * This Clads enables both data and the associated form information to be dropped.
+ * This class enables both data and the associated form information to be dropped.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -32,7 +32,7 @@ public class DroppableFormObject implements GhostDataAggregatable
     protected Object data;
     
     /**
-     * Constructor
+     * Constructor.
      * @param viewSetName the View Set name of the form
      * @param formId the form's ID within the view set
      * @param data the data associated with the form
@@ -64,6 +64,7 @@ public class DroppableFormObject implements GhostDataAggregatable
     //-------------------------------------------------
     //-- GhostDataAggregatable Interface
     //-------------------------------------------------
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.dnd.GhostDataAggregatable#getDataForClass(java.lang.Class)
      */

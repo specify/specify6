@@ -23,7 +23,7 @@ import javax.swing.JComponent;
  * An interface for all pane that want to participate in the "main" panel of the UI. SubPaneIFace are managed by the SubPaneMgr.
  * It is common for panes implementing the SubPaneIFace to be created by Taskables.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -31,44 +31,44 @@ import javax.swing.JComponent;
 public interface SubPaneIFace
 {
     /**
-     * Returns the name of the sub pane
+     * Returns the name of the sub pane.
      * @return Returns the name of the sub pane
      */
     public String getName();
     
     /**
-     * Sets a name
+     * Sets a name.
      * @param name the new name
      */
     public void setName(String name);
     
     /**
-     * Returns the title 
-     * @return Returns the title 
+     * Returns the title.
+     * @return the title 
      */
     public String getTitle();
     
     /**
-     * Returns the small icon used in the tab
-     * @return Returns the small icon used in the tab
+     * Returns the small icon used in the tab.
+     * @return the small icon used in the tab
      */
     public Icon getIcon();
     
     /**
-     * Returns the UI component of the pane
-     * @return Returns the UI component of the pane
+     * Returns the UI component of the pane.
+     * @return the UI component of the pane
      */
     public JComponent getUIComponent();
     
     /**
-     * Returns the task who owns this pane (needed for context)
-     * @return Returns the task who owns this pane (needed for context)
+     * Returns the task who owns this pane (needed for context).
+     * @return the task who owns this pane (needed for context)
      */
     public Taskable getTask();
     
     
     /**
-     * Tells the SubPane that it is about to be shown or hidden
+     * Tells the SubPane that it is about to be shown or hidden.
      * @param show true = show, false hide
      */
     public void showingPane(boolean show);

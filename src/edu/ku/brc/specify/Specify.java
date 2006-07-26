@@ -93,7 +93,7 @@ import edu.ku.brc.util.FileCache;
  
  * @code_status Unknown (auto-generated)
  **
- * @author rods <rods@ku.edu>
+ * @author rods
  */
 @SuppressWarnings("serial")
 public class Specify extends JPanel implements DatabaseLoginListener

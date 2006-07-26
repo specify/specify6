@@ -18,7 +18,7 @@ package edu.ku.brc.af.core;
  * Interface to notify folks when an SubPaneIFace is added or removed from the manager.
  * The most important notification is when a SubPane is closed and the task can be notified.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -26,20 +26,20 @@ package edu.ku.brc.af.core;
 public interface SubPaneMgrListener
 {
     /**
-     * Notication that a SubPane was added to the manager
+     * Notication that a SubPane was added to the manager.
      * @param subPane the subpane that was added
      */
     public void subPaneAdded(SubPaneIFace subPane);
     
     /**
-     * Notication that a SubPane was removed from the manager
+     * Notication that a SubPane was removed from the manager.
      * @param subPane the subpane that was removed
      */
     public void subPaneRemoved(SubPaneIFace subPane);
     
     
     /**
-     * Notication that a SubPane was removed from the manager
+     * Notication that a SubPane was removed from the manager.
      * @param subPane the subpane that was removed
      */
     public void subPaneShown(SubPaneIFace subPane);

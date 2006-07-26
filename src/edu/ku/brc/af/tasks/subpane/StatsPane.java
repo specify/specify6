@@ -45,7 +45,7 @@ import edu.ku.brc.stats.StatsMgr;
 /**
  * A class that loads a page of statistics from an XML description
  
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  **
  * @author rods
  *
@@ -65,7 +65,7 @@ public class StatsPane extends BaseSubPane
     protected int SPACING        = 35;
 
     /**
-     * Creates a StatsPane
+     * Creates a StatsPane.
      * @param name name of pane
      * @param task the owning task
      * @param fileName the name of the file that contains the configration

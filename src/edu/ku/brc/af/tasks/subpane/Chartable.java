@@ -16,9 +16,9 @@ package edu.ku.brc.af.tasks.subpane;
 
 
 /**
- * Interface that enables chart speciic informations to be set
+ * Interface that enables chart speciic informations to be set into the Chartable.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  * 
@@ -27,25 +27,25 @@ public interface Chartable
 {
 
     /**
-     * Sets the title of the chart
+     * Sets the title of the chart.
      * @param title the title
      */
     public void setTitle(final String title);
     
     /**
-     * Sets the X Axis label if applicable
+     * Sets the X Axis label if applicable.
      * @param title the title
      */
     public void setXAxis(final String title);
     
     /**
-     * Sets the Y Axis label if applicable
+     * Sets the Y Axis label if applicable.
      * @param title the title
      */
     public void setYAxis(final String title);
     
     /** 
-     * Set whether the chart is vertical or horizontal (vertical is the default)
+     * Set whether the chart is vertical or horizontal (vertical is the default).
      * @param isVertical true if vertical 
      */
     public void setVertical(boolean isVertical);

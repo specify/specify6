@@ -25,9 +25,9 @@ import java.util.Vector;
 import edu.ku.brc.ui.Trash;
 
 /**
- * The layout manager for laying out NavBoxes in a vertical fashion (only)
+ * The layout manager for laying out NavBoxes in a vertical fashion (only).
  
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  **
  * @author rods
  *
@@ -43,7 +43,7 @@ public class NavBoxLayoutManager implements LayoutManager, LayoutManager2
     /**
      * Contructs a layout manager for layting out NavBoxes. It lays out all the NavBoxes vertically
      * and uses the 'ySeparator' as the spacing in between the boxes. It uses borderPadding as a 'margin'
-     * aroound all the boxes
+     * aroound all the boxes.
      * @param borderPadding the margin around the boxes
      * @param ySeparation the vertical separation inbetween the boxes.
      */
@@ -125,7 +125,7 @@ public class NavBoxLayoutManager implements LayoutManager, LayoutManager2
     /**
      * Calculates the preferred size of the contain. It lays out all the NavBoxes vertically
      * and uses the 'ySeparator' as the spacing in between the boxes. It uses borderPadding as a 'margin'
-     * around all the boxes
+     * around all the boxes.
      *
      */
     protected void calcPreferredSize()
@@ -142,7 +142,7 @@ public class NavBoxLayoutManager implements LayoutManager, LayoutManager2
     }
 
     /**
-     * Return the list of all the components that have been added to the alyout manager
+     * Return the list of all the components that have been added to the alyout manager.
      * @return the list of all the components that have been added to the alyout manager
      */
     public List<Component> getComponentList()
@@ -150,15 +150,21 @@ public class NavBoxLayoutManager implements LayoutManager, LayoutManager2
         return comps;
     }
 
-    /*
-     * Remove all the componets that have been added to the layout manager
+    /**
+     * Remove all the componets that have been added to the layout manager.
      */
     public void removeAll()
     {
         comps.clear();
     }
 
+    //----------------------
     // LayoutManager2
+    //----------------------
+    
+    /* (non-Javadoc)
+     * @see java.awt.LayoutManager2#addLayoutComponent(java.awt.Component, java.lang.Object)
+     */
     public void  addLayoutComponent(Component comp, Object constraints)
     {
         if (comp == null)
@@ -167,19 +173,35 @@ public class NavBoxLayoutManager implements LayoutManager, LayoutManager2
         }
         comps.addElement(comp);
     }
+    
+    /* (non-Javadoc)
+     * @see java.awt.LayoutManager2#getLayoutAlignmentX(java.awt.Container)
+     */
     public float   getLayoutAlignmentX(Container target)
     {
         return (float)0.0;
     }
+    
+    /* (non-Javadoc)
+     * @see java.awt.LayoutManager2#getLayoutAlignmentY(java.awt.Container)
+     */
     public float   getLayoutAlignmentY(Container target)
     {
         return (float)0.0;
     }
+    
+    /* (non-Javadoc)
+     * @see java.awt.LayoutManager2#invalidateLayout(java.awt.Container)
+     */
     public void invalidateLayout(Container target)
     {
         preferredSize.setSize(0, 0);
         calcPreferredSize();
     }
+    
+    /* (non-Javadoc)
+     * @see java.awt.LayoutManager2#maximumLayoutSize(java.awt.Container)
+     */
     public Dimension maximumLayoutSize(Container target)
     {
         calcPreferredSize();

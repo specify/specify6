@@ -18,7 +18,7 @@ package edu.ku.brc.dbsupport;
  * Interface to notify the object that a query has completed. When it finishes successfully the resulset gets passed back.
  * when it finishes in error the exception gets passed as a parameter.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -26,14 +26,14 @@ package edu.ku.brc.dbsupport;
 public interface SQLExecutionListener
 {
     /**
-     * Notification that the process is done and has finished without exception
+     * Notification that the process is done and has finished without exception.
      * @param process the calling processor
      * @param resultSet the resultset of the query
      */
     public void exectionDone(final SQLExecutionProcessor process, final java.sql.ResultSet resultSet);
     
     /**
-     * Notification that the process was done and completed with an exception
+     * Notification that the process was done and completed with an exception.
      * @param process the calling processor
      * @param ex the exception of what went wrong
      */

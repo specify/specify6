@@ -23,12 +23,11 @@ import java.util.Vector;
  * instead of having to understand how to traverse multiple QRCs and QRCDOs.
  * (This class morphed so it is missed named)
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
  */
-
 public class PairsMultipleQueryResultsHandler implements QueryResultsHandlerIFace
 {
     private QueryResultsGetter                    getter   = null;

@@ -19,7 +19,7 @@ import javax.swing.JComponent;
 /**
  * Interface of an item to be organized by a NavBox
  
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  **
  * @author rods
  *
@@ -27,25 +27,26 @@ import javax.swing.JComponent;
 public interface NavBoxItemIFace
 {
     /**
-     * Returns the localized title of the item (it can be used for look ups by others)
+     * Returns the localized title of the item (it can be used for look ups by others).
      * @return the localized title
      */
     public String getTitle();
 
     /**
-     * Return the UI Component that is used to display the contents of the navigation box
-     * @return Return the UI Component that is used to display the contents of the navigation box
+     * Return the UI Component that is used to display the contents of the navigation box.
+     * @return the UI Component that is used to display the contents of the navigation box
      */
     public JComponent getUIComponent();
 
     /**
-     * Sets data into the Item
+     * Sets data into the Item.
      * @param data the data (anything really)
      */
     public void setData(Object data);
 
     /**
-     * @return the data
+     * Returns the data object.
+     * @return the data object
      */
     public Object getData();
 

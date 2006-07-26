@@ -28,7 +28,7 @@ import edu.ku.brc.ui.Trash;
  * A singleton that manages a list of NavBoxIFace items. The NavBoxIFace are layed out using a manager 
  * which typically lays them out in a vertical fashion. A Taskable object vends one or more NavBoxes.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
   * @author rods
  *
@@ -61,6 +61,7 @@ public class NavBoxMgr extends JPanel
     }
     
     /**
+     * Returns the TrashCan Object.
      * @return the trash can object
      */
     public static Trash getTrash()
@@ -68,13 +69,17 @@ public class NavBoxMgr extends JPanel
         return trash;
     }
     
+    /**
+     * Sets the JSplitPane.
+     * @param splitPane the JSplitPane
+     */
     public void setSplitPane(final JSplitPane splitPane)
     {
         this.splitPane = splitPane;
     }
     
     /**
-     * Returns instance of MavBoxMgr
+     * Returns instance of MavBoxMgr.
      * @return returns a NavBoxMgr singleton instance
      */
     public static NavBoxMgr getInstance()
@@ -83,7 +88,7 @@ public class NavBoxMgr extends JPanel
     }
     
     /**
-     * Registers a Task's NavBoxes into the Manager
+     * Registers a Task's NavBoxes into the Manager.
      * @param task a task to be managed, this means we ask the task for the list of NavBoxes and then does a layout
      */
     public static void register(final Taskable task)
@@ -109,7 +114,7 @@ public class NavBoxMgr extends JPanel
     }
     
     /**
-     * Adjust the split for when things are added (or removed)
+     * Adjust the split for when things are added (or removed).
      *
      */
     public void adjustSplitter()
@@ -127,7 +132,7 @@ public class NavBoxMgr extends JPanel
     }
     
     /**
-     * Registers a Task's NavBoxes into the Manager
+     * Registers a Task's NavBoxes into the Manager.
      * @param task the task to be registered 
      */
     public static void unregister(final Taskable task)
@@ -142,7 +147,7 @@ public class NavBoxMgr extends JPanel
     }
     
     /**
-     * Returns whether a box with a unique name has already been registered
+     * Returns whether a box with a unique name has already been registered.
      * @param name the name of the box
      * @return Returns whether a box with a unique name has already been registered
      */
@@ -197,7 +202,7 @@ public class NavBoxMgr extends JPanel
     }
     
     /**
-     * Adds a box to the manager (all adds are 'appends' at the moment)
+     * Adds a box to the manager (all adds are 'appends' at the moment).
      * @param box the box to be added
      */
     public void addBox(final NavBoxIFace box)
@@ -206,7 +211,7 @@ public class NavBoxMgr extends JPanel
     } 
     
     /**
-     * Removes a box from the manager
+     * Removes a box from the manager.
      * @param box the box to be remove
      * @param notify true - throws exception if it can't be found, false - ignore not found
      */

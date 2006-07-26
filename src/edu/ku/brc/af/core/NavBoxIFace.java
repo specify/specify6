@@ -22,7 +22,7 @@ import javax.swing.JComponent;
  * Describes a Navigation Box (container) of objects. The objects can be commands, queries, 
  * recordsets, anything that can be shown and acts or acts upon.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -30,51 +30,51 @@ import javax.swing.JComponent;
 public interface NavBoxIFace
 {
     /**
-     * Global   - All Users can see items in a 'global' tab <br>
+     * Global   - All Users can see items in a 'global' tab. <br>
      * Local    - Local to current User
      * SubPanel - Owned and managed by a SubPanel
      */
     public enum Scope {Global, Local, SubPanel}
     
     /**
-     * Returns the scope of the tab
+     * Returns the scope of the tab.
      * @return returns the scope of the tab
      */
     public Scope getScope();
     
     /**
-     * 
-     * @param scope
+     *  Sets the scrope.
+     * @param scope the new cope
      */
     public void setScope(final Scope scope);
     
     /**
-     * Returns the name of the tab (localized)
+     * Returns the name of the tab (localized).
      * @return the localized name of the tab
      */
     public String getName();
     
     /**
-     * 
-     * @param name
+     * Sets the name
+     * @param name the new name
      */
     public void setName(final String name);
     
     /**
-     * Returns the UI component for this tab
-     * @return returns the UI component for this tab
+     * Returns the UI component for this tab.
+     * @return the UI component for this tab
      */
     public JComponent getUIComponent();
     
     /**
-     * Sets the manager into the object
+     * Sets the manager into the object.
      * @param mgr the NavBox Manager
      */
     public void setMgr(NavBoxMgr mgr);
     
     /**
-     * Returns the list of NavBoxItemIfaces
-     * @return Returns the list of NavBoxItemIfaces
+     * Returns the list of NavBoxItemIfaces.
+     * @return the list of NavBoxItemIfaces
      */
     public List<NavBoxItemIFace> getItems();
     

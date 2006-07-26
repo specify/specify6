@@ -15,15 +15,12 @@
 
 package edu.ku.brc.af.tasks.subpane;
 
-//import org.apache.log4j.Logger;
-//import org.apache.commons.logging.LogFactory;
-
 import edu.ku.brc.af.core.Taskable;
 
 /**
- * This pane will be responsible for creating forms
+ * This pane will be responsible for creating forms, but at the moment I am not sure what it really does.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Code Freeze
  * 
  * @author rods
  * 
@@ -31,11 +28,10 @@ import edu.ku.brc.af.core.Taskable;
 @SuppressWarnings("serial")
 public class DataEntryPane extends BaseSubPane
 {
-    //private static final Logger log = Logger.getLogger(DataEntryPane.class);
-
     /**
-     * 
-     *
+     * The data entry pane.
+     * @param name the name of the subpane
+     * @param task the owning task
      */
     public DataEntryPane(final String name, 
                          final Taskable task)

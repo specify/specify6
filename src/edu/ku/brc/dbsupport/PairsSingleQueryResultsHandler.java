@@ -20,9 +20,10 @@ import java.util.Vector;
 
 /**
  * This class processes a single container and places all the results in a collection
- * (This class morphed so it is missed named)
+ * (This class morphed so it is missed named) 
+ * (This class needs to be explained better - thus Code Freeze).
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Code Freeze
  * 
  * @author rods
  *

@@ -10,7 +10,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
  
  * @code_status Unknown (auto-generated)
  **
- * @author rods <rods@ku.edu>
+ * @author rods
  */
 public class InitializeData 
 {

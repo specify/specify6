@@ -23,7 +23,7 @@ import javax.swing.Icon;
  * Interface for any task in the system, most of the methods are "getters" that
  * enable the Task to play nice within the system.
  
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  **
  * @author rods
  *
@@ -31,26 +31,26 @@ import javax.swing.Icon;
 public interface Taskable
 {
     /**
-     * Returns all a collection of Nav Boxes for the NavBox PAne
+     * Returns all a collection of Nav Boxes for the NavBox Pane.
      * @return a collection of Nav Boxes
      */
     public List<NavBoxIFace> getNavBoxes();
 
     /**
-     * Return the icon that represents the task
-     * @return Return the icon that represents the task
+     * Return the icon that represents the task.
+     * @return the icon that represents the task
      */
     public Icon getIcon();
 
     /**
-     * Returns the name of the task (NOT Localized)
-     * @return Returns the name of the task (NOT Localized)
+     * Returns the name of the task (NOT Localized).
+     * @return the name of the task (NOT Localized)
      */
     public String getName();
 
     /**
-     * Returns the title of the task (Localized)
-     * @return Returns the title of the task (Localized)
+     * Returns the title of the task (Localized).
+     * @return the title of the task (Localized)
      */
     public String getTitle();
 
@@ -62,7 +62,7 @@ public interface Taskable
     public void initialize();
 
     /**
-     * Requests the context for this task
+     * Requests the context for this task.
      *
      */
     public void requestContext();

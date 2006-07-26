@@ -22,7 +22,7 @@ import java.awt.Dimension;
  
  * @code_status Unknown (auto-generated)
  **
- * @author rods <rods@ku.edu>
+ * @author rods
  */
 
 public interface ExternalImageFileIFace

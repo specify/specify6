@@ -22,7 +22,7 @@ import org.hibernate.Query;
 /**
  * Class that enables a consumer (usually a form) to easily page through a set of resultsList.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *

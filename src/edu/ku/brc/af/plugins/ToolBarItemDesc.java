@@ -20,7 +20,7 @@ import java.awt.Component;
 /**
  * Describes a Toolbar item for a plugin.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -46,7 +46,7 @@ public class ToolBarItemDesc
 
     /**
      * Constructs a toolbar item desc with the component that will be placed in the toolbar and gives its position.
-     * @param comp the component
+     * @param comp the component.
      * @param pos the position in the toolbar or related to the other items
      * @param index the index of where to place the item
      */
@@ -58,6 +58,7 @@ public class ToolBarItemDesc
     }
 
     /**
+     * Returns the component.
      * @return the component
      */
     public Component getComp()

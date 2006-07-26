@@ -16,37 +16,22 @@ package edu.ku.brc.af.tasks;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.af.tasks.subpane.StatsPane;
 import edu.ku.brc.af.plugins.MenuItemDesc;
 import edu.ku.brc.af.plugins.ToolBarItemDesc;
-import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.af.tasks.subpane.StatsPane;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.ImageSwirlPanel;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 
 /**
- * This task will enable the user to create queries, save them and execute them.
+ * This task reads an xml definition describing the content and the layout of statistics for the
+ * startup page of the application.
  
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  **
  * @author rods
  *
@@ -74,7 +59,7 @@ public class StartUpTask extends BaseTask
     }
 
     /**
-     * Creates the StartUP Statistics pane and removes the blank pane
+     * Creates the StartUP Statistics pane and removes the blank pane.
      */
     public void createStartUpStatPanel()
     {
@@ -85,6 +70,7 @@ public class StartUpTask extends BaseTask
     }
 
     /**
+     * Returns the blank SubPane or null.
      * @return the blank SubPane or null
      */
     public SubPaneIFace getBlankPane()
@@ -101,91 +87,9 @@ public class StartUpTask extends BaseTask
         //System.out.println(blankPanel);
         //return blankPanel;
 
-        // XXX Real way
-        if (true)
-        {
-            StatsPane statPane = new StatsPane(title, this, "startup_panel.xml", true, null);
-            return statPane;
-
-        } else
-        {
-            if (true)
-            {
-                java.io.File  f = new java.io.File(".");
-                SimpleDescPane sdp = new SimpleDescPane("", this, "");
-                sdp.setBackground(Color.WHITE);
-                sdp.setOpaque(true);
-                sdp.removeAll();
-                //sdp.setLayout(new BorderLayout());
-                ImageSwirlPanel isp = new ImageSwirlPanel(f.getAbsolutePath() +  File.separator + "splashfish400.png", 4, 1000);
-                isp.setBackground(Color.WHITE);
-                isp.setOpaque(true);
-
-                PanelBuilder builder = new PanelBuilder(new FormLayout("C:P:G", "p,p,p"), sdp);
-                //PanelBuilder builder = new PanelBuilder(new FormLayout("c:p", "c:p"), sdp);
-                CellConstraints cc = new CellConstraints();
-                builder.add(isp, cc.xy(1,1));
-
-                builder.add(new JLabel(new ImageIcon(IconManager.getImagePath("specify_splash.gif"))), cc.xy(1,3));
-
-                isp.addMouseListener(new MouseAdapter()
-                    {
-                    public void mouseClicked(MouseEvent ev)
-                    {
-                        if (!ev.isShiftDown())
-                        {
-                            ((ImageSwirlPanel)ev.getSource()).startAnimation();
-
-                        } else
-                        {
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run()
-                                {
-                                    switchToDemoStart();
-                                }
-                            });
-                        }
-                    }
-                    });
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run()
-                    {
-                        createStats();
-                    }
-                });
-                return sdp;
-
-            } else
-            {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run()
-                    {
-                        createStats();
-                    }
-                });
-            }
-
-
-            blankPanel = new DemoPane("", this, "", this);
-            return blankPanel;
-
-        }
-
-
+        StatsPane statPane = new StatsPane(title, this, "startup_panel.xml", true, null);
+        return statPane;
     }
-    // XXX Demo only
-    protected void createStats()
-    {
-        statPane = new StatsPane(title, this, "startup_panel.xml", true, null);
-    }
-
-    protected void switchToDemoStart()
-    {
-        SubPaneMgr.getInstance().removePane(SubPaneMgr.getInstance().getCurrentSubPane());
-        blankPanel = new DemoPane("", this, "", this);
-        SubPaneMgr.getInstance().addPane(blankPanel);
-    }
-
 
     //-------------------------------------------------------
     // Plugin Interface
@@ -228,70 +132,6 @@ public class StartUpTask extends BaseTask
     public Class getTaskClass()
     {
         return this.getClass();
-    }
-
-
-    // XXX For Demo only
-    protected void swapPanes()
-    {
-        SubPaneMgr.getInstance().addPane(statPane);
-        SubPaneMgr.getInstance().removePane(blankPanel);
-    }
-
-    class DemoPane extends SimpleDescPane
-    {
-        String[]    imgNames = {"directorsview.png", "accessions.png"};
-        ImageIcon[] imgs     = {null, null};
-
-        protected int currentStep = 0;
-        protected JLabel imgLabel;
-        protected StartUpTask startUpTask;
-
-
-        public DemoPane(final String name,
-                        final Taskable task,
-                        final String desc,
-                        final StartUpTask startUpTask)
-        {
-            super(name, task, desc);
-            this.startUpTask = startUpTask;
-
-            java.io.File  f = new java.io.File(".");
-            for (int i=0;i<imgNames.length;i++)
-            {
-                imgs[i] = new ImageIcon(f.getAbsolutePath() +  File.separator + imgNames[i]);
-
-            }
-            removeAll();
-            imgLabel = new JLabel(imgs[currentStep]);
-            add(imgLabel, BorderLayout.CENTER);
-
-            addMouseListener(new MouseAdapter()
-                    {
-                    public void mouseClicked(MouseEvent ev)
-                    {
-                        if (ev.isShiftDown())
-                        {
-                            if (currentStep > 0)
-                            {
-                                currentStep--;
-                                imgLabel.setIcon(imgs[currentStep]);
-                            }
-                        } else
-                        {
-                            if (currentStep < imgNames.length-1)
-                            {
-                                currentStep++;
-                                imgLabel.setIcon(imgs[currentStep]);
-
-                            } else if (currentStep == imgNames.length-1)
-                            {
-                                startUpTask.swapPanes();
-                            }
-                        }
-                    }
-                    });
-        }
     }
 
 }

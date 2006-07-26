@@ -58,7 +58,7 @@ import edu.ku.brc.ui.dnd.GhostActionable;
  * Abstract class to provide a base level of functionality for implementing a task.
  * It fully implements Taskable and partially implements TaskPluginable.
  
- * @code_status Unknown (auto-generated)
+ * @code_status Code Freeze
  **
  * @author rods
  *
@@ -162,8 +162,8 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     /**
      * Helper method to add an item to the navbox.
      * @param navBox navBox
-     * @param labelText navBox
-     * @param cmdGroup navBox
+     * @param labelText labelText
+     * @param cmdGroup cmdGroup
      * @param cmdStr cmdStr
      * @param data data
      * @return btn

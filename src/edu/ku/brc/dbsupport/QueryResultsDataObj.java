@@ -19,7 +19,7 @@ package edu.ku.brc.dbsupport;
  * A class that describes where the the desired piece of data is located (row/col) in the results set 
  * and whether it has been processed, meaning: does it have it's value yet?
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -32,9 +32,9 @@ public class QueryResultsDataObj
     protected boolean isProcessable = true;
     
     /**
-     * COnstructs with row and column
-     * @param row
-     * @param col
+     * Constructs with row and column.
+     * @param row the row it came from
+     * @param col the column it came from
      */
     public QueryResultsDataObj(int row, int col)
     {
@@ -53,7 +53,7 @@ public class QueryResultsDataObj
     }
 
     /**
-     * Returns the processed result
+     * Returns the processed result.
      * @return Returns the processed result
      */
     public Object getResult()
@@ -62,7 +62,7 @@ public class QueryResultsDataObj
     }
 
     /**
-     * Sets the processed results
+     * Sets the processed results.
      * @param result the new value
      */
     public void setResult(Object result)
@@ -71,7 +71,7 @@ public class QueryResultsDataObj
     }
 
     /**
-     * Returns the column wher the data is located in the resultset
+     * Returns the column wher the data is located in the resultset.
      * @return Returns the column where the data is located in the resultset
      */
     public int getCol()
@@ -80,7 +80,7 @@ public class QueryResultsDataObj
     }
 
     /**
-     * Sest the column of where the data is located
+     * Sest the column of where the data is located.
      * @param col the column
      */
     public void setCol(int col)
@@ -89,7 +89,7 @@ public class QueryResultsDataObj
     }
 
     /**
-     * Returns the row wher the data is located in the resultset
+     * Returns the row where the data is located in the resultset.
      * @return Returns the row where the data is located in the resultset
      */
     public int getRow()
@@ -98,8 +98,8 @@ public class QueryResultsDataObj
     }
 
     /**
-     * Sest the row of where the data is located
-     * @param row the column
+     * Sest the row of where the data is located.
+     * @param row the row
      */
     public void setRow(int row)
     {
@@ -107,7 +107,7 @@ public class QueryResultsDataObj
     }
 
     /**
-     * Returns whether it has been processed or not
+     * Returns whether it has been processed or not.
      * @return Returns whether it has been processed or not
      */
     public boolean isProcessable()
@@ -116,7 +116,7 @@ public class QueryResultsDataObj
     }
     
     /**
-     * Clear the result pointer so we can prevent memory leaks
+     * Clear the result pointer so we can prevent memory leaks.
      *
      */
     public void clear()

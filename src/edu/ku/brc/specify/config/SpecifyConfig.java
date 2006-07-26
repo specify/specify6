@@ -34,7 +34,7 @@ import edu.ku.brc.specify.extfilerepos.impl.ExternalFileRepository;
  
  * @code_status Unknown (auto-generated)
  **
- * @author rods <rods@ku.edu>
+ * @author rods
  */
 public class SpecifyConfig
 {

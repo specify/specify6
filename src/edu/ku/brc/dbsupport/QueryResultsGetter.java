@@ -22,16 +22,13 @@ import java.util.Vector;
  * SQLExecutionProcessors for each Container and has them execute all the Queries in parallel. If one returns an error
  * then the listener is notified immediately, otherwise the listener is notified when they all complete.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
  */
 public class QueryResultsGetter
 {
-    // Static Data Members
-    //private static final Logger log = Logger.getLogger(QueryResultsGetter.class);
-    
     // Data Members
     protected Vector<SQLExec>               sqlExecList = new Vector<SQLExec>();
     protected Vector<QueryResultsContainer> qrcs        = new Vector<QueryResultsContainer>();
@@ -39,7 +36,7 @@ public class QueryResultsGetter
     protected QueryResultsListener          listener;
     
     /**
-     * Creates a getter to go get (in parallel) all the containers and their values
+     * Creates a getter to go get (in parallel) all the containers and their values.
      * @param listener the object that will be notified when all the queries are done
      */
     public QueryResultsGetter(final QueryResultsListener listener)
@@ -49,7 +46,7 @@ public class QueryResultsGetter
     }
     
     /**
-     * Adds a QueryResultsContainer to be processed
+     * Adds a QueryResultsContainer to be processed.
      * @param qrc the QueryResultsContainer to be processed
      */
     public void add(QueryResultsContainer qrc)
@@ -62,7 +59,7 @@ public class QueryResultsGetter
     }
     
     /**
-     * Adds a QueryResultsContainer and starts its execution on a separate thread 
+     * Adds a QueryResultsContainer and starts its execution on a separate thread .
      * @param qrcs the collection of containers to be executed
      */
     public void add(final List<QueryResultsContainer> qrcs)
@@ -74,7 +71,7 @@ public class QueryResultsGetter
     }
    
    /**
-     * Returns the collection of QueryResultsContainer
+     * Returns the collection of QueryResultsContainer.
      * @return Returns the collection of QueryResultsContainer
      */
     public List<QueryResultsContainer> getQueryResultsContainers()
@@ -83,7 +80,7 @@ public class QueryResultsGetter
     }
     
     /**
-     * Checks to see of all of the paraellel queries are done
+     * Checks to see of all of the paraellel queries are done.
      * @return true if all the parallel queries are done.
      */
     public boolean isDoneProcessing()
@@ -99,7 +96,7 @@ public class QueryResultsGetter
     }
     
     /**
-     * Cleans up all the data structures
+     * Cleans up all the data structures.
      *
      */
     public void clear()
@@ -119,10 +116,11 @@ public class QueryResultsGetter
     }
     
     /**
-     * Called when a container is done processing
+     * Called when a container is done processing.
      *
+     * @param qrc the container that is done
      */
-    protected synchronized void containerIsDone(QueryResultsContainer qrc)
+    protected synchronized void containerIsDone(final QueryResultsContainer qrc)
     {
         if (isDoneProcessing())
         {
@@ -134,10 +132,11 @@ public class QueryResultsGetter
     }
     
     /**
-     * Called when a container has an error
+     * Called when a container has an error.
      *
+     * @param qrc the container that is in error
      */
-    protected synchronized void containerIsInError(QueryResultsContainer qrc)
+    protected synchronized void containerIsInError(final QueryResultsContainer qrc)
     {
         hasFailed = true;
         listener.resultsInError(qrc);

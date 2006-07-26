@@ -1,45 +1,63 @@
-/* This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+/*
+ * This library is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation; either version
+ * 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * 
+ * You should have received a copy of the GNU Lesser General Public License along with this library;
+ * if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ * 02111-1307 USA
  */
 
 package edu.ku.brc.exceptions;
 
-
 /**
  * This exception is used to mark (fatal) failures in infrastructure and system code.
- 
- * @code_status Unknown (auto-generated)
- **
+ * 
+ * @code_status Complete
+ * 
  * @author rods
  */
 @SuppressWarnings("serial")
-public class UIException extends RuntimeException 
+public class UIException extends RuntimeException
 {
-    //private static final long serialVersionUID = 0;
-    
-    public UIException() {
+    // private static final long serialVersionUID = 0;
+
+    /**
+     * Default Constructor.
+     */
+    public UIException()
+    {
     }
 
-    public UIException(String message) {
+    /**
+     * Constructor.
+     * @param message the text message
+     */
+    public UIException(String message)
+    {
         super(message);
     }
 
-    public UIException(String message, Throwable cause) {
+    /**
+     * Constructor.
+     * @param message the text message
+     * @param cause throwable
+     */
+    public UIException(String message, Throwable cause)
+    {
         super(message, cause);
     }
 
-    public UIException(Throwable cause) {
+    /**
+     * Constructor with throwable.
+     * @param cause throwable
+     */
+    public UIException(Throwable cause)
+    {
         super(cause);
     }
 }

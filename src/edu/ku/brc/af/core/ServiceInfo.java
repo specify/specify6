@@ -27,7 +27,7 @@ import edu.ku.brc.ui.IconManager;
  * Services are mapped to a table ID because not all service can act on all tables.<br><br>
  * The service info MUST be able to provide icons in the standard sizes of 32, 24, and 16.<br>
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -44,7 +44,7 @@ public class ServiceInfo
     protected Hashtable<String, ImageIcon> icons = new Hashtable<String, ImageIcon>();
     
     /**
-     * Constructs a service info object describing the service for UI components to use
+     * Constructs a service info object describing the service for UI components to use.
      * @param name the name of the service
      * @param tableId the table ID that the service is provided for
      * @param command the command to be sent
@@ -62,6 +62,7 @@ public class ServiceInfo
     
  
     /**
+     * Adds an icon to be associated with the service.
      * @param icon the icon to be registered with the service
      * @param iconSize the size of the icon
      */
@@ -71,9 +72,9 @@ public class ServiceInfo
     }
 
     /**
-     * returns an icon of a specific size
+     * Returns an icon of a specific size.
      * @param iconSize the sie of the icon to be returned
-     * @return returns an icon of a specific size
+     * @return an icon of a specific size
      */
     public ImageIcon getIcon(final IconManager.IconSize iconSize)
     {
@@ -81,8 +82,8 @@ public class ServiceInfo
     }
     
     /**
-     * Returns the a string that includes the name and the table ID
-     * @return Returns the a string that includes the name and the table ID
+     * Returns the a string that includes the name and the table ID.
+     * @return the a string that includes the name and the table ID
      */
     public String getHashKey()
     {
@@ -94,18 +95,15 @@ public class ServiceInfo
         return name;
     }
 
-
     public int getTableId()
     {
         return tableId;
     }
 
-
     public Taskable getTask()
     {
         return task;
     }
-
 
     public String getTooltip()
     {

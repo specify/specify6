@@ -35,9 +35,10 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
 
 /**
- * This organized NavBoxItemIFace object in a vertical layout (via a layout manager)
+ * This organized NavBoxItemIFace object in a vertical layout (via a layout manager)<br>
+ * (Note: Overrides paint on prupose)
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -51,8 +52,8 @@ public class NavBox extends JPanel implements NavBoxIFace
     private Vector<NavBoxItemIFace> items = new Vector<NavBoxItemIFace>();
     
     /**
-     * 
-     *
+     * Constructor (with name)
+     * @param name the name of the NavBox.
      */
     public NavBox(String name)
     {
@@ -65,7 +66,7 @@ public class NavBox extends JPanel implements NavBoxIFace
     }
     
     /**
-     * Returns the scope of the tab
+     * Returns the scope of the tab.
      * @return returns the scope of the tab
      */
     public Scope getScope()
@@ -116,7 +117,7 @@ public class NavBox extends JPanel implements NavBoxIFace
     }
 
     /**
-     * Adds a NavBoxItemIFace item to the box and returns the UI component for that item
+     * Adds a NavBoxItemIFace item to the box and returns the UI component for that item.
      * @param item the NavBoxItemIFace item to be added
      * @param notify whether to have it relayout or not (true -> does layout)
      * @param position the position in the list
@@ -148,7 +149,7 @@ public class NavBox extends JPanel implements NavBoxIFace
     }
        
     /**
-     * Adds a NavBoxItemIFace item to the box and returns the UI component for that item
+     * Adds a NavBoxItemIFace item to the box and returns the UI component for that item.
      * @param item the NavBoxItemIFace item to be added
      * @param notify whether to have it relayout or not (true -> does layout)
      * @return the UI component for this item
@@ -159,7 +160,7 @@ public class NavBox extends JPanel implements NavBoxIFace
     }
        
     /**
-     * Adds a NavBoxItemIFace item to the box and returns the UI component for that item and does not perform a doLayout of the box
+     * Adds a NavBoxItemIFace item to the box and returns the UI component for that item and does not perform a doLayout of the box.
      * @param item NavBoxItemIFace to be added
      * @return the ui component for the item
      */
@@ -169,7 +170,7 @@ public class NavBox extends JPanel implements NavBoxIFace
     }
     
     /**
-     * Removes an item from the navbox
+     * Removes an item from the navbox.
      * @param item the item to be removed
      */
     public void remove(final NavBoxItemIFace item)
@@ -237,12 +238,12 @@ public class NavBox extends JPanel implements NavBoxIFace
     }
 
     /**
-     * Returns a NavBoxItemIFace item built from a RolloverCommand
+     * Returns a NavBoxItemIFace item built from a RolloverCommand.
      * @param label the text label
      * @param iconName the icon name, not the image filename, but the IconManager name for the icon
      * @param fileName the file name for the icon
      * @param iconSize the size  to use
-     * @return Returns a NavBoxItemIFace item built from a RolloverCommand
+     * @return a NavBoxItemIFace item built from a RolloverCommand
      */
     public static NavBoxItemIFace createBtn(final String label, 
                                             final String iconName, 
@@ -267,11 +268,11 @@ public class NavBox extends JPanel implements NavBoxIFace
     }
     
     /**
-     * Returns a NavBoxItemIFace item built from a RolloverCommand
+     * Returns a NavBoxItemIFace item built from a RolloverCommand.
      * @param label the text label
      * @param iconName the icon name, not the image filename, but the IconManager name for the icon
      * @param iconSize the size  to use
-     * @return Returns a NavBoxItemIFace item built from a RolloverCommand
+     * @return a NavBoxItemIFace item built from a RolloverCommand
      */
     public static NavBoxItemIFace createBtn(final String label, 
                                             final String iconName, 
@@ -281,12 +282,12 @@ public class NavBox extends JPanel implements NavBoxIFace
     }
     
     /**
-     * Returns a NavBoxItemIFace item built from a RolloverCommand
+     * Returns a NavBoxItemIFace item built from a RolloverCommand.
      * @param label the text label
      * @param iconName the icon name, not the image filename, but the IconManager name for the icon
      * @param iconSize the size  to use
      * @param al the action listener that will be added the item 
-     * @return Returns a NavBoxItemIFace item built from a RolloverCommand
+     * @return a NavBoxItemIFace item built from a RolloverCommand
      */
     public static NavBoxItemIFace createBtn(final String label,
                                             final String iconName, 

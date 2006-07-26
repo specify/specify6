@@ -19,7 +19,7 @@ package edu.ku.brc.dbsupport;
  * These methods are called when the results are done being processed. allResultsBack is called when they are done, and 
  * resultsInError as soon as one error occurs, the listener will not be notified again of other errors.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  * 
@@ -28,14 +28,15 @@ public interface QueryResultsListener
 {
 
     /**
-     * Notifies the consumer that all the results are back
+     * Notifies the consumer that all the results are back.
      *
      */
     public void allResultsBack();
     
     /**
-     * Notifies the consumer that an error occurred
+     * Notifies the consumer that an error occurred.
      *
+     * @param qrc the container in error
      */
     public void resultsInError(final QueryResultsContainer qrc);
     

@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
  * After setting the necessary parameters you can ask it for a connection at anytime.<br><br>
  * Also, has a factory method for creating instances so users can connect to more than one database ata time.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -57,6 +57,7 @@ public class DBConnection
     }
     
     /**
+     * The error message if it was caused by an exception.
      * @return the error message if it was caused by an exception
      */
     public String getErrorMsg()
@@ -90,7 +91,7 @@ public class DBConnection
 
     
     /**
-     * Returns the instance to the singleton
+     * Returns the instance to the singleton.
      * @return the instance to the singleton
      */
     public static DBConnection getInstance()
@@ -99,7 +100,7 @@ public class DBConnection
     }
     
     /**
-     * Sets the user name and password
+     * Sets the user name and password.
      * @param dbUsername the username
      * @param dbPassword the password
      */
@@ -110,7 +111,7 @@ public class DBConnection
     }
     
     /**
-     * Sets the database name 
+     * Sets the database name.
      * @param dbName the database name
      */
     public void setDatabaseName(final String dbName)
@@ -119,7 +120,7 @@ public class DBConnection
     }
     
     /**
-     * Sets the driver name 
+     * Sets the driver name.
      * @param dbDriver the driver name
      */
     public void setDriver(final String dbDriver)
@@ -128,7 +129,7 @@ public class DBConnection
     }
     
     /**
-     * Sets the protocol string
+     * Sets the protocol string.
      * @param dbProtocol the protocol
      */
     public void setProtocol(String dbProtocol)
@@ -137,7 +138,7 @@ public class DBConnection
     }
 
     /**
-     * Sets the fully specified path to connect to the database
+     * Sets the fully specified path to connect to the database.
      * i.e. jdbc:mysql://localhost/fish<br>Some databases may need to construct their fully specified path.
      * @param dbConnectionStr the full connection string
      */
@@ -146,13 +147,17 @@ public class DBConnection
         this.dbConnectionStr = dbConnectionStr;
     }
     
+    /**
+     * Returns the driver
+     * @return the driver
+     */
     public String getDriver()
     {
         return dbDriver;
     }
 
     /**
-     * Gets the fully specified path to connect to the database
+     * Gets the fully specified path to connect to the database.
      * i.e. jdbc:mysql://localhost/fish<br>Some databases may need to construct their fully specified path.
      * @return the full connection string
      */

@@ -26,9 +26,10 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
 
 /**
- * This manages all the tables and maps names to ids and can create queries for recordsets
+ * This manages all the tables and maps names to ids and can create queries for recordsets.
+ * (This needs to be updated for all the tables. XXX - Meg??????)
  
- * @code_status Unknown (auto-generated)
+ * @code_status Alpha
  **
  * @author rods
  *

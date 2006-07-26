@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
  * The container will be asked for it's SQL and the statment will be executed on a thread. Once the results
  * are back this clas is asked to process the results and fill the collection of QueryResultsDataObjects.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -40,7 +40,7 @@ public class QueryResultsContainer
     protected Vector<QueryResultsDataObj> qrdos = new Vector<QueryResultsDataObj>();
     
     /**
-     * Default constuctor
+     * Default constuctor.
      */
     public QueryResultsContainer()
     {
@@ -48,7 +48,7 @@ public class QueryResultsContainer
     }
     
     /**
-     * Constructs it with the SQL statment to be executed
+     * Constructs it with the SQL statment to be executed.
      * @param sql the SQL statement to be executed
      */
     public QueryResultsContainer(final String sql)
@@ -57,7 +57,7 @@ public class QueryResultsContainer
     }
     
     /**
-     * Returns a list of QueryResultsDataObj objects
+     * Returns a list of QueryResultsDataObj objects.
      * @return Returns a list of QueryResultsDataObj objects
      */
     public List<QueryResultsDataObj> getQueryResultsDataObjs()
@@ -66,7 +66,7 @@ public class QueryResultsContainer
     }
 
     /**
-     * Adds a QueryResultsDataObj to be processed
+     * Adds a QueryResultsDataObj to be processed.
      * @param qrdo
      */
     public void add(final QueryResultsDataObj qrdo)
@@ -75,7 +75,7 @@ public class QueryResultsContainer
     }
     
     /**
-     * Process the SQL's Result Set and fill the QueryResultsDataObj with the results
+     * Process the SQL's Result Set and fill the QueryResultsDataObj with the results.
      * @param resultSet the SQL result set to be processes
      */
     protected void processResultSet(final java.sql.ResultSet resultSet)
@@ -107,7 +107,7 @@ public class QueryResultsContainer
     }
 
     /**
-     * Returns the SQL string that is or was executed
+     * Returns the SQL string that is or was executed.
      * @return Returns the SQL string that is or was executed
      */
     public String getSql()
@@ -116,7 +116,7 @@ public class QueryResultsContainer
     }
 
     /**
-     * Sets the SQL string to be executed
+     * Sets the SQL string to be executed.
      * @param sql the string of SQL
      */
     public void setSql(String sql)
@@ -125,7 +125,7 @@ public class QueryResultsContainer
     }
     
     /**
-     * Clears all the data structures
+     * Clears all the data structures.
      *
      */
     public void clear()

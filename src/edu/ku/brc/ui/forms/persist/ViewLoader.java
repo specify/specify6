@@ -46,7 +46,7 @@ import edu.ku.brc.ui.validation.ComboBoxFromQueryFactory;
  
  * @code_status Unknown (auto-generated)
  **
- * @author rods <rods@ku.edu>
+ * @author rods
  */
 public class ViewLoader
 {

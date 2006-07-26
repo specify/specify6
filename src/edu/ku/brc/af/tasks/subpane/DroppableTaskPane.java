@@ -28,9 +28,9 @@ import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 
 /**
- * A Task SubPane that can have forms (DroppableFormObject) dropped onto it so it can display a form
+ * A Task SubPane that can have forms (DroppableFormObject) dropped onto it so it can display a form. This also dislays a text string in the middle of the ane.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -48,7 +48,11 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
     protected List<DataFlavor>       dropFlavors         = new ArrayList<DataFlavor>(); 
 
     /**
-     * Constructor
+     * Constructor.
+     * 
+     * @param name the name of the subpane
+     * @param task the owning task
+     * @param desc a description to be displayed in the middle of the pane
      */
     public DroppableTaskPane(final String name, 
                              final Taskable task,
@@ -122,9 +126,8 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
 
     }
     
-    /**
-     * Returns the adaptor for tracking mouse drop gestures
-     * @return Returns the adaptor for tracking mouse drop gestures
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#getMouseInputAdapter()
      */
     public GhostMouseInputAdapter getMouseInputAdapter()
     {
@@ -153,8 +156,6 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
     public List<DataFlavor> getDragDataFlavors()
     {
         return (List<DataFlavor>)null; // this is not draggable
-    }
-    
-
+    }   
 
 }

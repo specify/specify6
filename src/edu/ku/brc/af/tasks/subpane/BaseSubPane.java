@@ -34,7 +34,7 @@ import edu.ku.brc.af.core.Taskable;
  * Class that implements the SubPanelIFace interface which enables derived classes to participate in the main pane.
  * It also adds the progress indicator and it provide.
  
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  **
  * @author rods
  *
@@ -55,6 +55,8 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
      * which enables derived classes to participate in the main pane.
      * It also adds the progress indicator and it provide
      *
+     * @param name the name of the subpane
+     * @param task the owning task
      */
     public BaseSubPane(final String name,
                        final Taskable task)

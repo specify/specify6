@@ -28,10 +28,10 @@ import javax.swing.SwingConstants;
 import edu.ku.brc.af.core.Taskable;
 
 /**
- * A default pane for display a simple label telling what it is suppose to do
- 
- * @code_status Unknown (auto-generated)
- **
+ * A default pane for display a simple label telling what it is suppose to do.
+ *
+ * @code_status Code Freeze
+ *
  * @author rods
  *
  */
@@ -42,8 +42,9 @@ public class SimpleDescPane extends BaseSubPane
     protected Image splashImage = null;
 
     /**
-     *
-     *
+     * @param name
+     * @param task
+     * @param desc
      */
     public SimpleDescPane(final String name,
                           final Taskable task,
@@ -59,8 +60,9 @@ public class SimpleDescPane extends BaseSubPane
     }
 
     /**
-     *
-     *
+     * @param name
+     * @param task
+     * @param panel
      */
     public SimpleDescPane(final String name,
                           final Taskable task,
@@ -75,6 +77,9 @@ public class SimpleDescPane extends BaseSubPane
 
 
 
+    /* (non-Javadoc)
+     * @see java.awt.Component#paintAll(java.awt.Graphics)
+     */
     @Override
     public void paintAll(Graphics g)
     {
@@ -89,16 +94,19 @@ public class SimpleDescPane extends BaseSubPane
         }
     }
 
+    /**
+     * @return
+     */
     public Image getSplashImage()
     {
         return splashImage;
     }
 
+    /**
+     * @param splashImage
+     */
     public void setSplashImage(Image splashImage)
     {
         this.splashImage = splashImage;
     }
-
-
-
 }

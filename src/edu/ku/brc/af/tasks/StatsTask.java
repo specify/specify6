@@ -38,10 +38,11 @@ import edu.ku.brc.stats.StatsMgr;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 /**
- * The StatsTask is responsible gettng and displaying all various idfferent kinds of stats
- 
- * @code_status Unknown (auto-generated)
- **
+ * The StatsTask is responsible gettiong and displaying all various different kinds of stats
+ * (needs better comments)
+ * 
+ * @code_status Code Freeze 
+ *
  * @author rods
  *
  */
@@ -63,7 +64,7 @@ public class StatsTask extends BaseTask
      protected Element panelDOM;
 
     /**
-     * Creates a Statistics Tasks
+     * Constructor that creates a Statistics Tasks
      *
      */
     public StatsTask()
