@@ -267,8 +267,8 @@ public class FishConversion
         short[] fishBioTypes = {
                 AttributeIFace.FieldType.StringType.getType(),
                 AttributeIFace.FieldType.FloatType.getType(),
-                AttributeIFace.FieldType.FloatType.getType(),
-                AttributeIFace.FieldType.MemoType.getType(),
+                AttributeIFace.FieldType.FloatType.getType()//,
+                //AttributeIFace.FieldType.MemoType.getType(),
         };
         AttrUtils.loadAttrDefs(collectionObjDef, GenericDBConversion.TableType.CollectionObject, null, fishBioAttrs, fishBioTypes);
 
@@ -343,7 +343,7 @@ public class FishConversion
                 AttributeIFace.FieldType.StringType.getType(),
                 AttributeIFace.FieldType.StringType.getType(),
                 AttributeIFace.FieldType.StringType.getType(),
-                AttributeIFace.FieldType.MemoType.getType(),
+                //AttributeIFace.FieldType.MemoType.getType(),
                 AttributeIFace.FieldType.FloatType.getType(),
                 AttributeIFace.FieldType.FloatType.getType()};
         

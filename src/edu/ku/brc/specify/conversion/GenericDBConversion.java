@@ -83,8 +83,6 @@ import edu.ku.brc.util.Pair;
  * This class is used for copying over the and creating all the tables that are not specify to any one collection.
  * This assumes that the "static" data members of DBConnection have been set up with the new Database's
  * driver, name, user and password. This is created with the old Database's driver, name, user and password.
- *
- * @code_status Unknown (auto-generated)
  * 
  * @author rods
  *
@@ -1462,9 +1460,9 @@ public class GenericDBConversion
         {
             return AttributeIFace.FieldType.BooleanType;
 
-        } else if (name.equalsIgnoreCase("remarks"))
-        {
-            return AttributeIFace.FieldType.MemoType;
+        //} else if (name.equalsIgnoreCase("remarks"))
+        //{
+        //    return AttributeIFace.FieldType.MemoType;
 
         } else if (type.equalsIgnoreCase("float"))
         {
@@ -1532,8 +1530,10 @@ public class GenericDBConversion
     public boolean convertBiologicalAttrs(CollectionObjDef colObjDef, final Map<String, String> colToNameMap, final Map<String, Short> typeMap)
     {
         AttributeIFace.FieldType[] attrTypes = {AttributeIFace.FieldType.IntegerType, AttributeIFace.FieldType.FloatType,
-                                                AttributeIFace.FieldType.DoubleType, AttributeIFace.FieldType.BooleanType,AttributeIFace.FieldType.StringType,
-                                                AttributeIFace.FieldType.MemoType};
+                                                AttributeIFace.FieldType.DoubleType, AttributeIFace.FieldType.BooleanType,
+                                                AttributeIFace.FieldType.StringType,
+                                                //AttributeIFace.FieldType.MemoType
+                                                };
 
         Session session = HibernateUtil.getCurrentSession();
 
