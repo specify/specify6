@@ -69,8 +69,8 @@
             type="form"
             name="Accession"
             class="edu.ku.brc.specify.datamodel.Accession"
-            gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.specify.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
 
@@ -139,8 +139,8 @@
             type="form"
             name="AccessionAgent"
             class="edu.ku.brc.specify.datamodel.AccessionAgents"
-            gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.specify.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
 
@@ -167,8 +167,8 @@
             type="form"
             name="AgentForAccessions"
             class="edu.ku.brc.specify.datamodel.Agent"
-            gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.specify.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Agent subform for Acessions.]]></desc>
             <columnDef>p,3dlu,p,3dlu,p,3dlu,p</columnDef>
@@ -216,8 +216,8 @@
             type="form"
             name="PermitForAccessions"
             class="edu.ku.brc.specify.datamodel.Permit"
-            gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.specify.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Permit subform for Acessions.]]></desc>
             <enableRules/>
@@ -269,8 +269,8 @@
             type="form"
             name="AccessionAuthorizations"
             class="edu.ku.brc.specify.datamodel.AccessionAuthorizations"
-            gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.specify.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Permit subform for AccessionAuthorizations.]]></desc>
             <enableRules/>
@@ -294,8 +294,8 @@
             type="form"
             name="Address"
             class="edu.ku.brc.specify.datamodel.Address"
-            gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.specify.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Address subform for Acessions.]]></desc>
             <columnDef>p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p</columnDef>

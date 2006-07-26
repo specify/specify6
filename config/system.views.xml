@@ -30,8 +30,8 @@
             type="form"
             name="PickList"
             class="edu.ku.brc.specify.datamodel.CollectionObject"
-            gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.specify.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
             
             <desc><![CDATA[Form for editing an Info Request]]></desc>
@@ -111,8 +111,8 @@
             type="form"
             name="DatabaseLoginOld"
             class="java.util.Hashtable"
-            gettable="edu.ku.brc.specify.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.specify.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[Database Logon]]></desc>
             <enableRules>
@@ -160,8 +160,8 @@
             type="form"
             name="DatabaseLogin"
             class="java.util.Hashtable"
-            gettable="edu.ku.brc.specify.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.specify.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[Database Logon]]></desc>
             <enableRules>

@@ -27,8 +27,8 @@
         <viewdef type="form"
             name="AgentSearch"
             class="edu.ku.brc.specify.datamodel.Agent"
-            gettable="edu.ku.brc.specify.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.specify.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The Agent Search Form]]></desc>
             <enableRules/>
@@ -72,8 +72,8 @@
         <viewdef type="form"
             name="PermitSearch"
             class="edu.ku.brc.specify.datamodel.Permit"
-            gettable="edu.ku.brc.specify.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.specify.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The Agent Search Form]]></desc>
             <enableRules/>

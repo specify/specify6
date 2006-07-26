@@ -5,7 +5,7 @@
 	  type="form" 
 	  name="TestObject" 
 	  class="edu.ku.brc.specify.tests.forms.TestDataObj" 
-	  gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+	  gettable="edu.ku.brc.ui.forms.DataGetterForObj"
 	  resourceLabels="false">
   	<desc><![CDATA[Test the Main form]]></desc>
     <altviews>
@@ -80,7 +80,7 @@
 	  type="form" 
 	  name="TestObject" 
 	  class="edu.ku.brc.specify.tests.forms.TestDataObj" 
-	  gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+	  gettable="edu.ku.brc.ui.forms.DataGetterForObj"
 	  resourceLabels="false"
 	  validate="true">
   	<desc><![CDATA[Test the Main form]]></desc>
@@ -147,7 +147,7 @@
 	  type="form" 
 	  name="TestSubObject" 
 	  class="edu.ku.brc.specify.tests.forms.TestDataSubObj" 
-	  gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+	  gettable="edu.ku.brc.ui.forms.DataGetterForObj"
 	  resourceLabels="false">
   	<desc><![CDATA[Test Sub Form.]]></desc>
     <altviews>
@@ -481,7 +481,7 @@
   
   <view id="80" name="Info Request" 
          class="edu.ku.brc.specify.datamodel.InfoRequest" 
-         gettable="edu.ku.brc.specify.ui.forms.DataGetterForObj"
+         gettable="edu.ku.brc.ui.forms.DataGetterForObj"
          type="form"
          useresourcelabels="false"
          validate="true">
