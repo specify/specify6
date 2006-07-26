@@ -4,10 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-
-
 /**
-
+ * @author rods
+ *
  */
 public class AttributeDef  implements java.io.Serializable {
 
