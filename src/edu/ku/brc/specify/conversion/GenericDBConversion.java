@@ -135,14 +135,14 @@ public class GenericDBConversion
     /**
      * "Old" means the database you want to copy "from"
      * @param oldDriver old driver
-     * @param oldServer old server name
      * @param oldDBName old database name
+     * @param connectionStr old server name
      * @param oldUserName old user name
      * @param oldPassword old password
      */
     public GenericDBConversion(final String oldDriver,
-                               final String oldServer,
                                final String oldDBName,
+                               final String connectionStr,
                                final String oldUserName,
                                final String oldPassword)
     {
@@ -152,7 +152,7 @@ public class GenericDBConversion
         this.oldPassword  = oldPassword;
         this.idMapperMgr  = IdMapperMgr.getInstance();
         
-        this.oldDB        = DBConnection.createInstance(oldDriver, null, oldDBName, oldServer, oldUserName, oldPassword);
+        this.oldDB        = DBConnection.createInstance(oldDriver, null, oldDBName, connectionStr, oldUserName, oldPassword);
 
         oldDBConn = oldDB.createConnection();
         newDBConn = DBConnection.getConnection();
