@@ -177,7 +177,7 @@ public class SpecifyDBConverter
         }
         
         // This will log us in and return true/false
-        if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", "mysql", "localhost", databaseName, "rods", "rods"))
+        if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", databaseName, "jdbc:mysql://localhost/"+databaseName, "rods", "rods"))
         {
             throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
         }
