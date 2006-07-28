@@ -15,25 +15,18 @@
 
 package edu.ku.brc.specify;
 
-import static edu.ku.brc.helpers.UIHelper.centerAndShow;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
-import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
@@ -56,8 +49,6 @@ import javax.swing.UIManager;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -69,17 +60,16 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MainPanel;
-import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.plugins.PluginMgr;
 import edu.ku.brc.af.prefs.PrefMainPanel;
 import edu.ku.brc.af.tasks.StartUpTask;
-import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyConfig;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
+import edu.ku.brc.specify.ui.DBObjDialogFactory;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToolbarLayoutManager;
@@ -103,7 +93,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
     // The preferred size of the demo
     private static final int    PREFERRED_WIDTH  = 900;
     private static final int    PREFERRED_HEIGHT = 800;
-
+    
+    private static Specify      specifyApp       = null; // needed for ActionListeners etc.
+    
     // Status Bar
     private JStatusBar          statusField        = null;
     private JMenuBar            menuBar            = null;
@@ -113,8 +105,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     protected  boolean          hasChanged         = false;
 
     protected Configuration     hibernateConfig    = null;
-    protected SessionFactory    mSessionFactory    = null;
-    protected Session           mSession           = null;
+    protected String            currentDatabaseName = null;
 
     protected GhostGlassPane    glassPane;
 
@@ -124,37 +115,11 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private JFrame    frame               = null;
     private JWindow   splashWindow        = null;
     private ImageIcon specifyImageIcon    = null;
-    private ImageIcon userSplashImageIcon = null;
-    //private TransparentBackground splashScreen = null;
-    //private ImageIcon specifyspecifyImageIcon   = null;
-
-    /*
-    private String databaseName = "";
-    private String userName = "";
-    private String password ="";
-    private String hostName ="";
-    private boolean useLogonDialog = false;
-    */
-    //private GraphicsConfiguration grc;
-
-    // Global Prefs Registered into the Cache
-
-
-
+    //private ImageIcon userSplashImageIcon = null;
+ 
 
     @SuppressWarnings("unused")
     private SpecifyConfig config;
-
-    private static Specify  specifyApp       = null;
-
-    /*static {
-        System.setProperty ("apple.awt.antialiasing", "true");
-        System.setProperty ("apple.awt.textantialiasing", "true");
-        System.setProperty ("apple.laf.useScreenMenuBar", "true");
-        System.setProperty ("apple.awt.brushMetalLook", "true");
-        System.setProperty ("com.apple.mrj.application.apple.menu.about.name", "Specify");
-
-    }*/
 
 
      /**
@@ -173,6 +138,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         FileCache.setDefaultPath(UICacheManager.getInstance().getDefaultWorkingPath());
 
         UICacheManager.register(UICacheManager.MAINPANE, this); // important to be done immediately
+        UICacheManager.setViewbasedFactory(DBObjDialogFactory.getInstance());
 
         initPrefs();
         
@@ -241,7 +207,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     /**
      * 
      */
-    protected void initStartUpPanels()
+    protected void initStartUpPanels(final String databaseName)
     {
         PluginMgr.initializePlugins();
 
@@ -251,7 +217,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 {
                     public void run()
                     {
-                        initStartUpPanels();
+                        initStartUpPanels(databaseName);
                     }
                 });
             return;
@@ -264,59 +230,15 @@ public class Specify extends JPanel implements DatabaseLoginListener
         doLayout();
 
         mainPanel.setBackground(Color.WHITE);
+        
+        SubPaneMgr.getInstance().removeAllPanes();
 
-        //GhostGlassPane ggp = UICacheManager.getGlassPane();
-
-        if (false)
+        Taskable startUpTask = ContextMgr.getTaskByClass(StartUpTask.class);
+        if (startUpTask != null)
         {
-            java.io.File  f = new java.io.File(".");
-            userSplashImageIcon = new ImageIcon(f.getAbsolutePath() +  File.separator + "posterfish600.png");
-            int w = Math.max(userSplashImageIcon.getIconWidth(), specifyImageIcon.getIconWidth());
-            int h = userSplashImageIcon.getIconHeight() + specifyImageIcon.getIconHeight() + 20;
-
-            BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-
-            Graphics2D    g2 = (Graphics2D)bi.getGraphics();
-            g2.drawImage(specifyImageIcon.getImage(), (w - specifyImageIcon.getIconWidth()) / 2, 0, specifyImageIcon.getIconWidth(), specifyImageIcon.getIconHeight(), null);
-            g2.drawImage(userSplashImageIcon.getImage(), (w - userSplashImageIcon.getIconWidth()) / 2, specifyImageIcon.getIconHeight()+20, userSplashImageIcon.getIconWidth(), userSplashImageIcon.getIconHeight(), null);
-            glassPane.setImage(bi);
-            g2.dispose();
-            
-            Dimension size = glassPane.getSize();
-
-            glassPane.setPoint(new Point(0,0), GhostGlassPane.ImagePaintMode.CENTERED);
-
-            System.out.println(glassPane.getLocation()+" "+size);
-            /*
-
-            SubPaneMgr sbm = SubPaneMgr.getInstance();
-            Point      pp       = new Point(0,0);
-            SwingUtilities.convertPointToScreen(pp, sbm);
-            SwingUtilities.convertPointFromScreen(pp, mainPanel);*/
-
-            glassPane.setAlpha(1.0f);
-
-            ContextMgr.getTaskByClass(StartUpTask.class).requestContext();
-
-            glassPane.setVisible(true);
-            glassPane.addMouseListener(new MouseAdapter() {
-                    public void mouseClicked(MouseEvent e)
-                    {
-                        glassPane.setVisible(false);
-                        SubPaneIFace blankSP = ((StartUpTask)ContextMgr.getTaskByClass(StartUpTask.class)).getBlankPane();
-                        System.out.println(blankSP);
-                        ((SimpleDescPane)blankSP).setSplashImage(userSplashImageIcon.getImage());
-                    }
-
-            });
-        } else
-        {
-            Taskable startUpTask = ContextMgr.getTaskByClass(StartUpTask.class);
-            if (startUpTask != null)
-            {
-                startUpTask.requestContext();
-            }
+            startUpTask.requestContext();
         }
+
         showApp();
     }
 
@@ -570,7 +492,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
         return toolBar;
     }
 
-
     /**
      * Create menus
      */
@@ -605,13 +526,15 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     {
                         class DBListener implements DatabaseLoginListener
                         {
-                            public void loggedIn()
+                            public void loggedIn(final String databaseName, final String userName)
                             {
-                                
+                                specifyApp.loggedIn(databaseName, userName);
                             }
                             
                             public void cancelled()
                             {
+                                // Do not call this it will exit the application
+                                //specifyApp.cancelled();
                             }
                         }
 
@@ -778,7 +701,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         				doExit();
         			}
         		});
-        centerAndShow(f);
+        UIHelper.centerAndShow(f);
     }
 
     /**
@@ -817,13 +740,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
     //---------------------------------------------------------
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.DatabaseLoginListener#loggedIn()
+     * @see edu.ku.brc.ui.db.DatabaseLoginListener#loggedIn(java.lang.String, java.lang.String)
      */
-    public void loggedIn()
+    public void loggedIn(final String databaseName, final String userName)
     {
         ViewMgr.setAsDefaultViewSet("Fish Views");
         
-        initStartUpPanels();
+        initStartUpPanels(databaseName);
     }
     
     /* (non-Javadoc)

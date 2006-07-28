@@ -17,7 +17,7 @@ package edu.ku.brc.ui.db;
 /**
  * This interface is used to notify listeners of a successful login or when thethe dialog is cancelled.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -26,8 +26,11 @@ public interface DatabaseLoginListener
 {
     /**
      * The login was successful
+     *
+     * @param databaseName the name of the database that was logged into
+     * @param userName the username
      */
-    public void loggedIn();
+    public void loggedIn(String databaseName, String userName);
     
     /**
      * The login dialog was cancelled

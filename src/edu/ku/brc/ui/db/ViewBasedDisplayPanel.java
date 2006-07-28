@@ -18,6 +18,7 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.HeadlessException;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
@@ -66,6 +67,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     // UI
     protected JButton        okBtn;
     protected JPanel         contentPanel;
+    protected Window         parent;
 
     /**
      * Constructor
@@ -88,16 +90,18 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
      * @param idFieldName the name of the field in the class that is the primary key which is filled in from the search table id
      * @throws HeadlessException an exception
      */
-    public ViewBasedDisplayPanel(final String  viewSetName,
-                             final String  viewName,
-                             final String  displayName,
-                             final String  className,
-                             final String  idFieldName,
-                             final boolean isEdit) throws HeadlessException
+    public ViewBasedDisplayPanel(final Window  parent,
+                                 final String  viewSetName,
+                                 final String  viewName,
+                                 final String  displayName,
+                                 final String  className,
+                                 final String  idFieldName,
+                                 final boolean isEdit) throws HeadlessException
     {
+        this.parent      = parent;
         this.className   = className;
         this.idFieldName = idFieldName;
-        this.displayName  = displayName;
+        this.displayName = displayName;
 
         createUI(viewSetName, viewName, isEdit ? AltView.CreationMode.Edit : AltView.CreationMode.View);
     }
@@ -124,22 +128,30 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
             log.error("Couldn't load form with name ["+viewSetName+"] Id ["+viewName+"]");
         }
 
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
+        setLayout(new BorderLayout());
+        setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
 
-        panel.add(multiView, BorderLayout.NORTH);
+        add(multiView, BorderLayout.NORTH);
         contentPanel = new JPanel(new NavBoxLayoutManager(0,2));
 
         okBtn = new JButton(getResourceString(isEdit ? "Save" : "Close"));
         okBtn.addActionListener(this);
-        getRootPane().setDefaultButton(okBtn);
 
         ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
         btnBuilder.addGlue();
         btnBuilder.addGriddedButtons(new JButton[] { okBtn });
 
-        panel.add(btnBuilder.getPanel(), BorderLayout.SOUTH);
+        add(btnBuilder.getPanel(), BorderLayout.SOUTH);
 
+    }    
+
+    /**
+     * Returns the OK button
+     * @return the OK button
+     */
+    public JButton getOkBtn()
+    {
+        return okBtn;
     }
 
     /* (non-Javadoc)
@@ -148,7 +160,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     public void actionPerformed(ActionEvent e)
     {
         // Handle clicks on the OK and Cancel buttons.
-        setVisible(false);
+        parent.setVisible(false);
         propertyChangeListener.propertyChange(null);
         propertyChangeListener = null;
     }

@@ -73,6 +73,15 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                 */
         init();
     }
+    
+    /**
+     * Returns the singleton instance
+     * @return the singleton instance
+     */
+    public static DBObjDialogFactory getInstance()
+    {
+        return instance;
+    }
 
     /**
      *

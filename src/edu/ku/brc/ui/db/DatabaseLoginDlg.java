@@ -28,7 +28,7 @@ import edu.ku.brc.ui.UICacheManager;
  * 
  *  NOTE: This dialog can only be closed for two reasons: 1) A valid login, 2) It was cancelled by the user.
  * 
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -39,7 +39,9 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
      protected DatabaseLoginListener listener;
      
     /**
-     * Constructor that has the form created from the view system
+     * Constructor that has the form created from the view system.
+     * *
+     * @param listener the listener usually the parent like the Dialog
      */
     public DatabaseLoginDlg(final DatabaseLoginListener listener)
     {
@@ -83,15 +85,15 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
     //---------------------------------------------------------
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.DatabaseLoginListener#loggedIn()
+     * @see edu.ku.brc.ui.db.DatabaseLoginListener#loggedIn(java.lang.String)
      */
-    public void loggedIn()
+    public void loggedIn(final String databaseName, final String userName)
     {
         setVisible(false);
         dispose();
         if (listener != null)
         {
-            listener.loggedIn();
+            listener.loggedIn(databaseName, userName);
         }
     }
     

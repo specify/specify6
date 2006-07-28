@@ -55,7 +55,7 @@ public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFa
     {
         this.setTitle(title);
         
-        mainPanel = new ViewBasedDisplayPanel(viewSetName, viewName, displayName, className, idFieldName, isEdit);
+        mainPanel = new ViewBasedDisplayPanel(this, viewSetName, viewName, displayName, className, idFieldName, isEdit);
         
         setContentPane(mainPanel);
         pack();

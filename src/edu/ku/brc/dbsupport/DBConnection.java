@@ -18,6 +18,7 @@ package edu.ku.brc.dbsupport;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -36,12 +37,11 @@ public class DBConnection
     
     protected String dbUsername;
     protected String dbPassword;
-    protected String dbDriver;
-    protected String dbProtocol;
-    protected String dbName;
-    
     protected String dbConnectionStr;
-    
+    protected String dbDriver;
+    protected String dbDialect; // needed for Hibernate
+    protected String dbName;
+     
     protected String errMsg = "";
     
     // Static Data Members
@@ -75,9 +75,29 @@ public class DBConnection
         Connection con = null;
         try
         {
+            if (StringUtils.isEmpty(dbDriver))
+            {
+                errMsg = "Driver Class name is empty.";
+                return null;
+            }
+            if (StringUtils.isEmpty(dbConnectionStr))
+            {
+                errMsg = "The Connection String is empty.";
+                return null;
+            }
+            if (StringUtils.isEmpty(dbUsername))
+            {
+                errMsg = "The Username is empty.";
+                return null;
+            }
+            if (StringUtils.isEmpty(dbPassword))
+            {
+                errMsg = "The Password is empty.";
+                return null;
+            }
             Class.forName(dbDriver); // load driver
             
-            log.debug("["+dbConnectionStr+"]["+dbDriver+"]["+dbProtocol+"]["+dbUsername+"]["+dbPassword+"]");
+            log.debug("["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"]");
             con = DriverManager.getConnection(dbConnectionStr, dbUsername, dbPassword);
             
         } catch (Exception ex)
@@ -129,14 +149,14 @@ public class DBConnection
     }
     
     /**
-     * Sets the protocol string.
-     * @param dbProtocol the protocol
+     * Sets the Hibernate Dialect class name.
+     * @param dbDialect the driver name
      */
-    public void setProtocol(String dbProtocol)
+    public void setDialect(final String dbDialect)
     {
-        this.dbProtocol = dbProtocol;
+        this.dbDialect = dbDialect;
     }
-
+    
     /**
      * Sets the fully specified path to connect to the database.
      * i.e. jdbc:mysql://localhost/fish<br>Some databases may need to construct their fully specified path.
@@ -194,12 +214,12 @@ public class DBConnection
     }
     
     /**
-     * Returns the Protocol.
-     * @return the Protocol.
+     * Returns the Dialect.
+     * @return the Dialect.
      */
-    public String getProtocol()
+    public String getDialect()
     {
-        return dbProtocol;
+        return dbDialect;
     }
 
     /**
@@ -214,23 +234,26 @@ public class DBConnection
     /**
      * Create a new instance.
      * @param dbDriver the driver name
-     * @param dbConnectionStr the full connection string
+     * @param dbDialect the dialect class name for Hibernate
      * @param dbName the database name (just the name)
+     * @param dbConnectionStr the full connection string
      * @param dbUsername the username
      * @param dbPassword the password
      * @return a new instance of a DBConnection
      */
     public static DBConnection createInstance(final String dbDriver, 
-                                              final String dbConnectionStr, 
+                                              final String dbDialect, 
                                               final String dbName, 
+                                              final String dbConnectionStr, 
                                               final String dbUsername, 
                                               final String dbPassword)
     {
         DBConnection dbConnection = new DBConnection();
         
         dbConnection.setDriver(dbDriver);
-        dbConnection.setConnectionStr(dbConnectionStr);
+        dbConnection.setDialect(dbDialect);
         dbConnection.setDatabaseName(dbName);
+        dbConnection.setConnectionStr(dbConnectionStr);
         dbConnection.setUsernamePassword(dbUsername, dbPassword);
         
         return dbConnection;

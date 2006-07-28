@@ -152,7 +152,7 @@ public class GenericDBConversion
         this.oldPassword  = oldPassword;
         this.idMapperMgr  = IdMapperMgr.getInstance();
         
-        this.oldDB        = DBConnection.createInstance(oldDriver, oldServer, oldDBName, oldUserName, oldPassword);
+        this.oldDB        = DBConnection.createInstance(oldDriver, null, oldDBName, oldServer, oldUserName, oldPassword);
 
         oldDBConn = oldDB.createConnection();
         newDBConn = DBConnection.getConnection();

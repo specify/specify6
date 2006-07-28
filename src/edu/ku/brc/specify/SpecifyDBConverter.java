@@ -195,8 +195,8 @@ public class SpecifyDBConverter
             if (doConvert)
             {
                 GenericDBConversion conversion = new GenericDBConversion("com.mysql.jdbc.Driver", 
-                                                                         "jdbc:mysql://localhost/", 
                                                                          oldDatabaseName, 
+                                                                         "jdbc:mysql://localhost/"+oldDatabaseName, 
                                                                          "rods", 
                                                                          "rods");
                 

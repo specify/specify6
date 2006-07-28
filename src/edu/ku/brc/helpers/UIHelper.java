@@ -879,30 +879,28 @@ public final class UIHelper
     
     /**
      * Tries to login using the supplied params
-     * @param dbDriver the driver (a package/class name)
-     * @param dbProtocol the connection type (i.e. the "mysql" portion of jdbc:mysql://localhost/)
-     * @param dbServer the server (i.e. the "localhost" portion of jdbc:mysql://localhost/)
+     * @param dbDriver the driver (a class name)
+     * @param dbDialect the Hibernate Dialect class name
+     * @param connectionStr the full JDBC connection string that includes the database name
      * @param dbName the name of the database
      * @param dbUsername the user name
      * @param dbPassword the password
      * @return true if logged in, false if not
      */
     public static boolean tryLogin(final String dbDriver, 
-                                   final String dbProtocol, 
-                                   final String dbServer, 
-                                   final String dbName, 
+                                   final String dbDialect, 
+                                   final String dbName,
+                                   final String connectionStr, 
                                    final String dbUsername, 
                                    final String dbPassword)
     {
         DBConnection dbConn = DBConnection.getInstance();
         
-        dbConn.setUsernamePassword(dbUsername, dbPassword);
         dbConn.setDriver(dbDriver);
-        dbConn.setProtocol(dbProtocol);
+        dbConn.setDialect(dbDialect);
         dbConn.setDatabaseName(dbName);
-        
-        // TODO We may need a factory for constructing connection strings for various different databases 
-        dbConn.setConnectionStr(constructJDBCConnectionString(dbProtocol, dbServer, dbName));
+        dbConn.setConnectionStr(connectionStr);
+        dbConn.setUsernamePassword(dbUsername, dbPassword);
         
         Connection connection = dbConn.createConnection();
         if (connection != null)
@@ -927,7 +925,6 @@ public final class UIHelper
      * Tries to do the login, if doAutoLogin is set to true it will try without displaying a dialog
      * and if the login fails then it will display the dialog
      * @param doAutoLogin whether to try to utomatically log the user in
-     * @return true if loged in, false if not
      */
     public static void doLogin(final boolean doAutoLogin, 
                                final boolean useDialog, 
@@ -953,7 +950,7 @@ public final class UIHelper
                 doLogin = false;
                 if (listener != null)
                 {
-                    listener.loggedIn();
+                    listener.loggedIn(databasesStr, usernameStr);
                 }
             }
         } 
@@ -979,10 +976,10 @@ public final class UIHelper
                         this.frame = frame;
                         this.frameDBListener = frameDBListener;
                     }
-                    public void loggedIn()
+                    public void loggedIn(final String databaseName, final String userName)
                     {
                         frame.setVisible(false);
-                        frameDBListener.loggedIn();
+                        frameDBListener.loggedIn(databaseName, userName);
                     }
                     
                     public void cancelled()

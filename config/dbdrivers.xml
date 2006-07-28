@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databases>
+    <db name="MySQL" driver="com.mysql.jdbc.Driver" dialect="org.hibernate.dialect.MySQLDialect">
+        <connection>jdbc:mysql://SERVER/DATABASE</connection>
+    </db>
+    
+    <db name="Derby" driver="org.apache.derby.jdbc.EmbeddedDriver" dialect="org.hibernate.dialect.DerbyDialect">
+        <connection>jdbc:derby:DATABASE;create=true</connection>
+    </db>
+    
+    <!-- not sure if I have the connection string is correct -->
+    <db name="SQLServer" driver="com.microsoft.jdbc.sqlserver.SQLServerDriver" dialect="org.hibernate.dialect.SQLServerDriver">
+        <connection>jdbc:microsoft:sqlserver://SERVER/?database=DATABASE</connection>
+    </db>
+    
+</databases>
+    

@@ -99,7 +99,7 @@ public class DBSchemaTest extends TestCase
     {
         log.info("Testing IdTableMapper");
 
-        DBConnection oldDB = DBConnection.createInstance("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/", "demo_fish2", "rods", "rods");
+        DBConnection oldDB = DBConnection.createInstance("com.mysql.jdbc.Driver", null, "demo_fish2", "jdbc:mysql://localhost/demo_fish2", "rods", "rods");
 
         try
         {

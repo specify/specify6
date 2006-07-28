@@ -604,7 +604,7 @@ public class FormEditor implements DatabaseLoginListener
    * this method should be invoked from the
    * event-dispatching thread.
    */
-  private void startup()
+  private void startup(final String databaseName, final String userName)
   {
         
         for (int i=0;i<10;i++)
@@ -859,9 +859,9 @@ public class FormEditor implements DatabaseLoginListener
     // DatabaseLoginListener Interface
     //---------------------------------------------------------
     
-    public void loggedIn()
+    public void loggedIn(final String databaseName, final String userName)
     {
-        startup();
+        startup(databaseName, userName);
     }
     
     public void cancelled()

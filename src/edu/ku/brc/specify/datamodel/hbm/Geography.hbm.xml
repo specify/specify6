@@ -141,7 +141,7 @@
 			<column name="ParentID" />
 		</many-to-one>
 		
-		<set name="children" lazy="false" inverse="true"
+		<set name="children" lazy="true" inverse="true"
 			cascade="none">
 			<meta attribute="scope-field">protected</meta>
 			<key>

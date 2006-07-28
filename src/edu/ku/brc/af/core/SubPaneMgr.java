@@ -99,8 +99,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             if (spName.equals(newName))
             {
                 count++;
-            }
-            
+            } 
         }
         return count;
     }
@@ -162,7 +161,24 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         }
         notifyListeners(NotificationType.Removed, pane);
         this.remove(pane.getUIComponent());
+        panes.remove(pane);
         return pane;
+    }
+    
+    /**
+     * Remove all the SubPanes
+     */
+    public void removeAllPanes()
+    {
+        for (Enumeration<SubPaneIFace> e=panes.elements();e.hasMoreElements();)
+        {
+            SubPaneIFace sp = e.nextElement();
+            removePane(sp); 
+        }
+        
+        // Make Sure
+        removeAll();
+        panes.clear();
     }
     
     /**

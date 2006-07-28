@@ -24,12 +24,14 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Collections;
+import java.util.Vector;
 import java.util.prefs.Preferences;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -51,9 +53,10 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.helpers.Encryption;
-import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.JStatusBar;
@@ -69,7 +72,7 @@ import edu.ku.brc.ui.UICacheManager;
  *  The "extra" portion of the dialog that is initially hidden is for configuring the driver (the fully specified
  *  class name of the driver) and the protocol for the JDBC connection string.
  * 
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -98,8 +101,7 @@ public class DatabaseLoginPanel extends JPanel
     protected JStatusBar       statusBar;
     
     // Extra UI
-    protected JTextField       driver;
-    protected JTextField       protocol;
+    protected JComboBox        dbDriverCBX;
     protected JPanel           extraPanel;
 
 
@@ -109,12 +111,7 @@ public class DatabaseLoginPanel extends JPanel
     protected DatabaseLoginListener dbListener;
     protected Window                window;
     
-    private String      serverName    = "localhost";
-    private String      databaseName  = "";
-    private String      usernameStr   = "";
-    private String      passwordStr   = "";
-    private String      driverName    = "com.mysql.jdbc.Driver"; // XXX HARD CODED VALUE!
-    private String      protocolStr   = "mysql";
+    protected Vector<DatabaseDriverInfo> dbDrivers = new Vector<DatabaseDriverInfo>();
 
     private Preferences prefNode;
 
@@ -202,18 +199,33 @@ public class DatabaseLoginPanel extends JPanel
         extraBtn       = new JCheckBox("More", forwardImgIcon);
         
         // Extra
-        driver  = new JTextField(20);
-        protocol  = new JTextField(20);
+        dbDrivers = DatabaseDriverInfo.loadDatabaseDriverInfo();
+        dbDriverCBX  = new JComboBox(dbDrivers);
+        if (dbDrivers.size() > 0)
+        {
+            String selectedStr = prefNode.get("dbdriver_selected", "MySQL");
+            int inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(selectedStr, null, null, null));
+            dbDriverCBX.setSelectedIndex(inx > -1 ? inx : -1);
+            
+        } else
+        {
+            JOptionPane.showConfirmDialog(null, getResourceString("NO_DBDRIVERS"), 
+                                          getResourceString("NO_DBDRIVERS_TITLE"), JOptionPane.CLOSED_OPTION);
+            System.exit(1);
+        }
+        
+        dbDriverCBX.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e)
+            {
+                updateUIControls();
+             }
+        });
         
         addFocusListenerForTextComp(username);
         addFocusListenerForTextComp(password);
-        addFocusListenerForTextComp(driver);
-        addFocusListenerForTextComp(protocol);
         
         addKeyListenerForTextComp(username, !isDlg);
         addKeyListenerForTextComp(password, !isDlg);
-        addKeyListenerForTextComp(driver, !isDlg);
-        addKeyListenerForTextComp(protocol, !isDlg);
         
         addKeyListenerForTextComp(databases.getTextField(), !isDlg);
         addKeyListenerForTextComp(servers.getTextField(), !isDlg);
@@ -240,9 +252,6 @@ public class DatabaseLoginPanel extends JPanel
           });
 
         }
-        
-        driver.setText(prefNode.get("driver", "com.mysql.jdbc.Driver"));
-        protocol.setText(prefNode.get("protocol", "mysql"));
 
         cancelBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -271,10 +280,11 @@ public class DatabaseLoginPanel extends JPanel
         extraBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                if (extraPanel.isVisible() && StringUtils.isNotEmpty(protocol.getText()) && StringUtils.isNotEmpty(driver.getText()))
+                if (extraPanel.isVisible() && dbDriverCBX.getSelectedIndex() == -1)
                 {
                     extraPanel.setVisible(false);
                     extraBtn.setIcon(forwardImgIcon);
+                    
                 } else
                 {
                     extraPanel.setVisible(true);
@@ -331,8 +341,7 @@ public class DatabaseLoginPanel extends JPanel
         y += 2;
         
         extraPanelBlder.addSeparator(getResourceString("extratitle"), cc.xywh(1,1,3,1));
-        addLine("driver",  driver, extraPanelBlder, cc, 3);
-        addLine("protocol",  protocol, extraPanelBlder, cc, 5);
+        addLine("driver",  dbDriverCBX, extraPanelBlder, cc, 3);
         extraPanel.setVisible(false);
         
         formBuilder.add(extraPanelBlder.getPanel(), cc.xywh(1,y,3,1));
@@ -349,7 +358,7 @@ public class DatabaseLoginPanel extends JPanel
         
         updateUIControls();
     }
-    
+     
     /**
      * Creates a focus listener so the UI is updated when the focus leaves
      * @param textField the text field to be changed
@@ -426,7 +435,7 @@ public class DatabaseLoginPanel extends JPanel
                                 (servers.getSelectedIndex() != -1 || StringUtils.isNotEmpty(servers.getTextField().getText()) && 
                                 (databases.getSelectedIndex() != -1 || StringUtils.isNotEmpty(databases.getTextField().getText())));
         
-        if (StringUtils.isEmpty(driver.getText()))
+        if (dbDriverCBX.getSelectedIndex() == -1)
         {
             shouldEnable = false;
             setMessage(getResourceString("missingdriver"), true);
@@ -435,14 +444,6 @@ public class DatabaseLoginPanel extends JPanel
                 extraBtn.doClick();
             }
             
-        } else if (StringUtils.isEmpty(protocol.getText()))
-        {
-            shouldEnable = false;
-            setMessage(getResourceString("missingprotocol"), true);
-            if (!extraPanel.isVisible())
-            {
-                extraBtn.doClick();
-            }
         }
         
         loginBtn.setEnabled(shouldEnable);
@@ -492,23 +493,7 @@ public class DatabaseLoginPanel extends JPanel
         {
             prefNode.put("username", username.getText());
         }
-        prefNode.put("protocol", protocol.getText());
-        prefNode.put("driver", driver.getText());
-
-    }
-    
-    /**
-     * Grabs all the values from the UI
-     */
-    protected void getValuesFromUI()
-    {
-        databaseName = databases.getTextField().getText();
-        serverName   = servers.getTextField().getText();
-        usernameStr  = username.getText();
-        passwordStr  = new String(password.getPassword());
-        
-        driverName   = driver.getText();
-        protocolStr  = protocol.getText(); 
+        prefNode.put("dbdriver_selected", dbDrivers.get(dbDriverCBX.getSelectedIndex()).getName());
 
     }
     
@@ -520,7 +505,7 @@ public class DatabaseLoginPanel extends JPanel
         isCancelled = false;
         if (dbListener != null)
         {
-            dbListener.loggedIn();
+            dbListener.loggedIn(getDatabaseName(), getUserName());
         }
     }
 
@@ -530,15 +515,13 @@ public class DatabaseLoginPanel extends JPanel
      */
     protected void doLogin()
     {
-        getValuesFromUI();
-
         save();
         
         statusBar.setIndeterminate(true);
         cancelBtn.setEnabled(false);
         loginBtn.setEnabled(false);
         
-        setMessage(String.format(getResourceString("LoggingIn"), new Object[] {databaseName}), false);
+        setMessage(String.format(getResourceString("LoggingIn"), new Object[] {getDatabaseName()}), false);
                
         final SwingWorker worker = new SwingWorker()
         {
@@ -546,7 +529,8 @@ public class DatabaseLoginPanel extends JPanel
             
             public Object construct()
             {
-                isLoggedIn = UIHelper.tryLogin(driverName, protocolStr, serverName, databaseName, usernameStr, passwordStr);
+                isLoggedIn = UIHelper.tryLogin(getDriverClassName(), getDialectClassName(), getDatabaseName(), 
+                                               getConnectionStr(), getUserName(), getPassword());
                  return null;
             }
 
@@ -559,8 +543,7 @@ public class DatabaseLoginPanel extends JPanel
 
                 if (!isLoggedIn)
                 {
-                    DBConnection dbConn = DBConnection.getInstance();
-                    setMessage(dbConn.getErrorMsg(), true);
+                    setMessage(DBConnection.getInstance().getErrorMsg(), true);
                         
                 } else
                 {
@@ -577,7 +560,7 @@ public class DatabaseLoginPanel extends JPanel
      */
     public String getServerName()
     {
-        return serverName;
+        return servers.getTextField().getText();
     }
 
     /**
@@ -585,7 +568,7 @@ public class DatabaseLoginPanel extends JPanel
      */
     public String getDatabaseName()
     {
-        return databaseName;
+        return databases.getTextField().getText();
     }
 
     /**
@@ -594,7 +577,7 @@ public class DatabaseLoginPanel extends JPanel
      */
     public String getUserName()
     {
-        return usernameStr;
+        return username.getText();
     }
 
     /**
@@ -602,24 +585,54 @@ public class DatabaseLoginPanel extends JPanel
      */
     public String getPassword()
     {
-        return passwordStr;
+        return new String(password.getPassword());
     }
-     
+
     /**
-     * @return the driver name
+     * @return the formatted connection string
      */
-    public String getDriverName()
+    public String getConnectionStr()
     {
-        return driverName;
+        if (dbDriverCBX.getSelectedIndex() > -1)
+        {
+            return dbDrivers.get(dbDriverCBX.getSelectedIndex()).getConnectionStr(getServerName(), getDatabaseName());
+            
+        } else
+        {
+            return null; // we should never get here
+        }
     }
-     
+
     /**
-     * @return the protocol
+     * @return dialect clas name
      */
-    public String getProtocol()
+    public String getDialectClassName()
     {
-        return protocolStr;
+        if (dbDriverCBX.getSelectedIndex() > -1)
+        {
+            return dbDrivers.get(dbDriverCBX.getSelectedIndex()).getDialectClassName();
+            
+        } else
+        {
+            return null; // we should never get here
+        }
     }
+
+    /**
+     * @return the driver class name
+     */
+    public String getDriverClassName()
+    {
+        if (dbDriverCBX.getSelectedIndex() > -1)
+        {
+            return dbDrivers.get(dbDriverCBX.getSelectedIndex()).getDriverClassName();
+            
+        } else
+        {
+            return null; // we should never get here
+        }
+    }
+
 
     /**
      * Returns true if doing auto login
