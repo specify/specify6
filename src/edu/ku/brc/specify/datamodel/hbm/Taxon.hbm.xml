@@ -147,7 +147,7 @@
 
 		<!-- Associations -->
 
-		<set name="determinations" lazy="true" inverse="true"
+		<set name="determinations" lazy="false" inverse="true"
 			cascade="none">
 			<key>
 				<column name="TaxonID" />
@@ -156,8 +156,7 @@
 		</set>
 
 		<!-- bi-directional one-to-many association to Taxon -->
-		<set name="acceptedChildren" lazy="false" inverse="true"
-			cascade="none">
+		<set name="acceptedChildren" inverse="true"	cascade="none" lazy="false">
 			<key>
 				<column name="AcceptedID" />
 			</key>
@@ -172,8 +171,7 @@
 		</many-to-one>
 
 		<!-- bi-directional one-to-many association to TaxonCitation -->
-		<set name="taxonCitations" lazy="true" inverse="true"
-			cascade="none">
+		<set name="taxonCitations" inverse="true" lazy="false" cascade="none">
 			<key>
 				<column name="TaxonID" />
 			</key>
@@ -203,8 +201,8 @@
 		</many-to-one>
 
 		<!-- bi-directional many-to-many association to ExternalResource -->
-		<set name="externalResources" table="taxon_extres" lazy="true"
-			inverse="true" cascade="save-update">
+		<set name="externalResources" table="taxon_extres" inverse="true"
+				lazy="false" cascade="save-update">
 			<key>
 				<column name="TaxonID" />
 			</key>
@@ -213,8 +211,7 @@
 				column="ExternalResourceID" />
 		</set>
 
-		<set name="children" lazy="true" inverse="true"
-			cascade="none">
+		<set name="children" inverse="true"	cascade="none">
 			<meta attribute="scope-field">protected</meta>
 			<key>
 				<column name="ParentId" />
