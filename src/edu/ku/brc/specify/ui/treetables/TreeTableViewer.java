@@ -52,7 +52,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
-import edu.ku.brc.specify.ui.treetables.TreeNodeEditDialog.TreeNodeDialogCallback;
+import edu.ku.brc.specify.ui.treetables.EditFormDialog.EditDialogCallback;
 import edu.ku.brc.ui.DragDropCallback;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.listeners.ScrollBarLinkingListener;
@@ -121,6 +121,8 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	
 	/** Collection of all nodes deleted by user that have not yet been deleted from persistent store (DB). */
 	protected SortedSet<Treeable> deletedNodes;
+	
+	protected String nameBeforeEditDialogShown;
 	
 //	protected boolean busy;
 //	protected BusyComponentGlassPane glassPane;
@@ -493,14 +495,16 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	 */
 	protected void showNewTreeableForm(Treeable newNode)
 	{
-		TreeNodeDialogCallback callback = new TreeNodeDialogCallback()
+		EditDialogCallback callback = new EditDialogCallback()
 		{
-			public void editCompleted(Treeable node, boolean nameChanged)
+			public void editCompleted(Object dataObj)
 			{
+				Treeable node = (Treeable)dataObj;
 				newNodeEntryComplete(node);
 			}
-			public void editCancelled(Treeable node)
+			public void editCancelled(Object dataObj)
 			{
+				Treeable node = (Treeable)dataObj;
 				newNodeEntryCancelled(node);
 			}
 		};
@@ -632,14 +636,16 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		
 		final Treeable node = (Treeable)selection;
 		
-		TreeNodeDialogCallback callback = new TreeNodeDialogCallback()
+		EditDialogCallback callback = new EditDialogCallback()
 		{
-			public void editCompleted(Treeable node, boolean nameChanged)
+			public void editCompleted(Object dataObj)
 			{
-				editSelectedNodeOK(node,nameChanged);
+				Treeable node = (Treeable)dataObj;
+				editSelectedNodeOK(node);
 			}
-			public void editCancelled(Treeable node)
+			public void editCancelled(Object dataObj)
 			{
+				Treeable node = (Treeable)dataObj;
 				editSelectedNodeCancelled(node);
 			}
 		};
@@ -655,11 +661,11 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	 *
 	 * @param node the node being edited
 	 */
-	protected void editSelectedNodeOK(Treeable node, boolean nameChanged)
+	protected void editSelectedNodeOK(Treeable node)
 	{
 		log.info("User selected 'OK' from edit node dialog: ");
 		
-        if( nameChanged )
+        if( !node.getName().equals(nameBeforeEditDialogShown) )
         {
         	node.fixFullNameForAllDescendants();
         }
@@ -766,8 +772,9 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	 * @param title the title of the dialog window
 	 * @param callback the 'complete' and 'cancel' callbacks for the 'OK' and 'Cancel' buttons
 	 */
-	protected void showEditDialog(Treeable node,String title,TreeNodeDialogCallback callback)
+	protected void showEditDialog(Treeable node,String title,EditDialogCallback callback)
 	{
+		nameBeforeEditDialogShown = node.getName();
 		String shortClassName = node.getClass().getName();
 		String idFieldName = shortClassName.substring(0,1).toLowerCase() + shortClassName.substring(1) + "Id";
 		Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(node);

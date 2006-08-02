@@ -14,35 +14,12 @@
  */
 package edu.ku.brc.specify.ui.treetables;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
-
-import java.awt.BorderLayout;
-import java.awt.Frame;
 import java.awt.HeadlessException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
-
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-
-import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.ui.UICacheManager;
-import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.ViewMgr;
-import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.persist.AltView;
-import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.validation.ValComboBox;
 
 /**
@@ -58,120 +35,40 @@ import edu.ku.brc.ui.validation.ValComboBox;
  *
  */
 @SuppressWarnings("serial")
-public class TreeNodeEditDialog extends JDialog implements ActionListener
+public class TreeNodeEditDialog extends EditFormDialog
 {
-    private static final Logger log  = Logger.getLogger(TreeNodeEditDialog.class);
-
     private static final String DEF_ITEM_CB_ID = "defItemComboBox";
     
-    // Form Stuff
-    protected MultiView      multiView;
-    protected View           formView;
-    protected Viewable       form;
-    protected List<String>   fieldNames;
-    
-    // Members needed for creating results
-    protected String         className;
-    protected String         idFieldName;
-
-    // UI
-    protected JButton        okBtn;
-    protected JButton		 cancelBtn;
-
-    protected JPanel         contentPanel;
-    
-    protected TreeNodeDialogCallback callback;
-    
-    protected String initialName;
-
-    /**
-     * Constructs a {@link Treeable} node edit dialog from form info
-     * @param viewSetName the viewset name
-     * @param viewName the form name from the viewset
-     * @param title the title (should be already localized before passing in)
-     * @param className the name of the class to be created from the selected results
-     * @param idFieldName the name of the field in the clas that is the primary key which is filled in from the search table id
-     * @throws HeadlessException an exception
-     */
-    public TreeNodeEditDialog(final String viewSetName,
-                                final String viewName,
-                                final String title,
-                                final String className,
-                                final String idFieldName,
-                                final TreeNodeDialogCallback callback) throws HeadlessException
-    {
-        super((Frame)UICacheManager.get(UICacheManager.FRAME), title, true);
-        
-        this.callback = callback;
-        
-        this.className   = className;
-        this.idFieldName = idFieldName;
-
-        createUI(viewSetName, viewName, title);
-
-        setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        this.setModal(false);
-    }
-
-    protected void createUI(final String viewSetName,
-                            final String viewName,
-                            final String title)
-    {
-        formView = ViewMgr.getView(viewSetName, viewName);
-        if (formView != null)
-        {
-            multiView   = new MultiView(null, formView, AltView.CreationMode.Edit, false, true);
-            form = multiView.getCurrentView();
-
-        } else
-        {
-            log.error("Couldn't load form with name ["+viewSetName+"] Id ["+viewName+"]");
-        }
-        
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
-
-        panel.add(multiView, BorderLayout.NORTH);
-        contentPanel = new JPanel(new NavBoxLayoutManager(0,2));
-
-        okBtn = new JButton(getResourceString("OK"));
-        okBtn.addActionListener(this);
-        getRootPane().setDefaultButton(okBtn);
-        
-        cancelBtn = new JButton(getResourceString("Cancel"));
-        cancelBtn.addActionListener(this);
-
-        ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
-        btnBuilder.addGlue();
-        btnBuilder.addGriddedButtons(new JButton[] { cancelBtn, okBtn });
-
-        panel.add(btnBuilder.getPanel(), BorderLayout.SOUTH);
-
-        setContentPane(panel);
-        pack();
-    }
+    public TreeNodeEditDialog(String viewSetName, String viewName, String title, String className, String idFieldName, EditDialogCallback callback) throws HeadlessException
+	{
+		super(viewSetName,viewName,title,className,idFieldName,callback);
+		// TODO Auto-generated constructor stub
+	}
     
     /**
      * Sets data into the dialog.
      * 
      * @param dataObj the data object
      */
-    public void setData(final Treeable dataObj)
+    public void setData(final Object dataObj)
     {
-    	initialName = dataObj.getName();
+    	if(!(dataObj instanceof Treeable))
+    	{
+    		return;
+    	}
     	
+    	Treeable node = (Treeable)dataObj;
     	ValComboBox cb = (ValComboBox)form.getCompById(DEF_ITEM_CB_ID);
     	DefaultComboBoxModel model = (DefaultComboBoxModel)cb.getModel();
-    	Treeable parent = dataObj.getParentNode();
+    	Treeable parent = node.getParentNode();
     	
     	// if we are editing the root node, just put one def item in
     	// the item selection box
     	if( parent == null )
     	{
-    		model.addElement(dataObj.getDefItem().getName());
+    		model.addElement(node.getDefItem().getName());
     		cb.setEnabled(false);
-    		form.setDataObj(dataObj);
+    		form.setDataObj(node);
     		return;
     	}
     	
@@ -184,7 +81,7 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
     		if( item != null )
     		{
     			model.addElement(item.getName());
-    			if( dataObj.getDefItem() == item )
+    			if( node.getDefItem() == item )
     			{
     				cb.setValue(item.getName(), null);
     			}
@@ -200,11 +97,11 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
     			done = true;
     		}
     	}
-    	if(dataObj.getDefItem()==null && defaultItem!=null)
+    	if(node.getDefItem()==null && defaultItem!=null)
     	{
     		cb.setValue(defaultItem.getName(),null);
     	}
-        form.setDataObj(dataObj);
+        form.setDataObj(node);
     }
 
     protected void setDefItemByName( Treeable node, String defItemName )
@@ -214,46 +111,14 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
     	node.setRankId(item.getRankId());
     }
 
-    public void actionPerformed(ActionEvent e)
+    protected void getData()
     {
-        // Handle clicks on the OK buttons.
-    	if( e.getSource().equals(okBtn) )
-    	{
-    		okAction(e);
-    	}
-    	else if( e.getSource().equals(cancelBtn) )
-    	{
-    		cancelAction(e);
-    	}
-    	return;
-    }
-    
-    public void okAction(ActionEvent e)
-    {
-        // Handle clicks on the OK buttons.
-        setVisible(false);
-        
-        form.getDataFromUI();
-        
+    	super.getData();
+    	
         ValComboBox cb = (ValComboBox)form.getCompById(DEF_ITEM_CB_ID);
         String defItemName = (String)cb.getValue();
         Treeable node = (Treeable)form.getDataObj();
         
         setDefItemByName(node, defItemName);
-        callback.editCompleted(node,!node.getName().equals(initialName));
-    }
-    
-    public void cancelAction(ActionEvent e)
-    {
-        setVisible(false);
-
-    	Treeable node = (Treeable)form.getDataObj();
-    	callback.editCancelled(node);
-    }
-    
-    public interface TreeNodeDialogCallback
-    {
-    	public void editCompleted(Treeable node, boolean nameChanged);
-    	public void editCancelled(Treeable node);
     }
 }
