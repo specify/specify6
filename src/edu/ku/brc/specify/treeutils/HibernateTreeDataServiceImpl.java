@@ -10,6 +10,7 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -57,7 +58,14 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 	
 	public void fini()
 	{
-		session.close();
+		try
+		{
+			session.close();
+		}
+		catch( Exception ex )
+		{
+			log.warn("Exception caught while closing Hibernate session", ex);
+		}
 	}
 	
 	/**

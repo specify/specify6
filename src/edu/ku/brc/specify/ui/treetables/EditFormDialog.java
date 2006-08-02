@@ -186,7 +186,7 @@ public class EditFormDialog extends JDialog implements ActionListener
     
     public interface EditDialogCallback
     {
-    	public void editCompleted(Object defItem);
-    	public void editCancelled(Object defItem);
+    	public void editCompleted(Object dataObj);
+    	public void editCancelled(Object dataObj);
     }
 }

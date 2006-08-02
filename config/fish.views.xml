@@ -134,39 +134,75 @@
             </altviews>
         </view>
         
-        <view name="NewTaxon"
+        <view name="Taxon"
             class="edu.ku.brc.specify.datamodel.Taxon"
             resourcelabels="false">
-            <desc><![CDATA[New Taxon Node Form]]></desc>
+            <desc><![CDATA[Taxon Node Form]]></desc>
             <altviews>
-                <altview name="Taxon Edit" viewdef="NewTaxon" label="Edit" mode="edit" validated="true"/>
+                <altview name="Taxon Edit" viewdef="Taxon" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
         
-        <view name="NewGeography"
+        <view name="Geography"
             class="edu.ku.brc.specify.datamodel.Geography"
             resourcelabels="false">
-            <desc><![CDATA[New Taxon Node Form]]></desc>
+            <desc><![CDATA[Geography Node Form]]></desc>
             <altviews>
-                <altview name="Taxon Edit" viewdef="NewGeography" label="Edit" mode="edit" validated="true"/>
+                <altview name="Geography Edit" viewdef="Geography" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
         
-        <view name="NewGeologicTimePeriod"
+        <view name="GeologicTimePeriod"
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
             resourcelabels="false">
-            <desc><![CDATA[New Taxon Node Form]]></desc>
+            <desc><![CDATA[GeologicTimePeriod Node Form]]></desc>
             <altviews>
-                <altview name="GeologicTimePeriod Edit" viewdef="NewGeologicTimePeriod" label="Edit" mode="edit" validated="true"/>
+                <altview name="GeologicTimePeriod Edit" viewdef="GeologicTimePeriod" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
         
-        <view name="NewLocation"
+        <view name="Location"
             class="edu.ku.brc.specify.datamodel.Location"
             resourcelabels="false">
-            <desc><![CDATA[New Taxon Node Form]]></desc>
+            <desc><![CDATA[Location Node Form]]></desc>
             <altviews>
-                <altview name="Location Edit" viewdef="NewLocation" label="Edit" mode="edit" validated="true"/>
+                <altview name="Location Edit" viewdef="Location" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
+        <view name="TaxonTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"
+            resourcelabels="false">
+            <desc><![CDATA[TaxonTreeDefItem Node Form]]></desc>
+            <altviews>
+                <altview name="TaxonTreeDefItem Edit" viewdef="TreeDefItem" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
+        <view name="GeographyTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.GeographyTreeDefItem"
+            resourcelabels="false">
+            <desc><![CDATA[GeographyTreeDefItem Node Form]]></desc>
+            <altviews>
+                <altview name="GeographyTreeDefItem Edit" viewdef="TreeDefItem" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
+        <view name="GeologicTimePeriodTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"
+            resourcelabels="false">
+            <desc><![CDATA[GeologicTimePeriodTreeDefItem Node Form]]></desc>
+            <altviews>
+                <altview name="GeologicTimePeriodTreeDefItem Edit" viewdef="TreeDefItem" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
+        <view name="LocationTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"
+            resourcelabels="false">
+            <desc><![CDATA[LocationTreeDefItem Node Form]]></desc>
+            <altviews>
+                <altview name="LocationTreeDefItem Edit" viewdef="TreeDefItem" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
     </views>
@@ -897,13 +933,13 @@
                 <row>
                     <cell type="subview" viewname="Preparation" id="9" name="preparations" colspan="12"/>
                 </row>
-    -->
+    			-->
 
             </rows>
         </viewdef>
         <viewdef
             type="form"
-            name="NewTaxon"
+            name="Taxon"
             class="edu.ku.brc.specify.datamodel.Taxon"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
@@ -957,7 +993,7 @@
         
         <viewdef
             type="form"
-            name="NewGeography"
+            name="Geography"
             class="edu.ku.brc.specify.datamodel.Geography"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
@@ -984,7 +1020,7 @@
         
         <viewdef
             type="form"
-            name="NewGeologicTimePeriod"
+            name="GeologicTimePeriod"
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
@@ -1011,7 +1047,7 @@
         
         <viewdef
             type="form"
-            name="NewLocation"
+            name="Location"
             class="edu.ku.brc.specify.datamodel.Location"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
@@ -1034,7 +1070,35 @@
                     <cell type="field" id="defItemComboBox" uitype="combobox" name=""/>
                 </row>
             </rows>
-        </viewdef>        
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="TreeDefItem"
+            class="edu.ku.brc.specify.datamodel.TreeDefinitionItemIface"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Tree Definition Item Form]]></desc>
+            <columnDef>p,3dlu,p,6dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Is Enforced?"/>
+                    <cell type="field" id="3" uitype="checkbox" name="isEnforced"/>
+                </row>
+            </rows>
+        </viewdef>
+        
 
     </viewdefs>
 </viewset>

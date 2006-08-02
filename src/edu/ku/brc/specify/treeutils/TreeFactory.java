@@ -318,22 +318,22 @@ public class TreeFactory
 	{
 		if( node instanceof Geography )
 		{
-			return new Pair<String,String>("Fish Views","NewGeography");
+			return new Pair<String,String>("Fish Views","Geography");
 		}
 
 		if( node instanceof GeologicTimePeriod )
 		{
-			return new Pair<String,String>("Fish Views","NewGeologicTimePeriod");
+			return new Pair<String,String>("Fish Views","GeologicTimePeriod");
 		}
 
 		if( node instanceof Location )
 		{
-			return new Pair<String,String>("Fish Views","NewLocation");
+			return new Pair<String,String>("Fish Views","Location");
 		}
 
 		if( node instanceof Taxon )
 		{
-			return new Pair<String,String>("Fish Views","NewTaxon");
+			return new Pair<String,String>("Fish Views","Taxon");
 		}
 		
 		return null;
@@ -350,22 +350,22 @@ public class TreeFactory
 	{
 		if( defItem instanceof GeographyTreeDefItem )
 		{
-			return new Pair<String,String>("Fish Views","NewGeographyDefItem");
+			return new Pair<String,String>("Fish Views","GeographyTreeDefItem");
 		}
 
 		if( defItem instanceof GeologicTimePeriodTreeDefItem )
 		{
-			return new Pair<String,String>("Fish Views","NewGeologicTimePeriodDefItem");
+			return new Pair<String,String>("Fish Views","GeologicTimePeriodTreeDefItem");
 		}
 
 		if( defItem instanceof LocationTreeDefItem )
 		{
-			return new Pair<String,String>("Fish Views","NewLocationDefItem");
+			return new Pair<String,String>("Fish Views","LocationTreeDefItem");
 		}
 
 		if( defItem instanceof TaxonTreeDefItem )
 		{
-			return new Pair<String,String>("Fish Views","NewTaxonDefItem");
+			return new Pair<String,String>("Fish Views","TaxonTreeDefItem");
 		}
 		
 		return null;

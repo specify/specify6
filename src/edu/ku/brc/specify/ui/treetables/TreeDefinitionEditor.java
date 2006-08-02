@@ -6,6 +6,8 @@ package edu.ku.brc.specify.ui.treetables;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -18,6 +20,8 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
@@ -37,8 +41,10 @@ import edu.ku.brc.util.Pair;
  * @author jstewart
  * @version %I% %G%
  */
-public class TreeDefinitionEditor extends BaseSubPane implements ListSelectionListener
+public class TreeDefinitionEditor extends BaseSubPane implements ListSelectionListener, MouseListener
 {
+	private static final Logger log  = Logger.getLogger(TreeDefinitionEditor.class);
+	
 	protected Class treeDefClass;
 	
 	protected JPanel northPanel;
@@ -130,6 +136,7 @@ public class TreeDefinitionEditor extends BaseSubPane implements ListSelectionLi
 		listModel = new TreeDefEditorListModel(defItems);
 		defItemsList = new JList(listModel);
 		defItemsList.addListSelectionListener(this);
+		defItemsList.addMouseListener(this);
 		Icon enforcedIcon = IconManager.getIcon("GoogleEarth",IconManager.IconSize.Std16);
 		defItemsList.setCellRenderer(new TreeDefItemListCellRenderer(20,enforcedIcon));
 		
@@ -178,12 +185,12 @@ public class TreeDefinitionEditor extends BaseSubPane implements ListSelectionLi
 	
 	protected void newDefItemEditComplete(TreeDefinitionItemIface defItem)
 	{
-		
+		log.info("newDefItemEditComplete called");
 	}
 	
 	protected void newDefItemEditCancelled(TreeDefinitionItemIface defItem)
 	{
-		
+		log.info("newDefItemEditCancelled called");
 	}
 	
 	/**
@@ -195,7 +202,7 @@ public class TreeDefinitionEditor extends BaseSubPane implements ListSelectionLi
 	 */
 	protected void showEditDialog(TreeDefinitionItemIface defItem,String title,EditDialogCallback callback)
 	{
-		String shortClassName = defItem.getClass().getName();
+		String shortClassName = defItem.getClass().getSimpleName();
 		String idFieldName = shortClassName.substring(0,1).toLowerCase() + shortClassName.substring(1) + "Id";
 		Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(defItem);
 		EditFormDialog editDialog = new EditFormDialog(formsNames.first,formsNames.second,title,shortClassName,idFieldName,callback);
@@ -204,4 +211,82 @@ public class TreeDefinitionEditor extends BaseSubPane implements ListSelectionLi
 		editDialog.setVisible(true);
 	}
 
+	/**
+	 *
+	 *
+	 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
+	 * @param e
+	 */
+	public void mouseClicked(MouseEvent e)
+	{
+		if(e.getClickCount()==2)
+		{
+			int doubleClickedItemIndex = defItemsList.getUI().locationToIndex(defItemsList,e.getPoint());
+			TreeDefinitionItemIface defItem = (TreeDefinitionItemIface)listModel.getElementAt(doubleClickedItemIndex);
+			EditDialogCallback callback = new EditDialogCallback()
+			{
+				public void editCancelled(Object dataObj)
+				{
+					TreeDefinitionItemIface item = (TreeDefinitionItemIface)dataObj;
+					itemEditComplete(item);
+				}
+				public void editCompleted(Object dataObj)
+				{
+					TreeDefinitionItemIface item = (TreeDefinitionItemIface)dataObj;
+					itemEditCancelled(item);
+				}
+			};
+			showEditDialog(defItem,"Edit Definition Item",callback);
+		}
+	}
+	
+	protected void itemEditComplete(TreeDefinitionItemIface defItem)
+	{
+		log.info("itemEditComplete called");
+	}
+	
+	protected void itemEditCancelled(TreeDefinitionItemIface defItem)
+	{
+		log.info("itemEditCancelled called");
+	}
+
+	/**
+	 *
+	 *
+	 * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
+	 * @param e
+	 */
+	public void mouseEntered(MouseEvent e)
+	{
+	}
+
+	/**
+	 *
+	 *
+	 * @see java.awt.event.MouseListener#mouseExited(java.awt.event.MouseEvent)
+	 * @param e
+	 */
+	public void mouseExited(MouseEvent e)
+	{
+	}
+
+	/**
+	 *
+	 *
+	 * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
+	 * @param e
+	 */
+	public void mousePressed(MouseEvent e)
+	{
+	}
+
+	/**
+	 *
+	 *
+	 * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
+	 * @param e
+	 */
+	public void mouseReleased(MouseEvent e)
+	{
+	}
 }
