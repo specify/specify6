@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 
 /**
- * A compartor to be used in reverse sorting <code>Rankable</code> objects
+ * A comparator to be used in reverse sorting <code>Rankable</code> objects
  * based on their ranks.
  *
  * @code_status Unknown (auto-generated)
