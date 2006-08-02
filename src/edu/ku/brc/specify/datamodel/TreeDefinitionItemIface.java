@@ -2,22 +2,19 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.Set;
 
-public interface TreeDefinitionItemIface
+import edu.ku.brc.util.Nameable;
+import edu.ku.brc.util.Rankable;
+
+public interface TreeDefinitionItemIface extends Rankable, Nameable
 {
 	public void initialize();
 	
 	public Integer getTreeDefItemId();
 	public void setTreeDefItemId(Integer id);
 	
-	public String getName();
-	public void setName(String name);
-	
 	public String getRemarks();
 	public void setRemarks(String remarks);
 
-	public Integer getRankId();
-	public void setRankId(Integer rank);
-	
 	public TreeDefinitionIface getTreeDefinition();
 	public void setTreeDefinition(TreeDefinitionIface treeDef);
 	
