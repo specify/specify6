@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.Serializable {
+public class GeologicTimePeriodTreeDef extends AbstractTreeDefinition implements java.io.Serializable {
 
     // Fields    
 
@@ -156,5 +156,11 @@ public class GeologicTimePeriodTreeDef  implements TreeDefinitionIface,java.io.S
 	{
 		collObjDefs.remove(def);
 		def.setGeologicTimePeriodTreeDef(null);
+	}
+	
+	// methods to "complete" the implementation of TreeDefinitionIface
+	public Class getNodeClass()
+	{
+		return GeologicTimePeriod.class;
 	}
 }

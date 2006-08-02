@@ -20,4 +20,9 @@ public interface TreeDefinitionIface
 	
 	public Set getTreeDefItems();
 	public void setTreeDefItems(Set treeDefItems);
+	
+	public Class getNodeClass();
+	public TreeDefinitionItemIface getDefItemByRank(Integer rank);
+	public TreeDefinitionItemIface getDefItemByName(String name);
+	public boolean canChildBeReparentedToNode(Treeable child,Treeable newParent);
 }

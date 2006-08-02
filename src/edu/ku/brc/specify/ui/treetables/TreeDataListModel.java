@@ -29,7 +29,6 @@ import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeFactory;
-import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.util.Pair;
 
 /*
@@ -47,7 +46,7 @@ public class TreeDataListModel extends AbstractListModel
     private static final Logger log = Logger.getLogger(TreeDataListModel.class);
     protected Treeable root;
     protected Treeable visibleRoot;
-    protected Comparator<Treeable> comparator;
+    protected Comparator comparator;
 
 	public TreeDataListModel( Treeable root )
 	{
@@ -240,7 +239,7 @@ public class TreeDataListModel extends AbstractListModel
 		{
 			// if we've moved past the last descendant of 'parent',
 			// insert the new node ('t') as the last descendant of 'parent'
-			if( !TreeTableUtils.nodeIsDescendantOfNode(node, parent) )
+			if( !node.isDescendantOf(parent) )
 			{
 				// we've ventured out of our parent's descendant set
 				// we should be added just before 'node'
@@ -382,7 +381,7 @@ public class TreeDataListModel extends AbstractListModel
 			return null;
 		}
 		
-		TreeDefinitionItemIface defItem = TreeTableUtils.getDefItemByRank(treeDef, rank);
+		TreeDefinitionItemIface defItem = treeDef.getDefItemByRank(rank);
 
 		// start with the rank name being the longest item
 		// this way, it's length gets factored in
@@ -413,17 +412,19 @@ public class TreeDataListModel extends AbstractListModel
 	
 	public Object getElementAt(int arg0)
 	{
-		int index = 0;
-		for( Treeable t: visibleNodes )
-		{
-			if( index == arg0 )
-			{
-				return t;
-			}
-			++index;
-		}
+//		int index = 0;
+//		for( Treeable t: visibleNodes )
+//		{
+//			if( index == arg0 )
+//			{
+//				return t;
+//			}
+//			++index;
+//		}
+//		
+//		throw new ArrayIndexOutOfBoundsException();
 		
-		throw new ArrayIndexOutOfBoundsException();
+		return visibleNodes.elementAt(arg0);
 	}
 	
 	public boolean parentHasChildrenAfterNode( Treeable parent, Treeable child )
@@ -465,7 +466,7 @@ public class TreeDataListModel extends AbstractListModel
 		
 		this.removeNode(node);
 		this.insertNode(node, newParent);
-		TreeTableUtils.fixFullNames(node);
+		node.fixFullNameForAllDescendants();
 		return true;
 	}
 

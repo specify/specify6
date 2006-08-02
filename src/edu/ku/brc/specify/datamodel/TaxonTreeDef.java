@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class TaxonTreeDef implements TreeDefinitionIface,java.io.Serializable {
+public class TaxonTreeDef extends AbstractTreeDefinition implements java.io.Serializable {
 
     // Fields    
 
@@ -145,5 +145,11 @@ public class TaxonTreeDef implements TreeDefinitionIface,java.io.Serializable {
 	{
 		treeDefItems.remove(item);
 		item.setTreeDef(null);
+	}
+	
+	// methods to "complete" the implementation of TreeDefinitionIface
+	public Class getNodeClass()
+	{
+		return Taxon.class;
 	}
 }

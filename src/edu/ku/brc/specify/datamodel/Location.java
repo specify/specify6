@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class Location  implements java.io.Serializable,Treeable {
+public class Location extends AbstractTreeable implements java.io.Serializable {
 
     // Fields    
 
@@ -492,4 +492,51 @@ public class Location  implements java.io.Serializable,Treeable {
     	String parentName = getParent() != null ? getParent().getName() : "none";
     	return "Location " + locationId + ": " + name + ", child of " + parentName + ", " + rankId + ", " + nodeNumber + ", " + highestChildNodeNumber;
     }
+    
+    // methods to complete implementation of AbstractTreeable
+    
+	public int getFullNameDirection()
+	{
+		//TODO: move these to prefs
+		//XXX: pref
+		return REVERSE;
+	}
+
+	public String getFullNameSeparator()
+	{
+		//TODO: move these to prefs
+		//XXX: pref
+		return ", ";
+	}
+	
+	/**
+	 * Determines if the Location can be deleted.  This method checks whether or not
+	 * the given Treeable is referenced by any foreign key contraints.  If no FKs are
+	 * currently referring to this node, <code>true</code> is returned.
+	 * 
+	 * @return <code>true</code> if deletable
+	 */
+	public boolean canBeDeleted()
+	{
+		// force all collections to be loaded
+		boolean noConts = getContainers().isEmpty();
+		boolean noPreps = getPreparations().isEmpty();
+		
+		boolean descendantsDeletable = true;
+		for( Location child: getChildren() )
+		{
+			if(!child.canBeDeleted())
+			{
+				descendantsDeletable = false;
+				break;
+			}
+		}
+
+		if( noConts && noPreps && descendantsDeletable )
+		{
+			return true;
+		}
+		
+		return false;
+	}	
 }

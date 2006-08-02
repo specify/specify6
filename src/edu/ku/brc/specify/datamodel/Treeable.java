@@ -1,7 +1,11 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
+
+import edu.ku.brc.util.Nameable;
+import edu.ku.brc.util.Rankable;
 
 /**
  * Describes any class where a collection of its objects can be modeled as
@@ -27,7 +31,7 @@ import java.util.Set;
  * 
  * @author jstewart
  */
-public interface Treeable
+public interface Treeable extends Rankable, Nameable
 {
 	public void initialize();
 	
@@ -86,17 +90,7 @@ public interface Treeable
 	 * @param nodeNumber the node number of the descdendant having the largest node number
 	 */
 	public void setHighestChildNodeNumber(Integer nodeNumber);
-	
-	/**
-	 * @return the name of this node
-	 */
-	public String getName();
-	
-	/**
-	 * @param name the new name of the node
-	 */
-	public void setName(String name);
-	
+		
 	/**
 	 * @return the remarks of this node
 	 */
@@ -106,16 +100,6 @@ public interface Treeable
 	 * @param name the new remarks of the node
 	 */
 	public void setRemarks(String remarks);
-
-	/**
-	 * @return the rank (tree level) of this node
-	 */
-	public Integer getRankId();
-	
-	/**
-	 * @param id the new rank (tree level) of this node
-	 */
-	public void setRankId(Integer id);
 	
 	/**
 	 * @return the series ID of the tree containing this node
@@ -152,4 +136,17 @@ public interface Treeable
 	
 	public String getLastEditedBy();
 	public void setLastEditedBy(String user);
+	
+	public int getFullNameDirection();
+	public String getFullNameSeparator();
+	
+	public int getDescendantCount();
+	public boolean childrenAllowed();
+	public boolean canBeDeleted();
+	public List<Treeable> getAllDescendants();
+	public void fixFullNameForAllDescendants();
+	
+	public void setTimestampsToNow();
+	public void updateModifiedTimeAndUser();
+	public boolean isDescendantOf(Treeable node);
 }

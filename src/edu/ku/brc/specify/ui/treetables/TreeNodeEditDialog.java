@@ -37,7 +37,6 @@ import com.jgoodies.forms.builder.ButtonBarBuilder;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewMgr;
@@ -210,7 +209,7 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
 
     protected void setDefItemByName( Treeable node, String defItemName )
     {
-    	TreeDefinitionItemIface item = TreeTableUtils.getDefItemByName(node.getTreeDef(),defItemName);
+    	TreeDefinitionItemIface item = node.getTreeDef().getDefItemByName(defItemName);
     	node.setDefItem(item);
     	node.setRankId(item.getRankId());
     }
@@ -240,12 +239,8 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
         String defItemName = (String)cb.getValue();
         Treeable node = (Treeable)form.getDataObj();
         
-        if( !node.getName().equals(initialName) )
-        {
-        	TreeTableUtils.fixAllDescendantFullNames(node);
-        }
         setDefItemByName(node, defItemName);
-        callback.editCompleted(node);
+        callback.editCompleted(node,!node.getName().equals(initialName));
     }
     
     public void cancelAction(ActionEvent e)
@@ -258,7 +253,7 @@ public class TreeNodeEditDialog extends JDialog implements ActionListener
     
     public interface TreeNodeDialogCallback
     {
-    	public void editCompleted(Treeable node);
+    	public void editCompleted(Treeable node, boolean nameChanged);
     	public void editCancelled(Treeable node);
     }
 }

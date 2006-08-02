@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class LocationTreeDef  implements TreeDefinitionIface,java.io.Serializable {
+public class LocationTreeDef extends AbstractTreeDefinition implements java.io.Serializable {
 
     // Fields    
 
@@ -156,5 +156,11 @@ public class LocationTreeDef  implements TreeDefinitionIface,java.io.Serializabl
 	{
 		collObjDefs.remove(def);
 		def.setLocationTreeDef(null);
+	}
+	
+	// methods to "complete" the implementation of TreeDefinitionIface
+	public Class getNodeClass()
+	{
+		return Location.class;
 	}
 }

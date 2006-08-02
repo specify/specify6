@@ -72,9 +72,9 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
+import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tests.ObjCreatorHelper;
 import edu.ku.brc.specify.treeutils.TreeFactory;
-import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.ui.db.PickList;
 import edu.ku.brc.ui.db.PickListItem;
 import edu.ku.brc.util.Pair;
@@ -2836,7 +2836,7 @@ public class GenericDBConversion
     			break;
     		}
     	}
-    	GeographyTreeDefItem defItem = (GeographyTreeDefItem)TreeTableUtils.getDefItemByRank(treeDef,0);
+    	GeographyTreeDefItem defItem = (GeographyTreeDefItem)treeDef.getDefItemByRank(0);
     	planetEarth.setDefinitionItem(defItem);
     	session.save(planetEarth);
     	
@@ -2946,7 +2946,7 @@ public class GenericDBConversion
     	parent.addChild(newGeo);
     	newGeo.setTreeDef(parent.getTreeDef());
     	int newGeoRank = parent.getRankId()+100;
-    	GeographyTreeDefItem defItem = (GeographyTreeDefItem)TreeTableUtils.getDefItemByRank(parent.getTreeDef(), newGeoRank);
+    	GeographyTreeDefItem defItem = (GeographyTreeDefItem)parent.getTreeDef().getDefItemByRank(newGeoRank);
     	newGeo.setDefinitionItem(defItem);
     	newGeo.setRankId(newGeoRank);
     	session.save(newGeo);
@@ -3145,7 +3145,7 @@ public class GenericDBConversion
     	GeologicTimePeriod allTime = new GeologicTimePeriod();
     	allTime.initialize();
     	allTime.setDefinition(treeDef);
-    	TreeDefinitionItemIface rootDefItem = TreeTableUtils.getDefItemByRank(treeDef, 0);
+    	TreeDefinitionItemIface rootDefItem = treeDef.getDefItemByRank(0);
 		allTime.setDefItem(rootDefItem);
     	allTime.setRankId(0);
     	allTime.setName("All Time");
@@ -3176,7 +3176,7 @@ public class GenericDBConversion
     		GeologicTimePeriod gtp = new GeologicTimePeriod();
     		gtp.initialize();
     		gtp.setName(name);
-    		TreeDefinitionItemIface defItem = TreeTableUtils.getDefItemByRank(treeDef, rank);
+    		TreeDefinitionItemIface defItem = treeDef.getDefItemByRank(rank);
     		gtp.setDefItem(defItem);
     		gtp.setRankId(rank);
     		gtp.setDefinition(treeDef);
@@ -3218,13 +3218,33 @@ public class GenericDBConversion
     	
     	// TODO: fix node number, child node number stuff
     	allTime.setNodeNumber(1);
-    	TreeTableUtils.fixNodeNumbersFromRoot(allTime);
+    	fixNodeNumbersFromRoot(allTime);
     	
     	HibernateUtil.commitTransaction();
     	HibernateUtil.closeSession();
     	
     	log.info(count + " geologic time period records converted");
     }
+    
+	/**
+	 * Regenerates all nodeNumber and highestChildNodeNumber field values for all
+	 * nodes attached to the given root.  The nodeNumber field of the given root
+	 * must already be set.
+	 * 
+	 * @param root the top of the tree to be renumbered
+	 * @return the highest node number value present in the subtree rooted at <code>root</code>
+	 */
+	public static int fixNodeNumbersFromRoot( Treeable root )
+	{
+		int nextNodeNumber = root.getNodeNumber();
+		for( Treeable child: root.getChildNodes() )
+		{
+			child.setNodeNumber(++nextNodeNumber);
+			nextNodeNumber = fixNodeNumbersFromRoot(child);
+		}
+		root.setHighestChildNodeNumber(nextNodeNumber);
+		return nextNodeNumber;
+	}
     
     protected boolean isParentChildPair( GeologicTimePeriod parent, GeologicTimePeriod child )
     {

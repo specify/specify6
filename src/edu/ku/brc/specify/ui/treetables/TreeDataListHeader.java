@@ -28,7 +28,6 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
-import edu.ku.brc.specify.treeutils.TreeTableUtils;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -98,7 +97,7 @@ public class TreeDataListHeader extends JLabel implements Icon, ListDataListener
 
         for( Integer rank: model.getVisibleRanks() )
 		{
-			TreeDefinitionItemIface defItem = TreeTableUtils.getDefItemByRank(model.getTreeDef(), rank);
+			TreeDefinitionItemIface defItem = model.getTreeDef().getDefItemByRank(rank);
 			g.setColor(textColor);
 			TreeDataListCellRenderer rend = (TreeDataListCellRenderer)list.getCellRenderer();
 			Pair<Integer,Integer> textBounds = rend.getTextBoundsForRank(rank); 

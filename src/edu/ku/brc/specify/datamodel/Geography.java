@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class Geography  implements java.io.Serializable,Treeable {
+public class Geography extends AbstractTreeable implements java.io.Serializable {
 
     // Fields
 
@@ -501,42 +501,60 @@ public class Geography  implements java.io.Serializable,Treeable {
 
      // Delete Add Methods
 
-    protected String getGeo(Geography g, final int rankId)
-    {
-        while (g != null && g.getRankId() != rankId)
-        {
-            g = g.getParent();
-        }
-        if (g != null)
-        {
-            return g.getName();
-        }
-        return "";
-    }
-
-    public String getContinent()
-    {
-        return getGeo(this, 100);
-    }
-
-    public String getCountry()
-    {
-        return getGeo(this, 200);
-    }
-
-    public String getState()
-    {
-        return getGeo(this, 300);
-    }
-
-    public String getCounty()
-    {
-        return getGeo(this, 400);
-    }
-
     public String toString()
     {
     	String parentName = getParent() != null ? getParent().getName() : "none";
     	return "Geography " + geographyId + ": " + name + ", child of " + parentName + ", " + rankId + ", " + nodeNumber + ", " + highestChildNodeNumber;
     }
+
+    // methods to complete implementation of AbstractTreeable
+    
+	public int getFullNameDirection()
+	{
+		//TODO: move these to prefs
+		//XXX: pref
+		return REVERSE;
+	}
+
+	public String getFullNameSeparator()
+	{
+		//TODO: move these to prefs
+		//XXX: pref
+		return ", ";
+	}
+
+	/**
+	 * Determines if the given Geography can be deleted.  This method checks wether or not
+	 * the given Treeable is referenced by any foreign key contraints.  If no FKs are
+	 * currently referring to this node, <code>true</code> is returned.
+	 * 
+	 * @see #canBeDeleted(Treeable)
+	 * @param geo the node to check
+	 * @return <code>true</code> if deletable
+	 */
+	public boolean canBeDeleted()
+	{
+		// force all collections to be loaded
+		boolean noLocs = getLocalities().isEmpty();
+		
+		boolean descendantsDeletable = true;
+		for( Geography child: getChildren() )
+		{
+			if(!child.canBeDeleted())
+			{
+				descendantsDeletable = false;
+				break;
+			}
+		}
+
+		if( noLocs && descendantsDeletable )
+		{
+			return true;
+		}
+		
+		return false;
+	}
+
+
+
 }

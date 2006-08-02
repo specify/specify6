@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class GeographyTreeDef  implements TreeDefinitionIface,java.io.Serializable {
+public class GeographyTreeDef extends AbstractTreeDefinition implements java.io.Serializable {
 
     // Fields    
 
@@ -158,5 +158,11 @@ public class GeographyTreeDef  implements TreeDefinitionIface,java.io.Serializab
 	{
 		collObjDefs.remove(def);
 		def.setGeographyTreeDef(null);
+	}
+	
+	// methods to "complete" the implementation of TreeDefinitionIface
+	public Class getNodeClass()
+	{
+		return Geography.class;
 	}
 }

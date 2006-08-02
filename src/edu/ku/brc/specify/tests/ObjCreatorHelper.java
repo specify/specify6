@@ -78,7 +78,6 @@ import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
-import edu.ku.brc.specify.treeutils.TreeTableUtils;
 
 public class ObjCreatorHelper
 {
@@ -462,7 +461,7 @@ public class ObjCreatorHelper
         geography.setName(name);
         geography.setParent(parent);
         geography.setRankId(rankId);
-        GeographyTreeDefItem defItem = (GeographyTreeDefItem)TreeTableUtils.getDefItemByRank(gtd,rankId);
+        GeographyTreeDefItem defItem = (GeographyTreeDefItem)gtd.getDefItemByRank(rankId);
         if( defItem != null )
         {
         	geography.setDefinitionItem(defItem);
@@ -548,7 +547,7 @@ public class ObjCreatorHelper
         location.setDefinition(ltd);
         location.setName(name);
         location.setParent(parent);
-        LocationTreeDefItem defItem = (LocationTreeDefItem)TreeTableUtils.getDefItemByRank(ltd,rankId);
+        LocationTreeDefItem defItem = (LocationTreeDefItem)ltd.getDefItemByRank(rankId);
         if( defItem != null )
         {
         	location.setDefinitionItem(defItem);
@@ -634,7 +633,7 @@ public class ObjCreatorHelper
         gtp.setDefinition(gtptd);
         gtp.setName(name);
         gtp.setParent(parent);
-        GeologicTimePeriodTreeDefItem defItem = (GeologicTimePeriodTreeDefItem)TreeTableUtils.getDefItemByRank(gtptd,rankId);
+        GeologicTimePeriodTreeDefItem defItem = (GeologicTimePeriodTreeDefItem)gtptd.getDefItemByRank(rankId);
         if( defItem != null )
         {
         	gtp.setDefinitionItem(defItem);
@@ -715,7 +714,7 @@ public class ObjCreatorHelper
         taxon.setDefinition(ttd);
         taxon.setName(name);
         taxon.setParent(parent);
-        TaxonTreeDefItem defItem = (TaxonTreeDefItem)TreeTableUtils.getDefItemByRank(ttd,rankId);
+        TaxonTreeDefItem defItem = (TaxonTreeDefItem)ttd.getDefItemByRank(rankId);
         if( defItem != null )
         {
         	taxon.setDefinitionItem(defItem);
