@@ -17,6 +17,7 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.util.NameBasedComparator;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -145,7 +146,7 @@ public class TreeFactory
 	 * @param rank the rank of the new node
 	 * @return the new Treeable node instance
 	 */
-	public static Treeable createNewTreeable( Class implementingClass, Treeable parent, String name, Integer rank )
+	public static Treeable createNewTreeable( Class implementingClass, String name )
 	{
 		Treeable t = null;
 		// big switch statement on implementingClass
@@ -171,60 +172,9 @@ public class TreeFactory
 		}
 		t.setName(name);
 
-		if( parent != null )
-		{
-			parent.addChild(t);
-			if( rank == null )
-			{
-				rank = TreeTableUtils.getRankOfChildren(parent);
-			}
-			t.setRankId(rank);
-			t.setTreeDef(parent.getTreeDef());
-		}
 		return t;
 	}
-	
-	/**
-	 * Creates a new Treeable node instance having the given parent and name.
-	 * 
-	 * @param parent the parent of the new node
-	 * @param name the name of the new node
-	 * @see TreeFactory#createNewTreeable(Class,Treeable,String,Integer)
-	 * @return the new Treeable node instance
-	 */
-	public static Treeable createNewTreeable( Treeable parent, String name )
-	{
-		Integer rank = TreeTableUtils.getRankOfChildren(parent);
-		return createNewTreeable( parent.getClass(), parent, name, rank );
-	}
-	
-	/**
-	 * Creates a new Treeable node instance having the given parent and name.
-	 * 
-	 * @param implementingClass the implementation class for the new node
-	 * @param name the name of the new node
-	 * @see TreeFactory#createNewTreeable(Class,Treeable,String,Integer)
-	 * @return the new Treeable node instance
-	 */
-	public static Treeable createNewTreeable( Class implementingClass, String name )
-	{
-		return createNewTreeable(implementingClass,null,name,null);
-	}
-
-	/**
-	 * Creates a new Treeable node instance having the given parent, name and rank.
-	 * 
-	 * @param parent the parent of the new node
-	 * @param name the name of the new node
-	 * @param rankId the rank of the new node
-	 * @see TreeFactory#createNewTreeable(Class,Treeable,String,Integer)
-	 * @return the new Treeable node instance
-	 */
-	public static Treeable createNewTreeable( Treeable parent, String name, Integer rankId )
-	{
-		return createNewTreeable( parent.getClass(), parent, name, rankId );
-	}
-	
+		
 	/**
 	 * Creates a new tree definition instance having the given parent, name and rank.
 	 * 
@@ -342,15 +292,19 @@ public class TreeFactory
 	 * @param node a node of the class tobe compared
 	 * @return a <code>Comparator</code> capable of properly comparing nodes of the same class as <code>node</code>
 	 */
-	public static Comparator<Treeable> getAppropriateComparator( Treeable node )
+	public static Comparator getAppropriateComparator( Treeable node )
 	{
 		Class nodeClass = node.getClass();
 		if( nodeClass.equals(GeologicTimePeriod.class) )
 		{
 			return new GeologicTimePeriodComparator();
 		}
+		else if( nodeClass.equals(Taxon.class) )
+		{
+			return new TaxonComparator();
+		}
 		
-		return new NameBasedTreeableComparator();
+		return new NameBasedComparator();
 	}
 
 	/**
