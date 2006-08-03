@@ -10,7 +10,6 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
-import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -134,6 +133,42 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 			log.error("Failed to save tree data to DB",ex);
 			tx.rollback();
 		}
+	}
+	
+	public void saveNewTree(TreeDefinitionIface treeDef)
+	{
+		// get the root node of the tree
+		Treeable rootNode = (Treeable)treeDef.getTreeEntries().iterator().next();
+		while(rootNode.getParentNode()!=null)
+		{
+			rootNode = rootNode.getParentNode();
+		}
+		
+		rootNode.setNodeNumber(1);
+		fixNodeNumbersFromRoot(rootNode);
+		Transaction tx = session.beginTransaction();
+		
+		// save the TreeDefinitionIface object itself
+		session.saveOrUpdate(treeDef);
+		
+		// save all of the TreeDefinitionItemIface objects
+		for(Object o: treeDef.getTreeDefItems())
+		{
+			session.saveOrUpdate(o);
+		}
+		
+		// save all of the nodes
+		saveOrUpdateTree(rootNode);
+		try
+		{
+			tx.commit();
+		}
+		catch( Exception ex )
+		{
+			log.error("Failed to save tree data to DB",ex);
+			tx.rollback();
+		}
+		
 	}
 
 	/**

@@ -80,6 +80,13 @@ public class TreeFactory
 		return def;
 	}
 	
+	public static TreeDefinitionIface setupNewTreeDef( TreeDefinitionIface def )
+	{
+		TreeDefinitionIface newDef = setupNewTreeDef(def.getNodeClass(),def.getName());
+		newDef.setRemarks(def.getRemarks());
+		return newDef;
+	}
+	
 	/**
 	 * Create, initialize, and name a new GeographyTreeDef instance.
 	 * 
@@ -370,4 +377,17 @@ public class TreeFactory
 		
 		return null;
 	}
+	
+	/**
+	 * Find and return the names of the formset and view for editing tree def items of the same class
+	 * as the given <code>TreeDefinitionItemIface</code>.
+	 * 
+	 * @param defItem an instance of the class to be edited using the returned formset and view
+	 * @return a {@link edu.ku.brc.util.Pair<String,String>} containing the formset and view names
+	 */
+	public static Pair<String,String> getAppropriateFormsetAndViewNames( TreeDefinitionIface defItem )
+	{
+		return new Pair<String,String>("Fish Views","NewTreeDefEditor");
+	}
+
 }

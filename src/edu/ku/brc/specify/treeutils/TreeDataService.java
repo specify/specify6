@@ -21,6 +21,7 @@ public interface TreeDataService
 	public void init();
 	public void fini();
 	public void saveTree(Treeable rootNode,Set<Treeable> deletedNodes);
+	public void saveNewTree(TreeDefinitionIface treeDef);
 	public Set<Treeable> getTreeNodes(TreeDefinitionItemIface defItem);
 	public Treeable getRootNode(TreeDefinitionIface treeDef);
 	public List<TreeDefinitionIface> getAllTreeDefs(Class treeDefClass);
