@@ -29,8 +29,8 @@ import java.util.Vector;
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -43,6 +43,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
@@ -55,6 +56,9 @@ import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.ui.treetables.EditFormDialog.EditDialogCallback;
 import edu.ku.brc.ui.DragDropCallback;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.ListPopupDialog;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.ListPopupDialog.ListPopupCallback;
 import edu.ku.brc.ui.listeners.ScrollBarLinkingListener;
 import edu.ku.brc.ui.renderers.NameBasedListCellRenderer;
 import edu.ku.brc.util.Pair;
@@ -101,8 +105,6 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	
 	protected TreeDefinitionIface displayedTreeDef;
 	
-	/** Tree selection widget. */
-	protected JComboBox defsBox;
 	/** Button for adding new nodes. */
 	protected JButton addNodeButton;
 	/** Button for deleting nodes. */
@@ -158,6 +160,44 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 //		glassPane = new BusyComponentGlassPane(this,viewSubtreeButton);
 //		JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
 //		topFrame.setGlassPane(glassPane);
+		
+		showTreeSelectionDialog(defs);
+	}
+	
+	protected void showTreeSelectionDialog(List<TreeDefinitionIface> defs)
+	{
+		// show the dialog with all trees listed
+		// if the user hits "Cancel", close this copy of the TTV
+		// if the user hits "OK", call initTreeList(selectedDef)
+		Vector<Object> options = new Vector<Object>(defs);
+		options.add("Create New Tree Definition");
+		ListPopupCallback callback = new ListPopupCallback()
+		{
+			public void cancelled()
+			{
+				SubPaneMgr.getInstance().removePane(TreeTableViewer.this);
+			}
+			public void completed(Object userSelection)
+			{
+				if(userSelection instanceof TreeDefinitionIface)
+				{
+					TreeDefinitionIface def = (TreeDefinitionIface)userSelection;
+					initTreeList(def);
+				}
+				else
+				{
+					log.info("Implement this: close this TTV and open a TreeDefEditor and do the \"make new\" process");
+					// user selected "Create New..."
+					// close this TTV and open a TreeDefEditor and do the "make new" process
+				}
+			}
+		};
+		JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
+		ListPopupDialog d = new ListPopupDialog(topFrame,"Select a Tree",options,callback);
+		d.setModal(true);
+		d.setComboBoxCellRenderer(new NameBasedListCellRenderer());
+		d.setSize(300,150);
+		d.setVisible(true);
 	}
 	
 	/**
@@ -172,38 +212,12 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		messageLabel = new JLabel("Select a tree in the combobox above");
 		this.add(messageLabel,BorderLayout.CENTER);
 		
+		northPanel = new JPanel();
+		this.add(northPanel,BorderLayout.NORTH);
+		
 		southPanel = new JPanel();
 		southPanel.setLayout(new BorderLayout());
 		this.add(southPanel,BorderLayout.SOUTH);
-
-		northPanel = new JPanel();
-		northPanel.setLayout(new BorderLayout());
-		this.add(northPanel,BorderLayout.NORTH);
-		
-		Vector<Object> defs = new Vector<Object>(definitions);
-		defs.add(0, "Choose a tree definition");
-		defsBox = new JComboBox(defs);
-		defsBox.setRenderer(new NameBasedListCellRenderer());
-		defsBox.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				Object selection = defsBox.getSelectedItem();
-				if( selection instanceof TreeDefinitionIface )
-				{
-					TreeDefinitionIface treeDef = (TreeDefinitionIface)defsBox.getSelectedItem();
-					displayedTreeDef = treeDef;
-					
-					messageLabel.setText("Please wait while the tree is prepared");
-					messageLabel.setIcon(null);
-					add(messageLabel);
-					repaint();
-					
-					initTreeList(treeDef);
-				}
-			}
-		});
-		northPanel.add(defsBox,BorderLayout.CENTER);
 
 		statusBar = new JLabel();
 		statusBar.setPreferredSize(new Dimension(0,30));
@@ -267,10 +281,9 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	{
 		log.debug("Successfully initialized tree editor");
 
-		defsBox.setEnabled(false);
+		northPanel.add(new JLabel(root.getTreeDef().getName()));
 		
 		listModel = new TreeDataListModel(root);
-		//list = new GhostDropJList(listModel,this);
 		list = new TreeDataGhostDropJList(listModel,this);
 		list.addMouseListener(this);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
