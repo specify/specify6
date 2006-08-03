@@ -101,9 +101,15 @@ public class DataEntryTask extends BaseTask
             navBox.add(NavBox.createBtn("Geography", "Geography", IconManager.IconSize.Std16,new ShowTreeTableEditorAction(GeographyTreeDef.class,"Geography Editor")));
             navBox.add(NavBox.createBtn("Location", "Location", IconManager.IconSize.Std16,new ShowTreeTableEditorAction(LocationTreeDef.class,"Location Editor")));
             navBox.add(NavBox.createBtn("Geologic Time Period", "Geologic Time Period", IconManager.IconSize.Std16,new ShowTreeTableEditorAction(GeologicTimePeriodTreeDef.class,"Geologic Time Period Editor")));
-            navBox.add(NavBox.createBtn("Taxon Tree Def Editor","Taxon", IconManager.IconSize.Std16,new ShowTreeDefinitionEditorAction(TaxonTreeDef.class,"Taxonomy Editor")));
             navBox.add(NavBox.createBtn("Agent", "Agent", IconManager.IconSize.Std16));
             navBox.add(NavBox.createBtn("Address", "Address", IconManager.IconSize.Std16));
+            navBoxes.addElement(navBox);
+
+            navBox = new NavBox(getResourceString("Administration Tasks"));
+            navBox.add(NavBox.createBtn("Taxon Tree Def Editor","Taxon", IconManager.IconSize.Std16,new ShowTreeDefinitionEditorAction(TaxonTreeDef.class,"Taxonomy Tree Def Editor")));
+            navBox.add(NavBox.createBtn("Geography Tree Def Editor","Geography", IconManager.IconSize.Std16,new ShowTreeDefinitionEditorAction(GeographyTreeDef.class,"Geography Tree Def Editor")));
+            navBox.add(NavBox.createBtn("Location Tree Def Editor","Location", IconManager.IconSize.Std16,new ShowTreeDefinitionEditorAction(LocationTreeDef.class,"Location Tree Def Editor")));
+            navBox.add(NavBox.createBtn("GTP Tree Def Editor","Geologic Time Period", IconManager.IconSize.Std16,new ShowTreeDefinitionEditorAction(GeologicTimePeriodTreeDef.class,"GTP Tree Def Editor")));
             navBoxes.addElement(navBox);
         }
     }

@@ -122,6 +122,7 @@ public class TreeDefinitionEditor extends BaseSubPane implements ListSelectionLi
 				}
 				else if( defsBox.getSelectedIndex() == defsBox.getModel().getSize()-1 )
 				{
+					log.info("New Tree Def: Implement this");
 					// do new def stuff
 				}
 			}
@@ -225,12 +226,12 @@ public class TreeDefinitionEditor extends BaseSubPane implements ListSelectionLi
 			TreeDefinitionItemIface defItem = (TreeDefinitionItemIface)listModel.getElementAt(doubleClickedItemIndex);
 			EditDialogCallback callback = new EditDialogCallback()
 			{
-				public void editCancelled(Object dataObj)
+				public void editCompleted(Object dataObj)
 				{
 					TreeDefinitionItemIface item = (TreeDefinitionItemIface)dataObj;
 					itemEditComplete(item);
 				}
-				public void editCompleted(Object dataObj)
+				public void editCancelled(Object dataObj)
 				{
 					TreeDefinitionItemIface item = (TreeDefinitionItemIface)dataObj;
 					itemEditCancelled(item);
