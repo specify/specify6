@@ -222,11 +222,16 @@ public class DatabaseLoginPanel extends JPanel
         addFocusListenerForTextComp(username);
         addFocusListenerForTextComp(password);
 
-        addKeyListenerForTextComp(username, !isDlg);
-        addKeyListenerForTextComp(password, !isDlg);
+        addKeyListenerFor(username, !isDlg);
+        addKeyListenerFor(password, !isDlg);
 
-        addKeyListenerForTextComp(databases.getTextField(), !isDlg);
-        addKeyListenerForTextComp(servers.getTextField(), !isDlg);
+        addKeyListenerFor(databases.getTextField(), !isDlg);
+        addKeyListenerFor(servers.getTextField(), !isDlg);
+        
+        if (!isDlg)
+        {
+            addKeyListenerFor(loginBtn, true);
+        }
 
         autoLoginCBX.setSelected(UICacheManager.getAppPrefs().getBoolean("login.autologin", false));
         rememberUsernameCBX.setSelected(UICacheManager.getAppPrefs().getBoolean("login.rememberuser", false));
@@ -426,7 +431,7 @@ public class DatabaseLoginPanel extends JPanel
      * Creates a Document listener so the UI is updated when the doc changes
      * @param textField the text field to be changed
      */
-    protected void addKeyListenerForTextComp(final JTextComponent textField, final boolean checkForRet)
+    protected void addKeyListenerFor(final JComponent comp, final boolean checkForRet)
     {
         class KeyAdp extends KeyAdapter
         {
@@ -444,7 +449,7 @@ public class DatabaseLoginPanel extends JPanel
                 }
             }
         }
-        textField.addKeyListener(new KeyAdp(checkForRet));
+        comp.addKeyListener(new KeyAdp(checkForRet));
     }
 
 
