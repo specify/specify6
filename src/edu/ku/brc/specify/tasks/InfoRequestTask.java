@@ -46,7 +46,7 @@ import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.plugins.MenuItemDesc;
 import edu.ku.brc.af.plugins.ToolBarItemDesc;
-import edu.ku.brc.af.prefs.PrefsCache;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
@@ -95,7 +95,7 @@ public class InfoRequestTask extends BaseTask
         super(INFOREQUEST, getResourceString(INFOREQUEST));
         CommandDispatcher.register(INFOREQUEST, this);
         
-        scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+        scrDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
     }
     
     /**

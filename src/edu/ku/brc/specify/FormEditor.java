@@ -73,6 +73,7 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
+import edu.ku.brc.af.prefs.AppPrefsMgr;
 import edu.ku.brc.af.prefs.PrefMainPanel;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -566,7 +567,9 @@ public class FormEditor implements DatabaseLoginListener
    {
        UICacheManager.getInstance(); // initializes it first thing
        
-       AppPrefs.initialPrefs(); // Must be done first thing!
+       UICacheManager.setAppPrefs(AppPrefsMgr.getInstance().load(System.getProperty("user.home")));
+       
+       SpecifyAppPrefs.initialPrefs(); // Must be done first thing!
        
        try
        {
@@ -589,8 +592,8 @@ public class FormEditor implements DatabaseLoginListener
            
            
            // Note: This is asynchronous
-           UIHelper.doLogin(false, false, this); // true means do auto login if it can, second true means use dialog
-
+           //UIHelper.doLogin(false, false, this); // true means do auto login if it can, second true means use dialog
+           preferences();
 
        }
        catch (Exception e)
@@ -795,7 +798,7 @@ public class FormEditor implements DatabaseLoginListener
      *
      *
      * TODO To change the template for this generated type comment go to
-     * Window - Preferences - Java - Code Generation - Code and Comments
+     * Window - AppPrefsIFace - Java - Code Generation - Code and Comments
      */
     private class ActionChangedListener implements PropertyChangeListener
     {

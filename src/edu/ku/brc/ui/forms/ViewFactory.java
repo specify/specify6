@@ -53,7 +53,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.prefs.PrefsCache;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.helpers.BrowserLauncher;
 import edu.ku.brc.ui.BrowseBtnPanel;
 import edu.ku.brc.ui.ColorChooser;
@@ -183,11 +183,11 @@ public class ViewFactory
     {
         if (scrDateFormat == null)
         {
-            scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+            scrDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
         }
         if (viewFieldColor == null)
         {
-            viewFieldColor = PrefsCache.getColorWrapper("ui", "formatting", "viewfieldcolor");
+            viewFieldColor = AppPrefsCache.getColorWrapper("ui", "formatting", "viewfieldcolor");
         }
 
         ViewDef viewDef = altView.getViewDef();
@@ -1058,9 +1058,9 @@ public class ViewFactory
                 
                 fv.setName(formViewDef.getName()); // For Debugging
 
-                for (String name : enableRules.keySet())
+                for (String id : enableRules.keySet())
                 {
-                    fv.addEnableRule(name, enableRules.get(name));
+                    fv.addEnableRule(id, enableRules.get(id));
                 }
 
                 // Load up labels and associate them with there component
@@ -1131,11 +1131,11 @@ public class ViewFactory
     {
         if (scrDateFormat == null)
         {
-            scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+            scrDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
         }
         if (viewFieldColor == null)
         {
-            viewFieldColor = PrefsCache.getColorWrapper("ui", "formatting", "viewfieldcolor");
+            viewFieldColor = AppPrefsCache.getColorWrapper("ui", "formatting", "viewfieldcolor");
         }
 
         AltView altView = view.getAltView(altName);

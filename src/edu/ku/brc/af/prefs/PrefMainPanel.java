@@ -42,6 +42,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.Timer;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -53,16 +56,21 @@ import edu.ku.brc.ui.validation.DataChangeNotifier;
 
 /**
  *
- * This is the main content panel of the Dialog. It is also responsible for animating the resizing
- 
- * @code_status Unknown (auto-generated)
- **
+ * This is the main content panel of the Dialog. It is also responsible for animating the resizing of the dialog.<br>
+ * The Preference dialog can be configured to have a toolbar with each major section across the top or as a grid.
+ * Currently it is using the toolbar and the grid may need more testing.<br>
+ * The preferences are being loaded from an XML file.
+ *
+ * @code_status Complete
+ *
  * @author rods
  *
  */
 @SuppressWarnings("serial")
 public class PrefMainPanel extends JPanel implements DataChangeListener
 {
+    private static final Logger log = Logger.getLogger(PrefMainPanel.class);
+    
     protected JDialog       dialog;
     protected JTextField    searchText;
     protected JButton       searchBtn;
@@ -83,7 +91,8 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
 
 
     /**
-     * Constructor
+     * Constructor.
+     * @param dialog the parent frame (dialog)
      */
     public PrefMainPanel(JDialog dialog)
     {
@@ -132,6 +141,13 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
             {
                 saveChangedPrefs();
                 dialog.setVisible(false);
+                try
+                {
+                    UICacheManager.getAppPrefs().flush();
+                } catch (BackingStoreException ex)
+                {
+                    log.error(ex);
+                }
             }
         });
 
@@ -144,6 +160,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
             }
         });
         add(buttonBar, BorderLayout.SOUTH);
+        
         showPanel(firstPanelName);
 
     }
@@ -176,6 +193,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
         try
         {
             UICacheManager.getAppPrefs().flush();
+
         } catch (BackingStoreException ex)
         {
             // XXX FIXME
@@ -199,10 +217,11 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         add(builder.getPanel(), BorderLayout.NORTH);
 
-        prefsPane    = new PrefsToolbar(this);
+        prefsPane = new PrefsToolbar(this);
 
         firstPanelName = "Main";
         addPanel(firstPanelName, prefsPane);
+        
         showPanel(firstPanelName);
 
         showAllBtn.addActionListener(new ActionListener() {
@@ -219,35 +238,38 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
      */
     public void showPanel(final String name)
     {
-        Component comp = compsHash.get(name);
-        if (comp == currentComp)
+        if (StringUtils.isNotEmpty(name))
         {
-            return;
-        }
-
-        boolean   makeVis = false;
-        Dimension oldSize = null;
-        if (currentComp != null)
-        {
-            oldSize = currentComp.getSize();
-            remove(currentComp);
-
-        } else
-        {
-            makeVis = true;
-        }
-
-        if (comp != null)
-        {
-            comp.setVisible(makeVis);
-            add(comp, BorderLayout.CENTER);
-            comp.invalidate();
-            doLayout();
-            repaint();
-            currentComp = comp;
-            if (oldSize != null)
+            Component comp = compsHash.get(name);
+            if (comp == currentComp)
             {
-                startAnimation(dialog, comp, currentComp.getPreferredSize().height - oldSize.height, false);
+                return;
+            }
+    
+            boolean   makeVis = false;
+            Dimension oldSize = null;
+            if (currentComp != null)
+            {
+                oldSize = currentComp.getSize();
+                remove(currentComp);
+    
+            } else
+            {
+                makeVis = true;
+            }
+    
+            if (comp != null)
+            {
+                comp.setVisible(makeVis);
+                add(comp, BorderLayout.CENTER);
+                comp.invalidate();
+                doLayout();
+                repaint();
+                currentComp = comp;
+                if (oldSize != null)
+                {
+                    startAnimation(dialog, comp, currentComp.getPreferredSize().height - oldSize.height, false);
+                }
             }
         }
     }
@@ -288,7 +310,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
      */
     protected void doPrefSearch()
     {
-
+        // TODO needs implementing using Lucene
     }
 
     /**
@@ -353,7 +375,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
     }
 
    /**
-     *  Start animation where painting will occur for the given rect
+     * Start animation where painting will occur for the given rect
      * @param window the window to start it in
      * @param comp the component
      * @param delta the delta each time

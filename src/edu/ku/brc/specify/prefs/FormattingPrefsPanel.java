@@ -1,7 +1,6 @@
 package edu.ku.brc.specify.prefs;
 
 import java.awt.BorderLayout;
-import java.util.prefs.Preferences;
 
 import javax.swing.JPanel;
 
@@ -19,8 +18,8 @@ import edu.ku.brc.ui.validation.FormValidator;
 /**
  * This panel will handle all the various options for formatting of data.
  *
- * @code_status Unknown (auto-generated)
- * 
+ * @code_status Complete
+ *
  * @author rods
  *
  */
@@ -28,27 +27,18 @@ import edu.ku.brc.ui.validation.FormValidator;
 public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, PrefsSavable
 {
     private static final Logger log  = Logger.getLogger(FormattingPrefsPanel.class);
-    
-    protected Preferences  prefNode = null;
+
     protected View         formView = null;
     protected Viewable     form     = null;
-    
+
     /**
-     * 
+     * Constructor.
      */
     public FormattingPrefsPanel()
     {
-        Preferences appsNode = UICacheManager.getAppPrefs();
-        prefNode = appsNode.node("ui/formatting");
-        if (prefNode == null)
-        {
-            throw new RuntimeException("Could find pref for formatting!");
-        }
-        
         createUI();
-
     }
-    
+
     /**
      * Create the UI for the panel
      */
@@ -57,30 +47,30 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
         
         String viewName = "Formatting";
         String name = "Preferences";
-        
+
         formView = ViewMgr.getView(name, viewName);
 
         if (formView != null)
         {
-            form = ViewFactory.createFormView(null, formView, null, prefNode);
+            form = ViewFactory.createFormView(null, formView, null, UICacheManager.getAppPrefs());
             add(form.getUIComponent(), BorderLayout.CENTER);
-            
+
         } else
         {
             log.error("Couldn't load form with name ["+name+"] Id ["+viewName+"]");
         }
-        
-        form.setDataObj(prefNode);
-        
+
+        form.setDataObj(UICacheManager.getAppPrefs());
+
         form.getValidator().validateForm();
 
-        
+
     }
-    
+
     //--------------------------------------------------------------------
     // PrefsSavable Interface
     //--------------------------------------------------------------------
-   
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.prefs.PrefsSavable#savePrefs()
      */
@@ -91,7 +81,7 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
             form.getDataFromUI();
         }
     }
-    
+
 
     //---------------------------------------------------
     // PrefsPanelIFace

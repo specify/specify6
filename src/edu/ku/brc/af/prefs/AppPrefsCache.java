@@ -16,11 +16,8 @@ package edu.ku.brc.af.prefs;
 
 import java.text.SimpleDateFormat;
 import java.util.Hashtable;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.Preferences;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.UICacheManager;
@@ -31,42 +28,60 @@ import edu.ku.brc.ui.UICacheManager;
  * ColorWrapper and SimpleDateFormat object can be registered into the cache and their mutal value will always be up to date, this saves
  * the consumer from having to go get them each time.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
  */
-public class PrefsCache
+public class AppPrefsCache
 {
-    protected static final PrefsCache instance = new PrefsCache();
+    protected static final String NOT_INIT = "AppPrefs have not been initialized.";
+    protected static final String BAD_ARGS = "Empty fully qualified pref name.";
     
-    protected Preferences                        appPrefs = UICacheManager.getAppPrefs();
-    protected Hashtable<String, PrefsCacheEntry> hash     = new Hashtable<String, PrefsCacheEntry>();
+    protected static final AppPrefsCache instance = new AppPrefsCache();
+    
+    protected AppPrefsIFace                         appPrefs = UICacheManager.getAppPrefs();
+    protected Hashtable<String, AppPrefsCacheEntry> hash     = new Hashtable<String, AppPrefsCacheEntry>();
     
     
     /**
      * Protected Default Constructor
      */
-    protected PrefsCache()
+    protected AppPrefsCache()
     {
         super();
     }
     
     
-    public static PrefsCache getInstance()
+    public static AppPrefsCache getInstance()
     {
          return instance;
     }
     
     /**
-     * @param section
-     * @param pref
-     * @param attrName
-     * @return
+     * Creates a fully qualified name using "." notation
+     * @param section the section or category of the pref
+     * @param pref the pref's name
+     * @param attrName the actual attribute
+     * @return return the name as section.pref.attr
      */
     protected static String makeKey(final String section, final String pref, final String attrName)
     {
         return section + "." + pref + "." + attrName;
+    }
+    
+    /**
+     * Checks to make sure that the fully qualified name of the pref is not empty
+     * @param section the section or category of the pref
+     * @param pref the pref's name
+     * @param attrName the actual attribute     
+     */
+    protected static void checkName(final String section, final String pref, final String attrName)
+    {
+        if (StringUtils.isEmpty(section) || StringUtils.isEmpty(pref) || StringUtils.isEmpty(attrName))
+        {
+            throw new RuntimeException(BAD_ARGS);
+        }
     }
     
 
@@ -78,21 +93,20 @@ public class PrefsCache
      * @param defValue the default value
      * @return the entry for this pref
      */
-    protected PrefsCacheEntry registerInternal(final String section, final String pref, final String attrName, final String defValue)
+    protected AppPrefsCacheEntry registerInternal(final String section, final String pref, final String attrName, final String defValue)
     {
-        Preferences sectionNode = instance.appPrefs.node(section);
-        if (sectionNode != null)
+        if (appPrefs == null)
         {
-            Preferences prefNode = sectionNode.node(pref);
-            if (prefNode != null)
-            {
-                PrefsCacheEntry prefsCacheEntry = new PrefsCacheEntry(attrName, prefNode.get(attrName, defValue), defValue);
-                prefNode.addPreferenceChangeListener(prefsCacheEntry);
-                hash.put(makeKey(section, pref, attrName), prefsCacheEntry);
-                return prefsCacheEntry;
-            }
+            throw new RuntimeException(NOT_INIT);
         }
-        return null;
+        checkName(section, pref, attrName);
+        
+        String name = makeKey(section, pref, attrName);
+        
+        AppPrefsCacheEntry prefsCacheEntry = new AppPrefsCacheEntry(attrName, appPrefs.get(name, defValue), defValue);
+        appPrefs.addChangeListener(name, prefsCacheEntry);
+        hash.put(makeKey(section, pref, attrName), prefsCacheEntry);
+        return prefsCacheEntry;
     }
     
     /**
@@ -115,34 +129,17 @@ public class PrefsCache
      */
     public static boolean remove(final String section, final String pref, final String attrName)
     {
-        PrefsCache cache = getInstance();
-        Preferences prefNode = cache.getPrefNode(section, pref);
-        if (prefNode != null)
+        if (getInstance().appPrefs == null)
         {
-            prefNode.remove(attrName);
-            getInstance().hash.remove(makeKey(section, pref, attrName));
-            return true;
-            
-        } else
-        {
-            throw new RuntimeException("["+section+"/"+pref+"] node was returned null!");
+            throw new RuntimeException(NOT_INIT);
         }
-    }
-    
-    /**
-     * Helper method - This "should" always return a node
-     * @param section the category or section of the prefs
-     * @param pref the pref's name
-     * @return the Preferences node to be return
-     */
-    protected Preferences getPrefNode(final String section, final String pref)
-    {
-        Preferences sectionNode = appPrefs.node(section);
-        if (sectionNode != null)
-        {
-            return sectionNode.node(pref);
-        }        
-        return null;
+        checkName(section, pref, attrName);
+        
+        // TODO error checking
+        String name = makeKey(section, pref, attrName);
+        getInstance().appPrefs.remove(name);
+        getInstance().hash.remove(name);
+        return true;
     }
     
     /**
@@ -157,7 +154,8 @@ public class PrefsCache
      */
     public static String getValue(final String section, final String pref, final String attrName)
     {
-        PrefsCacheEntry prefsCacheEntry = getInstance().hash.get(makeKey(section, pref, attrName));
+        checkName(section, pref, attrName);
+        AppPrefsCacheEntry prefsCacheEntry = getInstance().hash.get(makeKey(section, pref, attrName));
         return prefsCacheEntry != null ? prefsCacheEntry.getValue() : "";
     }
     
@@ -168,30 +166,26 @@ public class PrefsCache
      * @param defValue the default value
      * @return return the pref's value
      */
-    protected String checkForPref(final Preferences prefNode, final String attrName, final String defValue)
+    protected String checkForPref(final String fullName, final String attrName, final String defValue)
     {
+        if (appPrefs == null)
+        {
+            throw new RuntimeException(NOT_INIT);
+        } 
+        
         String prefVal;
-        try
+
+        if (!appPrefs.exists(fullName))
         {
-            //System.out.println("--------");
-            //for (String s : prefNode.keys())
-            //{
-            //    System.out.println("["+s+"]");
-            //}
-            if (!ArrayUtils.contains(prefNode.keys(), attrName))
-            {
-                    prefNode.put(attrName, defValue);
-                    //prefNode.flush();
-                    
-                prefVal = defValue;
-            }  else
-            {
-                prefVal = prefNode.get(attrName, defValue);
-            }
-        } catch (BackingStoreException ex) 
+            appPrefs.put(fullName, defValue);
+            //prefNode.flush();
+                
+            prefVal = defValue;
+        }  else
         {
-            prefVal = prefNode.get(attrName, defValue);
+            prefVal = appPrefs.get(fullName, defValue);
         }
+
         return prefVal;
     }
     
@@ -212,18 +206,23 @@ public class PrefsCache
                                  final String       pref, 
                                  final String       attrName)
     {
-        Preferences prefNode = instance.getPrefNode(section, pref);
-        if (prefNode != null)
+        if (getInstance().appPrefs == null)
         {
-            String defValue = colorWrapper.toString();
-            String prefVal  = checkForPref(prefNode, attrName, defValue);
-            colorWrapper.setRGB(prefVal);
-            
-            ColorCacheEntry colorEntry = new ColorCacheEntry(colorWrapper, attrName, prefVal, defValue);
-            
-            prefNode.addPreferenceChangeListener(colorEntry);
-            hash.put(makeKey(section, pref, attrName), colorEntry);
-        }
+            throw new RuntimeException(NOT_INIT);
+        }    
+        checkName(section, pref, attrName);
+        
+        String fullName = makeKey(section, pref, attrName);
+        
+        String defValue = colorWrapper.toString();
+        String prefVal  = checkForPref(fullName, attrName, defValue);
+        colorWrapper.setRGB(prefVal);
+        
+        ColorCacheEntry colorEntry = new ColorCacheEntry(colorWrapper, fullName, prefVal, defValue);
+        
+        appPrefs.addChangeListener(fullName, colorEntry);
+        hash.put(fullName, colorEntry);
+
     }
     
     /**
@@ -253,8 +252,9 @@ public class PrefsCache
                                                final String pref, 
                                                final String attrName)
     {
-        PrefsCache cache = getInstance();
-        ColorCacheEntry colorEntry = (ColorCacheEntry)cache.hash.get(makeKey(section, pref, attrName));
+        checkName(section, pref, attrName);
+        
+        ColorCacheEntry colorEntry = (ColorCacheEntry)getInstance().hash.get(makeKey(section, pref, attrName));
         if (colorEntry != null)
         {
             return colorEntry.getColorWrapper();
@@ -282,19 +282,19 @@ public class PrefsCache
                                  final String           pref, 
                                  final String           attrName)
     {
-        Preferences prefNode = instance.getPrefNode(section, pref);
-        if (prefNode != null)
+        if (appPrefs == null)
         {
-            //System.out.println("["+appPrefs+"]");
-            //System.out.println("["+prefNode+"]");
-            
-            String defValue = simpleFormat.toPattern();
-            String prefVal  = checkForPref(prefNode, attrName, defValue);
-            simpleFormat.applyPattern(prefVal);
-            DateFormatCacheEntry dateEntry = new DateFormatCacheEntry(simpleFormat, attrName, prefVal, defValue);
-            prefNode.addPreferenceChangeListener(dateEntry);
-            hash.put(makeKey(section, pref, attrName), dateEntry);
+            throw new RuntimeException(NOT_INIT);
         }
+        checkName(section, pref, attrName);
+        
+        String fullName = makeKey(section, pref, attrName);
+        String defValue = simpleFormat.toPattern();
+        String prefVal  = checkForPref(fullName, attrName, defValue);
+        simpleFormat.applyPattern(prefVal);
+        DateFormatCacheEntry dateEntry = new DateFormatCacheEntry(simpleFormat, fullName, prefVal, defValue);
+        appPrefs.addChangeListener(fullName, dateEntry);
+        hash.put(fullName, dateEntry);
     }
     
     /**
@@ -324,11 +324,13 @@ public class PrefsCache
                                                        final String pref, 
                                                        final String attrName)
     {
-        PrefsCache cache = getInstance();
-        DateFormatCacheEntry dateEntry = (DateFormatCacheEntry)cache.hash.get(makeKey(section, pref, attrName));
+        checkName(section, pref, attrName);
+        
+        DateFormatCacheEntry dateEntry = (DateFormatCacheEntry)getInstance().hash.get(makeKey(section, pref, attrName));
         if (dateEntry != null)
         {
             return dateEntry.getSimpleDateFormat();
+            
         } else
         {
             throw new RuntimeException("Couldn't find Date Entry ["+makeKey(section, pref, attrName)+"]");
@@ -336,10 +338,10 @@ public class PrefsCache
     }
 
     /**
-     * @author rods
+     * Simple class to wrap color changes
      *
      */
-    public class ColorCacheEntry extends PrefsCacheEntry
+    public class ColorCacheEntry extends AppPrefsCacheEntry
     {
         protected ColorWrapper colorWrapper;
         
@@ -349,13 +351,10 @@ public class PrefsCache
             this.colorWrapper = colorWrapper;
         }
         
-        public void preferenceChange(PreferenceChangeEvent evt)
+        public void preferenceChange(AppPrefsChangeEvent evt)
         {
             super.preferenceChange(evt);
-            if (evt.getKey().equals(this.attrName))
-            {
-                colorWrapper.setRGB(getValue());
-            }
+            colorWrapper.setRGB(getValue());
         }
 
         public ColorWrapper getColorWrapper()
@@ -365,10 +364,10 @@ public class PrefsCache
     }
 
     /**
-     * @author rods
+     * Simple class to wrap Data format changes
      *
      */
-    public class DateFormatCacheEntry extends PrefsCacheEntry
+    public class DateFormatCacheEntry extends AppPrefsCacheEntry
     {
         protected SimpleDateFormat simpleDateFormat;
         
@@ -378,21 +377,15 @@ public class PrefsCache
             this.simpleDateFormat = simpleDateFormat;
         }
         
-        public void preferenceChange(PreferenceChangeEvent evt)
+        public void preferenceChange(AppPrefsChangeEvent evt)
         {
             super.preferenceChange(evt);
-            if (evt.getKey().equals(this.attrName))
-            {
-                simpleDateFormat.applyPattern(getValue());
-            }
+            simpleDateFormat.applyPattern(getValue());
         }
 
         public SimpleDateFormat getSimpleDateFormat()
         {
             return simpleDateFormat;
         }
-        
     }
-    
-
 }

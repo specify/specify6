@@ -14,23 +14,52 @@
  */
 package edu.ku.brc.af.prefs;
 
-import edu.ku.brc.ui.validation.FormValidator;
+import java.util.EventObject;
 
 /**
- * Simple interface for Pref Panels
+ * Change event patterned after the PreferenceChangeEvent
  * 
  * @code_status Complete
  * 
  * @author rods
  *
  */
-public interface PrefsPanelIFace
+public class AppPrefsChangeEvent extends EventObject
 {
+    protected Object source;
+    protected String key;
+    protected String newValue;
 
-    
     /**
-     * Return the validator for the panel
-     * @return Return the validator for the panel
+     * Constructor.
+     * @param source the source object generating the change
+     * @param key the key of the change
+     * @param newValue the new value
      */
-    public FormValidator getValidator();
+    public AppPrefsChangeEvent(final Object source, final String key, final String newValue)
+    {
+        super(source);
+
+        this.key = key;
+        this.newValue = newValue;
+    }
+
+    /**
+     * Returns the key.
+     * @return the key.
+     */
+    public String getKey()
+    {
+        return key;
+    }
+
+    /**
+     * Returns the new value.
+     * @return the new value.
+     */
+    public String getNewValue()
+    {
+        return newValue;
+    }
+
 }

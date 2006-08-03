@@ -30,8 +30,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
-import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.PreferenceChangeListener;
 
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -42,10 +40,9 @@ import javax.swing.text.BadLocationException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.prefs.PrefsCache;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.UIFieldFormatterMgr;
 
 /**
@@ -61,8 +58,7 @@ import edu.ku.brc.ui.forms.UIFieldFormatterMgr;
 @SuppressWarnings("serial")
 public class ValFormattedTextField extends JTextField implements UIValidatable,
                                                                  GetSetValueIFace,
-                                                                 DocumentListener,
-                                                                 PreferenceChangeListener
+                                                                 DocumentListener
 {
     private static final Logger log  = Logger.getLogger(ValFormattedTextField.class);
 
@@ -152,10 +148,9 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         bgColor = getBackground();
         if (valtextcolor == null || requiredfieldcolor == null)
         {
-            valtextcolor = PrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
-            requiredfieldcolor = PrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
+            valtextcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
+            requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
-        UICacheManager.getAppPrefs().node("ui/formatting").addPreferenceChangeListener(this);
     }
 
 
@@ -379,7 +374,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
             String value = getText();
             if (StringUtils.isNotEmpty(value))
             {
-                SimpleDateFormat simpleDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+                SimpleDateFormat simpleDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
                 try
                 {
                     Calendar cal = Calendar.getInstance();
@@ -421,20 +416,9 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         isChanged = true;
     }
 
-    //-------------------------------------------------
-    // PreferenceChangeListener
-    //-------------------------------------------------
-
-    public void preferenceChange(PreferenceChangeEvent evt)
-    {
-        if (evt.getKey().equals("requiredfieldcolor"))
-        {
-            //setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
-        }
-    }
 
     //-------------------------------------------------
-    // PreferenceChangeListener
+    // AppPrefsChangeListener
     //-------------------------------------------------
 
     public class JFormattedDoc extends ValPlainTextDocument

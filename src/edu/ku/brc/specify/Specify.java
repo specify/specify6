@@ -28,10 +28,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
-import java.util.prefs.Preferences;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
@@ -48,7 +44,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.apache.log4j.Logger;
-import org.dom4j.Element;
 import org.hibernate.cfg.Configuration;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -63,10 +58,10 @@ import edu.ku.brc.af.core.MainPanel;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.plugins.PluginMgr;
+import edu.ku.brc.af.prefs.AppPrefsMgr;
 import edu.ku.brc.af.prefs.PrefMainPanel;
 import edu.ku.brc.af.tasks.StartUpTask;
 import edu.ku.brc.helpers.UIHelper;
-import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyConfig;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.ui.DBObjDialogFactory;
@@ -80,7 +75,7 @@ import edu.ku.brc.ui.forms.ViewMgr;
 import edu.ku.brc.util.FileCache;
 /**
  * Specify Main Application Class
- 
+
  * @code_status Unknown (auto-generated)
  **
  * @author rods
@@ -93,9 +88,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
     // The preferred size of the demo
     private static final int    PREFERRED_WIDTH  = 900;
     private static final int    PREFERRED_HEIGHT = 800;
-    
+
     private static Specify      specifyApp       = null; // needed for ActionListeners etc.
-    
+
     // Status Bar
     private JStatusBar          statusField        = null;
     private JMenuBar            menuBar            = null;
@@ -116,7 +111,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private JWindow   splashWindow        = null;
     private ImageIcon specifyImageIcon    = null;
     //private ImageIcon userSplashImageIcon = null;
- 
+
 
     @SuppressWarnings("unused")
     private SpecifyConfig config;
@@ -133,7 +128,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
         UICacheManager.getInstance(); // initializes it first thing
 
-        AppPrefs.initialPrefs();
+        UICacheManager.setAppPrefs(AppPrefsMgr.getInstance().load(System.getProperty("user.home")));
+        SpecifyAppPrefs.initialPrefs();
 
         FileCache.setDefaultPath(UICacheManager.getInstance().getDefaultWorkingPath());
 
@@ -141,7 +137,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         UICacheManager.setViewbasedFactory(DBObjDialogFactory.getInstance());
 
         initPrefs();
-        
+
         // Create and throw the splash screen up. Since this will
         // physically throw bits on the screen, we need to do this
         // on the GUI thread using invokeLater.
@@ -201,11 +197,11 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
         UIHelper.doLogin(true, false, this); // true means do auto login if it can, second bool means use dialog instead of frame
 
-        
+
     }
 
     /**
-     * 
+     *
      */
     protected void initStartUpPanels(final String databaseName)
     {
@@ -230,7 +226,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         doLayout();
 
         mainPanel.setBackground(Color.WHITE);
-        
+
         SubPaneMgr.getInstance().removeAllPanes();
 
         Taskable startUpTask = ContextMgr.getTaskByClass(StartUpTask.class);
@@ -247,14 +243,14 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     protected void initPrefs()
     {
-
+/*
         boolean skip = false;
         if (skip)
         {
             return;
         }
 
-        Preferences appPrefs = UICacheManager.getAppPrefs();
+        AppPrefsIFace appPrefs = UICacheManager.getAppPrefs();
 
         try
         {
@@ -270,7 +266,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 org.dom4j.Element section = (org.dom4j.Element)iter.next();
 
                 String      title       = section.attributeValue("title");
-                Preferences sectionNode = appPrefs.node(title);
+                AppPrefsIFace sectionNode = appPrefs.node(title);
                 if (!sectionNode.getBoolean("isApp", false))
                 {
                     sectionNode.put("title", title);
@@ -286,7 +282,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     String iconName   = pref.attributeValue("icon");
                     String panelClass = pref.attributeValue("panelClass");
 
-                    Preferences prefNode     = sectionNode.node(prefTitle);
+                    AppPrefsIFace prefNode     = sectionNode.node(prefTitle);
                     String      prefTitleStr = prefNode.get("title", null);
                     if (prefTitleStr == null)
                     {
@@ -311,7 +307,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             ex.printStackTrace();
             // XXX FIXME
         }
-
+*/
     }
 
     /**
@@ -530,7 +526,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             {
                                 specifyApp.loggedIn(databaseName, userName);
                             }
-                            
+
                             public void cancelled()
                             {
                                 // Do not call this it will exit the application
@@ -734,21 +730,21 @@ public class Specify extends JPanel implements DatabaseLoginListener
           }
         });
     }
-    
+
     //---------------------------------------------------------
     // DatabaseLoginListener Interface
     //---------------------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.DatabaseLoginListener#loggedIn(java.lang.String, java.lang.String)
      */
     public void loggedIn(final String databaseName, final String userName)
     {
         ViewMgr.setAsDefaultViewSet("Fish Views");
-        
+
         initStartUpPanels(databaseName);
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.DatabaseLoginListener#cancelled()
      */

@@ -262,7 +262,7 @@ public class DataEntryTask extends BaseTask
      */
     public void installPrefs()
     {
-       /*Preferences appPrefs = UICacheManager.getAppPrefs();
+       /*AppPrefsIFace appPrefs = UICacheManager.getAppPrefs();
 
        String sectionName = appendChildPrefName("UserInterface", "Formatting", "name");
        String sectionName = appPrefs.get("", null);

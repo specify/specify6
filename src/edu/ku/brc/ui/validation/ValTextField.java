@@ -23,15 +23,15 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.PreferenceChangeListener;
+import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
+import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.af.prefs.PrefsCache;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UICacheManager;
@@ -50,7 +50,7 @@ import edu.ku.brc.ui.db.PickListDBAdapter;
 public class ValTextField extends JAutoCompTextField implements UIValidatable, 
                                                                 GetSetValueIFace, 
                                                                 DocumentListener,
-                                                                PreferenceChangeListener
+                                                                AppPrefsChangeListener
 {
     protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
     protected boolean isRequired = false;
@@ -126,10 +126,10 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
         bgColor = getBackground();
         if (valtextcolor == null || requiredfieldcolor == null)
         {
-            valtextcolor = PrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
-            requiredfieldcolor = PrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
+            valtextcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
+            requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
-        UICacheManager.getAppPrefs().node("ui/formatting").addPreferenceChangeListener(this);
+        UICacheManager.getAppPrefs().addChangeListener("ui.formatting.requiredfieldcolor", this);
         
         addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e)
@@ -347,10 +347,10 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     }
     
     //-------------------------------------------------
-    // PreferenceChangeListener
+    // AppPrefsChangeListener
     //-------------------------------------------------
 
-    public void preferenceChange(PreferenceChangeEvent evt)
+    public void preferenceChange(AppPrefsChangeEvent evt)
     {
         if (evt.getKey().equals("requiredfieldcolor"))
         {

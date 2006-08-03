@@ -22,8 +22,8 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.PreferenceChangeListener;
+import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
+import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 
 import javax.swing.JPasswordField;
 import javax.swing.event.DocumentEvent;
@@ -32,7 +32,7 @@ import javax.swing.text.Document;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.af.prefs.PrefsCache;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
@@ -50,7 +50,7 @@ import edu.ku.brc.ui.UICacheManager;
 public class ValPasswordField extends JPasswordField implements UIValidatable, 
                                                                 GetSetValueIFace, 
                                                                 DocumentListener, 
-                                                                PreferenceChangeListener
+                                                                AppPrefsChangeListener
 {
     protected static ColorWrapper valtextcolor       = null;
     protected static ColorWrapper requiredfieldcolor = null;
@@ -98,10 +98,10 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
         bgColor = getBackground();
         if (valtextcolor == null || requiredfieldcolor == null)
         {
-            valtextcolor = PrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
-            requiredfieldcolor = PrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
+            valtextcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
+            requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
-        UICacheManager.getAppPrefs().node("ui/formatting").addPreferenceChangeListener(this);
+        UICacheManager.getAppPrefs().addChangeListener("ui.formatting.requiredfieldcolor", this);
         
         addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e)
@@ -345,10 +345,10 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
     }
     
     //-------------------------------------------------
-    // PreferenceChangeListener
+    // AppPrefsChangeListener
     //-------------------------------------------------
 
-    public void preferenceChange(PreferenceChangeEvent evt)
+    public void preferenceChange(AppPrefsChangeEvent evt)
     {
         if (evt.getKey().equals("requiredfieldcolor"))
         {

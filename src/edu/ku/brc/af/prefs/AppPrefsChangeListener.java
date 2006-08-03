@@ -14,23 +14,21 @@
  */
 package edu.ku.brc.af.prefs;
 
-import edu.ku.brc.ui.validation.FormValidator;
-
 /**
- * Simple interface for Pref Panels
+ * Interface for listening to change events
  * 
  * @code_status Complete
  * 
  * @author rods
  *
  */
-public interface PrefsPanelIFace
+public interface AppPrefsChangeListener
 {
 
-    
     /**
-     * Return the validator for the panel
-     * @return Return the validator for the panel
+     * Notifies the listener that a preference has changed
+     * @param e the change event
      */
-    public FormValidator getValidator();
+    public void preferenceChange(AppPrefsChangeEvent e);
+
 }

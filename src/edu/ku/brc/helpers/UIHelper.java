@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
@@ -50,8 +49,9 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.prefs.PrefsCache;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.db.DatabaseLoginDlg;
@@ -64,9 +64,9 @@ import edu.ku.brc.ui.forms.persist.FormCell;
 
 /**
  * A Helper class that has a very wide array of misc methods for helping out. (Is that meaningless or what?)
- * 
+ *
  * @code_status Code Freeze
- * 
+ *
  * @author rods
  *
  */
@@ -527,11 +527,13 @@ public final class UIHelper
      * @param getter the DataObjectGettable to use to get the data
      * @return an array of values at least as long as the fielName list, but may be longer
      */
-    public static Object[] getFieldValues(final String[] fieldNames, final Object dataObj, final DataObjectGettable getter)
+    public static Object[] getFieldValues(final String[] fieldNames, 
+                                          final Object dataObj,
+                                          final DataObjectGettable getter)
     {
         if (scrDateFormat == null)
         {
-            scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+            scrDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
         }
 
         if (fieldNames.length > values.length)
@@ -551,16 +553,22 @@ public final class UIHelper
         for (String fldName : fieldNames)
         {
             Object dataValue;
-            int inx = fldName.indexOf(".");
-            if (inx > -1)
+            if (getter.usesDotNotation())
             {
-                StringTokenizer st = new StringTokenizer(fldName, ".");
-                Object data = dataObj;
-                while (data != null && st.hasMoreTokens())
+                int inx = fldName.indexOf(".");
+                if (inx > -1)
                 {
-                    data = getter.getFieldValue(data, st.nextToken());
+                    StringTokenizer st = new StringTokenizer(fldName, ".");
+                    Object data = dataObj;
+                    while (data != null && st.hasMoreTokens())
+                    {
+                        data = getter.getFieldValue(data, st.nextToken());
+                    }
+                    dataValue = data == null ? "" : data;
+                } else
+                {
+                    dataValue = getter.getFieldValue(dataObj, fldName);
                 }
-                dataValue = data == null ? "" : data;
             } else
             {
                 dataValue = getter.getFieldValue(dataObj, fldName);
@@ -581,7 +589,6 @@ public final class UIHelper
             }
             values[cnt++] = dataValue;
         }
-
 
          return allFieldsNull ? null : values;
     }
@@ -625,7 +632,7 @@ public final class UIHelper
             {
                 String methodName = "add" + newDataObj.getClass().getSimpleName();
                 log.debug("Invoking method["+methodName+"] on Object "+parentDataObj.getClass().getSimpleName());
-                
+
                 method = parentDataObj.getClass().getMethod(methodName, new Class[] {newDataObj.getClass()});
                 method.invoke(parentDataObj, new Object[] {newDataObj});
                 log.debug("Adding ["+newDataObj+"] to parent Set["+parentDataObj+"]");
@@ -647,10 +654,10 @@ public final class UIHelper
 
         return false;
     }
-    
+
      /**
       * intializes the data object for searching
-     * @param dataObj 
+     * @param dataObj
      * @return true is successful, false if error
      */
     public static boolean initForSearch(final Object dataObj)
@@ -736,64 +743,71 @@ public final class UIHelper
     {
     	if( StringUtils.isNotEmpty(fieldNames) )
     	{
-	   		int inx = fieldNames.indexOf(".");
-	        if (inx > -1)
-	        {
-	            String[] fileNameArray = StringUtils.split(fieldNames, '.');
-	            Object data = dataObj;
-	            for (int i=0;i<fileNameArray.length;i++)
-	            {
-	                String fieldName = fileNameArray[i];
-	               if (i < fileNameArray.length-1)
-	                {
-	                     data = getter.getFieldValue(dataObj, fieldName);
-	                    if (data == null)
-	                    {
-	                        try
-	                        {
-	                            PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, fieldName.trim());
-	                            Class  classObj = descr.getPropertyType();
-	                            Object newObj = classObj.newInstance();
-	                            log.debug("New Obj ["+newObj+"] being added to ["+dataObj+"]");
-	                            if (newObj != null)
-	                            {
-	
-	                                Method method = newObj.getClass().getMethod("initialize", new Class[] {});
-	                                method.invoke(newObj, new Object[] {});
-	                                setter.setFieldValue(dataObj, fieldName, newObj);
-	                                data = newObj;
-	
-	                                log.debug("Inserting New Obj ["+newObj+" at top of new DB ObjCache");
-	
-	                            }
-	                        } catch (NoSuchMethodException ex)
-	                        {
-	                            ex.printStackTrace();
-	
-	                        } catch (IllegalAccessException ex)
-	                        {
-	                            ex.printStackTrace();
-	
-	                        } catch (InvocationTargetException ex)
-	                        {
-	                            ex.printStackTrace();
-	
-	                        } catch (InstantiationException ex)
-	                        {
-	                            ex.printStackTrace();
-	                        }
-	                    }
-	                } else
-	                {
-	                    log.info("Data Obj ["+newData+" being added to ["+data+"]");
-	                    setter.setFieldValue(data, fieldName, newData);
-	                }
-	            }
-	        } else
-	        {
-	            log.info("setFieldValue -  newData ["+newData+"] fieldNames["+fieldNames+"] set into ["+dataObj+"]");
-	            setter.setFieldValue(dataObj, fieldNames, newData);
-	        }
+            if (setter.usesDotNotation())
+            {
+    	   		int inx = fieldNames.indexOf(".");
+    	        if (inx > -1)
+    	        {
+    	            String[] fileNameArray = StringUtils.split(fieldNames, '.');
+    	            Object data = dataObj;
+    	            for (int i=0;i<fileNameArray.length;i++)
+    	            {
+    	                String fieldName = fileNameArray[i];
+    	               if (i < fileNameArray.length-1)
+    	                {
+    	                     data = getter.getFieldValue(dataObj, fieldName);
+    	                    if (data == null)
+    	                    {
+    	                        try
+    	                        {
+    	                            PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, fieldName.trim());
+    	                            Class  classObj = descr.getPropertyType();
+    	                            Object newObj = classObj.newInstance();
+    	                            log.debug("New Obj ["+newObj+"] being added to ["+dataObj+"]");
+    	                            if (newObj != null)
+    	                            {
+    
+    	                                Method method = newObj.getClass().getMethod("initialize", new Class[] {});
+    	                                method.invoke(newObj, new Object[] {});
+    	                                setter.setFieldValue(dataObj, fieldName, newObj);
+    	                                data = newObj;
+    
+    	                                log.debug("Inserting New Obj ["+newObj+" at top of new DB ObjCache");
+    
+    	                            }
+    	                        } catch (NoSuchMethodException ex)
+    	                        {
+    	                            ex.printStackTrace();
+    
+    	                        } catch (IllegalAccessException ex)
+    	                        {
+    	                            ex.printStackTrace();
+    
+    	                        } catch (InvocationTargetException ex)
+    	                        {
+    	                            ex.printStackTrace();
+    
+    	                        } catch (InstantiationException ex)
+    	                        {
+    	                            ex.printStackTrace();
+    	                        }
+    	                    }
+    	                } else
+    	                {
+    	                    log.info("Data Obj ["+newData+" being added to ["+data+"]");
+    	                    setter.setFieldValue(data, fieldName, newData);
+    	                }
+    	            }
+    	        } else
+    	        {
+    	            log.info("setFieldValue -  newData ["+newData+"] fieldNames["+fieldNames+"] set into ["+dataObj+"]");
+    	            setter.setFieldValue(dataObj, fieldNames, newData);
+    	        }
+            } else
+            {
+                log.info("setFieldValue -  newData ["+newData+"] fieldNames["+fieldNames+"] set into ["+dataObj+"]");
+                setter.setFieldValue(dataObj, fieldNames, newData);
+            }
     	}
     }
 
@@ -842,11 +856,11 @@ public final class UIHelper
     {
         return new ArrayList<String>();
     }
-    
+
     //-------------------------------------------------------
     //-- Helpers for logging into the database
     //-------------------------------------------------------
-    
+
     /**
      * Constructs the full connection string for JDBC
      * @param dbProtocol the protocol
@@ -854,21 +868,21 @@ public final class UIHelper
      * @param dbName the name of the database
      * @return the full JDBC connection string
      */
-    public static String constructJDBCConnectionString(final String dbProtocol, 
-                                                       final String dbServer, 
+    public static String constructJDBCConnectionString(final String dbProtocol,
+                                                       final String dbServer,
                                                        final String dbName)
     {
         StringBuilder strBuf = new StringBuilder(64);
         strBuf.append("jdbc:");
         strBuf.append(dbProtocol);
-        
+
         if (isNotEmpty(dbServer))
         {
             strBuf.append("://");
             strBuf.append(dbServer);
             strBuf.append("/");
             strBuf.append(dbName);
-            
+
         } else
         {
             strBuf.append(":");
@@ -876,7 +890,7 @@ public final class UIHelper
         }
         return strBuf.toString();
     }
-    
+
     /**
      * Tries to login using the supplied params
      * @param dbDriver the driver (a class name)
@@ -887,64 +901,68 @@ public final class UIHelper
      * @param dbPassword the password
      * @return true if logged in, false if not
      */
-    public static boolean tryLogin(final String dbDriver, 
-                                   final String dbDialect, 
+    public static boolean tryLogin(final String dbDriver,
+                                   final String dbDialect,
                                    final String dbName,
-                                   final String connectionStr, 
-                                   final String dbUsername, 
+                                   final String connectionStr,
+                                   final String dbUsername,
                                    final String dbPassword)
     {
         DBConnection dbConn = DBConnection.getInstance();
-        
+
         dbConn.setDriver(dbDriver);
         dbConn.setDialect(dbDialect);
         dbConn.setDatabaseName(dbName);
         dbConn.setConnectionStr(connectionStr);
         dbConn.setUsernamePassword(dbUsername, dbPassword);
-        
+
         Connection connection = dbConn.createConnection();
         if (connection != null)
         {
             try
             {
                 connection.close();
-                
+
             } catch (SQLException ex)
             {
-                
+
             }
             return true;
-            
+
         } else
         {
             return false;
-        }  
+        }
     }
-    
+
     /**
      * Tries to do the login, if doAutoLogin is set to true it will try without displaying a dialog
      * and if the login fails then it will display the dialog
      * @param doAutoLogin whether to try to utomatically log the user in
      */
-    public static void doLogin(final boolean doAutoLogin, 
-                               final boolean useDialog, 
+    public static void doLogin(final boolean doAutoLogin,
+                               final boolean useDialog,
                                final DatabaseLoginListener listener)
     {
         // NOTE: These prefs are taken from DatabaseLoginPanel
-        Preferences appsNode = UICacheManager.getAppPrefs();
-        Preferences prefNode = appsNode.node("login");
+
+        String usernameStr  = UICacheManager.getAppPrefs().get("login.username", "");
+        String password     = Encryption.decrypt(UICacheManager.getAppPrefs().get("login.password", ""));
+        String driverStr    = UICacheManager.getAppPrefs().get("login.dbdriver_selected", "MySQL");         // XXX HARD CODED VALUE!
+        String serversStr   = UICacheManager.getAppPrefs().get("login.servers_selected", "");
+        String databasesStr = UICacheManager.getAppPrefs().get("login.databases_selected", "");
+                
+        DatabaseDriverInfo dbInfo = DatabaseDriverInfo.getInfoByName(DatabaseDriverInfo.loadDatabaseDriverInfo(), driverStr);
         
-        String usernameStr    = prefNode.get("username", "");
-        String password       = Encryption.decrypt(prefNode.get("password", ""));
-        String driverStr      = prefNode.get("driver", "com.mysql.jdbc.Driver"); // XXX HARD CODED VALUE!
-        String protocol       = prefNode.get("protocol", "mysql");         // XXX HARD CODED VALUE!
-        String serversStr     = prefNode.get("servers_selected", "");
-        String databasesStr   = prefNode.get("databases_selected", "");
-                   
         boolean doLogin = true;
-        if (doAutoLogin && prefNode.getBoolean("autologin", false))
+        if (dbInfo != null && doAutoLogin && UICacheManager.getAppPrefs().getBoolean("login.autologin", false))
         {
-            boolean loginOK = tryLogin(driverStr, protocol, serversStr, databasesStr, usernameStr, password);
+            boolean loginOK = tryLogin(dbInfo.getDriverClassName(), 
+                                       dbInfo.getDialectClassName(),
+                                       databasesStr, 
+                                       dbInfo.getConnectionStr(serversStr, databasesStr), 
+                                       usernameStr, 
+                                       password);
             if (loginOK)
             {
                 doLogin = false;
@@ -953,24 +971,24 @@ public final class UIHelper
                     listener.loggedIn(databasesStr, usernameStr);
                 }
             }
-        } 
-         
+        }
+
         //doLogin = true; // testing
-        
+
         if (doLogin)
         {
             if (useDialog)
             {
                 DatabaseLoginDlg dlg = new DatabaseLoginDlg(listener);
                 UIHelper.centerAndShow(dlg);
-                
+
             } else
             {
                 class DBListener implements DatabaseLoginListener
                 {
                     protected JFrame                frame;
                     protected DatabaseLoginListener frameDBListener;
-                    
+
                     public DBListener(JFrame frame, DatabaseLoginListener frameDBListener)
                     {
                         this.frame = frame;
@@ -981,7 +999,7 @@ public final class UIHelper
                         frame.setVisible(false);
                         frameDBListener.loggedIn(databaseName, userName);
                     }
-                    
+
                     public void cancelled()
                     {
                         frame.setVisible(false);
@@ -989,7 +1007,7 @@ public final class UIHelper
                     }
                 }
                 JFrame.setDefaultLookAndFeelDecorated(false);
-                
+
                 JFrame frame = new JFrame(getResourceString("logintitle"));
                 DatabaseLoginPanel panel = new DatabaseLoginPanel(new DBListener(frame, listener), false);
                 panel.setWindow(frame);

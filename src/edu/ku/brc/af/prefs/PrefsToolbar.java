@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.af.prefs;
 
+import static edu.ku.brc.helpers.XMLHelper.getAttr;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.Component;
@@ -21,22 +22,26 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
-import java.util.prefs.Preferences;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.dom4j.Element;
 
+import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolbarLayoutManager;
-import edu.ku.brc.ui.UICacheManager;
 
 /**
  * This class simply reads all the prefs and constructs a toolbar with the various icons.
  *
- * @code_status Unknown (auto-generated)
- * 
+ * @code_status Complete
+ *
  * @author rods
  *
  */
@@ -49,123 +54,131 @@ public class PrefsToolbar extends JPanel
     public static final String TITLE       = "title";
     public static final String PANEL_CLASS = "panelClass";
     public static final String ICON_PATH   = "iconPath";
-           
-    protected Preferences                appsNode = UICacheManager.getAppPrefs();
-    protected PrefMainPanel              mainPanel;
-    protected int                        iconSize     = 24;  // XXX PREF (Possible???)
-    
-    /**
-     * COnstructor
-     */
-    /**
-     * Constructor with the main panel so the icon know how to show their pane
-     * 
+
+    protected PrefMainPanel mainPanel;
+    protected int           iconSize = 24;  // XXX PREF (Possible???)
+
+     /**
+     * Constructor with the main panel so the icon know how to show their pane.
+     *
      * @param mainPanel the main pane that houses all the preference panes
      */
     public PrefsToolbar(final PrefMainPanel mainPanel)
     {
         super(new ToolbarLayoutManager(2,5));
-        
+
         this.mainPanel = mainPanel;
-        
+
         init();
-        
+
     }
 
     /**
-     * Initializes the toolbar with all the icon from all the diffrent groups or sections
+     * Initializes the toolbar with all the icon from all the diffrent groups or sections.
      */
     protected void init()
     {
-        Preferences appPrefs = UICacheManager.getAppPrefs();
-        if (appPrefs == null)
-        {
-            throw new RuntimeException("The root pref name has not been set.");
-        }
-        
         try
         {
-            // First Get Main Categories
-            String[] childrenNames = appPrefs.childrenNames();
-            for (String sectionName : childrenNames)
+            Element root = XMLHelper.readDOMFromConfigDir("prefsInit.xml");
+            if (root == null)
             {
-                Preferences section = appPrefs.node(sectionName);
-                String  title = sectionName;
-                if (title != null)
+                return; // XXX FIXME
+            }
+
+            List sections = root.selectNodes("/prefs/section");
+            for ( Iterator iter = sections.iterator(); iter.hasNext(); )
+            {
+                org.dom4j.Element section = (org.dom4j.Element)iter.next();
+
+                String title = getAttr(section, "title", null);
+                if (StringUtils.isNotEmpty(title))
                 {
-                    boolean isAppPref = section.getBoolean("isApp", false);
-                    if (isAppPref)
+                    if (!getAttr(section, "isApp", false))
                     {
                         loadSectionPrefs(section);
                     }
                 }
             }
-            
+
         } catch (Exception ex)
         {
             ex.printStackTrace();
-            throw new RuntimeException(ex);
+            // XXX FIXME
         }
     }
-    
+
     /**
-     * Loads a Section or grouping of Prefs
+     * Loads a Section or grouping of Prefs.
      * @param parentPref the parent pref which is the groups or section
      */
-    protected void loadSectionPrefs(final Preferences parentPref)
+    protected void loadSectionPrefs(final Element sectionElement)
     {
+        
         try
         {
-            String[] childrenNames = parentPref.childrenNames();
-            for (String childName : childrenNames)
+            List prefs = sectionElement.selectNodes("pref");
+            for ( Iterator iterPrefs = prefs.iterator(); iterPrefs.hasNext(); )
             {
-                Preferences pref  = parentPref.node(childName);
-                
-                String title      = pref.get(TITLE, null);
-                String panelClass = pref.get(PANEL_CLASS, null);
-                String iconPath   = pref.get(ICON_PATH, null);
-                
-                if (title != null && panelClass != null && iconPath != null)
+                org.dom4j.Element pref = (org.dom4j.Element)iterPrefs.next();
+
+                String prefTitle  = pref.attributeValue("title");
+                String iconPath   = pref.attributeValue("icon");
+                String panelClass = pref.attributeValue("panelClass");
+
+                if (StringUtils.isNotEmpty(prefTitle) && StringUtils.isNotEmpty(iconPath) && StringUtils.isNotEmpty(panelClass))
                 {
-                    ImageIcon icon = new ImageIcon(new URL(iconPath));
-                    if (icon.getIconWidth() > iconSize || icon.getIconHeight() > iconSize)
+                    ImageIcon icon;
+                    if (iconPath.startsWith("http") || iconPath.startsWith("file"))
                     {
-                        icon = new ImageIcon(icon.getImage().getScaledInstance(iconSize, iconSize, Image.SCALE_SMOOTH));  
+                        icon = new ImageIcon(new URL(iconPath));
+                    } else
+                    {
+                        icon = IconManager.getImage(iconPath);
+                    }
+                    
+                    if (icon != null)
+                    {
+                        if (icon.getIconWidth() > iconSize || icon.getIconHeight() > iconSize)
+                        {
+                            icon = new ImageIcon(icon.getImage().getScaledInstance(iconSize, iconSize, Image.SCALE_SMOOTH));
+                        }
                     }
                     if (icon == null)
                     {
                         log.error("Icon was created - path["+iconPath+"]");
                     }
-                    
-                    RolloverCommand btn = new RolloverCommand(getResourceString(title), icon);
+
+                    RolloverCommand btn = new RolloverCommand(getResourceString(prefTitle), icon);
                     btn.setOpaque(false);
                     btn.setVerticalLayout(true);
-                    
+
                     try
                     {
                         Class panelClassObj = Class.forName(panelClass);
-                        Component comp = (Component)panelClassObj.newInstance(); 
-                        mainPanel.addPanel(title, comp);
-                        
+                        Component comp = (Component)panelClassObj.newInstance();
+                        mainPanel.addPanel(prefTitle, comp);
+
                         add(btn.getUIComponent());
-                        
+
                     } catch (Exception ex)
                     {
                         log.error(ex); // XXX FIXME
                         ex.printStackTrace();
                     }
-                    btn.addActionListener(new ShowAction(title)); 
+                    btn.addActionListener(new ShowAction(prefTitle));
                 }
             }
-            
+
         } catch (Exception ex)
         {
             throw new RuntimeException(ex);
         }
+        
     }
-    
+
     /**
-     * Show a panel by name
+     * Show a panel by name.
      * @param panelName the name of the panel to be shown
      */
     protected void showPanel(final String panelName)
@@ -177,22 +190,22 @@ public class PrefsToolbar extends JPanel
     //--------------------------------------------------------------
     // Inner Classes
     //--------------------------------------------------------------
-    
- 
+
+
     /**
-     * 
+     *
      * Command for showing a pref pane
      *
      */
-    class ShowAction implements ActionListener 
+    class ShowAction implements ActionListener
     {
         private String panelName;
-        
+
         public ShowAction(final String panelName)
         {
             this.panelName = panelName;
         }
-        public void actionPerformed(ActionEvent e) 
+        public void actionPerformed(ActionEvent e)
         {
             showPanel(panelName);
         }

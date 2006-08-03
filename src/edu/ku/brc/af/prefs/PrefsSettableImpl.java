@@ -15,51 +15,48 @@
 package edu.ku.brc.af.prefs;
 
 import java.awt.Color;
-import java.util.prefs.Preferences;
 
 import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.DataObjectSettable;
 
 /**
  * Class that implements the DataObjectSettable for preferences
  *
- * @code_status Unknown (auto-generated)
- * 
+ * @code_status Complete
+ *
  * @author rods
  *
  */
 public class PrefsSettableImpl implements DataObjectSettable
 {
 
+    /**
+     * Constructor.
+     */
     public PrefsSettableImpl()
     {
         super();
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.DataObjectSettable#setFieldValue(java.lang.Object, java.lang.String, java.lang.Object)
      */
     public void setFieldValue(Object dataObj, String fieldName, Object data)
     {
-        if (dataObj instanceof Preferences)
-        {
-            Preferences prefNode = (Preferences)dataObj;
             if (data instanceof Color)
             {
                 data = ColorWrapper.toString((Color)data);
             }
-            //System.out.println("setFieldValue["+dataObj+"]  ["+fieldName+"]  ["+ data+"]");
-            prefNode.put(fieldName, data == null ? "" : data.toString());
-            /*try
-            {
-                prefNode.flush();
-            } catch (BackingStoreException ex)
-            {
-                // XXX FIXME
-            }*/
-        } else
-        {
-            throw new RuntimeException("In setFieldValue dataObj["+dataObj+"] is not of class Preferences.");
-        }
+            System.out.println("setFieldValue["+dataObj+"]  ["+fieldName+"]  ["+ data+"]");
+            UICacheManager.getAppPrefs().put(fieldName, data == null ? "" : data.toString());
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.DataObjectSettable#usesDotNotation()
+     */
+    public boolean usesDotNotation()
+    {
+        return false;
     }
 }

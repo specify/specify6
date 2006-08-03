@@ -55,4 +55,11 @@ public class DataSetterForHashMap implements DataObjectSettable
         }
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.DataObjectSettable#usesDotNotation()
+     */
+    public boolean usesDotNotation()
+    {
+        return false;
+    }
 }

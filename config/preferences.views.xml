@@ -26,23 +26,23 @@
 
 	<viewdefs>
 	    <viewdef
-	    		type="form"
+	         type="form"
 	         name="EMail"
 	         class="java.util.prefs.Preferences"
-             gettable="edu.ku.brc.specify.prefs.PrefsGettableImpl"
-             settable="edu.ku.brc.specify.prefs.PrefsSettableImpl">
+             gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+             settable="edu.ku.brc.af.prefs.PrefsSettableImpl">
 
 		    	<desc><![CDATA[EMail Preference Form.]]></desc>
 
 		    	<enableRules>
-		    		<rule name="localmailbox"><![CDATA[accounttype.getSelectedIndex() == 1]]></rule>
+		    		<rule id="localmailbox"><![CDATA[accounttype.getSelectedIndex() == 1]]></rule>
 
-		    		<rule name="accountname"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
-		    		<rule name="servername"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
-		    		<rule name="smtp"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
-		    		<rule name="username"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
-		    		<rule name="password"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
-		    		<rule name="email"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
+		    	    <rule id="accountname"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
+		    	    <rule id="servername"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
+		    	    <rule id="smtp"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
+		    	    <rule id="username"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
+		    	    <rule id="password"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
+		    	    <rule id="email"><![CDATA[accounttype.getSelectedIndex() == 1 || accounttype.getSelectedIndex() == 2]]></rule>
 
 		    	</enableRules>
 
@@ -51,55 +51,55 @@
 
 			<rows>
 				<row>
-					<cell type="separator" label="emailacctsettings"/>
+				    <cell type="separator" label="emailacctsettings"/>
 				</row>
 				<row>
 					<cell type="label" name="accounttypeLabel" labelfor="accounttype" label="accounttype"/>
-					<cell type="field" uitype="combobox" name="accounttype" initialize="data=Not in use, POP3, IMAP"/>
+				    <cell type="field" uitype="combobox" id="accounttype" name="settings.email.accounttype" initialize="data=Not in use, POP3, IMAP"/>
 				</row>
 				<row>
 					<cell type="label" name="accountnameLabel" labelfor="accountname" label="accountname"/>
-					<cell type="field" uitype="text" cols="20" name="accountname" isrequired="true"/>
+				    <cell type="field" uitype="text" cols="20" id="accountname" name="settings.email.accountname" isrequired="true"/>
 				</row>
 				<row>
 					<cell type="label" name="servernameLabel" labelfor="servername" label="servername"/>
-					<cell type="field" uitype="text" cols="20" name="servername" isrequired="true"/>
+				    <cell type="field" uitype="text" cols="20" id="servername" name="settings.email.servername" isrequired="true"/>
 
 					<cell type="label" name="smtpLabel" labelfor="smtp" label="smtp"/>
-					<cell type="field" uitype="text" cols="20" name="smtp" isrequired="true"/>
+				    <cell type="field" uitype="text" cols="20" id="smtp" name="settings.email.smtp" isrequired="true"/>
 				</row>
 				<row>
 					<cell type="label" name="localmailboxLabel" labelfor="localmailbox" label="localmailbox"/>
-					<cell type="field" name="localmailbox" cols="20" colspan="5" uitype="browse" isrequired="true" validation="obj.isNotEmpty()" valtype="Changed"/>
+				    <cell type="field" id="localmailbox" name="settings.email.localmailbox" cols="20" colspan="5" uitype="browse" isrequired="true" validation="obj.isNotEmpty()" valtype="Changed"/>
 				</row>
 				<row>
-					<cell type="separator" label="userinfo"/>
+				    <cell type="separator" label="userinfo"/>
 				</row>
 				<row>
 					<cell type="label" name="usernameLabel" labelfor="username" label="username"/>
-					<cell type="field" name="username" cols="20" isrequired="true"/>
+				    <cell type="field" id="username" name="settings.email.username" cols="20" isrequired="true"/>
 
 					<cell type="label" name="passwordLabel" labelfor="password" label="password"/>
-					<cell type="field" name="password" cols="20" uitype="password" ispassword="true" isrequired="true" isencrypted="true"/>
+				    <cell type="field" id="password" name="settings.email.password" cols="20" uitype="password" ispassword="true" isrequired="true" isencrypted="true"/>
 				</row>
 				<row>
 					<cell type="label" name="emailLabel" labelfor="email" label="email" />
-					<cell type="field" name="email" cols="20" isrequired="true"/>
+				    <cell type="field" id="email" name="settings.email.email" cols="20" isrequired="true"/>
 				</row>
 				<row>
 					<cell type="label" labelfor="" label="" />
-					<cell type="command" name="testconnection" label="testconnection" commandtype="EmailPref" action="test"/>
+				    <cell type="command" id="testconnection" name="settings.email.testconnection" label="testconnection" commandtype="EmailPref" action="test"/>
 
 				</row>
 			</rows>
 		</viewdef>
 
 	    <viewdef
-	    		type="form"
+	    	 type="form"
              name="Formatting"
              class="java.util.prefs.Preferences"
-             gettable="edu.ku.brc.specify.prefs.PrefsGettableImpl"
-             settable="edu.ku.brc.specify.prefs.PrefsSettableImpl">
+             gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+             settable="edu.ku.brc.af.prefs.PrefsSettableImpl">
 
 	    		<desc><![CDATA[Formatting Preference Form.]]></desc>
 
@@ -112,19 +112,19 @@
 				</row>
 				<row>
 					<cell type="label" name="scrdateformatLabel" labelfor="scrdateformat" label="scrdateformat"/>
-					<cell type="field" uitype="text" cols="10" name="scrdateformat" isrequired="true"/>
+				    <cell type="field" uitype="text" cols="10" id="scrdateformat" name="ui.formatting.scrdateformat" isrequired="true"/>
 				</row>
 				<row>
 					<cell type="label" labelfor="valtextcolor" label="valtextcolor"/>
-					<cell type="field" uitype="colorchooser" name="valtextcolor"/>
+				    <cell type="field" uitype="colorchooser" id="valtextcolor" name="ui.formatting.valtextcolor"/>
 				</row>
 			    <row>
 			        <cell type="label" labelfor="requiredfieldcolor" label="requiredfieldcolor"/>
-			        <cell type="field" uitype="colorchooser" name="requiredfieldcolor"/>
+			        <cell type="field" uitype="colorchooser" id="requiredfieldcolor" name="ui.formatting.requiredfieldcolor"/>
 			    </row>
 			    <row>
 			        <cell type="label" labelfor="viewfieldcolor" label="viewfieldcolor"/>
-			        <cell type="field" uitype="colorchooser" name="viewfieldcolor"/>
+			        <cell type="field" uitype="colorchooser" id="viewfieldcolor" name="ui.formatting.viewfieldcolor"/>
 			    </row>
 			</rows>
 		</viewdef>

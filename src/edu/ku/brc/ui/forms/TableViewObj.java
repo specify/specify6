@@ -68,9 +68,9 @@ public class TableViewObj implements Viewable
         //    scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
         //}
 
-        //Preferences appsNode = UICacheManager.getAppPrefs();
-        //Preferences prefNode = appsNode.node("ui/formatting");
-        //prefNode.addPreferenceChangeListener(this);
+        //AppPrefsIFace appsNode = UICacheManager.getAppPrefs();
+        //AppPrefsIFace prefNode = appsNode.node("ui/formatting");
+        //prefNode.addAppPrefsChangeListener(this);
 
         mainComp = new JPanel(new BorderLayout());
         table = new JTable();

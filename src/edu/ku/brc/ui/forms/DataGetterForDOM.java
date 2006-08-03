@@ -75,4 +75,12 @@ public class DataGetterForDOM implements DataObjectGettable
         return null;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.DataObjectGettable#usesDotNotation()
+     */
+    public boolean usesDotNotation()
+    {
+        return true;
+    }
+    
 }

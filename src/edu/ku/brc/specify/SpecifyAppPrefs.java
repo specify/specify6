@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang.time.FastDateFormat;
 
-import edu.ku.brc.af.prefs.PrefsCache;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
@@ -34,14 +34,14 @@ import edu.ku.brc.ui.UICacheManager;
  * @author rods
  *
  */
-public class AppPrefs
+public class SpecifyAppPrefs
 {
 
     
     /**
      * Singleton Constructor.
      */
-    protected AppPrefs()
+    protected SpecifyAppPrefs()
     {
     }
     
@@ -55,16 +55,16 @@ public class AppPrefs
         
         FastDateFormat fastDateFormat = FastDateFormat.getDateInstance(FastDateFormat.SHORT);      
         SimpleDateFormat screenDateFormat = new SimpleDateFormat(fastDateFormat.getPattern());
-        PrefsCache.register(screenDateFormat, "ui", "formatting", "scrdateformat");
+        AppPrefsCache.register(screenDateFormat, "ui", "formatting", "scrdateformat");
         
         ColorWrapper valtextcolor = new ColorWrapper(Color.RED);
-        PrefsCache.register(valtextcolor, "ui", "formatting", "valtextcolor");
+        AppPrefsCache.register(valtextcolor, "ui", "formatting", "valtextcolor");
         
         ColorWrapper requiredFieldColor = new ColorWrapper(215, 230, 253);
-        PrefsCache.register(requiredFieldColor, "ui", "formatting", "requiredfieldcolor");
+        AppPrefsCache.register(requiredFieldColor, "ui", "formatting", "requiredfieldcolor");
        
         ColorWrapper viewFieldColor = new ColorWrapper(250, 250, 250);
-        PrefsCache.register(viewFieldColor, "ui", "formatting", "viewfieldcolor");
+        AppPrefsCache.register(viewFieldColor, "ui", "formatting", "viewfieldcolor");
        
     }
     

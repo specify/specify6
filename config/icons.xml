@@ -89,5 +89,9 @@
     
     <icon name="Warning" file="exclaim_yellow.gif" sizes="all"/>
     <icon name="Error" file="exclaim.gif" sizes="all"/>
+    
+    <!-- Preferences -->
+    <icon name="Browse" file="browse.gif" sizes="all"/>
+    
 
 </icons>

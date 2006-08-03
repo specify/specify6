@@ -36,5 +36,13 @@ public interface DataObjectGettable
      * @return the value of the field
      */
     public Object getFieldValue(Object dataObj, String fieldName);
+    
+    /**
+     * Returns true if dots (".") should be used to walk an object tree when getting the value, or
+     * false when "." in the name are meaningless.
+     * @return true if dots (".") should be used to walk an object tree when getting the value, or
+     * false when "." in the name are meaningless.
+     */
+    public boolean usesDotNotation();
 
 }

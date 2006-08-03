@@ -294,10 +294,10 @@ public class ViewLoader
                 for ( Iterator i = enableRules.elementIterator( "rule" ); i.hasNext(); )
                 {
                     Element ruleElement = (Element) i.next();
-                    String name = getAttr(ruleElement, "name", "");
-                    if (isNotEmpty(name))
+                    String id = getAttr(ruleElement, "id", "");
+                    if (isNotEmpty(id))
                     {
-                        rulesList.put(name, ruleElement.getTextTrim());
+                        rulesList.put(id, ruleElement.getTextTrim());
                     } else
                     {
                         throw new RuntimeException("The name is missing for rule["+ruleElement.getTextTrim()+"] is missing.");

@@ -14,17 +14,16 @@
  */
 package edu.ku.brc.af.prefs;
 
-import java.util.prefs.Preferences;
-
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.DataObjectGettable;
 
 /**
  * This knows how to get a field's value from a POJO.<br><br>
- * Implementation idea: We may need to cache the method objects, 
+ * Implementation idea: We may need to cache the method objects,
  * and then the factory will want to create a different object per class that will be using this)
  *
- * @code_status Unknown (auto-generated)
- * 
+ * @code_status Complete
+ *
  * @author rods
  *
  */
@@ -32,27 +31,35 @@ public class PrefsGettableImpl implements DataObjectGettable
 {
     // Static Data Members
     //private static final Logger log = Logger.getLogger(PrefsGettableImpl.class);
-    
+
     /**
-     * Default constructor (needed for factory) 
+     * Default constructor (needed for factory)
      */
     public PrefsGettableImpl()
     {
-        
+
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.DataObjectGettable#getFieldValue(java.lang.Object, java.lang.String)
      */
-    public Object getFieldValue(Object dataObj, String fieldName) 
+    public Object getFieldValue(Object dataObj, String fieldName)
     {
-        if (!(dataObj instanceof Preferences))
-        {
-            throw new RuntimeException("dataObj is not a Preference in call getFieldValue fieldName["+fieldName+"] data["+dataObj+"]");
-        }
+        //if (!(dataObj instanceof AppPrefsIFace))
+        //{
+        //    throw new RuntimeException("dataObj is not a Preference in call getFieldValue fieldName["+fieldName+"] data["+dataObj+"]");
+        //}
 
-        //System.out.println("getFieldValue["+dataObj+"]  ["+fieldName+"]  ["+ ((Preferences)dataObj).get(fieldName, "")+"]");
-        return ((Preferences)dataObj).get(fieldName, "");
-    }  
+        //System.out.println("getFieldValue["+dataObj+"]  ["+fieldName+"]  ["+ ((AppPrefsIFace)dataObj).get(fieldName, "")+"]");
+        return UICacheManager.getAppPrefs().get(fieldName, "");
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.DataObjectGettable#usesDotNotation()
+     */
+    public boolean usesDotNotation()
+    {
+        return false;
+    }
 
 }

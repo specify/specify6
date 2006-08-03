@@ -30,7 +30,7 @@ import javax.swing.JLabel;
  * 
  * (Currently not in use)
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -54,7 +54,7 @@ public class PrefPanelRowLayoutManager implements LayoutManager, LayoutManager2
     /**
      * Contructs a layout manager for layting out NavBoxes. It lays out all the NavBoxes vertically 
      * and uses the 'ySeparator' as the spacing in between the boxes. It uses borderPadding as a 'margin'
-     * aroound all the boxes
+     * around all the boxes.
      * @param title the JLabel title
      */
     public PrefPanelRowLayoutManager(final JLabel title)
@@ -63,7 +63,7 @@ public class PrefPanelRowLayoutManager implements LayoutManager, LayoutManager2
     }
     
     /**
-     * Sets the actual cell size for layout
+     * Sets the actual cell size for layout.
      * @param actualCellSize the dim of the cell, which is the same size as all other cells in the panel
      */
     public void setActualCellSize(Dimension actualCellSize)
@@ -72,7 +72,7 @@ public class PrefPanelRowLayoutManager implements LayoutManager, LayoutManager2
     }
     
     /**
-     * Sets the actual size of row
+     * Sets the actual size of row.
      * @param actualRowSize the actual size of row
      */
     public void setActualRowSize(final Dimension actualRowSize)
@@ -82,7 +82,7 @@ public class PrefPanelRowLayoutManager implements LayoutManager, LayoutManager2
 
     
     /**
-     * Return the preferred celll size of all the cells in this row
+     * Return the preferred celll size of all the cells in this row.
      * @return Return the preferred celll size of all the cells in this row
      */ 
     public Dimension getPreferredCellSize()
@@ -91,7 +91,7 @@ public class PrefPanelRowLayoutManager implements LayoutManager, LayoutManager2
     }
 
     /**
-     * Sets the most number of items on a row
+     * Sets the most number of items on a row.
      * @param maxNumItems the most number of items on a row
      */
     public void setMaxNumItems(final int maxNumItems)

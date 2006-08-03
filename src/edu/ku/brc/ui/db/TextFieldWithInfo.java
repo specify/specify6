@@ -27,8 +27,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.PreferenceChangeListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -42,7 +40,9 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.prefs.PrefsCache;
+import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
+import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
@@ -58,17 +58,17 @@ import edu.ku.brc.ui.forms.MultiView;
  * Create a TextField with accompanying UI that enables it to display a single formatted value in the text field
  * and then the "info" button can be pressed to display a dialog/window of the full data for the object that is in the control.
  * See the constructr for details.
- 
+
  * @code_status Unknown (auto-generated)
  **
  * @author rods
  *
  */
 @SuppressWarnings("serial")
-public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, PreferenceChangeListener, PropertyChangeListener
+public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPrefsChangeListener, PropertyChangeListener
 {
     protected static final Logger log                 = Logger.getLogger(TextFieldWithInfo.class);
-   
+
     protected static ColorWrapper valtextcolor       = null;
     protected static ColorWrapper requiredfieldcolor = null;
 
@@ -90,11 +90,11 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
     protected String[]           fieldNames;
     protected Object             dataObj     = null;
     protected String             frameTitle = null;
-    
+
     protected ViewBasedDisplayIFace  frame      = null;
     protected MultiView          multiView  = null;
 
- 
+
     /**
      * Constructor.
      * @param className the Class name of the java object that represents the table
@@ -116,12 +116,12 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
         this.format           = format;
         this.formatName       = formatName;
         this.displayInfoDialogName = displayInfoDialogName;
-        
+
         textField = new JTextField();
-        
+
         init(false);
     }
-    
+
     /**
      * Sets the string that is preappended to the title.
      * @param frameTitle the string arg
@@ -130,16 +130,16 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
     {
         this.frameTitle = frameTitle;
     }
-    
+
     /**
      * Sets the MultiView parent into the control.
      * @param multiView parent multiview
      */
     public void setMultiView(final MultiView multiView)
     {
-        this.multiView = multiView; 
+        this.multiView = multiView;
     }
-    
+
     /**
      * Returns the text field for this control.
      * @return the text field for this control
@@ -148,10 +148,10 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
     {
         return textField;
     }
-    
+
     /**
-     * Creates a Dialog (non-modl) that will display detail information 
-     * for the object in the text field. 
+     * Creates a Dialog (non-modl) that will display detail information
+     * for the object in the text field.
      */
     protected void createInfoFrame()
     {
@@ -159,13 +159,13 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
         frame.setCloseListener(this);
         frame.setData(dataObj);
         frame.showDisplay(true);
-        
+
         if (multiView != null)
         {
             multiView.registerDisplayFrame(frame);
         }
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.Component#requestFocus()
      */
@@ -173,7 +173,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
     {
         textField.requestFocus();
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.Component#setEnabled(boolean)
      */
@@ -204,7 +204,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
            log.error(ex);
            throw new RuntimeException(ex);
         }
-        
+
         PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,1px,p", "c:p"), this);
         CellConstraints cc         = new CellConstraints();
 
@@ -224,10 +224,10 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
         bgColor = textField.getBackground();
         if (valtextcolor == null || requiredfieldcolor == null)
         {
-            valtextcolor = PrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
-            requiredfieldcolor = PrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
+            valtextcolor       = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
+            requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
-        UICacheManager.getAppPrefs().node("ui/formatting").addPreferenceChangeListener(this);
+        UICacheManager.getAppPrefs().addChangeListener("ui.formatting.requiredfieldcolor", this);
 
 
         infoBtn.addActionListener(new ActionListener()
@@ -254,7 +254,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
             g.drawRect(0, 0, dim.width-1, dim.height-1);
         }
     }
-    
+
     //--------------------------------------------------------
     // PropertyChangeListener
     //--------------------------------------------------------
@@ -270,7 +270,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
         }
         frame = null;
     }
-    
+
     //--------------------------------------------------------
     // GetSetValueIFace
     //--------------------------------------------------------
@@ -287,8 +287,8 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
             {
                 getter = new DataGetterForObj();
             }
-            
-            // NOTE: If there was a formatName defined for this then the value coming 
+
+            // NOTE: If there was a formatName defined for this then the value coming
             // in will already be correctly formatted.
             // So just set the cvalue if there is a format name.
             Object newVal = value;
@@ -308,7 +308,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
             }
 
             textField.setText(newVal.toString());
-            
+
         } else
         {
             textField.setText("");
@@ -330,13 +330,13 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, Prefe
     }
 
     //-------------------------------------------------
-    // PreferenceChangeListener
+    // AppPrefsChangeListener
     //-------------------------------------------------
 
     /* (non-Javadoc)
-     * @see java.util.prefs.PreferenceChangeListener#preferenceChange(java.util.prefs.PreferenceChangeEvent)
+     * @see edu.ku.brc.af.prefs.AppPrefsChangeListener#preferenceChange(edu.ku.brc.af.prefs.AppPrefsChangeEvent)
      */
-    public void preferenceChange(PreferenceChangeEvent evt)
+    public void preferenceChange(AppPrefsChangeEvent evt)
     {
         if (evt.getKey().equals("requiredfieldcolor"))
         {

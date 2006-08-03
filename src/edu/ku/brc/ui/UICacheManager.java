@@ -19,7 +19,6 @@ import java.io.File;
 import java.util.Hashtable;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.prefs.Preferences;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -28,6 +27,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.prefs.AppPrefsIFace;
 import edu.ku.brc.exceptions.UIException;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.util.FileCache;
@@ -40,7 +40,7 @@ import edu.ku.brc.util.FileCache;
  * You <i>SHOULD</i> set the RECENTFRAME ui component when you are in a dialog and then any error dialogs
  * can be parented to your dialog. But if you set it you MUST set it back to null. (NOte if you forget it will always return
  * the TOPFRAME, but don't rely on this)
- 
+
  * @code_status Unknown (auto-generated)
  **
  * @author rods
@@ -79,8 +79,9 @@ public class UICacheManager
     protected FileCache      shortTermCache = null;
 
     protected String         defaultWorkingPath = System.getProperty("user.home") + File.separator + "Specify";
-    
-    protected ViewBasedDialogFactoryIFace viewbasedFactory = null; 
+
+    protected ViewBasedDialogFactoryIFace viewbasedFactory = null;
+    protected AppPrefsIFace  appPrefs = null;
 
     /**
      * Default private constructor for singleton
@@ -440,16 +441,6 @@ public class UICacheManager
         return parentName + "/" + childName+ "/" + subChildName;
     }
 
-    /**
-     * Return the Preferences node for the application
-     * @return Return the Preferences node for the application
-     */
-    public static Preferences getAppPrefs()
-    {
-        return Preferences.userNodeForPackage(getRootPrefClass());
-    }
-
-
     //----------------------------------------------------------------------------------
     // File Cache Section
     //----------------------------------------------------------------------------------
@@ -474,6 +465,7 @@ public class UICacheManager
 	}
 
 	/**
+     * Sets the longTermCache.
 	 * @param longTermCache The longTermCache to set.
 	 */
 	public static void setLongTermFileCache(FileCache longTermCache)
@@ -482,6 +474,7 @@ public class UICacheManager
 	}
 
 	/**
+     * Gets the shortTermCache.
 	 * @return Returns the shortTermCache.
 	 */
 	public static FileCache getShortTermFileCache()
@@ -501,10 +494,32 @@ public class UICacheManager
 	}
 
 	/**
+     * Sets the shortTermCache.
 	 * @param shortTermCache The shortTermCache to set.
 	 */
 	public static void setShortTermFileCache(FileCache shortTermCache)
 	{
 		instance.shortTermCache = shortTermCache;
 	}
+
+    /**
+     * Return the SpecifyAppPrefs.
+     * @return the SpecifyAppPrefs.
+     */
+    public static AppPrefsIFace getAppPrefs()
+    {
+        return instance.appPrefs;
+    }
+
+    /**
+     * Sets the SpecifyAppPrefs
+     * @param appPrefs the appPrefs
+     */
+    public static void setAppPrefs(AppPrefsIFace appPrefs)
+    {
+        instance.appPrefs = appPrefs;
+    }
+    
+    
 }
+

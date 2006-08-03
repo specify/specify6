@@ -20,7 +20,6 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.prefs.Preferences;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -52,11 +51,11 @@ import edu.ku.brc.ui.validation.FormValidator;
 
 /**
  * Preference Panel for setting EMail Preferences.
- *  
+ *
  * This also includes a method that kicks off a dialog on a thread to check to make sure all the email settings are correct.
  *
- * @code_status Unknown (auto-generated)
- * 
+ * @code_status Alpha
+ *
  * @author rods
  *
  */
@@ -64,84 +63,73 @@ import edu.ku.brc.ui.validation.FormValidator;
 public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandListener, PrefsPanelIFace
 {
     private static final Logger log  = Logger.getLogger(EMailPrefsPanel.class);
-    
-    //protected FormValidator formValidator = new FormValidator();
 
-    protected Preferences  prefNode = null;
-    
     protected View         formView = null;
-    protected Viewable form     = null;
-    
+    protected Viewable     form     = null;
+
     // Checker
-    protected ImageIcon  checkIcon     = new ImageIcon(IconManager.getImagePath("check.gif"));  // Move to icons.xml
-    protected ImageIcon  exclaimIcon   = new ImageIcon(IconManager.getImagePath("exclaim.gif"));
-    protected ImageIcon  exclaimYWIcon = new ImageIcon(IconManager.getImagePath("exclaim_yellow.gif"));
-    
+    protected ImageIcon    checkIcon     = new ImageIcon(IconManager.getImagePath("check.gif"));  // Move to icons.xml
+    protected ImageIcon    exclaimIcon   = new ImageIcon(IconManager.getImagePath("exclaim.gif"));
+    protected ImageIcon    exclaimYWIcon = new ImageIcon(IconManager.getImagePath("exclaim_yellow.gif"));
+
     protected JDialog      checkerDialog = null;
     protected JLabel[]     checkerLabels;
     protected JLabel[]     checkerIcons;
     protected JButton      closeCheckerBtn;
     protected JProgressBar progressBar;
     protected JPanel       checkPanel;
-    
+
     protected String testMessage = "Specify Test Message";
 
-    
-    
+
+
     protected EMailCheckerRunnable emailCheckerRunnable;
 
-    
+
     /**
-     * Constructor of the EMail setting panel
+     * Constructor of the EMail setting panel.
      */
     public EMailPrefsPanel()
     {
         super(new BorderLayout());
-        
-        Preferences appsNode = UICacheManager.getAppPrefs();
-        prefNode = appsNode.node("settings/email");
-        if (prefNode == null)
-        {
-            throw new RuntimeException("Could not find pref for email!");
-        }
-        
+
         createUI();
 
     }
-    
+
     /**
      * Create the UI for the panel
      */
     protected void createUI()
     {
-        
+
         String viewName = "EMail";
         String name     = "Preferences";
-        
+
         formView = ViewMgr.getView(name, viewName);
 
         if (formView != null)
         {
-            form = ViewFactory.createFormView(null, formView, null, prefNode);
+            form = ViewFactory.createFormView(null, formView, null, UICacheManager.getAppPrefs());
             add(form.getUIComponent(), BorderLayout.CENTER);
-            
+
         } else
         {
             log.error("Couldn't load form with name ["+name+"] Id ["+viewName+"]");
         }
 
-        form.setDataObj(prefNode);
+        form.setDataObj(UICacheManager.getAppPrefs());
 
         form.getValidator().validateForm();
-        
-        CommandDispatcher.register("EmailPref", this);
-        
-    }
-    
 
-    
+        CommandDispatcher.register("EmailPref", this);
+
+    }
+
+
+
     /**
-     * Test to make the mailbox is present and we can read it and 
+     * Test to make the mailbox is present and we can read it and
      * then check to see if we can download messages
      */
     protected void testSettings()
@@ -162,7 +150,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
         {
             passwordStr = Encryption.decrypt(passwordStr);
         }
-        
+
         boolean checkSendMail = true;
         if (checkSendMail)
         {
@@ -179,20 +167,20 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
             }
         } else
         {
-            checkerIcons[0].setIcon(checkIcon); 
+            checkerIcons[0].setIcon(checkIcon);
         }
-        
-        // Open Local Box if POP  
+
+        // Open Local Box if POP
         if (acctType == EMailHelper.AccountType.POP3)
         {
             try
             {
                 Properties props = new Properties();
                 Session session = Session.getDefaultInstance(props);
-                
+
                 Store store = session.getStore(new URLName("mstor:"+localMailBoxStr));
                 store.connect();
-        
+
                 java.util.List<javax.mail.Message> msgList = new java.util.ArrayList<javax.mail.Message>();
                 if (EMailHelper.getMessagesFromInbox(store, msgList))
                 {
@@ -205,74 +193,44 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
                     checkerIcons[1].setIcon(exclaimIcon);
                     checkerLabels[1].setText(EMailHelper.getLastErrorMsg());
                 }
-                
+
             } catch (Exception ex)
             {
                 checkerIcons[1].setIcon(exclaimIcon);
                 checkerLabels[1].setText(ex.toString());
-                
+
                 JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.TOPFRAME), ex.toString());
                 ex.printStackTrace();
             }
-            
-            
+
+
         } else if (acctType == EMailHelper.AccountType.IMAP)
         {
-            checkerIcons[1].setIcon(checkIcon); 
-            
+            checkerIcons[1].setIcon(checkIcon);
+
         } else
         {
             throw new RuntimeException("Unknown Account Type ["+acctTypeStr+"] must be POP3 or IMAP"); // XXX FIXME
         }
-        
+
         // Try to download message from pop account
         try
         {
             Properties props = System.getProperties();
             //props.put("mail.smtp.host", serverName.getText());
             //props.put( "mail.smtp.auth", "true");
-            
+
             boolean foundMsg = false;
-           
+
             if (acctType == EMailHelper.AccountType.POP3)
             {
                 //props.put("mail.pop3.host", serverName);
                 //props.put("mail.pop3.user", username);
 
-                Session session = Session.getInstance(props, null);   
+                Session session = Session.getInstance(props, null);
                 Store store = session.getStore("pop3");
                 store.connect(serverNameStr, usernameStr, passwordStr);
-                
-                java.util.List<javax.mail.Message> msgList = new java.util.ArrayList<javax.mail.Message>();
-                if (EMailHelper.getMessagesFromInbox(store, msgList))
-                {
-                    String msgStr = String.format(getResourceString("messagewerefound"), new Object[] {(msgList.size())});
-                    for (javax.mail.Message msg : msgList)
-                    {
-                        String subject = msg.getSubject();
-                        if (subject != null && subject.indexOf(testMessage) != -1)
-                        {
-                            foundMsg = true;
-                        }
-                    }
-                    checkerIcons[2].setIcon(checkIcon);
-                    checkerLabels[2].setText(msgStr);
-                    msgList.clear();
-                    EMailHelper.closeAllMailBoxes();
-                    
-                } else
-                {
-                    checkerIcons[2].setIcon(exclaimIcon);
-                    checkerLabels[2].setText(EMailHelper.getLastErrorMsg());
-                }
-                checkerLabels[2].invalidate();
-                
-            } else if (acctType == EMailHelper.AccountType.IMAP)
-            {
-                Session session = Session.getInstance(props, null);   
-                Store store = session.getStore("imap");
-                store.connect(serverNameStr, usernameStr, passwordStr);
-                
+
                 java.util.List<javax.mail.Message> msgList = new java.util.ArrayList<javax.mail.Message>();
                 if (EMailHelper.getMessagesFromInbox(store, msgList))
                 {
@@ -296,7 +254,37 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
                     checkerLabels[2].setText(EMailHelper.getLastErrorMsg());
                 }
                 checkerLabels[2].invalidate();
-                
+
+            } else if (acctType == EMailHelper.AccountType.IMAP)
+            {
+                Session session = Session.getInstance(props, null);
+                Store store = session.getStore("imap");
+                store.connect(serverNameStr, usernameStr, passwordStr);
+
+                java.util.List<javax.mail.Message> msgList = new java.util.ArrayList<javax.mail.Message>();
+                if (EMailHelper.getMessagesFromInbox(store, msgList))
+                {
+                    String msgStr = String.format(getResourceString("messagewerefound"), new Object[] {(msgList.size())});
+                    for (javax.mail.Message msg : msgList)
+                    {
+                        String subject = msg.getSubject();
+                        if (subject != null && subject.indexOf(testMessage) != -1)
+                        {
+                            foundMsg = true;
+                        }
+                    }
+                    checkerIcons[2].setIcon(checkIcon);
+                    checkerLabels[2].setText(msgStr);
+                    msgList.clear();
+                    EMailHelper.closeAllMailBoxes();
+
+                } else
+                {
+                    checkerIcons[2].setIcon(exclaimIcon);
+                    checkerLabels[2].setText(EMailHelper.getLastErrorMsg());
+                }
+                checkerLabels[2].invalidate();
+
             } else
             {
                 String msgStr = "Unknown Account Type ["+acctTypeStr+"] must be POP3 or IMAP"; // XXX I18N
@@ -304,22 +292,22 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
                 checkerLabels[2].setText(msgStr);
                 throw new RuntimeException(msgStr); // XXX FIXME
             }
-            
+
             if (foundMsg)
             {
                 checkerIcons[3].setIcon(checkIcon);
-                checkerLabels[3].setText(getResourceString("fndtestmsg"));                    
+                checkerLabels[3].setText(getResourceString("fndtestmsg"));
             } else
             {
                 checkerIcons[3].setIcon(exclaimIcon);
-                checkerLabels[3].setText(getResourceString("nofndtestmsg"));                    
+                checkerLabels[3].setText(getResourceString("nofndtestmsg"));
             }
 
         } catch (Exception ex)
         {
             checkerIcons[2].setIcon(exclaimIcon);
             checkerLabels[2].setText(ex.toString());
-            
+
             ex.printStackTrace();
         }
 
@@ -331,19 +319,19 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
         checkerDialog.setSize(checkerDialog.getPreferredSize());
 */
     }
-    
+
     //--------------------------------------------------------------------
     // CommandListener Interface
     //--------------------------------------------------------------------
     public void doCommand(CommandAction cmdAction)
     {
-        startEMailSettingsTest(); 
+        startEMailSettingsTest();
     }
-    
+
     //--------------------------------------------------------------------
     // PrefsSavable Interface
     //--------------------------------------------------------------------
-   
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.prefs.PrefsSavable#savePrefs()
      */
@@ -354,24 +342,24 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
             form.getDataFromUI();
         }
     }
-    
+
     /**
      * This creates a dialog and start a thread to check to make sure all the email settings work.
      */
     protected void startEMailSettingsTest()
     {
-        
+
         String rowDef = createDuplicateJGoodiesDef("p","4dlu", 6);
         PanelBuilder    builder    = new PanelBuilder(new FormLayout("p, 2dlu, p", rowDef));
         CellConstraints cc         = new CellConstraints();
-        
+
         int row = 1;
         int col = 1;
-        
+
         builder.addSeparator(getResourceString("checkingemailsettings"), cc.xyw(col,row,3));
         row += 2;
-        
-        String[] labels = {getResourceString("chksendingmail"), getResourceString("chkmailbox"), 
+
+        String[] labels = {getResourceString("chksendingmail"), getResourceString("chkmailbox"),
                            getResourceString("chkgetmail"), getResourceString("chkforsentmsg")};
         checkerIcons  = new JLabel[labels.length];
         checkerLabels = new JLabel[labels.length];
@@ -381,56 +369,56 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
             builder.add(checkerLabels[i] = new JLabel(labels[i]), cc.xy(col+2,row));
             row += 2;
         }
-        
+
         col = 1;
         builder.add(progressBar = new JProgressBar(0,100), cc.xyw(col,row,3));
         progressBar.setIndeterminate(true);
         row += 2;
-        
+
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-        
+
         JPanel panel = new JPanel(new BorderLayout());
         checkPanel = builder.getPanel();
         panel.add(builder.getPanel(), BorderLayout.CENTER);
-                
+
         builder = new PanelBuilder(new FormLayout("c:p:g", "c:p:g"));
         closeCheckerBtn = new JButton(getResourceString("Close"));
         builder.add(closeCheckerBtn, cc.xy(1,1));
         panel.add(builder.getPanel(), BorderLayout.SOUTH);
-        
-        closeCheckerBtn.addActionListener(new ActionListener() 
+
+        closeCheckerBtn.addActionListener(new ActionListener()
                 {
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 checkerDialog.setVisible(false);
                 emailCheckerRunnable = null;
             }
         });
-        
+
         panel.doLayout();
         checkPanel.doLayout();
         builder.getPanel().doLayout();
-        
+
         checkerDialog = new JDialog();
         checkerDialog.setModal(true);
-        
+
         checkerDialog.setContentPane(panel);
         checkerDialog.pack();
         checkerDialog.doLayout();
         //checkerDialog.setPreferredSize(checkerDialog.getPreferredSize());
         checkerDialog.setSize(checkerDialog.getPreferredSize());
-        
+
         emailCheckerRunnable = new EMailCheckerRunnable();
         emailCheckerRunnable.start();
-        
-        UIHelper.centerAndShow(checkerDialog);          
+
+        UIHelper.centerAndShow(checkerDialog);
     }
-    
-    
+
+
     //----------------------------------------------------------------------------
     // Runnable to check for the email settings
     //----------------------------------------------------------------------------
-    
+
     public class EMailCheckerRunnable implements Runnable
     {
         protected Thread               thread;
@@ -441,7 +429,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
         public EMailCheckerRunnable()
         {
         }
-        
+
         /**
          * Starts the thread to make the SQL call
          *
@@ -451,7 +439,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
             thread = new Thread(this);
             thread.start();
         }
-        
+
         /**
          * Stops the thread making the call
          *
@@ -465,16 +453,16 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
             thread = null;
             notifyAll();
         }
-        
+
         /**
-         * Test the various settings 
+         * Test the various settings
          */
         public void run()
         {
             try
             {
                 testSettings();
-                
+
             } catch (Exception ex)
             {
                 //ex.printStackTrace();

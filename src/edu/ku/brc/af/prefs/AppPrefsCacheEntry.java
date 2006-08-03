@@ -14,46 +14,61 @@
  */
 package edu.ku.brc.af.prefs;
 
-import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.PreferenceChangeListener;
-import java.util.prefs.Preferences;
+import edu.ku.brc.ui.UICacheManager;
+
 
 /**
  * Represents an entry in the cache of a single simple string pref that is always up-to-date because
  * it listens for changes.
- *  
- * @code_status Unknown (auto-generated)
- * 
+ *
+ * @code_status Complete
+ *
  * @author rods
  *
  */
-public class PrefsCacheEntry implements PreferenceChangeListener
+public class AppPrefsCacheEntry implements AppPrefsChangeListener
 {
     protected String attrName;
     protected String value;
     protected String defValue;
-    
-    public PrefsCacheEntry(String attrName, String value, String defValue)
+
+    /**
+     * Constructor.
+     * @param attrName the fully specified attribute name
+     * @param value the current value
+     * @param defValue the default value
+     */
+    public AppPrefsCacheEntry(String attrName, String value, String defValue)
     {
         this.attrName = attrName;
         this.value    = value;
         this.defValue = defValue;
     }
-    
-    public void preferenceChange(PreferenceChangeEvent evt)
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.AppPrefsChangeListener#preferenceChange(edu.ku.brc.af.prefs.AppPrefsChangeEvent)
+     */
+    public void preferenceChange(AppPrefsChangeEvent evt)
     {
-        Preferences pref = evt.getNode();
-        value = pref.get(evt.getKey(), defValue);
+        value = UICacheManager.getAppPrefs().get(evt.getKey(), defValue);
     }
 
+    /**
+     * Returns the default value.
+     * @return the default value
+     */
     public String getDefValue()
     {
         return defValue;
     }
 
+    /**
+     * Returns the value.
+     * @return the value
+     */
     public String getValue()
     {
         return value;
     }
-    
+
 }

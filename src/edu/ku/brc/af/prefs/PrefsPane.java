@@ -14,94 +14,74 @@
  */
 package edu.ku.brc.af.prefs;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
-
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URL;
-import java.util.prefs.Preferences;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
-
-import edu.ku.brc.ui.UICacheManager;
-
 /**
- * 
- * This class creates a grid of Preferences icon (commands) where each icon will dispay a panel.
+ *
+ * This class creates a grid of AppPrefsIFace icon (commands) where each icon will dispay a panel.
  * It creates a row (or section) for each grouping of preferences and then makes sure all the columns and rows are aligned.
  * (Currently not in use)
  *
- * @code_status Unknown (auto-generated)
- * 
+ * @code_status Complete
+ *
  * @author rods
  *
  */
 @SuppressWarnings("serial")
 public class PrefsPane extends JPanel
 {
-    private static final Logger log = Logger.getLogger(PrefsPane.class);
-    
+    //private static final Logger log = Logger.getLogger(PrefsPane.class);
+
     public static final String NAME        = "name";
     public static final String TITLE       = "title";
     public static final String PANEL_CLASS = "panelClass";
     public static final String ICON_PATH   = "iconPath";
-           
-    protected Preferences   appsNode = UICacheManager.getAppPrefs();
+
     protected PrefMainPanel mainPanel;
-    
+
     /**
-     * 
+     *
      */
     public PrefsPane(final PrefMainPanel mainPanel)
     {
         super();
-        
+
         this.mainPanel = mainPanel;
         setLayout(new PrefsPaneLayoutManager());
         init();
     }
 
     /**
-     * 
+     *
      */
     protected void init()
     {
-        Preferences appPrefs = UICacheManager.getAppPrefs();
-        if (appPrefs == null)
-        {
-            throw new RuntimeException("The root pref name has not been set.");
-        }
-        
+        /*
         try
         {
             Color gray = new Color(230,230,230);
             int   delta = 8;
             Color lighter = new Color(gray.getRed()+delta, gray.getRed()+delta, gray.getRed()+delta);
-            
+
+
             // First Get Main Categories
             Font newFont = null;
             String[] childrenNames = appPrefs.childrenNames();
             System.out.println("Keys: "+childrenNames.length);
             System.out.println("childrenNames: "+appPrefs.childrenNames().length);
-            
+
             for (String name : childrenNames)
             {
                 System.out.println("Section: "+name);
             }
-            
+
             int row = 0;
             for (String sectionName : childrenNames)
             {
-                Preferences section = appPrefs.node(sectionName);
+                AppPrefsIFace section = appPrefs.node(sectionName);
                 String  title = sectionName;
                 if (title != null)
                 {
@@ -115,9 +95,9 @@ public class PrefsPane extends JPanel
                             newFont = new Font(font.getFontName(), Font.BOLD, font.getSize()+1);
                         }
                         rowPanel.getTitle().setFont(newFont);
-                        
+
                         loadSectionPrefs(section, rowPanel);
-                        
+
                         rowPanel.setBackground((row % 2 == 0) ? lighter : gray);
                         add(rowPanel);
                         row++;
@@ -129,26 +109,28 @@ public class PrefsPane extends JPanel
         {
             throw new RuntimeException(ex);
         }
+        */
     }
-    
+
     /**
      * @param parentPref
      * @param rowPanel
      */
-    protected void loadSectionPrefs(final Preferences parentPref, 
+    protected void loadSectionPrefs(final String parentPref,
                                     final PrefPanelRow rowPanel)
     {
+        /*
         try
         {
             String[] childrenNames = parentPref.childrenNames();
             for (String childName : childrenNames)
             {
-                Preferences pref  = parentPref.node(childName);
-                
+                AppPrefsIFace pref  = parentPref.node(childName);
+
                 String title      = pref.get(TITLE, null);
                 String panelClass = pref.get(PANEL_CLASS, null);
                 String iconPath   = pref.get(ICON_PATH, null);
-                
+
                 if (title != null && panelClass != null && iconPath != null)
                 {
                     ImageIcon icon = new ImageIcon(new URL(iconPath));
@@ -156,18 +138,18 @@ public class PrefsPane extends JPanel
                     {
                         log.error("Icon was created - path["+iconPath+"]");
                     }
-                    
+
                     JButton btn = new JButton(getResourceString(title), icon);
                     btn.setHorizontalTextPosition(JLabel.CENTER);
                     btn.setVerticalTextPosition(JLabel.BOTTOM);
                     btn.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
                     btn.setBorderPainted(false);
                     btn.setOpaque(false);
-                    
+
                     try
                     {
                         Class panelClassObj = Class.forName(panelClass);
-                        Component comp = (Component)panelClassObj.newInstance(); 
+                        Component comp = (Component)panelClassObj.newInstance();
                         if (!mainPanel.addPanel(title, comp))
                         {
                             log.error("The Class ["+panelClass+"] couldn't loaded into prefs because it doesn't implement the proper interfaces");
@@ -175,46 +157,47 @@ public class PrefsPane extends JPanel
                         {
                             rowPanel.add(btn);
                         }
-                        
+
                     } catch (Exception ex)
                     {
                         log.error(ex); // XXX FIXME
                     }
-                    btn.addActionListener(new ShowAction(title)); 
+                    btn.addActionListener(new ShowAction(title));
                 }
             }
-            
+
         } catch (Exception ex)
         {
             throw new RuntimeException(ex);
         }
+        */
     }
-    
+
     protected void showPanel(final String panelName)
     {
         mainPanel.showPanel(panelName);
-        
+
     }
-    
+
     //--------------------------------------------------------------
     // Inner Classes
     //--------------------------------------------------------------
-    
- 
+
+
     /**
-     * 
+     *
      * @author rods
      *
      */
-    class ShowAction implements ActionListener 
+    class ShowAction implements ActionListener
     {
         private String panelName;
-        
+
         public ShowAction(final String panelName)
         {
             this.panelName = panelName;
         }
-        public void actionPerformed(ActionEvent e) 
+        public void actionPerformed(ActionEvent e)
         {
             showPanel(panelName);
         }

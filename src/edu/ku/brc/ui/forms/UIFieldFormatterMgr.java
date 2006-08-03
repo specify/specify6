@@ -23,7 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
-import edu.ku.brc.af.prefs.PrefsCache;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.helpers.XMLHelper;
 
 /**
@@ -140,7 +140,7 @@ public class UIFieldFormatterMgr
      */
     protected void addFieldsForDate(UIFieldFormatterMgr.Formatter formatter)
     {
-        SimpleDateFormat scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+        SimpleDateFormat scrDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
 
         String formatStr = scrDateFormat.toPattern();
         char currChar = ' ';

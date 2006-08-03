@@ -169,7 +169,7 @@ public class PickListTestApp
      */
     private void initialize() 
     {
-        AppPrefs.initialPrefs(); // Must be done first thing!
+        SpecifyAppPrefs.initialPrefs(); // Must be done first thing!
 
 
         try 

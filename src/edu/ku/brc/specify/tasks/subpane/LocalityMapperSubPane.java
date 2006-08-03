@@ -59,7 +59,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jdesktop.animation.timing.TimingTarget;
 
 import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.af.prefs.PrefsCache;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
@@ -95,7 +95,7 @@ import edu.ku.brc.ui.forms.persist.View;
 public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper.MapperListener, ResultSetControllerListener, TimingTarget
 {
     //private static final Logger log = Logger.getLogger(SimpleDescPane.class);
-    protected SimpleDateFormat scrDateFormat = PrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+    protected SimpleDateFormat scrDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
     protected static final Cursor handCursor   = new Cursor(Cursor.HAND_CURSOR);
     protected static final Cursor defCursor    = new Cursor(Cursor.DEFAULT_CURSOR);
 

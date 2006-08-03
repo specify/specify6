@@ -23,7 +23,7 @@ import com.apple.eawt.ApplicationEvent;
 
 /**
  * Needed for Mac Integration
- 
+
  * @code_status Unknown (auto-generated)
  **
  * @author rods
@@ -50,7 +50,7 @@ public class MacOSAppHandler extends Application
             event.setHandled(true);
         }
 
-        public void handlePreferences(ApplicationEvent event)
+        public void handleAppPrefsIFace(ApplicationEvent event)
         {
             ((Specify)app.get()).preferences();
             event.setHandled(true);
@@ -62,5 +62,5 @@ public class MacOSAppHandler extends Application
             event.setHandled(true);
          }
     }
-    
+
 }

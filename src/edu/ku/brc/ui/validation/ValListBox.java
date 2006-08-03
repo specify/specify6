@@ -26,8 +26,6 @@ import java.awt.event.FocusEvent;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
-import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.PreferenceChangeListener;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -35,7 +33,9 @@ import javax.swing.ListModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import edu.ku.brc.af.prefs.PrefsCache;
+import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
+import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UICacheManager;
@@ -49,7 +49,7 @@ import edu.ku.brc.ui.UICacheManager;
  *
  */
 @SuppressWarnings("serial")
-public class ValListBox extends JList implements UIValidatable, ListSelectionListener, GetSetValueIFace, PreferenceChangeListener
+public class ValListBox extends JList implements UIValidatable, ListSelectionListener, GetSetValueIFace, AppPrefsChangeListener
 {
     protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
     protected boolean isRequired = false;
@@ -96,10 +96,10 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
         bgColor = getBackground();
         if (valtextcolor == null || requiredfieldcolor == null)
         {
-            valtextcolor = PrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
-            requiredfieldcolor = PrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
+            valtextcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
+            requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
-        UICacheManager.getAppPrefs().node("ui/formatting").addPreferenceChangeListener(this);
+        UICacheManager.getAppPrefs().addChangeListener("ui.formatting.requiredfieldcolor", this);
         
         addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e)
@@ -320,10 +320,10 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
     }
     
     //-------------------------------------------------
-    // PreferenceChangeListener
+    // AppPrefsChangeListener
     //-------------------------------------------------
 
-    public void preferenceChange(PreferenceChangeEvent evt)
+    public void preferenceChange(AppPrefsChangeEvent evt)
     {
         if (evt.getKey().equals("requiredfieldcolor"))
         {

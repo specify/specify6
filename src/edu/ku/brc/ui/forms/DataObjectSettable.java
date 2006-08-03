@@ -30,4 +30,12 @@ public interface DataObjectSettable
      * @param data the field's data
      */
     public void setFieldValue(Object dataObj, String fieldName, Object data);
+    
+    /**
+     * Returns true if dots (".") should be used to walk an object tree when setting the value, or
+     * false when "." in the name are meaningless.
+     * @return true if dots (".") should be used to walk an object tree when setting the value, or
+     * false when "." in the name are meaningless.
+     */
+    public boolean usesDotNotation();
 }

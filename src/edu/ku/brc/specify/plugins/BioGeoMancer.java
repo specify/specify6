@@ -66,7 +66,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.prefs.PrefsCache;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.helpers.XMLHelper;
@@ -602,7 +602,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
         latitude.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
         builder.add(latitude, cc.xy(5,1));
 
-        ColorWrapper viewFieldColor = PrefsCache.getColorWrapper("ui", "formatting", "viewfieldcolor");
+        ColorWrapper viewFieldColor = AppPrefsCache.getColorWrapper("ui", "formatting", "viewfieldcolor");
         if (viewFieldColor != null)
         {
             longitude.setBackground(viewFieldColor.getColor());

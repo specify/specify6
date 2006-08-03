@@ -162,4 +162,11 @@ public class DataGetterForObj implements DataObjectGettable
         return value;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.DataObjectGettable#usesDotNotation()
+     */
+    public boolean usesDotNotation()
+    {
+        return true;
+    }
 }

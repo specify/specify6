@@ -186,4 +186,17 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
         Collections.sort(dbDrivers);
         return dbDrivers;
     }
+    
+    /**
+     * Locates a DatabaseDriverInfo object by name.
+     * @param dbDrivers a list of drivers
+     * @param name the name to look up
+     * @return the info object
+     */
+    public static DatabaseDriverInfo getInfoByName(final Vector<DatabaseDriverInfo> dbDrivers, final String name)
+    {
+        int inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(name, null, null, null));
+        return inx > -1 ? dbDrivers.get(inx) : null;
+    }
+
 }

@@ -137,12 +137,12 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
     /**
      * Helper to that adds a validation for enabling or disabling control by name
-     * @param name the name of the rule
+     * @param id the id of the rule
      * @param rule the rule that will be validated
      */
-    public void addEnableRule(final String name, final String rule)
+    public void addEnableRule(final String id, final String rule)
     {
-        formRules.add(new RuleExpression(name, rule));
+        formRules.add(new RuleExpression(id, rule));
     }
 
     /**

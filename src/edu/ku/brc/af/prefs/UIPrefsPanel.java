@@ -5,9 +5,10 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 
 /**
- * Preference Panel for setting the UI Preferences.
+ * Preference Panel for setting the UI AppPrefsIFace. 
+ * (Currently not used)
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *

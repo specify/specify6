@@ -25,7 +25,7 @@ import javax.swing.JPanel;
  * One row (or section) of the prefs when it is laaid out in a grid  
  * (Currently not in use)
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -38,7 +38,7 @@ public class PrefPanelRow extends JPanel
     protected JLabel                    title;
     
     /**
-     * Constructor
+     * Constructor.
      * @param titleStr the title string of the panel row
      */
     public PrefPanelRow(final String titleStr)
@@ -50,7 +50,7 @@ public class PrefPanelRow extends JPanel
     }
     
     /**
-     * Return the preferred Cel size which is the largest cell width and height dims
+     * Return the preferred Cel size which is the largest cell width and height dims.
      * @return Return the preferred Cel size which is the largest cell width and height dims
      */
     public Dimension getPreferredCellSize()
@@ -70,7 +70,7 @@ public class PrefPanelRow extends JPanel
     }
     
     /**
-     * Sets the actual cell size for layout
+     * Sets the actual cell size for layout.
      * @param actualCellSize the dim of the cell, which is the same size as all other cells in the panel
      */
     public void setActualCellSize(Dimension actualCellSize)
@@ -79,7 +79,7 @@ public class PrefPanelRow extends JPanel
     }
     
     /**
-     * Sets the actual size of row
+     * Sets the actual size of row.
      * @param actualRowSize the actual size of row
      */
     public void setActualRowSize(final Dimension actualRowSize)
@@ -88,7 +88,7 @@ public class PrefPanelRow extends JPanel
     }
     
     /**
-     * Sets the most number of items on a row
+     * Sets the most number of items on a row.
      * @param maxNumItems the most number of items on a row
      */
     public void setMaxNumItems(final int maxNumItems)
@@ -97,7 +97,7 @@ public class PrefPanelRow extends JPanel
     }
 
     /**
-     * Returns the JLabel for the panel
+     * Returns the JLabel for the panel.
      * @return Returns the JLabel for the panel
      */
     public JLabel getTitle()
