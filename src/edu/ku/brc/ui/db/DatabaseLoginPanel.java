@@ -96,7 +96,7 @@ public class DatabaseLoginPanel extends JPanel
 
     protected JButton          cancelBtn;
     protected JButton          loginBtn;
-    protected JCheckBox        extraBtn;
+    protected JCheckBox        moreBtn;
     protected ImageIcon        forwardImgIcon;
     protected ImageIcon        downImgIcon;
 
@@ -194,7 +194,7 @@ public class DatabaseLoginPanel extends JPanel
 
         forwardImgIcon = IconManager.getImage("Forward");
         downImgIcon    = IconManager.getImage("Down");
-        extraBtn       = new JCheckBox("More", forwardImgIcon);
+        moreBtn       = new JCheckBox("More", forwardImgIcon);
 
         // Extra
         dbDrivers = DatabaseDriverInfo.loadDatabaseDriverInfo();
@@ -307,18 +307,21 @@ public class DatabaseLoginPanel extends JPanel
             
         });
 
-        extraBtn.addActionListener(new ActionListener() {
+        moreBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                if (extraPanel.isVisible() && dbDriverCBX.getSelectedIndex() == -1)
+                if (extraPanel.isVisible())
                 {
-                    extraPanel.setVisible(false);
-                    extraBtn.setIcon(forwardImgIcon);
+                    if (dbDriverCBX.getSelectedIndex() != -1)
+                    {
+                        extraPanel.setVisible(false);
+                        moreBtn.setIcon(forwardImgIcon);
+                    }
 
                 } else
                 {
                     extraPanel.setVisible(true);
-                    extraBtn.setIcon(downImgIcon);
+                    moreBtn.setIcon(downImgIcon);
                 }
                 if (window != null)
                 {
@@ -368,7 +371,7 @@ public class DatabaseLoginPanel extends JPanel
         extraPanel = extraPanelBlder.getPanel();
         extraPanel.setBorder(BorderFactory.createEmptyBorder(2,2,4,2));
 
-        formBuilder.add(extraBtn, cc.xy(1,y));
+        formBuilder.add(moreBtn, cc.xy(1,y));
         y += 2;
 
         extraPanelBlder.addSeparator(getResourceString("extratitle"), cc.xywh(1,1,3,1));
@@ -472,7 +475,7 @@ public class DatabaseLoginPanel extends JPanel
             setMessage(getResourceString("missingdriver"), true);
             if (!extraPanel.isVisible())
             {
-                extraBtn.doClick();
+                moreBtn.doClick();
             }
 
         }
