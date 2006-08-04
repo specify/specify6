@@ -19,6 +19,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.List;
@@ -55,14 +56,11 @@ import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.ui.treetables.EditFormDialog.EditDialogCallback;
+import edu.ku.brc.specify.ui.treetables.TreeDefSelectionDialog.TreeSelectionDialogCallback;
 import edu.ku.brc.ui.DragDropCallback;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.ListPopupDialog;
 import edu.ku.brc.ui.UICacheManager;
-import edu.ku.brc.ui.ListPopupDialog.ListPopupCallback;
 import edu.ku.brc.ui.listeners.ScrollBarLinkingListener;
-import edu.ku.brc.ui.renderers.NameBasedListCellRenderer;
-import edu.ku.brc.ui.renderers.NameableListItemCellRenderer;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.ReverseRankBasedComparator;
 
@@ -77,7 +75,7 @@ import edu.ku.brc.util.ReverseRankBasedComparator;
  * @author jstewart
  */
 @SuppressWarnings("serial")
-public class TreeTableViewer extends BaseSubPane implements ListSelectionListener, DragDropCallback, MouseListener
+public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 {
 	/** North section container. */
 	protected JPanel northPanel;
@@ -183,33 +181,24 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		// show the dialog with all trees listed
 		// if the user hits "Cancel", close this copy of the TTV
 		// if the user hits "OK", call initTreeList(selectedDef)
-		Vector<Object> options = new Vector<Object>(defs);
-		final TreeDefinitionIface newDef = TreeFactory.createNewTreeDef(treeDefClass,"New Def",null);
-		options.add(newDef);
-		ListPopupCallback callback = new ListPopupCallback()
+		TreeSelectionDialogCallback callback = new TreeSelectionDialogCallback()
 		{
 			public void cancelled()
 			{
 				SubPaneMgr.getInstance().removePane(TreeTableViewer.this);
 			}
-			public void completed(Object userSelection)
+			public void defSelected(TreeDefinitionIface def)
 			{
-				if(userSelection == newDef)
-				{
-					editNewTreeDef();
-				}
-				else
-				{
-					TreeDefinitionIface def = (TreeDefinitionIface)userSelection;
-					initTreeList(def);
-				}
+				initTreeList(def);
+			}
+			public void newDefOptionSelected()
+			{
+				editNewTreeDef();			
 			}
 		};
-		
 		JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
-		ListPopupDialog d = new ListPopupDialog(topFrame,"Select a Tree",options,callback);
+		TreeDefSelectionDialog d = new TreeDefSelectionDialog(topFrame,defs,callback,true);
 		d.setModal(true);
-		d.setComboBoxCellRenderer(new NameableListItemCellRenderer());
 		d.setSize(300,150);
 		UIHelper.centerAndShow(d);
 	}
@@ -308,23 +297,37 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 
 		northPanel.add(new JLabel(root.getTreeDef().getName()));
 		
+		MouseListener mouseListener = new MouseAdapter()
+		{
+			public void mouseClicked(MouseEvent e){mouseButtonClicked(e);}
+			public void mousePressed(MouseEvent e){mouseButtonPressed(e);}
+		};
 		listModel = new TreeDataListModel(root);
 		list = new TreeDataGhostDropJList(listModel,this);
-		list.addMouseListener(this);
+		list.addMouseListener(mouseListener);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		listCellRenderer = new TreeDataListCellRenderer(list,listModel);
 		list.setCellRenderer(listCellRenderer);
-		list.addListSelectionListener(this);
+		
+		ListSelectionListener listSelListener = new ListSelectionListener()
+		{
+			public void valueChanged(ListSelectionEvent e)
+			{
+				Treeable t = (Treeable)list.getSelectedValue();
+				newTreeableSelected(t);
+			}
+		};
+		list.addListSelectionListener(listSelListener);
 		listHeader = new TreeDataListHeader(list,listModel,listCellRenderer);
 
 		treeListPanel = buildTreeListPanel(list,listHeader);
 
 		TreeDataGhostDropJList list2 = new TreeDataGhostDropJList(listModel,this);
-		list2.addMouseListener(this);
+		list2.addMouseListener(mouseListener);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		TreeDataListCellRenderer rend2 = new TreeDataListCellRenderer(list2,listModel);
 		list2.setCellRenderer(rend2);
-		list.addListSelectionListener(this);
+		list.addListSelectionListener(listSelListener);
 		TreeDataListHeader head2 = new TreeDataListHeader(list2,listModel,rend2);
 		
 		JPanel treeListPanel2 = buildTreeListPanel(list2,head2);
@@ -834,17 +837,14 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		return this;
 	}
 
-
 	/**
 	 * Updates the status bar text to display the full name of the currently
 	 * selected nodes and updates the enabled/disabled status of the buttons.
 	 *
-	 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
-	 * @param e a selection event on the tree display
+	 * @param t the newly selected Treeable
 	 */
-	public void valueChanged(ListSelectionEvent e)
+	protected void newTreeableSelected(Treeable t)
 	{
-		Treeable t = (Treeable)list.getSelectedValue();
 		if( t == null )
 		{
 			statusBar.setText(null);
@@ -852,11 +852,10 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 			return;
 		}
 		
-		System.out.println("Selection changed: " + t.getName());
 		statusBar.setText(t.getFullName());
 		enableAllButtons();
 	}
-
+	
 	/**
 	 * Reparents <code>dragged</code> to <code>droppedOn</code> by calling
 	 * {@link TreeDataListModel#reparent(Treeable, Treeable)}.
@@ -889,13 +888,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		}
 	}
 
-	/**
-	 *
-	 *
-	 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
-	 * @param e
-	 */
-	public void mouseClicked(MouseEvent e)
+	public void mouseButtonClicked(MouseEvent e)
 	{
 		Point p = e.getPoint();
 		int index = list.locationToIndex(p);
@@ -929,33 +922,7 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		}
 	}
 
-	/**
-	 *
-	 *
-	 * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
-	 * @param e
-	 */
-	public void mouseEntered(MouseEvent e)
-	{
-	}
-
-	/**
-	 *
-	 *
-	 * @see java.awt.event.MouseListener#mouseExited(java.awt.event.MouseEvent)
-	 * @param e
-	 */
-	public void mouseExited(MouseEvent e)
-	{
-	}
-
-	/**
-	 *
-	 *
-	 * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
-	 * @param e
-	 */
-	public void mousePressed(MouseEvent e)
+	public void mouseButtonPressed(MouseEvent e)
 	{
 		Point p = e.getPoint();
 		int index = list.locationToIndex(p);
@@ -976,16 +943,6 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		{
 			this.list.setClickOnText(false);
 		}
-	}
-
-	/**
-	 *
-	 *
-	 * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
-	 * @param e
-	 */
-	public void mouseReleased(MouseEvent e)
-	{
 	}
 
 	@Override

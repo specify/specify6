@@ -8,11 +8,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -33,11 +31,8 @@ import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.ui.treetables.EditFormDialog.EditDialogCallback;
 import edu.ku.brc.specify.ui.treetables.TreeDefSelectionDialog.TreeSelectionDialogCallback;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.ListPopupDialog;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.IconManager.IconSize;
-import edu.ku.brc.ui.ListPopupDialog.ListPopupCallback;
-import edu.ku.brc.ui.renderers.NameableListItemCellRenderer;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -129,7 +124,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 			}
 		};
 		JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
-		TreeDefSelectionDialog d = new TreeDefSelectionDialog(topFrame,treeDefs,callback);
+		TreeDefSelectionDialog d = new TreeDefSelectionDialog(topFrame,treeDefs,callback,true);
 		d.setModal(true);
 		d.setSize(300,150);
 		UIHelper.centerAndShow(d);
@@ -242,8 +237,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 			}
 			public void editCancelled(Object dataObj)
 			{
-				TreeDefinitionIface def = (TreeDefinitionIface)dataObj;
-				newDefEditCancelled(def);
+				SubPaneMgr.getInstance().removePane(TreeDefinitionEditor.this);
 			}
 		};
 
@@ -256,10 +250,6 @@ public class TreeDefinitionEditor extends BaseSubPane
 		treeDefSelected(newDef);
 	}
 	
-	protected void newDefEditCancelled(TreeDefinitionIface def)
-	{
-		log.info("newDefEditCancelled called");
-	}
 	
 	/**
 	 * Display the form for editing tree definition data.

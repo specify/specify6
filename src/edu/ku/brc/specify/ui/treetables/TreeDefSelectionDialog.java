@@ -49,18 +49,24 @@ public class TreeDefSelectionDialog extends JDialog
 	protected JButton okButton;
 	protected JButton cancelButton;
 	
-	public TreeDefSelectionDialog(Frame owner,List<TreeDefinitionIface> defs,TreeSelectionDialogCallback dialogCallback)
+	public TreeDefSelectionDialog(Frame owner,List<TreeDefinitionIface> defs,TreeSelectionDialogCallback dialogCallback,boolean includeNewOption)
 	{
 		super(owner);
 		this.setLayout(new BorderLayout());
 		this.callback = dialogCallback;
 		this.options = new Vector<Nameable>();
+		
+		// MUST ALWAYS INITIALIZE newDef FOR USE IN ActionListener BELOW
+		// EVEN IF includeNewOption IS FALSE
 		newDef = new Nameable()
 		{
 			public String getName(){return "Create new def...";}
 			public void setName(String name){}
 		};
-		this.options.add(newDef);
+		if(includeNewOption)
+		{
+			this.options.add(newDef);
+		}
 		this.options.addAll(defs);
 		
 		model = new DefaultComboBoxModel(this.options);
@@ -166,7 +172,7 @@ public class TreeDefSelectionDialog extends JDialog
 		options.add(TreeFactory.createNewTreeDef(TaxonTreeDef.class,"Def2","Rem2"));
 		options.add(TreeFactory.createNewTreeDef(TaxonTreeDef.class,"Def3","Rem3"));
 		options.add(TreeFactory.createNewTreeDef(TaxonTreeDef.class,"Def4","Rem4"));
-		TreeDefSelectionDialog d = new TreeDefSelectionDialog(null,options,cb);
+		TreeDefSelectionDialog d = new TreeDefSelectionDialog(null,options,cb,true);
 		d.setSize(300,300);
 		UIHelper.centerAndShow(d);
 	}
