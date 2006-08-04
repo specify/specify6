@@ -25,9 +25,9 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 
 /**
- 
+ *
  * @code_status Unknown (auto-generated)
- **
+ *
  * @author rods
  *
  */

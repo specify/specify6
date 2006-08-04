@@ -23,7 +23,7 @@ import javax.swing.JOptionPane;
 /**
  * Implementation of the ExternalFileRepositoryIFace for a local directory/disk based external repository
  
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  **
  * @author rods
  */
@@ -33,7 +33,7 @@ public class AskForDirectory
     protected JComponent parent;
     
     /**
-     * Constructor with UI parent
+     * Constructor with UI parent.
      * @param aParent the UI parent
      */
     public AskForDirectory(JComponent aParent)
@@ -43,7 +43,7 @@ public class AskForDirectory
     
     /**
      * 
-     * @return gets a directory using the JFileChooser
+     * @return gets a directory using the JFileChooser.
      * @throws NoSuchElementException if no dir is choosen (dialog is cancelled)
      */
     public String getDirectory() throws NoSuchElementException
@@ -61,10 +61,10 @@ public class AskForDirectory
     
     /**
      * Displays an error dialog with the provided message.
-     * @param aMsg
+     * @param msg the message to show
      */
-    public void showErrorDialog(String aMsg)
+    public void showErrorDialog(String msg)
     {
-        JOptionPane.showMessageDialog(parent, aMsg, "Error", JOptionPane.ERROR_MESSAGE);   // XXX LOCALIZE
+        JOptionPane.showMessageDialog(parent, msg, "Error", JOptionPane.ERROR_MESSAGE);   // XXX LOCALIZE
     }    
 }

@@ -35,7 +35,7 @@ public interface AppPrefsIFace
      * Gets a string value.
      * @param name the name of the pref
      * @param defaultValue the default value
-     * @return
+     * @return the value as a String.
      */
     public String get(final String name, final String defaultValue);
 

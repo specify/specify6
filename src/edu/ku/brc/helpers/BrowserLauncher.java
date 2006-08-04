@@ -38,7 +38,7 @@ import javax.swing.JOptionPane;
 /**
  * Taken from the Web (Bare Bones Launcher). This is a cross platform approach for launching browsers from java Apps
  
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  **
  * @author rods
  *
@@ -49,10 +49,10 @@ public class BrowserLauncher
     private static final String errMsg = "Error attempting to launch web browser";
 
     /**
-     * Opens an URL in a browser
+     * Opens an URL in a browser.
      * @param url the url to open
      */
-    public static void openURL(String url)
+    public static void openURL(final String url)
     {
         String osName = System.getProperty("os.name");
         try

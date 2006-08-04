@@ -49,7 +49,7 @@ import edu.ku.brc.ui.UICacheManager;
 /**
  * Sends an email with optional attachment
 
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  **
  * @author rods
  */
@@ -73,7 +73,7 @@ public class EMailHelper
     protected List<MailBoxInfo> mailBoxCache = new ArrayList<MailBoxInfo>();
 
     /**
-     * Default Constructor
+     * Default Constructor.
      *
      */
     public EMailHelper()
@@ -81,7 +81,7 @@ public class EMailHelper
     }
 
     /**
-     * Send an email
+     * Send an email.
      * @param aHost host of SMTP server
      * @param aUserName username of email account
      * @param aPassword password of email account
@@ -209,7 +209,7 @@ public class EMailHelper
     }
 
     /**
-     * Returns true if the account type string is "POP3"
+     * Returns true if the account type string is "POP3".
      * @param acctType the account type string
      * @return Returns true if the account type string is "POP3"
      */
@@ -229,7 +229,7 @@ public class EMailHelper
     }
 
     /**
-     * Returns true if the account type string is "POP3"
+     * Returns true if the account type string is "POP3".
      * @param acctType the account type string
      * @return Returns true if the account type string is "POP3"
      */
@@ -239,7 +239,7 @@ public class EMailHelper
     }
 
     /**
-     * Returns whether the email settings have been filled in (but this doesn't indicate whether they will actually work)
+     * Returns whether the email settings have been filled in (but this doesn't indicate whether they will actually work).
      * @param usernameStr username
      * @param passwordStr password
      * @param emailStr email
@@ -266,7 +266,7 @@ public class EMailHelper
     }
 
     /**
-     * Returns whether the email settings have been filled in (but this doesn't indicate whether they will actually work)
+     * Returns whether the email settings have been filled in (but this doesn't indicate whether they will actually work).
      * @return Returns whether the email settings have been filled in (but this doesn't indicate whether they will actually work)
      */
     public static boolean hasEMailSettings()
@@ -283,7 +283,7 @@ public class EMailHelper
     }
 
     /**
-     * Retrieves all the message from the INBOX
+     * Retrieves all the message from the INBOX.
      * @param store the store to retrieve them from
      * @param msgList the list to add them to
      * @return true if successful, false if their was an exception
@@ -315,7 +315,7 @@ public class EMailHelper
 
     /**
      * Retrieves a list of all the available messages. For POP3 it checks the local mailbox and downloads any on the server.
-     *  For IMAP it returns any in the INBOX
+     *  For IMAP it returns any in the INBOX.
      * @param msgList the list to be filled
      * @return true if not erros, false if an error occurred.
      */
@@ -405,7 +405,7 @@ public class EMailHelper
     }
 
     /**
-     * Returns a the last error message string it typ[ically comes from an exception that we catch
+     * Returns a the last error message string it typ[ically comes from an exception that we catch.
      * @return Returns a the last error message string it typ[ically comes from an exception that we catch
      */
     public static String getLastErrorMsg()

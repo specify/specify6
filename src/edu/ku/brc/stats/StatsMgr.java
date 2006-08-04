@@ -139,7 +139,7 @@ public class StatsMgr
     /**
      * Creates a custom class instance
      * @param className
-     * @return
+     * @return the custom query
      * @throws ClassNotFoundException
      * @throws IllegalAccessException
      * @throws InstantiationException
