@@ -206,12 +206,12 @@
             </altviews>
         </view>
         
-        <view name="NewTreeDefEditor"
+        <view name="TreeDefEditor"
         	class="edu.ku.brc.specify.datamodel.TreeDefinitionIface"
         	resourcelabels="false">
         	<desc><![CDATA[New Tree Definition Data Entry Form]]></desc>
         	<altviews>
-        		<altview name="NewTreeDefDataEntry" viewdef="NewTreeDefDateEntry" label="Edit" mode="edit" validated="true"/>
+        		<altview name="NewTreeDefDataEntry" viewdef="NewTreeDefDataEntry" label="Edit" mode="edit" validated="true"/>
         	</altviews>
         </view>
         
@@ -1096,7 +1096,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
+                    <cell type="field" id="1" name="name" uitype="text" cols="16" valtype="Changed"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Remarks"/>
@@ -1104,14 +1104,14 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Is Enforced?"/>
-                    <cell type="field" id="3" uitype="checkbox" name="isEnforced"/>
+                    <cell type="field" id="3" name="isEnforced" uitype="checkbox"/>
                 </row>
             </rows>
         </viewdef>
         
         <viewdef
             type="form"
-            name="NewTreeDefDateEntry"
+            name="NewTreeDefDataEntry"
             class="edu.ku.brc.specify.datamodel.TreeDefinitionIface"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
@@ -1132,6 +1132,5 @@
             </rows>
         </viewdef>
         
-
     </viewdefs>
 </viewset>

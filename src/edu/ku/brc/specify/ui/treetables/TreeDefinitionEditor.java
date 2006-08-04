@@ -168,7 +168,36 @@ public class TreeDefinitionEditor extends BaseSubPane
 		this.add(defItemsList,BorderLayout.CENTER);
 		this.add(new JLabel(treeDef.getName()),BorderLayout.NORTH);
 	}
+	
+	/**
+	 * Display the form for editing the given object.  This is a generic method for displaying
+	 * a form for editing values in any object where TreeFactory.getAppropriateFormsetAndViewNames
+	 * returns non-null.
+	 *
+	 * @param obj the obj being edited
+	 * @param title the title of the dialog window
+	 * @param callback the 'complete' and 'cancel' callbacks for the 'OK' and 'Cancel' buttons
+	 */
+	protected void showObjectEditDialog(Object obj,String title,EditDialogCallback callback)
+	{
+		String shortClassName = obj.getClass().getSimpleName();
+		String idFieldName = shortClassName.substring(0,1).toLowerCase() + shortClassName.substring(1) + "Id";
+		Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(obj);
+		if(formsNames==null)
+		{
+			log.error("Unable to locate appropriate forms for editing");
+			return;
+		}
+		EditFormDialog editDialog = new EditFormDialog(formsNames.first,formsNames.second,title,shortClassName,idFieldName,callback);
+		editDialog.setModal(true);
+		editDialog.setData(obj);
+		editDialog.setVisible(true);
+	}
 
+	/////////////////////////////////////////////////////////////////////////////////////////
+	// Methods to handle the creation and editing of a new TreeDefinitionItemIface object.
+	/////////////////////////////////////////////////////////////////////////////////////////
+	
 	/**
 	 * Display the data entry form for creating a new node.
 	 *
@@ -190,7 +219,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 			}
 		};
 
-		showItemEditDialog(newItem, "New Definition Item Form", callback);
+		showObjectEditDialog(newItem, "New Definition Item Form", callback);
 	}
 	
 	protected void newDefItemEditComplete(TreeDefinitionItemIface defItem)
@@ -203,23 +232,9 @@ public class TreeDefinitionEditor extends BaseSubPane
 		log.info("newDefItemEditCancelled called");
 	}
 	
-	/**
-	 * Display the form for editing node data.
-	 *
-	 * @param node the node being edited
-	 * @param title the title of the dialog window
-	 * @param callback the 'complete' and 'cancel' callbacks for the 'OK' and 'Cancel' buttons
-	 */
-	protected void showItemEditDialog(TreeDefinitionItemIface defItem,String title,EditDialogCallback callback)
-	{
-		String shortClassName = defItem.getClass().getSimpleName();
-		String idFieldName = shortClassName.substring(0,1).toLowerCase() + shortClassName.substring(1) + "Id";
-		Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(defItem);
-		EditFormDialog editDialog = new EditFormDialog(formsNames.first,formsNames.second,title,shortClassName,idFieldName,callback);
-		editDialog.setModal(true);
-		editDialog.setData(defItem);
-		editDialog.setVisible(true);
-	}
+	/////////////////////////////////////////////////////////////////////////////////////////
+	// Methods to handle the creation and editing of a new TreeDefinitionIface object.
+	/////////////////////////////////////////////////////////////////////////////////////////
 	
 	/**
 	 * Display the data entry form for creating a new tree definition.
@@ -241,7 +256,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 			}
 		};
 
-		showDefEditDialog(newDef, "New Definition Form", callback);
+		showObjectEditDialog(newDef, "New Definition Form", callback);
 	}
 
 	protected void newDefEditComplete(TreeDefinitionIface def)
@@ -250,25 +265,10 @@ public class TreeDefinitionEditor extends BaseSubPane
 		treeDefSelected(newDef);
 	}
 	
+	/////////////////////////////////////////////////////////////////////////////////////////
+	// Methods to handle the editing of an existing TreeDefinitionItemIface object.
+	/////////////////////////////////////////////////////////////////////////////////////////
 	
-	/**
-	 * Display the form for editing tree definition data.
-	 *
-	 * @param def the def being edited
-	 * @param title the title of the dialog window
-	 * @param callback the 'complete' and 'cancel' callbacks for the 'OK' and 'Cancel' buttons
-	 */
-	protected void showDefEditDialog(TreeDefinitionIface def,String title,EditDialogCallback callback)
-	{
-		String shortClassName = def.getClass().getSimpleName();
-		String idFieldName = shortClassName.substring(0,1).toLowerCase() + shortClassName.substring(1) + "Id";
-		Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(def);
-		EditFormDialog editDialog = new EditFormDialog(formsNames.first,formsNames.second,title,shortClassName,idFieldName,callback);
-		editDialog.setModal(true);
-		editDialog.setData(def);
-		editDialog.setVisible(true);
-	}
-
 	protected void mouseDoubleClick(int index)
 	{
 		TreeDefinitionItemIface defItem = (TreeDefinitionItemIface)listModel.getElementAt(index);
@@ -285,7 +285,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 				itemEditCancelled(item);
 			}
 		};
-		showItemEditDialog(defItem,"Edit Definition Item",callback);
+		showObjectEditDialog(defItem,"Edit Definition Item",callback);
 	}
 	
 	protected void itemEditComplete(TreeDefinitionItemIface defItem)

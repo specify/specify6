@@ -387,7 +387,33 @@ public class TreeFactory
 	 */
 	public static Pair<String,String> getAppropriateFormsetAndViewNames( TreeDefinitionIface defItem )
 	{
-		return new Pair<String,String>("Fish Views","NewTreeDefEditor");
+		return new Pair<String,String>("Fish Views","TreeDefEditor");
 	}
-
+	
+	/**
+	 * Find and return the names of the formset and view for editing objects of the same
+	 * class as the provided obj.
+	 * 
+	 * @param obj an instance of the class to be edited using the returned formset and view
+	 * @return a {@link edu.ku.brc.util.Pair<String,String>} containing the formset and view names
+	 */
+	public static Pair<String,String> getAppropriateFormsetAndViewNames( Object obj )
+	{
+		if(obj instanceof TreeDefinitionIface)
+		{
+			return getAppropriateFormsetAndViewNames((TreeDefinitionIface)obj);
+		}
+		else if(obj instanceof TreeDefinitionItemIface)
+		{
+			return getAppropriateFormsetAndViewNames((TreeDefinitionItemIface)obj);
+		}
+		else if(obj instanceof Treeable)
+		{
+			return getAppropriateFormsetAndViewNames((Treeable)obj);
+		}
+		else
+		{
+			return null;
+		}
+	}
 }

@@ -210,7 +210,7 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		TreeDefinitionEditor defEditor = new TreeDefinitionEditor(treeDefClass,"Tree Def Editor",getTask(),false);
 		SubPaneMgr.getInstance().addPane(defEditor);
 		SubPaneMgr.getInstance().removePane(TreeTableViewer.this);
-		TreeDefinitionIface newDef = TreeFactory.createNewTreeDef(treeDefClass,null,null);
+		TreeDefinitionIface newDef = TreeFactory.createNewTreeDef(treeDefClass,"New Def",null);
 		defEditor.showNewDefForm(newDef);
 	}
 	
