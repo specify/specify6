@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -31,6 +31,7 @@ import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.ui.treetables.EditFormDialog.EditDialogCallback;
+import edu.ku.brc.specify.ui.treetables.TreeDefSelectionDialog.TreeSelectionDialogCallback;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ListPopupDialog;
 import edu.ku.brc.ui.UICacheManager;
@@ -111,36 +112,30 @@ public class TreeDefinitionEditor extends BaseSubPane
 		// if the user hits "Cancel", close this copy of the TDE
 		// if the user hits "OK", either create a new def or edit the chosen def (depending on selection)
 
-		Vector<Object> options = new Vector<Object>(treeDefs);
-		final TreeDefinitionIface newDef = TreeFactory.createNewTreeDef(treeDefClass,"New Def",null);
-		options.add(newDef);
-		ListPopupCallback callback = new ListPopupCallback()
+		TreeSelectionDialogCallback callback = new TreeSelectionDialogCallback()
 		{
 			public void cancelled()
 			{
 				SubPaneMgr.getInstance().removePane(TreeDefinitionEditor.this);
 			}
-			public void completed(Object userSelection)
+			public void defSelected(TreeDefinitionIface def)
 			{
-				if(userSelection == newDef)
-				{
-					showNewDefForm(newDef);
-				}
-				else
-				{
-					defSelected(userSelection);
-				}
+				treeDefSelected(def);
+			}
+			public void newDefOptionSelected()
+			{
+				TreeDefinitionIface newDef = TreeFactory.createNewTreeDef(treeDefClass,"New Def",null);
+				showNewDefForm(newDef);				
 			}
 		};
 		JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
-		ListPopupDialog d = new ListPopupDialog(topFrame,"Select a Tree Definition",options,callback);
+		TreeDefSelectionDialog d = new TreeDefSelectionDialog(topFrame,treeDefs,callback);
 		d.setModal(true);
-		d.setComboBoxCellRenderer(new NameableListItemCellRenderer());
 		d.setSize(300,150);
 		UIHelper.centerAndShow(d);
 	}
 	
-	protected void defSelected(Object selection)
+	protected void treeDefSelected(Object selection)
 	{
 		TreeDefinitionIface treeDef = (TreeDefinitionIface)selection;
 		displayedDef = treeDef;
@@ -258,7 +253,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 	protected void newDefEditComplete(TreeDefinitionIface def)
 	{
 		TreeDefinitionIface newDef = TreeFactory.setupNewTreeDef(def);
-		defSelected(newDef);
+		treeDefSelected(newDef);
 	}
 	
 	protected void newDefEditCancelled(TreeDefinitionIface def)

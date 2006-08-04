@@ -328,7 +328,6 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		TreeDataListHeader head2 = new TreeDataListHeader(list2,listModel,rend2);
 		
 		JPanel treeListPanel2 = buildTreeListPanel(list2,head2);
-			
 		
 		this.remove(messageLabel);
 //		this.add(treeListPanel, BorderLayout.CENTER);
