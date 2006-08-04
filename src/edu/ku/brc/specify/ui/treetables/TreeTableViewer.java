@@ -121,6 +121,8 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	/** Implementation class of <code>Treeable</code> nodes. */
 	protected Class treeableClass;
 	
+	protected Class treeDefClass;
+	
 	/** Collection of all nodes deleted by user that have not yet been deleted from persistent store (DB). */
 	protected SortedSet<Treeable> deletedNodes;
 	
@@ -149,7 +151,9 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		super(name,task);
 		
 		dataService = TreeDataServiceFactory.createService();
-		List<TreeDefinitionIface> defs = dataService.getAllTreeDefs(treeDefClass);
+		final List<TreeDefinitionIface> defs = dataService.getAllTreeDefs(treeDefClass);
+		
+		this.treeDefClass = treeDefClass;
 		
 		errorIcon = IconManager.getIcon("Error", IconManager.IconSize.Std24);
 		init(defs);
@@ -161,7 +165,15 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 //		JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
 //		topFrame.setGlassPane(glassPane);
 		
-		showTreeSelectionDialog(defs);
+		// gotta ask for this to show up later in order for this constructor to finish
+		// and to let the TTV be shown as a tab
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				showTreeSelectionDialog(defs);
+			}
+		});
 	}
 	
 	protected void showTreeSelectionDialog(List<TreeDefinitionIface> defs)
@@ -189,6 +201,11 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 					log.info("Implement this: close this TTV and open a TreeDefEditor and do the \"make new\" process");
 					// user selected "Create New..."
 					// close this TTV and open a TreeDefEditor and do the "make new" process
+					TreeDefinitionEditor defEditor = new TreeDefinitionEditor(treeDefClass,"Tree Def Editor",getTask());
+					SubPaneMgr.getInstance().addPane(defEditor);
+					SubPaneMgr.getInstance().removePane(TreeTableViewer.this);
+					TreeDefinitionIface newDef = TreeFactory.createNewTreeDef(treeDefClass,null,null);
+					defEditor.showNewDefForm(newDef);
 				}
 			}
 		};

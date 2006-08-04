@@ -4,25 +4,23 @@
 package edu.ku.brc.specify.ui.treetables;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
@@ -32,6 +30,9 @@ import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.ui.treetables.EditFormDialog.EditDialogCallback;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.ListPopupDialog;
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.ListPopupDialog.ListPopupCallback;
 import edu.ku.brc.ui.renderers.NameBasedListCellRenderer;
 import edu.ku.brc.util.Pair;
 
@@ -41,7 +42,7 @@ import edu.ku.brc.util.Pair;
  * @author jstewart
  * @version %I% %G%
  */
-public class TreeDefinitionEditor extends BaseSubPane implements ListSelectionListener, MouseListener
+public class TreeDefinitionEditor extends BaseSubPane
 {
 	private static final Logger log  = Logger.getLogger(TreeDefinitionEditor.class);
 	
@@ -51,7 +52,6 @@ public class TreeDefinitionEditor extends BaseSubPane implements ListSelectionLi
 	protected JPanel southPanel;
 	protected JPanel eastPanel;
 	protected JLabel messageLabel;
-	protected JComboBox defsBox;
 	
 	protected JList defItemsList;
 	protected TreeDefEditorListModel listModel;
@@ -60,6 +60,8 @@ public class TreeDefinitionEditor extends BaseSubPane implements ListSelectionLi
 	
 	protected TreeDataService dataService;
 	protected TreeDefinitionIface displayedDef;
+	
+	protected String newTreeDefString;
 	
 	/**
 	 *
@@ -74,11 +76,19 @@ public class TreeDefinitionEditor extends BaseSubPane implements ListSelectionLi
 	
 		dataService = TreeDataServiceFactory.createService();
 		
-		List<TreeDefinitionIface> treeDefs = dataService.getAllTreeDefs(treeDefClass);
-		init(treeDefs);
+		final List<TreeDefinitionIface> treeDefs = dataService.getAllTreeDefs(treeDefClass);
+		initUI();
+		
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				showTreeDefSelectionDialog(treeDefs);
+			}
+		});
 	}
 	
-	protected void init(List<TreeDefinitionIface> treeDefs)
+	protected void initUI()
 	{
 		this.setLayout(new BorderLayout());
 		
@@ -94,40 +104,57 @@ public class TreeDefinitionEditor extends BaseSubPane implements ListSelectionLi
 		this.add(northPanel,BorderLayout.NORTH);
 		
 		eastPanel = new JPanel();
-//		eastPanel.setLayout(mgr)
-		
-		Vector<Object> defs = new Vector<Object>(treeDefs);
-		
-		defs.add(0, "Choose a tree definition");
-		defs.add("Create a new tree definition.");
-		defsBox = new JComboBox(defs);
-		defsBox.setRenderer(new NameBasedListCellRenderer());
-		defsBox.addActionListener(new ActionListener()
+	}
+	
+	protected void showTreeDefSelectionDialog(List<TreeDefinitionIface> treeDefs)
+	{
+		// show the dialog with all trees listed
+		// if the user hits "Cancel", close this copy of the TTV
+		// if the user hits "OK", call initTreeList(selectedDef)
+		Vector<Object> options = new Vector<Object>(treeDefs);
+		newTreeDefString = "Create New Tree Definition";
+		options.add(newTreeDefString);
+		ListPopupCallback callback = new ListPopupCallback()
 		{
-			public void actionPerformed(ActionEvent e)
+			public void cancelled()
 			{
-				Object selection = defsBox.getSelectedItem();
-				if( selection instanceof TreeDefinitionIface )
-				{
-					TreeDefinitionIface treeDef = (TreeDefinitionIface)defsBox.getSelectedItem();
-					displayedDef = treeDef;
-					
-					messageLabel.setText("Please wait while the tree is prepared");
-					messageLabel.setIcon(null);
-					add(messageLabel);
-					repaint();
-					
-					defsBox.setEnabled(false);
-					initTreeDefEditorComponent(treeDef);
-				}
-				else if( defsBox.getSelectedIndex() == defsBox.getModel().getSize()-1 )
-				{
-					log.info("New Tree Def: Implement this");
-					// do new def stuff
-				}
+				SubPaneMgr.getInstance().removePane(TreeDefinitionEditor.this);
 			}
-		});
-		northPanel.add(defsBox,BorderLayout.CENTER);
+			public void completed(Object userSelection)
+			{
+				defSelected(userSelection);
+			}
+		};
+		JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
+		ListPopupDialog d = new ListPopupDialog(topFrame,"Select a Tree Definition",options,callback);
+		d.setModal(true);
+		d.setComboBoxCellRenderer(new NameBasedListCellRenderer());
+		d.setSize(300,150);
+		d.setVisible(true);
+	}
+	
+	protected void defSelected(Object selection)
+	{
+		if( selection instanceof TreeDefinitionIface )
+		{
+			TreeDefinitionIface treeDef = (TreeDefinitionIface)selection;
+			displayedDef = treeDef;
+			
+			messageLabel.setText("Please wait while the tree is prepared");
+			messageLabel.setIcon(null);
+			add(messageLabel);
+			repaint();
+			
+			initTreeDefEditorComponent(treeDef);
+			
+			northPanel.add(new JLabel(treeDef.getName()));
+		}
+		else if( selection.equals(newTreeDefString) )
+		{
+			log.info("New Tree Def: Implement this");
+			TreeDefinitionIface newDef = TreeFactory.createNewTreeDef(treeDefClass,null,null);
+			showNewDefForm(newDef);
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -136,28 +163,22 @@ public class TreeDefinitionEditor extends BaseSubPane implements ListSelectionLi
 		Set<TreeDefinitionItemIface> defItems = treeDef.getTreeDefItems();
 		listModel = new TreeDefEditorListModel(defItems);
 		defItemsList = new JList(listModel);
-		defItemsList.addListSelectionListener(this);
-		defItemsList.addMouseListener(this);
+		defItemsList.addMouseListener(new MouseAdapter()
+		{
+			public void mouseClicked(MouseEvent e)
+			{
+				if(e.getClickCount()==2)
+				{
+					int index = defItemsList.getUI().locationToIndex(defItemsList,e.getPoint());
+					mouseDoubleClick(index);
+				}
+			}
+		});
 		Icon enforcedIcon = IconManager.getIcon("GoogleEarth",IconManager.IconSize.Std16);
 		defItemsList.setCellRenderer(new TreeDefItemListCellRenderer(20,enforcedIcon));
 		
 		this.remove(messageLabel);
 		this.add(defItemsList,BorderLayout.CENTER);
-	}
-
-	/**
-	 *
-	 *
-	 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
-	 * @param e
-	 */
-	public void valueChanged(ListSelectionEvent e)
-	{
-		if(e.getValueIsAdjusting())
-		{
-			return;
-		}
-		repaint();
 	}
 
 	/**
@@ -181,7 +202,7 @@ public class TreeDefinitionEditor extends BaseSubPane implements ListSelectionLi
 			}
 		};
 
-		showEditDialog(newItem, "New Definition Item Form", callback);
+		showItemEditDialog(newItem, "New Definition Item Form", callback);
 	}
 	
 	protected void newDefItemEditComplete(TreeDefinitionItemIface defItem)
@@ -201,7 +222,7 @@ public class TreeDefinitionEditor extends BaseSubPane implements ListSelectionLi
 	 * @param title the title of the dialog window
 	 * @param callback the 'complete' and 'cancel' callbacks for the 'OK' and 'Cancel' buttons
 	 */
-	protected void showEditDialog(TreeDefinitionItemIface defItem,String title,EditDialogCallback callback)
+	protected void showItemEditDialog(TreeDefinitionItemIface defItem,String title,EditDialogCallback callback)
 	{
 		String shortClassName = defItem.getClass().getSimpleName();
 		String idFieldName = shortClassName.substring(0,1).toLowerCase() + shortClassName.substring(1) + "Id";
@@ -211,34 +232,77 @@ public class TreeDefinitionEditor extends BaseSubPane implements ListSelectionLi
 		editDialog.setData(defItem);
 		editDialog.setVisible(true);
 	}
-
+	
 	/**
+	 * Display the data entry form for creating a new tree definition.
 	 *
-	 *
-	 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
-	 * @param e
+	 * @param newNode the new node for which the user must enter data
 	 */
-	public void mouseClicked(MouseEvent e)
+	public void showNewDefForm(TreeDefinitionIface newDef)
 	{
-		if(e.getClickCount()==2)
+		EditDialogCallback callback = new EditDialogCallback()
 		{
-			int doubleClickedItemIndex = defItemsList.getUI().locationToIndex(defItemsList,e.getPoint());
-			TreeDefinitionItemIface defItem = (TreeDefinitionItemIface)listModel.getElementAt(doubleClickedItemIndex);
-			EditDialogCallback callback = new EditDialogCallback()
+			public void editCompleted(Object dataObj)
 			{
-				public void editCompleted(Object dataObj)
-				{
-					TreeDefinitionItemIface item = (TreeDefinitionItemIface)dataObj;
-					itemEditComplete(item);
-				}
-				public void editCancelled(Object dataObj)
-				{
-					TreeDefinitionItemIface item = (TreeDefinitionItemIface)dataObj;
-					itemEditCancelled(item);
-				}
-			};
-			showEditDialog(defItem,"Edit Definition Item",callback);
-		}
+				TreeDefinitionIface def = (TreeDefinitionIface)dataObj;
+				newDefEditComplete(def);
+			}
+			public void editCancelled(Object dataObj)
+			{
+				TreeDefinitionIface def = (TreeDefinitionIface)dataObj;
+				newDefEditCancelled(def);
+			}
+		};
+
+		showDefEditDialog(newDef, "New Definition Form", callback);
+	}
+
+	protected void newDefEditComplete(TreeDefinitionIface def)
+	{
+		TreeDefinitionIface newDef = TreeFactory.setupNewTreeDef(def);
+		defSelected(newDef);
+	}
+	
+	protected void newDefEditCancelled(TreeDefinitionIface def)
+	{
+		log.info("newDefEditCancelled called");
+	}
+	
+	/**
+	 * Display the form for editing tree definition data.
+	 *
+	 * @param def the def being edited
+	 * @param title the title of the dialog window
+	 * @param callback the 'complete' and 'cancel' callbacks for the 'OK' and 'Cancel' buttons
+	 */
+	protected void showDefEditDialog(TreeDefinitionIface def,String title,EditDialogCallback callback)
+	{
+		String shortClassName = def.getClass().getSimpleName();
+		String idFieldName = shortClassName.substring(0,1).toLowerCase() + shortClassName.substring(1) + "Id";
+		Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(def);
+		EditFormDialog editDialog = new EditFormDialog(formsNames.first,formsNames.second,title,shortClassName,idFieldName,callback);
+		editDialog.setModal(true);
+		editDialog.setData(def);
+		editDialog.setVisible(true);
+	}
+
+	protected void mouseDoubleClick(int index)
+	{
+		TreeDefinitionItemIface defItem = (TreeDefinitionItemIface)listModel.getElementAt(index);
+		EditDialogCallback callback = new EditDialogCallback()
+		{
+			public void editCompleted(Object dataObj)
+			{
+				TreeDefinitionItemIface item = (TreeDefinitionItemIface)dataObj;
+				itemEditComplete(item);
+			}
+			public void editCancelled(Object dataObj)
+			{
+				TreeDefinitionItemIface item = (TreeDefinitionItemIface)dataObj;
+				itemEditCancelled(item);
+			}
+		};
+		showItemEditDialog(defItem,"Edit Definition Item",callback);
 	}
 	
 	protected void itemEditComplete(TreeDefinitionItemIface defItem)
@@ -249,45 +313,5 @@ public class TreeDefinitionEditor extends BaseSubPane implements ListSelectionLi
 	protected void itemEditCancelled(TreeDefinitionItemIface defItem)
 	{
 		log.info("itemEditCancelled called");
-	}
-
-	/**
-	 *
-	 *
-	 * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
-	 * @param e
-	 */
-	public void mouseEntered(MouseEvent e)
-	{
-	}
-
-	/**
-	 *
-	 *
-	 * @see java.awt.event.MouseListener#mouseExited(java.awt.event.MouseEvent)
-	 * @param e
-	 */
-	public void mouseExited(MouseEvent e)
-	{
-	}
-
-	/**
-	 *
-	 *
-	 * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
-	 * @param e
-	 */
-	public void mousePressed(MouseEvent e)
-	{
-	}
-
-	/**
-	 *
-	 *
-	 * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
-	 * @param e
-	 */
-	public void mouseReleased(MouseEvent e)
-	{
 	}
 }
