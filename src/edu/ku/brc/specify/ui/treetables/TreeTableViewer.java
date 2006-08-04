@@ -46,6 +46,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
+import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
@@ -61,6 +62,7 @@ import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.ListPopupDialog.ListPopupCallback;
 import edu.ku.brc.ui.listeners.ScrollBarLinkingListener;
 import edu.ku.brc.ui.renderers.NameBasedListCellRenderer;
+import edu.ku.brc.ui.renderers.NameableListItemCellRenderer;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.ReverseRankBasedComparator;
 
@@ -182,7 +184,8 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 		// if the user hits "Cancel", close this copy of the TTV
 		// if the user hits "OK", call initTreeList(selectedDef)
 		Vector<Object> options = new Vector<Object>(defs);
-		options.add("Create New Tree Definition");
+		final TreeDefinitionIface newDef = TreeFactory.createNewTreeDef(treeDefClass,"New Def",null);
+		options.add(newDef);
 		ListPopupCallback callback = new ListPopupCallback()
 		{
 			public void cancelled()
@@ -191,30 +194,35 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 			}
 			public void completed(Object userSelection)
 			{
-				if(userSelection instanceof TreeDefinitionIface)
+				if(userSelection == newDef)
+				{
+					editNewTreeDef();
+				}
+				else
 				{
 					TreeDefinitionIface def = (TreeDefinitionIface)userSelection;
 					initTreeList(def);
 				}
-				else
-				{
-					log.info("Implement this: close this TTV and open a TreeDefEditor and do the \"make new\" process");
-					// user selected "Create New..."
-					// close this TTV and open a TreeDefEditor and do the "make new" process
-					TreeDefinitionEditor defEditor = new TreeDefinitionEditor(treeDefClass,"Tree Def Editor",getTask());
-					SubPaneMgr.getInstance().addPane(defEditor);
-					SubPaneMgr.getInstance().removePane(TreeTableViewer.this);
-					TreeDefinitionIface newDef = TreeFactory.createNewTreeDef(treeDefClass,null,null);
-					defEditor.showNewDefForm(newDef);
-				}
 			}
 		};
+		
 		JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
 		ListPopupDialog d = new ListPopupDialog(topFrame,"Select a Tree",options,callback);
 		d.setModal(true);
-		d.setComboBoxCellRenderer(new NameBasedListCellRenderer());
+		d.setComboBoxCellRenderer(new NameableListItemCellRenderer());
 		d.setSize(300,150);
-		d.setVisible(true);
+		UIHelper.centerAndShow(d);
+	}
+	
+	protected void editNewTreeDef()
+	{
+		// user selected "Create New..."
+		// close this TTV and open a TreeDefEditor and do the "make new" process
+		TreeDefinitionEditor defEditor = new TreeDefinitionEditor(treeDefClass,"Tree Def Editor",getTask(),false);
+		SubPaneMgr.getInstance().addPane(defEditor);
+		SubPaneMgr.getInstance().removePane(TreeTableViewer.this);
+		TreeDefinitionIface newDef = TreeFactory.createNewTreeDef(treeDefClass,null,null);
+		defEditor.showNewDefForm(newDef);
 	}
 	
 	/**
@@ -985,9 +993,9 @@ public class TreeTableViewer extends BaseSubPane implements ListSelectionListene
 	public void showingPane(boolean show)
 	{
 		super.showingPane(show);
-		if(!show)
-		{
-			dataService.fini();
-		}
+//		if(!show)
+//		{
+//			dataService.fini();
+//		}
 	}
 }

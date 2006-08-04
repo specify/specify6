@@ -81,6 +81,8 @@
 
     <icon name="Down" file="down.png" sizes="NonStd"/>
     <icon name="Forward" file="forward.png" sizes="NonStd"/>
+    
+    <icon name="Checkmark" file="stock-apply.png" sizes="all"/>
 
     <!--  Plugins -->
     <icon name="FishBase" file="fblogootw32.png" sizes="all"/>

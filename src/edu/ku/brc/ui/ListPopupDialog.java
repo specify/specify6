@@ -21,6 +21,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
+import edu.ku.brc.helpers.UIHelper;
+
 /**
  *
  *
@@ -138,6 +140,6 @@ public class ListPopupDialog extends JDialog
 		options.add(new WindowAdapter(){});
 		ListPopupDialog d = new ListPopupDialog(null,"Make a selection",options,cb);
 		d.setSize(300,300);
-		d.setVisible(true);
+		UIHelper.centerAndShow(d);
 	}
 }

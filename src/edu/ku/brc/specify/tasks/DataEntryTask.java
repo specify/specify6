@@ -180,7 +180,7 @@ public class DataEntryTask extends BaseTask
     
     public void openTreeDefEditor(final Class treeDefClass, final String name)
     {
-    	TreeDefinitionEditor defEditor = new TreeDefinitionEditor(treeDefClass,name,this);
+    	TreeDefinitionEditor defEditor = new TreeDefinitionEditor(treeDefClass,name,this,true);
     	SubPaneMgr.getInstance().addPane(defEditor);
     }
 

@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -23,6 +24,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
+import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.treeutils.TreeDataService;
@@ -32,8 +34,9 @@ import edu.ku.brc.specify.ui.treetables.EditFormDialog.EditDialogCallback;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ListPopupDialog;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.ListPopupDialog.ListPopupCallback;
-import edu.ku.brc.ui.renderers.NameBasedListCellRenderer;
+import edu.ku.brc.ui.renderers.NameableListItemCellRenderer;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -48,7 +51,6 @@ public class TreeDefinitionEditor extends BaseSubPane
 	
 	protected Class treeDefClass;
 	
-	protected JPanel northPanel;
 	protected JPanel southPanel;
 	protected JPanel eastPanel;
 	protected JLabel messageLabel;
@@ -61,15 +63,13 @@ public class TreeDefinitionEditor extends BaseSubPane
 	protected TreeDataService dataService;
 	protected TreeDefinitionIface displayedDef;
 	
-	protected String newTreeDefString;
-	
 	/**
 	 *
 	 *
 	 * @param name
 	 * @param task
 	 */
-	public TreeDefinitionEditor(Class treeDefClass, String name, Taskable task)
+	public TreeDefinitionEditor(Class treeDefClass, String name, Taskable task, boolean showSelectionDialog)
 	{
 		super(name,task);
 		this.treeDefClass = treeDefClass;
@@ -79,13 +79,16 @@ public class TreeDefinitionEditor extends BaseSubPane
 		final List<TreeDefinitionIface> treeDefs = dataService.getAllTreeDefs(treeDefClass);
 		initUI();
 		
-		SwingUtilities.invokeLater(new Runnable()
+		if( showSelectionDialog )
 		{
-			public void run()
+			SwingUtilities.invokeLater(new Runnable()
 			{
-				showTreeDefSelectionDialog(treeDefs);
-			}
-		});
+				public void run()
+				{
+					showTreeDefSelectionDialog(treeDefs);
+				}
+			});
+		}
 	}
 	
 	protected void initUI()
@@ -99,21 +102,18 @@ public class TreeDefinitionEditor extends BaseSubPane
 		southPanel.setLayout(new BorderLayout());
 		this.add(southPanel,BorderLayout.SOUTH);
 
-		northPanel = new JPanel();
-		northPanel.setLayout(new BorderLayout());
-		this.add(northPanel,BorderLayout.NORTH);
-		
 		eastPanel = new JPanel();
 	}
 	
 	protected void showTreeDefSelectionDialog(List<TreeDefinitionIface> treeDefs)
 	{
 		// show the dialog with all trees listed
-		// if the user hits "Cancel", close this copy of the TTV
-		// if the user hits "OK", call initTreeList(selectedDef)
+		// if the user hits "Cancel", close this copy of the TDE
+		// if the user hits "OK", either create a new def or edit the chosen def (depending on selection)
+
 		Vector<Object> options = new Vector<Object>(treeDefs);
-		newTreeDefString = "Create New Tree Definition";
-		options.add(newTreeDefString);
+		final TreeDefinitionIface newDef = TreeFactory.createNewTreeDef(treeDefClass,"New Def",null);
+		options.add(newDef);
 		ListPopupCallback callback = new ListPopupCallback()
 		{
 			public void cancelled()
@@ -122,39 +122,35 @@ public class TreeDefinitionEditor extends BaseSubPane
 			}
 			public void completed(Object userSelection)
 			{
-				defSelected(userSelection);
+				if(userSelection == newDef)
+				{
+					showNewDefForm(newDef);
+				}
+				else
+				{
+					defSelected(userSelection);
+				}
 			}
 		};
 		JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
 		ListPopupDialog d = new ListPopupDialog(topFrame,"Select a Tree Definition",options,callback);
 		d.setModal(true);
-		d.setComboBoxCellRenderer(new NameBasedListCellRenderer());
+		d.setComboBoxCellRenderer(new NameableListItemCellRenderer());
 		d.setSize(300,150);
-		d.setVisible(true);
+		UIHelper.centerAndShow(d);
 	}
 	
 	protected void defSelected(Object selection)
 	{
-		if( selection instanceof TreeDefinitionIface )
-		{
-			TreeDefinitionIface treeDef = (TreeDefinitionIface)selection;
-			displayedDef = treeDef;
-			
-			messageLabel.setText("Please wait while the tree is prepared");
-			messageLabel.setIcon(null);
-			add(messageLabel);
-			repaint();
-			
-			initTreeDefEditorComponent(treeDef);
-			
-			northPanel.add(new JLabel(treeDef.getName()));
-		}
-		else if( selection.equals(newTreeDefString) )
-		{
-			log.info("New Tree Def: Implement this");
-			TreeDefinitionIface newDef = TreeFactory.createNewTreeDef(treeDefClass,null,null);
-			showNewDefForm(newDef);
-		}
+		TreeDefinitionIface treeDef = (TreeDefinitionIface)selection;
+		displayedDef = treeDef;
+		
+		messageLabel.setText("Please wait while the tree is prepared");
+		messageLabel.setIcon(null);
+		add(messageLabel);
+		repaint();
+		
+		initTreeDefEditorComponent(treeDef);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -174,11 +170,13 @@ public class TreeDefinitionEditor extends BaseSubPane
 				}
 			}
 		});
-		Icon enforcedIcon = IconManager.getIcon("GoogleEarth",IconManager.IconSize.Std16);
+		ImageIcon enforcedIcon = IconManager.getIcon("Checkmark",IconManager.IconSize.Std16);
+		enforcedIcon = IconManager.getScaledIcon(enforcedIcon,IconSize.Std32,IconSize.Std16);
 		defItemsList.setCellRenderer(new TreeDefItemListCellRenderer(20,enforcedIcon));
 		
 		this.remove(messageLabel);
 		this.add(defItemsList,BorderLayout.CENTER);
+		this.add(new JLabel(treeDef.getName()),BorderLayout.NORTH);
 	}
 
 	/**
