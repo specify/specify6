@@ -195,6 +195,7 @@ public class TreeDataListModel extends AbstractListModel
 	 * @return the new index of t in the visible node collection
 	 * @throws RuntimeException if the parent of t isn't currently visible
 	 */
+	@SuppressWarnings("unchecked")
 	protected int makeNodeVisible( Treeable t )
 	{
 		// if this is the first node to ever be made visible...
