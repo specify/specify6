@@ -400,7 +400,7 @@ public class Geography extends AbstractTreeable implements java.io.Serializable 
 	 */
 	public void setTreeDef(TreeDefinitionIface treeDef)
 	{
-		if( !(treeDef instanceof GeographyTreeDef) )
+		if( treeDef!=null && !(treeDef instanceof GeographyTreeDef) )
 		{
 			throw new IllegalArgumentException("Argument must be an instance of GeographyTreeDef");
 		}
@@ -423,7 +423,7 @@ public class Geography extends AbstractTreeable implements java.io.Serializable 
 	 */
 	public void setDefItem(TreeDefinitionItemIface defItem)
 	{
-		if( !(defItem instanceof GeographyTreeDefItem) )
+		if( defItem!=null && !(defItem instanceof GeographyTreeDefItem) )
 		{
 			throw new IllegalArgumentException("Argument must be an instance of GeographyTreeDefItem");
 		}

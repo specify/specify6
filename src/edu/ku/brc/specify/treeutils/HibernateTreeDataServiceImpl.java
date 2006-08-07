@@ -110,7 +110,7 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 	 * @param root the root of the subtree to save
 	 * @param deletedNodes the <code>Set</code> of nodes to delete
 	 */
-	public void saveTree(Treeable rootNode,Set<Treeable> deletedNodes)
+	public void saveTree(Treeable rootNode, Set<Treeable> deletedNodes)
 	{
 		rootNode.setNodeNumber(1);
 		fixNodeNumbersFromRoot(rootNode);
@@ -135,7 +135,7 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 		}
 	}
 	
-	public void saveNewTree(TreeDefinitionIface treeDef)
+	public void saveTreeDef(TreeDefinitionIface treeDef, List<TreeDefinitionItemIface> deletedItems)
 	{
 		// get the root node of the tree
 		Treeable rootNode = (Treeable)treeDef.getTreeEntries().iterator().next();
@@ -159,6 +159,19 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 		
 		// save all of the nodes
 		saveOrUpdateTree(rootNode);
+
+		// delete all of the tree def items that were deleted by the user
+		for(TreeDefinitionItemIface item: deletedItems)
+		{
+//			// ignore the items with null ID
+//			// they were probably created, then deleted, before ever being persisted
+//			if(item.getTreeDefItemId() != null)
+//			{
+//				session.delete(item);
+//			}
+			session.delete(item);
+		}
+		
 		try
 		{
 			tx.commit();

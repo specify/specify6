@@ -554,7 +554,7 @@ public class Taxon extends AbstractTreeable implements java.io.Serializable {
 	 */
 	public void setTreeDef(TreeDefinitionIface treeDef)
 	{
-		if( !(treeDef instanceof TaxonTreeDef) )
+		if( treeDef!=null && !(treeDef instanceof TaxonTreeDef) )
 		{
 			throw new IllegalArgumentException("Argument must be an instance of TaxonTreeDef");
 		}
@@ -577,7 +577,7 @@ public class Taxon extends AbstractTreeable implements java.io.Serializable {
 	 */
 	public void setDefItem(TreeDefinitionItemIface defItem)
 	{
-		if( !(defItem instanceof TaxonTreeDefItem) )
+		if( defItem!=null && !(defItem instanceof TaxonTreeDefItem) )
 		{
 			throw new IllegalArgumentException("Argument must be an instance of TaxonTreeDefItem");
 		}

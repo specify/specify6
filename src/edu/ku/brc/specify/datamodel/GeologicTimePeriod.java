@@ -356,7 +356,7 @@ public class GeologicTimePeriod extends AbstractTreeable implements java.io.Seri
 	 */
 	public void setTreeDef(TreeDefinitionIface treeDef)
 	{
-		if( !(treeDef instanceof GeologicTimePeriodTreeDef) )
+		if( treeDef!=null && !(treeDef instanceof GeologicTimePeriodTreeDef) )
 		{
 			throw new IllegalArgumentException("Argument must be an instance of GeologicTimePeriodTreeDef");
 		}
@@ -379,7 +379,7 @@ public class GeologicTimePeriod extends AbstractTreeable implements java.io.Seri
 	 */
 	public void setDefItem(TreeDefinitionItemIface defItem)
 	{
-		if( !(defItem instanceof GeologicTimePeriodTreeDefItem) )
+		if( defItem!=null && !(defItem instanceof GeologicTimePeriodTreeDefItem) )
 		{
 			throw new IllegalArgumentException("Argument must be an instance of GeologicTimePeriodTreeDefItem");
 		}

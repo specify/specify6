@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serializable {
+public class TaxonTreeDefItem extends AbstractTreeDefItem implements java.io.Serializable {
 
     // Fields    
 
@@ -178,7 +178,7 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
     
     public void setTreeDefinition(TreeDefinitionIface treeDef)
     {
-        if( !(treeDef instanceof TaxonTreeDef) )
+        if( treeDef!=null && !(treeDef instanceof TaxonTreeDef) )
         {
             throw new IllegalArgumentException("Argument must be an instance of TaxonTreeDef");
         }
@@ -192,7 +192,7 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
     
     public void setParentItem(TreeDefinitionItemIface parent)
     {
-        if( !(parent instanceof TaxonTreeDefItem) )
+        if( parent!=null && !(parent instanceof TaxonTreeDefItem) )
         {
             throw new IllegalArgumentException("Argument must be an instance of TaxonTreeDefItem");
         }
@@ -212,6 +212,13 @@ public class TaxonTreeDefItem  implements TreeDefinitionItemIface,java.io.Serial
     @SuppressWarnings("unchecked")
 	public void setChildItem(TreeDefinitionItemIface child)
     {
+    	if(child==null)
+    	{
+    		Set children = new HashSet<TaxonTreeDefItem>();
+    		setChildren(children);
+    		return;
+    	}
+    	
         if( !(child instanceof TaxonTreeDefItem) )
         {
             throw new IllegalArgumentException("Argument must be an instance of TaxonTreeDefItem");

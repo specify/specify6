@@ -32,4 +32,6 @@ public interface TreeDefinitionItemIface extends Rankable, Nameable
 
 	public Set getTreeEntries();
 	public void setTreeEntries(Set treeables);
+	
+	public boolean canBeDeleted();
 }

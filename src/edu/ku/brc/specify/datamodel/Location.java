@@ -374,7 +374,7 @@ public class Location extends AbstractTreeable implements java.io.Serializable {
 	 */
 	public void setTreeDef(TreeDefinitionIface treeDef)
 	{
-		if( !(treeDef instanceof LocationTreeDef) )
+		if( treeDef!=null && !(treeDef instanceof LocationTreeDef) )
 		{
 			throw new IllegalArgumentException("Argument must be an instance of LocationTreeDef");
 		}
@@ -397,7 +397,7 @@ public class Location extends AbstractTreeable implements java.io.Serializable {
 	 */
 	public void setDefItem(TreeDefinitionItemIface defItem)
 	{
-		if( !(defItem instanceof LocationTreeDefItem) )
+		if( defItem!=null && !(defItem instanceof LocationTreeDefItem) )
 		{
 			throw new IllegalArgumentException("Argument must be an instance of LocationTreeDefItem");
 		}

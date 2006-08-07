@@ -211,7 +211,7 @@
         	resourcelabels="false">
         	<desc><![CDATA[New Tree Definition Data Entry Form]]></desc>
         	<altviews>
-        		<altview name="NewTreeDefDataEntry" viewdef="NewTreeDefDataEntry" label="Edit" mode="edit" validated="true"/>
+        		<altview name="TreeDefinitionIface Edit" viewdef="TreeDefDataEntry" label="Edit" mode="edit" validated="true"/>
         	</altviews>
         </view>
         
@@ -1111,12 +1111,12 @@
         
         <viewdef
             type="form"
-            name="NewTreeDefDataEntry"
+            name="TreeDefDataEntry"
             class="edu.ku.brc.specify.datamodel.TreeDefinitionIface"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[New Tree Definition Data Entry Form]]></desc>
+            <desc><![CDATA[Tree Definition Data Entry Form]]></desc>
             <columnDef>p,3dlu,p,6dlu,p</columnDef>
             <rowDef>p,2dlu,p,2dlu,p</rowDef>
             

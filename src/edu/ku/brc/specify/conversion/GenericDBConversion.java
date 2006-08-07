@@ -2434,33 +2434,33 @@ public class GenericDBConversion
     {
     	Object[][] stdItems = {
     			{  0,"Taxonomy Root",true},
-    			{ 10,"Kingdom",true},
-    			{ 20,"Subkingdom",false},
-    			{ 30,"Phylum",true},
-    		//	{ 30,"Division",true}, // botanical collections
-    			{ 40,"Subphylum",false},
-    		//	{ 40,"Subdivision",false}, // botanical collections
-    			{ 50,"Superclass",false},
-    			{ 60,"Class",true},
-    			{ 70,"Subclass",false},
-    			{ 80,"Infraclass",false},
-    			{ 90,"Superorder",false},
-    			{100,"Order",true},
-    			{110,"Suborder",false},
-    			{120,"Infraorder",false},
-    			{130,"Superfamily",false},
-    			{140,"Tribe",false},
-    			{150,"Subtribe",false},
-    			{160,"Genus",true},
-    			{170,"Subgenus",false},
-    			{180,"Section",false},
-    			{190,"Subsection",false},
-    			{200,"Species",false},
-    			{210,"Subspecies",false},
-    			{220,"Variety",false},
-    			{230,"Subvariety",false},
-    			{240,"Forma",false},
-    			{250,"Subforma",false}
+    			{ 100,"Kingdom",true},
+    			{ 200,"Subkingdom",false},
+    			{ 300,"Phylum",true},
+    		//	{ 300,"Division",true}, // botanical collections
+    			{ 400,"Subphylum",false},
+    		//	{ 400,"Subdivision",false}, // botanical collections
+    			{ 500,"Superclass",false},
+    			{ 600,"Class",true},
+    			{ 700,"Subclass",false},
+    			{ 800,"Infraclass",false},
+    			{ 900,"Superorder",false},
+    			{1000,"Order",true},
+    			{1100,"Suborder",false},
+    			{1200,"Infraorder",false},
+    			{1300,"Superfamily",false},
+    			{1400,"Tribe",false},
+    			{1500,"Subtribe",false},
+    			{1600,"Genus",true},
+    			{1700,"Subgenus",false},
+    			{1800,"Section",false},
+    			{1900,"Subsection",false},
+    			{2000,"Species",false},
+    			{2100,"Subspecies",false},
+    			{2200,"Variety",false},
+    			{2300,"Subvariety",false},
+    			{2400,"Forma",false},
+    			{2500,"Subforma",false}
     	};
 
     	TaxonTreeDef ttd = new TaxonTreeDef();

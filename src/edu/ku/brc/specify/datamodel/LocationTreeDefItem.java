@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Serializable {
+public class LocationTreeDefItem extends AbstractTreeDefItem implements java.io.Serializable {
 
     // Fields    
 
@@ -177,7 +177,7 @@ public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Ser
     
     public void setTreeDefinition(TreeDefinitionIface treeDef)
     {
-        if( !(treeDef instanceof LocationTreeDef) )
+        if( treeDef!=null && !(treeDef instanceof LocationTreeDef) )
         {
             throw new IllegalArgumentException("Argument must be an instance of LocationTreeDef");
         }
@@ -191,7 +191,7 @@ public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Ser
     
     public void setParentItem(TreeDefinitionItemIface parent)
     {
-        if( !(parent instanceof LocationTreeDefItem) )
+        if( parent!=null && !(parent instanceof LocationTreeDefItem) )
         {
             throw new IllegalArgumentException("Argument must be an instance of LocationTreeDefItem");
         }
@@ -211,6 +211,13 @@ public class LocationTreeDefItem  implements TreeDefinitionItemIface,java.io.Ser
     @SuppressWarnings("unchecked")
 	public void setChildItem(TreeDefinitionItemIface child)
     {
+    	if(child==null)
+    	{
+    		Set children = new HashSet<LocationTreeDefItem>();
+    		setChildren(children);
+    		return;
+    	}
+    	
         if( !(child instanceof LocationTreeDefItem) )
         {
             throw new IllegalArgumentException("Argument must be an instance of LocationTreeDefItem");

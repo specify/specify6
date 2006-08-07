@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Serializable {
+public class GeographyTreeDefItem extends AbstractTreeDefItem implements java.io.Serializable {
 
     // Fields    
 
@@ -167,7 +167,7 @@ public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Se
     
     public void setTreeDefinition(TreeDefinitionIface treeDef)
     {
-        if( !(treeDef instanceof GeographyTreeDef) )
+        if( treeDef!=null && !(treeDef instanceof GeographyTreeDef) )
         {
             throw new IllegalArgumentException("Argument must be an instance of GeographyTreeDef");
         }
@@ -181,7 +181,7 @@ public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Se
     
     public void setParentItem(TreeDefinitionItemIface parent)
     {
-        if( !(parent instanceof GeographyTreeDefItem) )
+        if( parent!=null && !(parent instanceof GeographyTreeDefItem) )
         {
             throw new IllegalArgumentException("Argument must be an instance of GeographyTreeDefItem");
         }
@@ -201,6 +201,13 @@ public class GeographyTreeDefItem  implements TreeDefinitionItemIface,java.io.Se
     @SuppressWarnings("unchecked")
 	public void setChildItem(TreeDefinitionItemIface child)
     {
+    	if(child==null)
+    	{
+    		Set children = new HashSet<GeographyTreeDefItem>();
+    		setChildren(children);
+    		return;
+    	}
+    	
         if( !(child instanceof GeographyTreeDefItem) )
         {
             throw new IllegalArgumentException("Argument must be an instance of GeographyTreeDefItem");

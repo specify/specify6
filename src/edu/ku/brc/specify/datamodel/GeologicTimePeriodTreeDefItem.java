@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,java.io.Serializable {
+public class GeologicTimePeriodTreeDefItem extends AbstractTreeDefItem implements java.io.Serializable {
 
     // Fields    
 
@@ -167,7 +167,7 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
     
     public void setTreeDefinition(TreeDefinitionIface treeDef)
     {
-        if( !(treeDef instanceof GeologicTimePeriodTreeDef) )
+        if( treeDef!=null && !(treeDef instanceof GeologicTimePeriodTreeDef) )
         {
             throw new IllegalArgumentException("Argument must be an instance of GeologicTimePeriodTreeDef");
         }
@@ -181,7 +181,7 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
     
     public void setParentItem(TreeDefinitionItemIface parent)
     {
-        if( !(parent instanceof GeologicTimePeriodTreeDefItem) )
+        if( parent!=null && !(parent instanceof GeologicTimePeriodTreeDefItem) )
         {
             throw new IllegalArgumentException("Argument must be an instance of GeologicTimePeriodTreeDefItem");
         }
@@ -201,6 +201,13 @@ public class GeologicTimePeriodTreeDefItem  implements TreeDefinitionItemIface,j
     @SuppressWarnings("unchecked")
 	public void setChildItem(TreeDefinitionItemIface child)
     {
+    	if(child==null)
+    	{
+    		Set children = new HashSet<GeologicTimePeriodTreeDefItem>();
+    		setChildren(children);
+    		return;
+    	}
+    	
         if( !(child instanceof GeologicTimePeriodTreeDefItem) )
         {
             throw new IllegalArgumentException("Argument must be an instance of GeologicTimePeriodTreeDefItem");
