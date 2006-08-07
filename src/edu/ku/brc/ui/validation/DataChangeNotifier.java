@@ -50,7 +50,7 @@ import edu.ku.brc.ui.GetSetValueIFace;
  * Implements several listener interfaces and listens for the various types of notifications
  * to figure out if the component has changed.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -125,6 +125,11 @@ public class DataChangeNotifier implements FocusListener,
         //log.debug("DataChangeNotifier - notifyDataChangeListeners");
         
         hasDataChanged = true;
+        
+        if (comp instanceof UIValidatable)
+        {
+            ((UIValidatable)comp).setChanged(true);
+        }
         
         for (DataChangeListener dcl : dcListeners)
         {
@@ -233,6 +238,7 @@ public class DataChangeNotifier implements FocusListener,
     }
 
     /**
+     * Sets that the data has changed.
      * @param hasDataChanged The hasDataChanged to set.
      */
     public void setDataChanged(boolean hasDataChanged)
@@ -241,7 +247,8 @@ public class DataChangeNotifier implements FocusListener,
     }
 
     /**
-     * @return Returns the id.
+     * Returns the id.
+     * @return the id.
      */
     public String getId()
     {
@@ -259,7 +266,7 @@ public class DataChangeNotifier implements FocusListener,
 
     /**
      * Returns the uiv.
-     * @return Returns the uiv.
+     * @return the uiv.
      */
     public UIValidator getUIV()
     {
