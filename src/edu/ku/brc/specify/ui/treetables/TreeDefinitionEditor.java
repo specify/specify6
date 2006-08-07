@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
@@ -149,6 +150,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 		Set<TreeDefinitionItemIface> defItems = treeDef.getTreeDefItems();
 		listModel = new TreeDefEditorListModel(defItems);
 		defItemsList = new JList(listModel);
+		defItemsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		defItemsList.addMouseListener(new MouseAdapter()
 		{
 			public void mouseClicked(MouseEvent e)

@@ -29,8 +29,6 @@ public class TreeDefItemListCellRenderer extends JPanel implements ListCellRende
 	
 	protected TreeDefinitionItemIface item;
 	protected int index;
-	protected boolean selected;
-	protected boolean focus;
 	
 	protected JLabel textLabel;
 	protected JLabel iconLabel;
@@ -72,7 +70,7 @@ public class TreeDefItemListCellRenderer extends JPanel implements ListCellRende
 			return null;
 		}
 
-		if( selected )
+		if( isSelected )
 		{
 			this.setBackground(list.getSelectionBackground());
 			this.setForeground(list.getSelectionForeground());
@@ -84,8 +82,6 @@ public class TreeDefItemListCellRenderer extends JPanel implements ListCellRende
 		}
 		cellWidth = list.getWidth();
 		item = (TreeDefinitionItemIface)value;
-		selected = isSelected;
-		focus = cellHasFocus;
 		
 		textLabel.setText(item.getName());
 		if( item.getIsEnforced()!=null && item.getIsEnforced().booleanValue()==true )
