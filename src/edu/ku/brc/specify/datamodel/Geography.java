@@ -320,6 +320,10 @@ public class Geography extends AbstractTreeable implements java.io.Serializable 
 
     public void setDefinitionItem(GeographyTreeDefItem definitionItem) {
         this.definitionItem = definitionItem;
+        if(this.definitionItem!=null)
+        {
+        	this.rankId = this.definitionItem.getRankId();
+        }
     }
 
     /**

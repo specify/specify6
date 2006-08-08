@@ -272,6 +272,10 @@ public class Location extends AbstractTreeable implements java.io.Serializable {
     
     public void setDefinitionItem(LocationTreeDefItem definitionItem) {
         this.definitionItem = definitionItem;
+        if(this.definitionItem!=null)
+        {
+        	this.rankId = this.definitionItem.getRankId();
+        }
     }
 
     /**

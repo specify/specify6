@@ -2965,7 +2965,7 @@ public class GenericDBConversion
     	Session session = HibernateUtil.getCurrentSession();
     	HibernateUtil.beginTransaction();
     	
-    	LocationTreeDef locDef = (LocationTreeDef)TreeFactory.setupNewTreeDef(Location.class, "Sample location tree");
+    	LocationTreeDef locDef = (LocationTreeDef)TreeFactory.setupNewTreeDef(Location.class, "Sample location tree", null);
     	locDef.setRemarks("This definition is merely for demonstration purposes.  Consult documentation or support staff for instructions on creating one tailored for an institutions specific needs.");
     	session.save(locDef);
     	

@@ -41,7 +41,7 @@ public class TreeFactory
 	 * @return the new <code>TreeDefinitionIface</code> instance
 	 */
 	@SuppressWarnings("unchecked")
-	public static TreeDefinitionIface setupNewTreeDef( Class treeNodeClass, String defName )
+	public static TreeDefinitionIface setupNewTreeDef( Class treeNodeClass, String defName, String remarks )
 	{
 		TreeDefinitionIface def = null;
 		TreeDefinitionItemIface defItem = null;
@@ -73,17 +73,40 @@ public class TreeFactory
 
 		defItem.setTreeDefinition(def);
 		defItem.getTreeEntries().add(rootNode);
+		defItem.setRankId(0);
 		def.getTreeDefItems().add(defItem);
 		def.getTreeEntries().add(rootNode);
 		rootNode.setDefItem(defItem);
 		rootNode.setTreeDef(def);
+		def.setRemarks(remarks);
 		return def;
 	}
 	
 	public static TreeDefinitionIface setupNewTreeDef( TreeDefinitionIface def )
 	{
-		TreeDefinitionIface newDef = setupNewTreeDef(def.getNodeClass(),def.getName());
-		newDef.setRemarks(def.getRemarks());
+		TreeDefinitionIface newDef = setupNewTreeDef(def.getNodeClass(),def.getName(),def.getRemarks());
+		return newDef;
+	}
+	
+	public static TreeDefinitionIface setupNewStdTreeDef( TreeDefinitionIface def )
+	{
+		TreeDefinitionIface newDef = setupNewTreeDef(def);
+		
+		// get rid of the root def item and root node
+		TreeDefinitionItemIface rootDefItem = newDef.getDefItemByRank(0);
+		Treeable rootNode = (Treeable)rootDefItem.getTreeEntries().iterator().next();
+		newDef.getTreeDefItems().remove(rootDefItem);
+		newDef.getTreeEntries().remove(rootNode);
+		rootNode.setDefItem(null);
+		rootNode.setTreeDef(null);
+		rootDefItem.setTreeDefinition(null);
+		rootDefItem.getTreeEntries().remove(rootNode);
+		
+		addStdDefItems(newDef);
+		rootDefItem = newDef.getDefItemByRank(0);
+		
+		rootNode = createNewTreeable(rootNode.getClass(),"Root");
+		
 		return newDef;
 	}
 	
@@ -415,5 +438,140 @@ public class TreeFactory
 		{
 			return null;
 		}
+	}
+	
+	public static void addStdDefItems(TreeDefinitionIface def)
+	{
+		if(def instanceof GeographyTreeDef)
+		{
+			addStdGeographyItems((GeographyTreeDef)def);
+		}
+		if(def instanceof GeologicTimePeriodTreeDef)
+		{
+			addStdGtpItems((GeologicTimePeriodTreeDef)def);
+		}
+		if(def instanceof LocationTreeDef)
+		{
+			addStdLocationItems((LocationTreeDef)def);
+		}
+		if(def instanceof TaxonTreeDef)
+		{
+			addStdTaxonItems((TaxonTreeDef)def);
+		}
+	}
+	
+	public static void addStdGeographyItems(GeographyTreeDef def)
+	{
+    	Object[][] stdItems = {
+       	           			{  0,"Geography Root",true},
+       	           			{ 200,"Continent/Ocean",true},
+       	           			{ 400,"Country",false},
+       	           			{ 600,"State",true},
+       	           			{ 800,"County",false},
+       	           	};
+
+       	TreeDefinitionItemIface prevItem = null;
+       	for(int i = 0; i < stdItems.length; ++i)
+       	{
+       		Object[] itemInfo = stdItems[i];
+       		TreeDefinitionItemIface item = createNewTreeDefItem(GeographyTreeDefItem.class,prevItem,(String)itemInfo[1]);
+       		item.setIsEnforced((Boolean)itemInfo[2]);
+       		item.setRankId((Integer)itemInfo[0]);
+       		item.setTreeDefinition(def);
+       		def.addTreeDefItem((GeographyTreeDefItem)item);
+       		prevItem = item;
+       	}
+	}
+
+	public static void addStdGtpItems(GeologicTimePeriodTreeDef def)
+	{
+    	Object[][] stdItems = {
+          	           			{   0,"Time Root",true},
+          	           			{ 200,"Erathem",false},
+          	           			{ 400,"Period",false},
+          	           			{ 600,"Epoch",false},
+          	           			{ 800,"Age",false},
+          	           	};
+
+          	TreeDefinitionItemIface prevItem = null;
+          	for(int i = 0; i < stdItems.length; ++i)
+          	{
+          		Object[] itemInfo = stdItems[i];
+          		TreeDefinitionItemIface item = createNewTreeDefItem(GeologicTimePeriodTreeDefItem.class,prevItem,(String)itemInfo[1]);
+          		item.setIsEnforced((Boolean)itemInfo[2]);
+          		item.setRankId((Integer)itemInfo[0]);
+          		item.setTreeDefinition(def);
+          		def.addTreeDefItem((GeologicTimePeriodTreeDefItem)item);
+          		prevItem = item;
+          	}
+	}
+
+	public static void addStdLocationItems(LocationTreeDef def)
+	{
+    	Object[][] stdItems = {
+         	           			{   0,"Location Root",true},
+         	           			{ 200,"Building",false},
+         	           			{ 400,"Floor",false},
+         	           			{ 600,"Room",true},
+         	           			{ 800,"Shelf/Freezer",true},
+         	           	};
+
+         	TreeDefinitionItemIface prevItem = null;
+         	for(int i = 0; i < stdItems.length; ++i)
+         	{
+         		Object[] itemInfo = stdItems[i];
+         		TreeDefinitionItemIface item = createNewTreeDefItem(LocationTreeDefItem.class,prevItem,(String)itemInfo[1]);
+         		item.setIsEnforced((Boolean)itemInfo[2]);
+         		item.setRankId((Integer)itemInfo[0]);
+         		item.setTreeDefinition(def);
+         		def.addTreeDefItem((LocationTreeDefItem)item);
+         		prevItem = item;
+         	}
+	}
+
+	public static void addStdTaxonItems(TaxonTreeDef def)
+	{
+    	Object[][] stdItems = {
+    	           			{  0,"Taxonomy Root",true},
+    	           			{ 100,"Kingdom",true},
+    	           			{ 200,"Subkingdom",false},
+    	           			{ 300,"Phylum",true},
+    	           		//	{ 300,"Division",true}, // botanical collections
+    	           			{ 400,"Subphylum",false},
+    	           		//	{ 400,"Subdivision",false}, // botanical collections
+    	           			{ 500,"Superclass",false},
+    	           			{ 600,"Class",true},
+    	           			{ 700,"Subclass",false},
+    	           			{ 800,"Infraclass",false},
+    	           			{ 900,"Superorder",false},
+    	           			{1000,"Order",true},
+    	           			{1100,"Suborder",false},
+    	           			{1200,"Infraorder",false},
+    	           			{1300,"Superfamily",false},
+    	           			{1400,"Tribe",false},
+    	           			{1500,"Subtribe",false},
+    	           			{1600,"Genus",true},
+    	           			{1700,"Subgenus",false},
+    	           			{1800,"Section",false},
+    	           			{1900,"Subsection",false},
+    	           			{2000,"Species",false},
+    	           			{2100,"Subspecies",false},
+    	           			{2200,"Variety",false},
+    	           			{2300,"Subvariety",false},
+    	           			{2400,"Forma",false},
+    	           			{2500,"Subforma",false}
+    	           	};
+
+    	TreeDefinitionItemIface prevItem = null;
+    	for(int i = 0; i < stdItems.length; ++i)
+    	{
+    		Object[] itemInfo = stdItems[i];
+    		TreeDefinitionItemIface item = createNewTreeDefItem(TaxonTreeDefItem.class,prevItem,(String)itemInfo[1]);
+    		item.setIsEnforced((Boolean)itemInfo[2]);
+    		item.setRankId((Integer)itemInfo[0]);
+    		item.setTreeDefinition(def);
+    		def.addTreeDefItem((TaxonTreeDefItem)item);
+    		prevItem = item;
+    	}
 	}
 }

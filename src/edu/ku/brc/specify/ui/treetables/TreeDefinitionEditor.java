@@ -4,7 +4,9 @@
 package edu.ku.brc.specify.ui.treetables;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -21,8 +23,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 
@@ -51,28 +56,45 @@ import edu.ku.brc.util.Pair;
 public class TreeDefinitionEditor extends BaseSubPane
 {
 	private static final Logger log  = Logger.getLogger(TreeDefinitionEditor.class);
-	
-	protected Class treeDefClass;
-	
-	protected JPanel northPanel;
-	protected JPanel southPanel;
-	protected JLabel messageLabel;
-	
-	protected JList defItemsList;
-	protected TreeDefEditorListModel listModel;
-	
-	protected JLabel nameLabel;
-	protected JButton editDefButton;
-	protected JButton deleteDefButton;
-	protected JButton deleteItemButton;
-	protected JButton newItemButton;
-	protected JButton editItemButton;
-	
-	protected JButton commitToDbButton;
+
+	//////////////////
+	// Non-GUI members
+	//////////////////
 	
 	protected TreeDataService dataService;
 	protected TreeDefinitionIface displayedDef;
 	protected Vector<TreeDefinitionItemIface> deletedItems;
+	protected Class treeDefClass;
+
+	//////////////
+	// GUI widgets
+	//////////////
+	
+	// panels
+	protected JPanel northPanel;
+	protected JPanel southPanel;
+	
+	protected JLabel messageLabel;
+	
+	// main user interaction widget
+	protected JList defItemsList;
+	protected TreeDefEditorListModel listModel;
+	
+	// north panel widgets
+	protected JLabel nameLabel;
+	protected JLabel defNameLabel;
+	protected JButton editDefButton;
+	protected JLabel isEnforcedLabel;
+	
+	// south panel widgets
+	protected JButton commitToDbButton;
+	protected JLabel  statusLabel;
+	protected JButton deleteItemButton;
+	protected JButton newItemButton;
+	protected JButton editItemButton;
+	
+	protected Color errorColor;
+	
 	
 	/**
 	 *
@@ -107,25 +129,43 @@ public class TreeDefinitionEditor extends BaseSubPane
 	{
 		this.setLayout(new BorderLayout());
 		
-		messageLabel = new JLabel();
-		this.add(messageLabel,BorderLayout.CENTER);
-		
 		Dimension horizSpacer = new Dimension(5,0);
+		
+		errorColor = Color.RED;
+		
+		messageLabel = new JLabel();
 
+		// create north panel
 		northPanel = new JPanel();
 		northPanel.setLayout(new BoxLayout(northPanel,BoxLayout.LINE_AXIS));
-		nameLabel = new JLabel();
+		
+		// create north panel widgets
+		nameLabel = new JLabel("Rank Name");
+		defNameLabel = new JLabel();
 		editDefButton = new JButton("Edit");
-		deleteDefButton = new JButton("Delete");
-		northPanel.add(Box.createRigidArea(horizSpacer));
+		editDefButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent ae)
+			{
+				showDefEditForm(displayedDef);	
+			}
+		});
+		isEnforcedLabel = new JLabel("Enforced");
+
+		// add north panel widgets
 		northPanel.add(nameLabel);
 		northPanel.add(Box.createHorizontalGlue());
-		northPanel.add(editDefButton);
+		northPanel.add(defNameLabel);
 		northPanel.add(Box.createRigidArea(horizSpacer));
-		northPanel.add(deleteDefButton);
+		northPanel.add(editDefButton);
+		northPanel.add(Box.createHorizontalGlue());
+		northPanel.add(isEnforcedLabel);
 
+		// create south panel
 		southPanel = new JPanel();
 		southPanel.setLayout(new BoxLayout(southPanel,BoxLayout.LINE_AXIS));
+		
+		// create south panel widgets
 		commitToDbButton = new JButton("Save");
 		commitToDbButton.addActionListener(new ActionListener()
 		{
@@ -134,8 +174,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 				saveToDb();
 			}
 		});
-		southPanel.add(commitToDbButton);
-		southPanel.add(Box.createHorizontalGlue());
+		statusLabel = new JLabel();
 		editItemButton = new JButton("Edit");
 		editItemButton.addActionListener(new ActionListener()
 		{
@@ -160,13 +199,17 @@ public class TreeDefinitionEditor extends BaseSubPane
 				newItem(defItemsList.getSelectedIndex());
 			}
 		});
+		
+		// add south panel widgets
+		southPanel.add(commitToDbButton);
+		southPanel.add(Box.createRigidArea(horizSpacer));
+		southPanel.add(statusLabel);
+		southPanel.add(Box.createHorizontalGlue());
 		southPanel.add(editItemButton);
 		southPanel.add(Box.createRigidArea(horizSpacer));
 		southPanel.add(deleteItemButton);
 		southPanel.add(Box.createRigidArea(horizSpacer));
 		southPanel.add(newItemButton);
-		
-		this.add(southPanel,BorderLayout.SOUTH);
 	}
 	
 	protected void showTreeDefSelectionDialog(List<TreeDefinitionIface> treeDefs)
@@ -217,6 +260,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 		Set<TreeDefinitionItemIface> defItems = treeDef.getTreeDefItems();
 		listModel = new TreeDefEditorListModel(defItems);
 		defItemsList = new JList(listModel);
+		addSelectionListener();
 		defItemsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		defItemsList.addMouseListener(new MouseAdapter()
 		{
@@ -233,18 +277,32 @@ public class TreeDefinitionEditor extends BaseSubPane
 		enforcedIcon = IconManager.getScaledIcon(enforcedIcon,IconSize.Std32,IconSize.Std16);
 		defItemsList.setCellRenderer(new TreeDefItemListCellRenderer(20,enforcedIcon));
 		
+		defNameLabel.setText(treeDef.getName());
+		Font f = defNameLabel.getFont();
+		Font boldF = f.deriveFont(Font.BOLD);
+		defNameLabel.setFont(boldF);
+
+		// put everything in the main panel
 		this.remove(messageLabel);
-		this.add(defItemsList,BorderLayout.CENTER);
-		nameLabel.setText(treeDef.getName());
-		editDefButton.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
-				showDefEditForm(displayedDef);	
-			}
-		});
+		this.add(new JScrollPane(defItemsList),BorderLayout.CENTER);
 		this.add(northPanel,BorderLayout.NORTH);
+		this.add(southPanel,BorderLayout.SOUTH);
+		
+		repaint();
 	}
+	
+	protected void addSelectionListener()
+	{
+		ListSelectionListener sl = new ListSelectionListener()
+		{
+			public void valueChanged(ListSelectionEvent e)
+			{
+				clearStatus();
+			}
+		};
+		defItemsList.addListSelectionListener(sl);
+	}
+	
 	
 	/**
 	 * Display the form for editing the given object.  This is a generic method for displaying
@@ -263,6 +321,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 		if(formsNames==null)
 		{
 			log.error("Unable to locate appropriate forms for editing");
+			showError("Cannot locate forms for editing object");
 			return;
 		}
 		EditFormDialog editDialog = new EditFormDialog(formsNames.first,formsNames.second,title,shortClassName,idFieldName,callback);
@@ -271,6 +330,23 @@ public class TreeDefinitionEditor extends BaseSubPane
 		editDialog.setVisible(true);
 	}
 
+	public void clearStatus()
+	{
+		statusLabel.setText(null);
+	}
+	
+	public void showError(String error)
+	{
+		statusLabel.setText(error);
+		statusLabel.setForeground(errorColor);
+	}
+	
+	public void showMessage(String message)
+	{
+		statusLabel.setText(message);
+		statusLabel.setForeground(this.getForeground());
+	}
+	
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Methods to handle the creation and editing of a new TreeDefinitionItemIface object.
 	/////////////////////////////////////////////////////////////////////////////////////////
@@ -337,6 +413,11 @@ public class TreeDefinitionEditor extends BaseSubPane
 		
 		displayedDef.getTreeDefItems().add(newItem);
 		newItem.setTreeDefinition(displayedDef);
+		
+		int insertIndex = listModel.indexOf(parent)+1;
+		listModel.add(insertIndex,newItem);
+		
+		clearStatus();
 	}
 	
 	protected void newDefItemEditCancelled(TreeDefinitionItemIface defItem)
@@ -373,7 +454,8 @@ public class TreeDefinitionEditor extends BaseSubPane
 
 	protected void newDefEditComplete(TreeDefinitionIface def)
 	{
-		TreeDefinitionIface newDef = TreeFactory.setupNewTreeDef(def);
+//		TreeDefinitionIface newDef = TreeFactory.setupNewTreeDef(def);
+		TreeDefinitionIface newDef = TreeFactory.setupNewStdTreeDef(def);
 		treeDefSelected(newDef);
 	}
 	
@@ -450,6 +532,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 		{
 			//TODO: make this some sort of message on the GUI
 			log.warn("Tree definition item cannot be deleted.  Tree nodes reference this def item.");
+			showError("Item cannot be deleted");
 			return;
 		}
 		
@@ -478,6 +561,9 @@ public class TreeDefinitionEditor extends BaseSubPane
 		item.setTreeDefinition(null);
 		displayedDef.getTreeDefItems().remove(item);
 		deletedItems.add(item);
+		
+		listModel.remove(item);
+		showMessage("Item deleted");
 	}
 	
 	/////////////////////////////////////////////////////////////////////////////////////////
@@ -487,5 +573,6 @@ public class TreeDefinitionEditor extends BaseSubPane
 	protected void saveToDb()
 	{
 		dataService.saveTreeDef(displayedDef,deletedItems);
+		showMessage("Tree Definition Saved");
 	}
 }

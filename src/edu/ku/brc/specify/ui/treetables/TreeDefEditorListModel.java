@@ -55,4 +55,39 @@ public class TreeDefEditorListModel extends AbstractListModel
 		return defItems.size();
 	}
 
+	public int indexOf(Object elem)
+	{
+		return defItems.indexOf(elem);
+	}
+
+	public void add(int index, TreeDefinitionItemIface element)
+	{
+		defItems.add(index,element);
+		fireIntervalAdded(this,index,index);
+	}
+
+	public void add(TreeDefinitionItemIface o)
+	{
+		defItems.add(o);
+		int index = defItems.size()-1;
+		fireIntervalAdded(this,index,index);
+	}
+	
+	public TreeDefinitionItemIface remove(int index)
+	{
+		TreeDefinitionItemIface removed = defItems.remove(index);
+		fireIntervalRemoved(this,index,index);
+		return removed;
+	}
+
+	public boolean remove(Object o)
+	{
+		int index = defItems.indexOf(o);
+		boolean removed = defItems.remove(o);
+		if(removed)
+		{
+			fireIntervalRemoved(this,index,index);
+		}
+		return removed;
+	}
 }

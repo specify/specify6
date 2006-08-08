@@ -267,6 +267,10 @@ public class GeologicTimePeriod extends AbstractTreeable implements java.io.Seri
     
     public void setDefinitionItem(GeologicTimePeriodTreeDefItem definitionItem) {
         this.definitionItem = definitionItem;
+        if(this.definitionItem!=null)
+        {
+        	this.rankId = this.definitionItem.getRankId();
+        }
     }
 
     /**

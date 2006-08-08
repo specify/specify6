@@ -181,7 +181,6 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 			log.error("Failed to save tree data to DB",ex);
 			tx.rollback();
 		}
-		
 	}
 
 	/**
