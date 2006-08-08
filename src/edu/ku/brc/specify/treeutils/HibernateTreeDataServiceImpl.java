@@ -163,13 +163,12 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 		// delete all of the tree def items that were deleted by the user
 		for(TreeDefinitionItemIface item: deletedItems)
 		{
-//			// ignore the items with null ID
-//			// they were probably created, then deleted, before ever being persisted
-//			if(item.getTreeDefItemId() != null)
-//			{
-//				session.delete(item);
-//			}
-			session.delete(item);
+			// ignore the items with null ID
+			// they were probably created, then deleted, before ever being persisted
+			if(item.getTreeDefItemId() != null)
+			{
+				session.delete(item);
+			}
 		}
 		
 		try
