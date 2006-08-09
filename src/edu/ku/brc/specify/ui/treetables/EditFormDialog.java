@@ -107,7 +107,7 @@ public class EditFormDialog extends JDialog implements ActionListener
         formView = ViewMgr.getView(viewSetName, viewName);
         if (formView != null)
         {
-            multiView   = new MultiView(null, formView, AltView.CreationMode.Edit, false, true);
+            multiView   = new MultiView(null, formView, AltView.CreationMode.Edit, false, false);
             form = multiView.getCurrentView();
 
         } else
