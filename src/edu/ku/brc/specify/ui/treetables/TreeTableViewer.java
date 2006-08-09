@@ -197,7 +197,7 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 			}
 		};
 		JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
-		TreeDefSelectionDialog d = new TreeDefSelectionDialog(topFrame,defs,callback,true);
+		TreeDefSelectionDialog d = new TreeDefSelectionDialog(topFrame,defs,callback,false);
 		d.setModal(true);
 		d.setSize(300,150);
 		UIHelper.centerAndShow(d);

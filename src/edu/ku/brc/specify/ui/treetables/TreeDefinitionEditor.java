@@ -223,7 +223,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 				showNewDefForm(newDef);				
 			}
 		};
-		TreeDefSelectionDialog d = new TreeDefSelectionDialog(null,treeDefs,callback,true);
+		TreeDefSelectionDialog d = new TreeDefSelectionDialog(null,treeDefs,callback,false);
 		d.setModal(true);
 		d.setSize(300,150);
 		UIHelper.centerAndShow(d);
