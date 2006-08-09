@@ -34,9 +34,10 @@ import org.apache.log4j.Logger;
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
 import edu.ku.brc.af.core.NavBoxLayoutManager;
+import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.ViewMgr;
+import edu.ku.brc.ui.forms.ViewSetMgrManager;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
@@ -104,7 +105,7 @@ public class EditFormDialog extends JDialog implements ActionListener
                             final String viewName,
                             final String title)
     {
-        formView = ViewMgr.getView(viewSetName, viewName);
+        formView = ViewSetMgrManager.getView(viewSetName, viewName);
         if (formView != null)
         {
             multiView   = new MultiView(null, formView, AltView.CreationMode.Edit, false, false);

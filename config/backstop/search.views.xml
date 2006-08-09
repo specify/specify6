@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<viewset name="Search" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <views>
+        <view 
+            name="AgentSearch"
+            class="edu.ku.brc.specify.datamodel.Agent"
+            resourcelabels="false">
+            <desc><![CDATA[The Agent Search Form]]></desc>
+            <altviews>
+                <altview name="AgentSearch" viewdef="AgentSearch" label="Edit" editable="true" validated="false" default="true"/>
+            </altviews>
+        </view>
+        
+        <view 
+            name="PermitSearch"
+            class="edu.ku.brc.specify.datamodel.Permit"
+            resourcelabels="false">
+            <desc><![CDATA[The Permit Search Form]]></desc>
+            <altviews>
+                <altview name="PermitSearch" viewdef="PermitSearch" label="Edit" editable="true" validated="false" default="true"/>
+            </altviews>
+        </view>
+    </views>
+    
+    <viewdefs>
+        <viewdef type="form"
+            name="AgentSearch"
+            class="edu.ku.brc.specify.datamodel.Agent"
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The Agent Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p,3dlu,p,3dlu,p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Agent Info" colspan="7"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="LastName" label="Last Name"/>
+                    <cell type="field" name="LastName" uitype="text" cols="20"/>
+                    <cell type="label" labelfor="FirstName" label="First Name"/>
+                    <cell type="field" name="FirstName" uitype="text" cols="20"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="Name" label="Organization"/>
+                    <cell type="field" name="Name" uitype="text" cols="20" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="Address" label="Address"/>
+                    <cell type="field" name="Address" uitype="text" cols="20"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="City" label="City"/>
+                    <cell type="field" name="City" uitype="text" cols="20"/>
+                    <cell type="label" labelfor="State" label="State"/>
+                    <cell type="field" name="State" uitype="text" cols="15"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="Postalcode" label="Postal Code"/>
+                    <cell type="field" name="Postalcode" uitype="text" cols="11"/>
+                    <cell type="label" labelfor="Country" label="Country"/>
+                    <cell type="field" name="Country" uitype="text" cols="20"/>
+                </row>
+            </rows>
+        </viewdef>        
+        
+        <viewdef type="form"
+            name="PermitSearch"
+            class="edu.ku.brc.specify.datamodel.Permit"
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The Agent Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>80px,3dlu,p,3dlu,80px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="PermitNumber" label="Number"/>
+                    <cell type="field" name="PermitNumber" uitype="text" isrequired="true"/>
+                    
+                    <cell type="label" labelfor="Type" label="Type"/>
+                    <cell type="field" name="Type" uitype="combobox" picklist="PermitType"/>
+                </row>
+                
+                <row>
+                    <cell type="label" labelfor="LastName" label="Issued By (Last Name)"/>
+                    <cell type="field" name="LastName" uitype="text"/>
+                    
+                    <cell type="label" labelfor="agentAddressByIssuee" label="Issued To  (Last Name)"/>
+                    <cell type="field" name="agentAddressByIssuee" uitype="text"/>
+                </row>
+                
+                <row>
+                    <cell type="label" labelfor="issuedDate" label="Date Issued"/>
+                    <cell type="field" name="issuedDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    
+                    <cell type="label" labelfor="renewalDate" label="Date Renewed"/>
+                    <cell type="field" name="renewalDate" uitype="formattedtext" uifieldformatter="Date"/>
+                </row>
+                
+                <row>
+                    <cell type="label" labelfor="startDate" label="Start Date"/>
+                    <cell type="field" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    
+                    <cell type="label" labelfor="endDate" label="End Date"/>
+                    <cell type="field" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>
+                </row>
+               
+            </rows>
+        </viewdef>        
+        
+    </viewdefs>
+</viewset>

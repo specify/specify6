@@ -23,7 +23,6 @@ import org.apache.commons.lang.time.FastDateFormat;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
 
 /**
  * One stop shopping for prefs, this is the one place that initializes all the prefs for any Specify application
@@ -50,7 +49,6 @@ public class SpecifyAppPrefs
      */
     public static void initialPrefs()
     {
-        UICacheManager.setRootPrefClass(Specify.class);
         IconManager.setApplicationClass(Specify.class);
         
         FastDateFormat fastDateFormat = FastDateFormat.getDateInstance(FastDateFormat.SHORT);      

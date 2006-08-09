@@ -12,7 +12,7 @@ import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
-import edu.ku.brc.ui.forms.ViewMgr;
+import edu.ku.brc.ui.forms.ViewSetMgrManager;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
@@ -133,7 +133,7 @@ public class FormPane extends DroppableTaskPane
                            final Object  data,
                            final boolean isNewForm)
     {
-        View view = ViewMgr.getView(viewSetName, viewName);
+        View view = ViewSetMgrManager.getView(viewSetName, viewName);
         if (view != null)
         {
             name = view.getName(); // names the Tab
@@ -206,7 +206,7 @@ public class FormPane extends DroppableTaskPane
     public static Viewable createFormView(final String viewSetName, final String viewName, final Object data)
     {
         // create form
-        View view = ViewMgr.getView(viewSetName, viewName);
+        View view = ViewSetMgrManager.getView(viewSetName, viewName);
         if (view != null)
         {
             Viewable form = ViewFactory.createFormView(null, view, null, data);

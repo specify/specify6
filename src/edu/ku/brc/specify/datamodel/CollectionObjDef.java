@@ -9,12 +9,16 @@ import java.util.Set;
 /**
 
  */
-public class CollectionObjDef  implements java.io.Serializable {
+public class CollectionObjDef  implements java.io.Serializable 
+{
 
+    protected static CollectionObjDef currentCollectionObjDef = null;
+    
     // Fields
 
      protected Integer collectionObjDefId;
      protected String name;
+     protected String discipline;
      protected DataType dataType;
      protected Set<CatalogSeries> catalogSeries;
      protected SpecifyUser specifyUser;
@@ -37,14 +41,22 @@ public class CollectionObjDef  implements java.io.Serializable {
         this.collectionObjDefId = collectionObjDefId;
     }
 
+    public static CollectionObjDef getCurrentCollectionObjDef()
+    {
+        return currentCollectionObjDef;
+    }
 
-
+    public static void setCurrentCollectionObjDef(CollectionObjDef currentCollectionObjDef)
+    {
+        CollectionObjDef.currentCollectionObjDef = currentCollectionObjDef;
+    }
 
     // Initializer
     public void initialize()
     {
         collectionObjDefId = null;
         name = null;
+        discipline = null;
         dataType = null;
         catalogSeries = new HashSet<CatalogSeries>();
         specifyUser = null;
@@ -79,6 +91,19 @@ public class CollectionObjDef  implements java.io.Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+    *
+    */
+    public String getDiscipline()
+    {
+        return discipline;
+    }
+
+    public void setDiscipline(String discipline)
+    {
+        this.discipline = discipline;
     }
 
     /**

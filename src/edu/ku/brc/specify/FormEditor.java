@@ -107,7 +107,7 @@ import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.db.DatabaseLoginDlg;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.ViewMgr;
+import edu.ku.brc.ui.forms.ViewSetMgrManager;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
@@ -145,7 +145,7 @@ public class FormEditor implements DatabaseLoginListener
 
     public FormEditor()
     {
-        ViewMgr.setAsDefaultViewSet("Fish Views");
+        //ViewSetMgr.setAsDefaultViewSet("Fish Views");
         
     }
 
@@ -156,7 +156,7 @@ public class FormEditor implements DatabaseLoginListener
     public CollectionObject[] createSingleDiscipline(final String disciplineName)
     {
         UserGroup        userGroup        = createUserGroup(disciplineName);
-        SpecifyUser      user             = createSpecifyUser("John", "Doe", (short)0, userGroup);
+        SpecifyUser      user             = createSpecifyUser("John Doe", "jd@email.com", (short)0, userGroup);
         DataType         dataType         = createDataType(disciplineName);
 
 
@@ -523,9 +523,9 @@ public class FormEditor implements DatabaseLoginListener
      */
     protected void reload()
     {
-       // ViewMgr.reset();
+       // ViewSetMgr.reset();
 
-        //fvo = createForm(ViewMgr.getView(currViewSetName, currViewName));
+        //fvo = createForm(ViewSetMgrTests.getView(currViewSetName, currViewName));
     }
 
     /**
@@ -537,7 +537,7 @@ public class FormEditor implements DatabaseLoginListener
 
         List<FormView>    fullFormsList = new ArrayList<FormView>();
 
-        for (ViewSet viewSet : ViewMgr.getViewSets())
+        for (ViewSet viewSet : ViewSetMgrTests.getViewSets())
         {
 
             List<FormView>    forms   = viewSet.getViews();
@@ -566,10 +566,10 @@ public class FormEditor implements DatabaseLoginListener
    private void initialize()
    {
        UICacheManager.getInstance(); // initializes it first thing
-       
-       UICacheManager.setAppPrefs(AppPrefsMgr.getInstance().load(System.getProperty("user.home")));
-       
-       SpecifyAppPrefs.initialPrefs(); // Must be done first thing!
+       UICacheManager.setAppName("Specify");
+
+       UICacheManager.setAppPrefs(AppPrefsMgr.getInstance().load(UICacheManager.getDefaultWorkingPath()));
+       SpecifyAppPrefs.initialPrefs();
        
        try
        {
@@ -673,7 +673,7 @@ public class FormEditor implements DatabaseLoginListener
         currViewName      = "Accession";
         currViewSetName =   "Fish Views";
 
-        View view = ViewMgr.getView(currViewSetName, currViewName);
+        View view = ViewSetMgrManager.getView(currViewSetName, currViewName);
 
         if (view != null)
         {

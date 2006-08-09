@@ -42,7 +42,6 @@ public class IdHashMapper implements IdMapper
     protected Connection      newConn;
     protected Connection      oldConn;
 
-    protected Vector<Integer> ids           = null;
     protected String          mapTableName  = null;
     protected boolean         showLogErrors = true;  
     

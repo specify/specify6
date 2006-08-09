@@ -20,8 +20,6 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.ui.forms.ViewMgr;
-
 public class TestFormFactory extends TestCase
 {
     private static final Logger log = Logger.getLogger(TestFormFactory.class);
@@ -37,10 +35,10 @@ public class TestFormFactory extends TestCase
     {
         /*try
         {
-            ViewMgr.loadViewFile(new FileInputStream(aFile));
+            ViewSetMgr.loadViewFile(new FileInputStream(aFile));
             if (aDoValidate)
             {
-                ViewMgr.validate();
+                ViewSetMgr.validate();
             }
             return true;
             
@@ -82,11 +80,11 @@ public class TestFormFactory extends TestCase
     public void testReadValidViewFile()
     {
         log.info("Running Test testReadValidViewFile");
-        ViewMgr.clearAll();
+//      XXX ViewSetMgr.clearAll();
         
         assertTrue(readFile(getPath("view_valid.xml"), true));
         
-        // XXX ViewLoader.save(ViewMgr.getViews("view valid"), getPath("view_valid_new.xml"));
+        // XXX ViewLoader.save(ViewSetMgrTests.getViews("view valid"), getPath("view_valid_new.xml"));
     }
     
     /**
@@ -96,7 +94,7 @@ public class TestFormFactory extends TestCase
     public void testDuplicateViewIds()
     {
         log.info("Running Test testDuplicateViewIds");
-        ViewMgr.clearAll();
+//      XXX ViewSetMgr.clearAll();
         assertFalse(readFile(getPath("duplicate_view_ids.xml"), true));
     }
     
@@ -105,8 +103,8 @@ public class TestFormFactory extends TestCase
      */
     public void testMissingSubViewId()
     {
-        log.info("Running Test testMissingSubViewId");
-        ViewMgr.clearAll();
+        log.info("//      XXX Running Test testMissingSubViewId");
+//      XXX ViewSetMgr.clearAll();
         assertFalse(readFile(getPath("missing_subview_id.xml"), true));
     }
     
@@ -117,14 +115,14 @@ public class TestFormFactory extends TestCase
     public void testLookups()
     {
         log.info("Running Test testLookups");
-        ViewMgr.clearAll();
+//      XXX ViewSetMgr.clearAll();
         boolean rs = readFile(getPath("view_valid.xml"), true);
         if (rs)
         {
-            rs = ViewMgr.isViewSetNameInUse("view valid");
+//          XXX rs = ViewSetMgr.isViewSetNameInUse("view valid");
             if (rs)
             {
-                rs = ViewMgr.isViewInUse("view valid", "2");
+//              XXX rs = ViewSetMgr.isViewInUse("view valid", "2");
             }
         }
         assertTrue(rs);
@@ -137,7 +135,7 @@ public class TestFormFactory extends TestCase
     public void testSubViewReference()
     {
         log.info("Running Test testSubViewReference");
-        ViewMgr.clearAll();
+//      XXX ViewSetMgr.clearAll();
         readFile(getPath("view_valid.xml"), false);    // don't validate
         assertTrue(getPath("view_valid2.xml"), true);  // asks the ViewManager to validate the entire set of forms
     }

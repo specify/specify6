@@ -9,6 +9,7 @@ commons-configuration-> 1.1
 commons-dbcp         -> 1.2.1
 commons-digester     -> 1.7
 commons-httpclient   -> 3.0
+commons-io           -> 1.2
 commons-jexl         -> 1.0
 commons-jxpath       -> 1.2
 commons-lang         -> 2.1

@@ -2036,13 +2036,13 @@ public class ObjCreatorHelper
     }
 
     public static SpecifyUser createSpecifyUser(final String name,
-                                                final String password,
+                                                final String email,
                                                 final Short privLevel,
                                                 final UserGroup userGroup)
     {
         SpecifyUser specifyuser = new SpecifyUser();
         specifyuser.initialize();
-        specifyuser.setPassword(password);
+        specifyuser.setEmail(null);
         specifyuser.setPrivLevel(privLevel);
         specifyuser.setUserGroup(userGroup);
         specifyuser.setName(name);

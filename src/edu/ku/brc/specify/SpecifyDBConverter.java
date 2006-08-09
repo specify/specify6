@@ -160,14 +160,18 @@ public class SpecifyDBConverter
      */
     public static void main(String args[]) throws Exception
     {
-        //String oldDatabaseName = "demo_fish2";  // Fish
+        String oldDatabaseName = "demo_fish2";  // Fish
         //String oldDatabaseName = "demo_fish4";  // Accessions
-        String oldDatabaseName = "demo_fish5";  // Cranbrook
+        //String oldDatabaseName = "demo_fish5";  // Cranbrook
         
         String databaseName = "fish";
         String userHome = System.getProperty("user.home");
         if (userHome.indexOf("rods") > -1)
         {
+            oldDatabaseName = "demo_fish2";  // Fish
+            databaseName = "fish";
+            
+            oldDatabaseName = "demo_fish5";
             databaseName = "cranbrook";
         }
         
@@ -247,7 +251,7 @@ public class SpecifyDBConverter
                 boolean convertCatalogSeriesDef = false;
                 if (convertCatalogSeriesDef || doAll)
                 {
-                    int specifyUserId = conversion.createDefaultUser("admin");
+                    int specifyUserId = conversion.createDefaultUser("rods");
                     conversion.convertCollectionObjectDefs(specifyUserId);
                     
                 } else
@@ -314,7 +318,7 @@ public class SpecifyDBConverter
 
                     DataType          dataType  = ObjCreatorHelper.createDataType("Animal");
                     UserGroup         userGroup = ObjCreatorHelper.createUserGroup("Fish");
-                    SpecifyUser       user      = ObjCreatorHelper.createSpecifyUser("rods", "rods", (short)0, userGroup);
+                    SpecifyUser       user      = ObjCreatorHelper.createSpecifyUser("rods", "rods@ku.edu", (short)0, userGroup);
 
 
 

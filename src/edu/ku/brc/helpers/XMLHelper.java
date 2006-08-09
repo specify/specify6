@@ -153,5 +153,6 @@ public class XMLHelper
        String str = element.attributeValue(attrName);
        return isNotEmpty(str) ? Boolean.parseBoolean(str.toLowerCase()) : defValue;
    }
+   
 
 }

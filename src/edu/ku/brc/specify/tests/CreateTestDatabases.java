@@ -720,7 +720,7 @@ public class CreateTestDatabases
             HibernateUtil.beginTransaction();
 
             UserGroup        userGroup        = createUserGroup(disciplineName);
-            SpecifyUser      user             = createSpecifyUser("John", "Doe", (short)0, userGroup);
+            SpecifyUser      user             = createSpecifyUser("John Doe", "jd@email.com", (short)0, userGroup);
             DataType         dataType         = createDataType(disciplineName);
 
             createMultipleLocalities();
@@ -900,7 +900,7 @@ public class CreateTestDatabases
             HibernateUtil.beginTransaction();
 
             UserGroup        userGroup        = createUserGroup("MyGroup");
-            SpecifyUser      user             = createSpecifyUser("John", "Doe", (short)0, userGroup);
+            SpecifyUser      user             = createSpecifyUser("John Doe", "jd@email.com", (short)0, userGroup);
             DataType         dataType         = createDataType("Animal");
 
             createMultipleLocalities();
@@ -1033,7 +1033,7 @@ public class CreateTestDatabases
             HibernateUtil.beginTransaction();
 
             UserGroup        userGroup        = createUserGroup(name);
-            SpecifyUser      user             = createSpecifyUser("John", "Doe", (short)0, userGroup);
+            SpecifyUser      user             = createSpecifyUser("John Doe", "jd@email.com", (short)0, userGroup);
 
             createMultipleAgents();
 
@@ -1081,7 +1081,7 @@ public class CreateTestDatabases
             HibernateUtil.beginTransaction();
 
             UserGroup        userGroup        = createUserGroup(disciplineName);
-            SpecifyUser      user             = createSpecifyUser("John", "Doe", (short)0, userGroup);
+            SpecifyUser      user             = createSpecifyUser("John Doe", "jd@email.com", (short)0, userGroup);
             DataType         dataType         = createDataType(disciplineName);
 
             createMultipleLocalities();

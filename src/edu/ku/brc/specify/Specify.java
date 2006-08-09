@@ -44,7 +44,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.criterion.Expression;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -61,8 +63,13 @@ import edu.ku.brc.af.plugins.PluginMgr;
 import edu.ku.brc.af.prefs.AppPrefsMgr;
 import edu.ku.brc.af.prefs.PrefMainPanel;
 import edu.ku.brc.af.tasks.StartUpTask;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.UIHelper;
-import edu.ku.brc.specify.config.SpecifyConfig;
+import edu.ku.brc.specify.config.AppContextMgr;
+import edu.ku.brc.specify.datamodel.CatalogSeries;
+import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.Collectors;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.ui.DBObjDialogFactory;
 import edu.ku.brc.ui.IconManager;
@@ -71,7 +78,6 @@ import edu.ku.brc.ui.ToolbarLayoutManager;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
-import edu.ku.brc.ui.forms.ViewMgr;
 import edu.ku.brc.util.FileCache;
 /**
  * Specify Main Application Class
@@ -113,10 +119,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
     //private ImageIcon userSplashImageIcon = null;
 
 
-    @SuppressWarnings("unused")
-    private SpecifyConfig config;
-
-
      /**
      * Constructor with GraphicsConfiguration
      * @param gc the GraphicsConfiguration
@@ -127,14 +129,15 @@ public class Specify extends JPanel implements DatabaseLoginListener
         @SuppressWarnings("unused") MacOSAppHandler macoshandler = new MacOSAppHandler(this);
 
         UICacheManager.getInstance(); // initializes it first thing
+        UICacheManager.setAppName("Specify");
 
-        UICacheManager.setAppPrefs(AppPrefsMgr.getInstance().load(System.getProperty("user.home")));
+        UICacheManager.setAppPrefs(AppPrefsMgr.getInstance().load(UICacheManager.getDefaultWorkingPath()));
         SpecifyAppPrefs.initialPrefs();
 
-        FileCache.setDefaultPath(UICacheManager.getInstance().getDefaultWorkingPath());
+        FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath());
 
         UICacheManager.register(UICacheManager.MAINPANE, this); // important to be done immediately
-        UICacheManager.setViewbasedFactory(DBObjDialogFactory.getInstance());
+        //UICacheManager.setViewbasedFactory(DBObjDialogFactory.getInstance());
 
         initPrefs();
 
@@ -182,17 +185,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
         UICacheManager.register(UICacheManager.FRAME, frame);
 
-        try
-        {
-            config = SpecifyConfig.getInstance();
-            //config.init(this); // do this once
-
-        } catch (Exception e)
-        {
-            log.error("Error with Configuration", e);
-            JOptionPane.showMessageDialog(this, e.toString(), "Fatal Error", JOptionPane.ERROR_MESSAGE);
-        }
-
         log.info("Creating Database configuration ");
 
         UIHelper.doLogin(true, false, this); // true means do auto login if it can, second bool means use dialog instead of frame
@@ -203,9 +195,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
     /**
      *
      */
-    protected void initStartUpPanels(final String databaseName)
+    protected void initStartUpPanels(final String databaseName, final String userName)
     {
-        PluginMgr.initializePlugins();
 
         if( !SwingUtilities.isEventDispatchThread() )
         {
@@ -213,29 +204,66 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 {
                     public void run()
                     {
-                        initStartUpPanels(databaseName);
+                        initStartUpPanels(databaseName, userName);
                     }
                 });
             return;
         }
-
-        validate();
-        hideSplash();
-
-        add(mainPanel, BorderLayout.CENTER);
-        doLayout();
-
-        mainPanel.setBackground(Color.WHITE);
-
-        SubPaneMgr.getInstance().removeAllPanes();
-
-        Taskable startUpTask = ContextMgr.getTaskByClass(StartUpTask.class);
-        if (startUpTask != null)
+        
+        CatalogSeries.setCurrentCatalogSeries(null);
+        CollectionObjDef.setCurrentCollectionObjDef(null);
+        
+        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(SpecifyUser.class);
+        criteria.add(Expression.eq("name", userName));
+        java.util.List list = criteria.list();
+       
+        
+        if (list.size() == 1)
         {
-            startUpTask.requestContext();
+            SpecifyUser user = (SpecifyUser)list.get(0);
+            SpecifyUser.setCurrentUser(user);
+            
+            if (AppContextMgr.setContext(databaseName, userName, user))
+            {
+
+                PluginMgr.readRegistry();
+                
+                PluginMgr.initializePlugins();
+    
+                validate();
+                hideSplash();
+    
+                add(mainPanel, BorderLayout.CENTER);
+                doLayout();
+    
+                mainPanel.setBackground(Color.WHITE);
+    
+                SubPaneMgr.getInstance().removeAllPanes();
+    
+                Taskable startUpTask = ContextMgr.getTaskByClass(StartUpTask.class);
+                if (startUpTask != null)
+                {
+                    startUpTask.requestContext();
+                }
+    
+                showApp();
+            } else
+            {
+                
+            }
+
+        } else
+        {
+            // TODO This is really bad because there is a Database Login with no Specify login
+            JOptionPane.showMessageDialog(null, 
+                                          getResourceString("LoginUserMismatch"), 
+                                          getResourceString("LoginUserMismatchTitle"), 
+                                          JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
+            
         }
 
-        showApp();
+        
     }
 
     /**
@@ -470,9 +498,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
         UICacheManager.register(UICacheManager.STATUSBAR, statusField);
 
         add(statusField, BorderLayout.SOUTH);
-
-        PluginMgr.readRegistry();
-
 
     }
 
@@ -740,9 +765,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     public void loggedIn(final String databaseName, final String userName)
     {
-        ViewMgr.setAsDefaultViewSet("Fish Views");
+        HibernateUtil.shutdown();
 
-        initStartUpPanels(databaseName);
+        initStartUpPanels(databaseName, userName);
     }
 
     /* (non-Javadoc)

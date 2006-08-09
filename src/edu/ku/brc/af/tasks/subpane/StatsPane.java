@@ -35,7 +35,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.AppContextMgr;
 import edu.ku.brc.stats.BarChartPanel;
 import edu.ku.brc.stats.StatDataItem;
 import edu.ku.brc.stats.StatGroupTable;
@@ -105,7 +105,7 @@ public class StatsPane extends BaseSubPane
         Element rootElement = null;
         try
         {
-            rootElement = XMLHelper.readDOMFromConfigDir(fileName);
+            rootElement = AppContextMgr.readFileToDOM4J(fileName);
 
             // count up rows and column
             StringBuilder rowsDef = new StringBuilder(128);

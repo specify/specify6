@@ -47,7 +47,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.forms.ViewMgr;
+import edu.ku.brc.ui.forms.ViewSetMgrManager;
 import edu.ku.brc.ui.forms.persist.View;
 
 /**
@@ -130,7 +130,7 @@ public class DataEntryTask extends BaseTask
                                 final Object   data,
                                 final boolean isNewForm)
     {
-        View view = ViewMgr.getView(viewSetName, viewName);
+        View view = ViewSetMgrManager.getView(viewSetName, viewName);
         FormPane formPane = new FormPane(view.getName(), task, viewSetName, viewName, mode, data, isNewForm);
         SubPaneMgr.getInstance().addPane(formPane);
     }

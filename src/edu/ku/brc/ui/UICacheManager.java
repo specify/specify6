@@ -25,6 +25,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.prefs.AppPrefsIFace;
@@ -41,7 +42,7 @@ import edu.ku.brc.util.FileCache;
  * can be parented to your dialog. But if you set it you MUST set it back to null. (NOte if you forget it will always return
  * the TOPFRAME, but don't rely on this)
 
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  **
  * @author rods
  *
@@ -60,7 +61,7 @@ public class UICacheManager
     public static final String MAINPANE  = "mainpane";
     public static final String RECENTFRAME  = "recentframe";
 
-    public static final String LONGTERM_CACHE_MAP = "sp6-cache-map.xml";
+    public static final String LONGTERM_CACHE_MAP = "longterm-cache-map.xml";
 
     private static final Logger         log      = Logger.getLogger(UICacheManager.class);
     private static final UICacheManager instance = new UICacheManager();
@@ -70,18 +71,17 @@ public class UICacheManager
 
     protected Hashtable<String, Hashtable<String, JComponent>> uiItems = new Hashtable<String, Hashtable<String, JComponent>>();
 
-    protected ResourceBundle resourceBundle = null;
-    protected String         resourceName   = "resources";
+    protected ResourceBundle resourceBundle     = null;
+    protected String         resourceName       = "resources";
+    protected AppPrefsIFace  appPrefs           = null;
 
-    protected Class          rootPrefClass   = null;
+    protected FileCache      longTermCache      = null;
+    protected FileCache      shortTermCache     = null;
 
-    protected FileCache      longTermCache = null;
-    protected FileCache      shortTermCache = null;
-
-    protected String         defaultWorkingPath = System.getProperty("user.home") + File.separator + "Specify";
+    protected String         defaultWorkingPath = null;
+    protected String         appName            = null;
 
     protected ViewBasedDialogFactoryIFace viewbasedFactory = null;
-    protected AppPrefsIFace  appPrefs = null;
 
     /**
      * Default private constructor for singleton
@@ -89,17 +89,6 @@ public class UICacheManager
      */
     private UICacheManager()
     {
-        File path = new File(defaultWorkingPath);
-        if (!path.exists())
-        {
-            if (!path.mkdirs())
-            {
-                String msg = "unable to create directory [" + path.getAbsolutePath() + "]";
-                log.error(msg);
-                throw new RuntimeException(msg);
-            }
-        }
-
         if (resourceBundle == null)
         {
             try {
@@ -113,7 +102,7 @@ public class UICacheManager
     }
 
     /**
-     *
+     * Returns the singleton.
      * @return the singleton instance
      */
     public static UICacheManager getInstance()
@@ -122,27 +111,97 @@ public class UICacheManager
     }
 
     /**
-     *
+     *  Return the current ResourceBundle.
      * @return the current ResourceBundle
      */
-    public static ResourceBundle getResourceBundleInternal()
+    protected static ResourceBundle getResourceBundleInternal()
     {
         return instance.getResourceBundle();
     }
 
 
-    public String getDefaultWorkingPath()
+    /**
+     * Returns the "working" directory which is platform specific. It will create one if one is not created
+     * <b>NOTE: The application name must be set first.</b><br>
+     * One Windows it is ...\<i>&lt;user name&gt;</i>\Application Data\&lt;application name&gt;<br>
+     * On Unix based platforms it will create a directory of the "application name" with a "." in front. 
+     * For example: <code>/home/john/.specify</code>
+     * @return Returns the "working" directory which is platform specific.
+     */
+    public static String getDefaultWorkingPath()
     {
-        return defaultWorkingPath;
-    }
-
-    public void setDefaultWorkingPath(String defaultWorkingPath)
-    {
-        this.defaultWorkingPath = defaultWorkingPath;
+        if (instance.defaultWorkingPath == null)
+        {
+            instance.defaultWorkingPath = getUserDataDir();
+        }
+        return instance.defaultWorkingPath;
     }
 
     /**
-     * Registers a uicomp
+     * Set the working directory. It is not recommended to use this because the working directory will automatically be created.
+     * @param defaultWorkingPath the new and different working directory.
+     */
+    public static void setDefaultWorkingPath(String defaultWorkingPath)
+    {
+        instance.defaultWorkingPath = defaultWorkingPath;
+    }
+    
+    /**
+     * Get the "user" based working directory that is platform specific and requires the "application name" be set first. 
+     * @return the string to a platform specify user data directory for the application name.
+     */
+    public static String getUserDataDir()
+    {
+        if (instance.appName == null)
+        {
+            throw new RuntimeException("The AppName has not been set into the UICacheManger!");
+        }
+        
+        String base;
+        if (System.getProperty("os.name").indexOf("Windows") > -1)
+        {
+            base = System.getenv("APPDATA") + File.separator + instance.appName;
+        } else
+        {
+            base = System.getProperty("user.home") + File.separator + "." + instance.appName;
+        }
+        File baseDir = new File(base);
+        if (!baseDir.exists())
+        {
+            if (!baseDir.mkdir())
+            {
+                throw new RuntimeException("Couldn't create data directory for "+instance.appName+" ["+baseDir.getAbsolutePath()+"]");
+            }
+        }
+        return base;
+    }
+
+    /**
+     * Returns the current application name.
+     * @return the current application name.
+     */
+    public static String getAppName()
+    {
+        return instance.appName;
+    }
+
+    /**
+     * Sets the application name and this name cannot be changed (meaning it can only be set once).
+     * @param appName the application name (it is best if it doesn't have a space in the middle)
+     */
+    public static void setAppName(final String appName)
+    {
+        if (StringUtils.isNotEmpty(appName) && StringUtils.isEmpty(instance.appName))
+        {
+            instance.appName = appName;
+        } else
+        {
+            throw new RuntimeException("You cannot set the app name twice or with an empty string!");
+        }
+    }
+
+    /**
+     * Registers a uicomp.
      * @param category the category to be registered
      * @param name the name
      * @param uiComp the ui component
@@ -164,7 +223,7 @@ public class UICacheManager
     }
 
     /**
-     * Unregisters a uicomp
+     * Unregisters a uicomp.
      * @param category the category to be registered
      * @param name the name
      * @throws UIException throws exception if it is not registered
@@ -185,7 +244,7 @@ public class UICacheManager
     }
 
     /**
-     * Returns a UI component by name
+     * Returns a UI component by name.
      * @param name the name of the component to be retrieved
      * @return a UI component by name
      */
@@ -195,7 +254,7 @@ public class UICacheManager
     }
 
     /**
-     * Returns the main ResourceBundle
+     * Returns the main ResourceBundle.
      * @return Returns the main ResourceBundle
      */
     public ResourceBundle getResourceBundle()
@@ -213,7 +272,7 @@ public class UICacheManager
     }
 
     /**
-     * Sets the resource name
+     * Sets the resource name.
      * @param resourceName The reourceName to set.
      */
     public void setResourceName(final String resourceName)
@@ -222,22 +281,25 @@ public class UICacheManager
     }
 
     /**
-     * Returns a localized string from the resource bundle (masks the thrown expecption)
+     * Returns a localized string from the resource bundle (masks the thrown expecption).
      * @param key the key to look up
      * @return  Returns a localized string from the resource bundle
      */
     protected String getResourceStringInternal(final String key)
     {
-        try {
+        try 
+        {
             return resourceBundle.getString(key);
-        } catch (MissingResourceException ex) {
+            
+        } catch (MissingResourceException ex) 
+        {
             log.error("Couldn't find key["+key+"] in resource bundle.");
             return key;
         }
     }
 
     /**
-     * Returns a localized string from the resource bundle (masks the thrown expecption)
+     * Returns a localized string from the resource bundle (masks the thrown expecption).
      * @param key the key to look up
      * @return  Returns a localized string from the resource bundle
      */
@@ -247,7 +309,7 @@ public class UICacheManager
     }
 
     /**
-     * Returns the ViewBasedFacory for the application
+     * Returns the ViewBasedFacory for the application.
      * @return the ViewBasedFacory for the application
      */
     public static ViewBasedDialogFactoryIFace getViewbasedFactory()
@@ -260,7 +322,7 @@ public class UICacheManager
     }
 
     /**
-     * Sets the ViewBasedFacory for the application
+     * Sets the ViewBasedFacory for the application.
      * @param viewbasedFactory the factory
      */
     public static void setViewbasedFactory(ViewBasedDialogFactoryIFace viewbasedFactory)
@@ -269,7 +331,7 @@ public class UICacheManager
     }
 
     /**
-     * Registers a uiComp into the applications
+     * Registers a uiComp into the applications.
      * @param name the name of the UI component to be registered
      * @param uiComp the UI component to be registered
      */
@@ -291,7 +353,7 @@ public class UICacheManager
     }
 
     /**
-     * Unregisters a uiComp from the application
+     * Unregisters a uiComp from the application.
      * @param name the name of the UI component to be unregistered
      */
     public static void unregister(final String name)
@@ -312,7 +374,7 @@ public class UICacheManager
     }
 
     /**
-     * Displays a message in the status bar
+     * Displays a message in the status bar.
      * @param text the text to be displayed
      */
     public static void displayStatusBarText(final String text)
@@ -325,7 +387,7 @@ public class UICacheManager
     }
 
     /**
-     * Displays a message in the status bar
+     * Displays a message in the status bar.
      * @param key the key of the string that is to appear in the status bar. The resource string will be looked up
      */
     public static void displayLocalizedStatusBarText(final String key)
@@ -341,7 +403,7 @@ public class UICacheManager
     }
 
     /**
-     * repaints the top most frame
+     * Repaints the top most frame.
      *
      */
     public static void forceTopFrameRepaint()
@@ -357,7 +419,7 @@ public class UICacheManager
     }
 
     /**
-     * Returns the glass pane from the mgr
+     * Returns the glass pane from the mgr.
      * @return Returns the glass pane from the mgr
      */
     public static GhostGlassPane getGlassPane()
@@ -370,6 +432,7 @@ public class UICacheManager
      * must set the the most recent frame in order for it to be used by someone else. The one
      * thing it does do for you, is that if you forgot to set it and someone else uses it it does
      * check to make sure it is not null AND visible. If either of these are true then it returns the TOPFRAME.
+     * 
      * @return Returns the most recent frame to be used, but note that there is no magic here. You
      * must set the the most recent frame in order for it to be used by someone else. The one
      * thing it does do for you, is that if you forgot to set it and someone else uses it it does
@@ -382,7 +445,7 @@ public class UICacheManager
     }
 
      /**
-      * Display an Error dialog
+      * Display an Error dialog.
      * @param msg the message to be displayed
      */
     public static void displayErrorDlg(final String msg)
@@ -390,63 +453,13 @@ public class UICacheManager
          JOptionPane.showMessageDialog(getMostRecentFrame(), msg, getResourceString("error"), JOptionPane.ERROR_MESSAGE);
     }
 
-
-    //----------------------------------------------------------------------------------
-    // Prefs Section
-    //----------------------------------------------------------------------------------
-
-    /**
-     * Returns the name of the root preference for this application
-     * @return Returns the name of the root preference for this application
-     */
-    public static Class getRootPrefClass()
-    {
-        if (instance.rootPrefClass == null)
-        {
-            throw new RuntimeException("Root Pref Name is null and nees to be set!");
-        }
-        return instance.rootPrefClass;
-    }
-
-    /**
-     * Sets the name of the root preference for this application
-     * @param rootPrefClass the root pref name (defaults to "Specify")
-     */
-    public static void setRootPrefClass(final Class rootPrefClass)
-    {
-        instance.rootPrefClass = rootPrefClass;
-    }
-
-    /**
-     * Helper method to assist in building pref node names.
-     * It takes the parent name and then appends a slash and then the child's name
-     * @param parentName the parent name
-     * @param childName the new child name to be appended
-     * @return returnturn [parentName]/[childName]
-     */
-    public static String appendChildPrefName(String parentName, String childName)
-    {
-        return parentName + "/" + childName;
-    }
-
-    /**
-     * Helper method to assist in building pref node names.
-     * It takes the parent name and then appends a slash and then the child's name
-     * @param parentName the parent name
-     * @param childName the new child name to be appended
-     * @return returnturn [parentName]/[childName]
-     */
-    public static String appendChildPrefName(String parentName, String childName, String subChildName)
-    {
-        return parentName + "/" + childName+ "/" + subChildName;
-    }
-
     //----------------------------------------------------------------------------------
     // File Cache Section
     //----------------------------------------------------------------------------------
 
     /**
-	 * @return Returns the longTermCache.
+     * Returns the longTermCache.
+	 * @return the longTermCache.
 	 */
 	public static FileCache getLongTermFileCache()
 	{
@@ -475,7 +488,7 @@ public class UICacheManager
 
 	/**
      * Gets the shortTermCache.
-	 * @return Returns the shortTermCache.
+	 * @return the shortTermCache.
 	 */
 	public static FileCache getShortTermFileCache()
 	{
@@ -512,7 +525,7 @@ public class UICacheManager
     }
 
     /**
-     * Sets the SpecifyAppPrefs
+     * Sets the SpecifyAppPrefs.
      * @param appPrefs the appPrefs
      */
     public static void setAppPrefs(AppPrefsIFace appPrefs)

@@ -95,7 +95,7 @@ import edu.ku.brc.ui.validation.ValidatedJPanel;
 /**
  * Creates FormViewObj object that implment the Viewable interface.
  
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  **
  * @author rods
  *
@@ -120,8 +120,8 @@ public class ViewFactory
     }
 
     /**
-     *
-     * @return the singleton for the ViewMgr
+     * Returns the singleton for the ViewSetMgr.
+     * @return the singleton for the ViewSetMgr
      */
     public static ViewFactory getInstance()
     {
@@ -129,10 +129,10 @@ public class ViewFactory
     }
 
     /**
-     * CReates a panel with the "..." icon
+     * Creates a panel with the "..." icon.
      * @param comp the component to put into the panel
      */
-    public JPanel createIconPanel(JComponent comp)
+    public JPanel createIconPanel(final JComponent comp)
     {
         JPanel  panel = new JPanel(new BorderLayout());
         JButton btn   = new JButton("...");
@@ -147,7 +147,7 @@ public class ViewFactory
      * @param fieldName the field name to be gotten
      * @return return the field data frm the POJO
      */
-    public Object getFieldValue(Object dataObj, String fieldName)
+    public Object getFieldValue(final Object dataObj, final String fieldName)
     {
         Object value = null;
         if (dataObj != null)
@@ -167,7 +167,7 @@ public class ViewFactory
     }
 
     /**
-     * Returns a ViewDef Obj with the form UI built
+     * Returns a ViewDef Obj with the form UI built.
      * @param view the view definition
      * @param altView which AltView to build
      * @param parentView the MultiViw that this view/form will be parented to
@@ -221,7 +221,7 @@ public class ViewFactory
     }
 
     /**
-     * Creates a ValTextField
+     * Creates a ValTextField.
      * @param validator a validator to hook the control up to (may be null)
      * @param cellField the definition of the cell for this control
      * @return a ValTextField
@@ -264,7 +264,7 @@ public class ViewFactory
     }
 
     /**
-     * Creates a ValPasswordField
+     * Creates a ValPasswordField.
      * @param validator a validator to hook the control up to (may be null)
      * @param cellField the definition of the cell for this control
      * @return a ValPasswordField
@@ -299,7 +299,7 @@ public class ViewFactory
 
 
     /**
-     * Creates a ValFormattedTextField
+     * Creates a ValFormattedTextField.
      * @param validator a validator to hook the control up to (may be null)
      * @param cellField the definition of the cell for this control
      * @return ValFormattedTextField
@@ -337,7 +337,7 @@ public class ViewFactory
     }
 
     /**
-     * Creates a ValTextArea
+     * Creates a ValTextArea.
      * @param validator a validator to hook the control up to (may be null)
      * @param cellField the definition of the cell for this control
      * @return ValTextArea
@@ -361,7 +361,7 @@ public class ViewFactory
 
 
     /**
-     * Creates a ValListBox
+     * Creates a ValListBox.
      * @param validator a validator to hook the control up to (may be null)
      * @param cellField the definition of the cell for this control
      * @return ValListBox
@@ -395,7 +395,7 @@ public class ViewFactory
     }
 
     /**
-     * Creates a ValComboBoxFromQuery
+     * Creates a ValComboBoxFromQuery.
      * @param validator a validator to hook the control up to (may be null)
      * @param cellField the definition of the cell for this control
      * @return ValComboBoxFromQuery
@@ -428,7 +428,7 @@ public class ViewFactory
     }
 
     /**
-     * Creates a ValComboBox
+     * Creates a ValComboBox.
      * @param validator a validator to hook the control up to (may be null)
      * @param cellField the definition of the cell for this control
      * @return ValComboBox
@@ -476,7 +476,7 @@ public class ViewFactory
     }
     
     /**
-     * Makes adjusts to the border and the colors to make it "flat" for diaply mode
+     * Makes adjusts to the border and the colors to make it "flat" for diaply mode.
      * @param textField the text field to be flattened
      */
     protected void changeTextFieldUIForDisplay(final JTextField textField)
@@ -492,6 +492,7 @@ public class ViewFactory
     }
 
     /**
+     * Processes the rows in a definition.
      * @param parent MultiView parent
      * @param formViewDef the FormViewDef (Viewdef)
      * @param validator optional validator
@@ -856,7 +857,7 @@ public class ViewFactory
 
                     String subViewName = cellSubView.getViewName();
 
-                    View subView = ViewMgr.getView(cellSubView.getViewSetName(), subViewName);
+                    View subView = ViewSetMgrManager.getView(cellSubView.getViewSetName(), subViewName);
                     if (subView != null)
                     {
                         if (parent != null)
@@ -948,11 +949,12 @@ public class ViewFactory
     }
 
     /**
+     * Processes the rows for a button bar.
      * @param formViewDef formViewDef
      * @param validator validator
      * @param formViewObj formViewObj
      * @param formRows formRows
-     * @return JButton[]
+     * @return the array of buttons
      */
     protected JButton[] processRows(final FormViewDef    formViewDef,
                                     final FormValidator  validator,
@@ -993,7 +995,7 @@ public class ViewFactory
 
 
     /**
-     * Creates a Form
+     * Creates a Form.
      * @param view view the view definition
      * @param altView the altView to use (if null, then it uses the default ViewDef)
      * @param parentView the MultiView parent (this may be null)
@@ -1086,18 +1088,8 @@ public class ViewFactory
         return null;
     }
     
-    protected boolean isRecordSetNeeded(final MultiView multiView)
-    {
-        if (multiView != null)
-        {
-            //multiView.getViewDef();
-        }
-        return false;
-    }
-    
-
     /**
-     * Creates a FormViewObj
+     * Creates a FormViewObj.
      * @param multiView the parent multiView
      * @param view the definition of the form view to be created
      * @param altName the name of the altView to be used (can be null - then it defaults to the default AltView)
@@ -1114,7 +1106,7 @@ public class ViewFactory
     
 
     /**
-     * Creates a FormViewObj
+     * Creates a FormViewObj.
      * @param multiView the parent multiView
      * @param view the definition of the form view to be created
      * @param altName the name of the altView to be used (can be null - then it defaults to the default AltView)

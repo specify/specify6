@@ -27,7 +27,7 @@ public class FileCache
 	private static final Logger log = Logger.getLogger(FileCache.class);
 	private static String mappingFileComment = "edu.ku.brc.util.FileCache Name Mapping File";
 	private static String accessTimeFileComment = "edu.ku.brc.util.FileCache Access Times File";
-	private static String defaultPrefix = "sp6-";
+	private static String defaultPrefix = "brc-";
 	private static String defaultSuffix = ".cache";
     private static String defaultPath = System.getProperty("java.io.tmpdir");
 

@@ -39,7 +39,7 @@ import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.AppContextMgr;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.UICacheManager;
 
@@ -105,7 +105,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         String compiledName = getFileNameWithoutExt(fileName) + ".jasper";
         File compiledPath = null;
         
-        File reportPath = new File(XMLHelper.getConfigDirPath(fileName));
+        File reportPath = AppContextMgr.getCurrentContext(fileName);
         File cachePath  = checkAndCreateReportsCache();
         if (cachePath != null)
         {
@@ -192,17 +192,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     {
         try
         {
-            File path = new File(System.getProperty("user.home")+File.separator+"Specify");
-            if (!path.exists())
-            {
-                if (!path.mkdir())
-                {
-                    String msg = "unable to create directory [" + path.getAbsolutePath() + "]";
-                    log.error(msg); 
-                    throw new RuntimeException(msg);
-                }
-            }
-            path = new File(path.getAbsoluteFile()+File.separator+"reportsCache");
+            File path = new File(UICacheManager.getDefaultWorkingPath()+File.separator+"reportsCache"); 
             if (!path.exists())
             {
                 if (!path.mkdir())

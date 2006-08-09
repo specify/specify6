@@ -69,7 +69,7 @@ public class FishBaseInfoGetter extends HTTPGetter
 
         //tmpDir = System.getProperty("java.io.tmpdir");
         // XXX Will use long term cache in future
-        tmpDir = UICacheManager.getInstance().getDefaultWorkingPath() + File.separator + "cache";
+        tmpDir = UICacheManager.getDefaultWorkingPath() + File.separator + "cache";
         File path = new File(tmpDir);
         if (!path.exists())
         {

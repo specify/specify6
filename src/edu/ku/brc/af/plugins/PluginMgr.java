@@ -287,54 +287,57 @@ public class PluginMgr
      */
     public static void readRegistry()
     {
-
-        try
+        // Only read in the XML if there are no plugins
+        if (instance.plugins.size() == 0)
         {
-            Element root  = XMLHelper.readDOMFromConfigDir("plugin_registry.xml");
-
-            List boxes = root.selectNodes("/plugins/core/plugin");
-            for ( Iterator iter = boxes.iterator(); iter.hasNext(); )
+            try
             {
-                org.dom4j.Element pluginElement = (org.dom4j.Element)iter.next();
-
-                Object newObj = null;
-                String name   = pluginElement.attributeValue("class");
-                try
+                Element root  = XMLHelper.readDOMFromConfigDir("plugin_registry.xml");
+    
+                List boxes = root.selectNodes("/plugins/core/plugin");
+                for ( Iterator iter = boxes.iterator(); iter.hasNext(); )
                 {
-
-                    Class cls = Class.forName(name);
-                    newObj = cls.newInstance();
-
-                } catch (ClassNotFoundException ex)
-                {
-                    log.error(ex);
-                    // XXX Do we need a dialog here ???
-                }
-
-                if (newObj instanceof TaskPluginable)
-                {
-                    TaskPluginable tp = (TaskPluginable)newObj;
-                    register(tp);
-
-                    List servicesList = pluginElement.selectNodes("service");
-                    for ( Iterator iterServices = servicesList.iterator(); iterServices.hasNext(); )
+                    org.dom4j.Element pluginElement = (org.dom4j.Element)iter.next();
+    
+                    Object newObj = null;
+                    String name   = pluginElement.attributeValue("class");
+                    try
                     {
-                        Element       serviceElement = (Element)iterServices.next();
-                        int           tableId        = Integer.parseInt(serviceElement.attributeValue("tableid"));
-                        CommandAction cmd            = new CommandAction(tp.getName(), serviceElement.attributeValue("command"), tableId);
-                        ServiceInfo   serviceInfo    = ContextMgr.registerService(tp.getName(), tableId, cmd, null, serviceElement.attributeValue("tooltip"));
-                        loadServiceIcons(tp.getName(), serviceInfo);
+    
+                        Class cls = Class.forName(name);
+                        newObj = cls.newInstance();
+    
+                    } catch (ClassNotFoundException ex)
+                    {
+                        log.error(ex);
+                        // XXX Do we need a dialog here ???
                     }
-                } else
-                {
-                    log.error("Oops, the plugin is not instance of TaskPluginable ["+newObj+"]");
-                    // XXX Need to display an error
+    
+                    if (newObj instanceof TaskPluginable)
+                    {
+                        TaskPluginable tp = (TaskPluginable)newObj;
+                        register(tp);
+    
+                        List servicesList = pluginElement.selectNodes("service");
+                        for ( Iterator iterServices = servicesList.iterator(); iterServices.hasNext(); )
+                        {
+                            Element       serviceElement = (Element)iterServices.next();
+                            int           tableId        = Integer.parseInt(serviceElement.attributeValue("tableid"));
+                            CommandAction cmd            = new CommandAction(tp.getName(), serviceElement.attributeValue("command"), tableId);
+                            ServiceInfo   serviceInfo    = ContextMgr.registerService(tp.getName(), tableId, cmd, null, serviceElement.attributeValue("tooltip"));
+                            loadServiceIcons(tp.getName(), serviceInfo);
+                        }
+                    } else
+                    {
+                        log.error("Oops, the plugin is not instance of TaskPluginable ["+newObj+"]");
+                        // XXX Need to display an error
+                    }
                 }
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                log.error(ex);
             }
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            log.error(ex);
         }
     }
 

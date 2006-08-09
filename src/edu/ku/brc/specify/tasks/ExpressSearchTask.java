@@ -55,12 +55,12 @@ import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.af.plugins.MenuItemDesc;
 import edu.ku.brc.af.plugins.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
-import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.AppContextMgr;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchIndexerPane;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPane;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
@@ -121,7 +121,7 @@ public class ExpressSearchTask extends BaseTask
      */
     public static File getIndexDirPath()
     {
-        File path = new File(System.getProperty("user.home")+File.separator+"Specify"+File.separator+"index-dir");
+        File path = new File(UICacheManager.getDefaultWorkingPath()+File.separator+"index-dir");
         if (!path.exists())
         {
             if (!path.mkdirs())
@@ -144,7 +144,7 @@ public class ExpressSearchTask extends BaseTask
         try
         {
             tables = new Hashtable<String, ExpressResultsTableInfo>();
-            Element esDOM = XMLHelper.readDOMFromConfigDir("search_config.xml");         // Describes the definitions of the full text search
+            Element esDOM = AppContextMgr.readFileToDOM4J("search_config.xml");         // Describes the definitions of the full text search
             List tableItems = esDOM.selectNodes("/tables/table");
             for ( Iterator iter = tableItems.iterator(); iter.hasNext(); )
             {

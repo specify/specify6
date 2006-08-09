@@ -35,8 +35,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
-import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
-import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
@@ -57,6 +55,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
+import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.ColorWrapper;
@@ -64,9 +64,9 @@ import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
+import edu.ku.brc.ui.db.JComboBoxFromQuery;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
-import edu.ku.brc.ui.db.JComboBoxFromQuery;
 import edu.ku.brc.ui.forms.DataGetterForObj;
 import edu.ku.brc.ui.forms.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.DataObjectSettable;

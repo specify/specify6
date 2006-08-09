@@ -1,7 +1,6 @@
 package edu.ku.brc.specify.tests;
 
 import java.awt.Color;
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;

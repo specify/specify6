@@ -44,7 +44,7 @@ import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.ViewFactory;
-import edu.ku.brc.ui.forms.ViewMgr;
+import edu.ku.brc.ui.forms.ViewSetMgrManager;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.validation.FormValidator;
@@ -106,7 +106,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
         String viewName = "EMail";
         String name     = "Preferences";
 
-        formView = ViewMgr.getView(name, viewName);
+        formView = ViewSetMgrManager.getView(name, viewName);
 
         if (formView != null)
         {

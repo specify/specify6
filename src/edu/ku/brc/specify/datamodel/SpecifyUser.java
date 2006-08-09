@@ -11,17 +11,19 @@ import java.util.Set;
  */
 public class SpecifyUser  implements java.io.Serializable {
 
+    protected static SpecifyUser currentUser = null;;
+    
     // Fields
 
      protected Integer specifyUserId;
      protected String name;
-     protected String password;
+     protected String email;
      protected Short privLevel;
      protected Set<CollectionObjDef> collectionObjDef;
      protected Set<RecordSet> recordSets;
      protected UserGroup userGroup;
 
-
+     
     // Constructors
 
     /** default constructor */
@@ -33,7 +35,23 @@ public class SpecifyUser  implements java.io.Serializable {
         this.specifyUserId = specifyUserId;
     }
 
-
+    /**
+     * Return the current Specify User.
+     * @return the current Specify User
+     */
+    public static SpecifyUser getCurrentUser()
+    {
+        return currentUser;
+    }
+    
+    /**
+     * Sets the Current Specify User.
+     * @param currentUser the current specify user
+     */
+    public static void setCurrentUser(final SpecifyUser currentUser)
+    {
+        SpecifyUser.currentUser = currentUser;
+    }
 
 
     // Initializer
@@ -41,7 +59,7 @@ public class SpecifyUser  implements java.io.Serializable {
     {
         specifyUserId = null;
         name = null;
-        password = null;
+        email = null;
         privLevel = null;
         collectionObjDef = new HashSet<CollectionObjDef>();
         recordSets = new HashSet<RecordSet>();
@@ -76,12 +94,12 @@ public class SpecifyUser  implements java.io.Serializable {
     /**
      *
      */
-    public String getPassword() {
-        return this.password;
+    public String getEmail() {
+        return this.email;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     /**

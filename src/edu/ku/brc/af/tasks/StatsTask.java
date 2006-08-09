@@ -29,11 +29,11 @@ import org.dom4j.Element;
 
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.tasks.subpane.StatsPane;
-import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.af.plugins.MenuItemDesc;
 import edu.ku.brc.af.plugins.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.af.tasks.subpane.StatsPane;
+import edu.ku.brc.specify.config.AppContextMgr;
 import edu.ku.brc.stats.StatsMgr;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
@@ -73,7 +73,7 @@ public class StatsTask extends BaseTask
 
         try
         {
-            panelDOM = XMLHelper.readDOMFromConfigDir("statistics_panel.xml");   // contains a description of the NavBoxes
+            panelDOM = AppContextMgr.readFileToDOM4J("statistics_panel.xml");   // contains a description of the NavBoxes
 
         } catch (Exception ex)
         {

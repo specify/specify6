@@ -75,6 +75,7 @@ import edu.ku.brc.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.helpers.DiskFileFilter;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.AppContextMgr;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.ui.IconManager;
@@ -176,7 +177,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         {
             if (esDOM == null)
             {
-                esDOM = XMLHelper.readDOMFromConfigDir("search_config.xml");         // Describes the definitions of the full text search
+                esDOM = AppContextMgr.readFileToDOM4J("search_config.xml");         // Describes the definitions of the full text search
             }
 
             Hashtable<String, String> namesHash = new Hashtable<String, String>();
@@ -738,7 +739,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         /*
         // Count up how many View we are going to process
         int cnt = 0;
-        for (ViewSet viewSet : ViewMgr.getViewSets())
+        for (ViewSet viewSet : ViewSetMgrTests.getViewSets())
         {
             cnt += viewSet.getViews().size();
         }
@@ -753,7 +754,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         long begin = new Date().getTime();
 
         cnt = 0;
-        for (ViewSet viewSet : ViewMgr.getViewSets())
+        for (ViewSet viewSet : ViewSetMgrTests.getViewSets())
         {
             for (FormView formView : viewSet.getViews())
             {
@@ -792,8 +793,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
      */
     protected long indexLabels(final IndexWriter writer)
     {
-        File configDir = new File(XMLHelper.getConfigDirPath(null));
-        File[] files = configDir.listFiles(new DiskFileFilter("jrxml"));
+        File resourceDir = AppContextMgr.getCurrentContext();
+        File[] files = resourceDir.listFiles(new DiskFileFilter("jrxml"));
 
         indvLabel.setVisible(true);
         progressBar.setMaximum(files.length);

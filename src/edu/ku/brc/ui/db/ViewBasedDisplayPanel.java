@@ -34,7 +34,7 @@ import com.jgoodies.forms.builder.ButtonBarBuilder;
 
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.ViewMgr;
+import edu.ku.brc.ui.forms.ViewSetMgrManager;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
 
@@ -118,7 +118,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     {
         boolean isEdit = mode == AltView.CreationMode.Edit;
 
-        formView = ViewMgr.getView(viewSetName, viewName);
+        formView = ViewSetMgrManager.getView(viewSetName, viewName);
         if (formView != null)
         {
             multiView   = new MultiView(null, formView, mode, false, !isEdit);

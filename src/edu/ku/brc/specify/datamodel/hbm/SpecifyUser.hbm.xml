@@ -15,7 +15,7 @@
         <meta attribute="field-description"></meta>
     </property>
 
-    <property name="password" type="java.lang.String" column="Password" length="64">
+    <property name="email" type="java.lang.String" column="email" length="64">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
     </property>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<disciplines>
+    <!-- Types
+        0 - Collection
+        1 - Tissues
+        2 - Accessions 
+    -->
+    
+    <discipline name="fish"         title="Fish"    type="0"/>
+    <discipline name="bird"         title="Bird"  type="0"/>
+    <discipline name="mammal"       title="Mammal" type="0"/>
+    <discipline name="insect"       title="Insect" type="0"/>
+    <discipline name="plant"        title="Plant" type="0"/>
+    <discipline name="invertebrate" title="Invertebrate" type="0"/>
+    <discipline name="minerals"     title="Minerals" type="0"/>
+    <discipline name="anthropology" title="Anthropology" type="0"/>
+    <discipline name="fungi"        title="Fungi" type="0"/>
+    
+    <discipline name="tissue"       title="Tissue" type="1"/>
+    
+    <discipline name="accessions"   title="Accessions" type="2"/>
+   
+    
+</disciplines>
+
+<!--
+Botany
+Entomology
+Herpetology
+Ichthyology
+Invertebrate Paleontology
+Invertebrate zoology
+Mammalogy
+Ornithology
+Paleobotany
+Vertebrate paleontology
+-->

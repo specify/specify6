@@ -36,6 +36,8 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 
@@ -60,7 +62,8 @@ public class ChooseFromListDlg extends JDialog implements ActionListener
     protected JButton        okBtn;
     protected JList          list;
     protected List           items;
-    protected ImageIcon      icon   = null;
+    protected ImageIcon      icon        = null;
+    protected boolean        isCancelled = false;
     
     /**
      * Constructor.
@@ -130,6 +133,15 @@ public class ChooseFromListDlg extends JDialog implements ActionListener
                     }
                 }
             });
+            list.addListSelectionListener(new ListSelectionListener() {
+                public void valueChanged(ListSelectionEvent e)
+                {
+                    if (!e.getValueIsAdjusting())
+                    {
+                        updateUIState();
+                    }
+                }
+            });
             JScrollPane listScroller = new JScrollPane(list);
             panel.add(listScroller, BorderLayout.CENTER);
             
@@ -145,9 +157,11 @@ public class ChooseFromListDlg extends JDialog implements ActionListener
              btnBuilder.addGriddedButtons(new JButton[] {cancelBtn, okBtn}); 
  
             cancelBtn.addActionListener(new ActionListener()
-                    {  public void actionPerformed(ActionEvent ae) { setVisible(false);} });
+                    {  public void actionPerformed(ActionEvent ae) { setVisible(false); isCancelled = true;} });
             
             panel.add(btnBuilder.getPanel(), BorderLayout.SOUTH);
+            
+            updateUIState();
 
         } catch (Exception ex)
         {
@@ -160,6 +174,14 @@ public class ChooseFromListDlg extends JDialog implements ActionListener
         
     }
     
+    /**
+     * Update the button UI given the state of the list.
+     */
+    protected void updateUIState()
+    {
+        okBtn.setEnabled(list.getSelectedIndex() != -1);
+    }
+    
     /* (non-Javadoc)
      * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
      */
@@ -169,7 +191,7 @@ public class ChooseFromListDlg extends JDialog implements ActionListener
     }
     
     /**
-     * Returns the selected Object or null if nothing was selected
+     * Returns the selected Object or null if nothing was selected.
      * @return the selected Object or null if nothing was selected
      */
     public Object getSelectedObject()
@@ -181,5 +203,16 @@ public class ChooseFromListDlg extends JDialog implements ActionListener
         }
         return null;
     }
+
+    /**
+     * Returns whether it was cancelled.
+     * @return whether it was cancelled
+     */
+    public boolean isCancelled()
+    {
+        return isCancelled;
+    }
+    
+    
     
 }

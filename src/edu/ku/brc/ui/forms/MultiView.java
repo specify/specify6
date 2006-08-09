@@ -374,7 +374,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             if (inx < list.size())
             {
                 AltView altView = list.get(inx);
-                View view = ViewMgr.getView(currentView.getView().getViewSetName(), altView.getView().getName());
+                View view = ViewSetMgrManager.getView(currentView.getView().getViewSetName(), altView.getView().getName());
                 if (view != null)
                 {
                     log.debug("--------------------------");

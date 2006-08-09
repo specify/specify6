@@ -10,7 +10,7 @@ import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.ViewFactory;
-import edu.ku.brc.ui.forms.ViewMgr;
+import edu.ku.brc.ui.forms.ViewSetMgrManager;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.validation.FormValidator;
@@ -48,7 +48,7 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
         String viewName = "Formatting";
         String name = "Preferences";
 
-        formView = ViewMgr.getView(name, viewName);
+        formView = ViewSetMgrManager.getView(name, viewName);
 
         if (formView != null)
         {

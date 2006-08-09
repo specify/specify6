@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.AppContextMgr;
 
 /*
  * @code_status Unknown (auto-generated)
@@ -65,7 +66,7 @@ public class DataObjFieldFormatMgr
         String fileName = "dataobj_formatters.xml";
         try
         {
-            Element root  = XMLHelper.readDOMFromConfigDir(fileName);
+            Element root  = AppContextMgr.readFileToDOM4J(fileName);
             if (root != null)
             {
                 List formatters = root.selectNodes("/formatters/format");

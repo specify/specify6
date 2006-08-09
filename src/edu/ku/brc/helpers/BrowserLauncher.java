@@ -54,16 +54,16 @@ public class BrowserLauncher
      */
     public static void openURL(final String url)
     {
-        String osName = System.getProperty("os.name");
+        UIHelper.OSTYPE osType = UIHelper.getOSType();
         try
         {
-            if (osName.startsWith("Mac OS"))
+            if (osType == UIHelper.OSTYPE.MacOSX)
             {
                 Class fileMgr = Class.forName("com.apple.eio.FileManager");
                 Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[] { String.class });
                 openURL.invoke(null, new Object[] { url });
 
-            } else if (osName.startsWith("Windows"))
+            } else if (osType == UIHelper.OSTYPE.Windows)
             {
                 Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
 

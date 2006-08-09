@@ -32,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
-import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
@@ -61,6 +59,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
+import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.ColorChooser;

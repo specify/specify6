@@ -25,6 +25,7 @@ import org.dom4j.Element;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.AppContextMgr;
 
 /**
  * The Format Manager; reads in all the formats from XM
@@ -80,7 +81,7 @@ public class UIFieldFormatterMgr
 
         try
         {
-            Element root  = XMLHelper.readDOMFromConfigDir("uiformatters.xml");
+            Element root  = AppContextMgr.readFileToDOM4J("uiformatters.xml");
             if (root != null)
             {
                 List formats = root.selectNodes("/formats/format");

@@ -52,7 +52,7 @@ import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsHitsCache;
 import edu.ku.brc.specify.ui.DBObjSearchDialog;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.ViewFactory;
-import edu.ku.brc.ui.forms.ViewMgr;
+import edu.ku.brc.ui.forms.ViewSetMgrManager;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.View;
 
@@ -175,7 +175,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
         String viewName = "test";
         String name = null; // use the default
 
-        formView = ViewMgr.getView(name, viewName);
+        formView = ViewSetMgrManager.getView(name, viewName);
         if (formView != null)
         {
             form = ViewFactory.createFormView(null, formView, null, dataMap);

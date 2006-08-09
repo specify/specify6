@@ -102,7 +102,7 @@ public class QueryTask extends BaseTask
     /*
     protected void createSearchForm(final String viewSetName, final String viewName)
     {
-        View view = ViewMgr.getView(viewSetName, viewName);
+        View view = ViewSetMgrTests.getView(viewSetName, viewName);
         SearchFormPane searchFormPane = new SearchFormPane(view.getName(), this, viewSetName, viewName);
         SubPaneMgr.getInstance().addPane(searchFormPane);
 

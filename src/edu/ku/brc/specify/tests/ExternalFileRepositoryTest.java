@@ -4,12 +4,11 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.specify.config.SpecifyConfig;
 import edu.ku.brc.specify.extfilerepos.impl.ExternalFileRepository;
 
 public class ExternalFileRepositoryTest extends TestCase
 {
-    private static final Logger log = Logger.getLogger(SpecifyConfig.class);
+    private static final Logger log = Logger.getLogger(ExternalFileRepositoryTest.class);
 
     public ExternalFileRepository extFileRepos = null;
     
@@ -22,16 +21,6 @@ public class ExternalFileRepositoryTest extends TestCase
     public void setUp()
     {
         log.info("In Setup.");
-        try
-        {
-            SpecifyConfig config = SpecifyConfig.getInstance();
-            config.init(null); // do this once
-            
-        } catch (Exception e)
-        {
-            log.info("Error with Configuration", e);
-        }
-        
         extFileRepos = ExternalFileRepository.getInstance();
         
     }

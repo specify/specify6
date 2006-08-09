@@ -25,8 +25,6 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.Vector;
-import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
-import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
@@ -42,6 +40,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
+import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UICacheManager;

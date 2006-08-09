@@ -98,7 +98,8 @@ public class AppPrefsMgr implements AppPrefsIFace
      */
     public Integer getInt(final String name, final Integer defaultValue)
     {
-        return Integer.valueOf(get(name, Integer.toString(defaultValue)));
+        String val = get(name, (defaultValue == null ? null : Integer.toString(defaultValue)));
+        return val == null ? null : Integer.valueOf(val);
     }
 
     /* (non-Javadoc)
@@ -114,7 +115,8 @@ public class AppPrefsMgr implements AppPrefsIFace
      */
     public Boolean getBoolean(final String name, final Boolean defaultValue)
     {
-        return Boolean.valueOf(get(name, Boolean.toString(defaultValue)));
+        String val = get(name, (defaultValue == null ? null : Boolean.toString(defaultValue)));
+        return val == null ? null : Boolean.valueOf(val);
     }
 
     /* (non-Javadoc)
@@ -130,7 +132,8 @@ public class AppPrefsMgr implements AppPrefsIFace
      */
     public Double getDouble(final String name, final Double defaultValue)
     {
-        return Double.valueOf(get(name, Double.toString(defaultValue)));
+        String val = get(name, (defaultValue == null ? null : Double.toString(defaultValue)));
+        return val == null ? null : Double.valueOf(val);
     }
 
     /* (non-Javadoc)
@@ -146,7 +149,8 @@ public class AppPrefsMgr implements AppPrefsIFace
      */
     public Float getFloat(final String name, final Float defaultValue)
     {
-        return Float.valueOf(get(name, Float.toString(defaultValue)));
+        String val = get(name, (defaultValue == null ? null : Float.toString(defaultValue)));
+        return val == null ? null : Float.valueOf(val);
     }
 
     /* (non-Javadoc)

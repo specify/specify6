@@ -14,15 +14,12 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
@@ -37,7 +34,7 @@ import edu.ku.brc.helpers.XMLHelper;
  * @author rods
  */
 
-public class ViewSet
+public class ViewSet implements Comparable<ViewSet>
 {
     private static final Logger  log = Logger.getLogger(ViewSet.class);
     private static boolean ALWAYS_LOAD = true; // XXX PREF
@@ -48,8 +45,7 @@ public class ViewSet
     protected String           name      = null;
     protected String           title     = null;
     protected String           fileName  = null;
-    protected List<String>     databases = new ArrayList<String>();
-    protected List<String>     users     = new ArrayList<String>();
+    protected File             dirPath   = null;
     
     protected Hashtable<String, View>    views    = null;
     protected Hashtable<String, ViewDef> viewDefs = new Hashtable<String, ViewDef>();
@@ -77,19 +73,13 @@ public class ViewSet
                    final String name, 
                    final String title, 
                    final String fileName,
-                   final String databases,
-                   final String users)
+                   final File   dirPath)
     {
         this.type     = type;
         this.name     = name;
         this.title    = title;
         this.fileName = fileName;
-        
-        String[] items = StringUtils.split(databases, ",");
-        Collections.addAll(this.databases, items);
-        
-        items = StringUtils.split(users, ",");
-        Collections.addAll(this.users, items);
+        this.dirPath  = dirPath;
     }
     
     /**
@@ -132,7 +122,7 @@ public class ViewSet
         {
             try
             {
-                loadViewFile(new FileInputStream(XMLHelper.getConfigDirPath(fileName)));
+                loadViewFile(new FileInputStream(new File(dirPath + File.separator + fileName)));
                 
             } catch (FileNotFoundException ex)
             {
@@ -222,30 +212,21 @@ public class ViewSet
     }
 
     /**
+     * Returns file name (no path)
+     * @return file name (no path)
+     */
+    public String getFileName()
+    {
+        return fileName;
+    }
+
+    /**
      * Indicates that is contains the core set of forms that can be referred in other places with specifying the viewset name.
      * @return that is contains the core set of forms that can be referred in other places with specifying the viewset name
      */
     public boolean isSystem()
     {
         return type == Type.System;
-    }
-
-    /**
-     * Returns a list of databases that the view works with.
-     * @return a list of databases that the view works with
-     */
-    public List<String> getDatabases()
-    {
-        return databases;
-    }
-
-    /**
-     * Returns a list of users that can use this form.
-     * @return a list of users that can use this form
-     */
-    public List<String> getUsers()
-    {
-        return users;
     }
 
     /**
@@ -281,5 +262,15 @@ public class ViewSet
             log.error(msg);
             throw new ConfigurationException(msg);
         }
+    }
+    
+    /**
+     * Comparator.
+     * @param obj the obj to compare
+     * @return 0,1,-1
+     */
+    public int compareTo(ViewSet obj)
+    {
+        return name.compareTo(obj.name);
     }
 }

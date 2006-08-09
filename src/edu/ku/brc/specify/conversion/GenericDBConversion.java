@@ -52,6 +52,8 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.UIHelper;
+import edu.ku.brc.specify.config.AppContextMgr;
+import edu.ku.brc.specify.config.Discipline;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
@@ -190,10 +192,13 @@ public class GenericDBConversion
      */
     public void mapIds() throws SQLException
     {
-        //String[] tableNames =
-        //{
-        //        "Agent"
-        //};
+        /*String[] tableNames =
+        {
+                "CatalogSeries",
+                "CatalogSeriesDefinition",
+                "TaxonName",
+                "TaxonomicUnitType"                
+        };*/
 
         String[] tableNames =
         {
@@ -271,7 +276,7 @@ public class GenericDBConversion
                 idMapper.mapAllIds();
         }
 
-        idMapper = idMapperMgr.addTableMapper("TaxonomyType", "TaxonomyTypeID", "select TaxonomyTypeID, TaxonomyTypeName from taxonomytype where TaxonomyTypeID in (SELECT distinct TaxonomyTypeID from taxonname)");
+        idMapper = idMapperMgr.addTableMapper("TaxonomyType", "TaxonomyTypeID", "select TaxonomyTypeID, TaxonomyTypeName from taxonomytype where TaxonomyTypeID in (SELECT distinct TaxonomyTypeID from taxonname where RankId <> 0)");
         if (shouldCreateMapTables)
         {
             idMapper.mapAllIdsWithSQL();
@@ -680,7 +685,49 @@ public class GenericDBConversion
         {
             return "Fungi";
         }
-        log.error("****** Unable to Map ["+collectionObjTypeName+"] to a standard type.");
+        log.error("****** Unable to Map ["+collectionObjTypeName+"] to a standard DataType.");
+
+        return null;
+    }
+
+    /**
+     * Convert a CollectionObjectTypeName to a DataType
+     * @param name the name
+     * @return the Standard DataType
+     */
+    public String getStandardDisciplineName(final String name)
+    {
+        Discipline discipline = AppContextMgr.get(name.toLowerCase());
+        if (discipline != null)
+        {
+            return discipline.getName();
+        }
+        
+        if (checkName(new String[] {"Plant", "Herb"}, name))
+        {
+            return "plant";
+        }
+
+        if (checkName(new String[] {"FishHerps"}, name))
+        {
+            return "animal";
+        }
+
+        if (checkName(new String[] {"Mineral", "Rock"}, name))
+        {
+            return "mineral";
+        }
+
+        if (checkName(new String[] {"Anthro"}, name))
+        {
+            return "anthropology";
+        }
+
+        if (checkName(new String[] {"Fungi"}, name))
+        {
+            return "fungi";
+        }
+        log.error("****** Unable to Map Name["+name+"] to a Discipline type.");
 
         return null;
     }
@@ -840,8 +887,24 @@ public class GenericDBConversion
             {
                 int    taxonomyTypeID   = rs.getInt(1);
                 String taxonomyTypeName = rs.getString(2);
-                log.info("Creating a new CollectionObjDef for ["+taxonomyTypeName+"]");
+                
+                String disciplineName = getStandardDisciplineName(taxonomyTypeName);
+                if (disciplineName == null)
+                {
+                    log.error("**** Had to Skip record because taxonomyTypeName couldn't be found in our Discipline lookup in AppContextMgr["+taxonomyTypeName+"]");
+                    continue;
+                }
+                
+                Discipline discipline = AppContextMgr.get(disciplineName);
+                if (discipline == null)
+                {
+                    log.error("**** discipline couldn't be found in our Discipline lookup in AppContextMgr["+disciplineName+"]");
+                    continue;
+                }
+                log.info("Creating a new CollectionObjDef for taxonomyTypeName["+taxonomyTypeName+"] discipline["+disciplineName+"]");
 
+                taxonomyTypeName = disciplineName;
+                
                 // Figure out what type of standard adat type this is from the CollectionObjectTypeName
                 int dataTypeId = createDataType(taxonomyTypeName);
                 if (dataTypeId == -1)
@@ -856,7 +919,8 @@ public class GenericDBConversion
                 CollectionObjDef
                 +-----------------------------+-------------+------+-----+---------+----------------+
                 | CollectionObjDefID          | int(11)     | NO   | PRI |         | auto_increment |
-                | Name                        | varchar(50) | YES  |     |         |                |
+                | Name                        | varchar(64) | YES  |     |         |                |
+                | Discipline                  | varchar(64) | YES  |     |         |                |
                 | DataTypeID                  | int(11)     | YES  | MUL |         |                |
                 | SpecifyUserID               | int(11)     | YES  | MUL |         |                |
                 | GeographyTreeDefID          | int(11)     | YES  | MUL |         |                |
@@ -870,8 +934,9 @@ public class GenericDBConversion
                 Statement updateStatement = newDBConn.createStatement();
                 StringBuilder strBuf = new StringBuilder();
                 strBuf.append("INSERT INTO collectionobjdef VALUES (");
-                strBuf.append("NULL,");
-                strBuf.append("'"+taxonomyTypeName+"',");
+                strBuf.append(taxonomyTypeMapper.get(taxonomyTypeID)+",");
+                strBuf.append("'"+discipline.getTitle()+"',");
+                strBuf.append("'"+discipline.getName()+"',");
                 strBuf.append(dataTypeId+",");
                 strBuf.append(specifyUserId+",");
                 strBuf.append("1,"); // GeographyTreeDefID
@@ -884,7 +949,6 @@ public class GenericDBConversion
                 updateStatement = null;
                 recordCnt++;
 
-
                 int colObjDefID = BasicSQLUtils.getHighestId(newDBConn, "CollectionObjDefID", "collectionobjdef");
                 taxonomyTypeIDToColObjID.put(taxonomyTypeID, colObjDefID);
 
@@ -894,48 +958,53 @@ public class GenericDBConversion
             stmt.close();
             log.info("CollectionObjDef Records: "+ recordCnt);
 
-            // Now convert over all CatalogSeries
-
-            String sql = "Select catalogseries.CatalogSeriesID, taxonomytype.TaxonomyTypeID From catalogseries Inner Join catalogseriesdefinition ON " +
-                         "catalogseries.CatalogSeriesID = catalogseriesdefinition.CatalogSeriesID Inner Join collectiontaxonomytypes ON " +
-                         "catalogseriesdefinition.ObjectTypeID = collectiontaxonomytypes.BiologicalObjectTypeID Inner Join taxonomytype ON " +
-                         "collectiontaxonomytypes.TaxonomyTypeID = taxonomytype.TaxonomyTypeID";
-            log.info(sql);
-
-            stmt = oldDBConn.createStatement();
-            rs   = stmt.executeQuery(sql.toString());
-
-             recordCnt = 0;
-             while (rs.next())
-             {
-                 int    catalogSeriesID = rs.getInt(1);
-                 int    taxonomyTypeID  = rs.getInt(2);
-
-                 // Now craete the proper record in the  Join Table
-
-                 int newCatalogSeriesID = catalogSeriesMapper.get(catalogSeriesID);
-                 int newColObjdefID     = taxonomyTypeMapper.get(taxonomyTypeID);
-
-                 Statement updateStatement = newDBConn.createStatement();
-                 strBuf.setLength(0);
-                 strBuf.append("INSERT INTO catseries_colobjdef VALUES (");
-                 strBuf.append(newCatalogSeriesID+", ");
-                 strBuf.append(newColObjdefID+")");
-
-                 log.info("CatalogSeries Join["+newCatalogSeriesID+"]["+newColObjdefID+"]");
-                 updateStatement.executeUpdate(strBuf.toString());
-                 updateStatement.clearBatch();
-                 updateStatement.close();
-                 updateStatement = null;
-
-                 recordCnt++;
-
-             } // while
-
-             log.info("CatalogSeries Join Records: "+ recordCnt);
-             rs.close();
-             stmt.close();
-
+            if (taxonomyTypeMapper.size() > 0)
+            {
+                // Now convert over all CatalogSeries
+    
+                String sql = "Select catalogseries.CatalogSeriesID, taxonomytype.TaxonomyTypeID From catalogseries Inner Join catalogseriesdefinition ON " +
+                             "catalogseries.CatalogSeriesID = catalogseriesdefinition.CatalogSeriesID Inner Join collectiontaxonomytypes ON " +
+                             "catalogseriesdefinition.ObjectTypeID = collectiontaxonomytypes.BiologicalObjectTypeID Inner Join taxonomytype ON " +
+                             "collectiontaxonomytypes.TaxonomyTypeID = taxonomytype.TaxonomyTypeID";
+                log.info(sql);
+    
+                stmt = oldDBConn.createStatement();
+                rs   = stmt.executeQuery(sql.toString());
+    
+                 recordCnt = 0;
+                 while (rs.next())
+                 {
+                     int    catalogSeriesID = rs.getInt(1);
+                     int    taxonomyTypeID  = rs.getInt(2);
+    
+                     // Now craete the proper record in the  Join Table
+    
+                     int newCatalogSeriesID = catalogSeriesMapper.get(catalogSeriesID);
+                     int newColObjdefID     = taxonomyTypeMapper.get(taxonomyTypeID);
+    
+                     Statement updateStatement = newDBConn.createStatement();
+                     strBuf.setLength(0);
+                     strBuf.append("INSERT INTO catseries_colobjdef VALUES (");
+                     strBuf.append(newCatalogSeriesID+", ");
+                     strBuf.append(newColObjdefID+")");
+    
+                     log.info("CatalogSeries Join["+newCatalogSeriesID+"]["+newColObjdefID+"]");
+                     updateStatement.executeUpdate(strBuf.toString());
+                     updateStatement.clearBatch();
+                     updateStatement.close();
+                     updateStatement = null;
+    
+                     recordCnt++;
+    
+                 } // while
+    
+                 log.info("CatalogSeries Join Records: "+ recordCnt);
+                 rs.close();
+                 stmt.close();
+            } else
+            {
+                log.warn("taxonomyTypeMapper is empty.");
+            }
 
         } catch (SQLException e)
         {
@@ -1043,7 +1112,8 @@ public class GenericDBConversion
                 if (!useField || rs.getObject(fieldSetInx) != null)
                 {
                     String val = rs.getString(dataInx);
-                    if (values.get(val) == null)
+                    String lowerStr = val.toLowerCase();
+                    if (values.get(lowerStr) == null)
                     {
                         log.info("["+val+"]");
                         PickListItem pli = new PickListItem();
@@ -1051,7 +1121,7 @@ public class GenericDBConversion
                         pli.setValue(val);
                         pli.setCreatedDate(new Date());
                         items.add(pli);
-                        values.put(val, val);
+                        values.put(lowerStr, val);
                         count++;
                     } else
                     {
@@ -2491,7 +2561,7 @@ public class GenericDBConversion
     {
     	BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "taxontreedef");
     	
-    	String sql = "SELECT * FROM taxonomytype";
+    	String sql = "select * from taxonomytype where taxonomytype.TaxonomyTypeId in (SELECT DISTINCT t.TaxonomyTypeId FROM taxonname t WHERE t.RankId<> 0 ORDER BY TaxonomyTypeId)";
 
     	Hashtable<String,String> newToOldColMap = new Hashtable<String,String>();
     	newToOldColMap.put("TaxonTreeDefID", "TaxonomyTypeID");
@@ -2528,7 +2598,7 @@ public class GenericDBConversion
     {
     	BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "taxontreedefitem");
 
-    	String sqlStr = "SELECT * FROM taxonomicunittype";
+    	String sqlStr = "SELECT * FROM taxonomicunittype where taxonomicunittype.TaxonomyTypeID in (SELECT DISTINCT t.TaxonomyTypeId FROM taxonname t WHERE t.RankId<> 0 ORDER BY TaxonomyTypeId)";
 
     	Hashtable<String,String> newToOldColMap = new Hashtable<String,String>();
     	newToOldColMap.put("TaxonTreeDefItemID", "TaxonomicUnitTypeID");
@@ -2558,7 +2628,8 @@ public class GenericDBConversion
 		Statement newDbStmt = newDBConn.createStatement();
 
     	// get each individual TaxonomyTypeID value
-    	sqlStr = "SELECT DISTINCT TaxonomyTypeID from taxonomicunittype";
+    	sqlStr = "SELECT DISTINCT TaxonomyTypeID from taxonomicunittype where taxonomicunittype.TaxonomyTypeId in (SELECT DISTINCT t.TaxonomyTypeId FROM taxonname t WHERE t.RankId<> 0 ORDER BY TaxonomyTypeId)";
+
 		ResultSet rs = oldDbStmt.executeQuery(sqlStr);
 
     	Vector<Integer> typeIds = new Vector<Integer>();
@@ -2670,7 +2741,7 @@ public class GenericDBConversion
     {
     	BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "taxon");
 
-    	String sql = "SELECT * FROM taxonname";
+    	String sql = "SELECT * FROM taxonname where taxonname.TaxonomyTypeId in (SELECT DISTINCT t.TaxonomyTypeId FROM taxonname t WHERE t.RankId <> 0 ORDER BY TaxonomyTypeId)";
 
     	Hashtable<String,String> newToOldColMap = new Hashtable<String,String>();
     	newToOldColMap.put("TaxonID", "TaxonNameID");

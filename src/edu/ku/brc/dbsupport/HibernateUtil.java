@@ -59,9 +59,9 @@ public class HibernateUtil {
 
     private static boolean useThreadLocal = true;
     
-    static {
-        HibernateUtil.initialize();
-    }
+    //static {
+    //    HibernateUtil.initialize();
+    //}
 
     /*
     static {
@@ -247,17 +247,23 @@ public class HibernateUtil {
      */
     public static void shutdown() 
     {
-        log.debug("Shutting down Hibernate.");
-        // Close caches and connection pools
-        getSessionFactory().close();
-
-        // Clear static variables
-        configuration = null;
-        sessionFactory = null;
-
-        // Clear ThreadLocal variables
-        threadSession.set(null);
-        threadTransaction.set(null);
+        if (configuration != null)
+        {
+            log.debug("Shutting down Hibernate.");
+            
+            // Close caches and connection pools
+            getSessionFactory().close();
+    
+            // Clear static variables
+            configuration = null;
+            sessionFactory = null;
+    
+            // Clear ThreadLocal variables
+            threadSession.set(null);
+            threadTransaction.set(null);
+            
+            configuration = null;
+        }
     }
 
 

@@ -10,12 +10,18 @@
       <generator class="native"/>
     </id>
 
-    <property name="name" type="java.lang.String" column="Name" length="50">
+    <property name="name" type="java.lang.String" column="Name" length="64">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="use-in-tostring">true</meta>
         <meta attribute="field-description"></meta>
     </property>
-
+    
+    <property name="discipline" type="java.lang.String" column="Discipline" length="64">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="use-in-tostring">true</meta>
+        <meta attribute="field-description"></meta>
+    </property>
+    
     <!-- Associations -->
 
     <!-- many-to-one association to DataType -->

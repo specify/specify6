@@ -15,9 +15,7 @@
 package edu.ku.brc.specify.ui;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
-import static edu.ku.brc.helpers.XMLHelper.readFileToDOM4J;
 
-import java.io.FileInputStream;
 import java.util.Hashtable;
 import java.util.Iterator;
 
@@ -25,7 +23,8 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.exceptions.ConfigurationException;
-import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.AppContextMgr;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.ui.db.ViewBasedDisplayFrame;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
@@ -88,10 +87,11 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
      */
     protected void init()
     {
+        final String fileName = "dialog_defs.xml";
+        
         try
         {
-            Element root = readFileToDOM4J(new FileInputStream(XMLHelper.getConfigDirPath("dialog_defs.xml")));
-            //Element  root     = document.getRootElement();
+            Element root = AppContextMgr.readFileToDOM4J(fileName);
             if (root != null)
             {
                 for ( Iterator i = root.elementIterator( "dialog" ); i.hasNext(); )
@@ -114,6 +114,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                         dialogs.put(name, di);
                     }
                 }
+                UICacheManager.setViewbasedFactory(this);
             } else
             {
                 String msg = "The root element for the document was null!";
@@ -122,8 +123,9 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             }
         } catch (Exception ex)
         {
-            ex.printStackTrace();
             log.error(ex);
+            ex.printStackTrace();
+            throw new RuntimeException("Couldn't load "+ fileName);
         }
     }
 

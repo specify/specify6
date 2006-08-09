@@ -4,14 +4,13 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-
-
-
 /**
 
  */
-public class CatalogSeries  implements java.io.Serializable {
-
+public class CatalogSeries  implements java.io.Serializable, Comparable<CatalogSeries>
+{
+    protected static CatalogSeries currentCatalogSeries = null;
+    
     // Fields
 
      protected Integer catalogSeriesId;
@@ -37,8 +36,15 @@ public class CatalogSeries  implements java.io.Serializable {
         this.catalogSeriesId = catalogSeriesId;
     }
 
+    public static CatalogSeries getCurrentCatalogSeries()
+    {
+        return currentCatalogSeries;
+    }
 
-
+    public static void setCurrentCatalogSeries(CatalogSeries currentCatalogSeries)
+    {
+        CatalogSeries.currentCatalogSeries = currentCatalogSeries;
+    }
 
     // Initializer
     public void initialize()
@@ -169,7 +175,16 @@ public class CatalogSeries  implements java.io.Serializable {
     }
 
 
-
+    
+    public String toString()
+    {
+        return seriesName;
+    }
+    
+    public int compareTo(CatalogSeries obj)
+    {
+        return seriesName.compareTo(obj.seriesName);
+    }
 
 
     // Add Methods
@@ -191,4 +206,5 @@ public class CatalogSeries  implements java.io.Serializable {
     }
 
     // Delete Add Methods
+
 }

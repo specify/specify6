@@ -23,8 +23,6 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
-import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 
 import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
@@ -34,6 +32,8 @@ import javax.swing.text.Document;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
+import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UICacheManager;

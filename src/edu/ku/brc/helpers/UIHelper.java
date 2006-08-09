@@ -85,7 +85,7 @@ public final class UIHelper
     static {
 
         String osStr = System.getProperty("os.name");
-        if (osStr.equals("Mac OS X"))
+        if (osStr.startsWith("Mac OS X"))
         {
             oSType   = OSTYPE.MacOSX;
 
@@ -396,7 +396,7 @@ public final class UIHelper
     }
 
     /**
-     * Returns the type of the current OS
+     * Returns the type of the current OS.
      * @return the type of the current OS
      */
     public static OSTYPE getOSType()
@@ -408,6 +408,12 @@ public final class UIHelper
     // Menu Helpers
     //-----------------------------------------------------------------------------------------
 
+    /**
+     * @param resKey
+     * @param virtualKeyCode
+     * @param mneu
+     * @return
+     */
     protected static JMenuItem createMenu(final String resKey, int virtualKeyCode, String mneu)
     {
         JMenuItem jmi = new JMenuItem(getResourceString(resKey));

@@ -31,12 +31,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.configuration.XMLConfiguration;
 import org.dom4j.Node;
-
-import edu.ku.brc.specify.config.SpecifyConfig;
 
 /**
  *
@@ -54,7 +49,6 @@ public class PropertyViewer extends JPanel
     protected JPanel        groupContainer; 
     protected JTree         tree;
     protected JSplitPane    splitPane;
-    protected Configuration config       = SpecifyConfig.getInstance().getConfiguration();
     protected JLabel        titleLabel;
     protected JPanel        iconPanel; 
     
@@ -88,13 +82,8 @@ public class PropertyViewer extends JPanel
         add(scrollPane, BorderLayout.EAST);
         
         
-        if (config instanceof PropertiesConfiguration)
-        {
-            
-        } else if (config instanceof XMLConfiguration) 
-        {
-            buildXMLPropsViewer();
-        }
+        buildXMLPropsViewer();
+
     }
     
     protected void buildPlainPropsViewer()
