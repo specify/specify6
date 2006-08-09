@@ -378,32 +378,19 @@ public class TreeFactory
 	 */
 	public static Pair<String,String> getAppropriateFormsetAndViewNames( TreeDefinitionItemIface defItem )
 	{
-		if( defItem instanceof GeographyTreeDefItem )
+		// if this is the root defItem, make sure they can't edit the isEnforced field
+		if(defItem.getParentItem()==null)
 		{
-			return new Pair<String,String>("Fish Views","GeographyTreeDefItem");
+			return new Pair<String,String>("Fish Views","RootTreeDefItem");
 		}
-
-		if( defItem instanceof GeologicTimePeriodTreeDefItem )
+		else
 		{
-			return new Pair<String,String>("Fish Views","GeologicTimePeriodTreeDefItem");
+			return new Pair<String,String>("Fish Views","TreeDefItem");
 		}
-
-		if( defItem instanceof LocationTreeDefItem )
-		{
-			return new Pair<String,String>("Fish Views","LocationTreeDefItem");
-		}
-
-		if( defItem instanceof TaxonTreeDefItem )
-		{
-			return new Pair<String,String>("Fish Views","TaxonTreeDefItem");
-		}
-		
-		return null;
 	}
 	
 	/**
-	 * Find and return the names of the formset and view for editing tree def items of the same class
-	 * as the given <code>TreeDefinitionItemIface</code>.
+	 * Find and return the names of the formset and view for editing the given def item.
 	 * 
 	 * @param defItem an instance of the class to be edited using the returned formset and view
 	 * @return a {@link edu.ku.brc.util.Pair<String,String>} containing the formset and view names

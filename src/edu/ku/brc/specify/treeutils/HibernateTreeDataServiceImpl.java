@@ -137,15 +137,15 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 	
 	public void saveTreeDef(TreeDefinitionIface treeDef, List<TreeDefinitionItemIface> deletedItems)
 	{
-		// get the root node of the tree
-		Treeable rootNode = (Treeable)treeDef.getTreeEntries().iterator().next();
-		while(rootNode.getParentNode()!=null)
-		{
-			rootNode = rootNode.getParentNode();
-		}
-		
-		rootNode.setNodeNumber(1);
-		fixNodeNumbersFromRoot(rootNode);
+//		// get the root node of the tree
+//		Treeable rootNode = (Treeable)treeDef.getTreeEntries().iterator().next();
+//		while(rootNode.getParentNode()!=null)
+//		{
+//			rootNode = rootNode.getParentNode();
+//		}
+//		
+//		rootNode.setNodeNumber(1);
+//		fixNodeNumbersFromRoot(rootNode);
 		Transaction tx = session.beginTransaction();
 		
 		// save the TreeDefinitionIface object itself
@@ -157,8 +157,8 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 			session.saveOrUpdate(o);
 		}
 		
-		// save all of the nodes
-		saveOrUpdateTree(rootNode);
+//		// save all of the nodes
+//		saveOrUpdateTree(rootNode);
 
 		// delete all of the tree def items that were deleted by the user
 		for(TreeDefinitionItemIface item: deletedItems)

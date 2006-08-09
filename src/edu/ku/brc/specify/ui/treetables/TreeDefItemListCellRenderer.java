@@ -6,7 +6,10 @@ package edu.ku.brc.specify.ui.treetables;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -25,27 +28,57 @@ public class TreeDefItemListCellRenderer extends JPanel implements ListCellRende
 {
 	protected int fixedCellHeight;
 	protected int cellWidth;
-	protected Icon enforcedIcon;
+	protected Icon checkmarkIcon;
+	protected Icon blankIcon;
+	protected int iconSpacer;
 	
 	protected TreeDefinitionItemIface item;
 	protected int index;
 	
 	protected JLabel textLabel;
-	protected JLabel iconLabel;
+	protected JLabel enforcedLabel;
+	protected JLabel fullnameLabel;
 	
-	public TreeDefItemListCellRenderer(int fixedCellHeight, Icon enforcedIcon)
+	public TreeDefItemListCellRenderer(int fixedCellHeight, Icon checkmarkIcon)
 	{
 		super();
 		this.fixedCellHeight = fixedCellHeight;
-		this.enforcedIcon = enforcedIcon;
+		this.checkmarkIcon = checkmarkIcon;
 		
-		this.setLayout(new BorderLayout());
+		this.setLayout(new BoxLayout(this,BoxLayout.LINE_AXIS));
 		
 		textLabel = new JLabel();
-		iconLabel = new JLabel();
+		enforcedLabel = new JLabel();
+		fullnameLabel = new JLabel();
 		
-		this.add(textLabel,BorderLayout.WEST);
-		this.add(iconLabel,BorderLayout.EAST);
+		createBlankIcon();
+		
+		Dimension spacer = new Dimension(5,0);
+		this.add(Box.createRigidArea(spacer));
+		this.add(textLabel);
+		this.add(Box.createHorizontalGlue());
+		this.add(fullnameLabel);
+		this.add(Box.createRigidArea(new Dimension(30,0)));
+		this.add(enforcedLabel);
+		this.add(Box.createRigidArea(spacer));
+	}
+	
+	protected void createBlankIcon()
+	{
+		blankIcon = new Icon()
+		{
+			public int getIconHeight()
+			{
+				return checkmarkIcon.getIconHeight();
+			}
+			public int getIconWidth()
+			{
+				return checkmarkIcon.getIconHeight();
+			}
+			public void paintIcon(Component c, Graphics g, int x, int y)
+			{
+			}
+		};
 	}
 	
 	/**
@@ -70,6 +103,7 @@ public class TreeDefItemListCellRenderer extends JPanel implements ListCellRende
 			return null;
 		}
 
+		// if row is selected, fixup the colors
 		if( isSelected )
 		{
 			this.setBackground(list.getSelectionBackground());
@@ -80,17 +114,26 @@ public class TreeDefItemListCellRenderer extends JPanel implements ListCellRende
 			this.setBackground(list.getBackground());
 			this.setForeground(list.getForeground());
 		}
+		
 		cellWidth = list.getWidth();
 		item = (TreeDefinitionItemIface)value;
 		
 		textLabel.setText(item.getName());
 		if( item.getIsEnforced()!=null && item.getIsEnforced().booleanValue()==true )
 		{
-			iconLabel.setIcon(enforcedIcon);
+			enforcedLabel.setIcon(checkmarkIcon);
 		}
 		else
 		{
-			iconLabel.setIcon(null);
+			enforcedLabel.setIcon(blankIcon);
+		}
+		if( item.getIsInFullName()!=null && item.getIsInFullName().booleanValue()==true)
+		{
+			fullnameLabel.setIcon(checkmarkIcon);
+		}
+		else
+		{
+			fullnameLabel.setIcon(blankIcon);
 		}
 		
 		return this;
@@ -112,7 +155,7 @@ public class TreeDefItemListCellRenderer extends JPanel implements ListCellRende
 //		
 //		int spaceBetweenIconAndString = 10;
 //		int beforeAndAfterSpacing = 5;
-//		int iconWidth = enforcedIcon.getIconWidth();
+//		int iconWidth = checkmarkIcon.getIconWidth();
 //		nameClip.width = cellWidth - 2*beforeAndAfterSpacing - spaceBetweenIconAndString - iconWidth;
 //		nameClip.x+=beforeAndAfterSpacing;
 //		g.setClip(nameClip.x,nameClip.y,nameClip.width,nameClip.height);
@@ -122,7 +165,7 @@ public class TreeDefItemListCellRenderer extends JPanel implements ListCellRende
 //		
 //		if( item.getIsEnforced() != null && item.getIsEnforced().booleanValue() == true )
 //		{
-//			enforcedIcon.paintIcon(this,g,cellWidth - beforeAndAfterSpacing - iconWidth,0);
+//			checkmarkIcon.paintIcon(this,g,cellWidth - beforeAndAfterSpacing - iconWidth,0);
 //		}
 //	}
 }

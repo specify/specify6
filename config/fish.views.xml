@@ -170,39 +170,21 @@
             </altviews>
         </view>
 
-        <view name="TaxonTreeDefItem"
-            class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"
+        <view name="TreeDefItem"
+            class="edu.ku.brc.specify.datamodel.TreeDefItemIface"
             resourcelabels="false">
             <desc><![CDATA[TaxonTreeDefItem Node Form]]></desc>
             <altviews>
-                <altview name="TaxonTreeDefItem Edit" viewdef="TreeDefItem" label="Edit" mode="edit" validated="true"/>
+                <altview name="TreeDefItem Edit" viewdef="TreeDefItem" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
         
-        <view name="GeographyTreeDefItem"
-            class="edu.ku.brc.specify.datamodel.GeographyTreeDefItem"
+        <view name="RootTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.TreeDefItemIface"
             resourcelabels="false">
-            <desc><![CDATA[GeographyTreeDefItem Node Form]]></desc>
+            <desc><![CDATA[TreeDefItem Node Form]]></desc>
             <altviews>
-                <altview name="GeographyTreeDefItem Edit" viewdef="TreeDefItem" label="Edit" mode="edit" validated="true"/>
-            </altviews>
-        </view>
-        
-        <view name="GeologicTimePeriodTreeDefItem"
-            class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"
-            resourcelabels="false">
-            <desc><![CDATA[GeologicTimePeriodTreeDefItem Node Form]]></desc>
-            <altviews>
-                <altview name="GeologicTimePeriodTreeDefItem Edit" viewdef="TreeDefItem" label="Edit" mode="edit" validated="true"/>
-            </altviews>
-        </view>
-        
-        <view name="LocationTreeDefItem"
-            class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"
-            resourcelabels="false">
-            <desc><![CDATA[LocationTreeDefItem Node Form]]></desc>
-            <altviews>
-                <altview name="LocationTreeDefItem Edit" viewdef="TreeDefItem" label="Edit" mode="edit" validated="true"/>
+                <altview name="RootTreeDefItem Edit" viewdef="RootTreeDefItem" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
         
@@ -1091,7 +1073,7 @@
             
             <desc><![CDATA[Tree Definition Item Form]]></desc>
             <columnDef>p,3dlu,p,6dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
                 <row>
@@ -1105,6 +1087,37 @@
                 <row>
                     <cell type="label" labelfor="3" label="Is Enforced?"/>
                     <cell type="field" id="3" name="isEnforced" uitype="checkbox"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Is In Fullname?"/>
+                    <cell type="field" id="4" name="isInFullName" uitype="checkbox"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="RootTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.TreeDefinitionItemIface"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Tree Definition Item Form]]></desc>
+            <columnDef>p,3dlu,p,6dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="16" valtype="Changed"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Is In Fullname?"/>
+                    <cell type="field" id="4" name="isInFullName" uitype="checkbox"/>
                 </row>
             </rows>
         </viewdef>

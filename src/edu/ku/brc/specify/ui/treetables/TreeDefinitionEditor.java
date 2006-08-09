@@ -9,21 +9,17 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -42,9 +38,6 @@ import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.ui.treetables.EditFormDialog.EditDialogCallback;
 import edu.ku.brc.specify.ui.treetables.TreeDefSelectionDialog.TreeSelectionDialogCallback;
-import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
-import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -77,14 +70,12 @@ public class TreeDefinitionEditor extends BaseSubPane
 	protected JLabel messageLabel;
 	
 	// main user interaction widget
-	protected JList defItemsList;
-	protected TreeDefEditorListModel listModel;
+	protected JTable defItemsTable;
+	protected TreeDefEditorTableModel tableModel;
 	
 	// north panel widgets
-	protected JLabel nameLabel;
 	protected JLabel defNameLabel;
 	protected JButton editDefButton;
-	protected JLabel isEnforcedLabel;
 	
 	// south panel widgets
 	protected JButton commitToDbButton;
@@ -140,7 +131,6 @@ public class TreeDefinitionEditor extends BaseSubPane
 		northPanel.setLayout(new BoxLayout(northPanel,BoxLayout.LINE_AXIS));
 		
 		// create north panel widgets
-		nameLabel = new JLabel("Rank Name");
 		defNameLabel = new JLabel();
 		editDefButton = new JButton("Edit");
 		editDefButton.addActionListener(new ActionListener()
@@ -150,16 +140,13 @@ public class TreeDefinitionEditor extends BaseSubPane
 				showDefEditForm(displayedDef);	
 			}
 		});
-		isEnforcedLabel = new JLabel("Enforced");
 
 		// add north panel widgets
-		northPanel.add(nameLabel);
 		northPanel.add(Box.createHorizontalGlue());
 		northPanel.add(defNameLabel);
 		northPanel.add(Box.createRigidArea(horizSpacer));
 		northPanel.add(editDefButton);
 		northPanel.add(Box.createHorizontalGlue());
-		northPanel.add(isEnforcedLabel);
 
 		// create south panel
 		southPanel = new JPanel();
@@ -180,7 +167,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 		{
 			public void actionPerformed(ActionEvent ae)
 			{
-				editItem(defItemsList.getSelectedIndex());
+				editItem(defItemsTable.getSelectedRow());
 			}
 		});
 		deleteItemButton = new JButton("Delete");
@@ -188,7 +175,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 		{
 			public void actionPerformed(ActionEvent ae)
 			{
-				deleteItem(defItemsList.getSelectedIndex());
+				deleteItem(defItemsTable.getSelectedRow());
 			}
 		});
 		newItemButton = new JButton("New");
@@ -196,7 +183,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 		{
 			public void actionPerformed(ActionEvent ae)
 			{
-				newItem(defItemsList.getSelectedIndex());
+				newItem(defItemsTable.getSelectedRow());
 			}
 		});
 		
@@ -210,6 +197,8 @@ public class TreeDefinitionEditor extends BaseSubPane
 		southPanel.add(deleteItemButton);
 		southPanel.add(Box.createRigidArea(horizSpacer));
 		southPanel.add(newItemButton);
+		
+		enableSelectionSensativeButtons(false);
 	}
 	
 	protected void showTreeDefSelectionDialog(List<TreeDefinitionIface> treeDefs)
@@ -234,8 +223,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 				showNewDefForm(newDef);				
 			}
 		};
-		JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
-		TreeDefSelectionDialog d = new TreeDefSelectionDialog(topFrame,treeDefs,callback,true);
+		TreeDefSelectionDialog d = new TreeDefSelectionDialog(null,treeDefs,callback,true);
 		d.setModal(true);
 		d.setSize(300,150);
 		UIHelper.centerAndShow(d);
@@ -258,24 +246,13 @@ public class TreeDefinitionEditor extends BaseSubPane
 	protected void initTreeDefEditorComponent(TreeDefinitionIface treeDef)
 	{
 		Set<TreeDefinitionItemIface> defItems = treeDef.getTreeDefItems();
-		listModel = new TreeDefEditorListModel(defItems);
-		defItemsList = new JList(listModel);
+		tableModel = new TreeDefEditorTableModel(defItems);
+		defItemsTable = new JTable(tableModel);
+		defItemsTable.setRowHeight(24);
 		addSelectionListener();
-		defItemsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		defItemsList.addMouseListener(new MouseAdapter()
-		{
-			public void mouseClicked(MouseEvent e)
-			{
-				if(e.getClickCount()==2)
-				{
-					int index = defItemsList.getUI().locationToIndex(defItemsList,e.getPoint());
-					editItem(index);
-				}
-			}
-		});
-		ImageIcon enforcedIcon = IconManager.getIcon("Checkmark",IconManager.IconSize.Std16);
-		enforcedIcon = IconManager.getScaledIcon(enforcedIcon,IconSize.Std32,IconSize.Std16);
-		defItemsList.setCellRenderer(new TreeDefItemListCellRenderer(20,enforcedIcon));
+		defItemsTable.setRowSelectionAllowed(true);
+		defItemsTable.setColumnSelectionAllowed(false);
+		defItemsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		defNameLabel.setText(treeDef.getName());
 		Font f = defNameLabel.getFont();
@@ -284,7 +261,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 
 		// put everything in the main panel
 		this.remove(messageLabel);
-		this.add(new JScrollPane(defItemsList),BorderLayout.CENTER);
+		this.add(new JScrollPane(defItemsTable),BorderLayout.CENTER);
 		this.add(northPanel,BorderLayout.NORTH);
 		this.add(southPanel,BorderLayout.SOUTH);
 		
@@ -298,11 +275,26 @@ public class TreeDefinitionEditor extends BaseSubPane
 			public void valueChanged(ListSelectionEvent e)
 			{
 				clearStatus();
+				
+				if(defItemsTable.getSelectedRow() == -1)
+				{
+					enableSelectionSensativeButtons(false);
+				}
+				else
+				{
+					enableSelectionSensativeButtons(true);
+				}
 			}
 		};
-		defItemsList.addListSelectionListener(sl);
+		defItemsTable.getSelectionModel().addListSelectionListener(sl);
 	}
 	
+	protected void enableSelectionSensativeButtons(boolean enable)
+	{
+		deleteItemButton.setEnabled(enable);
+		newItemButton.setEnabled(enable);
+		editItemButton.setEnabled(enable);
+	}
 	
 	/**
 	 * Display the form for editing the given object.  This is a generic method for displaying
@@ -358,7 +350,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 			return;
 		}
 		
-		TreeDefinitionItemIface parent = (TreeDefinitionItemIface)defItemsList.getModel().getElementAt(index);
+		TreeDefinitionItemIface parent = tableModel.get(index);
 		TreeDefinitionItemIface newItem = 
 			TreeFactory.createNewTreeDefinitionItem(parent.getClass(),"New Level");
 
@@ -414,8 +406,8 @@ public class TreeDefinitionEditor extends BaseSubPane
 		displayedDef.getTreeDefItems().add(newItem);
 		newItem.setTreeDefinition(displayedDef);
 		
-		int insertIndex = listModel.indexOf(parent)+1;
-		listModel.add(insertIndex,newItem);
+		int insertIndex = tableModel.indexOf(parent)+1;
+		tableModel.add(insertIndex,newItem);
 		
 		clearStatus();
 	}
@@ -470,7 +462,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 			public void editCompleted(Object dataObj)
 			{
 				TreeDefinitionIface def = (TreeDefinitionIface)dataObj;
-				nameLabel.setText(def.getName());
+				defNameLabel.setText(def.getName());
 			}
 			public void editCancelled(Object dataObj)
 			{
@@ -491,7 +483,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 			return;
 		}
 		
-		TreeDefinitionItemIface defItem = (TreeDefinitionItemIface)listModel.getElementAt(index);
+		TreeDefinitionItemIface defItem = tableModel.get(index);
 		EditDialogCallback callback = new EditDialogCallback()
 		{
 			public void editCompleted(Object dataObj)
@@ -526,7 +518,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 		}
 		
 		
-		TreeDefinitionItemIface item = (TreeDefinitionItemIface)defItemsList.getModel().getElementAt(index);
+		TreeDefinitionItemIface item = tableModel.get(index);
 
 		if(!item.canBeDeleted())
 		{
@@ -562,7 +554,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 		displayedDef.getTreeDefItems().remove(item);
 		deletedItems.add(item);
 		
-		listModel.remove(item);
+		tableModel.remove(item);
 		showMessage("Item deleted");
 	}
 	
