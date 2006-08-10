@@ -66,7 +66,7 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 		closed = IconManager.getIcon("Forward", IconManager.IconSize.NonStd);
 	}
 	
-	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+	public Component getListCellRendererComponent(JList l, Object value, int index, boolean isSelected, boolean cellHasFocus)
 	{
 		nodeUI.setTreeable((Treeable)value);
 		nodeUI.setSelected(isSelected);

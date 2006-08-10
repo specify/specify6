@@ -342,10 +342,10 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		listHeader.repaint();
 	}
 	
-	protected JPanel buildTreeListPanel(TreeDataGhostDropJList list,TreeDataListHeader header)
+	protected JPanel buildTreeListPanel(TreeDataGhostDropJList treeList,TreeDataListHeader header)
 	{
 		JPanel panel = new JPanel(new BorderLayout());
-		JScrollPane bodyScroll = new JScrollPane(list);
+		JScrollPane bodyScroll = new JScrollPane(treeList);
 		bodyScroll.setAutoscrolls(true);
 		panel.add(bodyScroll, BorderLayout.CENTER);
 		
@@ -674,7 +674,7 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 			return;
 		}
 		
-		final Treeable node = (Treeable)selection;
+		final Treeable selectedNode = (Treeable)selection;
 		
 		EditDialogCallback callback = new EditDialogCallback()
 		{
@@ -690,7 +690,7 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 			}
 		};
 
-		showEditDialog(node, "Edit Node Values", callback);
+		showEditDialog(selectedNode, "Edit Node Values", callback);
 	}
 	
 

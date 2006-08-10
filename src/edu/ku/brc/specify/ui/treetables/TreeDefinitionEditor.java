@@ -455,7 +455,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 	// Methods to handle the creation and editing of a new TreeDefinitionIface object.
 	/////////////////////////////////////////////////////////////////////////////////////////
 
-	protected void showDefEditForm(TreeDefinitionIface def)
+	protected void showDefEditForm(TreeDefinitionIface treeDef)
 	{
 		EditDialogCallback callback = new EditDialogCallback()
 		{
@@ -469,7 +469,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 				// nothing to do here
 			}
 		};
-		showObjectEditDialog(def,"Tree Definition Data Entry",callback);
+		showObjectEditDialog(treeDef,"Tree Definition Data Entry",callback);
 	}
 	
 	/////////////////////////////////////////////////////////////////////////////////////////
