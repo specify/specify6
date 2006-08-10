@@ -697,7 +697,7 @@ public class GenericDBConversion
      */
     public String getStandardDisciplineName(final String name)
     {
-        Discipline discipline = AppContextMgr.get(name.toLowerCase());
+        Discipline discipline = AppContextMgr.getInstance().get(name.toLowerCase());
         if (discipline != null)
         {
             return discipline.getName();
@@ -778,7 +778,7 @@ public class GenericDBConversion
             int userGroupId = BasicSQLUtils.getHighestId(newDBConn, "UserGroupID", "usergroup");
 
             updateStatement = newDBConn.createStatement();
-            StringBuilder strBuf = new StringBuilder(128);
+            strBuf = new StringBuilder(128);
             strBuf.append("INSERT INTO specifyuser VALUES (");
             strBuf.append("NULL,");
             strBuf.append("'"+userName+"',");
@@ -865,8 +865,8 @@ public class GenericDBConversion
     public boolean convertCollectionObjectDefs(final int specifyUserId)
     {
         // The Old Table catalogseriesdefinition is being converted to collectionobjdef
-        IdMapper catalogSeriesMapper = idMapperMgr.get("CatalogSeries", "CatalogSeriesID");
-        IdMapper taxonomyTypeMapper  = idMapperMgr.get("TaxonomyType", "TaxonomyTypeID");
+        IdMapperIFace catalogSeriesMapper = idMapperMgr.get("CatalogSeries", "CatalogSeriesID");
+        IdMapperIFace taxonomyTypeMapper  = idMapperMgr.get("TaxonomyType", "TaxonomyTypeID");
 
         try
         {
@@ -895,7 +895,7 @@ public class GenericDBConversion
                     continue;
                 }
                 
-                Discipline discipline = AppContextMgr.get(disciplineName);
+                Discipline discipline = AppContextMgr.getInstance().get(disciplineName);
                 if (discipline == null)
                 {
                     log.error("**** discipline couldn't be found in our Discipline lookup in AppContextMgr["+disciplineName+"]");
@@ -1563,7 +1563,7 @@ public class GenericDBConversion
         if (idMapperMgr != null && oldColName.endsWith("ID"))
         {
 
-            IdMapper idMapper =  idMapperMgr.get(fromTableName, oldColName);
+            IdMapperIFace idMapper =  idMapperMgr.get(fromTableName, oldColName);
             if (idMapper != null)
             {
                 return idMapper.get((Integer)data);
@@ -1909,8 +1909,8 @@ public class GenericDBConversion
             newToOld.put("CollectionObjectID", "DerivedFromID");
             newToOld.put("StorageLocation", "Location");
 
-            IdMapper agentIdMapper = idMapperMgr.get("agent", "AgentID");
-            //IdMapper prepIdMapper =  idMapperMgr.get("preparation",  "PreparationID");
+            IdMapperIFace agentIdMapper = idMapperMgr.get("agent", "AgentID");
+            //IdMapperIFace prepIdMapper =  idMapperMgr.get("preparation",  "PreparationID");
 
             boolean doDebug   = false;
             ResultSet rs      = stmt.executeQuery(sqlStr);
@@ -2022,7 +2022,7 @@ public class GenericDBConversion
 
                         if (idMapperMgr != null && mappedName.endsWith("ID"))
                         {
-                            IdMapper idMapper;
+                            IdMapperIFace idMapper;
                             if (mappedName.equals("DerivedFromID"))
                             {
                                 idMapper = idMapperMgr.get("preparation", "PreparationID");
@@ -2095,7 +2095,7 @@ public class GenericDBConversion
     public boolean createCollectionRecords()
     {
         IdHashMapper colObjTaxonMapper = (IdHashMapper)idMapperMgr.get("ColObjCatToTaxonType");
-        IdMapper     taxonomyTypeMapper  = idMapperMgr.get("TaxonomyType", "TaxonomyTypeID");
+        IdMapperIFace     taxonomyTypeMapper  = idMapperMgr.get("TaxonomyType", "TaxonomyTypeID");
         
         colObjTaxonMapper.setShowLogErrors(false); // NOTE: TURN THIS ON FOR DEBUGGING or running new Databases through it
         
@@ -2253,7 +2253,7 @@ public class GenericDBConversion
                             {
                                 //System.out.println(newFieldName+" "+(index.intValue()+1)+"  "+rs.getInt(index+1));
 
-                                IdMapper idMapper =  idMapperMgr.get(tableName, newFieldName);
+                                IdMapperIFace idMapper =  idMapperMgr.get(tableName, newFieldName);
                                 if (idMapper != null)
                                 {
                                     data = idMapper.get(rs.getInt(index+1));
@@ -2644,7 +2644,7 @@ public class GenericDBConversion
 
     	// will be used to map old TaxonomyTypeID values to TreeDefID values
 		IdMapperMgr idMapperMgr = IdMapperMgr.getInstance();
-		IdMapper typeIdMapper = idMapperMgr.get("taxonomytype", "TaxonomyTypeID");
+		IdMapperIFace typeIdMapper = idMapperMgr.get("taxonomytype", "TaxonomyTypeID");
 
     	// for each value of TaxonomyType...
     	for( Integer typeId: typeIds )
@@ -3468,9 +3468,9 @@ public class GenericDBConversion
   {
 
       // Create the mappers here, but fill them in during the AgentAddress Process
-      IdMapper agentIDMapper     = idMapperMgr.addTableMapper("agent", "AgentID");
-      IdMapper addrIDMapper      = idMapperMgr.addTableMapper("address", "AddressID");
-      IdMapper agentAddrIDMapper = idMapperMgr.addTableMapper("agentaddress", "AgentAddressID");
+      IdMapperIFace agentIDMapper     = idMapperMgr.addTableMapper("agent", "AgentID");
+      IdMapperIFace addrIDMapper      = idMapperMgr.addTableMapper("address", "AddressID");
+      IdMapperIFace agentAddrIDMapper = idMapperMgr.addTableMapper("agentaddress", "AgentAddressID");
 
        BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "agent");
        BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "address");

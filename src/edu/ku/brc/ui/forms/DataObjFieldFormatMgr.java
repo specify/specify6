@@ -66,7 +66,7 @@ public class DataObjFieldFormatMgr
         String fileName = "dataobj_formatters.xml";
         try
         {
-            Element root  = AppContextMgr.readFileToDOM4J(fileName);
+            Element root  = AppContextMgr.getInstance().readFileToDOM4J(fileName);
             if (root != null)
             {
                 List formatters = root.selectNodes("/formatters/format");

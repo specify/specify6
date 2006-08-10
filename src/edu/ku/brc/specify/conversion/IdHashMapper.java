@@ -19,7 +19,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
@@ -28,12 +27,12 @@ import org.apache.log4j.Logger;
  * This is a Database Table Hashtable. It doesn't support the the entire Map interface just
  * "get" and "put"
  
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  **
  * @author rods
  *
  */
-public class IdHashMapper implements IdMapper
+public class IdHashMapper implements IdMapperIFace
 {
     protected static final Logger log = Logger.getLogger(IdHashMapper.class);
 
@@ -46,7 +45,7 @@ public class IdHashMapper implements IdMapper
     protected boolean         showLogErrors = true;  
     
     /**
-     * Default Constructor for those creating derived classes
+     * Default Constructor for those creating derived classes.
      * @throws SQLException
      */
     protected IdHashMapper()
@@ -66,7 +65,7 @@ public class IdHashMapper implements IdMapper
     }
 
     /**
-     * Create a IdHashMapper with a table name an SQL that is used to do the mapping
+     * Create a IdHashMapper with a table name an SQL that is used to do the mapping.
      * @param tableName the table name
      * @param sql the sql
      * @throws SQLException
@@ -79,7 +78,7 @@ public class IdHashMapper implements IdMapper
     }
 
     /**
-     * Initializes the Hash Database Table 
+     * Initializes the Hash Database Table.
      */
     protected void init(final boolean checkOldDB) throws SQLException
     {
@@ -107,7 +106,10 @@ public class IdHashMapper implements IdMapper
                                     "`NewID` int(11) NOT NULL default '0', "+
                                     " PRIMARY KEY (`OldID`) ) ENGINE=InnoDB DEFAULT CHARSET=latin1";
                 //log.info(str);
-                stmtNew.executeUpdate(str);
+                stmtNew.executeUpdat    /**
+                 * 
+                 */
+e(str);
 
                 stmtNew.executeUpdate("alter table "+mapTableName+" add index INX_"+mapTableName+" (NewID)");
 
@@ -123,37 +125,10 @@ public class IdHashMapper implements IdMapper
 
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.conversion.IdMapper#getName()
-     */
-    public String getName()
-    {
-        return mapTableName;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.conversion.IdMapper#put(int, int)
-     */
-    public void put(final int oldIndex, final int newIndex)
-    {
-        try
-        {
-            String str = "INSERT INTO "+mapTableName+" VALUES (" + oldIndex + "," + newIndex + ")";
-            Statement stmtNew = newConn.createStatement();
-            stmtNew.executeUpdate(str);
-            stmtNew.clearBatch();
-            stmtNew.close();
-            
-        } catch (SQLException ex)
-        {
-            ex.printStackTrace();
-            log.error(ex);
-        }
-    }
     
     /**
-     * Maps the first index to the second index
-     * The SQL to do the mappings
+     * Maps the first index to the second index.
+     * The SQL to do the mappings.
      */
     public void mapAllIds()
     {
@@ -204,8 +179,83 @@ public class IdHashMapper implements IdMapper
 
     }
 
+    /**
+     * Returns whether it is showing log errors.
+     * @return whether it is showing log errors
+     */
+    public boolean isShowLogErrors()
+    {
+        return showLogErrors;
+    }
+
+    /**
+     * Tells it to show log errors.
+     * @param showLogErrors true/false
+     */
+    public void setShowLogErrors(boolean showLogErrors)
+    {
+        this.showLogErrors = showLogErrors;
+    }
+
+    /**
+     * Cleans up temporary data.
+     */
+    public void cleanup() throws SQLException
+    {
+    	if (mapTableName != null)
+    	{
+	        try
+	        {
+	            Statement stmtNew = newConn.createStatement();
+	            stmtNew.executeUpdate("DROP TABLE `"+mapTableName+"`");
+	            stmtNew.close();
+	            
+	        } catch (SQLException ex)
+	        {
+	            ex.printStackTrace();
+	            log.error(ex);
+	        }
+	
+	        mapTableName = null;
+    	}
+
+    }
+    
+    //--------------------------------------------------
+    // IdMapperIFace
+    //--------------------------------------------------
+
+
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.conversion.IdMapper#get(java.lang.Integer)
+     * @see edu.ku.brc.specify.conversion.IdMapperIFace#getName()
+     */
+    public String getName()
+    {
+        return mapTableName;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.conversion.IdMapperIFace#put(int, int)
+     */
+    public void put(final int oldIndex, final int newIndex)
+    {
+        try
+        {
+            String str = "INSERT INTO "+mapTableName+" VALUES (" + oldIndex + "," + newIndex + ")";
+            Statement stmtNew = newConn.createStatement();
+            stmtNew.executeUpdate(str);
+            stmtNew.clearBatch();
+            stmtNew.close();
+            
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+            log.error(ex);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.conversion.IdMapperIFace#get(java.lang.Integer)
      */
     public Integer get(final Integer oldId)
     {
@@ -244,7 +294,7 @@ public class IdHashMapper implements IdMapper
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.conversion.IdMapper#size()
+     * @see edu.ku.brc.specify.conversion.IdMapperIFace#size()
      */
     public int size()
     {
@@ -252,46 +302,12 @@ public class IdHashMapper implements IdMapper
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.conversion.IdMapper#getSql()
+     * @see edu.ku.brc.specify.conversion.IdMapperIFace#getSql()
      */
     public String getSql()
     {
         return sql;
     }
     
-
-    public boolean isShowLogErrors()
-    {
-        return showLogErrors;
-    }
-
-    public void setShowLogErrors(boolean showLogErrors)
-    {
-        this.showLogErrors = showLogErrors;
-    }
-
-    /**
-     * Cleans up temporary data
-     */
-    public void cleanup() throws SQLException
-    {
-    	if (mapTableName != null)
-    	{
-	        try
-	        {
-	            Statement stmtNew = newConn.createStatement();
-	            stmtNew.executeUpdate("DROP TABLE `"+mapTableName+"`");
-	            stmtNew.close();
-	            
-	        } catch (SQLException ex)
-	        {
-	            ex.printStackTrace();
-	            log.error(ex);
-	        }
-	
-	        mapTableName = null;
-    	}
-
-    }
-
+    
 }

@@ -105,7 +105,7 @@ public class StatsPane extends BaseSubPane
         Element rootElement = null;
         try
         {
-            rootElement = AppContextMgr.readFileToDOM4J(fileName);
+            rootElement = AppContextMgr.getInstance().readFileToDOM4J(fileName);
 
             // count up rows and column
             StringBuilder rowsDef = new StringBuilder(128);

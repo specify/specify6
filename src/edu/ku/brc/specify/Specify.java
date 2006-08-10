@@ -44,9 +44,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.criterion.Expression;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -63,15 +61,11 @@ import edu.ku.brc.af.plugins.PluginMgr;
 import edu.ku.brc.af.prefs.AppPrefsMgr;
 import edu.ku.brc.af.prefs.PrefMainPanel;
 import edu.ku.brc.af.tasks.StartUpTask;
-import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.specify.config.AppContextMgr;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
-import edu.ku.brc.specify.datamodel.Collectors;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
-import edu.ku.brc.specify.ui.DBObjDialogFactory;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToolbarLayoutManager;
@@ -213,54 +207,40 @@ public class Specify extends JPanel implements DatabaseLoginListener
         CatalogSeries.setCurrentCatalogSeries(null);
         CollectionObjDef.setCurrentCollectionObjDef(null);
         
-        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(SpecifyUser.class);
-        criteria.add(Expression.eq("name", userName));
-        java.util.List list = criteria.list();
-       
-        
-        if (list.size() == 1)
+        if (AppContextMgr.getInstance().setContext(databaseName, userName))
         {
-            SpecifyUser user = (SpecifyUser)list.get(0);
-            SpecifyUser.setCurrentUser(user);
-            
-            if (AppContextMgr.setContext(databaseName, userName, user))
-            {
 
-                PluginMgr.readRegistry();
-                
-                PluginMgr.initializePlugins();
-    
-                validate();
-                hideSplash();
-    
-                add(mainPanel, BorderLayout.CENTER);
-                doLayout();
-    
-                mainPanel.setBackground(Color.WHITE);
-    
-                SubPaneMgr.getInstance().removeAllPanes();
-    
-                Taskable startUpTask = ContextMgr.getTaskByClass(StartUpTask.class);
-                if (startUpTask != null)
-                {
-                    startUpTask.requestContext();
-                }
-    
-                showApp();
-            } else
+            PluginMgr.readRegistry();
+            
+            PluginMgr.initializePlugins();
+
+            validate();
+            hideSplash();
+
+            add(mainPanel, BorderLayout.CENTER);
+            doLayout();
+
+            mainPanel.setBackground(Color.WHITE);
+
+            SubPaneMgr.getInstance().removeAllPanes();
+
+            Taskable startUpTask = ContextMgr.getTaskByClass(StartUpTask.class);
+            if (startUpTask != null)
             {
-                
+                startUpTask.requestContext();
             }
 
+            showApp();
         } else
         {
+
             // TODO This is really bad because there is a Database Login with no Specify login
             JOptionPane.showMessageDialog(null, 
                                           getResourceString("LoginUserMismatch"), 
                                           getResourceString("LoginUserMismatchTitle"), 
                                           JOptionPane.ERROR_MESSAGE);
             System.exit(0);
-            
+        
         }
 
         

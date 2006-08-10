@@ -27,7 +27,7 @@ import java.util.List;
  * The Class requires a connection to the "Old" database which is where the "from" IDs will come from and a 
  * connection to the "new" database which is where all the tables will be created.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -152,7 +152,7 @@ public class IdMapperMgr
      * @param idName the id
      * @return the IdHashMapper object
      */
-    public IdMapper get(final String tableName, final String idName)
+    public IdMapperIFace get(final String tableName, final String idName)
     {
         return idMappers.get(tableName.toLowerCase()+"_"+idName);
     }
@@ -162,7 +162,7 @@ public class IdMapperMgr
      * @param name
      * @return the IdHashMapper object
      */
-    public IdMapper get(final String name)
+    public IdMapperIFace get(final String name)
     {
         return idMappers.get(name.toLowerCase());
     }

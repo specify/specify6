@@ -674,7 +674,7 @@ public class BasicSQLUtils
 
                         if (idMapperMgr != null && oldMappedColName.endsWith("ID"))
                         {
-                            IdMapper idMapper = idMapperMgr.get(fromTableName, oldMappedColName);
+                            IdMapperIFace idMapper = idMapperMgr.get(fromTableName, oldMappedColName);
                             if (idMapper != null)
                             {
                             	int oldPrimaryKeyId = rs.getInt(columnIndex);

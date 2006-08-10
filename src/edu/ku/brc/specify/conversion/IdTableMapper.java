@@ -24,9 +24,9 @@ import org.apache.log4j.Logger;
 
 
 /**
- * Manages the mapping of old primary key ID to new sequenial ones
- 
- * @code_status Unknown (auto-generated)
+ * Manages the mapping of old primary key ID to new sequenial ones for table name and it key (primary or foreign).
+ *
+ * @code_status Complete
  **
  * @author rods
  *
@@ -38,9 +38,10 @@ public class IdTableMapper extends IdHashMapper
     protected String idName;
 
     /**
-     * @param tableName
-     * @param idName
-     * @throws SQLException
+     * Creates a Mapper for a table and the name of the primary or foreign key.
+     * @param tableName name of the table
+     * @param idName name of the key field
+     * @throws SQLException any
      */
     public IdTableMapper(final String tableName, final String idName) throws SQLException
     {
@@ -55,10 +56,11 @@ public class IdTableMapper extends IdHashMapper
     }
 
     /**
-     * @param tableName
-     * @param idName
-     * @param sql
-     * @throws SQLException
+     * Creates a Mapper for a table and the name of the primary or foreign key.
+     * @param tableName name of the table
+     * @param idName name of the key field
+     * @param sql the SQL statement to build the index
+     * @throws SQLException any
      */
     public IdTableMapper(final String tableName, final String idName, final String sql) throws SQLException
     {
@@ -67,16 +69,8 @@ public class IdTableMapper extends IdHashMapper
     }
 
     /**
-     * Map all the old iDs to new IDs
-     */
-    public void mapAllIds()
-    {
-        sql = "select "+idName+" from "+tableName+" order by "+idName;
-        mapAllIds(sql);
-    }
-
-    /**
-     * Map all the old iDs to new IDs
+     * Map all the old IDs to new IDs
+     * @param sql the string to use to fill the map
      */
     public void mapAllIds(final String sql)
     {
@@ -117,7 +111,7 @@ public class IdTableMapper extends IdHashMapper
     }
 
     /**
-     * Map all the old iDs to new IDs
+     * Map all the old IDs to new IDs
      */
     public void mapAllIdsWithSQL()
     {
@@ -130,5 +124,21 @@ public class IdTableMapper extends IdHashMapper
             throw new RuntimeException("The SQL strng is empty in idmapper. "+tableName);
         }
     }
+    
+    
+    //--------------------------------------------------
+    // IdMapperIFace
+    //--------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.conversion.IdHashMapper#mapAllIds()
+     */
+    public void mapAllIds()
+    {
+        sql = "select "+idName+" from "+tableName+" order by "+idName;
+        mapAllIds(sql);
+    }
+
+
 
 }

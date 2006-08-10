@@ -73,7 +73,7 @@ public class StatsTask extends BaseTask
 
         try
         {
-            panelDOM = AppContextMgr.readFileToDOM4J("statistics_panel.xml");   // contains a description of the NavBoxes
+            panelDOM = AppContextMgr.getInstance().readFileToDOM4J("statistics_panel.xml");   // contains a description of the NavBoxes
 
         } catch (Exception ex)
         {

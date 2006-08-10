@@ -31,8 +31,11 @@ import javax.swing.JOptionPane;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.criterion.Expression;
 
+import edu.ku.brc.af.core.AppContextIFace;
 import edu.ku.brc.af.prefs.AppPrefsIFace;
 import edu.ku.brc.af.prefs.AppPrefsMgr;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -70,29 +73,42 @@ import edu.ku.brc.ui.forms.persist.ViewSet;
  *
  * @author rods
  */
-public class AppContextMgr
+public class AppContextMgr implements AppContextIFace
 {
     private static final Logger  log      = Logger.getLogger(AppContextMgr.class);
+    private static AppContextMgr instance = new AppContextMgr();
     
-    protected static Hashtable<String, Discipline> hash = new Hashtable<String, Discipline>();
+    protected Hashtable<String, Discipline> hash = new Hashtable<String, Discipline>();
     
-    protected static File        currentContextDir = null;
-    protected static File        backStopDir       = null;
+    protected File        currentContextDir = null;
+    protected File        backStopDir       = null;
     
-    protected static String      disciplineName    = null;  
-    protected static String      databaseName      = null;
-    protected static String      userName          = null;
-    protected static SpecifyUser user              = null;
+    protected String      disciplineName    = null;  
+    protected String      databaseName      = null;
+    protected String      userName          = null;
+    protected SpecifyUser user              = null;
 
-    static {
-        
+    /**
+     * Singleton Constructor.
+     */
+    protected AppContextMgr()
+    {
         init();
+    }
+    
+    /**
+     * Returns singleton.
+     * @return singleton.
+     */
+    public static AppContextMgr getInstance()
+    {
+        return AppContextMgr.instance;
     }
     
     /**
      * Reads in the disciplines file (is loaded when the class is loaded).
      */
-    protected static void init()
+    protected void init()
     {
         try
         {
@@ -129,7 +145,7 @@ public class AppContextMgr
      * Returns the list of Discipline objects.
      * @return the list of Discipline objects
      */
-    public static List<Discipline> getDisciplines()
+    public List<Discipline> getDisciplines()
     {
         List<Discipline> list = new ArrayList<Discipline>();
         for (Enumeration<Discipline> e=hash.elements();e.hasMoreElements();)
@@ -144,7 +160,7 @@ public class AppContextMgr
      * @param name the name of the discipline
      * @return a Discipline by name.
      */
-    public static Discipline get(final String name)
+    public Discipline get(final String name)
     {
         return hash.get(name);
     }
@@ -154,7 +170,7 @@ public class AppContextMgr
      * @param title the title of the discipline
      * @return a Discipline by title.
      */
-    public static Discipline getByTitle(final String title)
+    public Discipline getByTitle(final String title)
     {
         for (Enumeration<Discipline> e=hash.elements();e.hasMoreElements();)
         {
@@ -175,7 +191,7 @@ public class AppContextMgr
      * @return the current Catalog Series or null
      */
     @SuppressWarnings("unchecked")
-    public static CatalogSeries setupCurrentCatalogSeries(final SpecifyUser user, final boolean alwaysAsk)
+    public CatalogSeries setupCurrentCatalogSeries(final SpecifyUser user, final boolean alwaysAsk)
     {
         final String prefName = mkUserDBPrefName("recent_catalogseries_id");
         
@@ -252,7 +268,7 @@ public class AppContextMgr
      * @return the current CollectionObjDef or null
      */
     @SuppressWarnings("unchecked")
-    public static CollectionObjDef setupCurrentColObjDef(final CatalogSeries catalogSeries, final boolean alwaysAsk)
+    public CollectionObjDef setupCurrentColObjDef(final CatalogSeries catalogSeries, final boolean alwaysAsk)
     {
         if (catalogSeries == null)
         {
@@ -329,13 +345,13 @@ public class AppContextMgr
      * Returns the File object that represents the directory for the current user and database.
      * @return the File object that represents the directory for the current user and database.
      */
-    public static File getCurrentContext()
+    public File getCurrentContext()
     {
-        if (AppContextMgr.currentContextDir == null)
+        if (currentContextDir == null)
         {
-            throw new RuntimeException("AppContextMgr.currentContextDir is null and not initialized.");
+            throw new RuntimeException("currentContextDir is null and not initialized.");
         }
-        return AppContextMgr.currentContextDir;
+        return currentContextDir;
     }
     
     /**
@@ -343,13 +359,13 @@ public class AppContextMgr
      * @param fileName a file name to be appended to the Current Context Directory
      * @return the File object that represents the directory for the current user and database plus the name passed in.
      */
-    public static File getCurrentContext(final String fileName)
+    public File getCurrentContext(final String fileName)
     {
-        if (AppContextMgr.currentContextDir == null)
+        if (currentContextDir == null)
         {
-            throw new RuntimeException("AppContextMgr.currentContextDir is null and not initialized.");
+            throw new RuntimeException("currentContextDir is null and not initialized.");
         }
-        return new File(AppContextMgr.currentContextDir.getAbsoluteFile() + File.separator + fileName);
+        return new File(currentContextDir.getAbsoluteFile() + File.separator + fileName);
     }
     
     /**
@@ -358,9 +374,9 @@ public class AppContextMgr
      * @param fileName the file name
      * @return return a path to the file.
      */
-    public static File getFileFromDisciplineOrConfig(final String fileName)
+    public File getFileFromDisciplineOrConfig(final String fileName)
     {
-        File pathDir = AppContextMgr.getCurrentContext(fileName);
+        File pathDir = getCurrentContext(fileName);
         if (!pathDir.exists())
         {
             pathDir = new File(XMLHelper.getConfigDirPath(fileName));
@@ -371,14 +387,14 @@ public class AppContextMgr
         }
         return pathDir;
     }
-    
+
     /**
      * Reads an XML file from the current context or the config directory (as a backstop)
      * @param fileName the file name to read in as a DOM
      * @return the root Element for the XML document
      * @throws Exception from reading in the XML file
      */
-    public static Element readFileToDOM4J(final String fileName) throws Exception
+    public Element readFileToDOM4J(final String fileName) throws Exception
     {
         File pathDir = getFileFromDisciplineOrConfig(fileName);
         if (pathDir.exists())
@@ -394,7 +410,7 @@ public class AppContextMgr
      * @param path the path to the directory
      * @return the File object to the directory
      */
-    protected static File getOrCreateDir(final String path)
+    protected File getOrCreateDir(final String path)
     {
         File file = new File(path);
         if (!file.exists())
@@ -412,7 +428,7 @@ public class AppContextMgr
      * @param prefName the pref names
      * @return  a user and database centric pref name
      */
-    protected static String mkUserDBPrefName(final String prefName)
+    protected String mkUserDBPrefName(final String prefName)
     {
         return prefName + "." + userName+ "." + databaseName;
     }
@@ -425,20 +441,30 @@ public class AppContextMgr
      * @param user the user object
      * @return  true if the context was set correctly
      */
-    public static boolean setContext(final String      databaseName, 
-                                     final String      userName,
-                                     final SpecifyUser user)
+    public boolean setContext(final String databaseName, 
+                              final String userName)
     {
+        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(SpecifyUser.class);
+        criteria.add(Expression.eq("name", userName));
+        java.util.List list = criteria.list();
+       
         
-        AppContextMgr.databaseName = databaseName;
-        AppContextMgr.userName     = userName;
-        AppContextMgr.user         = user;
+        if (list.size() == 1)
+        {
+            user = (SpecifyUser)list.get(0);
+        } else
+        {
+            throw new RuntimeException("The user ["+userName+"] could  not be located as a Specify user.");
+        }
+        
+        this.databaseName = databaseName;
+        this.userName     = userName;
         
         AppPrefsIFace appPrefs = AppPrefsMgr.getInstance();
         
         Boolean isAccessionDB  = false;
         
-        CatalogSeries catalogSeries = AppContextMgr.setupCurrentCatalogSeries(user, false);
+        CatalogSeries catalogSeries = setupCurrentCatalogSeries(user, false);
         if (catalogSeries == null)
         {
             String isAccessionsPrefName = mkUserDBPrefName("isaccessions");
@@ -468,7 +494,7 @@ public class AppContextMgr
                 //ChooseFromListDlg       
             }
             
-            CollectionObjDef colObjDef = AppContextMgr.setupCurrentColObjDef(catalogSeries, false);
+            CollectionObjDef colObjDef = setupCurrentColObjDef(catalogSeries, false);
             disciplineName = colObjDef.getDiscipline();
         }
         
@@ -503,7 +529,7 @@ public class AppContextMgr
     /**
      * 
      */
-    protected static void initializeViewSetManager()
+    protected void initializeViewSetManager()
     {
         
         // Push BackStop on the Stack First

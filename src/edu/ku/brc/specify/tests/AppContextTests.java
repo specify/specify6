@@ -72,13 +72,13 @@ public class AppContextTests extends TestCase
         hash.put(2, "Accessions");
 
         log.info("List Disciplines:");
-        for (Discipline d : AppContextMgr.getDisciplines())
+        for (Discipline d : AppContextMgr.getInstance().getDisciplines())
         {
             log.info("[" + hash.get(d.getType()) + "][" + d.getName() + "][" + d.getTitle() + "]");
         }
         
-        assertNotNull(AppContextMgr.getByTitle("Mammal"));
-        assertNotNull(AppContextMgr.get("accessions"));
+        assertNotNull(AppContextMgr.getInstance().getByTitle("Mammal"));
+        assertNotNull(AppContextMgr.getInstance().get("accessions"));
         
 
         assertTrue(UIHelper.tryLogin("com.mysql.jdbc.Driver",
@@ -97,22 +97,22 @@ public class AppContextTests extends TestCase
         
         SpecifyUser user = (SpecifyUser)list.get(0);
         
-        CatalogSeries cs = AppContextMgr.setupCurrentCatalogSeries(user, false); // false means don't ask if you already have one
+        CatalogSeries cs = AppContextMgr.getInstance().setupCurrentCatalogSeries(user, false); // false means don't ask if you already have one
         assertNotNull(cs);
         
         log.info("Selected CatalogSeries: ["+cs.getSeriesName()+"]");
         
-        cs = AppContextMgr.setupCurrentCatalogSeries(user, true); // false means don't ask if you already have one
+        cs = AppContextMgr.getInstance().setupCurrentCatalogSeries(user, true); // false means don't ask if you already have one
         assertNotNull(cs);
         
         log.info("Selected CatalogSeries: ["+cs.getSeriesName()+"]");
         
-        CollectionObjDef cod = AppContextMgr.setupCurrentColObjDef(cs, false); // false means don't ask if you already have one
+        CollectionObjDef cod = AppContextMgr.getInstance().setupCurrentColObjDef(cs, false); // false means don't ask if you already have one
         assertNotNull(cod);
         
         log.info("Selected CollectionObjDef: ["+cod.getName()+"]");
         
-        cod = AppContextMgr.setupCurrentColObjDef(cs, true); // false means don't ask if you already have one
+        cod = AppContextMgr.getInstance().setupCurrentColObjDef(cs, true); // false means don't ask if you already have one
         assertNotNull(cod);
         
         log.info("Selected CollectionObjDef: ["+cod.getName()+"]");

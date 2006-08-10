@@ -91,7 +91,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
         
         try
         {
-            Element root = AppContextMgr.readFileToDOM4J(fileName);
+            Element root = AppContextMgr.getInstance().readFileToDOM4J(fileName);
             if (root != null)
             {
                 for ( Iterator i = root.elementIterator( "dialog" ); i.hasNext(); )

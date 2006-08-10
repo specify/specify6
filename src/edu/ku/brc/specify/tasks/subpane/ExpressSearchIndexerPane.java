@@ -177,7 +177,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         {
             if (esDOM == null)
             {
-                esDOM = AppContextMgr.readFileToDOM4J("search_config.xml");         // Describes the definitions of the full text search
+                esDOM = AppContextMgr.getInstance().readFileToDOM4J("search_config.xml");         // Describes the definitions of the full text search
             }
 
             Hashtable<String, String> namesHash = new Hashtable<String, String>();
@@ -793,7 +793,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
      */
     protected long indexLabels(final IndexWriter writer)
     {
-        File resourceDir = AppContextMgr.getCurrentContext();
+        File resourceDir = AppContextMgr.getInstance().getCurrentContext();
         File[] files = resourceDir.listFiles(new DiskFileFilter("jrxml"));
 
         indvLabel.setVisible(true);

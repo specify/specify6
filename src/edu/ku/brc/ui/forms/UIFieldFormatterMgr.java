@@ -81,7 +81,7 @@ public class UIFieldFormatterMgr
 
         try
         {
-            Element root  = AppContextMgr.readFileToDOM4J("uiformatters.xml");
+            Element root  = AppContextMgr.getInstance().readFileToDOM4J("uiformatters.xml");
             if (root != null)
             {
                 List formats = root.selectNodes("/formats/format");

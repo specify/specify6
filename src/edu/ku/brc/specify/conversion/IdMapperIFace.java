@@ -1,5 +1,5 @@
 /*
- * Filename:    $RCSfile: IdMapper.java,v $
+ * Filename:    $RCSfile: IdMapperIFace.java,v $
  * Author:      $Author: rods $
  * Revision:    $Revision: 1.0 $
  * Date:        $Date: 2005/10/20 12:53:02 $
@@ -24,42 +24,42 @@ package edu.ku.brc.specify.conversion;
  * A Database Hashtable that is for mapping one integer to another.
  * This is usually utilitized for ID mappings
  
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  **
  * @author rods
  *
  */
-public interface IdMapper
+public interface IdMapperIFace
 {
 
     /**
-     * Adds a Key/Value to the hash
-     * @param key the integer key
-     * @param value the value (most likely a database ID)
+     * Adds a Key/Value to the hash.
+     * @param fromID the integer key
+     * @param toID the value (most likely a database ID)
      */
-    public void put(int key, int value);
+    public void put(int fromID, int toID);
 
     /**
-     * Returns an integer (mostly a table ID)
+     * Returns an integer (mostly a table ID).
      * @param key the key (or ID) to use to get the value
      * @return the value of the mapping
      */
     public Integer get(Integer key);
 
     /**
-     * Returns the name of the table
+     * Returns the name of the table.
      * @return the name of the table
      */
     public String getName();
 
     /**
-     * Returns the SQL statement used to fill the table (might be null)
+     * Returns the SQL statement used to fill the table (might be null).
      * @return the SQL statement used to fill the table (might be null)
      */
     public String getSql();
 
     /**
-     * The number of entries in the mapping table
+     * The number of entries in the mapping table.
      * @return the number of entries in the mapping table
      */
     public int size();

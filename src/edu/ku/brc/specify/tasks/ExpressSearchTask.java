@@ -59,7 +59,6 @@ import edu.ku.brc.af.plugins.MenuItemDesc;
 import edu.ku.brc.af.plugins.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
-import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.AppContextMgr;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchIndexerPane;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPane;
@@ -144,7 +143,7 @@ public class ExpressSearchTask extends BaseTask
         try
         {
             tables = new Hashtable<String, ExpressResultsTableInfo>();
-            Element esDOM = AppContextMgr.readFileToDOM4J("search_config.xml");         // Describes the definitions of the full text search
+            Element esDOM = AppContextMgr.getInstance().readFileToDOM4J("search_config.xml");         // Describes the definitions of the full text search
             List tableItems = esDOM.selectNodes("/tables/table");
             for ( Iterator iter = tableItems.iterator(); iter.hasNext(); )
             {

@@ -21,7 +21,6 @@ import edu.ku.brc.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.dbsupport.QueryResultsProcessable;
-import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.AppContextMgr;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.ui.CommandAction;
@@ -62,7 +61,7 @@ public class StatsMgr
     {
         try
         {
-            statDOM  = AppContextMgr.readFileToDOM4J("statistics.xml"); // Describes each Statistic, its SQL and how it is to be displayed
+            statDOM  = AppContextMgr.getInstance().readFileToDOM4J("statistics.xml"); // Describes each Statistic, its SQL and how it is to be displayed
             
         } catch (Exception ex)
         {

@@ -105,7 +105,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         String compiledName = getFileNameWithoutExt(fileName) + ".jasper";
         File compiledPath = null;
         
-        File reportPath = AppContextMgr.getCurrentContext(fileName);
+        File reportPath = AppContextMgr.getInstance().getCurrentContext(fileName);
         File cachePath  = checkAndCreateReportsCache();
         if (cachePath != null)
         {

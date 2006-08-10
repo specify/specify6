@@ -177,20 +177,16 @@ public class LabelsTask extends BaseTask
 
 
     /**
-     *
-     * @param name the XML file name for the label
-     */
-    /**
      * Performs a command (to create a label)
-     * @param name the name of lable (the file name)
-     * @param title the localized title to be displayed as the tab title
+     * @param labelName the name of lable (the file name)
+     * @param labelTitle the localized title to be displayed as the tab title
      * @param recordSet the recordSet to be turned into labels
      */
-    public void doLabels(final String name, final String title, final RecordSet recordSet)
+    public void doLabels(final String labelName, final String labelTitle, final RecordSet recordSet)
     {
-        LabelsPane labelsPane = new LabelsPane(title, this);
+        LabelsPane labelsPane = new LabelsPane(labelTitle, this);
         SubPaneMgr.getInstance().addPane(labelsPane);
-        labelsPane.createReport(name, recordSet);
+        labelsPane.createReport(labelName, recordSet);
 
     }
 
