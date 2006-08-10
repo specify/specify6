@@ -95,7 +95,8 @@ public class SimpleDescPane extends BaseSubPane
     }
 
     /**
-     * @return
+     * Returns the splash image.
+     * @return the splash image
      */
     public Image getSplashImage()
     {

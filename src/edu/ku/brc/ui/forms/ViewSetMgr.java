@@ -35,7 +35,6 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import edu.ku.brc.exceptions.ConfigurationException;
-import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewSet;
 
@@ -59,6 +58,7 @@ public class ViewSetMgr
     // Data Members
     protected Hashtable<String, ViewSet> viewsHash      = new Hashtable<String, ViewSet>();
     protected File                       contextDir     = null;
+    protected boolean                    registryExists = false;
     
     /**
      * Constructor.
@@ -175,6 +175,23 @@ public class ViewSetMgr
      */
     public ViewSet getViewSet(final String viewSetName)
     {
+        if (viewSetName == null)
+        {
+            List<ViewSet> userVS = getUserViewSets();
+            if (userVS.size() == 1)
+            {
+                return userVS.get(0);
+                
+            } else
+            {
+                log.error("User ViewSets:");
+                for (ViewSet vs : userVS)
+                {
+                    log.error(vs.getName());
+                }
+                throw new RuntimeException("There are multiple User ViewSets so I don't know which one to choose for the default.");
+            }
+        }
         return viewsHash.get(viewSetName);        
     }
    
@@ -224,6 +241,15 @@ public class ViewSetMgr
     {
         return contextDir;
     }
+    
+    /**
+     * Returns whether the registry file was present in the directory.
+     * @return whether the registry file was present in the directory.
+     */
+    public boolean isRegistryExists()
+    {
+        return registryExists;
+    }
 
     /**
      * Reads the Form Registry. The forms are loaded when needed and onlu one ViewSet can be the "core" ViewSet which is where most of the forms
@@ -234,12 +260,15 @@ public class ViewSetMgr
     protected void init(final File contextDir, final boolean emptyIsOK)
     {
         this.contextDir = contextDir;
+        registryExists = false;
         
         if (contextDir != null)
         { 
             File vsRegFile = new File(contextDir.getAbsoluteFile() + File.separator + REGISTRY_FILENAME);
             if (vsRegFile.exists())
             {
+                registryExists = true;
+
                 try
                 {
                     org.dom4j.Document document = readFileToDOM4J(new FileInputStream(vsRegFile));

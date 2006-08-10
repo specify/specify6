@@ -105,7 +105,7 @@ public class DataEntryTask extends BaseTask
             navBox.add(NavBox.createBtn("Address", "Address", IconManager.IconSize.Std16));
             navBoxes.addElement(navBox);
 
-            navBox = new NavBox(getResourceString("Administration Tasks"));
+            navBox = new NavBox(getResourceString("AdministrationTasks"));
             navBox.add(NavBox.createBtn("Taxon Tree Def Editor","Taxon", IconManager.IconSize.Std16,new ShowTreeDefinitionEditorAction(TaxonTreeDef.class,"Taxonomy Tree Def Editor")));
             navBox.add(NavBox.createBtn("Geography Tree Def Editor","Geography", IconManager.IconSize.Std16,new ShowTreeDefinitionEditorAction(GeographyTreeDef.class,"Geography Tree Def Editor")));
             navBox.add(NavBox.createBtn("Location Tree Def Editor","Location", IconManager.IconSize.Std16,new ShowTreeDefinitionEditorAction(LocationTreeDef.class,"Location Tree Def Editor")));

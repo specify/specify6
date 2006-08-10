@@ -66,9 +66,8 @@ public class ViewSet implements Comparable<ViewSet>
      * @param name name of view set
      * @param title human readable title (short description)
      * @param fileName the filename of the ViewSet
-     * @param databases the databases it can be used with
-     * @param users the users that can access it
-     */
+     * @param dirPath the directory path to the viewset
+      */
     public ViewSet(final Type type, 
                    final String name, 
                    final String title, 

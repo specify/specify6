@@ -55,6 +55,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.UIHelper;
@@ -96,6 +97,7 @@ public class DatabaseLoginPanel extends JPanel
 
     protected JButton          cancelBtn;
     protected JButton          loginBtn;
+    protected JButton          helpBtn;
     protected JCheckBox        moreBtn;
     protected ImageIcon        forwardImgIcon;
     protected ImageIcon        downImgIcon;
@@ -190,7 +192,7 @@ public class DatabaseLoginPanel extends JPanel
 
         cancelBtn = new JButton(getResourceString("cancel"));
         loginBtn  = new JButton(getResourceString("login"));
-        JButton helpBtn = new JButton(getResourceString("help"));
+        helpBtn   = new JButton(getResourceString("help"));
 
         forwardImgIcon = IconManager.getImage("Forward");
         downImgIcon    = IconManager.getImage("Down");
@@ -572,6 +574,7 @@ public class DatabaseLoginPanel extends JPanel
         statusBar.setIndeterminate(true);
         cancelBtn.setEnabled(false);
         loginBtn.setEnabled(false);
+        helpBtn.setEnabled(false);
 
         setMessage(String.format(getResourceString("LoggingIn"), new Object[] {getDatabaseName()}), false);
 
@@ -583,7 +586,16 @@ public class DatabaseLoginPanel extends JPanel
             {
                 isLoggedIn = UIHelper.tryLogin(getDriverClassName(), getDialectClassName(), getDatabaseName(),
                                                getConnectionStr(), getUserName(), getPassword());
-                 return null;
+                
+                // I ma not sure this is the rightplace for this
+                // but this is where I am putting it for now
+                if (isLoggedIn)
+                {
+                    setMessage(getResourceString("LoadingSchema"), false);
+                    HibernateUtil.shutdown();
+                    HibernateUtil.getCurrentSession();
+                }
+                return null;
             }
 
             //Runs on the event-dispatching thread.
@@ -592,6 +604,7 @@ public class DatabaseLoginPanel extends JPanel
                 statusBar.setIndeterminate(false);
                 cancelBtn.setEnabled(true);
                 loginBtn.setEnabled(true);
+                helpBtn.setEnabled(true);
 
                 if (!isLoggedIn)
                 {

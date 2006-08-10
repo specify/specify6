@@ -67,7 +67,7 @@ public class QueryTask extends BaseTask
         navBox.add(NavBox.createBtn(getResourceString("Specimen"), name, IconManager.IconSize.Std16));
         navBox.add(NavBox.createBtn(getResourceString("Taxonomic"), name, IconManager.IconSize.Std16));
         navBox.add(NavBox.createBtn(getResourceString("Geographic"), name, IconManager.IconSize.Std16));
-        navBox.add(NavBox.createBtn(getResourceString("Collection Object"), name, IconManager.IconSize.Std16, new QueryAction(null, "Collection Object Search")));
+        navBox.add(NavBox.createBtn(getResourceString("CollectionObject"), name, IconManager.IconSize.Std16, new QueryAction(null, "Collection Object Search")));
         navBoxes.addElement(navBox);
 
         navBox = new NavBox(getResourceString("Saved_Searches"));

@@ -126,12 +126,14 @@ public interface AttributeIFace
     
 
     /**
-     * @return
+     * Returns the timestamp it was created.
+     * @return the timestamp it was created
      */
     public Date getTimestampCreated();
     
     /**
-     * @param timestampCreated
+     * Sets the timestamp it was created.
+     * @param timestampCreated the timestamp it was created
      */
     public void setTimestampCreated(Date timestampCreated);
     

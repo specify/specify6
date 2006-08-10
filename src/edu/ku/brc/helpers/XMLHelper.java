@@ -83,15 +83,30 @@ public class XMLHelper
    }
 
    /**
-     * Returns full path to file in config directory
+    * Returns full path to file in config directory
+    * @param fileName the name of the file to be read
+    * @return the path to the file
+    */
+    public static String getConfigDirPath(final String fileName)
+    {
+        String path = new File(".").getAbsolutePath();
+        if (path.endsWith("."))
+        {
+            path = path.substring(0, path.length() - 2);
+        }
+        return path + File.separator + "config" + (fileName != null ? (File.separator + fileName) : "");
+    }
+
+    /**
+     * Returns File object to file in config directory
+     * 
      * @param fileName the name of the file to be read
      * @return the path to the file
      */
-   public static String getConfigDirPath(final String fileName)
-   {
-       java.io.File f = new java.io.File(".");
-       return f.getAbsolutePath() +  File.separator + "config" + (fileName != null ? (File.separator + fileName) : "");
-   }
+    public static File getConfigDir(final String fileName)
+    {
+        return new File(getConfigDirPath(fileName));
+    }
 
    /**
      * Reads file from the config directory

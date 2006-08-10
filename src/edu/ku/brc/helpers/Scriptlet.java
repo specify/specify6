@@ -295,8 +295,9 @@ public class Scriptlet extends JRDefaultScriptlet
     }
 
     /**
+     * Formats the Field Number
      * @param fieldNumber
-     * @return
+     * @return the field number
      */
     public String formatFieldNo(String fieldNumber)
     {

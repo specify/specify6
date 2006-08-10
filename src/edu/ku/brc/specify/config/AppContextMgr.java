@@ -44,10 +44,28 @@ import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.forms.ViewSetMgr;
+import edu.ku.brc.ui.forms.ViewSetMgrManager;
+import edu.ku.brc.ui.forms.persist.ViewSet;
 
 /**
- * 
- * 
+ * This class provides the current context of the Specify application. The context consists of the following:<br>
+ * <ol>
+ * <li>The User Name
+ * <li>The Database Name (database connection)
+ * <li>The Specify User Object
+ * <li>The CatalogSeries
+ * <li>The CollectionObjDef
+ * <li>The Discipline Name
+ * </ol>
+ * <p>The AppContextMgr will place data in a <i>username</i>/<i>databaseName</i> directory in the "application data" directory of the user.
+ * On Windows this is <code>\Documents and Settings\&lt;User Name&gt;\Application Data\Specify</code>. 
+ * On Unix platforms it is <code>/<i>user home</i>/.Specify</code> (Note: the app data dir is created by UICacheManager)</p>
+ * <p>
+ * The ViewSetMgrManager needs to load the "backstop" ViewSetMgr and the "user" ViewSetMgr in order for the application to work correctly.
+ * So this class uses the "discipline name" to initialize the APPDATA dir with the appropriate data, which includes a "standard" set of 
+ * Views for that discipline. The APPDATA dir is really the "working space" of the application for a particular username/database.
+ * </p>
  * @code_status Complete
  *
  * @author rods
@@ -61,6 +79,7 @@ public class AppContextMgr
     protected static File        currentContextDir = null;
     protected static File        backStopDir       = null;
     
+    protected static String      disciplineName    = null;  
     protected static String      databaseName      = null;
     protected static String      userName          = null;
     protected static SpecifyUser user              = null;
@@ -418,7 +437,6 @@ public class AppContextMgr
         AppPrefsIFace appPrefs = AppPrefsMgr.getInstance();
         
         Boolean isAccessionDB  = false;
-        String  disciplineName = null;
         
         CatalogSeries catalogSeries = AppContextMgr.setupCurrentCatalogSeries(user, false);
         if (catalogSeries == null)
@@ -476,8 +494,45 @@ public class AppContextMgr
                 throw new RuntimeException(ex);
             }
         }
-       
+
+        initializeViewSetManager();
+        
         return true;
+    }
+    
+    /**
+     * 
+     */
+    protected static void initializeViewSetManager()
+    {
+        
+        // Push BackStop on the Stack First
+        ViewSetMgrManager.refresh(); // clear stack and adds the BackStop
+        
+        // The very first time we need to check to see if any ViewSets from the ViewSetMgr have been copied over
+        ViewSetMgr contextViewSetMgr = new ViewSetMgr(getCurrentContext());
+        if (!contextViewSetMgr.isRegistryExists())
+        {
+            // Ok, then we need to copy it over from the config directory
+            
+            ViewSetMgr configViewSetMgr = new ViewSetMgr(XMLHelper.getConfigDir(disciplineName));
+            if (configViewSetMgr.isRegistryExists())
+            {
+                for (ViewSet vs : configViewSetMgr.getViewSets())
+                {
+                    //if (vs.getType() == ViewSet.Type.User)
+                    //{
+                        ViewSetMgrManager.copyViewSet(configViewSetMgr, contextViewSetMgr, vs.getName(), false);
+                    //}
+                }
+            } else
+            {
+                throw new RuntimeException("Couldn't find a config ViewSetMgr at ["+configViewSetMgr.getContextDir()+"]");
+            }
+            
+        }
+        
+        ViewSetMgrManager.pushViewMgr(contextViewSetMgr);
     }
 
     

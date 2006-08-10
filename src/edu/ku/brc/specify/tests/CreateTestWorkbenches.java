@@ -124,7 +124,7 @@ public class CreateTestWorkbenches {
      * Given a name and description, create a template definition
      * @param templateName The name of the template to be created
      * @param templateDescription A description of the template being created
-     * @return
+     * @return xxx
      */
     public static boolean createTestSimpleTemplate(String templateName, String templateDescription) {
     	log.info("createSimpleTemplate");

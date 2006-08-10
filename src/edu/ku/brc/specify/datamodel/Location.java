@@ -95,7 +95,7 @@ public class Location extends AbstractTreeable implements java.io.Serializable {
     }
 
     /**
-	 * @return the fullname
+	 * @return the fullName
 	 */
 	public String getFullName()
 	{
@@ -103,7 +103,7 @@ public class Location extends AbstractTreeable implements java.io.Serializable {
 	}
 
 	/**
-	 * @param fullname the fullname to set
+	 * @param fullName the fullname to set
 	 */
 	public void setFullName(String fullName)
 	{

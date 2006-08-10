@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Stack;
 
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewSet;
 import org.apache.commons.io.FileUtils;
@@ -51,6 +52,52 @@ public class ViewSetMgrManager
     }
     
     /**
+     * Clears all ViewSetMgrs except the BackStop and if the backstop isn't loaded it loaded it.
+     */
+    public static void refresh()
+    {
+        clear(true);
+        
+        // The very first time that refresh is called the stack may be empty
+        // so we want to make sure we have the backstop loaded  
+        // Or the stack just may have been cleared
+        if (stack.size() == 0)
+        {
+            ViewSetMgrManager.pushViewMgr(new ViewSetMgr(new File(XMLHelper.getConfigDirPath(File.separator + ViewSetMgrManager.BACKSTOP)), false));
+        }
+    }
+    
+    /**
+     * Empties the stack with optionally keep the backstop
+     * @param keepBackStop true keeps the backstop, false removes it
+     */
+    public static void clear(final boolean keepBackStop)
+    {
+        while ((keepBackStop && stack.size() > 1) ||
+                !keepBackStop && stack.size() > 0)
+        {
+            ViewSetMgr vm = stack.pop();
+            vm.clearAll();
+        }
+        
+        // If the remaining VSM is not the BackStop then remove it.
+        if (stack.size() > 0)
+        {
+            ViewSetMgr vsm = stack.peek();
+            if (vsm != null)
+            {
+                File bsDir = new File(XMLHelper.getConfigDirPath(File.separator + ViewSetMgrManager.BACKSTOP));
+                
+                if (!vsm.getContextDir().getAbsoluteFile().equals(bsDir.getAbsoluteFile()))
+                {
+                    vsm.clearAll();
+                    stack.pop();
+                }
+            }
+        }
+    }
+    
+    /**
      * Search the entire stack of ViewMgrs for the view. Search down the stack because the "backstop" ViewSetMgr
      * if always at the bottom.
      * @param viewSetName the viewset name
@@ -66,14 +113,12 @@ public class ViewSetMgrManager
             ViewSet viewSet = viewMgr.getViewSet(viewSetName);
             if (viewSet != null)
             {   
-                if (viewSet.getName().equals(viewSetName))
+                View view = viewSet.getView(viewName);
+                if (view != null)
                 {
-                    View view = viewSet.getView(viewName);
-                    if (view != null)
-                    {
-                        return view;
-                    }
+                    return view;
                 }
+
             }
         }
         return null;

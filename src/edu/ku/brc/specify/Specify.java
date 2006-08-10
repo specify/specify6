@@ -765,7 +765,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     public void loggedIn(final String databaseName, final String userName)
     {
-        HibernateUtil.shutdown();
+        //HibernateUtil.shutdown();
 
         initStartUpPanels(databaseName, userName);
     }
