@@ -106,10 +106,7 @@ public class IdHashMapper implements IdMapperIFace
                                     "`NewID` int(11) NOT NULL default '0', "+
                                     " PRIMARY KEY (`OldID`) ) ENGINE=InnoDB DEFAULT CHARSET=latin1";
                 //log.info(str);
-                stmtNew.executeUpdat    /**
-                 * 
-                 */
-e(str);
+                stmtNew.executeUpdate(str);
 
                 stmtNew.executeUpdate("alter table "+mapTableName+" add index INX_"+mapTableName+" (NewID)");
 
