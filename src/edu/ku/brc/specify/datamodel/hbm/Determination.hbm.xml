@@ -10,10 +10,6 @@
         <generator class="native"/>
     </id>
 
-    <property name="isCurrent" type="boolean" column="IsCurrent" not-null="true">
-        <meta attribute="scope-field">protected</meta>
-        <meta attribute="field-description"></meta>    
-    </property>
     <property name="typeStatusName" type="java.lang.String" column="TypeStatusName" length="50">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">e.g. 'Holotype', 'Paratype'...</meta>
@@ -93,6 +89,11 @@
 
     <!-- Associations -->
   
+    <!-- bi-directional many-to-one association to DeterminationStatus -->
+    <many-to-one name="status" class="edu.ku.brc.specify.datamodel.DeterminationStatus" not-null="true" outer-join="true">
+        <column name="DeterminationStatusID"/>
+    </many-to-one>
+
     <!-- bi-directional many-to-one association to Taxon -->
     <many-to-one name="taxon" class="edu.ku.brc.specify.datamodel.Taxon" not-null="true" outer-join="true">
 	<meta attribute="scope-field">protected</meta>

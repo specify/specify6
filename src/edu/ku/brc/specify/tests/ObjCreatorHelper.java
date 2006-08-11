@@ -35,6 +35,7 @@ import edu.ku.brc.specify.datamodel.DeaccessionAgents;
 import edu.ku.brc.specify.datamodel.DeaccessionCollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationCitation;
+import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.ExternalResource;
 import edu.ku.brc.specify.datamodel.ExternalResourceAttr;
 import edu.ku.brc.specify.datamodel.Geography;
@@ -356,11 +357,25 @@ public class ObjCreatorHelper
         return colObj;
     }
 
-    public static Determination createDetermination(final CollectionObject collectionObject,
-                                                       final Agent            determiner,
-                                                       final Taxon            taxon,
-                                                       final boolean          isCurrent,
-                                                       final Calendar         calendar)
+    public static DeterminationStatus createDeterminationStatus(final String name,final String remarks)
+    {
+    	DeterminationStatus status = new DeterminationStatus();
+    	status.initialize();
+    	status.setName(name);
+    	status.setRemarks(remarks);
+    	    	
+        if (session != null)
+        {
+            session.saveOrUpdate(status);
+        }
+        return status;
+    }
+    
+    public static Determination createDetermination(final CollectionObject       collectionObject,
+                                                       final Agent               determiner,
+                                                       final Taxon               taxon,
+                                                       final DeterminationStatus status,
+                                                       final Calendar            calendar)
     {
         startCal.clear();
         startCal.set(2006, 0, 2);
@@ -369,7 +384,7 @@ public class ObjCreatorHelper
         Determination determination = new Determination();
         determination.initialize();
 
-        determination.setIsCurrent(isCurrent);
+        determination.setStatus(status);
         determination.setCollectionObject(collectionObject);
         determination.setDeterminedDate(calendar == null ? startCal : calendar);
         determination.setDeterminer(determiner);
@@ -1409,7 +1424,7 @@ public class ObjCreatorHelper
         return deaccessioncollectionobject;
     }
 
-    public static Determination createDetermination(final Boolean isCurrent,
+    public static Determination createDetermination(final DeterminationStatus status,
                                                     final String typeStatusName,
                                                     final Calendar determinedDate,
                                                     final String confidence,
@@ -1423,7 +1438,7 @@ public class ObjCreatorHelper
         determination.initialize();
         determination.setTimestampCreated(new Date());
         determination.setTimestampModified(new Date());
-        determination.setIsCurrent(isCurrent);
+        determination.setStatus(status);
         determination.setCollectionObject(collectionObject);
         determination.setTypeStatusName(typeStatusName);
         determination.setDeterminedDate(determinedDate);

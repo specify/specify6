@@ -175,7 +175,7 @@ public class KeyholeMarkupGenerator
 			String species = null;
 			for( Determination d: co.getDeterminations() )
 			{
-				if( d.getIsCurrent().booleanValue() )
+				if( d.isCurrent() )
 				{
 					Taxon t = d.getTaxon();
 					species = t.getName();

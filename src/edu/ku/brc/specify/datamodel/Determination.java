@@ -16,7 +16,7 @@ public class Determination  implements java.io.Serializable {
     // Fields    
 
      protected Integer determinationId;
-     protected Boolean isCurrent;
+     protected DeterminationStatus status;
      protected String typeStatusName;
      protected Calendar determinedDate;
      protected String confidence;
@@ -56,7 +56,7 @@ public class Determination  implements java.io.Serializable {
     public void initialize()
     {
         determinationId = null;
-        isCurrent = null;
+        status = null;
         typeStatusName = null;
         determinedDate = null;
         confidence = null;
@@ -95,12 +95,17 @@ public class Determination  implements java.io.Serializable {
     /**
      * 
      */
-    public Boolean getIsCurrent() {
-        return this.isCurrent;
+    public DeterminationStatus getStatus() {
+        return this.status;
     }
     
-    public void setIsCurrent(Boolean isCurrent) {
-        this.isCurrent = isCurrent;
+    public void setStatus(DeterminationStatus status) {
+        this.status = status;
+    }
+    
+    public boolean isCurrent()
+    {
+    	return (status.getName().equalsIgnoreCase("current") ? true : false );
     }
 
     /**

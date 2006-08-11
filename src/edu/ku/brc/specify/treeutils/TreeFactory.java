@@ -50,24 +50,28 @@ public class TreeFactory
 		{
 			def = setupNewGeographyTree(defName);
 			defItem = createNewTreeDefinitionItem(GeographyTreeDefItem.class, "Root");
+			defItem.setIsEnforced(true);
 			rootNode = createNewTreeable(Geography.class, "Root");
 		}
 		else if( treeNodeClass.equals(GeologicTimePeriod.class) )
 		{
 			def = setupNewGeologicTimePeriodTree(defName);
 			defItem = createNewTreeDefinitionItem(GeologicTimePeriodTreeDefItem.class, "Root");
+			defItem.setIsEnforced(true);
 			rootNode = createNewTreeable(GeologicTimePeriod.class, "Root");
 		}
 		else if( treeNodeClass.equals(Location.class) )
 		{
 			def = setupNewLocationTree(defName);
 			defItem = createNewTreeDefinitionItem(LocationTreeDefItem.class, "Root");
+			defItem.setIsEnforced(true);
 			rootNode = createNewTreeable(Location.class, "Root");
 		}
 		else if( treeNodeClass.equals(Taxon.class) )
 		{
 			def = setupNewTaxonTree(defName);
 			defItem = createNewTreeDefinitionItem(TaxonTreeDefItem.class, "Root");
+			defItem.setIsEnforced(true);
 			rootNode = createNewTreeable(Taxon.class, "Root");
 		}
 

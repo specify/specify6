@@ -177,7 +177,14 @@ public class SpecifyDBConverter
         
         if (userHome.indexOf("stewart") > -1)
         {
-            databaseName = "fish";
+        	oldDatabaseName = "sp5_cranbrook";
+            databaseName = "cranbrook";
+
+//        	oldDatabaseName = "sp5_accessions";
+//            databaseName = "accessions";
+
+//        	oldDatabaseName = "sp5_fish";
+//            databaseName = "fish";
         }
         
         // This will log us in and return true/false
@@ -192,6 +199,11 @@ public class SpecifyDBConverter
         {
         	GenericDBConversion.setShouldCreateMapTables(true);
             GenericDBConversion.setShouldDeleteMapTables(true);
+
+//        	// to enable faster testing (assuming mapping tables have already
+//        	// been created and are still in the DB)
+//        	GenericDBConversion.setShouldCreateMapTables(false);
+//            GenericDBConversion.setShouldDeleteMapTables(false);
 
             boolean doAll = true; // when converting
 
@@ -283,6 +295,9 @@ public class SpecifyDBConverter
                         conversion.createPreparationRecords(prepTypeMap);
                     }
                     conversion.createCollectionRecords();
+                    
+                    conversion.createDefaultDeterminationStatusRecords();
+                    conversion.fixDeterminationStatus();
                 }
                 
                 boolean doTaxonomy = false;

@@ -75,7 +75,6 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.tests.ObjCreatorHelper;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.ui.db.PickList;
 import edu.ku.brc.ui.db.PickListItem;
@@ -105,6 +104,9 @@ public class GenericDBConversion
         private short ord;
         public short getType() { return ord; }
     }
+    
+    protected static final int D_STATUS_UNKNOWN = 1;
+    protected static final int D_STATUS_CURRENT = 2;
     
     protected static final Logger log = Logger.getLogger(GenericDBConversion.class);
 
@@ -732,6 +734,142 @@ public class GenericDBConversion
         return null;
     }
 
+    /**
+     * Create the two default records that should be in the new 'determinationstatus' table.
+     * The first record is an 'unknown' record.  The second record is a 'current' record
+     * which corresponds to the old isCurrent=true records.
+     */
+    public void createDefaultDeterminationStatusRecords()
+    {
+    	StringBuilder insert = new StringBuilder();
+    	try
+    	{
+    		BasicSQLUtils.deleteAllRecordsFromTable("determinationstatus");
+
+    		// setup the insert statement
+    		insert.append("INSERT INTO determinationstatus ");
+    		insert.append("(DeterminationStatusID,Name,Remarks,TimestampCreated) ");
+    		insert.append("values ");
+    		// the 'unknown status' record
+    		insert.append("(");
+    		insert.append(D_STATUS_UNKNOWN);
+    		insert.append(",'unknown','',CURRENT_DATE)");
+    		// followed by the 'current status' record
+    		insert.append(", (");
+    		insert.append(D_STATUS_CURRENT);
+    		insert.append(",'current','mirror of the old schema isCurrent field',CURRENT_DATE)");
+
+    		Statement st = newDBConn.createStatement();
+    		st.executeUpdate(insert.toString());
+    	}
+    	catch(SQLException e)
+        {
+            log.error(insert.toString());
+            e.printStackTrace();
+            log.error(e);
+        }
+    }
+    
+    /**
+     * For each record in the new 'determination' table, fix the 'determinationstatus'
+     * foreign key to point at the correct 'determinationstatus' record, based on the
+     * value in the old 'determination.isCurrent' field.
+     */
+    public void fixDeterminationStatus()
+    {
+    	IdMapperIFace idMapper = idMapperMgr.get("determination","DeterminationID");
+    	
+    	Vector<Integer> statusCurrent = new Vector<Integer>();
+    	Vector<Integer> statusUnknown = new Vector<Integer>();
+    	
+    	StringBuilder sql = new StringBuilder();
+    	try
+    	{
+        	Statement deterQuery = oldDBConn.createStatement();
+        	sql.append("SELECT DeterminationID,IsCurrent FROM determination");
+        	ResultSet oldDeters = deterQuery.executeQuery(sql.toString());
+        	while(oldDeters.next())
+        	{
+        		Integer oldId = oldDeters.getInt(1);
+        		Boolean isCurrent = oldDeters.getBoolean(2);
+        		Integer newId = idMapper.get(oldId);
+        		if(isCurrent.booleanValue())
+        		{
+        			statusCurrent.add(newId);
+        		}
+        		else
+        		{
+        			statusUnknown.add(newId);
+        		}
+        	}
+    	}
+    	catch( SQLException sqlEx )
+    	{
+    		log.error(sql.toString(),sqlEx);
+    		sqlEx.printStackTrace();
+    	}
+    	
+    	// at this point we have all the info from the old DB
+    	// now we need to update the new DB
+    	
+    	if( !statusCurrent.isEmpty() )
+    	{
+    		// update the new records that should be 'current'
+	    	try
+	    	{
+	    		Statement update = newDBConn.createStatement();
+	    		sql = new StringBuilder();
+	    		sql.append("UPDATE determination SET DeterminationStatusID = ");
+	    		sql.append(D_STATUS_CURRENT);
+	    		sql.append(" WHERE DeterminationID IN (");
+	    		for(int i = 0; i < statusCurrent.size()-1; ++i)
+	    		{
+	    			Integer newId = statusCurrent.get(i);
+	    			sql.append(newId);
+	    			sql.append(",");
+	    		}
+	    		Integer newId = statusCurrent.lastElement();
+	    		sql.append(newId);
+	    		sql.append(");");
+	    		
+	    		update.executeUpdate(sql.toString());
+	    	}
+	    	catch( SQLException sqlEx )
+	    	{
+	    		log.error(sql,sqlEx);
+	    		sqlEx.printStackTrace();
+	    	}
+    	}
+
+    	if(!statusUnknown.isEmpty())
+    	{
+	   		// update the new records that should be 'unknown'
+	    	try
+	    	{
+	    		Statement update = newDBConn.createStatement();
+	    		sql = new StringBuilder();
+	    		sql.append("UPDATE determination SET DeterminationStatusID = ");
+	    		sql.append(D_STATUS_UNKNOWN);
+	    		sql.append(" WHERE DeterminationID IN (");
+	    		for(int i = 0; i < statusUnknown.size()-1; ++i)
+	    		{
+	    			Integer newId = statusUnknown.get(i);
+	    			sql.append(newId);
+	    			sql.append(",");
+	    		}
+	    		Integer newId = statusUnknown.lastElement();
+	    		sql.append(newId);
+	    		sql.append(");");
+	    		
+	    		update.executeUpdate(sql.toString());
+	    	}
+	    	catch( SQLException sqlEx )
+	    	{
+	    		log.error(sql,sqlEx);
+	    		sqlEx.printStackTrace();
+	    	}
+    	}
+}
 
     /**
      * Create a default user.
@@ -2500,63 +2638,6 @@ public class GenericDBConversion
     	return ttd;
     }
 
-    public static TaxonTreeDef createStdTaxonTreeDef()
-    {
-    	Object[][] stdItems = {
-    			{  0,"Taxonomy Root",true},
-    			{ 100,"Kingdom",true},
-    			{ 200,"Subkingdom",false},
-    			{ 300,"Phylum",true},
-    		//	{ 300,"Division",true}, // botanical collections
-    			{ 400,"Subphylum",false},
-    		//	{ 400,"Subdivision",false}, // botanical collections
-    			{ 500,"Superclass",false},
-    			{ 600,"Class",true},
-    			{ 700,"Subclass",false},
-    			{ 800,"Infraclass",false},
-    			{ 900,"Superorder",false},
-    			{1000,"Order",true},
-    			{1100,"Suborder",false},
-    			{1200,"Infraorder",false},
-    			{1300,"Superfamily",false},
-    			{1400,"Tribe",false},
-    			{1500,"Subtribe",false},
-    			{1600,"Genus",true},
-    			{1700,"Subgenus",false},
-    			{1800,"Section",false},
-    			{1900,"Subsection",false},
-    			{2000,"Species",false},
-    			{2100,"Subspecies",false},
-    			{2200,"Variety",false},
-    			{2300,"Subvariety",false},
-    			{2400,"Forma",false},
-    			{2500,"Subforma",false}
-    	};
-
-    	TaxonTreeDef ttd = new TaxonTreeDef();
-    	ttd.initialize();
-    	ttd.setName("Standard Taxonomy Tree Definition");
-
-    	TaxonTreeDefItem[] items = new TaxonTreeDefItem[stdItems.length];
-
-    	TaxonTreeDefItem parent = null;
-    	for( int i = 0; i < stdItems.length; ++i )
-    	{
-    		if( i > 0 )
-    		{
-    			parent = items[i-1];
-    		}
-    		int rank = (Integer)stdItems[i][0];
-    		String name = (String)stdItems[i][1];
-    		boolean enforced = (Boolean)stdItems[i][2];
-
-    		items[i] = ObjCreatorHelper.createTaxonTreeDefItem(parent, ttd, name, rank);
-   			items[i].setIsEnforced(enforced);
-    	}
-
-    	return ttd;
-    }
-
     public void copyTaxonTreeDefs()
     {
     	BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "taxontreedef");
@@ -2643,7 +2724,6 @@ public class GenericDBConversion
     	}
 
     	// will be used to map old TaxonomyTypeID values to TreeDefID values
-		IdMapperMgr idMapperMgr = IdMapperMgr.getInstance();
 		IdMapperIFace typeIdMapper = idMapperMgr.get("taxonomytype", "TaxonomyTypeID");
 
     	// for each value of TaxonomyType...
@@ -2792,6 +2872,7 @@ public class GenericDBConversion
 		planet.initialize();
 		planet.setName("Planet");
 		planet.setRankId(0);
+		planet.setIsEnforced(true);
 		session.save(planet);
 
 		GeographyTreeDefItem cont = new GeographyTreeDefItem();
@@ -3117,6 +3198,7 @@ public class GenericDBConversion
     	Vector<GeologicTimePeriodTreeDefItem> newItems = new Vector<GeologicTimePeriodTreeDefItem>();
     	
     	GeologicTimePeriodTreeDefItem rootItem = addGtpDefItem(0, "Time Root", def);
+    	rootItem.setIsEnforced(true);
     	session.save(rootItem);
     	newItems.add(rootItem);
     	++count;

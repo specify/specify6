@@ -16,6 +16,7 @@ import static edu.ku.brc.specify.tests.ObjCreatorHelper.createContainer;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createContainerItem;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDataType;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDetermination;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDeterminationStatus;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createGeography;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createGeographyTreeDef;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createGeographyTreeDefItem;
@@ -66,6 +67,7 @@ import edu.ku.brc.specify.datamodel.Container;
 import edu.ku.brc.specify.datamodel.ContainerItem;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Determination;
+import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
@@ -798,6 +800,9 @@ public class CreateTestDatabases
 
             int agentInx = 0;
             int taxonInx = 0;
+            // Create DeterminationStatus
+            DeterminationStatus current = createDeterminationStatus("Current","Test Status");
+            DeterminationStatus notCurrent = createDeterminationStatus("Not current","Test Status");
             // Create Determination
             for (int i=0;i<colObjs.length;i++)
             {
@@ -806,7 +811,8 @@ public class CreateTestDatabases
                     Calendar cal = Calendar.getInstance();
                     cal.clear();
                     cal.set(1990-i, 11-i, 28-(i+j));
-                    createDetermination(colObjs[i], agents[agentInx % agents.length], t[taxonInx % t.length], j == 0, cal);
+                    DeterminationStatus status = (j==0) ? current : notCurrent;
+                    createDetermination(colObjs[i], agents[agentInx % agents.length], t[taxonInx % t.length], status, cal);
                     agentInx++;
                     taxonInx++;
                 }
@@ -969,16 +975,19 @@ public class CreateTestDatabases
                 t[i] = getTaxonByName(speciesNames[i]);
             }
 
+            // Create DeterminationStatus
+            DeterminationStatus oldDetermination = createDeterminationStatus("Not current","Test Determination Status");
+            DeterminationStatus currentStatus = createDeterminationStatus("Current","Test Determination Status");
 
             // Create Determination
-            Determination determination = createDetermination(colObjs[0], agents[3], t[0], true, null);
-            determination = createDetermination(colObjs[0], agents[0], t[1], false, null);
+            Determination determination = createDetermination(colObjs[0], agents[3], t[0], currentStatus, null);
+            determination = createDetermination(colObjs[0], agents[0], t[1], oldDetermination, null);
 
-            determination = createDetermination(colObjs[1], agents[4], t[4], true, null);
-            determination = createDetermination(colObjs[1], agents[0], t[5], false, null);
+            determination = createDetermination(colObjs[1], agents[4], t[4], currentStatus, null);
+            determination = createDetermination(colObjs[1], agents[0], t[5], oldDetermination, null);
 
-            determination = createDetermination(colObjs[2], agents[2], t[7], true, null);
-            determination = createDetermination(colObjs[2], agents[1], t[8], false, null);
+            determination = createDetermination(colObjs[2], agents[2], t[7], currentStatus, null);
+            determination = createDetermination(colObjs[2], agents[1], t[8], oldDetermination, null);
 
             // Create Preparation Type
             PrepType prepType = createPrepType("Skeleton");
@@ -1185,6 +1194,9 @@ public class CreateTestDatabases
 
             int agentInx = 0;
             int taxonInx = 0;
+            // Create DeterminationStatus
+            DeterminationStatus current = createDeterminationStatus("Current","Test Status");
+            DeterminationStatus notCurrent = createDeterminationStatus("Not current","Test Status");
             // Create Determination
             for (int i=0;i<colObjs.length;i++)
             {
@@ -1193,7 +1205,8 @@ public class CreateTestDatabases
                     Calendar cal = Calendar.getInstance();
                     cal.clear();
                     cal.set(1990-i, 11-i, 28-(i+j));
-                    createDetermination(colObjs[i], agents[agentInx % agents.length], t[taxonInx % t.length], j == 0, cal);
+                    DeterminationStatus status = (j==0) ? current : notCurrent;
+                    createDetermination(colObjs[i], agents[agentInx % agents.length], t[taxonInx % t.length], status, cal);
                     agentInx++;
                     taxonInx++;
                 }

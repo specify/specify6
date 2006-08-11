@@ -11,6 +11,7 @@ import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectionObject;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectionObjectAttr;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollector;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDetermination;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDeterminationStatus;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createGeography;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createGeographyTreeDef;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createGeographyTreeDefItem;
@@ -47,6 +48,7 @@ import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.Collectors;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Determination;
+import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
@@ -416,15 +418,19 @@ public class DBSchemaTest extends TestCase
             Taxon t7 = (Taxon)getDBObject(Taxon.class, 7);
             Taxon t8 = (Taxon)getDBObject(Taxon.class, 8);
 
+            // Create DeterminationStatus
+            DeterminationStatus oldDetermination = createDeterminationStatus("Not current","Test Determination Status");
+            DeterminationStatus currentStatus = createDeterminationStatus("Current","Test Determination Status");
+            
             // Create Determination
-            Determination determination = createDetermination(colObj1, Darwin, t3, true, null);
-            determination = createDetermination(colObj1, Darwin, t4, false, null);
+            Determination determination = createDetermination(colObj1, Darwin, t3, currentStatus, null);
+            determination = createDetermination(colObj1, Darwin, t4, oldDetermination, null);
 
-            determination = createDetermination(colObj2, Darwin, t3, true, null);
-            determination = createDetermination(colObj2, Darwin, t7, false, null);
+            determination = createDetermination(colObj2, Darwin, t3, currentStatus, null);
+            determination = createDetermination(colObj2, Darwin, t7, oldDetermination, null);
 
-            determination = createDetermination(colObj3, Agassiz, t7, true, null);
-            determination = createDetermination(colObj3, Agassiz, t8, false, null);
+            determination = createDetermination(colObj3, Agassiz, t7, currentStatus, null);
+            determination = createDetermination(colObj3, Agassiz, t8, oldDetermination, null);
 
             // Create Preparation Type
             PrepType prepType = createPrepType("Skeleton");

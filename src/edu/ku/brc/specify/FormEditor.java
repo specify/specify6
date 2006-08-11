@@ -27,6 +27,7 @@ import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollectionObject;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createCollector;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDataType;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDetermination;
+import static edu.ku.brc.specify.tests.ObjCreatorHelper.createDeterminationStatus;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createLocality;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPrepType;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createPreparation;
@@ -91,6 +92,7 @@ import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Collectors;
 import edu.ku.brc.specify.datamodel.DataType;
+import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Location;
@@ -217,6 +219,9 @@ public class FormEditor implements DatabaseLoginListener
 
         int agentInx = 0;
         int taxonInx = 0;
+        // Create DeterminationStatus
+        DeterminationStatus current = createDeterminationStatus("Current","Test Status");
+        DeterminationStatus notCurrent = createDeterminationStatus("Not current","Test Status");
         // Create Determination
         for (int i=0;i<colObjs.length;i++)
         {
@@ -225,7 +230,8 @@ public class FormEditor implements DatabaseLoginListener
                 Calendar cal = Calendar.getInstance();
                 cal.clear();
                 cal.set(1990-i, 11-i, 28-(i+j));
-                createDetermination(colObjs[i], agents[agentInx % agents.length], taxonomy[taxonInx % taxonomy.length], j == 0, cal);
+                DeterminationStatus status = (j==0) ? current : notCurrent;
+                createDetermination(colObjs[i], agents[agentInx % agents.length], taxonomy[taxonInx % taxonomy.length], status, cal);
                 agentInx++;
                 taxonInx++;
             }
