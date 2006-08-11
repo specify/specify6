@@ -267,7 +267,7 @@
  collectionobject
  Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
  Inner Join agent ON determination.DeterminerID = agent.AgentID
- Inner Join taxon ON determination.TaxonID = taxon.TaxonID where determination.IsCurrent <> 0]]>
+ Inner Join taxon ON determination.TaxonID = taxon.TaxonID where determination.DeterminationStatusID = 2]]>
 	    </sql>
 	    <cols>
 	        <col>1</col>
@@ -289,7 +289,7 @@
  collectionobject
  Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
  Inner Join agent ON determination.DeterminerID = agent.AgentID
- Inner Join taxon ON determination.TaxonID = taxon.TaxonID where determination.IsCurrent <> 0) as tx
+ Inner Join taxon ON determination.TaxonID = taxon.TaxonID where determination.DeterminationStatusID = 2) as tx
  where tx.CollectionObjectID in (%s)]]>
 	    </sql>
         <captions>

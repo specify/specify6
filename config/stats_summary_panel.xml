@@ -20,7 +20,7 @@
         <item title="Unique Families" useprogress="true">
             <sql>
                 <statement>
-                  <![CDATA[create temporary table Families1 select TaxonID from determination where IsCurrent <> 0]]>
+                  <![CDATA[create temporary table Families1 select TaxonID from determination where DeterminationStatusID = 2]]>
                 </statement>
                 <statement>
                   <![CDATA[create temporary table Families2 select DISTINCT tax.TaxonID,tax.nodenumber from Families1,taxon as tax where tax.accepted <> 0 and tax.TaxonID = Families1.TaxonID]]>
@@ -45,7 +45,7 @@
         <item title="Unique Genera" useprogress="true">
             <sql>
                 <statement>
-                  <![CDATA[create temporary table Genera1 select TaxonID from determination where IsCurrent <> 0]]>
+                  <![CDATA[create temporary table Genera1 select TaxonID from determination where DeterminationStatusID = 2]]>
                 </statement>
                 <statement>
                   <![CDATA[create temporary table Genera2 select DISTINCT tax.TaxonID,tax.nodenumber from Genera1,taxon as tax where tax.accepted <> 0 and tax.TaxonID = Genera1.TaxonID]]>
@@ -70,7 +70,7 @@
         <item title="Unique Species" useprogress="true">
             <sql>
                 <statement>
-                  <![CDATA[create temporary table Species1 select TaxonID from determination where IsCurrent <> 0]]>
+                  <![CDATA[create temporary table Species1 select TaxonID from determination where DeterminationStatusID = 2]]>
                 </statement>
                 <statement>
                   <![CDATA[create temporary table Species2 select DISTINCT tax.TaxonID,tax.nodenumber from Species1,taxon as tax where tax.accepted <> 0 and tax.TaxonID = Species1.TaxonID]]>
@@ -93,7 +93,7 @@
             </sql>
         </item>
         <item title="Taxa in Collection" useprogress="true">
-            <sql><statement><![CDATA[select count(TaxonID) AS TaxaInCollectionCount from taxon where TaxonID in (select TaxonId from determination where IsCurrent <> 0)]]></statement></sql>
+            <sql><statement><![CDATA[select count(TaxonID) AS TaxaInCollectionCount from taxon where TaxonID in (select TaxonId from determination where DeterminationStatusID = 2)]]></statement></sql>
         </item>
       </box>
       <box title="Data Entry">
