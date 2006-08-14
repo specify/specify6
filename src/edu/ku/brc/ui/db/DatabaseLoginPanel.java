@@ -37,6 +37,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
@@ -111,11 +112,18 @@ public class DatabaseLoginPanel extends JPanel
 
     protected JDialog          thisDlg;
     protected boolean          isCancelled = true;
+    protected boolean          isLoggingIn = false;
 
     protected DatabaseLoginListener dbListener;
     protected Window                window;
 
     protected Vector<DatabaseDriverInfo> dbDrivers = new Vector<DatabaseDriverInfo>();
+
+    // User Feedback Data Members
+    protected long             elapsedTime    = -1;
+    protected long             loginCount     = 0;
+    protected long             loginAccumTime = 0;
+    protected ProgressWorker   progressWorker = null;
 
     /**
      * Constructor that has the form created from the view system
@@ -229,7 +237,7 @@ public class DatabaseLoginPanel extends JPanel
 
         addKeyListenerFor(databases.getTextField(), !isDlg);
         addKeyListenerFor(servers.getTextField(), !isDlg);
-        
+
         if (!isDlg)
         {
             addKeyListenerFor(loginBtn, true);
@@ -245,7 +253,7 @@ public class DatabaseLoginPanel extends JPanel
             password.setText(Encryption.decrypt(UICacheManager.getAppPrefs().get("login.password", "")));
             username.requestFocus();
 
-        } else 
+        } else
         {
             if (rememberUsernameCBX.isSelected())
             {
@@ -256,9 +264,9 @@ public class DatabaseLoginPanel extends JPanel
                         password.requestFocus();
                     }
               });
-    
+
             }
-            
+
             if (rememberPasswordCBX.isSelected())
             {
                 password.setText(Encryption.decrypt(UICacheManager.getAppPrefs().get("login.password", "")));
@@ -268,7 +276,7 @@ public class DatabaseLoginPanel extends JPanel
                         loginBtn.requestFocus();
                     }
               });
-    
+
             }
         }
 
@@ -295,7 +303,7 @@ public class DatabaseLoginPanel extends JPanel
                 JOptionPane.showConfirmDialog(null, "Future Help when help system works.", "Login Help", JOptionPane.CLOSED_OPTION);
             }
          });
-        
+
         autoLoginCBX.addChangeListener(new ChangeListener(){
             public void stateChanged(ChangeEvent e)
             {
@@ -306,7 +314,7 @@ public class DatabaseLoginPanel extends JPanel
                }
                updateUIControls();
             }
-            
+
         });
 
         moreBtn.addActionListener(new ActionListener() {
@@ -464,7 +472,7 @@ public class DatabaseLoginPanel extends JPanel
      */
     protected void updateUIControls()
     {
-        if (extraPanel == null) return; // if this is null then we should skip all the checks because nothing is created
+        if (extraPanel == null || isLoggingIn) return; // if this is null then we should skip all the checks because nothing is created
 
         boolean shouldEnable = StringUtils.isNotEmpty(username.getText()) &&
                                 StringUtils.isNotEmpty(new String(password.getPassword())) &&
@@ -527,21 +535,21 @@ public class DatabaseLoginPanel extends JPanel
             UICacheManager.getAppPrefs().put("login.username", username.getText());
             UICacheManager.getAppPrefs().put("login.password", Encryption.encrypt(new String(password.getPassword())));
 
-        } else 
+        } else
         {
             if (rememberUsernameCBX.isSelected())
             {
                 UICacheManager.getAppPrefs().put("login.username", username.getText());
-                
+
             } else if (UICacheManager.getAppPrefs().exists("login.username"))
             {
                 UICacheManager.getAppPrefs().remove("login.username");
             }
-            
+
             if (rememberPasswordCBX.isSelected())
             {
                 UICacheManager.getAppPrefs().put("login.password", Encryption.encrypt(new String(password.getPassword())));
-                
+
             } else if (UICacheManager.getAppPrefs().exists("login.password"))
             {
                 UICacheManager.getAppPrefs().remove("login.password");
@@ -563,12 +571,23 @@ public class DatabaseLoginPanel extends JPanel
         }
     }
 
+    /**
+     * Sets the ProgressWorker
+     * @param pw the ProgressWorker
+     */
+    protected synchronized void setProgressWorker(final ProgressWorker pw)
+    {
+        progressWorker = pw;
+    }
+
 
     /**
      * Performs a login on a separate thread and then notifies the dialog if it was successful.
      */
-    protected void doLogin()
+    public void doLogin()
     {
+        isLoggingIn = true;
+
         save();
 
         statusBar.setIndeterminate(true);
@@ -576,18 +595,48 @@ public class DatabaseLoginPanel extends JPanel
         loginBtn.setEnabled(false);
         helpBtn.setEnabled(false);
 
+        username.setEnabled(false);
+        password.setEnabled(false);
+        databases.setEnabled(false);
+        servers.setEnabled(false);
+        rememberUsernameCBX.setEnabled(false);
+        rememberPasswordCBX.setEnabled(false);
+        autoLoginCBX.setEnabled(false);
+        moreBtn.setEnabled(false);
+
+
         setMessage(String.format(getResourceString("LoggingIn"), new Object[] {getDatabaseName()}), false);
+
+        String basePrefName = getDatabaseName() + "." + getUserName() + ".";
+
+        loginCount     = UICacheManager.getAppPrefs().getLong(basePrefName+"logincount", -1L);
+        loginAccumTime = UICacheManager.getAppPrefs().getLong(basePrefName+"loginaccumtime", -1L);
+
+        if (loginCount != -1 && loginAccumTime != -1)
+        {
+            progressWorker = new ProgressWorker(statusBar.getProgressBar(), 0, (int)(((double)loginAccumTime / (double)loginCount)+0.5));
+            progressWorker.start();
+
+        } else
+        {
+            loginCount = 0;
+        }
+
 
         final SwingWorker worker = new SwingWorker()
         {
             boolean isLoggedIn = false;
+            long    eTime;
+            boolean timeOK = false;
 
             public Object construct()
             {
+                eTime = System.currentTimeMillis();
+
                 isLoggedIn = UIHelper.tryLogin(getDriverClassName(), getDialectClassName(), getDatabaseName(),
                                                getConnectionStr(), getUserName(), getPassword());
-                
-                // I ma not sure this is the rightplace for this
+
+                // I am not sure this is the rightplace for this
                 // but this is where I am putting it for now
                 if (isLoggedIn)
                 {
@@ -595,16 +644,49 @@ public class DatabaseLoginPanel extends JPanel
                     HibernateUtil.shutdown();
                     HibernateUtil.getCurrentSession();
                 }
+                long endTime = System.currentTimeMillis();
+                eTime = (endTime - eTime) / 1000;
+                timeOK = true;
                 return null;
             }
 
             //Runs on the event-dispatching thread.
             public void finished()
             {
+
+                if (progressWorker != null)
+                {
+                    progressWorker.stop();
+                }
+
+                isLoggingIn = false;
                 statusBar.setIndeterminate(false);
                 cancelBtn.setEnabled(true);
                 loginBtn.setEnabled(true);
                 helpBtn.setEnabled(true);
+
+                username.setEnabled(true);
+                password.setEnabled(true);
+                databases.setEnabled(true);
+                servers.setEnabled(true);
+                rememberUsernameCBX.setEnabled(true);
+                rememberPasswordCBX.setEnabled(true);
+                autoLoginCBX.setEnabled(true);
+                moreBtn.setEnabled(true);
+                updateUIControls();
+
+                if (timeOK)
+                {
+                    elapsedTime = eTime;
+                    loginAccumTime += elapsedTime;
+
+                    if (loginCount < 1000)
+                    {
+                        String basePrefName = getDatabaseName() + "." + getUserName() + ".";
+                        UICacheManager.getAppPrefs().putLong(basePrefName+"logincount", ++loginCount);
+                        UICacheManager.getAppPrefs().putLong(basePrefName+"loginaccumtime", loginAccumTime);
+                    }
+                }
 
                 if (!isLoggedIn)
                 {
@@ -849,6 +931,62 @@ public class DatabaseLoginPanel extends JPanel
             {
                 UICacheManager.getAppPrefs().put(prefSelectedName, selectedItem.toString());
                 log.debug("["+prefSelectedName+"]["+selectedItem.toString()+"]");
+            }
+        }
+    }
+
+    class ProgressWorker extends SwingWorker
+    {
+        protected final int    timesASecond = 4;
+        protected JProgressBar progressBar;
+        protected int          count;
+        protected int          totalCount;
+        protected boolean      stop = false;
+
+        public ProgressWorker(final JProgressBar progressBar, final int count, final int totalCount)
+        {
+            this.progressBar = progressBar;
+            this.count       = count;
+            this.totalCount  = totalCount * timesASecond;
+
+            this.progressBar.setIndeterminate(false);
+            this.progressBar.setMinimum(0);
+            this.progressBar.setMaximum(this.totalCount);
+            //log.info("Creating PW: "+count+"  "+this.totalCount);
+        }
+
+        public Object construct()
+        {
+            count++;
+            progressBar.setValue(count);
+            try
+            {
+                Thread.sleep(1000 / timesASecond);
+            } catch (Exception ex) {}
+
+            return null;
+        }
+
+        public synchronized void stop()
+        {
+            this.stop = true;
+        }
+
+        //Runs on the event-dispatching thread.
+        public void finished()
+        {
+            if (!stop)
+            {
+                if (count < totalCount && progressBar.getValue() < totalCount)
+                {
+                    ProgressWorker pw = new ProgressWorker(progressBar, count++, totalCount/timesASecond);
+                    pw.start();
+                    setProgressWorker(pw);
+
+                } else
+                {
+                    progressBar.setIndeterminate(true);
+                }
             }
         }
     }

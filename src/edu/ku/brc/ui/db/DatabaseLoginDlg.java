@@ -25,11 +25,11 @@ import edu.ku.brc.ui.UICacheManager;
 
 /**
  * This dialog simply wraps the DatabaseLoginPanel
- * 
+ *
  *  NOTE: This dialog can only be closed for two reasons: 1) A valid login, 2) It was cancelled by the user.
- * 
+ *
  * @code_status Complete
- * 
+ *
  * @author rods
  *
  */
@@ -37,7 +37,8 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
 {
      protected DatabaseLoginPanel    dbPanel;
      protected DatabaseLoginListener listener;
-     
+     protected boolean               doAutoLogin = false;
+
     /**
      * Constructor that has the form created from the view system.
      * *
@@ -46,22 +47,22 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
     public DatabaseLoginDlg(final DatabaseLoginListener listener)
     {
         this.listener = listener;
-        
+
         setTitle(getResourceString("logintitle"));
-        
+
         dbPanel = new DatabaseLoginPanel(this, true);
         setContentPane(dbPanel);
-        
+
         setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setModal(true);
         this.setAlwaysOnTop(true);
-        
+
         getRootPane().setDefaultButton(dbPanel.getLoginBtn());
-        
+
         pack();
     }
-    
+
     /**
      * Return whether dialog was cancelled
      * @return whether dialog was cancelled
@@ -70,7 +71,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
     {
         return dbPanel.isCancelled();
     }
-    
+
     /**
      * Returns true if doing auto login
      * @return true if doing auto login
@@ -79,11 +80,32 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
     {
         return dbPanel.doingAutoLogin();
     }
-    
+
+    /**
+     * Sets to auto login
+     * @param doAutoLogin true - do auto login
+     */
+    public void setDoAutoLogin(final boolean doAutoLogin)
+    {
+        this.doAutoLogin = doAutoLogin;
+    }
+
+    /* (non-Javadoc)
+     * @see java.awt.Component#setVisible(boolean)
+     */
+    public void setVisible(final boolean show)
+    {
+        if (show && doAutoLogin)
+        {
+            dbPanel.doLogin();
+        }
+        super.setVisible(show);
+    }
+
     //---------------------------------------------------------
     // DatabaseLoginListener Interface
     //---------------------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.DatabaseLoginListener#loggedIn(java.lang.String)
      */
@@ -96,7 +118,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
             listener.loggedIn(databaseName, userName);
         }
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.DatabaseLoginListener#cancelled()
      */
@@ -109,7 +131,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
             listener.cancelled();
         }
     }
-    
 
-    
+
+
 }

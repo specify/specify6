@@ -33,9 +33,9 @@ import java.util.prefs.BackingStoreException;
  * A reference implementation for the preferences/properties system. These are persisted every 30 seconds or whatever the
  * value "java.util.prefs.syncInterval" is set to. They are also saved automatically at shutdown. These is no real need
  * to call flush.
- * 
+ *
  * @code_status Complete
- * 
+ *
  * @author rods
  *
  */
@@ -43,7 +43,7 @@ public class AppPrefsMgr implements AppPrefsIFace
 {
     private   static final String NOT_INIT = "SpecifyAppPrefs have not been initialized!";
     protected static AppPrefsMgr instance = new AppPrefsMgr();
-    
+
     protected Properties  properties = null;
     protected String      dirPath;
     protected Hashtable<String, List<AppPrefsChangeListener>> listeners = new Hashtable<String, List<AppPrefsChangeListener>>();
@@ -54,9 +54,9 @@ public class AppPrefsMgr implements AppPrefsIFace
      */
     protected AppPrefsMgr()
     {
-        
+
     }
-    
+
     /**
      * Returns the singleton.
      * @return the singleton
@@ -106,6 +106,23 @@ public class AppPrefsMgr implements AppPrefsIFace
      * @see edu.ku.brc.af.prefs.AppPrefsIFace#putInt(java.lang.String, java.lang.Integer)
      */
     public void putInt(final String name, final Integer value)
+    {
+        put(name, value.toString());
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.AppPrefsIFace#getLong(java.lang.String, java.lang.Long)
+     */
+    public Long getLong(final String name, final Long defaultValue)
+    {
+        String val = get(name, (defaultValue == null ? null : Long.toString(defaultValue)));
+        return val == null ? null : Long.valueOf(val);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.AppPrefsIFace#putLong(java.lang.String, java.lang.Long)
+     */
+    public void putLong(final String name, final Long value)
     {
         put(name, value.toString());
     }
@@ -319,7 +336,7 @@ public class AppPrefsMgr implements AppPrefsIFace
                 String fullName = dirPath + File.separator + "user.properties";
                 properties.store(new FileOutputStream(fullName), "User Prefs");
                 isChanged = false;
-    
+
                 //UICacheManager.getAppPrefs().properties.store(new FileOutputStream(fullName), "User Prefs");
             } catch (IOException ex)
             {
@@ -377,13 +394,13 @@ public class AppPrefsMgr implements AppPrefsIFace
             }
         }
     }
-    
+
     //---------------------------------------------------------------------------------------
     //-- The Code below is re-purposed from Sun's Preferences.java
     //-- Since our prefs are eccentially working like theirs we need them to flush/save automatically
     //-- and to make sure they get saved on exit
     //---------------------------------------------------------------------------------------
-    
+
     /**
      * Sync interval in seconds.
      */
@@ -395,7 +412,7 @@ public class AppPrefsMgr implements AppPrefsIFace
                     return System.getProperty("java.util.prefs.syncInterval", "30");
                 }
         })));
-    
+
     private static Timer syncTimer = new Timer(true); // Daemon Thread
 
     static {
@@ -429,8 +446,8 @@ public class AppPrefsMgr implements AppPrefsIFace
          * lazily initialized.
          */
         AppPrefsMgr prefs;
-        
-        synchronized(AppPrefsMgr.class) 
+
+        synchronized(AppPrefsMgr.class)
         {
             prefs   = instance;
         }

@@ -51,7 +51,6 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.db.DatabaseLoginDlg;
@@ -533,7 +532,7 @@ public final class UIHelper
      * @param getter the DataObjectGettable to use to get the data
      * @return an array of values at least as long as the fielName list, but may be longer
      */
-    public static Object[] getFieldValues(final String[] fieldNames, 
+    public static Object[] getFieldValues(final String[] fieldNames,
                                           final Object dataObj,
                                           final DataObjectGettable getter)
     {
@@ -772,27 +771,27 @@ public final class UIHelper
     	                            log.debug("New Obj ["+newObj+"] being added to ["+dataObj+"]");
     	                            if (newObj != null)
     	                            {
-    
+
     	                                Method method = newObj.getClass().getMethod("initialize", new Class[] {});
     	                                method.invoke(newObj, new Object[] {});
     	                                setter.setFieldValue(dataObj, fieldName, newObj);
     	                                data = newObj;
-    
+
     	                                log.debug("Inserting New Obj ["+newObj+" at top of new DB ObjCache");
-    
+
     	                            }
     	                        } catch (NoSuchMethodException ex)
     	                        {
     	                            ex.printStackTrace();
-    
+
     	                        } catch (IllegalAccessException ex)
     	                        {
     	                            ex.printStackTrace();
-    
+
     	                        } catch (InvocationTargetException ex)
     	                        {
     	                            ex.printStackTrace();
-    
+
     	                        } catch (InstantiationException ex)
     	                        {
     	                            ex.printStackTrace();
@@ -950,81 +949,57 @@ public final class UIHelper
                                final boolean useDialog,
                                final DatabaseLoginListener listener)
     {
-        // NOTE: These prefs are taken from DatabaseLoginPanel
-
-        String usernameStr  = UICacheManager.getAppPrefs().get("login.username", "");
-        String password     = Encryption.decrypt(UICacheManager.getAppPrefs().get("login.password", ""));
-        String driverStr    = UICacheManager.getAppPrefs().get("login.dbdriver_selected", "MySQL");         // XXX HARD CODED VALUE!
-        String serversStr   = UICacheManager.getAppPrefs().get("login.servers_selected", "");
-        String databasesStr = UICacheManager.getAppPrefs().get("login.databases_selected", "");
-                
-        DatabaseDriverInfo dbInfo = DatabaseDriverInfo.getInfoByName(DatabaseDriverInfo.loadDatabaseDriverInfo(), driverStr);
-        
         boolean doLogin = true;
-        if (dbInfo != null && doAutoLogin && UICacheManager.getAppPrefs().getBoolean("login.autologin", false))
+        boolean doAutoLoginNow = doAutoLogin && UICacheManager.getAppPrefs().getBoolean("login.autologin", false);
+
+        if (useDialog)
         {
-            boolean loginOK = tryLogin(dbInfo.getDriverClassName(), 
-                                       dbInfo.getDialectClassName(),
-                                       databasesStr, 
-                                       dbInfo.getConnectionStr(serversStr, databasesStr), 
-                                       usernameStr, 
-                                       password);
-            if (loginOK)
+            DatabaseLoginDlg dlg = new DatabaseLoginDlg(listener);
+            dlg.setDoAutoLogin(doAutoLoginNow);
+            UIHelper.centerAndShow(dlg);
+
+        } else
+        {
+            class DBListener implements DatabaseLoginListener
             {
-                doLogin = false;
-                if (listener != null)
+                protected JFrame                frame;
+                protected DatabaseLoginListener frameDBListener;
+
+                public DBListener(JFrame frame, DatabaseLoginListener frameDBListener)
                 {
-                    listener.loggedIn(databasesStr, usernameStr);
+                    this.frame = frame;
+                    this.frameDBListener = frameDBListener;
+                }
+                public void loggedIn(final String databaseName, final String userName)
+                {
+                    frame.setVisible(false);
+                    frameDBListener.loggedIn(databaseName, userName);
+                }
+
+                public void cancelled()
+                {
+                    frame.setVisible(false);
+                    frameDBListener.cancelled();
                 }
             }
-        }
+            JFrame.setDefaultLookAndFeelDecorated(false);
 
-        //doLogin = true; // testing
+            JFrame frame = new JFrame(getResourceString("logintitle"));
+            DatabaseLoginPanel panel = new DatabaseLoginPanel(new DBListener(frame, listener), false);
+            panel.setWindow(frame);
+            frame.setContentPane(panel);
+            frame.setIconImage(IconManager.getIcon("AppIcon", IconManager.IconSize.Std16).getImage());
+            frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
-        if (doLogin)
-        {
-            if (useDialog)
+            frame.pack();
+
+            if (doAutoLoginNow)
             {
-                DatabaseLoginDlg dlg = new DatabaseLoginDlg(listener);
-                UIHelper.centerAndShow(dlg);
-
-            } else
-            {
-                class DBListener implements DatabaseLoginListener
-                {
-                    protected JFrame                frame;
-                    protected DatabaseLoginListener frameDBListener;
-
-                    public DBListener(JFrame frame, DatabaseLoginListener frameDBListener)
-                    {
-                        this.frame = frame;
-                        this.frameDBListener = frameDBListener;
-                    }
-                    public void loggedIn(final String databaseName, final String userName)
-                    {
-                        frame.setVisible(false);
-                        frameDBListener.loggedIn(databaseName, userName);
-                    }
-
-                    public void cancelled()
-                    {
-                        frame.setVisible(false);
-                        frameDBListener.cancelled();
-                    }
-                }
-                JFrame.setDefaultLookAndFeelDecorated(false);
-
-                JFrame frame = new JFrame(getResourceString("logintitle"));
-                DatabaseLoginPanel panel = new DatabaseLoginPanel(new DBListener(frame, listener), false);
-                panel.setWindow(frame);
-                frame.setContentPane(panel);
-                frame.setIconImage(IconManager.getIcon("AppIcon", IconManager.IconSize.Std16).getImage());
-                frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-
-                frame.pack();
-                UIHelper.centerAndShow(frame);
+                panel.doLogin();
             }
+            UIHelper.centerAndShow(frame);
         }
+
     }
 
 }

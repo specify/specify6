@@ -602,7 +602,7 @@ public class FormEditor implements DatabaseLoginListener
 
 
            // Note: This is asynchronous
-           UIHelper.doLogin(false, false, this); // true means do auto login if it can, second true means use dialog
+           UIHelper.doLogin(true, false, this); // true means do auto login if it can, second true means use dialog
            //preferences();
 
        }

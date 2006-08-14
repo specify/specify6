@@ -29,12 +29,14 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.helpers.UIHelper;
+
 /**
- * This is a statusbar component. It currently enables a progressbar to be show and 
+ * This is a statusbar component. It currently enables a progressbar to be shown and
  * hidden when "indeterminate" is turned on and off
  *
- * @code_status Unknown (auto-generated)
- * 
+ * @code_status Complete
+ *
  * @author rods
  *
  */
@@ -43,10 +45,10 @@ public class JStatusBar extends JPanel
     // RGB values discovered using ZoomIn
     //private static final Color WHITE_LINE_COLOR = new Color(255, 255, 255);
     //private static final Color GRAY_LINE_COLOR  = new Color(172, 168, 153);
-    
+
     private static final Color ERROR_COLOR  = Color.RED;
     private static final Color NORMAL_COLOR = Color.BLACK;
-    
+
     protected JLabel       statusLabel = null;
     protected JProgressBar progressBar = null;
 
@@ -58,24 +60,24 @@ public class JStatusBar extends JPanel
         setLayout(new BorderLayout());
 
         setBorder(new MyBevelBorder());
-        
+
         statusLabel = new JLabel(" ");
         progressBar = new JProgressBar(0, 100);
-        
+
         statusLabel.setPreferredSize(new Dimension(100, statusLabel.getPreferredSize().height));
         progressBar.setPreferredSize(new Dimension(100, statusLabel.getPreferredSize().height));
-        
-        PanelBuilder builder = new PanelBuilder(new FormLayout("f:p:g,2px,right:p", "p"), this);
+
+        PanelBuilder builder = new PanelBuilder(new FormLayout("f:p:g,2px,right:p" + (UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX ? ",15px" : ""), "p"), this);
         CellConstraints cc = new CellConstraints();
         builder.add(statusLabel, cc.xy(1,1));
         builder.add(progressBar, cc.xy(3,1));
         progressBar.setVisible(false);
         progressBar.setValue(0);
-        
+
         statusLabel.setForeground(NORMAL_COLOR);
 
     }
-    
+
     /**
      * Sets text into the statusbar and clear the foreground color (sets it to "normal").
      * @param text the text of the status bar
@@ -85,7 +87,7 @@ public class JStatusBar extends JPanel
         statusLabel.setForeground(NORMAL_COLOR);
         statusLabel.setText(text);
     }
-    
+
     /**
      * Sets the text's forground color to be in the "error" color
      */
@@ -94,7 +96,7 @@ public class JStatusBar extends JPanel
         statusLabel.setForeground(ERROR_COLOR);
 
     }
-    
+
     /**
      * Sets the progressbar as being indeterminate and sets the visibility to true
      * @param isIndeterminate whether it should be shown and set to be Indeterminate
@@ -104,6 +106,15 @@ public class JStatusBar extends JPanel
         progressBar.setIndeterminate(isIndeterminate);
         progressBar.setVisible(isIndeterminate);
         validate();
+    }
+
+    /**
+     * Returns the ProgressBar.
+     * @return the ProgressBar
+     */
+    public JProgressBar getProgressBar()
+    {
+        return progressBar;
     }
 
     /* (non-Javadoc)
@@ -138,7 +149,7 @@ public class JStatusBar extends JPanel
         */
 
     }
-    
+
     public class MyBevelBorder extends BevelBorder
     {
         public MyBevelBorder()

@@ -18,13 +18,13 @@ import java.util.prefs.BackingStoreException;
 
 /**
  * This interface describes the application level preference system. We decided to have our own preference
- * system different than java.util.Preferences because we wanted to store our prefs in a single file. We also decided to 
+ * system different than java.util.Preferences because we wanted to store our prefs in a single file. We also decided to
  * NOT override the current preference system by installing out own factory and implementing the absrtact class because
  * we just didn't want anything that robust.<br><br>
  * This Pref system enables user to specify a hierachy through a dot notation but it isn't enforced.
- * 
+ *
  * @code_status Complete
- * 
+ *
  * @author rods
  *
  */
@@ -48,7 +48,7 @@ public interface AppPrefsIFace
 
     /**
      * Returns the value as a Integer.
-     * @param name the name 
+     * @param name the name
      * @param defaultValue the default value
      * @return the value as a Integer.
      */
@@ -60,6 +60,21 @@ public interface AppPrefsIFace
      * @param value the new value
      */
     public void putInt(final String name, final Integer value);
+
+    /**
+     * Returns the value as a Long.
+     * @param name the name
+     * @param defaultValue the default value
+     * @return the value as a Long.
+     */
+    public Long getLong(final String name, final Long defaultValue);
+
+    /**
+     * Sets a Long value into a pref.
+     * @param name the name
+     * @param value the new value
+     */
+    public void putLong(final String name, final Long value);
 
     /**
      * Returns the value as a Boolean.
@@ -132,7 +147,7 @@ public interface AppPrefsIFace
      * @return  a list of all the children names for a given node.
      */
     public String[] childrenNames(final String nodeName);
-    
+
     /**
      * Return the singleton after the preferences are loaded.
      * @param dirPath the directory path to where the prefs file will be created.
