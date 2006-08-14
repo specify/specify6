@@ -116,6 +116,13 @@ public class TreeDefinitionEditor extends BaseSubPane
 		}
 	}
 	
+	@Override
+	public void shutdown()
+	{
+		super.shutdown();
+		dataService.fini();
+	}
+
 	protected void initUI()
 	{
 		this.setLayout(new BorderLayout());

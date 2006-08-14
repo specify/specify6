@@ -989,4 +989,11 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 			this.list.setClickOnText(false);
 		}
 	}
+
+	@Override
+	public void shutdown()
+	{
+		super.shutdown();
+		dataService.fini();
+	}
 }
