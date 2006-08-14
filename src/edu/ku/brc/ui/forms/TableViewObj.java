@@ -145,7 +145,7 @@ public class TableViewObj implements Viewable
     {
         return null;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#getControlMapping()
      */
@@ -281,5 +281,22 @@ public class TableViewObj implements Viewable
     public void validationWasOK(boolean wasOK)
     {
 
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#shutdown()
+     */
+    public void shutdown()
+    {
+        if (multiView != null)
+        {
+            multiView.shutdown();
+            multiView = null;
+        }
+        parent        = null;
+        tableViewDef  = null;
+        table         = null;
+        tableScroller = null;
+        mainComp      = null;
     }
 }

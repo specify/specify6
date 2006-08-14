@@ -42,13 +42,13 @@ import edu.ku.brc.ui.UICacheManager;
  * A JTextArea that implements UIValidatable for participating in validation
  *
  * @code_status Unknown (auto-generated)
- * 
+ *
  * @author rods
  *
  */
 @SuppressWarnings("serial")
-public class ValTextArea extends JTextArea implements UIValidatable, 
-                                                      GetSetValueIFace, 
+public class ValTextArea extends JTextArea implements UIValidatable,
+                                                      GetSetValueIFace,
                                                       DocumentListener,
                                                       AppPrefsChangeListener
 {
@@ -57,10 +57,10 @@ public class ValTextArea extends JTextArea implements UIValidatable,
     protected boolean isChanged  = false;
     protected boolean isNew      = false;
     protected Color   bgColor    = null;
-    
+
     protected static ColorWrapper valtextcolor       = null;
     protected static ColorWrapper requiredfieldcolor = null;
-    
+
     protected String              defaultValue = null;
 
 
@@ -79,7 +79,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
      */
     public ValTextArea(String arg0)
     {
-        super(arg0);       
+        super(arg0);
         init();
     }
 
@@ -112,7 +112,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
      */
     public void init()
     {
-        
+
         bgColor = getBackground();
         if (valtextcolor == null || requiredfieldcolor == null)
         {
@@ -120,10 +120,10 @@ public class ValTextArea extends JTextArea implements UIValidatable,
             requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
         UICacheManager.getAppPrefs().addChangeListener("ui.formatting.requiredfieldcolor", this);
-        
+
         getDocument().addDocumentListener(this);
-        
-        
+
+
         addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e)
             {
@@ -131,9 +131,9 @@ public class ValTextArea extends JTextArea implements UIValidatable,
                 repaint();
             }
         });
-        
+
     }
-    
+
     /**
      * Helper method for validation sripting to see if the text field is empty
      * @return whether the text field is empty or not
@@ -142,38 +142,38 @@ public class ValTextArea extends JTextArea implements UIValidatable,
     {
         return getText().length() > 0;
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
     public void paint(Graphics g)
     {
         super.paint(g);
-        
+
         if (!isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
         {
             Graphics2D g2d = (Graphics2D)g;
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); 
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             Dimension dim = getSize();
             g.setColor(valtextcolor.getColor());
             g.drawRect(1, 1, dim.width-2, dim.height-2);
         }
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.Component#setEnabled(boolean)
      */
     public void setEnabled(boolean enabled)
     {
         super.setEnabled(enabled);
-        
+
         setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
     }
 
     //--------------------------------------------------
     //-- UIValidatable Interface
     //--------------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.kui.brc.specify.validation.UIValidatable#isInError()
      */
@@ -213,7 +213,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
         setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
         this.isRequired = isRequired;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.validation.UIValidatable#isChanged()
      */
@@ -229,8 +229,8 @@ public class ValTextArea extends JTextArea implements UIValidatable,
     {
         this.isChanged = isChanged;
     }
-    
-    
+
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.validation.UIValidatable#setAsNew(boolean)
      */
@@ -238,7 +238,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
     {
         this.isNew = isRequired ? isNew : false;
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.Component#validate()
      */
@@ -247,7 +247,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
         valState = isRequired && getText().length() == 0 ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         return valState;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.validation.UIValidatable#reset()
      */
@@ -257,7 +257,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
         valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         repaint();
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.validation.UIValidatable#getValidatableUIComp()
      */
@@ -265,7 +265,15 @@ public class ValTextArea extends JTextArea implements UIValidatable,
     {
         return this;
     }
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.validation.UIValidatable#cleanUp()
+     */
+    public void cleanUp()
+    {
+        UICacheManager.getAppPrefs().removeChangeListener("ui.formatting.requiredfieldcolor", this);
+    }
+
     //--------------------------------------------------------
     // DocumentListener
     //--------------------------------------------------------
@@ -275,17 +283,17 @@ public class ValTextArea extends JTextArea implements UIValidatable,
     {
         isChanged = true;
     }
-    
+
     public void insertUpdate(DocumentEvent e)
     {
         isChanged = true;
     }
-    
-    public void removeUpdate(DocumentEvent e) 
+
+    public void removeUpdate(DocumentEvent e)
     {
         isChanged = true;
     }
-    
+
     //--------------------------------------------------------
     // GetSetValueIFace
     //--------------------------------------------------------
@@ -299,7 +307,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
         setText(value != null ? value.toString() : StringUtils.isNotEmpty(defaultValue) ? defaultValue : "");
     }
 
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.GetSetValueIFace#getValue()
      */
@@ -307,7 +315,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
     {
         return getText();
     }
-    
+
     //-------------------------------------------------
     // AppPrefsChangeListener
     //-------------------------------------------------

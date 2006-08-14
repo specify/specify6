@@ -27,7 +27,7 @@ import edu.ku.brc.ui.forms.MultiView;
  * by the implementation of ViewBasedDialogFactoryIFace interface. This class is consideraed to be a reference implementation.
  *
  * @code_status Complete
- * 
+ *
  * @author rods
  *
  */
@@ -54,20 +54,20 @@ public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFa
                                  final boolean isEdit)
     {
         this.setTitle(title);
-        
+
         mainPanel = new ViewBasedDisplayPanel(this, viewSetName, viewName, displayName, className, idFieldName, isEdit);
-        
+
         setContentPane(mainPanel);
         pack();
-        
+
         setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
-    
+
     //------------------------------------------------------------
     //-- ViewBasedDisplayIFace Interface
     //------------------------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.ViewBasedDisplayIFace#showDisplay(boolean)
      */
@@ -76,31 +76,37 @@ public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFa
         setVisible(show);
     }
 
-    /**
-     * Returns the MultiView
-     * @return the multiview
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.ViewBasedDisplayIFace#getMultiView()
      */
     public MultiView getMultiView()
     {
         return mainPanel.getMultiView();
     }
 
-    /**
-     * Set a listener to know when the dialog is closed
-     * @param propertyChangeListener the listener
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.ViewBasedDisplayIFace#setCloseListener(java.beans.PropertyChangeListener)
      */
     public void setCloseListener(final PropertyChangeListener propertyChangeListener)
     {
         mainPanel.setCloseListener(propertyChangeListener);
     }
 
-    /**
-     * Sets data into the dialog
-     * @param dataObj the data object
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.ViewBasedDisplayIFace#setData(java.lang.Object)
      */
     public void setData(final Object dataObj)
     {
         mainPanel.setData(dataObj);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.ViewBasedDisplayIFace#shutdown()
+     */
+    public void shutdown()
+    {
+        setVisible(true);
+       mainPanel.shutdown();
     }
 
 }

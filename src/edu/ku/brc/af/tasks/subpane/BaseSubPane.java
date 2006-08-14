@@ -33,7 +33,7 @@ import edu.ku.brc.af.core.Taskable;
 /**
  * Class that implements the SubPanelIFace interface which enables derived classes to participate in the main pane.
  * It also adds the progress indicator and it provide.
- 
+
  * @code_status Complete
  **
  * @author rods
@@ -81,14 +81,14 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
         add(builder2.getPanel(), BorderLayout.CENTER);
 
     }
-    
+
 
     /* (non-Javadoc)
      * @see javax.swing.JComponent#paintChildren(java.awt.Graphics)
      */
     /*public void paintChildren(Graphics g)
     {
-        
+
         ImageIcon imgIcon = IconManager.getImage("BGImage");
         if (imgIcon != null)
         {
@@ -96,7 +96,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
             g.drawImage(imgIcon.getImage(), (size.width - imgIcon.getIconWidth())/2, (size.height - imgIcon.getIconHeight())/2, imgIcon.getIconWidth(), imgIcon.getIconHeight(), null);
         }
         super.paintChildren(g);
-        
+
     }*/
 
     //----------------------------------
@@ -157,6 +157,14 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     public void showingPane(boolean show)
     {
         //log.info("showingPane "+name+"  "+show);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.SubPaneIFace#shutdown()
+     */
+    public void shutdown()
+    {
+
     }
 
 

@@ -42,13 +42,13 @@ import edu.ku.brc.ui.db.PickListDBAdapter;
  * A JTextControl that implements UIValidatable for participating in validation
  *
  * @code_status Unknown (auto-generated)
- * 
+ *
  * @author rods
  *
  */
 @SuppressWarnings("serial")
-public class ValTextField extends JAutoCompTextField implements UIValidatable, 
-                                                                GetSetValueIFace, 
+public class ValTextField extends JAutoCompTextField implements UIValidatable,
+                                                                GetSetValueIFace,
                                                                 DocumentListener,
                                                                 AppPrefsChangeListener
 {
@@ -57,7 +57,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     protected boolean isChanged  = false;
     protected boolean isNew      = false;
     protected Color   bgColor    = null;
-    
+
     protected static ColorWrapper valtextcolor       = null;
     protected static ColorWrapper requiredfieldcolor = null;
 
@@ -79,7 +79,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
      */
     public ValTextField(String arg0)
     {
-        super(arg0);       
+        super(arg0);
         init();
     }
 
@@ -89,7 +89,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
      */
     public ValTextField(int arg0)
     {
-        super(arg0);     
+        super(arg0);
         init();
     }
 
@@ -99,7 +99,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
      */
     public ValTextField(int arg0, PickListDBAdapter pickListDBAdapter)
     {
-        super(arg0, pickListDBAdapter);     
+        super(arg0, pickListDBAdapter);
         init();
     }
 
@@ -110,7 +110,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
      */
     public ValTextField(String arg0, int arg1)
     {
-        super(arg0, arg1);   
+        super(arg0, arg1);
         init();
     }
 
@@ -120,9 +120,9 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     public void init()
     {
         super.init();
-        
+
         setDocument(document = new ValPlainTextDocument());
-        
+
         bgColor = getBackground();
         if (valtextcolor == null || requiredfieldcolor == null)
         {
@@ -130,7 +130,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
             requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
         UICacheManager.getAppPrefs().addChangeListener("ui.formatting.requiredfieldcolor", this);
-        
+
         addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e)
             {
@@ -139,7 +139,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
             }
         });
     }
-    
+
     /**
      * Helper method for validation sripting to see if the text field is empty
      * @return whether the text field is empty or not
@@ -148,34 +148,34 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     {
         return getText().length() > 0;
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
     public void paint(Graphics g)
     {
         super.paint(g);
-        
+
         if (!isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
         {
             Graphics2D g2d = (Graphics2D)g;
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); 
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             Dimension dim = getSize();
             g.setColor(valtextcolor.getColor());
             g.drawRect(1, 1, dim.width-2, dim.height-2);
         }
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.Component#setEnabled(boolean)
      */
     public void setEnabled(boolean enabled)
     {
         super.setEnabled(enabled);
-        
+
         setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
     }
-    
+
 
     /* (non-Javadoc)
      * @see javax.swing.text.JTextComponent#setText(java.lang.String)
@@ -186,11 +186,11 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
         super.setText(text);
         document.setIgnoreNotify(false);
     }
-    
+
     //--------------------------------------------------
     //-- UIValidatable Interface
     //--------------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.kui.brc.specify.validation.UIValidatable#isInError()
      */
@@ -231,7 +231,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
         setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
         this.isRequired = isRequired;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.validation.UIValidatable#isChanged()
      */
@@ -247,7 +247,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     {
         this.isChanged = isChanged;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.validation.UIValidatable#setAsNew(boolean)
      */
@@ -255,7 +255,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     {
         this.isNew = isRequired ? isNew : false;
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.Component#validate()
      */
@@ -264,7 +264,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
         valState = isRequired && getText().length() == 0 ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         return valState;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.validation.UIValidatable#reset()
      */
@@ -274,7 +274,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
         valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         repaint();
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.validation.UIValidatable#getValidatableUIComp()
      */
@@ -282,7 +282,16 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     {
         return this;
     }
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.validation.UIValidatable#cleanUp()
+     */
+    public void cleanUp()
+    {
+        document           = null;
+        UICacheManager.getAppPrefs().removeChangeListener("ui.formatting.requiredfieldcolor", this);
+    }
+
     //--------------------------------------------------------
     // GetSetValueIFace
     //--------------------------------------------------------
@@ -293,15 +302,15 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     public void setValue(Object value, String defaultValue)
     {
         this.defaultValue = defaultValue;
-        
+
         String data;
-        
+
         if (value != null)
         {
             if (value instanceof String)
             {
                 data = (String)value;
-                
+
             } else
             {
                 data = value.toString();
@@ -311,12 +320,12 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
             data = StringUtils.isNotEmpty(defaultValue) ? defaultValue : "";
         }
         setText(data);
-        
+
         validateState();
-        
+
         repaint();
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.GetSetValueIFace#getValue()
      */
@@ -325,7 +334,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
         return getText();
     }
 
-    
+
     //--------------------------------------------------------
     // DocumentListener
     //--------------------------------------------------------
@@ -335,17 +344,17 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     {
         isChanged = true;
     }
-    
+
     public void insertUpdate(DocumentEvent e)
     {
         isChanged = true;
     }
-    
-    public void removeUpdate(DocumentEvent e) 
+
+    public void removeUpdate(DocumentEvent e)
     {
         isChanged = true;
     }
-    
+
     //-------------------------------------------------
     // AppPrefsChangeListener
     //-------------------------------------------------

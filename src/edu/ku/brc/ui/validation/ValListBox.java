@@ -223,6 +223,15 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
         return this;
     }
     
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.validation.UIValidatable#cleanUp()
+     */
+    public void cleanUp()
+    {
+        UICacheManager.getAppPrefs().removeChangeListener("ui.formatting.requiredfieldcolor", this);
+    }
+    
     //--------------------------------------------------------
     // ListSelectionListener
     //--------------------------------------------------------

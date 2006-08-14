@@ -43,13 +43,14 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.UIFieldFormatterMgr;
 
 /**
  * A JTextField (wrapped inside a JPanel) that provides for "formatted" input. The format "mask" is define in XML
  * via the UIFieldFormatterMgr class. This is idea for text fields that have a standard size and a specific format (i.e. Dates)
  * The mask enables the "fields" and separators to be specifically defined.
- 
+
  * @code_status Unknown (auto-generated)
  **
  * @author rods
@@ -186,7 +187,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         if (!isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
         {
             Graphics2D g2d = (Graphics2D)g;
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); 
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             Dimension dim = getSize();
             g.setColor(valtextcolor.getColor());
             g.drawRect(1, 1, dim.width-2, dim.height-2);
@@ -290,7 +291,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     {
         this.isNew = isRequired ? isNew : false;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.validation.UIValidatable#reset()
      */
@@ -300,7 +301,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         validateState();
         repaint();
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.validation.UIValidatable#getValidatableUIComp()
      */
@@ -308,7 +309,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     {
         return this;
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.Component#validate()
      */
@@ -318,7 +319,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         if (StringUtils.isEmpty(data))
         {
             valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
-            
+
         } else
         {
             valState = data.length() != requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
@@ -327,7 +328,18 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
 
         return valState;
     }
-    
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.validation.UIValidatable#cleanUp()
+     */
+    public void cleanUp()
+    {
+        document  = null;
+        formatter = null;
+        fields    = null;
+    }
+
     //--------------------------------------------------------
     // GetSetValueIFace
     //--------------------------------------------------------
@@ -338,7 +350,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     public void setValue(Object value, String defaultValue)
     {
         this.defaultValue = defaultValue;
-        
+
         String data;
 
         if (value != null)
@@ -353,7 +365,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
             }
         } else
         {
-            
+
             data = StringUtils.isNotEmpty(defaultValue) ? defaultValue : "";
         }
 
@@ -512,7 +524,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
             {
                 super.remove(offset, len);
                 validateState();
-                
+
             } catch (BadLocationException ex)
             {
                 throw new RuntimeException(ex);
@@ -579,13 +591,13 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                     }
                 }
                 //valState = offset + str.length() < requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
-               
+
                 super.insertString(offset, str, attr);
             } else
             {
                 //valState = UIValidatable.ErrorType.Error;
             }
-            
+
             validateState();
         }
     }

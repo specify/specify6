@@ -43,7 +43,7 @@ import edu.ku.brc.ui.forms.persist.View;
  * interface.
  *
  * @code_status Complete
- * 
+ *
  * @author rods
  *
  */
@@ -143,7 +143,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
 
         add(btnBuilder.getPanel(), BorderLayout.SOUTH);
 
-    }    
+    }
 
     /**
      * Returns the OK button
@@ -164,7 +164,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
         propertyChangeListener.propertyChange(null);
         propertyChangeListener = null;
     }
-    
+
     /**
      * Returns the MultiView
      * @return the multiview
@@ -190,6 +190,17 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     public void setData(final Object dataObj)
     {
         multiView.setData(dataObj);
+    }
+
+    /**
+     * Tells the panel that it is being shutdown ans it should be cleaned up.
+     */
+    public void shutdown()
+    {
+        multiView.shutdown();
+        formView = null;
+        propertyChangeListener = null;
+        fieldNames.clear();
     }
 
 }

@@ -20,7 +20,7 @@ import edu.ku.brc.ui.forms.persist.View;
 /**
  * A class that can display a form, it is dervied from DroppableTaskPane which means objects can be
  * dropped on it as long as the data is a instanceof DroppableFormObject.
- 
+
  * @code_status Complete
  **
  * @author rods
@@ -34,7 +34,6 @@ public class FormPane extends DroppableTaskPane
     protected Object        data          = null;
 
     protected MultiView     multiView     = null;
-    protected Viewable      viewable      = null;
     protected FormProcessor formProcessor = null;
 
     protected String        cacheDesc   = null;
@@ -74,7 +73,7 @@ public class FormPane extends DroppableTaskPane
         this.viewSetName = viewSetName;
         this.viewName    = viewName;
         this.data        = data;
-        
+
         createForm(viewSetName, viewName, AltView.parseMode(mode, AltView.CreationMode.View), data, isNewForm);
     }
 
@@ -95,6 +94,14 @@ public class FormPane extends DroppableTaskPane
     {
         this.formProcessor = formProcessor;
         formProcessor.setViewable(this);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.SubPaneIFace#shutdown()
+     */
+    public void shutdown()
+    {
+        multiView.shutdown();
     }
 
     //-----------------------------------------------
@@ -137,10 +144,9 @@ public class FormPane extends DroppableTaskPane
         if (view != null)
         {
             name = view.getName(); // names the Tab
-            
+
             boolean isList = data != null && (data instanceof List || data instanceof Set);
             multiView = new MultiView(null, view, mode, isList, true);
-            //viewable = multiView.get
             if (multiView != null)
             {
                 this.viewSetName = viewSetName;
@@ -157,13 +163,13 @@ public class FormPane extends DroppableTaskPane
                     multiView.setData(data);
                 }
 
-                // Tells it is is a new form and all the validator painting should be supressed 
+                // Tells it is is a new form and all the validator painting should be supressed
                 // on required fields until the user inputs something
                 if (isNewForm)
                 {
                     multiView.setIsNewForm(true);
                 }
-                
+
                 if (multiView.getCurrentView().getValidator() != null)
                 {
                     multiView.getCurrentView().getValidator().validateForm();

@@ -23,7 +23,7 @@ import edu.ku.brc.ui.forms.MultiView;
  * The display dialog/frame is created with a single name from a factory that implementats the ViewBasedDialogFactoryIFace interface.
  *
  * @code_status Complete
- * 
+ *
  * @author rods
  *
  */
@@ -34,7 +34,7 @@ public interface ViewBasedDisplayIFace
      * @param show true - show, false hide
      */
     public void showDisplay(boolean show);
-    
+
     /**
      * Returns the MultiView
      * @return the multiview
@@ -52,5 +52,10 @@ public interface ViewBasedDisplayIFace
      * @param dataObj the data object
      */
     public void setData(final Object dataObj);
+
+    /**
+     * Tells the Display that it is being shutdown
+     */
+    public void shutdown();
 
 }

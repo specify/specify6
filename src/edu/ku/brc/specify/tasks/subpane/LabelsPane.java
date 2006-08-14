@@ -22,7 +22,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -47,35 +49,36 @@ import edu.ku.brc.ui.UICacheManager;
 /**
  * This class will display Label previews and may eventually hold a labels editor
  *
- * @code_status Unknown (auto-generated)
- * 
+ * @code_status Complete
+ *
  * @author rods
- * 
- * 
+ *
+ *
  */
 @SuppressWarnings("serial")
 public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 {
     // Static Data Members
     private static final Logger log = Logger.getLogger(LabelsPane.class);
-    
+
     // Data Members
     protected AsynchronousFillHandle asyncFillHandler = null;
-    protected JLabel                 label            = null; 
+    protected JLabel                 label            = null;
     protected JasperCompilerRunnable compiler         = null;
-    
+
     protected RecordSet              recordSet        = null;
-    
+
     /**
-     * 
-     *
+     * Constructor.
+     * @param name name of subpanel
+     * @param task the owning task
      */
-    public LabelsPane(final String name, 
+    public LabelsPane(final String name,
                       final Taskable task)
     {
         super(name, task);
     }
-    
+
     /**
      * Set the text to the label (create the label if it doesn't exist)
      * @param msg the message to be displayed
@@ -88,12 +91,19 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
             label = new JLabel("", JLabel.CENTER);
             add(label, BorderLayout.CENTER);
         }
-        label.setText(msg);
-        invalidate();
-        doLayout();
-        repaint();
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                label.setText(msg);
+                invalidate();
+                doLayout();
+                repaint();
+            }
+          });
+
     }
-    
+
     /**
      * Starts the report creation process
      * @param fileName the XML file name of the report definition
@@ -101,30 +111,30 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     public void createReport(final String fileName, final RecordSet recordSet)
     {
         this.recordSet = recordSet;
-        
+
         String compiledName = getFileNameWithoutExt(fileName) + ".jasper";
         File compiledPath = null;
-        
+
         File reportPath = AppContextMgr.getInstance().getCurrentContext(fileName);
         File cachePath  = checkAndCreateReportsCache();
         if (cachePath != null)
         {
             compiledPath = new File(cachePath.getAbsoluteFile() + File.separator + compiledName);
         }
-        
+
         // check to see if it needs to be recompiled
         if (compiledPath != null && compiledPath.exists() && reportPath.lastModified() < compiledPath.lastModified())
         {
             this.compileComplete(compiledPath);
-            
+
         } else
         {
             progressLabel.setText(getResourceString("JasperReportCompiling"));
             compiler = new JasperCompilerRunnable(this, reportPath, compiledPath);
-            compiler.start();            
+            compiler.start();
         }
     }
-    
+
     /**
      * The compiling of the report is complete
      * @param report the completeed report, or null if there was a compiling error
@@ -137,8 +147,8 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
             {
                 // 28594
                 String itemnum = "";
-                
-                /* TEMPOARY 
+
+                /* TEMPOARY
                 if ( recordSet == null)
                 {
                     itemnum = JOptionPane.showInputDialog(this, getResourceString("AskCatalogNum"));
@@ -156,10 +166,10 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                 JasperReport jasperReport = (JasperReport)JRLoader.loadObject(compiledFile.getAbsoluteFile());
                 if (jasperReport != null)
                 {
-                    
+
                     Map<Object, Object> parameters = new HashMap<Object, Object>();
                     parameters.put("itemnum", itemnum);
-                    
+
                     progressLabel.setText(getResourceString("JasperReportFilling"));
                     asyncFillHandler = AsynchronousFillHandle.createHandle(jasperReport, parameters, DBConnection.getConnection());
                     asyncFillHandler.addListener(this);
@@ -170,20 +180,20 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                     progressBar.setIndeterminate(false);
                     setLabelText(getResourceString("JasperReportReadingCachedReport"));
                 }
-                    
+
             } catch (JRException ex)
             {
                 setLabelText(getResourceString("JasperReportCreatingViewer"));
                 log.error(ex);
-                ex.printStackTrace();                
+                ex.printStackTrace();
             }
         } else
         {
             setLabelText(getResourceString("JasperReportCompileError"));
         }
-        compiler = null;        
+        compiler = null;
     }
-    
+
     /**
      * XXX This really needs to be moved to a more centralized location
      *
@@ -192,25 +202,25 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     {
         try
         {
-            File path = new File(UICacheManager.getDefaultWorkingPath()+File.separator+"reportsCache"); 
+            File path = new File(UICacheManager.getDefaultWorkingPath()+File.separator+"reportsCache");
             if (!path.exists())
             {
                 if (!path.mkdir())
                 {
                     String msg = "unable to create directory [" + path.getAbsolutePath() + "]";
-                    log.error(msg); 
+                    log.error(msg);
                     throw new RuntimeException(msg);
                 }
             }
             return path;
-            
+
         } catch (Exception ex)
         {
-           log.error(ex); 
+           log.error(ex);
         }
         return null;
     }
-    
+
     /**
      * Returns just the name part with the path or the extension
      * @param path the fill path with file name and extension
@@ -221,17 +231,17 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         int inx = path.indexOf(File.separator);
         return path.substring(inx+1, path.lastIndexOf('.'));
     }
-    
+
     //------------------------------------------------------------
     // AsynchronousFilllListener
     //------------------------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see net.sf.jasperreports.engine.fill.AsynchronousFilllListener#reportCancelled()
      */
     public void reportCancelled()
     {
-
+        asyncFillHandler = null;
     }
 
     /* (non-Javadoc)
@@ -243,6 +253,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         setLabelText(getResourceString("JasperReportFillError"));
         log.error(t);
         t.printStackTrace();
+        asyncFillHandler = null;
     }
 
     /* (non-Javadoc)
@@ -254,21 +265,22 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         {
             removeAll();
             label = null;
-            
+
             JRViewer jasperViewer = new JRViewer(print);
             add(jasperViewer, BorderLayout.CENTER);
-            
+
             UICacheManager.forceTopFrameRepaint();
-           
-            
+
+
         } catch (Exception ex)
         {
             setLabelText(getResourceString("JasperReportCreatingViewer"));
             log.error(ex);
             ex.printStackTrace();
         }
+        asyncFillHandler = null;
     }
-    
+
     //------------------------------------------------------------
     // Inner Classes
     //------------------------------------------------------------
@@ -278,7 +290,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         protected LabelsPane           listener;
         protected File                 reportFile;
         protected File                 compiledFile;
-        
+
         /**
          * Constructs a an object to execute an SQL staement and then notify the listener
          * @param listener the listener
@@ -291,8 +303,8 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
             this.reportFile   = reportFile;
             this.compiledFile = compiledFile;
         }
-        
- 
+
+
         /**
          * Starts the thread to make the SQL call
          *
@@ -302,7 +314,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
             thread = new Thread(this);
             thread.start();
         }
-        
+
         /**
          * Stops the thread making the call
          *
@@ -316,7 +328,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
             thread = null;
             notifyAll();
         }
-        
+
         /**
          * Creates a connection, makes the call and returns the results
          */
@@ -326,13 +338,16 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
             {
                 JasperCompileManager.compileReportToFile(reportFile.getAbsolutePath(), compiledFile.getAbsolutePath());
                 listener.compileComplete(compiledFile);
-                
+
             } catch (Exception ex)
             {
                 log.error(ex);
                 listener.compileComplete(null);
-            } 
+            }
+            listener     = null;
+            reportFile   = null;
+            compiledFile = null;
         }
     }
-   
+
 }

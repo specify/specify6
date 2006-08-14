@@ -26,6 +26,7 @@ import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -116,9 +117,9 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
     protected List<MultiView>               kids           = new ArrayList<MultiView>();
     protected Vector<AltView>               altViewsList   = null;
 
-    protected Map<String, FieldInfo>        controlsById   = new Hashtable<String, FieldInfo>();
-    protected Map<String, FieldInfo>        controlsByName = new Hashtable<String, FieldInfo>();
-    protected Map<String, FieldInfo>        labels         = new Hashtable<String, FieldInfo>(); // ID is the Key
+    protected Hashtable<String, FieldInfo>  controlsById   = new Hashtable<String, FieldInfo>();
+    protected Hashtable<String, FieldInfo>  controlsByName = new Hashtable<String, FieldInfo>();
+    protected Hashtable<String, FieldInfo>  labels         = new Hashtable<String, FieldInfo>(); // ID is the Key
 
     protected FormValidator                 formValidator   = null;
     protected Object                        parentDataObj   = null;
@@ -945,24 +946,6 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         return saveBtn;
     }
 
-    /**
-     * Cleanup references
-     */
-    public void cleanUp()
-    {
-        controlsById.clear();
-        controlsByName.clear();
-        labels.clear();
-
-        // XXX FIXME for (MultiView fvo : kids)
-        //{
-        //    fvo.cleanUp();
-        //}
-        mvParent      = null;
-        formViewDef = null;
-        formComp    = null;
-    }
-
     //-------------------------------------------------
     // Viewable
     //-------------------------------------------------
@@ -1358,15 +1341,15 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
             throw new RuntimeException("Calling getDataFromUI when the DataObjectSettable is null for the form.");
         }
     }
-    
+
     /**
      * If the control supports UIValidatable interface then it return whether the controls has been changed. If it
      * doesn't then it assumes it has and returns true.
-     * @param id the id of the control 
+     * @param id the id of the control
      * @return If the control supports UIValidatable interface then it return whether the controls has been changed. If it
      * doesn't then it assumes it has and returns true.
      */
-    protected boolean hasFormControlChanged(final String id) 
+    protected boolean hasFormControlChanged(final String id)
     {
         FieldInfo fieldInfo = controlsById.get(id);
         if (fieldInfo != null)
@@ -1645,6 +1628,30 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
        }
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#shutdown()
+     */
+    public void shutdown()
+    {
+        for (Enumeration<FieldInfo> e=controlsById.elements(); e.hasMoreElements();)
+        {
+            e.nextElement().shutdown();
+        }
+        controlsById.clear();
+        controlsByName.clear();
+        labels.clear();
+
+        // XXX FIXME for (MultiView fvo : kids)
+        //{
+        //    fvo.cleanUp();
+        //}
+        kids.clear();
+
+        mvParent    = null;
+        formViewDef = null;
+        formComp    = null;
+    }
+
     //-----------------------------------------------------
     // ValidationListener
     //-----------------------------------------------------
@@ -1842,6 +1849,21 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
             {
                 scrollPane.setEnabled(enabled);
             }
+        }
+
+        /**
+         * Tells it to clean up
+         */
+        public void shutdown()
+        {
+            if (comp instanceof UIValidatable)
+            {
+                ((UIValidatable)comp).cleanUp();
+            }
+            formCell   = null;
+            subView    = null;
+            comp       = null;
+            scrollPane = null;
         }
 
     }

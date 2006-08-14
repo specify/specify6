@@ -82,6 +82,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.AppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
@@ -113,10 +114,11 @@ import edu.ku.brc.ui.forms.ViewSetMgrManager;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.util.FileCache;
 
 /**
  * The stand alone part of the FormEditor (this is a prototype at the moment that is used for viewing forms)
- 
+
  * @code_status Unknown (auto-generated)
  **
  * @author rods
@@ -148,7 +150,7 @@ public class FormEditor implements DatabaseLoginListener
     public FormEditor()
     {
         //ViewSetMgr.setAsDefaultViewSet("Fish Views");
-        
+
     }
 
     /**
@@ -447,7 +449,7 @@ public class FormEditor implements DatabaseLoginListener
             }
 
 
-            if (currViewSetName.equals("Fish Views") && currViewName.equals("Collection Object"))
+            if (currViewSetName.equals("Fish Views") && currViewName.equals("CollectionObject"))
             {
 
 
@@ -472,7 +474,7 @@ public class FormEditor implements DatabaseLoginListener
                 boolean doCatalogItems = true;
                 if (doCatalogItems)
                 {
-                    Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CollectionObject.class).setMaxResults(300);
+                    Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CollectionObject.class).setMaxResults(30);
                     //criteria.add(Expression.isNull("derivedFromId"));
 
 
@@ -576,7 +578,9 @@ public class FormEditor implements DatabaseLoginListener
 
        UICacheManager.setAppPrefs(AppPrefsMgr.getInstance().load(UICacheManager.getDefaultWorkingPath()));
        SpecifyAppPrefs.initialPrefs();
-       
+
+       FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath());
+
        try
        {
            //System.out.println(System.getProperty("os.name"));
@@ -595,11 +599,11 @@ public class FormEditor implements DatabaseLoginListener
            //UIManager.setLookAndFeel(new PlasticLookAndFeel());
            //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
            //UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-           
-           
+
+
            // Note: This is asynchronous
-           //UIHelper.doLogin(false, false, this); // true means do auto login if it can, second true means use dialog
-           preferences();
+           UIHelper.doLogin(false, false, this); // true means do auto login if it can, second true means use dialog
+           //preferences();
 
        }
        catch (Exception e)
@@ -615,7 +619,7 @@ public class FormEditor implements DatabaseLoginListener
    */
   private void startup(final String databaseName, final String userName)
   {
-        
+
         for (int i=0;i<10;i++)
         {
             testDataObj = new TestDataObj();
@@ -671,12 +675,12 @@ public class FormEditor implements DatabaseLoginListener
         currViewName      = "";
         currViewSetName =  "view valid";
 
-        //currViewName      = "Collection Object";
+        //currViewName      = "CollectionObject";
 
         currViewName      = "FishBase";
         currViewSetName =   "Fish Views";
 
-        currViewName      = "Accession";
+        currViewName      = "CollectionObject";
         currViewSetName =   "Fish Views";
 
         View view = ViewSetMgrManager.getView(currViewSetName, currViewName);
@@ -684,6 +688,7 @@ public class FormEditor implements DatabaseLoginListener
         if (view != null)
         {
             createView(view);
+
         } else
         {
             log.info("Couldn't load form with name ["+currViewSetName+"] Id ["+currViewName+"]");
@@ -788,6 +793,10 @@ public class FormEditor implements DatabaseLoginListener
      */
     protected void doExit()
     {
+        if (multiView != null)
+        {
+            multiView.shutdown();
+        }
         System.exit(0);
     }
 
@@ -854,25 +863,31 @@ public class FormEditor implements DatabaseLoginListener
         //mi.setEnabled(aEnabled);
         return mi;
     }
-    
+
     /**
-     * 
+     *
      */
     public void testLogin()
     {
         DatabaseLoginDlg dl = new DatabaseLoginDlg(this);
         UIHelper.centerAndShow(dl);
     }
-    
+
     //---------------------------------------------------------
     // DatabaseLoginListener Interface
     //---------------------------------------------------------
-    
+
     public void loggedIn(final String databaseName, final String userName)
     {
+
+        if (!AppContextMgr.getInstance().setContext(databaseName, userName))
+        {
+            log.error("Problems setting AppContext!");
+            System.exit(0);
+        }
         startup(databaseName, userName);
     }
-    
+
     public void cancelled()
     {
         System.exit(0);
@@ -889,7 +904,7 @@ public class FormEditor implements DatabaseLoginListener
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
-  /*              
+  /*
 JCollapsiblePane cp = new JCollapsiblePane();
 
 // JCollapsiblePane can be used like any other container
@@ -898,36 +913,36 @@ cp.setLayout(new BorderLayout());
 // the Controls panel with a textfield to filter the tree
 JPanel controls = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
 controls.add(new JLabel("Search:"));
-controls.add(new JTextField(10));    
+controls.add(new JTextField(10));
 controls.add(new JButton("Refresh"));
 controls.setBorder(new TitledBorder("Filters"));
 cp.add("Center", controls);
-  
+
 JFrame frame = new JFrame();
 frame.setLayout(new BorderLayout());
- 
+
 // Put the "Controls" first
 frame.add("North", cp);
-   
+
 // Then the tree - we assume the Controls would somehow filter the tree
 JScrollPane scroll = new JScrollPane(new JTree());
 frame.add("Center", scroll);
-                
+
 // Show/hide the "Controls"
 JButton toggle = new JButton(cp.getActionMap().get(JCollapsiblePane.TOGGLE_ACTION));
 toggle.setText("Show/Hide Search Panel");
 frame.add("South", toggle);
-                
+
 frame.pack();
 frame.setVisible(true);
 */
                 FormEditor formEditor = new FormEditor();
-                formEditor.initialize();    
+                formEditor.initialize();
             }
       });
 
-        
+
     }
 
-    
+
 }

@@ -21,7 +21,7 @@ import java.awt.Component;
  * Interface for validatable components.
  *
  * @code_status Unknown (auto-generated)
- * 
+ *
  * @author rods
  *
  */
@@ -34,8 +34,8 @@ public interface UIValidatable
      * @return the isInError.
      */
     public boolean isInError();
-    
-    
+
+
     /**
      * Returns the validation state.
      * @return the validation state
@@ -47,7 +47,7 @@ public interface UIValidatable
      * @param state The isInError to set.
      */
     public void setState(ErrorType state);
-    
+
     /**
      * Rests the state of the control to "empty" or what ever that means for the control
      */
@@ -76,25 +76,30 @@ public interface UIValidatable
      * @param isChanged whether it has changed.
      */
     public void setChanged(boolean isChanged);
-    
+
     /**
      * Tells a control that it is new and not to validate until it has received focus.
      * @param isNew true it's new, false it is not
      */
     public void setAsNew(boolean isNew);
-    
-    
+
+
     /**
      * Asks it to vaidate itself.
      * @return the result of the validation
      */
     public ErrorType validateState();
-    
-    
+
+
     /**
      * Returns the actual Component that is validatable, some UI components are composites or may be wrapped in a JPanel
      * so this is the actual control the user interact with
      * @return the actual Component being validated
      */
     public Component getValidatableUIComp();
+
+    /**
+     * Tells it clean up, meaning unregistering listeners etc.
+     */
+    public void cleanUp();
 }

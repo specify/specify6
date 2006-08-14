@@ -49,7 +49,7 @@ import edu.ku.brc.ui.validation.ValidationListener;
  * Upon creation the agrument "createWithMode" tells the creation mechanism whether to look for and obey the "View" vs "Edit" modeness.
  * Meaning that if we have a view with subview and they (or some of them) have both a n Edit View and a non-Edit View,
  * all the subview will be cerated as either view or edit form accoring to the parent's mode.
- 
+
  * @code_status Unknown (auto-generated)
  **
  * @author rods
@@ -67,7 +67,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected View                         view;
     protected Hashtable<String, Viewable>  viewMapByName   = new Hashtable<String, Viewable>();
     protected Object                       data            = null;
-    protected Object                       parentDataObj   = null;       
+    protected Object                       parentDataObj   = null;
     protected CardLayout                   cardLayout      = new CardLayout();
     protected Viewable                     currentView     = null;
 
@@ -75,13 +75,13 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected boolean                      editable        = false;
     protected AltView.CreationMode         createWithMode  = AltView.CreationMode.None;
     protected Vector<FormValidator>        formValidators  = new Vector<FormValidator>();
-    
+
     protected boolean                      createRecordSetController;
     protected boolean                      createViewSwitcher;
-    
+
     protected List<MultiView>              kids            = new ArrayList<MultiView>();
-    
-    protected List<ViewBasedDisplayIFace>      displayFrames   = null;
+
+    protected List<ViewBasedDisplayIFace>  displayFrames   = null;
 
     // Temp
     protected MultiView                    thisObj          = null;
@@ -96,7 +96,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      * @param createViewSwitcher can be used to make sure that the multiview switcher is not created
      * @param createRecordSetController indicates that a RecordSet Contoller should be created
      */
-    public MultiView(final MultiView mvParent, 
+    public MultiView(final MultiView mvParent,
                      final View view,
                      final AltView.CreationMode createWithMode,
                      final boolean createRecordSetController,
@@ -111,20 +111,20 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         this.createViewSwitcher        = createViewSwitcher;
 
         specialEditView = view.isSpecialViewEdit();
-        
+
         createDefaultViewable(createRecordSetController, createViewSwitcher);
-        
+
         // Testing
         if (mvParent == null)
         {
             thisObj = this;
-            
+
             addMouseListener(new MouseAdapter() {
                 public void mousePressed(MouseEvent e)
                 {
                     showContextMenu(e);
                 }
-                
+
                 public void mouseReleased(MouseEvent e)
                 {
                     showContextMenu(e);
@@ -135,10 +135,10 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                     ((FormViewObj)thisObj.currentView).listFieldChanges();
                 }
             });
-            
+
         }
     }
-    
+
     /**
      * Shows Parent Form's Context Menu.
      * @param e the mouse event
@@ -154,16 +154,16 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                 {
                     carryForwardSetup = new CarryForwardSetUp(thisObj);
                     thisObj.add(carryForwardSetup, "carryforward");
-                    cardLayout.show(thisObj, "carryforward");  
+                    cardLayout.show(thisObj, "carryforward");
                 }
             });
-            
+
             popup.add(menuItem);
-            popup.show(e.getComponent(), e.getX(), e.getY());                       
-            
+            popup.show(e.getComponent(), e.getX(), e.getY());
+
         }
     }
-    
+
     /**
      * Called to indicate acceptence of CarryForward setup.
      * @param accept true accept, false denied
@@ -177,7 +177,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             carryForwardSetup = null;
         }
     }
-    
+
 
     /**
      * Returns a Collection of the Viewables
@@ -187,7 +187,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         return viewMapByName.values();
     }
-    
+
     /**
      * Adds child view.
      * @param mv add child view
@@ -196,7 +196,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         kids.add(mv);
     }
-    
+
     /**
      * Asks the Viewable to get the data from the UI and transfer the changes (really all the fields) to
      * the DB object.
@@ -243,10 +243,10 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         }
         showDisplayFrames(show);
     }
-    
+
     /**
      * Tells all the Viewables that have validators that the form is new or old.
-     * NOTE New Forms means that it is an empty form and that the controls should 
+     * NOTE New Forms means that it is an empty form and that the controls should
      * not show validation errors until they have had focus if they are a validator that changes on input
      * and not by the OK button or by focus.
      */
@@ -285,7 +285,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
         Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createRecordSetController, createViewSwitcher);
         viewable.setParentDataObj(parentDataObj);
-        
+
         if (add(viewable, altView.getName()))
         {
             showView(altView.getName());
@@ -316,7 +316,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         {
             log.error("Adding a Viewable by a name that is already used["+name+"]");
             return false;
-            
+
         } else
         {
             viewMapByName.put(name, viewable);
@@ -390,7 +390,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                         }
                     }
                     log.debug("--------------------------");
-                    
+
                     String altViewName = altView.getName();
                     currentView.aboutToShow(false);
                     editable       = altView.getMode() == AltView.CreationMode.Edit;
@@ -423,7 +423,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         }
 
         currentView = viewable;
-        
+
         if (currentView != null)
         {
             currentView.setParentDataObj(parentDataObj);
@@ -497,7 +497,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         }
         return true;
     }
-    
+
 
     /**
      * Sets the dataObj of the parent, this is need to add new child node from subforms.
@@ -521,8 +521,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         return parentDataObj;
     }
-    
-    
+
+
     /**
      * Returns whether this MulitView is the very top MultiView which typically contains the save UI.
      * @return whether this MulitView is the very top MultiView
@@ -531,11 +531,11 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         return this.mvParent == null;
     }
-    
-  
+
+
     /**
      * Registers "display" window for display "sub object" information.
-     * @param frame the frame to be added 
+     * @param frame the frame to be added
      */
     public void registerDisplayFrame(final ViewBasedDisplayIFace frame)
     {
@@ -545,7 +545,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         }
         displayFrames.add(frame);
     }
-    
+
     /**
      * Unregsters a frame from the MultiView list of sub-frames.
      * @param frame the frame to be unregistered (removed)
@@ -556,9 +556,9 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         {
             displayFrames.remove(frame);
         }
-        
+
     }
-    
+
     /**
      * Shows or hides all the DisplayFrame attached to this MultiView.
      * @param show true - show, false - hide
@@ -573,7 +573,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             }
         }
     }
-    
+
 
     /**
      * Returns the current view.
@@ -584,7 +584,47 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         return currentView;
     }
 
-    
+    /**
+     * Tells the MultiView the MV that it is being shutdown to be disposed.
+     */
+    public void shutdown()
+    {
+        mvParent      = null;
+        view          = null;
+        data          = null;
+        parentDataObj = null;
+        currentView   = null;
+
+        for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
+        {
+            e.nextElement().shutdown();
+        }
+
+        for (FormValidator fv : formValidators)
+        {
+            fv.cleanUp();
+        }
+        formValidators.clear();
+
+        for (MultiView mv : kids)
+        {
+            mv.shutdown();
+        }
+        kids.clear();
+
+        if (displayFrames != null)
+        {
+            for (ViewBasedDisplayIFace vbd : displayFrames)
+            {
+                vbd.shutdown();
+            }
+            displayFrames.clear();
+        }
+
+        thisObj           = null;
+        carryForwardSetup = null;
+    }
+
     //-----------------------------------------------------
     // ValidationListener
     //-----------------------------------------------------

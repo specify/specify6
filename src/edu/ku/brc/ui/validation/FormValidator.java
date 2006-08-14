@@ -40,7 +40,7 @@ import org.apache.log4j.Logger;
  * disabling any of the controls depending on the state of other "named" controls.
  * Both UI Controls and thier labels are registered by name. When a component is disabledits
  * label can also be disabled.
- 
+
  * @code_status Unknown (auto-generated)
  **
  * @author rods
@@ -52,7 +52,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     private static final Logger log = Logger.getLogger(FormValidator.class);
 
     private String name = ""; // Optional for debugging
-    
+
     // Form validation
     protected JexlContext jc  = null;
     protected Expression  exp = null;
@@ -106,7 +106,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     {
         return formValidationState == UIValidatable.ErrorType.Valid;
     }
-    
+
     /**
      * Returns the state of the form, which really means... return the worst
      * "state" that was found from all the validators.
@@ -160,11 +160,11 @@ public class FormValidator implements ValidationListener, DataChangeListener
      * Tells all the validators that are required not to validate
      */
     public void setAllUIValidatorsToNew(boolean isNew)
-    {         
+    {
         for (UIValidator uiv : validators)
         {
             uiv.setAsNew(isNew);
-        }   
+        }
     }
 
 
@@ -381,7 +381,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
         return comp;
     }
-    
+
     /**
      * Returns the Text of the label for a control's Id (strips ':' from end of string)
      * @param id the unique identifier
@@ -474,7 +474,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     protected void checkForValidForm()
     {
         formValidationState = processFormRules() ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error;
-        
+
         //log.debug(name+" checkForValidForm -> formValidationState - processFormRules ["+formValidationState+"]");
 
         if (formValidationState == UIValidatable.ErrorType.Valid)
@@ -484,21 +484,21 @@ public class FormValidator implements ValidationListener, DataChangeListener
                 if (uiv.isInError())
                 {
                     UIValidatable.ErrorType state = uiv.getUIV().getState();
-                    
+
                     // Assumes Error is th worst, so if it is "less than" an Error i.e. Incompete
-                    // then we don't want to override an error with a lesser state 
+                    // then we don't want to override an error with a lesser state
                     if (formValidationState != UIValidatable.ErrorType.Error)
                     {
                         formValidationState = state;
                     }
-                    
+
                     if (state == UIValidatable.ErrorType.Error)
                     {
                         // Break for an Erro, but keep going for Incomplete
                         // to see if there are any errors
-                        //break; 
+                        //break;
                     }
-                    
+
                 }
             }
         }
@@ -533,9 +533,9 @@ public class FormValidator implements ValidationListener, DataChangeListener
                     if (!uiv.validate())
                     {
                         UIValidatable.ErrorType state = uiv.getUIV().getState();
-                        
+
                         // Assumes Error is th worst, so if it is "less than" an Error i.e. Incompete
-                        // then we don't want to override an error with a lesser state 
+                        // then we don't want to override an error with a lesser state
                         if (formValidationState != UIValidatable.ErrorType.Error)
                         {
                             formValidationState = state;
@@ -544,9 +544,9 @@ public class FormValidator implements ValidationListener, DataChangeListener
                         {
                             // Break for an Erro, but keep going for Incomplete
                             // to see if there are any errors
-                            //break; 
+                            //break;
                         }
-                        
+
                     }
 
                 }
@@ -627,6 +627,11 @@ public class FormValidator implements ValidationListener, DataChangeListener
             dcn.cleanUp();
         }
         dcNotifiers.clear();
+
+        for (UIValidator uv : validators)
+        {
+            uv.cleanUp();
+        }
         validators.clear();
 
         fields.clear();
@@ -642,6 +647,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
         formRules.clear();
 
         okBtn = null;
+        dcListeners.clear();
+        valListeners.clear();
     }
 
 
@@ -698,7 +705,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     {
         this.name = name;
     }
-    
+
     /**
      * Returns the Map of Notifiers
      * @return the Map of Notifiers
@@ -707,7 +714,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     {
         return dcNotifiers;
     }
-    
+
     /**
      * Dumps the State of the Validation State
      * @param doBrief just the state of validator, when false it dumps everthing about all the DCNs and validators
@@ -715,7 +722,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     public void dumpState(final boolean doBrief)
     {
         String displayName = (name != null ? name : "No Name");
-        
+
         if (doBrief)
         {
             log.debug("*** "+isFormValid()+"  "+displayName);
@@ -725,18 +732,18 @@ public class FormValidator implements ValidationListener, DataChangeListener
             log.debug("\n------------"+displayName+"-------------");
             log.debug("Valid: "+isFormValid());
             log.debug("\n");
-            
+
             int maxLen = 0;
             for (DataChangeNotifier dcn : dcNotifiers.values())
             {
                 int len = dcn.getId().length();
                 maxLen = Math.max(maxLen, len);
             }
-            
+
             for (DataChangeNotifier dcn : dcNotifiers.values())
             {
                 String nm = dcn.getId();
-                strBuf.setLength(0); 
+                strBuf.setLength(0);
                 strBuf.append(nm);
                 for (int i=0;i<=(maxLen-nm.length());i++) strBuf.append(" ");
                 UIValidator uiv = dcn.getUIV();
@@ -752,9 +759,9 @@ public class FormValidator implements ValidationListener, DataChangeListener
             }
             log.debug("-------------------------");
         }
-            
+
     }
-    
+
     //-----------------------------------------------------
     // ValidationListener
     //-----------------------------------------------------
@@ -779,12 +786,12 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void wasValidated(final UIValidator validator)
     {
-       
+
         // When the form has been asked manually to be validated then ignore the notifications
         if (!ignoreValidationNotifications)
         {
             checkForValidForm();
-            
+
             for (ValidationListener vcl : valListeners)
             {
                 vcl.wasValidated(validator);
@@ -855,6 +862,6 @@ public class FormValidator implements ValidationListener, DataChangeListener
     {
         this.hasChanged = hasChanged;
     }
-    
-    
+
+
 }

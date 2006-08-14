@@ -52,7 +52,7 @@ import edu.ku.brc.ui.db.PickListItem;
 
 /**
  * A JComboBox that implements UIValidatable for participating in validation
- 
+
  * @code_status Unknown (auto-generated)
  **
  * @author rods
@@ -123,7 +123,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         comboBox = new JAutoCompComboBox(dbAdapter);
         init(true);
     }
-    
+
     public void init(final PickListDBAdapter dbAdapter)
     {
         comboBox = new JAutoCompComboBox(dbAdapter);
@@ -136,7 +136,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     public void init(final boolean makeEditable)
     {
         comboBox.init(makeEditable);
-        
+
         if (defaultTextBGColor == null)
         {
             defaultTextBGColor = (new JTextField()).getBackground();
@@ -158,7 +158,8 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
             valtextcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
             requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
-         UICacheManager.getAppPrefs().addChangeListener("ui.formatting.requiredfieldcolor", this);
+        UICacheManager.getAppPrefs().addChangeListener("ui.formatting.valtextcolor", this);
+        UICacheManager.getAppPrefs().addChangeListener("ui.formatting.requiredfieldcolor", this);
 
         FocusAdapter focusAdapter = new FocusAdapter() {
             public void focusLost(FocusEvent e)
@@ -176,7 +177,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
             comboBox.addFocusListener(focusAdapter);
         }
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.Component#setEnabled(boolean)
      */
@@ -216,7 +217,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         if (!isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
         {
             Graphics2D g2d = (Graphics2D)g;
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); 
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             Dimension dim = getSize();
             g2d.setColor(valtextcolor.getColor());
             g2d.drawRect(0, 0, dim.width-1, dim.height-1);
@@ -231,7 +232,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     {
         return comboBox;
     }
-    
+
     /**
      * Helper function that indicates whether the control has text or not
      * @return whether the control has text or not
@@ -240,7 +241,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     {
         return comboBox.getTextField() != null ? comboBox.getTextField().getText().length() > 0 : comboBox.getSelectedIndex() > -1;
     }
-    
+
     /**
      * Helper function that returns true if an item is selected or the text field is not empty
      * @return true if an item is selected or the text field is not empty
@@ -250,7 +251,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         System.out.println((comboBox.getSelectedIndex() > -1) +"  "+ hasText()+"  "+comboBox.getSelectedItem());
         return comboBox.getSelectedIndex() > -1 || hasText();
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.Component#addFocusListener(java.awt.event.FocusListener)
      */
@@ -262,7 +263,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
             comboBox.getTextField().addFocusListener(l);
         }
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.Component#removeFocusListener(java.awt.event.FocusListener)
      */
@@ -274,7 +275,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
             comboBox.getTextField().removeFocusListener(l);
         }
     }
-    
+
     //--------------------------------------------------
     //-- UIValidatable Interface
     //--------------------------------------------------
@@ -337,7 +338,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     {
         this.isChanged = isChanged;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.validation.UIValidatable#setAsNew(boolean)
      */
@@ -345,7 +346,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     {
         this.isNew = isRequired ? isNew : false;
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.Component#validate()
      */
@@ -355,7 +356,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         valState = isRequired && comboBox.getSelectedIndex() == -1 ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         return valState;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.validation.UIValidatable#reset()
      */
@@ -369,13 +370,22 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         repaint();
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.validation.UIValidatable#getValidatableUIComp()
      */
     public Component getValidatableUIComp()
     {
         return this;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.validation.UIValidatable#cleanUp()
+     */
+    public void cleanUp()
+    {
+        comboBox  = null;
+        UICacheManager.getAppPrefs().removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
 
     //--------------------------------------------------------
@@ -457,7 +467,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
                     }
                 }
             }
-            
+
             if (fnd)
             {
                 this.valState = UIValidatable.ErrorType.Valid;

@@ -30,13 +30,13 @@ import org.apache.log4j.Logger;
 
 /**
  *  Validates a single UI Component the component is to be referred to in the validation script as "obj"
- 
+
  * @code_status Unknown (auto-generated)
  **
  * @author rods
  *
  */
-public class UIValidator 
+public class UIValidator
 {
     public enum Type {None, Focus, Changed, OK}
 
@@ -100,7 +100,7 @@ public class UIValidator
         }
 
     }
-    
+
     /**
      * Tells the UI Control that the form is "new" and to not show validation errors until it has focus.
      * @param isNew true if it is a new form, false if not
@@ -126,7 +126,7 @@ public class UIValidator
             try
             {
                 return Type.valueOf(type);
-                
+
             } catch (Exception ex)
             {
                 return Type.OK;
@@ -156,7 +156,7 @@ public class UIValidator
         }
 
         UIValidatable.ErrorType errorState = UIValidatable.ErrorType.Valid;
-        
+
         boolean isTextField = (uiv != null && uiv.getValidatableUIComp() instanceof JTextField) || comp instanceof JTextField;
 
          // If it is required then it MUST have a value or it is in error
@@ -166,9 +166,9 @@ public class UIValidator
         }
 
         // Skip processing the field if it is already in error as a required field
-        if (errorState ==  UIValidatable.ErrorType.Valid && 
-            isTextField && 
-            jc != null && 
+        if (errorState ==  UIValidatable.ErrorType.Valid &&
+            isTextField &&
+            jc != null &&
             exp != null)
         {
             try
@@ -200,7 +200,7 @@ public class UIValidator
         }
 
         // XXX This isn't right, this needs some rethinking
-        
+
         // Don't notify any of the listeners if we are validating it for an OK button
         if (isTextField && uiv.isRequired())
         {
@@ -289,5 +289,13 @@ public class UIValidator
     {
         return uiv;
     }
-    
+
+    /**
+     * Tells it to clean up.
+     */
+    public void cleanUp()
+    {
+        listeners.clear();
+    }
+
 }
