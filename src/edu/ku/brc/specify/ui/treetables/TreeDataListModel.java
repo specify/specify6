@@ -428,6 +428,11 @@ public class TreeDataListModel extends AbstractListModel
 		return visibleNodes.elementAt(arg0);
 	}
 	
+	public int indexOf(Object o)
+	{
+		return visibleNodes.indexOf(o);
+	}
+	
 	public boolean parentHasChildrenAfterNode( Treeable parent, Treeable child )
 	{
 		if( !visibleNodes.contains(child) )

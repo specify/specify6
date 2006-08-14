@@ -17,6 +17,7 @@ package edu.ku.brc.specify.ui.treetables;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -35,7 +36,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
@@ -189,11 +189,14 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 			}
 			public void defSelected(TreeDefinitionIface def)
 			{
+				displayedTreeDef = def;
 				initTreeList(def);
 			}
 			public void newDefOptionSelected()
 			{
-				editNewTreeDef();			
+				// this option shouldn't be allowed in the TreeTableViewer
+				// creating a new tree requires creating a new CollectionObjDef
+				// this is handled elsewhere
 			}
 		};
 		JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
@@ -201,17 +204,6 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		d.setModal(true);
 		d.setSize(300,150);
 		UIHelper.centerAndShow(d);
-	}
-	
-	protected void editNewTreeDef()
-	{
-		// user selected "Create New..."
-		// close this TTV and open a TreeDefEditor and do the "make new" process
-		TreeDefinitionEditor defEditor = new TreeDefinitionEditor(treeDefClass,"Tree Def Editor",getTask(),false);
-		SubPaneMgr.getInstance().addPane(defEditor);
-		SubPaneMgr.getInstance().removePane(TreeTableViewer.this);
-		TreeDefinitionIface newDef = TreeFactory.createNewTreeDef(treeDefClass,"New Def",null);
-		defEditor.showNewDefForm(newDef);
 	}
 	
 	/**
@@ -322,19 +314,23 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 
 		treeListPanel = buildTreeListPanel(list,listHeader);
 
+		// TODO: this code is simply for demostrating the concept of 2 views
+		// of the same tree with drag and drop between them.  We need a better
+		// way to do this.  Maybe a JToggleButton to toggle the mode from
+		// 1 view to 2 views.
 		TreeDataGhostDropJList list2 = new TreeDataGhostDropJList(listModel,this);
 		list2.addMouseListener(mouseListener);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		TreeDataListCellRenderer rend2 = new TreeDataListCellRenderer(list2,listModel);
 		list2.setCellRenderer(rend2);
 		list.addListSelectionListener(listSelListener);
-		TreeDataListHeader head2 = new TreeDataListHeader(list2,listModel,rend2);
+//		TreeDataListHeader head2 = new TreeDataListHeader(list2,listModel,rend2);
 		
-		JPanel treeListPanel2 = buildTreeListPanel(list2,head2);
+//		JPanel treeListPanel2 = buildTreeListPanel(list2,head2);
 		
 		this.remove(messageLabel);
-//		this.add(treeListPanel, BorderLayout.CENTER);
-		this.add(new JSplitPane(JSplitPane.VERTICAL_SPLIT,treeListPanel,treeListPanel2), BorderLayout.CENTER);
+		this.add(treeListPanel, BorderLayout.CENTER);
+//		this.add(new JSplitPane(JSplitPane.VERTICAL_SPLIT,treeListPanel,treeListPanel2), BorderLayout.CENTER);
 		this.repaint();
 		
 		list.repaint();
@@ -823,8 +819,6 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		editDialog.setData(node);
 		editDialog.setVisible(true);
 	}
-	
-	
 
 	/**
 	 * Returns the top-level UI component of the tree viewer.
@@ -864,28 +858,79 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 	 * @param dragged the dragged tree node
 	 * @param droppedOn the node the dragged node was dropped onto
 	 */
-	public void dropOccurred( Object dragged, Object droppedOn )
+	public boolean dropOccurred( Object dragged, Object droppedOn, int dropAction )
 	{
 		if( !(dragged instanceof Treeable && droppedOn instanceof Treeable) )
 		{
 			log.warn("Ignoring drag and drop of unhandled types of objects");
-			return;
+			return false;
 		}
-		
-		Treeable child = (Treeable)dragged;
-		Treeable newParent = (Treeable)droppedOn;
-		
-		if( displayedTreeDef.canChildBeReparentedToNode(child,newParent) )
+
+		Treeable draggedNode = (Treeable)dragged;
+		Treeable droppedOnNode = (Treeable)droppedOn;
+
+		if( dropAction == DnDConstants.ACTION_COPY || dropAction == DnDConstants.ACTION_NONE )
 		{
-			log.info("Cannot reparent " + child.getName() + " to " + newParent.getName());
-			return;
+			// TODO: at this point we need to add a new treeable relationship
+			// between dragged and droppedOn
+			
+			// for Taxon: setup new TaxonomicRelationship
+			// for Geog:  setup new GeographyNameRelationship
+			// for ?
+			log.warn("User requested new relationship be created between " + draggedNode.getName() + " and " + droppedOnNode.getName());
+			return true;
+		}
+		else if( dropAction == DnDConstants.ACTION_MOVE )
+		{
+			Treeable child = draggedNode;
+			Treeable newParent = droppedOnNode;
+			
+			if( !displayedTreeDef.canChildBeReparentedToNode(child,newParent) )
+			{
+				log.info("Cannot reparent " + child.getName() + " to " + newParent.getName());
+				return false;
+			}
+			
+			boolean changed = listModel.reparent(child,newParent);
+			if( changed )
+			{
+				commitTreeButton.setEnabled(true);
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean dropAcceptable( Object dragged, Object droppedOn, int dropAction )
+	{
+		// TODO: fully implement this
+		// XXX
+		if(dropAction == DnDConstants.ACTION_COPY  || dropAction == DnDConstants.ACTION_NONE)
+		{
+			if(listModel.indexOf(dragged) != -1 && listModel.indexOf(droppedOn) != -1 )
+			{
+				return true;
+			}
+		}
+		else if(dropAction == DnDConstants.ACTION_MOVE)
+		{
+			//TODO: check if reparenting is allowed
+			if( !(dragged instanceof Treeable && droppedOn instanceof Treeable) )
+			{
+				return false;
+			}
+			
+			Treeable child = (Treeable)dragged;
+			Treeable newParent = (Treeable)droppedOn;
+			
+			if( !displayedTreeDef.canChildBeReparentedToNode(child,newParent) )
+			{
+				return false;
+			}
+			return true;
 		}
 		
-		boolean changed = listModel.reparent(child,newParent);
-		if( changed )
-		{
-			commitTreeButton.setEnabled(true);
-		}
+		return false;
 	}
 
 	public void mouseButtonClicked(MouseEvent e)
@@ -943,15 +988,5 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		{
 			this.list.setClickOnText(false);
 		}
-	}
-
-	@Override
-	public void showingPane(boolean show)
-	{
-		super.showingPane(show);
-//		if(!show)
-//		{
-//			dataService.fini();
-//		}
 	}
 }

@@ -17,5 +17,7 @@ public interface DragDropCallback
 	 * @param draggedObj the dragged object
 	 * @param dropLocObj the object that <code>dragged</code> was dropped on
 	 */
-	public void dropOccurred(Object dragged, Object droppedOn );
+	public boolean dropOccurred(Object dragged, Object droppedOn, int dropAction);
+	
+	public boolean dropAcceptable(Object dragged, Object droppedOn, int dropAction);
 }

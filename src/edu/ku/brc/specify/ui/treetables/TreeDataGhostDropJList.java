@@ -17,7 +17,7 @@ package edu.ku.brc.specify.ui.treetables;
 import javax.swing.ListModel;
 
 import edu.ku.brc.ui.DragDropCallback;
-import edu.ku.brc.ui.GhostDropJList;
+import edu.ku.brc.ui.DragDropJList;
 
 /**
  * A custom JList that is capable of ignoring clicks on list items in order to
@@ -36,7 +36,7 @@ import edu.ku.brc.ui.GhostDropJList;
  * @author jstewart
  * @version %I% %G%
  */
-public class TreeDataGhostDropJList extends GhostDropJList
+public class TreeDataGhostDropJList extends DragDropJList
 {
 	protected boolean clickOnText;
 	

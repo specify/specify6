@@ -68,9 +68,9 @@ public abstract class AbstractTreeDefinition implements TreeDefinitionIface
 	 */
 	public boolean canChildBeReparentedToNode( Treeable child, Treeable newParent )
 	{
-		// can't reparent a node to one of its descendants
-		if( newParent.isDescendantOf(child) )
+		if( newParent.getRankId().intValue() >= child.getRankId().intValue() )
 		{
+			// a node cannot have a parent that is a peer or of lower rank (larger rank id)
 			return false;
 		}
 		
@@ -82,7 +82,7 @@ public abstract class AbstractTreeDefinition implements TreeDefinitionIface
 			return true;
 		}
 		
-		if( nextEnforcedRank.intValue() >= newParent.getRankId().intValue() )
+		if( nextEnforcedRank.intValue() <= newParent.getRankId().intValue() )
 		{
 			// the next enforced rank is equal to or above the new parent rank
 			return true;
