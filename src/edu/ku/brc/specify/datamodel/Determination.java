@@ -105,7 +105,13 @@ public class Determination  implements java.io.Serializable {
     
     public boolean isCurrent()
     {
+    	//TODO: is this a final implementation?
+    	// XXX: is this good for production
+    	// What about i18n?
     	return (status.getName().equalsIgnoreCase("current") ? true : false );
+    	
+    	// perhaps this is better (for i18n reasons)
+    	// return (status.getDeterminationStatusId() == 2 ) ? true : false;
     }
 
     /**
