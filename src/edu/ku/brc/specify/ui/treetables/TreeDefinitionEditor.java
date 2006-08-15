@@ -238,6 +238,12 @@ public class TreeDefinitionEditor extends BaseSubPane
 	
 	protected void treeDefSelected(Object selection)
 	{
+		if(selection == null)
+		{
+			messageLabel.setText("You must select a valid tree defintion.\nClose this panel and start over.");
+			return;
+		}
+		
 		TreeDefinitionIface treeDef = (TreeDefinitionIface)selection;
 		displayedDef = treeDef;
 		

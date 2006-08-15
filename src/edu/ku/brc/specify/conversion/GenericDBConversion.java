@@ -3130,6 +3130,7 @@ public class GenericDBConversion
     	
     	LocationTreeDefItem building = new LocationTreeDefItem();
     	building.initialize();
+    	building.setRankId(100);
     	building.setName("Building");
     	building.setIsEnforced(false);
     	building.setIsInFullName(false);
@@ -3138,6 +3139,7 @@ public class GenericDBConversion
 
     	LocationTreeDefItem room = new LocationTreeDefItem();
     	room.initialize();
+    	room.setRankId(200);
     	room.setName("Room");
     	room.setIsEnforced(true);
     	room.setIsInFullName(true);
@@ -3146,6 +3148,7 @@ public class GenericDBConversion
     	
     	LocationTreeDefItem freezer = new LocationTreeDefItem();
     	freezer.initialize();
+    	freezer.setRankId(300);
     	freezer.setName("Freezer");
     	freezer.setIsEnforced(true);
     	freezer.setIsInFullName(true);

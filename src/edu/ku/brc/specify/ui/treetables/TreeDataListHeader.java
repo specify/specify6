@@ -24,6 +24,7 @@ import java.awt.RenderingHints;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
@@ -40,7 +41,7 @@ import edu.ku.brc.util.Pair;
  * @version %I% %G%
  */
 @SuppressWarnings("serial")
-public class TreeDataListHeader extends JLabel implements Icon, ListDataListener
+public class TreeDataListHeader extends JPanel implements ListDataListener
 {
 	/** The associated JList. */
 	protected JList list;
@@ -66,8 +67,6 @@ public class TreeDataListHeader extends JLabel implements Icon, ListDataListener
 		
 		model.addListDataListener(this);
 		
-		this.setIcon(this);
-		
 		if( list.getFont() != null )
 		{
 			this.setFont(list.getFont());
@@ -76,16 +75,8 @@ public class TreeDataListHeader extends JLabel implements Icon, ListDataListener
 		this.setBackground(list.getBackground());
 	}
 
-	/**
-	 * Paints the column headers as an {@link Icon}.
-	 *
-	 * @see javax.swing.Icon#paintIcon(java.awt.Component, java.awt.Graphics, int, int)
-	 * @param c the component containing the icon
-	 * @param g the graphics context
-	 * @param x the x-coord to paint the icon at
-	 * @param y the y-coord to paint the icon at
-	 */
-	public void paintIcon(Component c, Graphics g, int x, int y)
+	@Override
+	protected void paintComponent(Graphics g)
 	{
 		Graphics2D g2 = (Graphics2D)g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -101,7 +92,7 @@ public class TreeDataListHeader extends JLabel implements Icon, ListDataListener
 			g.setColor(textColor);
 			TreeDataListCellRenderer rend = (TreeDataListCellRenderer)list.getCellRenderer();
 			Pair<Integer,Integer> textBounds = rend.getTextBoundsForRank(rank); 
-			g.drawString(defItem.getName(),x+textBounds.first,y+getIconHeight()/2);
+			g.drawString(defItem.getName(),textBounds.first,getHeight()/2);
 		}
 	}
 
@@ -133,7 +124,7 @@ public class TreeDataListHeader extends JLabel implements Icon, ListDataListener
 	 * @see javax.swing.Icon#getIconWidth()
 	 * @return the width of the header
 	 */
-	public int getIconWidth()
+	public int getWidth()
 	{
 		return list.getWidth();
 	}
@@ -144,15 +135,15 @@ public class TreeDataListHeader extends JLabel implements Icon, ListDataListener
 	 * @see javax.swing.Icon#getIconHeight()
 	 * @return the height of the header
 	 */
-	public int getIconHeight()
+	public int getHeight()
 	{
-		return list.getGraphics().getFontMetrics().getHeight()+50;
+		return list.getGraphics().getFontMetrics().getHeight()+20;
 	}
 
 	@Override
 	public Dimension getPreferredSize()
 	{
-		return new Dimension(list.getWidth(),list.getGraphics().getFontMetrics().getHeight()+50);
+		return new Dimension(getWidth(),getHeight());
 	}
 
 	/**

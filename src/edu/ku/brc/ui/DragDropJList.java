@@ -167,12 +167,10 @@ public class DragDropJList extends JList implements DragSourceListener,
 		if( shouldAccept(dtde) )
 		{
 			dtde.acceptDrag(dtde.getDropAction());
-			System.out.println("Accepted dragEnter");
 		}
 		else
 		{
 			dtde.rejectDrag();
-			System.out.println("Rejected dragEnter");
 		}
 	}
 
@@ -197,12 +195,10 @@ public class DragDropJList extends JList implements DragSourceListener,
 		if( shouldAccept(dtde) )
 		{
 			dtde.acceptDrag(dtde.getDropAction());
-			System.out.println("Accepted dragOver");
 		}
 		else
 		{
 			dtde.rejectDrag();
-			System.out.println("Rejected dragOver");
 		}
 	}
 	

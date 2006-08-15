@@ -177,14 +177,14 @@ public class SpecifyDBConverter
         
         if (userHome.indexOf("stewart") > -1)
         {
-        	oldDatabaseName = "sp5_cranbrook";
-            databaseName = "cranbrook";
-
-//        	oldDatabaseName = "sp5_accessions";
-//            databaseName = "accessions";
-
+//        	oldDatabaseName = "sp5_cranbrook";
+//        	databaseName = "cranbrook";
+//        	
+        	oldDatabaseName = "sp5_accessions";
+        	databaseName = "accessions";
+//        	
 //        	oldDatabaseName = "sp5_fish";
-//            databaseName = "fish";
+//        	databaseName = "fish";
         }
         
         // This will log us in and return true/false

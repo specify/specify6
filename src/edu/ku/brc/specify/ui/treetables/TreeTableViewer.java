@@ -36,6 +36,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
@@ -242,6 +243,12 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 	 */
 	protected synchronized void initTreeList( final TreeDefinitionIface treeDef )
 	{
+		if(treeDef == null)
+		{
+			messageLabel.setText("You must select a valid tree definition. Close this panel and start over.");
+			return;
+		}
+		
 		// setup a thread to load the objects from the DB
 		Runnable runnable = new Runnable()
 		{
@@ -324,13 +331,13 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		TreeDataListCellRenderer rend2 = new TreeDataListCellRenderer(list2,listModel);
 		list2.setCellRenderer(rend2);
 		list.addListSelectionListener(listSelListener);
-//		TreeDataListHeader head2 = new TreeDataListHeader(list2,listModel,rend2);
+		TreeDataListHeader head2 = new TreeDataListHeader(list2,listModel,rend2);
 		
-//		JPanel treeListPanel2 = buildTreeListPanel(list2,head2);
+		JPanel treeListPanel2 = buildTreeListPanel(list2,head2);
 		
 		this.remove(messageLabel);
-		this.add(treeListPanel, BorderLayout.CENTER);
-//		this.add(new JSplitPane(JSplitPane.VERTICAL_SPLIT,treeListPanel,treeListPanel2), BorderLayout.CENTER);
+//		this.add(treeListPanel, BorderLayout.CENTER);
+		this.add(new JSplitPane(JSplitPane.VERTICAL_SPLIT,treeListPanel,treeListPanel2), BorderLayout.CENTER);
 		this.repaint();
 		
 		list.repaint();
@@ -345,8 +352,9 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		bodyScroll.setAutoscrolls(true);
 		panel.add(bodyScroll, BorderLayout.CENTER);
 		
-		JScrollPane headerScroll = new JScrollPane(listHeader);
+		JScrollPane headerScroll = new JScrollPane(header);
 		headerScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+		headerScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		headerScroll.setAutoscrolls(true);
 		
 		ScrollBarLinkingListener linkingListener = new ScrollBarLinkingListener();

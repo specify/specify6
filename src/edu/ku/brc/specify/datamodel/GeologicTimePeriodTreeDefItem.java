@@ -167,7 +167,7 @@ public class GeologicTimePeriodTreeDefItem extends AbstractTreeDefItem implement
     
     public void setTreeDefinition(TreeDefinitionIface treeDef)
     {
-        if( treeDef!=null && !(treeDef instanceof GeologicTimePeriodTreeDef) )
+        if( treeDef==null || !(treeDef instanceof GeologicTimePeriodTreeDef) )
         {
             throw new IllegalArgumentException("Argument must be an instance of GeologicTimePeriodTreeDef");
         }
@@ -181,7 +181,7 @@ public class GeologicTimePeriodTreeDefItem extends AbstractTreeDefItem implement
     
     public void setParentItem(TreeDefinitionItemIface parent)
     {
-        if( parent!=null && !(parent instanceof GeologicTimePeriodTreeDefItem) )
+        if( parent==null || !(parent instanceof GeologicTimePeriodTreeDefItem) )
         {
             throw new IllegalArgumentException("Argument must be an instance of GeologicTimePeriodTreeDefItem");
         }

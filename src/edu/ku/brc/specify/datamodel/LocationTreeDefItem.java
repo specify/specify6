@@ -177,7 +177,7 @@ public class LocationTreeDefItem extends AbstractTreeDefItem implements java.io.
     
     public void setTreeDefinition(TreeDefinitionIface treeDef)
     {
-        if( treeDef!=null && !(treeDef instanceof LocationTreeDef) )
+        if( treeDef==null || !(treeDef instanceof LocationTreeDef) )
         {
             throw new IllegalArgumentException("Argument must be an instance of LocationTreeDef");
         }
@@ -191,7 +191,7 @@ public class LocationTreeDefItem extends AbstractTreeDefItem implements java.io.
     
     public void setParentItem(TreeDefinitionItemIface parent)
     {
-        if( parent!=null && !(parent instanceof LocationTreeDefItem) )
+        if( parent==null || !(parent instanceof LocationTreeDefItem) )
         {
             throw new IllegalArgumentException("Argument must be an instance of LocationTreeDefItem");
         }

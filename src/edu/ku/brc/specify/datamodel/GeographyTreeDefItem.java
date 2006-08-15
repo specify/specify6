@@ -167,7 +167,7 @@ public class GeographyTreeDefItem extends AbstractTreeDefItem implements java.io
     
     public void setTreeDefinition(TreeDefinitionIface treeDef)
     {
-        if( treeDef!=null && !(treeDef instanceof GeographyTreeDef) )
+        if( treeDef==null || !(treeDef instanceof GeographyTreeDef) )
         {
             throw new IllegalArgumentException("Argument must be an instance of GeographyTreeDef");
         }
@@ -181,7 +181,7 @@ public class GeographyTreeDefItem extends AbstractTreeDefItem implements java.io
     
     public void setParentItem(TreeDefinitionItemIface parent)
     {
-        if( parent!=null && !(parent instanceof GeographyTreeDefItem) )
+        if( parent==null || !(parent instanceof GeographyTreeDefItem) )
         {
             throw new IllegalArgumentException("Argument must be an instance of GeographyTreeDefItem");
         }

@@ -178,7 +178,7 @@ public class TaxonTreeDefItem extends AbstractTreeDefItem implements java.io.Ser
     
     public void setTreeDefinition(TreeDefinitionIface treeDef)
     {
-        if( treeDef!=null && !(treeDef instanceof TaxonTreeDef) )
+        if( treeDef==null || !(treeDef instanceof TaxonTreeDef) )
         {
             throw new IllegalArgumentException("Argument must be an instance of TaxonTreeDef");
         }
@@ -192,7 +192,7 @@ public class TaxonTreeDefItem extends AbstractTreeDefItem implements java.io.Ser
     
     public void setParentItem(TreeDefinitionItemIface parent)
     {
-        if( parent!=null && !(parent instanceof TaxonTreeDefItem) )
+        if( parent==null || !(parent instanceof TaxonTreeDefItem) )
         {
             throw new IllegalArgumentException("Argument must be an instance of TaxonTreeDefItem");
         }
