@@ -335,7 +335,7 @@ public class TreeFactory
 		}
 		else if( nodeClass.equals(Taxon.class) )
 		{
-			return new TaxonComparator();
+			return new TreeOrderSiblingComparator();
 		}
 		
 		return new NameBasedComparator();

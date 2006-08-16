@@ -20,6 +20,7 @@ public interface TreeDataService
 {
 	public void init();
 	public void fini();
+	public List<Treeable> findByName(TreeDefinitionIface treeDef, String name);
 	public void saveTree(Treeable rootNode, Set<Treeable> deletedNodes);
 	public void saveTreeDef(TreeDefinitionIface treeDef,List<TreeDefinitionItemIface> deletedItems);
 	public Set<Treeable> getTreeNodes(TreeDefinitionItemIface defItem);

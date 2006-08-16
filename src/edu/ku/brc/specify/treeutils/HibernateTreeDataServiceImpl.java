@@ -67,6 +67,20 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 		}
 	}
 	
+	public List<Treeable> findByName(TreeDefinitionIface treeDef, String name)
+	{
+		Vector<Treeable> results = new Vector<Treeable>();
+		Class nodeClass = treeDef.getNodeClass();
+		Query q = session.createQuery("FROM "+nodeClass.getSimpleName()+" as node WHERE node.name = :name");
+		q.setParameter("name",name);
+		for( Object o: q.list() )
+		{
+			Treeable t = (Treeable)o;
+			results.add(t);
+		}
+		return results;
+	}
+	
 	/**
 	 *
 	 *

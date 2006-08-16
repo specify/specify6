@@ -193,7 +193,6 @@ public class SpecifyDBConverter
             throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
         }
 
-
         IdMapperMgr idMapperMgr = null;
         try
         {

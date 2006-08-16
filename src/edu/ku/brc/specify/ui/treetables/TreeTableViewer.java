@@ -31,12 +31,14 @@ import java.util.Vector;
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
@@ -49,7 +51,6 @@ import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.helpers.UIHelper;
-import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -136,6 +137,14 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
     private static final Logger log = Logger.getLogger(TreeTableViewer.class);
     
     protected TreeDataService dataService;
+    
+    protected JTextField findNodeField;
+    protected JButton findNextButton;
+    protected JCheckBox wrapFindCheckBox;
+    protected String findName;
+    protected int resultsIndex;
+    protected List<Treeable> findResults;
+    protected boolean wrapSearch = false;
     
 	/**
 	 * Build a TreeTableViewer to view/edit the data found.
@@ -388,6 +397,33 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 	 */
 	protected void setupButtonPanel()
 	{
+		findNodeField = new JTextField(20);
+		findNodeField.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent ae)
+			{
+				findAndSelect(findNodeField.getText());
+			}
+		});
+		
+		findNextButton = new JButton("Find next");
+		findNextButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent ae)
+			{
+				findNextAndSelect();
+			}
+		});
+		
+		wrapFindCheckBox = new JCheckBox("Wrap Search");
+		wrapFindCheckBox.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent ae)
+			{
+				wrapSearch = wrapFindCheckBox.isSelected();
+			}
+		});
+		
 		addNodeButton = new JButton("Add child");
 		addNodeButton.addActionListener(new ActionListener()
 			{
@@ -459,10 +495,13 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		selectionSensativeButtons.add(showAllDescendantsButton);
 		
 		disableAllButtons();
-		commitTreeButton.setEnabled(true);
+		commitTreeButton.setEnabled(false);
 		showWholeTreeButton.setEnabled(true);
 		
 		buttonPanel = new JPanel();
+		buttonPanel.add(findNodeField);
+		buttonPanel.add(findNextButton);
+		buttonPanel.add(wrapFindCheckBox);
 		buttonPanel.add(addNodeButton);
 		buttonPanel.add(deleteNodeButton);
 		buttonPanel.add(editButton);
@@ -740,16 +779,6 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 	 */
 	public boolean commitStructureToDb()
 	{
-		// XXX: for testing
-		// block all but the test taxon tree from saving
-		TreeDefinitionIface treeDef = listModel.getRoot().getTreeDef();
-		int treeDefId = treeDef.getTreeDefId().intValue();
-		if( !treeDef.getClass().equals(TaxonTreeDef.class) || (treeDefId != 3 && treeDefId != 4) )
-		{
-			log.info("Currently only allowing commits to DB from the test taxon tree");
-			return false;
-		}
-		
 		Treeable root = listModel.getRoot();
 		dataService.saveTree(root,deletedNodes);
 		commitTreeButton.setEnabled(false);
@@ -807,6 +836,100 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		
 		Treeable node = (Treeable)selection;
 		listModel.showDescendants(node);
+	}
+	
+	public void findAndSelect(String nodeName)
+	{
+		findName = nodeName;
+		findResults = dataService.findByName(displayedTreeDef,findName);
+		if(findResults.isEmpty())
+		{
+			//TODO: notify the user that no results were found
+			log.error("Search returned no results.");
+			return;
+		}
+		
+		Treeable firstMatch = findResults.get(0);
+		resultsIndex = 0;
+		if(!showPathToNode(firstMatch))
+		{
+			//TODO: notify the user that no results are below current visible root
+			log.error("No results below current visible root.");
+			return;
+		}
+		list.setSelectedValue(firstMatch,true);
+	}
+	
+	public void findNextAndSelect()
+	{
+		Treeable selectedNode = (Treeable)list.getSelectedValue();
+		if( selectedNode != null )
+		{
+			log.error("Searching for next node with same name as selected node: " + selectedNode.getName());
+			// find the next node with the same name
+			List<Treeable> results = dataService.findByName(displayedTreeDef,selectedNode.getName());
+			if(results.isEmpty())
+			{
+				//TODO: notify the user that no results were found
+				log.error("Search returned no results.");
+				return;
+			}
+			
+			int index = results.indexOf(selectedNode);
+			if(results.size()-1 == index && !wrapSearch)
+			{
+				//TODO: notify the user that no more results
+				log.error("No more results");
+				return;
+			}
+			index = (index+1) % results.size();
+			Treeable nextNode = results.get(index);
+			
+			if( !showPathToNode(nextNode) )
+			{
+				//TODO: notify the user that no results are below current visible root
+				log.error("No more results below current visible root.");
+				return;
+			}
+			list.setSelectedValue(nextNode,true);
+		}
+		else if(findResults != null && findName != null)
+		{
+			log.error("Searching for next node from previous search: " + findName);
+			// find the next node from the previous search
+			if(findResults.size()-1 == resultsIndex && !wrapSearch)
+			{
+				//TODO: notify the user that no more results
+				log.error("No more results");
+				return;
+			}
+			
+			resultsIndex = (resultsIndex+1) % findResults.size();
+			Treeable nextNode = findResults.get(resultsIndex);
+			if( !showPathToNode(nextNode) )
+			{
+				//TODO: notify the user that no results are below current visible root
+				log.error("No more results below current visible root.");
+				return;
+			}
+			list.setSelectedValue(nextNode,true);
+		}
+	}
+	 
+	protected boolean showPathToNode(Treeable node)
+	{
+		List<Treeable> pathToNode = node.getAllAncestors();
+		Treeable visRoot = listModel.getVisibleRoot();
+		if(!pathToNode.contains(visRoot))
+		{
+			return false;
+		}
+		
+		for( int i = pathToNode.indexOf(visRoot); i < pathToNode.size(); ++i )
+		{
+			listModel.setChildrenVisible(pathToNode.get(i),true);
+		}
+		return true;
 	}
 	
 	/**

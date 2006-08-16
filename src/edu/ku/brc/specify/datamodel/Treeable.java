@@ -144,6 +144,7 @@ public interface Treeable extends Rankable, Nameable
 	public boolean childrenAllowed();
 	public boolean canBeDeleted();
 	public List<Treeable> getAllDescendants();
+	public List<Treeable> getAllAncestors();
 	public void fixFullNameForAllDescendants();
 	
 	public void setTimestampsToNow();

@@ -145,6 +145,19 @@ public abstract class AbstractTreeable implements Treeable
 		}
 		return descendants;
 	}
+	
+	public List<Treeable> getAllAncestors()
+	{
+		Vector<Treeable> ancestors = new Vector<Treeable>();
+		Treeable parent = getParentNode();
+		while(parent != null)
+		{
+			ancestors.add(0,parent);
+			parent = parent.getParentNode();
+		}
+		
+		return ancestors;
+	}
 
 	/**
 	 * Fixes the fullname for the given node and all of its descendants.

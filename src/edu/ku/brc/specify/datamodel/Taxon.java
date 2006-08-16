@@ -56,6 +56,19 @@ public class Taxon extends AbstractTreeable implements java.io.Serializable {
     public Taxon(Integer taxonId) {
         this.taxonId = taxonId;
     }
+    
+    public Taxon(String name)
+    {
+    	initialize();
+    	this.name = name;
+    }
+    
+    public Taxon(String name,Taxon parent,int rank)
+    {
+    	this.name = name;
+    	this.parent = parent;
+    	this.rankId = rank;
+    }
    
     // Initializer
     public void initialize()

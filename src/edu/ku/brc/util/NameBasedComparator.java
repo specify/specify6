@@ -12,6 +12,18 @@ import java.util.Comparator;
  */
 public class NameBasedComparator implements Comparator<Nameable>
 {
+	protected boolean ignoreCase;
+	
+	public NameBasedComparator()
+	{
+		ignoreCase = false;
+	}
+	
+	public NameBasedComparator(boolean ignoreCase)
+	{
+		this.ignoreCase = ignoreCase;
+	}
+	
 	/**
 	 * Compare two Nameable objects.  The objects are compared
 	 * based on the values returned by calls to <code>getName()</code>.
@@ -24,6 +36,10 @@ public class NameBasedComparator implements Comparator<Nameable>
 	 */
 	public int compare(Nameable o1, Nameable o2)
 	{
+		if(ignoreCase)
+		{
+			return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
+		}
 		return o1.getName().compareTo(o2.getName());
 	}
 }

@@ -135,8 +135,10 @@
 			<one-to-many class="edu.ku.brc.specify.datamodel.Container" />
 		</set>
 
-		<set name="children" lazy="false" inverse="true"
-			cascade="none">
+		<set name="children"
+			inverse="true"
+			cascade="none"
+			sort="edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator">
 			<meta attribute="scope-field">protected</meta>
 			<key>
 				<column name="ParentId" />
