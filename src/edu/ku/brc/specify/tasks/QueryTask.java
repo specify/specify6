@@ -128,7 +128,10 @@ public class QueryTask extends BaseTask
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
 
-        ToolBarDropDownBtn btn = createToolbarButton(name, "queryIt.gif", "search_hint", menus);
+        String label = getResourceString(name);
+        String iconName = name;
+        String hint = getResourceString("search_hint");
+        ToolBarDropDownBtn btn = createToolbarButton(label,iconName,hint,menus);
         if (tbList.size() == 0)
         {
             tbList.add(btn);

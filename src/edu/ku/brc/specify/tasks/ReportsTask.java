@@ -74,7 +74,10 @@ public class ReportsTask extends BaseTask
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        ToolBarDropDownBtn btn = createToolbarButton(name, "reports.gif", "reports_hint");
+        String label = getResourceString(name);
+        String iconName = name;
+        String hint = getResourceString("reports_hint");
+        ToolBarDropDownBtn btn = createToolbarButton(label, iconName, hint);
 
 
         list.add(new ToolBarItemDesc(btn));

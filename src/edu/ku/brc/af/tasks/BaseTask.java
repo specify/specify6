@@ -115,48 +115,67 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
 
     }
 
-     /**
+    /**
      * Helper.
-     * @param catName catName
-     * @param imageName imageName
-     * @param hint v
-     * @return return
+     * @param label the (localized) label string
+     * @param iconName the name of the icon (as registered with IconManager)
+     * @param hint a (localized) hint string
+     * @return the drop down button
      */
-    protected ToolBarDropDownBtn createToolbarButton(final String catName,
-                                                     final String imageName,
+    protected ToolBarDropDownBtn createToolbarButton(final String label,
+                                                     final String iconName,
                                                      final String hint)
     {
 
-        return createToolbarButton(catName, imageName, hint, null);
+        return createToolbarButton(label, iconName, hint, null);
 
     }
 
     /**
      * Helper.
-     * @param catName catName
-     * @param imageName imageName
-     * @param hint hint
-     * @return drop down btn
+     * @param label the (localized) label string
+     * @param iconName the name of the icon (as registered with IconManager)
+     * @param hint a (localized) hint string
+     * @param menus a List of JComponents to be added in a drop down box
+     * @param actionListener the listener to notify when the button is clicked
+     * @return the drop down button
+     */
+    protected ToolBarDropDownBtn createToolbarButton(final String label,
+                                                     final String iconName,
+                                                     final String hint,
+                                                     final List<JComponent> menus,
+                                                     final ActionListener actionListener )
+    {
+        Icon buttonIcon = IconManager.getIcon(iconName, IconManager.IconSize.Std24);
+
+        ToolBarDropDownBtn btn = new ToolBarDropDownBtn(label, buttonIcon, JButton.BOTTOM, menus);
+        btn.setStatusBarHintText(hint);
+
+        btn.addActionListener(actionListener);
+        return btn;
+    }
+    
+    /**
+     * Helper.
+     * @param label the (localized) label string
+     * @param iconName the name of the icon (as registered with IconManager)
+     * @param hint a (localized) hint string
+     * @param menus a List of JComponents to be added in a drop down box
+     * @return the drop down button
      */
     protected ToolBarDropDownBtn createToolbarButton(final String catName,
                                                      final String imageName,
                                                      final String hint,
                                                      final List<JComponent> menus)
     {
-        String name = getResourceString(catName);
-
-        icon = IconManager.getIcon(catName, IconManager.IconSize.Std16);
-
-        ToolBarDropDownBtn btn = new ToolBarDropDownBtn(name, IconManager.getIcon(catName, IconManager.IconSize.Std24), JButton.BOTTOM, menus);
-        btn.setStatusBarHintText(getResourceString(hint));
-
-        btn.addActionListener(new ActionListener() {
+    	ActionListener al = new ActionListener()
+    	{
             public void actionPerformed(ActionEvent e)
             {
                 requestContext();
             }
-        });
-        return btn;
+    	};
+    	return createToolbarButton(catName,imageName,hint,menus,al);
     }
 
     /**
@@ -262,7 +281,10 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     /* (non-Javadoc)
      * @see edu.ku.brc.af.plugins2.TaskPluginable#getTaskClass()
      */
-    public abstract Class getTaskClass();
+    public Class getTaskClass()
+    {
+    	return this.getClass();
+    }
 
     //-------------------------------------------------------
     // Recent Pane Management

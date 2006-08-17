@@ -183,7 +183,10 @@ public class WorkbenchTask extends BaseTask
 //        list.add(new ToolBarItemDesc(btn));
 //        return list;
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        ToolBarDropDownBtn btn = createToolbarButton(name, "workbench.gif", "workbench_hint");
+        String label = getResourceString(name);
+        String iconName = name;
+        String hint = getResourceString("workbench_hint");
+        ToolBarDropDownBtn btn = createToolbarButton(label, iconName, hint);
 
         list.add(new ToolBarItemDesc(btn));
         return list;

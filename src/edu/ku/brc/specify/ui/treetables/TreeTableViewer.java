@@ -120,11 +120,6 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 	protected JButton showWholeTreeButton;
 	protected JButton showAllDescendantsButton;
 	
-	/** Implementation class of <code>Treeable</code> nodes. */
-	protected Class treeableClass;
-	
-	protected Class treeDefClass;
-	
 	/** Collection of all nodes deleted by user that have not yet been deleted from persistent store (DB). */
 	protected SortedSet<Treeable> deletedNodes;
 	
@@ -162,8 +157,6 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		
 		dataService = TreeDataServiceFactory.createService();
 		final List<TreeDefinitionIface> defs = dataService.getAllTreeDefs(treeDefClass);
-		
-		this.treeDefClass = treeDefClass;
 		
 		errorIcon = IconManager.getIcon("Error", IconManager.IconSize.Std24);
 		init(defs);

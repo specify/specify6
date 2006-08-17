@@ -34,7 +34,7 @@
 			constrained="true" />
 
 		<set name="treeEntries" table="Taxon" inverse="true"
-			lazy="true">
+			lazy="extra">
 			<key column="TaxonTreeDefID" />
 			<one-to-many class="edu.ku.brc.specify.datamodel.Taxon" />
 		</set>

@@ -239,7 +239,10 @@ public class DataEntryTask extends BaseTask
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
 
-        ToolBarDropDownBtn btn = createToolbarButton(DATA_ENTRY,   "dataentry.gif",    "dataentry_hint");
+        String label = getResourceString(DATA_ENTRY);
+        String iconName = name;
+        String hint = getResourceString("dataentry_hint");
+        ToolBarDropDownBtn btn = createToolbarButton(label,iconName,hint);
 
         list.add(new ToolBarItemDesc(btn));
 

@@ -171,7 +171,7 @@
 		</many-to-one>
 
 		<!-- bi-directional one-to-many association to TaxonCitation -->
-		<set name="taxonCitations" inverse="true" lazy="false" cascade="none">
+		<set name="taxonCitations" inverse="true" cascade="none">
 			<key>
 				<column name="TaxonID" />
 			</key>
@@ -202,7 +202,7 @@
 
 		<!-- bi-directional many-to-many association to ExternalResource -->
 		<set name="externalResources" table="taxon_extres" inverse="true"
-				lazy="false" cascade="save-update">
+				cascade="save-update">
 			<key>
 				<column name="TaxonID" />
 			</key>
@@ -214,8 +214,8 @@
 		<set name="children"
 			inverse="true"
 			cascade="none"
+			fetch="join"
 			sort="edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator">
-			<meta attribute="scope-field">protected</meta>
 			<key>
 				<column name="ParentId" />
 			</key>

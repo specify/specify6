@@ -113,7 +113,10 @@ public class InteractionsTask extends BaseTask
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        ToolBarDropDownBtn btn = createToolbarButton(name, "loans.gif", "interactions_hint");
+        String label = getResourceString(name);
+        String iconName = name;
+        String hint = getResourceString("interactions_hint");
+        ToolBarDropDownBtn btn = createToolbarButton(label, iconName, hint);
 
         list.add(new ToolBarItemDesc(btn));
 
