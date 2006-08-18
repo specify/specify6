@@ -9,6 +9,7 @@
 	    	<service command="Edit" tableid="7" tooltip="EditRecordSetTT"/>
 	    	<service command="Edit" tableid="10" tooltip="EditRecordSetTT"/>
 	    </plugin>
+	    <plugin class="edu.ku.brc.specify.tasks.TaxonTreeTask"/>
 	    <plugin class="edu.ku.brc.specify.tasks.LabelsTask">
 	    	<service command="DoLabels" tableid="1" tooltip="CreateLabelTT"/>
 	        <service command="DoLabels" tableid="7" tooltip="CreateLabelTT"/>

@@ -6,6 +6,7 @@
     <icon name="Specify16"  file="specify_icon16.gif" sizes="16"/>
     <icon name="Workbench"  file="workbench.gif" sizes="all"/>
     <icon name="Data_Entry" file="form.gif" sizes="all"/>
+    <icon name="Taxon_Tree" file="taxon.gif" sizes="all"/>
     <icon name="Labels"     file="labels.gif" sizes="all"/>
     <icon name="Reports"    file="reports.gif" sizes="all"/>
     <icon name="Interactions" file="loans.gif" sizes="all"/>
@@ -94,6 +95,15 @@
     
     <!-- Preferences -->
     <icon name="Browse" file="browse.gif" sizes="all"/>
+    
+    <!-- TreeTableViewer icons -->
+    <icon name="TTV_Subtree"    file="zoom_in.png"    sizes="16"/>
+    <icon name="TTV_WholeTree"  file="zoom_out.png"   sizes="16"/>
+    <icon name="TTV_AllDescend" file="expand.png"     sizes="16"/>
+    <icon name="TTV_SyncViews"  file="sync.png"       sizes="16"/>
+    <icon name="TTV_NewChild"   file="add.png"        sizes="16"/>
+    <icon name="TTV_EditNode"   file="edit.png"       sizes="16"/>
+    <icon name="TTV_DelNode"    file="delete.png"     sizes="16"/>
     
 
 </icons>

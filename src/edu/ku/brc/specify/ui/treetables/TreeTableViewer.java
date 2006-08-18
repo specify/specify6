@@ -15,7 +15,10 @@
 package edu.ku.brc.specify.ui.treetables;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
@@ -26,19 +29,17 @@ import java.awt.event.MouseListener;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.Vector;
 
-import javax.swing.AbstractButton;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
@@ -50,19 +51,18 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
-import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
 import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.tasks.DualViewSearchable;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.ui.treetables.EditFormDialog.EditDialogCallback;
-import edu.ku.brc.specify.ui.treetables.TreeDefSelectionDialog.TreeSelectionDialogCallback;
 import edu.ku.brc.ui.DragDropCallback;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UICacheManager;
-import edu.ku.brc.ui.listeners.ScrollBarLinkingListener;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.ReverseRankBasedComparator;
 
@@ -77,164 +77,80 @@ import edu.ku.brc.util.ReverseRankBasedComparator;
  * @author jstewart
  */
 @SuppressWarnings("serial")
-public class TreeTableViewer extends BaseSubPane implements DragDropCallback
+public class TreeTableViewer extends BaseSubPane implements DragDropCallback, DualViewSearchable
 {
-	/** North section container. */
-	protected JPanel northPanel;
-	/** South section container. */
-	protected JPanel southPanel;
-	/** Button container. */
-	protected JPanel buttonPanel;
-	/** Tree widget container. */
-	protected JPanel treeListPanel;
-	/** Collection of all the buttons on the widget. */
-	protected List<AbstractButton> selectionSensativeButtons;
+	private static final int SINGLE_VIEW_MODE = 0;
+	private static final int DUAL_VIEW_MODE = 1;
+	
 	/** Status message display widget. */
-	protected JLabel statusBar;
-	/** Info message display widget. */
-	protected JLabel messageLabel;
-	/** An icon signifying that an error has occurred. */
-	protected Icon errorIcon;
+	protected JStatusBar statusBar;
 	
 	/** Model holding all <code>Treeable</code> nodes. */
 	protected TreeDataListModel listModel;
 	/** The tree display widget. */
-	protected TreeDataGhostDropJList list;
+	protected TreeDataGhostDropJList[] lists;
 	/** Cell renderer for displaying individual nodes in the tree. */
 	protected TreeDataListCellRenderer listCellRenderer;
 	/** A header for the tree, displaying the names of the visible levels. */
-	protected TreeDataListHeader listHeader;
+	protected TreeDataListHeader[] listHeaders;
 	
-	protected TreeDefinitionIface displayedTreeDef;
+	protected JPanel[] treeListPanels;
 	
-	/** Button for adding new nodes. */
-	protected JButton addNodeButton;
-	/** Button for deleting nodes. */
-	protected JButton deleteNodeButton;
-	/** Button for editing nodes. */
-	protected JButton editButton;
-	/** Button for committing current tree structure to disk. */
-	protected JButton commitTreeButton;
+	protected TreeDefinitionIface treeDef;
 	
-	protected JButton viewSubtreeButton;
-	protected JButton showWholeTreeButton;
-	protected JButton showAllDescendantsButton;
-	
-	/** Collection of all nodes deleted by user that have not yet been deleted from persistent store (DB). */
+	/** Collection of all nodes deleted by user that have not yet been deleted from the DB. */
 	protected SortedSet<Treeable> deletedNodes;
 	
 	protected String nameBeforeEditDialogShown;
-	
-//	protected boolean busy;
-//	protected BusyComponentGlassPane glassPane;
 	
     /** Logger for all messages emitted. */
     private static final Logger log = Logger.getLogger(TreeTableViewer.class);
     
     protected TreeDataService dataService;
     
-    protected JTextField findNodeField;
-    protected JButton findNextButton;
-    protected JCheckBox wrapFindCheckBox;
     protected String findName;
     protected int resultsIndex;
     protected List<Treeable> findResults;
-    protected boolean wrapSearch = false;
+    
+    protected boolean isInitialized;
+    protected int mode;
     
 	/**
 	 * Build a TreeTableViewer to view/edit the data found.
 	 * 
-	 * @param treeDefClass a Class object representing the DB table to find definitions in
+	 * @param treeDef handle to the tree to be displayed
 	 * @param name a String name for this viewer/editor
 	 * @param task the owning Taskable
 	 */
-	@SuppressWarnings("unchecked")
-	public TreeTableViewer( final Class treeDefClass,
+	public TreeTableViewer( final TreeDefinitionIface treeDef,
 							final String name,
 							final Taskable task )
 	{
 		super(name,task);
-		
+		this.treeDef = treeDef;
 		dataService = TreeDataServiceFactory.createService();
-		final List<TreeDefinitionIface> defs = dataService.getAllTreeDefs(treeDefClass);
-		
-		errorIcon = IconManager.getIcon("Error", IconManager.IconSize.Std24);
-		init(defs);
-
 		deletedNodes = new TreeSet<Treeable>(new ReverseRankBasedComparator());
+		statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
 		
-//		busy = false;
-//		glassPane = new BusyComponentGlassPane(this,viewSubtreeButton);
-//		JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
-//		topFrame.setGlassPane(glassPane);
-		
-		// gotta ask for this to show up later in order for this constructor to finish
-		// and to let the TTV be shown as a tab
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				showTreeSelectionDialog(defs);
-			}
-		});
+		removeAll();
+		setLayout(new BorderLayout());
 	}
 	
-	protected void showTreeSelectionDialog(List<TreeDefinitionIface> defs)
+	@Override
+	public void showingPane(boolean show)
 	{
-		// show the dialog with all trees listed
-		// if the user hits "Cancel", close this copy of the TTV
-		// if the user hits "OK", call initTreeList(selectedDef)
-		TreeSelectionDialogCallback callback = new TreeSelectionDialogCallback()
+		super.showingPane(show);
+		if(show)
 		{
-			public void cancelled()
+			synchronized(this)
 			{
-				SubPaneMgr.getInstance().removePane(TreeTableViewer.this);
+				if(!isInitialized)
+				{
+					isInitialized=true;
+					initTreeLists();
+				}
 			}
-			public void defSelected(TreeDefinitionIface def)
-			{
-				displayedTreeDef = def;
-				initTreeList(def);
-			}
-			public void newDefOptionSelected()
-			{
-				// this option shouldn't be allowed in the TreeTableViewer
-				// creating a new tree requires creating a new CollectionObjDef
-				// this is handled elsewhere
-			}
-		};
-		JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
-		TreeDefSelectionDialog d = new TreeDefSelectionDialog(topFrame,defs,callback,false);
-		d.setModal(true);
-		d.setSize(300,150);
-		UIHelper.centerAndShow(d);
-	}
-	
-	/**
-	 * Initialize all of the UI components in the viewer/editor.
-	 * 
-	 * @param definitions a list of TreeDefinitionIface objects that can be handled in this TreeTableViewer
-	 */
-	protected void init( List<TreeDefinitionIface> definitions )
-	{
-		this.setLayout(new BorderLayout());
-
-		messageLabel = new JLabel("Select a tree in the combobox above");
-		this.add(messageLabel,BorderLayout.CENTER);
-		
-		northPanel = new JPanel();
-		this.add(northPanel,BorderLayout.NORTH);
-		
-		southPanel = new JPanel();
-		southPanel.setLayout(new BorderLayout());
-		this.add(southPanel,BorderLayout.SOUTH);
-
-		statusBar = new JLabel();
-		statusBar.setPreferredSize(new Dimension(0,30));
-
-		setupButtonPanel();
-		
-		southPanel.add(buttonPanel,BorderLayout.NORTH);
-		southPanel.add(statusBar,BorderLayout.SOUTH);
+		}
 	}
 
 	/**
@@ -243,14 +159,8 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 	 *
 	 * @param treeDef the tree definition
 	 */
-	protected synchronized void initTreeList( final TreeDefinitionIface treeDef )
+	protected void initTreeLists()
 	{
-		if(treeDef == null)
-		{
-			messageLabel.setText("You must select a valid tree definition. Close this panel and start over.");
-			return;
-		}
-		
 		// setup a thread to load the objects from the DB
 		Runnable runnable = new Runnable()
 		{
@@ -258,25 +168,11 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 			{
 				final Treeable root = dataService.getRootNode(treeDef);
 				
-				if(root == null)
-				{
-					// do the failure callback on the Swing thread
-					SwingUtilities.invokeLater(new Runnable()
-					{
-						public void run()
-						{
-							initTreeListFailure("Selected tree is empty");
-						}
-					});
-					return;
-				}
-				
-				// do the success callback on the Swing thread
 				SwingUtilities.invokeLater(new Runnable()
 				{
 					public void run()
 					{
-						initTreeListSucess(root);
+						showTree(root);
 					}
 				});
 			}
@@ -292,250 +188,243 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 	 *
 	 * @param root the root node of the new tree
 	 */
-	protected synchronized void initTreeListSucess( Treeable root )
+	protected void showTree( Treeable root )
 	{
+		if(root==null)
+		{
+			String error = "Error while initializing tree editor: No root node found";
+			log.error(error);
+			statusBar.setText(error);
+			SubPaneMgr.getInstance().closeCurrent();
+			return;
+		}
+		
 		log.debug("Successfully initialized tree editor");
 
-		northPanel.add(new JLabel(root.getTreeDef().getName()));
-		
 		MouseListener mouseListener = new MouseAdapter()
 		{
 			public void mouseClicked(MouseEvent e){mouseButtonClicked(e);}
 			public void mousePressed(MouseEvent e){mouseButtonPressed(e);}
 		};
 		listModel = new TreeDataListModel(root);
-		list = new TreeDataGhostDropJList(listModel,this);
-		list.addMouseListener(mouseListener);
-		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		listCellRenderer = new TreeDataListCellRenderer(list,listModel);
-		list.setCellRenderer(listCellRenderer);
-		
+		Color[] bgs = new Color[2];
+		bgs[0] = new Color(202,238,255);
+		bgs[1] = new Color(151,221,255);
+		listCellRenderer = new TreeDataListCellRenderer(listModel,bgs);
 		ListSelectionListener listSelListener = new ListSelectionListener()
 		{
 			public void valueChanged(ListSelectionEvent e)
 			{
-				Treeable t = (Treeable)list.getSelectedValue();
-				newTreeableSelected(t);
+				newTreeableSelected(e);
 			}
 		};
-		list.addListSelectionListener(listSelListener);
-		listHeader = new TreeDataListHeader(list,listModel,listCellRenderer);
 
-		treeListPanel = buildTreeListPanel(list,listHeader);
+		// setup both views
+		lists = new TreeDataGhostDropJList[2];
+		listHeaders = new TreeDataListHeader[2];
+		treeListPanels = new JPanel[2];
+		
+		lists[0] = new TreeDataGhostDropJList(listModel,this);
+		lists[0].addMouseListener(mouseListener);
+		lists[0].setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		lists[0].setCellRenderer(listCellRenderer);
+		lists[0].addListSelectionListener(listSelListener);
+		
+		lists[1] = new TreeDataGhostDropJList(listModel,this);
+		lists[1].addMouseListener(mouseListener);
+		lists[1].setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		lists[1].setCellRenderer(listCellRenderer);
+		lists[1].addListSelectionListener(listSelListener);
+		
+		listHeaders[0] = new TreeDataListHeader(lists[0],listModel,listCellRenderer);
+		listHeaders[1] = new TreeDataListHeader(lists[0],listModel,listCellRenderer);
 
-		// TODO: this code is simply for demostrating the concept of 2 views
-		// of the same tree with drag and drop between them.  We need a better
-		// way to do this.  Maybe a JToggleButton to toggle the mode from
-		// 1 view to 2 views.
-		TreeDataGhostDropJList list2 = new TreeDataGhostDropJList(listModel,this);
-		list2.addMouseListener(mouseListener);
-		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		TreeDataListCellRenderer rend2 = new TreeDataListCellRenderer(list2,listModel);
-		list2.setCellRenderer(rend2);
-		list.addListSelectionListener(listSelListener);
-		TreeDataListHeader head2 = new TreeDataListHeader(list2,listModel,rend2);
-		
-		JPanel treeListPanel2 = buildTreeListPanel(list2,head2);
-		
-		this.remove(messageLabel);
-//		this.add(treeListPanel, BorderLayout.CENTER);
-		this.add(new JSplitPane(JSplitPane.VERTICAL_SPLIT,treeListPanel,treeListPanel2), BorderLayout.CENTER);
-		this.repaint();
-		
-		list.repaint();
-		treeListPanel.repaint();
-		listHeader.repaint();
+		treeListPanels[0] = buildTreeListPanel(lists[0],listHeaders[0]);
+		treeListPanels[1] = buildTreeListPanel(lists[1],listHeaders[1]);
+
+		this.add(treeListPanels[0],BorderLayout.CENTER);
+		repaint();
 	}
 	
-	protected JPanel buildTreeListPanel(TreeDataGhostDropJList treeList,TreeDataListHeader header)
+	public void toggleViewMode()
 	{
-		JPanel panel = new JPanel(new BorderLayout());
-		JScrollPane bodyScroll = new JScrollPane(treeList);
-		bodyScroll.setAutoscrolls(true);
-		panel.add(bodyScroll, BorderLayout.CENTER);
+		removeAll();
+
+		if(mode == SINGLE_VIEW_MODE)
+		{
+			// set to dual view mode
+			this.add(new JSplitPane(JSplitPane.VERTICAL_SPLIT,treeListPanels[0],treeListPanels[1]),BorderLayout.CENTER);
+			mode = DUAL_VIEW_MODE;
+		}
+		else
+		{
+			// set to single view mode
+			this.add(treeListPanels[0],BorderLayout.CENTER);
+			mode = SINGLE_VIEW_MODE;
+		}
+		repaint();
+	}
+	
+	protected JPanel buildTreeListPanel(final TreeDataGhostDropJList treeList,TreeDataListHeader header)
+	{
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel,BoxLayout.LINE_AXIS));
 		
-		JScrollPane headerScroll = new JScrollPane(header);
-		headerScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-		headerScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		headerScroll.setAutoscrolls(true);
+		JScrollPane listScroll = new JScrollPane(treeList);
+		listScroll.setBackground(Color.WHITE);
+		listScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		listScroll.setColumnHeaderView(header);
 		
-		ScrollBarLinkingListener linkingListener = new ScrollBarLinkingListener();
-		linkingListener.addScrollBar(bodyScroll.getHorizontalScrollBar());
-		linkingListener.addScrollBar(headerScroll.getHorizontalScrollBar());
+		JPanel buttonPanel = setupButtonPanel(treeList);
 		
-		panel.add(headerScroll, BorderLayout.NORTH);
+		panel.add(listScroll, BorderLayout.CENTER);
+		panel.add(buttonPanel,BorderLayout.EAST);
 
 		return panel;
 	}
 	
-	/**
-	 * Performs finalization work after {@link #initTreeList(TreeDefinitionIface)}
-	 * fails to initialize a new tree display.
-	 *
-	 * @param failureMessage a string containing info about the reason for failure
-	 */
-	protected synchronized void initTreeListFailure( String failureMessage )
+	protected JPanel setupButtonPanel(final JList list)
 	{
-		log.error("Error while initializing tree editor: " + failureMessage );
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new BoxLayout(buttonPanel,BoxLayout.PAGE_AXIS));
 		
-		messageLabel.setText(failureMessage);
-		messageLabel.setIcon(errorIcon);
-		this.add(messageLabel);
-		this.repaint();
-		return;
-	}
+		Icon icon_subtree    = IconManager.getIcon("TTV_Subtree",   IconManager.IconSize.Std16);
+		Icon icon_wholeTree  = IconManager.getIcon("TTV_WholeTree", IconManager.IconSize.Std16);
+		Icon icon_allDescend = IconManager.getIcon("TTV_AllDescend",IconManager.IconSize.Std16);
+		Icon icon_syncViews  = IconManager.getIcon("TTV_SyncViews", IconManager.IconSize.Std16);
+		Icon icon_newChild   = IconManager.getIcon("TTV_NewChild",  IconManager.IconSize.Std16);
+		Icon icon_editNode   = IconManager.getIcon("TTV_EditNode",  IconManager.IconSize.Std16);
+		Icon icon_delNode    = IconManager.getIcon("TTV_DelNode",   IconManager.IconSize.Std16);
 		
-	/**
-	 * Builds the button panel and all contained buttons.
-	 */
-	protected void setupButtonPanel()
-	{
-		findNodeField = new JTextField(20);
-		findNodeField.addActionListener(new ActionListener()
+		JButton subtree = new JButton(icon_subtree);
+		subtree.setSize(20,20);
+		subtree.setToolTipText("View Subtree");
+		subtree.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent ae)
 			{
-				findAndSelect(findNodeField.getText());
+				showSubtreeOfSelection(list);
 			}
 		});
 		
-		findNextButton = new JButton("Find next");
-		findNextButton.addActionListener(new ActionListener()
+		JButton wholeTree = new JButton(icon_wholeTree);
+		wholeTree.setSize(20,20);
+		wholeTree.setToolTipText("View Whole Tree");
+		wholeTree.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent ae)
 			{
-				findNextAndSelect();
+				showWholeTree(list);
 			}
 		});
 		
-		wrapFindCheckBox = new JCheckBox("Wrap Search");
-		wrapFindCheckBox.addActionListener(new ActionListener()
+		JButton showDescend = new JButton(icon_allDescend);
+		showDescend.setSize(20,20);
+		showDescend.setToolTipText("Show All Descendants");
+		showDescend.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent ae)
 			{
-				wrapSearch = wrapFindCheckBox.isSelected();
+				expandAllDescendantsOfSelection(list);
 			}
 		});
 		
-		addNodeButton = new JButton("Add child");
-		addNodeButton.addActionListener(new ActionListener()
+		JButton syncViews = new JButton(icon_syncViews);
+		syncViews.setSize(20,20);
+		syncViews.setToolTipText("Sync w/ Other View");
+		syncViews.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent ae)
 			{
-				public void actionPerformed(ActionEvent ae)
-				{
-					addChildToSelectedNode();
-				}
-			});
+				syncViewWithOtherView(list);
+			}
+		});
 		
-		deleteNodeButton = new JButton("Delete node");
-		deleteNodeButton.addActionListener(new ActionListener()
+		JButton newChild = new JButton(icon_newChild);
+		newChild.setSize(20,20);
+		newChild.setToolTipText("Add Child to Selection");
+		newChild.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent ae)
 			{
-				public void actionPerformed(ActionEvent ae)
-				{
-					deleteSelectedNode();
-				}
-			});
-		
-		editButton = new JButton("Edit node");
-		editButton.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent ae)
-				{
-					editSelectedNode();
-				}
-			});
-		
-		commitTreeButton = new JButton("Commit changes to DB");
-		commitTreeButton.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent ae)
-				{
-					commitStructureToDb();
-				}
-			});
+				addChildToSelectedNode(list);
+			}
+		});
 
-		viewSubtreeButton = new JButton("Subtree");
-		viewSubtreeButton.addActionListener(new ActionListener()
+		JButton editNode = new JButton(icon_editNode);
+		editNode.setSize(20,20);
+		editNode.setToolTipText("Edit Selected Node");
+		editNode.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent ae)
 			{
-				public void actionPerformed(ActionEvent ae)
-				{
-					showSubtreeOfSelection();
-				}
-			});
+				editSelectedNode(list);
+			}
+		});
 
-		showWholeTreeButton = new JButton("View Whole Tree");
-		showWholeTreeButton.addActionListener(new ActionListener()
+		JButton deleteNode = new JButton(icon_delNode);
+		deleteNode.setSize(20,20);
+		deleteNode.setToolTipText("Delete Selected Node");
+		deleteNode.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent ae)
 			{
-				public void actionPerformed(ActionEvent ae)
-				{
-					showWholeTree();
-				}
-			});
+				deleteSelectedNode(list);
+			}
+		});
+
+		// view manipulation buttons
+		JLabel viewLabel = new JLabel("View");
+		viewLabel.setSize(32,viewLabel.getHeight());
+		buttonPanel.add(viewLabel);
+		viewLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		buttonPanel.add(subtree);
+		subtree.setAlignmentX(Component.CENTER_ALIGNMENT);
+		buttonPanel.add(wholeTree);
+		wholeTree.setAlignmentX(Component.CENTER_ALIGNMENT);
+		buttonPanel.add(showDescend);
+		showDescend.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		buttonPanel.add(Box.createRigidArea(new Dimension(20,20)));
 		
-		showAllDescendantsButton = new JButton("Show All Descendants");
-		showAllDescendantsButton.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent ae)
-				{
-					expandAllDescendantsOfSelection();
-				}
-			});
+		// tree editing buttons
+		JLabel editLabel = new JLabel("Edit");
+		editLabel.setSize(32,editLabel.getHeight());
+		buttonPanel.add(editLabel);
+		editLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		buttonPanel.add(newChild);
+		newChild.setAlignmentX(Component.CENTER_ALIGNMENT);
+		buttonPanel.add(editNode);
+		editNode.setAlignmentX(Component.CENTER_ALIGNMENT);
+		buttonPanel.add(deleteNode);
+		deleteNode.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
-		selectionSensativeButtons = new Vector<AbstractButton>();
-		selectionSensativeButtons.add(addNodeButton);
-		selectionSensativeButtons.add(deleteNodeButton);
-		selectionSensativeButtons.add(editButton);
-		selectionSensativeButtons.add(viewSubtreeButton);
-		selectionSensativeButtons.add(showAllDescendantsButton);
+		buttonPanel.add(Box.createVerticalGlue());
+		buttonPanel.add(syncViews);
+		syncViews.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
-		disableAllButtons();
-		commitTreeButton.setEnabled(false);
-		showWholeTreeButton.setEnabled(true);
-		
-		buttonPanel = new JPanel();
-		buttonPanel.add(findNodeField);
-		buttonPanel.add(findNextButton);
-		buttonPanel.add(wrapFindCheckBox);
-		buttonPanel.add(addNodeButton);
-		buttonPanel.add(deleteNodeButton);
-		buttonPanel.add(editButton);
-		buttonPanel.add(commitTreeButton);
-		buttonPanel.add(viewSubtreeButton);
-		buttonPanel.add(showWholeTreeButton);
-		buttonPanel.add(showAllDescendantsButton);
+		return buttonPanel;
 	}
 	
-	/**
-	 * Disables all selection sensative buttons in the button panel.
-	 */
-	protected void disableAllButtons()
+	protected void syncViewWithOtherView(JList list)
 	{
-		for( AbstractButton b: selectionSensativeButtons )
+		log.error("Not yet implemented");
+		if(list == lists[0])
 		{
-			b.setEnabled(false);
+			// change the top list view to look like the bottom one
+		}
+		else
+		{
+			// change the bottom list view to look like the top one
 		}
 	}
-	
-
-	/**
-	 * Enables all selection sensative buttons in the button panel.
-	 */
-	protected void enableAllButtons()
-	{
-		for( AbstractButton b: selectionSensativeButtons )
-		{
-			b.setEnabled(true);
-		}
-		
-		showWholeTreeButton.setEnabled(true);
-	}
-
 
 	/**
 	 * Displays data entry form for creating a new node that will be
 	 * a child of the selected node.  A new child is only permanently
 	 * created if the user chooses to procede with the data entry.
 	 */
-	public void addChildToSelectedNode()
+	public void addChildToSelectedNode(JList list)
 	{
 		Object selection = list.getSelectedValue();
 		if( selection == null )
@@ -562,7 +451,6 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		// display a form for filling in child data
 		showNewTreeableForm(newT);
 	}
-	
 
 	/**
 	 * Display the data entry form for creating a new node.
@@ -588,7 +476,6 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		showEditDialog(newNode, "New Node Form", callback);
 	}
 	
-
 	/**
 	 * Peforms finalization of new node creation.  This method
 	 * serves as a callback to the data entry form for when
@@ -611,11 +498,8 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		String fullname = node.getFullName();
 		node.setFullName(fullname);
 		
-		commitTreeButton.setEnabled(true);
-
 		listModel.showChildren(node.getParentNode());
 	}
-	
 
 	/**
 	 * Cancels new node creation process.  This method serves
@@ -645,14 +529,13 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 			defItem.getTreeEntries().remove(node);
 		}
 	}
-	
 
 	/**
 	 * Deletes the currently selected node and all descendants if and
 	 * only if it is determined possible without violating any business
 	 * rules.
 	 */
-	public void deleteSelectedNode()
+	public void deleteSelectedNode(JList list)
 	{
 		Object selection = list.getSelectedValue();
 		if( selection == null )
@@ -677,7 +560,6 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		}
 	}
 	
-	
 	/**
 	 * Deletes all descendants of the given node.  Deletion is only persisted
 	 * if the user then chooses to commit the modified tree structure to the DB.
@@ -697,12 +579,12 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 			deletedNodes.add(node);
 		}
 	}
-	
 
+	
 	/**
 	 * Display a form for editing the data in the currently selected node.
 	 */
-	protected void editSelectedNode()
+	protected void editSelectedNode(JList list)
 	{
 		Object selection = list.getSelectedValue();
 		if( selection == null )
@@ -728,8 +610,8 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 
 		showEditDialog(selectedNode, "Edit Node Values", callback);
 	}
-	
 
+	
 	/**
 	 * Performs finalization of node data editing process.  This
 	 * method also signals the tree display widget to update its
@@ -747,11 +629,10 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
         }
 
         node.updateModifiedTimeAndUser();
-		commitTreeButton.setEnabled(true);
 		listModel.nodeValuesChanged(node);
 	}
-	
 
+	
 	/**
 	 * Performs cleanup tasks after the user cancels a node data
 	 * editing process.
@@ -763,7 +644,7 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		log.info("User selected 'Cancel' from edit node dialog");
 	}
 	
-
+	
 	/**
 	 * Commit the current tree structure to the database.  This also reassigns the nodeNumber
 	 * and highestChildNodeNumber fields to be consistent with the current tree layout.
@@ -774,15 +655,15 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 	{
 		Treeable root = listModel.getRoot();
 		dataService.saveTree(root,deletedNodes);
-		commitTreeButton.setEnabled(false);
 		return true;
 	}
+	
 	
 	/**
 	 * Sets the visibleRoot property of the tree to the currently selected node.  This provides
 	 * the ability to "zoom in" to a lower level of the tree.
 	 */
-	public void showSubtreeOfSelection()
+	public void showSubtreeOfSelection(JList list)
 	{
 		Object selection = list.getSelectedValue();
 		if( selection == null )
@@ -797,14 +678,15 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		list.setSelectedValue(node,true);
 		
 		// test code
-//		glassPane.setBusy(!glassPane.isBusy());
+		// glassPane.setBusy(!glassPane.isBusy());
 	}
+	
 	
 	/**
 	 * Sets the visibleRoot property to the actual root of the tree.  This results in the 
 	 * entire tree being made available to the user.
 	 */
-	public void showWholeTree()
+	public void showWholeTree(JList list)
 	{
 		Object selection = list.getSelectedValue();		
 
@@ -816,10 +698,11 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		}
 	}
 
+	
 	/** 
 	 * Expands all of the nodes below the currently selected node.
 	 */
-	public void expandAllDescendantsOfSelection()
+	public void expandAllDescendantsOfSelection(JList list)
 	{
 		Object selection = list.getSelectedValue();
 		if( selection == null )
@@ -831,10 +714,11 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		listModel.showDescendants(node);
 	}
 	
-	public void findAndSelect(String nodeName)
+	
+	public void find(String nodeName,int where,boolean wrap)
 	{
 		findName = nodeName;
-		findResults = dataService.findByName(displayedTreeDef,findName);
+		findResults = dataService.findByName(treeDef,findName);
 		if(findResults.isEmpty())
 		{
 			//TODO: notify the user that no results were found
@@ -850,47 +734,25 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 			log.error("No results below current visible root.");
 			return;
 		}
-		list.setSelectedValue(firstMatch,true);
+		
+		if((where & DualViewSearchable.TOPVIEW) != 0)
+		{
+			lists[0].setSelectedValue(firstMatch,true);
+		}
+		if((where & DualViewSearchable.BOTTOMVIEW) != 0)
+		{
+			lists[1].setSelectedValue(firstMatch,true);
+		}
 	}
 	
-	public void findNextAndSelect()
+	
+	public void findNext(int where,boolean wrap)
 	{
-		Treeable selectedNode = (Treeable)list.getSelectedValue();
-		if( selectedNode != null )
-		{
-			log.error("Searching for next node with same name as selected node: " + selectedNode.getName());
-			// find the next node with the same name
-			List<Treeable> results = dataService.findByName(displayedTreeDef,selectedNode.getName());
-			if(results.isEmpty())
-			{
-				//TODO: notify the user that no results were found
-				log.error("Search returned no results.");
-				return;
-			}
-			
-			int index = results.indexOf(selectedNode);
-			if(results.size()-1 == index && !wrapSearch)
-			{
-				//TODO: notify the user that no more results
-				log.error("No more results");
-				return;
-			}
-			index = (index+1) % results.size();
-			Treeable nextNode = results.get(index);
-			
-			if( !showPathToNode(nextNode) )
-			{
-				//TODO: notify the user that no results are below current visible root
-				log.error("No more results below current visible root.");
-				return;
-			}
-			list.setSelectedValue(nextNode,true);
-		}
-		else if(findResults != null && findName != null)
+		if(findResults != null && findName != null)
 		{
 			log.error("Searching for next node from previous search: " + findName);
 			// find the next node from the previous search
-			if(findResults.size()-1 == resultsIndex && !wrapSearch)
+			if(findResults.size()-1 == resultsIndex && !wrap)
 			{
 				//TODO: notify the user that no more results
 				log.error("No more results");
@@ -905,10 +767,20 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 				log.error("No more results below current visible root.");
 				return;
 			}
-			list.setSelectedValue(nextNode,true);
+
+			if((where & DualViewSearchable.TOPVIEW) != 0)
+			{
+				lists[0].setSelectedValue(nextNode,true);
+			}
+			if((where & DualViewSearchable.BOTTOMVIEW) != 0)
+			{
+				lists[1].setSelectedValue(nextNode,true);
+			}
 		}
 	}
+	
 	 
+	
 	protected boolean showPathToNode(Treeable node)
 	{
 		List<Treeable> pathToNode = node.getAllAncestors();
@@ -924,6 +796,7 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		}
 		return true;
 	}
+	
 	
 	/**
 	 * Display the form for editing node data.
@@ -944,6 +817,7 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		editDialog.setVisible(true);
 	}
 
+	
 	/**
 	 * Returns the top-level UI component of the tree viewer.
 	 *
@@ -955,25 +829,27 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		return this;
 	}
 
+	
 	/**
 	 * Updates the status bar text to display the full name of the currently
 	 * selected nodes and updates the enabled/disabled status of the buttons.
 	 *
 	 * @param t the newly selected Treeable
 	 */
-	protected void newTreeableSelected(Treeable t)
+	protected void newTreeableSelected(ListSelectionEvent e)
 	{
+		TreeDataGhostDropJList sourceList = (TreeDataGhostDropJList)e.getSource();
+		Treeable t = (Treeable)sourceList.getSelectedValue();
 		if( t == null )
 		{
 			statusBar.setText(null);
-			disableAllButtons();
 			return;
 		}
 		
 		statusBar.setText(t.getFullName());
-		enableAllButtons();
 	}
 	
+
 	/**
 	 * Reparents <code>dragged</code> to <code>droppedOn</code> by calling
 	 * {@link TreeDataListModel#reparent(Treeable, Treeable)}.
@@ -1009,21 +885,19 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 			Treeable child = draggedNode;
 			Treeable newParent = droppedOnNode;
 			
-			if( !displayedTreeDef.canChildBeReparentedToNode(child,newParent) )
+			if( !treeDef.canChildBeReparentedToNode(child,newParent) )
 			{
 				log.info("Cannot reparent " + child.getName() + " to " + newParent.getName());
 				return false;
 			}
 			
+			@SuppressWarnings("unused")
 			boolean changed = listModel.reparent(child,newParent);
-			if( changed )
-			{
-				commitTreeButton.setEnabled(true);
-			}
 			return true;
 		}
 		return false;
 	}
+	
 	
 	public boolean dropAcceptable( Object dragged, Object droppedOn, int dropAction )
 	{
@@ -1047,7 +921,7 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 			Treeable child = (Treeable)dragged;
 			Treeable newParent = (Treeable)droppedOn;
 			
-			if( !displayedTreeDef.canChildBeReparentedToNode(child,newParent) )
+			if( !treeDef.canChildBeReparentedToNode(child,newParent) )
 			{
 				return false;
 			}
@@ -1057,8 +931,10 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		return false;
 	}
 
+	
 	public void mouseButtonClicked(MouseEvent e)
 	{
+		TreeDataGhostDropJList list = (TreeDataGhostDropJList)e.getSource();
 		Point p = e.getPoint();
 		int index = list.locationToIndex(p);
 		if(index==-1)
@@ -1091,8 +967,10 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		}
 	}
 
+	
 	public void mouseButtonPressed(MouseEvent e)
 	{
+		final TreeDataGhostDropJList list = (TreeDataGhostDropJList)e.getSource();
 		Point p = e.getPoint();
 		int index = list.locationToIndex(p);
 		if(index==-1)
@@ -1105,15 +983,16 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback
 		
 		if( textBounds.first < p.x && p.x < textBounds.second )
 		{
-			this.list.setClickOnText(true);
+			list.setClickOnText(true);
 			// mouse press is on text area
 		}
 		else
 		{
-			this.list.setClickOnText(false);
+			list.setClickOnText(false);
 		}
 	}
 
+	
 	@Override
 	public void shutdown()
 	{

@@ -72,9 +72,9 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      * @param name the current name
      * @return the "base" name
      */
-    protected String getNameWithoutColon(final String name)
+    protected String getBaseName(final String name)
     {
-        int inx = name.indexOf(':');
+        int inx = name.indexOf('(');
         if (inx != -1)
         {
             return name.substring(0, inx);
@@ -89,13 +89,13 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     protected int countSameType(final String name)
     {
-        String newName = getNameWithoutColon(name);
+        String newName = getBaseName(name);
 
         int count = 0;
         for (Enumeration<SubPaneIFace> e=panes.elements();e.hasMoreElements();)
         {
             SubPaneIFace sp     = e.nextElement();
-            String       spName = getNameWithoutColon(sp.getName());
+            String       spName = getBaseName(sp.getName());
             if (spName.equals(newName))
             {
                 count++;
@@ -119,7 +119,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         int cnt = countSameType(pane.getName());
 
         // Add this pane to the tabs
-        String title = pane.getName() + (cnt > 0 ? ":" + Integer.toString(cnt+1) : "");
+        String title = pane.getName() + (cnt > 0 ? "("+Integer.toString(cnt+1)+")" : "");
 
         //log.debug("addPane: adding pane "+pane.getTitle());
         // When the first the pane is added there is no notification via the listener so we nedd to do it here

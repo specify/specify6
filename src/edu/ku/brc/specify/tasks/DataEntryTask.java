@@ -42,7 +42,6 @@ import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.ui.treetables.TreeDefinitionEditor;
-import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
@@ -97,10 +96,6 @@ public class DataEntryTask extends BaseTask
             //navBox.add(NavBox.createBtn(title, name, IconManager.IconSize.Std16));
             navBox.add(NavBox.createBtn("Specimen", "ColObj", IconManager.IconSize.Std16));
             navBox.add(NavBox.createBtn("Locality", "Locality", IconManager.IconSize.Std16));
-            navBox.add(NavBox.createBtn("Taxon", "Taxon", IconManager.IconSize.Std16,new ShowTreeTableEditorAction(TaxonTreeDef.class,"Taxonomy Editor")));
-            navBox.add(NavBox.createBtn("Geography", "Geography", IconManager.IconSize.Std16,new ShowTreeTableEditorAction(GeographyTreeDef.class,"Geography Editor")));
-            navBox.add(NavBox.createBtn("Location", "Location", IconManager.IconSize.Std16,new ShowTreeTableEditorAction(LocationTreeDef.class,"Location Editor")));
-            navBox.add(NavBox.createBtn("Geologic Time Period", "Geologic Time Period", IconManager.IconSize.Std16,new ShowTreeTableEditorAction(GeologicTimePeriodTreeDef.class,"Geologic Time Period Editor")));
             navBox.add(NavBox.createBtn("Agent", "Agent", IconManager.IconSize.Std16));
             navBox.add(NavBox.createBtn("Address", "Address", IconManager.IconSize.Std16));
             navBoxes.addElement(navBox);
@@ -165,22 +160,9 @@ public class DataEntryTask extends BaseTask
         }
     }
 
-
-
-    /**
-     * Opens tree Editor with the class of of the tree (type)
-     * @param treeableClass class of tree to be editted
-     * @param name the name of the tree
-     */
-    public void openTreeEditor(final Class treeDefClass, final String name)
+    public void openTreeDefEditor(final Class treeDefClass, final String editorName)
     {
-    	TreeTableViewer ttv = new TreeTableViewer(treeDefClass,name,this);
-    	SubPaneMgr.getInstance().addPane(ttv);
-    }
-    
-    public void openTreeDefEditor(final Class treeDefClass, final String name)
-    {
-    	TreeDefinitionEditor defEditor = new TreeDefinitionEditor(treeDefClass,name,this,true);
+    	TreeDefinitionEditor defEditor = new TreeDefinitionEditor(treeDefClass,editorName,this,true);
     	SubPaneMgr.getInstance().addPane(defEditor);
     }
 
@@ -341,25 +323,6 @@ public class DataEntryTask extends BaseTask
     //--------------------------------------------------------------
     // Inner Classes
     //--------------------------------------------------------------
-
-    /**
-     * @author jds
-     */
-    class ShowTreeTableEditorAction implements ActionListener
-    {
-    	protected Class treeDefClass;
-    	protected String name;
-
-    	public ShowTreeTableEditorAction(final Class treeDefClass, final String name)
-    	{
-    		this.treeDefClass = treeDefClass;
-    		this.name = name;
-    	}
-    	public void actionPerformed(ActionEvent e)
-    	{
-    		openTreeEditor(treeDefClass,name);
-    	}
-    }
 
     /**
      * @author jds

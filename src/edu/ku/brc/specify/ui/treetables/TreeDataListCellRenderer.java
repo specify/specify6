@@ -43,19 +43,18 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 	
 	protected Color bgs[];
 	
-	public TreeDataListCellRenderer(JList list, TreeDataListModel listModel)
+	public TreeDataListCellRenderer(TreeDataListModel listModel, Color[] backgroundColors )
 	{
 		bgs = new Color[2];
-		bgs[0] = new Color(202,238,255);
-		bgs[1] = new Color(151,221,255);
+		bgs[0] = backgroundColors[0];
+		bgs[1] = backgroundColors[1];
 		
 		leadTextOffset = 24;
 		tailTextOffset = 8;
 		
-		nodeUI = new TreeNodeUI(list,listModel);
+		nodeUI = new TreeNodeUI(listModel);
 		
 		this.whitespace = 5;
-		this.list = list;
 		model = listModel;
 		model.addListDataListener(this);
 		lengthsValid = false;
@@ -68,6 +67,7 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 	
 	public Component getListCellRendererComponent(JList l, Object value, int index, boolean isSelected, boolean cellHasFocus)
 	{
+		nodeUI.setList(l);
 		nodeUI.setTreeable((Treeable)value);
 		nodeUI.setSelected(isSelected);
 		nodeUI.setIndex(index);
@@ -147,19 +147,9 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 		protected boolean selected;
 		protected boolean hasFocus;
 
-		public TreeNodeUI(JList list, TreeDataListModel model)
+		public TreeNodeUI(TreeDataListModel model)
 		{
-			this.list = list;
 			this.model = model;
-			
-			if( list.getFont() != null )
-			{
-				this.setFont(list.getFont());
-			}
-			
-			setForeground(list.getForeground());
-			setBackground(list.getBackground());
-			setSize(list.getWidth(),list.getFixedCellHeight());
 			setOpaque(true);
 		}
 		
@@ -230,6 +220,11 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 		@Override
 		protected void paintComponent(Graphics g)
 		{
+			if( list.getFont() != null )
+			{
+				this.setFont(list.getFont());
+			}
+
 			// ensure that the lengths are valid
 			if( !lengthsValid )
 			{
