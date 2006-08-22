@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
@@ -75,7 +74,7 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
     protected List<JComponent>     menus    = null;
     protected List<ActionListener> listeners = new ArrayList<ActionListener>();
     
-    protected static ImageIcon dropDownArrow;
+    protected static Icon dropDownArrow;
     
     static {
         dropDownArrow = IconManager.getImage("DropDownArrow");
