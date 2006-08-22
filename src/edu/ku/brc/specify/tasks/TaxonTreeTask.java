@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
+import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 
@@ -34,6 +35,7 @@ import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
  *
@@ -59,6 +61,9 @@ public class TaxonTreeTask extends BaseTask implements DualViewSearchable
 	public TaxonTreeTask()
 	{
         super(TAXON, getResourceString(TAXON));
+//        this.icon = IconManager.getIcon(TAXON,IconManager.IconSize.Std24);
+//        
+//        Icon buttonIcon = IconManager.getIcon(iconName, IconManager.IconSize.Std24);
         CommandDispatcher.register(TAXON, this);
         dataService = TreeDataServiceFactory.createService();
         initialize();
@@ -74,7 +79,7 @@ public class TaxonTreeTask extends BaseTask implements DualViewSearchable
 			createToolBarButton(defs);
 			createMenus();
 			
-			ActionListener al = new ActionListener()
+			ActionListener toggleViewAction = new ActionListener()
 			{
 				public void actionPerformed(ActionEvent ae)
 				{
@@ -82,17 +87,30 @@ public class TaxonTreeTask extends BaseTask implements DualViewSearchable
 				}
 			};
 
-			NavBox navBox = new NavBox(getResourceString("Actions"));
+			ActionListener saveTreeAction = new ActionListener()
+			{
+				public void actionPerformed(ActionEvent ae)
+				{
+					saveTree();
+				}
+			};
+
+			NavBox actions = new NavBox(getResourceString("Actions"));
 			String label = getResourceString("ToggleViewMode");
 			String iconName = name;
-			NavBoxItemIFace navItem = NavBox.createBtn(label,iconName,IconManager.IconSize.Std16,al); 
-			navBox.add(navItem);
-			navBoxes.addElement(navBox);
+			NavBoxItemIFace toggleViewItem = NavBox.createBtn(label,iconName,IconManager.IconSize.Std16,toggleViewAction); 
+			actions.add(toggleViewItem);
+			
+			label = getResourceString("SaveTree");
+			NavBoxItemIFace saveTreeItem = NavBox.createBtn(label,iconName,IconManager.IconSize.Std16,saveTreeAction);
+			actions.add(saveTreeItem);
+			
+			navBoxes.addElement(actions);
 
-			navBox = new NavBox(getResourceString("FindNode"));
+			NavBox find = new NavBox(getResourceString("FindNode"));
 			finderWidget = new TreeNodeFindWidget(this);
-			navBox.add((NavBoxItemIFace)(finderWidget));
-			navBoxes.addElement(navBox);			
+			find.add((NavBoxItemIFace)(finderWidget));
+			navBoxes.addElement(find);			
 		}
 	}
 	
@@ -207,11 +225,18 @@ public class TaxonTreeTask extends BaseTask implements DualViewSearchable
         return this.getClass();
     }
     
+    public void saveTree()
+    {
+    	TreeTableViewer ttv = (TreeTableViewer)SubPaneMgr.getInstance().getCurrentSubPane();
+    	ttv.commitStructureToDb();
+    }
+    
     public void toggleViewMode()
     {
     	TreeTableViewer ttv = (TreeTableViewer)SubPaneMgr.getInstance().getCurrentSubPane();
     	ttv.toggleViewMode();
     	ttv.repaint();
+    	UICacheManager.forceTopFrameRepaint();
     }
     
 	/**

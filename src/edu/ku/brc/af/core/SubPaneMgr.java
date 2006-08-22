@@ -68,43 +68,6 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     }
 
     /**
-     * Get the name of the tab sans the colon
-     * @param name the current name
-     * @return the "base" name
-     */
-    protected String getBaseName(final String name)
-    {
-        int inx = name.indexOf('(');
-        if (inx != -1)
-        {
-            return name.substring(0, inx);
-        }
-        return name;
-    }
-
-    /**
-     * Counts up all the same kind of windows.
-     * @param name the name of the SubPanel
-     * @return the count of the same kind of panes
-     */
-    protected int countSameType(final String name)
-    {
-        String newName = getBaseName(name);
-
-        int count = 0;
-        for (Enumeration<SubPaneIFace> e=panes.elements();e.hasMoreElements();)
-        {
-            SubPaneIFace sp     = e.nextElement();
-            String       spName = getBaseName(sp.getName());
-            if (spName.equals(newName))
-            {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    /**
      * Adds the sub pane and return the same one it added.
      * @param pane the pane to be added
      * @return the same pane
@@ -116,11 +79,17 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             throw new NullPointerException("Null name or pane when adding to SubPaneMgr");
         }
 
-        int cnt = countSameType(pane.getName());
-
         // Add this pane to the tabs
-        String title = pane.getName() + (cnt > 0 ? "("+Integer.toString(cnt+1)+")" : "");
-
+        String title = pane.getName();
+        boolean nameInUse = (panes.get(title) != null) ? true : false;
+        int index = 2;
+        while(nameInUse)
+        {
+        	title = pane.getName() + "("+index+")";
+        	nameInUse = (panes.get(title) != null) ? true : false;
+        	index++;
+        }
+        
         //log.debug("addPane: adding pane "+pane.getTitle());
         // When the first the pane is added there is no notification via the listener so we nedd to do it here
         // when items are added and there is already items then the listener gets notified.
@@ -161,7 +130,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         }
         notifyListeners(NotificationType.Removed, pane);
         this.remove(pane.getUIComponent());
-        panes.remove(pane);
+        panes.remove(pane.getName());
         pane.shutdown();
         return pane;
     }
@@ -273,8 +242,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     public void closeCurrent()
     {
         SubPaneIFace subPane = this.getCurrentSubPane();
-        this.remove(subPane.getUIComponent());
-        notifyListeners(NotificationType.Removed, subPane);
+        this.removePane(subPane);
     }
 
     /**

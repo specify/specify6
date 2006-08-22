@@ -16,7 +16,7 @@ package edu.ku.brc.ui;
 
 import java.awt.Component;
 
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
@@ -33,13 +33,13 @@ import javax.swing.ListCellRenderer;
 public class IconListCellRenderer extends JLabel implements ListCellRenderer 
 {
 
-    protected ImageIcon icon = null;
+    protected Icon icon = null;
     
     /**
      * Constructor with icon
      * @param icon the icon to be displayed (can be null)
      */
-    public IconListCellRenderer(final ImageIcon icon)
+    public IconListCellRenderer(final Icon icon)
     {
         this.icon= icon;
     }

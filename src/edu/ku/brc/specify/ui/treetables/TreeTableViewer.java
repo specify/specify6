@@ -18,7 +18,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
@@ -997,6 +996,7 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	public void shutdown()
 	{
 		super.shutdown();
+		System.out.println("Shutting down TTV");
 		dataService.fini();
 	}
 }

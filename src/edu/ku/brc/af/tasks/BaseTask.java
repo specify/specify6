@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
@@ -73,7 +72,7 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
     protected final String        title;
 
     protected Vector<NavBoxIFace> navBoxes      = new Vector<NavBoxIFace>();
-    protected ImageIcon           icon          = null;
+    protected Icon                icon          = null;
     protected boolean             isInitialized = false;
 
     // Members needed for initialization
