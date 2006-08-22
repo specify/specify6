@@ -162,7 +162,9 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 				recomputeLengthPerLevel(list.getGraphics());
 			}
 
-			int width = rankBoundsMap.get(treeable.getRankId()).second;
+			Integer rankId = treeable.getRankId();
+			Pair<Integer,Integer> rankBounds = rankBoundsMap.get(rankId);
+			int width = rankBounds.second;
 			return new Dimension(width,list.getFixedCellHeight());
 		}
 		

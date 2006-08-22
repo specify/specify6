@@ -135,6 +135,11 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		setLayout(new BorderLayout());
 	}
 	
+	public TreeDefinitionIface getTreeDef()
+	{
+		return this.treeDef;
+	}
+	
 	@Override
 	public void showingPane(boolean show)
 	{

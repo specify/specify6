@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
-import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 
@@ -56,14 +55,15 @@ public class TaxonTreeTask extends BaseTask implements DualViewSearchable
     protected List<JComponent> toolBarBtnItems;
     protected TreeNodeFindWidget finderWidget;
     
-    protected TreeTableViewer currentVisibleTTV; 
+    protected TreeTableViewer currentVisibleTTV;
+
+    protected Vector<TreeTableViewer> visibleTTVs;
     
 	public TaxonTreeTask()
 	{
         super(TAXON, getResourceString(TAXON));
-//        this.icon = IconManager.getIcon(TAXON,IconManager.IconSize.Std24);
-//        
-//        Icon buttonIcon = IconManager.getIcon(iconName, IconManager.IconSize.Std24);
+        this.icon = IconManager.getIcon(TAXON,IconManager.IconSize.Std24);
+        visibleTTVs = new Vector<TreeTableViewer>();
         CommandDispatcher.register(TAXON, this);
         dataService = TreeDataServiceFactory.createService();
         initialize();
@@ -152,9 +152,18 @@ public class TaxonTreeTask extends BaseTask implements DualViewSearchable
 	
 	protected void showTaxonTree(TreeDefinitionIface treeDef)
 	{
+		for(TreeTableViewer ttv: visibleTTVs)
+		{
+			if(ttv.getTreeDef() == treeDef)
+			{
+				return;
+			}
+		}
+		
 		ContextMgr.requestContext(this);
 		String tabName = getResourceString(name) + ": " + treeDef.getName();
     	TreeTableViewer ttv = new TreeTableViewer(treeDef,tabName,this);
+    	visibleTTVs.add(ttv);
     	SubPaneMgr.getInstance().addPane(ttv);
 	}
 	
@@ -225,7 +234,17 @@ public class TaxonTreeTask extends BaseTask implements DualViewSearchable
         return this.getClass();
     }
     
-    public void saveTree()
+    @Override
+	public void subPaneRemoved(SubPaneIFace subPane)
+	{
+    	if(subPane instanceof TreeTableViewer)
+    	{
+    		TreeTableViewer ttv = (TreeTableViewer)subPane;
+    		visibleTTVs.remove(ttv);
+    	}
+	}
+
+	public void saveTree()
     {
     	TreeTableViewer ttv = (TreeTableViewer)SubPaneMgr.getInstance().getCurrentSubPane();
     	ttv.commitStructureToDb();
