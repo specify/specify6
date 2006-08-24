@@ -124,7 +124,14 @@
     </java>
   </target>
 
-   <target name="gencode">
+	  <target name="generateDatamodelDoc" description="Generates datamodel document" depends="compile">
+	    <java classname="edu.ku.brc.specify.tools.datamodelgenerator.DatamodelGenerator" fork="true">
+	      <classpath refid="project.class.path"/>
+	    </java>
+	  </target>	
+   
+	
+	<target name="gencode">
       <!-- bit of a best guess, I'm afraid -->
      <mkdir dir="${hibernate.generated.code.destdir}"/>
      <hibernatetool destdir="${hibernate.generated.code.destdir}">

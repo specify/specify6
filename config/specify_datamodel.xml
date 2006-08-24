@@ -1,0 +1,1121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <database>
+    <table classname="edu.ku.brc.specify.datamodel.Accession" table="accession" tableid="7" lazy="true" view="Accession">
+      <field column="Type" name="type" type="java.lang.String" length="32"/>
+      <field column="Status" name="status" type="java.lang.String" length="32"/>
+      <field column="Number" name="number" type="java.lang.String" length="60"/>
+      <field column="VerbatimDate" name="verbatimDate" type="java.lang.String" length="50"/>
+      <field column="DateAccessioned" name="dateAccessioned" type="calendar_date"/>
+      <field column="DateReceived" name="dateReceived" type="calendar_date"/>
+      <field column="Text1" name="text1" type="text"/>
+      <field column="Text2" name="text2" type="text"/>
+      <field column="Text3" name="text3" type="text"/>
+      <field column="Number1" name="number1" type="java.lang.Float"/>
+      <field column="Number2" name="number2" type="java.lang.Float"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <field column="YesNo1" name="yesNo1" type="boolean"/>
+      <field column="YesNo2" name="yesNo2" type="boolean"/>
+      <id column="AccessionID" name="accessionId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObject" relationshipname="collectionObjects" columnname="AccessionID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.AccessionAuthorizations" relationshipname="accessionAuthorizations" columnname="AccessionID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.AccessionAgents" relationshipname="accessionAgents" columnname="AccessionID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.AccessionAgents" table="accessionagents" tableid="12" lazy="true">
+      <field column="Role" name="role" type="java.lang.String" length="32"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="AccessionAgentsID" name="accessionAgentsId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="Agent" columnname="AgentID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Accession" relationshipname="accession" columnname="AccessionID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.RepositoryAgreement" relationshipname="repositoryAgreement" columnname="RepositoryAgreementID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.AccessionAuthorizations" table="accessionauthorizations" tableid="13" lazy="true">
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="AccessionAuthorizationsID" name="accessionAuthorizationsId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Permit" relationshipname="permit" columnname="PermitID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Accession" relationshipname="accession" columnname="AccessionID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.RepositoryAgreement" relationshipname="repositoryAgreement" columnname="RepositoryAgreementID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.Address" table="address" tableid="8" lazy="true" view="Address">
+      <field column="Address" name="address" type="java.lang.String" length="255"/>
+      <field column="Address2" name="address2" type="java.lang.String" length="255"/>
+      <field column="City" name="city" type="java.lang.String" length="64"/>
+      <field column="State" name="state" type="java.lang.String" length="64"/>
+      <field column="Country" name="country" type="java.lang.String" length="64"/>
+      <field column="PostalCode" name="postalCode" type="java.lang.String" length="32"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <field column="IsPrimary" name="isPrimary" type="boolean"/>
+      <field column="Phone1" name="phone1" type="java.lang.String" length="50"/>
+      <field column="Phone2" name="phone2" type="java.lang.String" length="50"/>
+      <field column="Fax" name="fax" type="java.lang.String" length="50"/>
+      <field column="RoomOrBuilding" name="roomOrBuilding" type="java.lang.String" length="50"/>
+      <id column="AddressID" name="addressId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agent" columnname="AgentID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.Agent" table="agent" tableid="5" lazy="true" view="Agent">
+      <field column="AgentType" name="agentType" type="byte" length="3"/>
+      <field column="JobTitle" name="jobTitle" type="java.lang.String" length="50"/>
+      <field column="FirstName" name="firstName" type="java.lang.String" length="50"/>
+      <field column="LastName" name="lastName" type="java.lang.String" length="50"/>
+      <field column="MiddleInitial" name="middleInitial" type="java.lang.String" length="50"/>
+      <field column="Title" name="title" type="java.lang.String" length="50"/>
+      <field column="Interests" name="interests" type="java.lang.String" length="255"/>
+      <field column="Abbreviation" name="abbreviation" type="java.lang.String" length="50"/>
+      <field column="Name" name="name" type="java.lang.String" length="120"/>
+      <field column="Email" name="email" type="java.lang.String" length="50"/>
+      <field column="URL" name="url" type="text"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="AgentID" name="agentId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Authors" relationshipname="authors" columnname="AgentID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject" relationshipname="loanReturnPhysicalObjects" columnname="ReceivedByID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.BorrowReturnMaterial" relationshipname="borrowReturnMaterials" columnname="ReturnedByID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.ExchangeIn" relationshipname="exchangeInCatalogedBys" columnname="CatalogedByID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="members" columnname="ParentOrganizationID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Project" relationshipname="projects" columnname="ProjectAgentID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Preparation" relationshipname="preparations" columnname="PreparedByID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Determination" relationshipname="determinations" columnname="DeterminerID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Shipment" relationshipname="shipments" columnname="ShippedByID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Collectors" relationshipname="collectors" columnname="AgentID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.ExchangeOut" relationshipname="exchangeOutCatalogedBys" columnname="CatalogedByID"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.ExternalResource" relationshipname="externalResources" columnname="AgentID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.RepositoryAgreement" relationshipname="repositoryAgreements" columnname="AgentID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Address" relationshipname="addresses" columnname="AgentID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LoanAgents" relationshipname="loanAgents" columnname="AgentID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Shipment" relationshipname="shipmentsByShipper" columnname="ShipperID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Shipment" relationshipname="shipmentsByShippedTo" columnname="ShippedToID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.DeaccessionAgents" relationshipname="deaccessionAgents" columnname="AgentID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.ExchangeIn" relationshipname="exchangeInFromOrganizations" columnname="ReceivedFromOrganizationID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Permit" relationshipname="permitsByIssuee" columnname="IssueeID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Permit" relationshipname="permitsByIssuer" columnname="IssuerID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.BorrowAgents" relationshipname="borrowAgents" columnname="AgentID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.AccessionAgents" relationshipname="accessionAgents" columnname="AgentID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.ExchangeOut" relationshipname="exchangeOutSentToOrganizations" columnname="SentToOrganizationID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="organization" columnname="ParentOrganizationID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.AttributeDef" table="attributedef" tableid="16" lazy="true">
+      <field column="TableType" name="tableType" type="short"/>
+      <field column="FieldName" name="fieldName" type="java.lang.String" length="32"/>
+      <field column="DataType" name="dataType" type="short"/>
+      <id column="AttributeDefID" name="attributeDefId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectingEventAttr" relationshipname="collectingEventAttrs" columnname="AttributeDefID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.PreparationAttr" relationshipname="preparationAttr" columnname="AttributeDefID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObjectAttr" relationshipname="collectionObjectAttrs" columnname="AttributeDefID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.ExternalResourceAttr" relationshipname="externalResourcesAttrs" columnname="AttributeDefID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectionObjDef" relationshipname="collectionObjDef" columnname="CollectionObjDefID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.PrepType" relationshipname="prepType" columnname="PrepTypeID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.Authors" table="authors" tableid="17">
+      <field column="OrderNumber" name="orderNumber" type="short"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="AuthorsID" name="authorsId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.ReferenceWork" relationshipname="referenceWork" columnname="ReferenceWorkID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agent" columnname="AgentID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.Borrow" table="borrow" tableid="18" lazy="true">
+      <field column="InvoiceNumber" name="invoiceNumber" type="java.lang.String" length="50"/>
+      <field column="ReceivedDate" name="receivedDate" type="calendar_date"/>
+      <field column="OriginalDueDate" name="originalDueDate" type="calendar_date"/>
+      <field column="DateClosed" name="dateClosed" type="calendar_date" length="10"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="Text1" name="text1" type="text"/>
+      <field column="Text2" name="text2" type="text"/>
+      <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
+      <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <field column="Closed" name="closed" type="short"/>
+      <field column="YesNo1" name="yesNo1" type="boolean"/>
+      <field column="YesNo2" name="yesNo2" type="boolean"/>
+      <field column="CurrentDueDate" name="currentDueDate" type="calendar_date"/>
+      <id column="BorrowID" name="borrowId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.BorrowShipments" relationshipname="borrowShipments" columnname="BorrowID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.BorrowAgents" relationshipname="borrowAgents" columnname="BorrowID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.BorrowMaterial" relationshipname="borrowMaterials" columnname="BorrowID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.BorrowAgents" table="borrowagents" tableid="19" lazy="true">
+      <field column="Role" name="role" type="java.lang.String" length="32"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="BorrowAgentsID" name="borrowAgentsId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="Agent" columnname="AgentID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Borrow" relationshipname="borrow" columnname="BorrowID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.BorrowMaterial" table="borrowmaterial" tableid="20" lazy="true">
+      <field column="MaterialNumber" name="materialNumber" type="java.lang.String" length="50"/>
+      <field column="Description" name="description" type="java.lang.String" length="50"/>
+      <field column="Quantity" name="quantity" type="short"/>
+      <field column="OutComments" name="outComments" type="text"/>
+      <field column="InComments" name="inComments" type="text"/>
+      <field column="QuantityResolved" name="quantityResolved" type="short"/>
+      <field column="QuantityReturned" name="quantityReturned" type="short"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="BorrowMaterialID" name="borrowMaterialId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.BorrowReturnMaterial" relationshipname="borrowReturnMaterials" columnname="BorrowMaterialID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Borrow" relationshipname="borrow" columnname="BorrowID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.BorrowReturnMaterial" table="borrowreturnmaterial" tableid="21" lazy="true">
+      <field column="ReturnedDate" name="returnedDate" type="calendar_date"/>
+      <field column="Quantity" name="quantity" type="short"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="BorrowReturnMaterialID" name="borrowReturnMaterialId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agent" columnname="ReturnedByID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.BorrowMaterial" relationshipname="borrowMaterial" columnname="BorrowMaterialID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.BorrowShipments" table="borrowshipments" tableid="22" lazy="true">
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="BorrowShipmentsID" name="borrowShipmentsId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Shipment" relationshipname="shipment" columnname="ShipmentID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Borrow" relationshipname="borrow" columnname="BorrowID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.CatalogSeries" table="catalogseries" tableid="23" lazy="true">
+      <field column="IsTissueSeries" name="isTissueSeries" type="boolean"/>
+      <field column="SeriesName" name="seriesName" type="java.lang.String" length="50"/>
+      <field column="CatalogSeriesPrefix" name="catalogSeriesPrefix" type="java.lang.String" length="50"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="CatalogSeriesID" name="catalogSeriesId" type="java.lang.Integer"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObjDef" relationshipname="collectionObjDefItems" columnname="CatalogSeriesID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CatalogSeries" relationshipname="tissue" columnname="TissueID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.CollectingEvent" table="collectingevent" tableid="10" lazy="true" view="CollectingEvent">
+      <field column="StationFieldNumber" name="stationFieldNumber" type="java.lang.String" length="50"/>
+      <field column="Method" name="method" type="java.lang.String" length="50"/>
+      <field column="VerbatimDate" name="verbatimDate" type="java.lang.String" length="50"/>
+      <field column="StartDate" name="startDate" type="calendar_date"/>
+      <field column="StartDatePrecision" name="startDatePrecision" type="short"/>
+      <field column="StartDateVerbatim" name="startDateVerbatim" type="java.lang.String" length="50"/>
+      <field column="EndDate" name="endDate" type="calendar_date"/>
+      <field column="EndDatePrecision" name="endDatePrecision" type="short"/>
+      <field column="EndDateVerbatim" name="endDateVerbatim" type="java.lang.String" length="50"/>
+      <field column="StartTime" name="startTime" type="short"/>
+      <field column="EndTime" name="endTime" type="short"/>
+      <field column="VerbatimLocality" name="verbatimLocality" type="text"/>
+      <field column="GroupPermittedToView" name="groupPermittedToView" type="java.lang.Integer" length="10"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="CollectingEventID" name="collectingEventId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObject" relationshipname="collectionObjects" columnname="CollectingEventID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Collectors" relationshipname="collectors" columnname="CollectingEventID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectingEventAttr" relationshipname="attrs" columnname="CollectingEventAttrID"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.ExternalResource" relationshipname="externalResources" columnname="CollectingEventID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Locality" relationshipname="locality" columnname="LocalityID"/>
+      <relationship type="one-to-one" classname="edu.ku.brc.specify.datamodel.Stratigraphy" relationshipname="stratigraphy"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.CollectingEventAttr" table="collectingeventattr" tableid="25" lazy="true">
+      <field column="StrValue" name="strValue" type="java.lang.String" length="255"/>
+      <field column="DoubleValue" name="dblValue" type="java.lang.Double"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <id column="AttrID" name="attrId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectingEvent" relationshipname="collectingEvent" columnname="CollectingEventID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.AttributeDef" relationshipname="definition" columnname="AttributeDefID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.CollectionObjDef" table="collectionobjdef" tableid="26" lazy="true">
+      <field column="Name" name="name" type="java.lang.String" length="64"/>
+      <field column="Discipline" name="discipline" type="java.lang.String" length="64"/>
+      <id column="CollectionObjDefID" name="collectionObjDefId" type="java.lang.Integer"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.CatalogSeries" relationshipname="catalogSeries" columnname="CollectionObjDefID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.AttributeDef" relationshipname="attributeDefs" columnname="CollectioObjDefID"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.Locality" relationshipname="localities" columnname="CollectionObjDefID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.DataType" relationshipname="dataType" columnname="DataTypeID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.SpecifyUser" relationshipname="specifyUser" columnname="SpecifyUserID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.GeographyTreeDef" relationshipname="geographyTreeDef" columnname="GeographyTreeDefID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef" relationshipname="geologicTimePeriodTreeDef" columnname="GeologicTimePeriodTreeDefID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.LocationTreeDef" relationshipname="locationTreeDef" columnname="LocationTreeDefID"/>
+      <relationship type="one-to-one" classname="edu.ku.brc.specify.datamodel.TaxonTreeDef" relationshipname="taxonTreeDef"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.CollectionObject" table="collectionobject" tableid="1" lazy="true" view="CollectionObject">
+      <field column="FieldNumber" name="fieldNumber" type="java.lang.String" length="50"/>
+      <field column="Description" name="description" type="java.lang.String" length="50"/>
+      <field column="Text1" name="text1" type="text"/>
+      <field column="Text2" name="text2" type="text"/>
+      <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
+      <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
+      <field column="YesNo1" name="yesNo1" type="boolean"/>
+      <field column="YesNo2" name="yesNo2" type="boolean"/>
+      <field column="CountAmt" name="countAmt" type="java.lang.Integer" length="10"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="Name" name="name" type="java.lang.String" length="64"/>
+      <field column="Modifier" name="modifier" type="java.lang.String" length="50"/>
+      <field column="CatalogedDate" name="catalogedDate" type="calendar_date"/>
+      <field column="CatalogedDateVerbatim" name="catalogedDateVerbatim" type="java.lang.String" length="32"/>
+      <field column="GUID" name="guid" type="java.lang.String" length="255"/>
+      <field column="AltCatalogNumber" name="altCatalogNumber" type="java.lang.String" length="32"/>
+      <field column="GroupPermittedToView" name="groupPermittedToView" type="java.lang.Integer" length="10"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <field column="Deaccessioned" name="deaccessioned" type="boolean"/>
+      <field column="CatalogNumber" name="catalogNumber" type="java.lang.Float"/>
+      <id column="CollectionObjectID" name="collectionObjectId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObjectCitation" relationshipname="collectionObjectCitations" columnname="CollectionObjectID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObjectAttr" relationshipname="attrs" columnname="CollectionObjectID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Preparation" relationshipname="preparations" columnname="CollectionObjectID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Determination" relationshipname="determinations" columnname="CollectionObjectID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.ProjectCollectionObject" relationshipname="projectCollectionObjects" columnname="CollectionObjectID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject" relationshipname="deaccessionCollectionObjects" columnname="CollectionObjectID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.OtherIdentifier" relationshipname="otherIdentifiers" columnname="CollectionObjectID"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.ExternalResource" relationshipname="externalResources" columnname="CollectionObjectID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectingEvent" relationshipname="collectingEvent" columnname="CollectingEventID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.ContainerItem" relationshipname="containerItem" columnname="ContainerItemID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectionObjDef" relationshipname="collectionObjDef" columnname="CollectionObjDefID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CatalogSeries" relationshipname="catalogSeries" columnname="CatalogSeriesID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Accession" relationshipname="accession" columnname="AccessionID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="cataloger" columnname="CatalogerID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Container" relationshipname="container" columnname="ContainerID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.CollectionObjectAttr" table="collectionobjectattr" tableid="28" lazy="true">
+      <field column="StrValue" name="strValue" type="java.lang.String" length="255"/>
+      <field column="DoubleValue" name="dblValue" type="java.lang.Double"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <id column="AttrID" name="attrId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectionObject" relationshipname="collectionObject" columnname="CollectionObjectID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.AttributeDef" relationshipname="definition" columnname="AttributeDefID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.CollectionObjectCitation" table="collectionobjectcitation" tableid="29" lazy="true">
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="CollectionObjectCitationID" name="collectionObjectCitationId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.ReferenceWork" relationshipname="referenceWork" columnname="ReferenceWorkID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectionObject" relationshipname="collectionObject" columnname="BiologicalObjectID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.Collectors" table="collectors" tableid="30">
+      <field column="OrderNumber" name="orderNumber" type="int" length="10"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="CollectorsID" name="collectorsId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectingEvent" relationshipname="collectingEvent" columnname="CollectingEventID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agent" columnname="AgentID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.Container" table="container" tableid="31" lazy="true">
+      <field column="CollectionObjectID" name="collectionObjectId" type="int"/>
+      <field column="Type" name="type" type="short"/>
+      <field column="Name" name="name" type="java.lang.String" length="64"/>
+      <field column="Description" name="description" type="java.lang.String" length="255"/>
+      <field column="Number" name="number" type="int"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="ContainerID" name="containerId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.ContainerItem" relationshipname="items" columnname="ContainerID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectionObject" relationshipname="container" columnname="CollectionObjectID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Location" relationshipname="location" columnname="LocationID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.ContainerItem" table="containeritem" tableid="32" lazy="true">
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <id column="ContainerItemID" name="containerItemId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObject" relationshipname="collectionObjects" columnname="ContainerID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Container" relationshipname="container" columnname="ContainerID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.DataType" table="datatype" tableid="33" lazy="true">
+      <field column="Name" name="name" type="java.lang.String" length="50"/>
+      <id column="DataTypeID" name="dataTypeId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObjDef" relationshipname="collectionObjDef" columnname="DataTypeID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.Deaccession" table="deaccession" tableid="34" lazy="true">
+      <field column="Type" name="type" type="java.lang.String" length="32"/>
+      <field column="DeaccessionNumber" name="deaccessionNumber" type="java.lang.String" length="50"/>
+      <field column="DeaccessionDate" name="deaccessionDate" type="calendar_date"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="Text1" name="text1" type="text"/>
+      <field column="Text2" name="text2" type="text"/>
+      <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
+      <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <field column="YesNo1" name="yesNo1" type="boolean"/>
+      <field column="YesNo2" name="yesNo2" type="boolean"/>
+      <id column="DeaccessionID" name="deaccessionId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.DeaccessionAgents" relationshipname="deaccessionAgents" columnname="DeaccessionID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject" relationshipname="deaccessionCollectionObjects" columnname="DeaccessionID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.DeaccessionAgents" table="deaccessionagents" tableid="35" lazy="true">
+      <field column="Role" name="role" type="java.lang.String" length="32"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="DeaccessionAgentsID" name="deaccessionAgentsId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="Agent" columnname="AgentID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Deaccession" relationshipname="deaccession" columnname="DeaccessionID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject" table="deaccessioncollectionobject" tableid="36" lazy="true">
+      <field column="Quantity" name="quantity" type="short"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="DeaccessionCollectionObjectID" name="deaccessionCollectionObjectId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject" relationshipname="loanReturnPhysicalObjects" columnname="DeaccessionPhysicalObjectID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectionObject" relationshipname="collectionObjectCatalog" columnname="CollectionObjectID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Deaccession" relationshipname="deaccession" columnname="DeaccessionID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.Determination" table="determination" tableid="9" lazy="true" view="Determination">
+      <field column="TypeStatusName" name="typeStatusName" type="java.lang.String" length="50"/>
+      <field column="DeterminedDate" name="determinedDate" type="calendar_date"/>
+      <field column="Confidence" name="confidence" type="java.lang.String" length="50"/>
+      <field column="Method" name="method" type="java.lang.String" length="50"/>
+      <field column="FeatureOrBasis" name="featureOrBasis" type="java.lang.String" length="50"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="Text1" name="text1" type="text"/>
+      <field column="Text2" name="text2" type="text"/>
+      <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
+      <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <field column="YesNo1" name="yesNo1" type="boolean"/>
+      <field column="YesNo2" name="yesNo2" type="boolean"/>
+      <id column="DeterminationID" name="determinationId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.DeterminationCitation" relationshipname="determinationCitations" columnname="DeterminationID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.DeterminationStatus" relationshipname="status" columnname="DeterminationStatusID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Taxon" relationshipname="taxon" columnname="TaxonID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectionObject" relationshipname="collectionObject" columnname="CollectionObjectID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="determiner" columnname="DeterminerID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.DeterminationCitation" table="determinationcitation" tableid="38" lazy="true">
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="DeterminationCitationID" name="determinationCitationId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.ReferenceWork" relationshipname="referenceWork" columnname="ReferenceWorkID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Determination" relationshipname="determination" columnname="DeterminationID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.DeterminationStatus" table="determinationstatus" tableid="501" lazy="true">
+      <field column="Name" name="name" type="java.lang.String" length="64"/>
+      <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="DeterminationStatusID" name="determinationStatusId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Determination" relationshipname="determinations" columnname="DeterminationID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.ExchangeIn" table="exchangein" tableid="39" lazy="true">
+      <field column="ExchangeDate" name="exchangeDate" type="calendar_date"/>
+      <field column="QuantityExchanged" name="quantityExchanged" type="short"/>
+      <field column="DescriptionOfMaterial" name="descriptionOfMaterial" type="java.lang.String" length="120"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="Text1" name="text1" type="text"/>
+      <field column="Text2" name="text2" type="text"/>
+      <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
+      <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <field column="YesNo1" name="yesNo1" type="boolean"/>
+      <field column="YesNo2" name="yesNo2" type="boolean"/>
+      <id column="ExchangeInID" name="exchangeInId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agentReceivedFrom" columnname="ReceivedFromOrganizationID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agentCatalogedBy" columnname="CatalogedByID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.ExchangeOut" table="exchangeout" tableid="40" lazy="true">
+      <field column="ExchangeDate" name="exchangeDate" type="calendar_date"/>
+      <field column="QuantityExchanged" name="quantityExchanged" type="short"/>
+      <field column="DescriptionOfMaterial" name="descriptionOfMaterial" type="java.lang.String" length="120"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="Text1" name="text1" type="text"/>
+      <field column="Text2" name="text2" type="text"/>
+      <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
+      <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <field column="YesNo1" name="yesNo1" type="boolean"/>
+      <field column="YesNo2" name="yesNo2" type="boolean"/>
+      <id column="ExchangeOutID" name="exchangeOutId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agentSentTo" columnname="SentToOrganizationID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agentCatalogedBy" columnname="CatalogedByID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Shipment" relationshipname="shipment" columnname="ShipmentID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.ExternalResource" table="externalresource" tableid="41" lazy="true">
+      <field column="MimeType" name="mimeType" type="java.lang.String" length="32"/>
+      <field column="FileName" name="fileName" type="java.lang.String" length="128"/>
+      <field column="FileCreatedDate" name="fileCreatedDate" type="calendar_date"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="ExternalLocation" name="externalLocation" type="java.lang.String" length="1024"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="ExternalResourceID" name="externalResourceId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.ExternalResourceAttr" relationshipname="attrs" columnname="ExternalResourceID"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agents" columnname="ExternalResourceID"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObject" relationshipname="collectionObjects" columnname="ExternalResourceID"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.CollectingEvent" relationshipname="collectinEvents" columnname="ExternalResourceID"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.Loan" relationshipname="loans" columnname="ExternalResourceID"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.Locality" relationshipname="localities" columnname="ExternalResourceID"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.Permit" relationshipname="permits" columnname="ExternalResourceID"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.Preparation" relationshipname="preparations" columnname="ExternalResourceID"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.Taxon" relationshipname="taxonomy" columnname="ExternalResourceID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="MadeByID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.ExternalResourceAttr" table="externalresourceattr" tableid="42" lazy="true">
+      <field column="StrValue" name="strValue" type="java.lang.String" length="64"/>
+      <field column="DoubleValue" name="dblValue" type="java.lang.Double"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <id column="AttrID" name="attrId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.ExternalResource" relationshipname="externalResource" columnname="ExternalResourceID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.AttributeDef" relationshipname="definition" columnname="AttributeDefID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.Geography" table="geography" tableid="3" lazy="true">
+      <field column="Name" name="name" type="java.lang.String" length="128"/>
+      <field column="FullName" name="fullName" type="java.lang.String" length="255"/>
+      <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
+      <field column="CommonName" name="commonName" type="java.lang.String" length="128"/>
+      <field column="GeographyCode" name="geographyCode" type="java.lang.String" length="8"/>
+      <field column="RankID" name="rankId" type="java.lang.Integer" length="10"/>
+      <field column="NodeNumber" name="nodeNumber" type="java.lang.Integer" length="10"/>
+      <field column="HighestChildNodeNumber" name="highestChildNodeNumber" type="java.lang.Integer" length="10"/>
+      <field column="Abbrev" name="abbrev" type="java.lang.String" length="16"/>
+      <field column="Text1" name="text1" type="java.lang.String" length="32"/>
+      <field column="Text2" name="text2" type="java.lang.String" length="32"/>
+      <field column="Number1" name="number1" type="java.lang.Integer" length="10"/>
+      <field column="Number2" name="number2" type="java.lang.Integer" length="10"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampVersion" name="timestampVersion" type="java.sql.Timestamp" length="16"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <field column="IsCurrent" name="isCurrent" type="java.lang.Boolean"/>
+      <id column="GeographyID" name="geographyId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Locality" relationshipname="localities" columnname="GeographyID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Geography" relationshipname="children" columnname="ParentId"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.GeographyTreeDef" relationshipname="definition" columnname="GeographyTreeDefID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.GeographyTreeDefItem" relationshipname="definitionItem" columnname="GeographyTreeDefItemID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Geography" relationshipname="parent" columnname="ParentID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.GeographyTreeDef" table="geographytreedef" tableid="44" lazy="true">
+      <field column="Name" name="name" type="java.lang.String" length="64"/>
+      <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
+      <id column="GeographyTreeDefID" name="geographyTreeDefId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Geography" relationshipname="treeEntries"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.GeographyTreeDefItem" relationshipname="treeDefItems"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObjDef" relationshipname="collObjDefs"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.GeographyTreeDefItem" table="geographytreedefitem" tableid="45" lazy="true">
+      <field column="Name" name="name" type="java.lang.String" length="64"/>
+      <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
+      <field column="RankID" name="rankId" type="java.lang.Integer"/>
+      <field column="IsEnforced" name="isEnforced" type="java.lang.Boolean"/>
+      <field column="IsInFullName" name="isInFullName" type="java.lang.Boolean"/>
+      <id column="GeographyTreeDefItemID" name="geographyTreeDefItemId" type="java.lang.Integer" length="10"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Geography" relationshipname="treeEntries"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.GeographyTreeDefItem" relationshipname="children"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.GeographyTreeDef" relationshipname="treeDef"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.GeographyTreeDefItem" relationshipname="parent"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.GeologicTimePeriod" table="geologictimeperiod" tableid="46" lazy="true">
+      <field column="RankID" name="rankId" type="java.lang.Integer" length="10"/>
+      <field column="Name" name="name" type="java.lang.String" length="64"/>
+      <field column="FullName" name="fullName" type="java.lang.String" length="255"/>
+      <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
+      <field column="NodeNumber" name="nodeNumber" type="java.lang.Integer" length="10"/>
+      <field column="HighestChildNodeNumber" name="highestChildNodeNumber" type="java.lang.Integer" length="10"/>
+      <field column="Standard" name="standard" type="java.lang.String" length="64"/>
+      <field column="Start" name="start" type="java.lang.Float" length="24"/>
+      <field column="AgeStartUncertainty" name="StartUncertainty" type="java.lang.Float" length="24"/>
+      <field column="End" name="end" type="java.lang.Float" length="24"/>
+      <field column="EndUncertainty" name="endUncertainty" type="java.lang.Float" length="24"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampVersion" name="timestampVersion" type="java.sql.Timestamp" length="16"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="32"/>
+      <id column="GeologicTimePeriodID" name="geologicTimePeriodId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.GeologicTimePeriod" relationshipname="children" columnname="ParentID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Stratigraphy" relationshipname="stratigraphies" columnname="GeologicTimePeriodID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef" relationshipname="definition" columnname="GeologicTimePeriodTreeDefID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem" relationshipname="definitionItem" columnname="GeologicTimePeriodTreeDefItemID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.GeologicTimePeriod" relationshipname="parent" columnname="ParentID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef" table="geologictimeperiodtreedef" tableid="47" lazy="true">
+      <field column="Name" name="name" type="java.lang.String" length="64"/>
+      <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
+      <id column="GeologicTimePeriodTreeDefID" name="geologicTimePeriodTreeDefId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.GeologicTimePeriod" relationshipname="treeEntries"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem" relationshipname="treeDefItems"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObjDef" relationshipname="collObjDefs"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem" table="geologictimeperiodtreedefitem" tableid="48" lazy="true">
+      <field column="Name" name="name" type="java.lang.String" length="64"/>
+      <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
+      <field column="RankID" name="rankId" type="java.lang.Integer"/>
+      <field column="IsEnforced" name="isEnforced" type="java.lang.Boolean"/>
+      <field column="IsInFullName" name="isInFullName" type="java.lang.Boolean"/>
+      <id column="GeologicTimePeriodTreeDefItemID" name="geologicTimePeriodTreeDefItemId" type="java.lang.Integer" length="10"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.GeologicTimePeriod" relationshipname="treeEntries"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem" relationshipname="children"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef" relationshipname="geologicTimePeriodTreeDef"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem" relationshipname="parent"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.GroupPersons" table="grouppersons" tableid="49">
+      <field column="OrderNumber" name="orderNumber" type="short"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="GroupPersonsID" name="groupPersonsId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agentByGroup" columnname="GroupID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agentByMember" columnname="MemberID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.InfoRequest" table="inforequest" tableid="50" lazy="false" view="InfoRequest">
+      <field column="Firstname" name="firstName" type="java.lang.String" length="50"/>
+      <field column="Lastname" name="lastName" type="java.lang.String" length="50"/>
+      <field column="Institution" name="institution" type="java.lang.String" length="127"/>
+      <field column="Email" name="email" type="java.lang.String" length="50"/>
+      <field column="RequestDate" name="requestDate" type="calendar_date"/>
+      <field column="ReplyDate" name="replyDate" type="calendar_date"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <id column="InfoRequestID" name="infoRequestID" type="long"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.RecordSet" relationshipname="recordSet" columnname="RecordSetID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agent" columnname="AgentID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.Journal" table="journal" tableid="51" lazy="true">
+      <field column="JournalName" name="journalName" type="java.lang.String" length="255"/>
+      <field column="JournalAbbreviation" name="journalAbbreviation" type="java.lang.String" length="50"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="JournalID" name="journalId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.ReferenceWork" relationshipname="referenceWorks" columnname="JournalID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.Loan" table="loan" tableid="52" lazy="true">
+      <field column="LoanNumber" name="loanNumber" type="java.lang.String" length="50"/>
+      <field column="LoanDate" name="loanDate" type="calendar_date"/>
+      <field column="CurrentDueDate" name="currentDueDate" type="calendar_date" length="10"/>
+      <field column="OriginalDueDate" name="originalDueDate" type="calendar_date"/>
+      <field column="DateClosed" name="dateClosed" type="calendar_date"/>
+      <field column="Category" name="category" type="java.lang.Byte" length="3"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="Text1" name="text1" type="text"/>
+      <field column="Text2" name="text2" type="text"/>
+      <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
+      <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <field column="Closed" name="closed" type="short"/>
+      <field column="YesNo1" name="yesNo1" type="boolean"/>
+      <field column="YesNo2" name="yesNo2" type="boolean"/>
+      <id column="LoanID" name="loanId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LoanAgents" relationshipname="loanAgents" columnname="LoanID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LoanPhysicalObject" relationshipname="loanPhysicalObjects" columnname="LoanID"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.ExternalResource" relationshipname="externalResources" columnname="LoanID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Shipment" relationshipname="shipment" columnname="ShipmentID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.LoanAgents" table="loanagents" tableid="53" lazy="true">
+      <field column="Role" name="role" type="java.lang.String" length="32"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="LoanAgentsID" name="loanAgentsId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Loan" relationshipname="loan" columnname="LoanID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="Agent" columnname="AgentID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.LoanPhysicalObject" table="loanphysicalobject" tableid="54" lazy="true">
+      <field column="Quantity" name="quantity" type="short"/>
+      <field column="DescriptionOfMaterial" name="descriptionOfMaterial" type="java.lang.String" length="255"/>
+      <field column="OutComments" name="outComments" type="text"/>
+      <field column="InComments" name="inComments" type="text"/>
+      <field column="QuantityResolved" name="quantityResolved" type="short"/>
+      <field column="QuantityReturned" name="quantityReturned" type="short"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="LoanPhysicalObjectID" name="loanPhysicalObjectId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject" relationshipname="loanReturnPhysicalObjects" columnname="LoanPhysicalObjectID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Preparation" relationshipname="preparation" columnname="PreparationID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Loan" relationshipname="loan" columnname="LoanID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject" table="loanreturnphysicalobject" tableid="55" lazy="true">
+      <field column="ReturnedDate" name="returnedDate" type="calendar_date"/>
+      <field column="Quantity" name="quantity" type="short"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="LoanReturnPhysicalObjectID" name="loanReturnPhysicalObjectId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.LoanPhysicalObject" relationshipname="loanPhysicalObject" columnname="LoanPhysicalObjectID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.DeaccessionCollectionObject" relationshipname="deaccessionCollectionObject" columnname="DeaccessionPhysicalObjectID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agent" columnname="ReceivedByID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.Locality" table="locality" tableid="2" lazy="true">
+      <field column="NamedPlace" name="namedPlace" type="java.lang.String" length="255"/>
+      <field column="RelationToNamedPlace" name="relationToNamedPlace" type="java.lang.String" length="120"/>
+      <field column="LocalityName" name="localityName" type="java.lang.String" length="1073741823"/>
+      <field column="BaseMeridian" name="baseMeridian" type="java.lang.String" length="50"/>
+      <field column="Range" name="range" type="java.lang.String" length="50"/>
+      <field column="RangeDirection" name="rangeDirection" type="java.lang.String" length="50"/>
+      <field column="Township" name="township" type="java.lang.String" length="50"/>
+      <field column="TownshipDirection" name="townshipDirection" type="java.lang.String" length="50"/>
+      <field column="Section" name="section" type="java.lang.String" length="50"/>
+      <field column="SectionPart" name="sectionPart" type="java.lang.String" length="50"/>
+      <field column="VerbatimElevation" name="verbatimElevation" type="java.lang.String" length="50"/>
+      <field column="OriginalElevationUnit" name="originalElevationUnit" type="java.lang.String" length="50"/>
+      <field column="MinElevation" name="minElevation" type="java.lang.Double"/>
+      <field column="MaxElevation" name="maxElevation" type="java.lang.Double"/>
+      <field column="ElevationMethod" name="elevationMethod" type="java.lang.String" length="50"/>
+      <field column="ElevationAccuracy" name="elevationAccuracy" type="java.lang.Double"/>
+      <field column="OriginalLatLongUnit" name="originalLatLongUnit" type="java.lang.Integer" length="10"/>
+      <field column="LatLongType" name="latLongType" type="java.lang.String" length="50"/>
+      <field column="Latitude1" name="latitude1" type="java.lang.Double"/>
+      <field column="Longitude1" name="longitude1" type="java.lang.Double"/>
+      <field column="Latitude2" name="latitude2" type="java.lang.Double"/>
+      <field column="Longitude2" name="longitude2" type="java.lang.Double"/>
+      <field column="LatLongMethod" name="latLongMethod" type="java.lang.String" length="50"/>
+      <field column="LatLongAccuracy" name="latLongAccuracy" type="java.lang.Double"/>
+      <field column="Datum" name="datum" type="java.lang.String" length="50"/>
+      <field column="GroupPermittedToView" name="groupPermittedToView" type="java.lang.Integer" length="10"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="Text1" name="text1" type="text"/>
+      <field column="Text2" name="text2" type="text"/>
+      <field column="Number1" name="number1" type="java.lang.Double"/>
+      <field column="Number2" name="number2" type="java.lang.Double"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <field column="YesNo1" name="yesNo1" type="boolean"/>
+      <field column="YesNo2" name="yesNo2" type="boolean"/>
+      <field column="Lat1Text" name="lat1text" type="java.lang.String" length="50"/>
+      <field column="Lat2Text" name="lat2text" type="java.lang.String" length="50"/>
+      <field column="Long1Text" name="long1text" type="java.lang.String" length="50"/>
+      <field column="Long2Text" name="long2text" type="java.lang.String" length="50"/>
+      <field column="NationalParkName" name="nationalParkName" type="java.lang.String" length="64"/>
+      <field column="IslandGroup" name="islandGroup" type="java.lang.String" length="64"/>
+      <field column="Island" name="island" type="java.lang.String" length="64"/>
+      <field column="WaterBody" name="waterBody" type="java.lang.String" length="64"/>
+      <field column="Drainage" name="drainage" type="java.lang.String" length="64"/>
+      <id column="LocalityID" name="localityId" type="java.lang.Integer"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObjDef" relationshipname="collectionObjDefs" columnname="LocalityID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LocalityCitation" relationshipname="localityCitations" columnname="LocalityID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectingEvent" relationshipname="collectingEvents" columnname="LocalityID"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.ExternalResource" relationshipname="externalResources" columnname="LocalityID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Geography" relationshipname="geography" columnname="GeographyID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.LocalityCitation" table="localitycitation" tableid="57" lazy="true">
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="LocalityCitationID" name="localityCitationId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.ReferenceWork" relationshipname="referenceWork" columnname="ReferenceWorkID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Locality" relationshipname="locality" columnname="LocalityID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.Location" table="location" tableid="58" lazy="true">
+      <field column="Name" name="name" type="java.lang.String" length="128"/>
+      <field column="FullName" name="fullName" type="java.lang.String" length="255"/>
+      <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
+      <field column="RankID" name="rankId" type="java.lang.Integer" length="10"/>
+      <field column="NodeNumber" name="nodeNumber" type="java.lang.Integer" length="10"/>
+      <field column="HighestChildNodeNumber" name="highestChildNodeNumber" type="java.lang.Integer" length="10"/>
+      <field column="Abbrev" name="abbrev" type="java.lang.String" length="16"/>
+      <field column="Text1" name="text1" type="java.lang.String" length="32"/>
+      <field column="Text2" name="text2" type="java.lang.String" length="32"/>
+      <field column="Number1" name="number1" type="java.lang.Integer" length="10"/>
+      <field column="Number2" name="number2" type="java.lang.Integer" length="10"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampVersion" name="timestampVersion" type="java.sql.Timestamp" length="16"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="LocationID" name="locationId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Preparation" relationshipname="preparations" columnname="LocationID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Container" relationshipname="containers" columnname="LocationID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Location" relationshipname="children" columnname="ParentId"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.LocationTreeDef" relationshipname="definition" columnname="LocationTreeDefID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.LocationTreeDefItem" relationshipname="definitionItem" columnname="LocationTreeDefItemID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Location" relationshipname="parent" columnname="ParentID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.LocationTreeDef" table="locationtreedef" tableid="59" lazy="true">
+      <field column="Name" name="name" type="java.lang.String" length="64"/>
+      <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
+      <id column="LocationTreeDefID" name="locationTreeDefId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Location" relationshipname="treeEntries"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LocationTreeDefItem" relationshipname="treeDefItems"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObjDef" relationshipname="collObjDefs"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.LocationTreeDefItem" table="locationtreedefitem" tableid="60" lazy="true">
+      <field column="Name" name="name" type="java.lang.String" length="64"/>
+      <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
+      <field column="RankID" name="rankId" type="java.lang.Integer"/>
+      <field column="IsEnforced" name="isEnforced" type="java.lang.Boolean"/>
+      <field column="IsInFullName" name="isInFullName" type="java.lang.Boolean"/>
+      <id column="LocationTreeDefItemID" name="locationTreeDefItemId" type="java.lang.Integer" length="10"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Location" relationshipname="treeEntries"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LocationTreeDefItem" relationshipname="children"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.LocationTreeDef" relationshipname="treeDef"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.LocationTreeDefItem" relationshipname="parent"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.OtherIdentifier" table="otheridentifier" tableid="61" lazy="true">
+      <field column="Identifier" name="identifier" type="java.lang.String" length="50"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="OtherIdentifierID" name="otherIdentifierId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectionObject" relationshipname="collectionObject" columnname="CollectionObjectID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.Permit" table="permit" tableid="6" lazy="true" view="Permit">
+      <field column="PermitNumber" name="permitNumber" type="java.lang.String" length="50"/>
+      <field column="Type" name="type" type="java.lang.String" length="50"/>
+      <field column="IssuedDate" name="issuedDate" type="calendar_date"/>
+      <field column="StartDate" name="startDate" type="calendar_date"/>
+      <field column="EndDate" name="endDate" type="calendar_date"/>
+      <field column="RenewalDate" name="renewalDate" type="calendar_date"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="Text1" name="text1" type="text"/>
+      <field column="Text2" name="text2" type="text"/>
+      <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
+      <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <field column="YesNo1" name="yesNo1" type="boolean"/>
+      <field column="YesNo2" name="yesNo2" type="boolean"/>
+      <id column="PermitID" name="permitId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.AccessionAuthorizations" relationshipname="accessionAuthorizations" columnname="PermitID"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.ExternalResource" relationshipname="externalResources" columnname="PermitID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="AgentByIssuee" columnname="IssueeID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="AgentByIssuer" columnname="IssuerID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.Preparation" table="preparation" tableid="63" lazy="true">
+      <field column="Text1" name="text1" type="text"/>
+      <field column="Text2" name="text2" type="text"/>
+      <field column="Count" name="count" type="java.lang.Integer" length="10"/>
+      <field column="StorageLocation" name="storageLocation" type="java.lang.String" length="50"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="PreparedDate" name="preparedDate" type="calendar_date"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="PreparationID" name="preparationId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LoanPhysicalObject" relationshipname="loanPhysicalObjects" columnname="PreparationID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.PreparationAttr" relationshipname="attrs" columnname="PreparationID"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.ExternalResource" relationshipname="externalResources" columnname="PreparationID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.PrepType" relationshipname="prepType" columnname="PrepTypeID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectionObject" relationshipname="collectionObject" columnname="CollectionObjectID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="preparedByAgent" columnname="PreparedByID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Location" relationshipname="location" columnname="LocationID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.PreparationAttr" table="preparationattr" tableid="64" lazy="true">
+      <field column="StrValue" name="strValue" type="java.lang.String" length="255"/>
+      <field column="DoubleValue" name="dblValue" type="java.lang.Double"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <id column="AttrID" name="attrId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.AttributeDef" relationshipname="definition" columnname="AttributeDefID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Preparation" relationshipname="preparation" columnname="PreparationId"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.PrepType" table="preptype" tableid="65" lazy="true">
+      <field column="Name" name="name" type="java.lang.String" length="32"/>
+      <id column="PrepTypeID" name="prepTypeId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Preparation" relationshipname="preparations" columnname="PrepTypeID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.AttributeDef" relationshipname="attributeDefs" columnname="PrepTypeID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.Project" table="project" tableid="66" lazy="true">
+      <field column="ProjectName" name="projectName" type="java.lang.String" length="50"/>
+      <field column="ProjectDescription" name="projectDescription" type="text"/>
+      <field column="URL" name="url" type="text"/>
+      <field column="StartDate" name="startDate" type="calendar_date"/>
+      <field column="EndDate" name="endDate" type="calendar_date"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="Text1" name="text1" type="text"/>
+      <field column="Text2" name="text2" type="text"/>
+      <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
+      <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <field column="YesNo1" name="yesNo1" type="boolean"/>
+      <field column="YesNo2" name="yesNo2" type="boolean"/>
+      <id column="ProjectID" name="projectId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.ProjectCollectionObject" relationshipname="projectCollectionObjects" columnname="ProjectID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agent" columnname="ProjectAgentID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.ProjectCollectionObject" table="projectcollectionobjects" tableid="67" lazy="true">
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="ProjectCollectionObjectsID" name="projectCollectionObjectsId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectionObject" relationshipname="collectionObject" columnname="CollectionObjectID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Project" relationshipname="project" columnname="ProjectID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.RecordSet" table="recordset" tableid="68" lazy="false">
+      <field column="Name" name="name" type="java.lang.String" length="64"/>
+      <field column="TableID" name="tableId" type="int"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <id column="RecordSetID" name="recordSetID" type="long"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.SpecifyUser" relationshipname="owner" columnname="SpecifyUserID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.ReferenceWork" table="referencework" tableid="69" lazy="true">
+      <field column="ContainingReferenceWorkID" name="containingReferenceWorkId" type="java.lang.Integer" length="10"/>
+      <field column="ReferenceWorkType" name="referenceWorkType" type="byte" length="3"/>
+      <field column="Title" name="title" type="java.lang.String" length="255"/>
+      <field column="Publisher" name="publisher" type="java.lang.String" length="50"/>
+      <field column="PlaceOfPublication" name="placeOfPublication" type="java.lang.String" length="50"/>
+      <field column="WorkDate" name="workDate" type="java.lang.String" length="25"/>
+      <field column="Volume" name="volume" type="java.lang.String" length="25"/>
+      <field column="Pages" name="pages" type="java.lang.String" length="50"/>
+      <field column="URL" name="url" type="text"/>
+      <field column="LibraryNumber" name="libraryNumber" type="java.lang.String" length="50"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="Text1" name="text1" type="text"/>
+      <field column="Text2" name="text2" type="text"/>
+      <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
+      <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <field column="Published" name="published" type="short"/>
+      <field column="YesNo1" name="yesNo1" type="boolean"/>
+      <field column="YesNo2" name="yesNo2" type="boolean"/>
+      <id column="ReferenceWorkID" name="referenceWorkId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LocalityCitation" relationshipname="localityCitations" columnname="ReferenceWorkID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObjectCitation" relationshipname="collectionObjectCitations" columnname="ReferenceWorkID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.TaxonCitation" relationshipname="taxonCitations" columnname="ReferenceWorkID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.DeterminationCitation" relationshipname="determinationCitations" columnname="ReferenceWorkID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Authors" relationshipname="authors" columnname="ReferenceWorkID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Journal" relationshipname="journal" columnname="JournalID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.RepositoryAgreement" table="repositoryAgreement" tableid="70" lazy="true">
+      <field column="Number" name="number" type="java.lang.String" length="60"/>
+      <field column="Status" name="status" type="java.lang.String" length="32"/>
+      <field column="StartDate" name="startDate" type="calendar_date"/>
+      <field column="EndDate" name="endDate" type="calendar_date"/>
+      <field column="DateReceived" name="dateReceived" type="calendar_date"/>
+      <field column="Text1" name="text1" type="text"/>
+      <field column="Text2" name="text2" type="text"/>
+      <field column="Text3" name="text3" type="text"/>
+      <field column="Number1" name="number1" type="java.lang.Float"/>
+      <field column="Number2" name="number2" type="java.lang.Float"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <field column="YesNo1" name="yesNo1" type="boolean"/>
+      <field column="YesNo2" name="yesNo2" type="boolean"/>
+      <id column="RepositoryAgreementID" name="repositoryAgreementId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObject" relationshipname="collectionObjects" columnname="RepositoryAgreementID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.AccessionAuthorizations" relationshipname="repositoryAgreementAuthorizations" columnname="RepositoryAgreementID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.AccessionAgents" relationshipname="repositoryAgreementAgents" columnname="RepositoryAgreementID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="originator" columnname="AgentID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.Shipment" table="shipment" tableid="71" lazy="true">
+      <field column="ShipmentDate" name="shipmentDate" type="calendar_date"/>
+      <field column="ShipmentNumber" name="shipmentNumber" type="java.lang.String" length="50"/>
+      <field column="ShipmentMethod" name="shipmentMethod" type="java.lang.String" length="50"/>
+      <field column="NumberOfPackages" name="numberOfPackages" type="short"/>
+      <field column="Weight" name="weight" type="java.lang.String" length="50"/>
+      <field column="InsuredForAmount" name="insuredForAmount" type="java.lang.String" length="50"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="Text1" name="text1" type="text"/>
+      <field column="Text2" name="text2" type="text"/>
+      <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
+      <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <field column="YesNo1" name="yesNo1" type="boolean"/>
+      <field column="YesNo2" name="yesNo2" type="boolean"/>
+      <id column="ShipmentID" name="shipmentId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.BorrowShipments" relationshipname="borrowShipments" columnname="ShipmentID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Loan" relationshipname="loans" columnname="ShipmentID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.ExchangeOut" relationshipname="exchangeOuts" columnname="ShipmentID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="AgentByShipper" columnname="ShipperID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="AgentByShippedTo" columnname="ShippedToID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agent" columnname="ShippedByID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.SpecifyUser" table="specifyuser" tableid="72" lazy="true">
+      <field column="Name" name="name" type="java.lang.String" length="64"/>
+      <field column="email" name="email" type="java.lang.String" length="64"/>
+      <field column="PrivLevel" name="privLevel" type="short"/>
+      <id column="SpecifyUserID" name="specifyUserId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObjDef" relationshipname="collectionObjDef" columnname="SpecifyUserID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.RecordSet" relationshipname="recordSets" columnname="CollectionObjectID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.UserGroup" relationshipname="userGroup" columnname="UserGroupID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.Stratigraphy" table="stratigraphy" tableid="73">
+      <field column="SuperGroup" name="superGroup" type="java.lang.String" length="50"/>
+      <field column="LithoGroup" name="lithoGroup" type="java.lang.String" length="50"/>
+      <field column="Formation" name="formation" type="java.lang.String" length="50"/>
+      <field column="Member" name="member" type="java.lang.String" length="50"/>
+      <field column="Bed" name="bed" type="java.lang.String" length="50"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="Text1" name="text1" type="text"/>
+      <field column="Text2" name="text2" type="text"/>
+      <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
+      <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <field column="YesNo1" name="yesNo1" type="boolean"/>
+      <field column="YesNo2" name="yesNo2" type="boolean"/>
+      <id column="StratigraphyID" name="stratigraphyId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.GeologicTimePeriod" relationshipname="geologicTimePeriod" columnname="GeologicTimePeriodID"/>
+      <relationship type="one-to-one" classname="edu.ku.brc.specify.datamodel.CollectingEvent" relationshipname="collectingEvent"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.Taxon" table="taxon" tableid="4" lazy="true" view="Taxon">
+      <field column="TaxonomicSerialNumber" name="taxonomicSerialNumber" type="java.lang.String" length="50"/>
+      <field column="GUID" name="guid" type="java.lang.String" length="255"/>
+      <field column="Name" name="name" type="java.lang.String" length="50"/>
+      <field column="FullName" name="fullName" type="java.lang.String" length="255"/>
+      <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
+      <field column="UnitInd1" name="unitInd1" type="java.lang.String" length="50"/>
+      <field column="UnitName1" name="unitName1" type="java.lang.String" length="50"/>
+      <field column="UnitInd2" name="unitInd2" type="java.lang.String" length="50"/>
+      <field column="UnitName2" name="unitName2" type="java.lang.String" length="50"/>
+      <field column="UnitInd3" name="unitInd3" type="java.lang.String" length="50"/>
+      <field column="UnitName3" name="unitName3" type="java.lang.String" length="50"/>
+      <field column="UnitInd4" name="unitInd4" type="java.lang.String" length="50"/>
+      <field column="UnitName4" name="unitName4" type="java.lang.String" length="50"/>
+      <field column="CommonName" name="commonName" type="java.lang.String" length="128"/>
+      <field column="Author" name="author" type="java.lang.String" length="128"/>
+      <field column="Source" name="source" type="java.lang.String" length="64"/>
+      <field column="GroupPermittedToView" name="groupPermittedToView" type="java.lang.Integer" length="10"/>
+      <field column="EnvironmentalProtectionStatus" name="environmentalProtectionStatus" type="java.lang.String" length="64"/>
+      <field column="NodeNumber" name="nodeNumber" type="java.lang.Integer" length="10"/>
+      <field column="HighestChildNodeNumber" name="highestChildNodeNumber" type="java.lang.Integer" length="10"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <field column="Accepted" name="accepted" type="short"/>
+      <field column="RankID" name="rankId" type="java.lang.Integer" length="10"/>
+      <field column="GroupNumber" name="groupNumber" type="java.lang.String" length="20"/>
+      <id column="TaxonID" name="taxonId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Determination" relationshipname="determinations" columnname="TaxonID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Taxon" relationshipname="acceptedChildren" columnname="AcceptedID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.TaxonCitation" relationshipname="taxonCitations" columnname="TaxonID"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.ExternalResource" relationshipname="externalResources" columnname="TaxonID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Taxon" relationshipname="children" columnname="ParentId"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Taxon" relationshipname="acceptedTaxon" columnname="AcceptedID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.TaxonTreeDef" relationshipname="definition" columnname="TaxonTreeDefID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" relationshipname="definitionItem" columnname="TaxonTreeDefItemID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Taxon" relationshipname="parent" columnname="ParentID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.TaxonCitation" table="taxoncitation" tableid="75" lazy="true">
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="Text1" name="text1" type="text"/>
+      <field column="Text2" name="text2" type="text"/>
+      <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
+      <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <field column="YesNo1" name="yesNo1" type="boolean"/>
+      <field column="YesNo2" name="yesNo2" type="boolean"/>
+      <id column="TaxonCitationID" name="taxonCitationId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.ReferenceWork" relationshipname="referenceWork" columnname="ReferenceWorkID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Taxon" relationshipname="taxon" columnname="TaxonID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.TaxonTreeDef" table="taxontreedef" tableid="76" lazy="true">
+      <field column="Name" name="name" type="java.lang.String" length="64"/>
+      <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
+      <id column="TaxonTreeDefID" name="taxonTreeDefId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Taxon" relationshipname="treeEntries"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" relationshipname="treeDefItems"/>
+      <relationship type="one-to-one" classname="edu.ku.brc.specify.datamodel.CollectionObjDef" relationshipname="collObjDef"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" table="taxontreedefitem" tableid="77" lazy="true">
+      <field column="Name" name="name" type="java.lang.String" length="64"/>
+      <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
+      <field column="RankID" name="rankId" type="java.lang.Integer"/>
+      <field column="IsEnforced" name="isEnforced" type="java.lang.Boolean"/>
+      <field column="IsInFullName" name="isInFullName" type="java.lang.Boolean"/>
+      <id column="TaxonTreeDefItemID" name="taxonTreeDefItemId" type="java.lang.Integer" length="10"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Taxon" relationshipname="treeEntries"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" relationshipname="children"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.TaxonTreeDef" relationshipname="treeDef"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" relationshipname="parent"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.UserGroup" table="usergroup" tableid="78" lazy="true">
+      <field column="Name" name="name" type="java.lang.String" length="64"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <id column="UserGroupID" name="userGroupId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.SpecifyUser" relationshipname="specifyUsers" columnname="UserGroupID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.Workbench" table="workbench" tableid="79" lazy="false">
+      <field column="Name" name="name" type="java.lang.String" length="64"/>
+      <field column="TableID" name="tableId" type="int"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="FormId" name="formid" type="java.lang.Integer"/>
+      <field column="ExportInstitution" name="exportinstitutionname" type="java.lang.String" length="120"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <id column="WorkbenchID" name="workbenchID" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.WorkbenchDataItem" relationshipname="workbenchItems" columnname="WorkbenchID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.WorkbenchTemplate" relationshipname="workbenchTemplates" columnname="WorkbenchTemplateID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.WorkbenchDataItem" table="workbenchdataitem" tableid="80" lazy="false">
+      <field column="CellData" name="cellData" type="text" length="23"/>
+      <field column="RowNumber" name="rowNumber" type="text" length="23"/>
+      <field column="ColumnNumber" name="columnNumber" type="text" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <id column="WorkbenchDataItemID" name="workbenchDataItemID" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Workbench" relationshipname="owner" columnname="WorkbenchID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.WorkbenchTemplate" table="workbenchtemplate" tableid="81" lazy="true">
+      <field column="Name" name="name" type="java.lang.String" length="64"/>
+      <field column="Remarks" name="remarks" type="text"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <id column="WorkbenchTemplateID" name="workbenchTemplateID" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Workbench" relationshipname="workbenches" columnname="WorkbenchTemplateID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem" relationshipname="workbenchtemplatemappingitems" columnname="WorkbenchTemplateID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem" table="workbenchtemplatemappingitem" tableid="82" lazy="true">
+      <field column="TableName" name="tablename" type="java.lang.String" length="64"/>
+      <field column="TableId" name="tableid" type="java.lang.Integer" length="64"/>
+      <field column="FieldName" name="fieldname" type="java.lang.String"/>
+      <field column="Caption" name="caption" type="java.lang.String" length="64"/>
+      <field column="ViewOrder" name="vieworder" type="java.lang.Integer"/>
+      <field column="DataType" name="datatype" type="java.lang.String" length="64"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <id column="WorkbenchTemplateMappingItemID" name="workbenchTemplateMappingItemID" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.WorkbenchTemplate" relationshipname="workbenchTemplates" columnname="WorkbenchTemplateID"/>
+    </table>
+  </database>
