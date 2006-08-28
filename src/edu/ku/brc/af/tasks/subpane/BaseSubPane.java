@@ -49,6 +49,8 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
 
     protected JProgressBar      progressBar;
     protected JLabel            progressLabel;
+    
+    protected JPanel			progressBarPanel;
 
     /**
      * Constructsa base class that implements the SubPanelIFace interface
@@ -78,7 +80,8 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
         PanelBuilder    builder2    = new PanelBuilder(new FormLayout("center:p:g", "center:p:g"));
         builder2.add(builder.getPanel(), cc.xy(1,1));
 
-        add(builder2.getPanel(), BorderLayout.CENTER);
+        progressBarPanel = builder2.getPanel();
+        add(progressBarPanel, BorderLayout.CENTER);
 
     }
 

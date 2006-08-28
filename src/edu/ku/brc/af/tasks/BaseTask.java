@@ -49,6 +49,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.MemoryDropDownButton;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.dnd.GhostActionable;
@@ -151,6 +152,18 @@ public abstract class BaseTask implements Taskable, TaskPluginable, CommandListe
         btn.setStatusBarHintText(hint);
 
         btn.addActionListener(actionListener);
+        return btn;
+    }
+    
+    protected MemoryDropDownButton createMemoryToolbarButton(final String label,
+                                                             final String iconName,
+                                                             final String hint,
+                                                             final List<JComponent> menus)
+    {
+        Icon buttonIcon = IconManager.getIcon(iconName, IconManager.IconSize.Std24);
+
+        MemoryDropDownButton btn = new MemoryDropDownButton(label, buttonIcon, JButton.BOTTOM, menus);
+        btn.setStatusBarHintText(hint);
         return btn;
     }
     

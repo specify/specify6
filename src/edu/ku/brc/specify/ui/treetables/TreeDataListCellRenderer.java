@@ -65,6 +65,11 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 		closed = IconManager.getIcon("Forward", IconManager.IconSize.NonStd);
 	}
 	
+	public Color[] getBackgroundsColors()
+	{
+		return bgs;
+	}
+	
 	public Component getListCellRendererComponent(JList l, Object value, int index, boolean isSelected, boolean cellHasFocus)
 	{
 		nodeUI.setList(l);
@@ -115,6 +120,26 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 		return anchorBounds;
 	}
 	
+	public Pair<Integer,Integer> getColumnBoundsForRank(Integer rank)
+	{
+		if( rank == null )
+		{
+			return null;
+		}
+		
+		Pair<Integer,Integer> colBounds = new Pair<Integer,Integer>();
+		Pair<Integer,Integer> bounds = rankBoundsMap.get(rank);
+		if( bounds == null )
+		{
+			return null;
+		}
+		
+		colBounds.first = bounds.first;
+		colBounds.second = bounds.second;
+		
+		return colBounds;
+	}
+	
 	protected void recomputeLengthPerLevel( Graphics g )
 	{
 		rankBoundsMap.clear();
@@ -136,6 +161,19 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 		}
 		
 		lengthsValid = true;
+	}
+	
+	protected int getWidestRankWidth()
+	{
+		int longest = 0;
+		for(Pair<Integer,Integer> width: rankBoundsMap.values())
+		{
+			if(width.second > longest)
+			{
+				longest = width.second;
+			}
+		}
+		return longest;
 	}
 
 	public class TreeNodeUI extends JPanel
@@ -164,6 +202,21 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 
 			Integer rankId = treeable.getRankId();
 			Pair<Integer,Integer> rankBounds = rankBoundsMap.get(rankId);
+			if(rankBounds == null)
+			{
+				System.out.println("rankBounds is unexpectedly null.  Trying to recover by recomputing bounds.");
+				recomputeLengthPerLevel(list.getGraphics());
+				rankBounds = rankBoundsMap.get(rankId);
+				if(rankBounds==null)
+				{
+					System.out.println("Recovery attempt failed.");
+					return new Dimension(getWidestRankWidth(),list.getFirstVisibleIndex());
+				}
+				else
+				{
+					System.out.println("Recovery attempt succeeded.");
+				}
+			}
 			int width = rankBounds.second;
 			return new Dimension(width,list.getFixedCellHeight());
 		}

@@ -8,6 +8,7 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
@@ -33,7 +34,7 @@ import edu.ku.brc.specify.ui.treetables.TreeNodeFindWidget;
 import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.MemoryDropDownButton;
 import edu.ku.brc.ui.UICacheManager;
 
 /**
@@ -51,6 +52,7 @@ public class TaxonTreeTask extends BaseTask implements DualViewSearchable
     protected TreeDataService dataService;
     
     protected List<ToolBarItemDesc> toolBarItems;
+    protected Hashtable<TreeDefinitionIface, JMenuItem> defToMenuItem;
     protected List<MenuItemDesc> menuItems;
     protected List<JComponent> toolBarBtnItems;
     protected TreeNodeFindWidget finderWidget;
@@ -64,6 +66,7 @@ public class TaxonTreeTask extends BaseTask implements DualViewSearchable
         super(TAXON, getResourceString(TAXON));
         this.icon = IconManager.getIcon(TAXON,IconManager.IconSize.Std24);
         visibleTTVs = new Vector<TreeTableViewer>();
+        defToMenuItem = new Hashtable<TreeDefinitionIface, JMenuItem>();
         CommandDispatcher.register(TAXON, this);
         dataService = TreeDataServiceFactory.createService();
         initialize();
@@ -123,6 +126,7 @@ public class TaxonTreeTask extends BaseTask implements DualViewSearchable
 		{
 			final TreeDefinitionIface chosenDef = def;
 			JMenuItem defMenuItem = new JMenuItem(def.getName());
+			defToMenuItem.put(def,defMenuItem);
 			defMenuItem.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent ae)
@@ -136,17 +140,7 @@ public class TaxonTreeTask extends BaseTask implements DualViewSearchable
 		String label = getResourceString(TAXON);
 		String iconName = TAXON;
 		String hint = getResourceString("taxontree_hint");
-		ActionListener al = new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
-				if(defs.size()>0)
-				{
-					showTaxonTree(defs.get(0));					
-				}
-			}
-		};
-        ToolBarDropDownBtn btn = createToolbarButton(label,iconName,hint,toolBarBtnItems,al);
+		MemoryDropDownButton btn = createMemoryToolbarButton(label,iconName,hint,toolBarBtnItems);
         toolBarItems.add(new ToolBarItemDesc(btn));
 	}
 	
@@ -156,6 +150,7 @@ public class TaxonTreeTask extends BaseTask implements DualViewSearchable
 		{
 			if(ttv.getTreeDef() == treeDef)
 			{
+				SubPaneMgr.getInstance().setSelectedComponent(ttv);
 				return;
 			}
 		}
@@ -164,8 +159,15 @@ public class TaxonTreeTask extends BaseTask implements DualViewSearchable
 		String tabName = getResourceString(name) + ": " + treeDef.getName();
     	TreeTableViewer ttv = new TreeTableViewer(treeDef,tabName,this);
     	visibleTTVs.add(ttv);
+//    	setMenuItemEnabled(treeDef,false);
     	SubPaneMgr.getInstance().addPane(ttv);
 	}
+	
+//	protected void setMenuItemEnabled(TreeDefinitionIface treeDef, boolean enabled)
+//	{
+//    	JMenuItem defMenuItem = defToMenuItem.get(treeDef);    	
+//    	defMenuItem.setEnabled(enabled);
+//	}
 	
 	protected void createMenus()
 	{
@@ -241,6 +243,7 @@ public class TaxonTreeTask extends BaseTask implements DualViewSearchable
     	{
     		TreeTableViewer ttv = (TreeTableViewer)subPane;
     		visibleTTVs.remove(ttv);
+//    		setMenuItemEnabled(ttv.getTreeDef(),true);
     	}
 	}
 

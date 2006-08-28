@@ -36,6 +36,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -114,6 +115,8 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
     protected boolean isInitialized;
     protected int mode;
     
+    protected TreeNodePopupMenu popupMenu;
+    
 	/**
 	 * Build a TreeTableViewer to view/edit the data found.
 	 * 
@@ -130,9 +133,9 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		dataService = TreeDataServiceFactory.createService();
 		deletedNodes = new TreeSet<Treeable>(new ReverseRankBasedComparator());
 		statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
+		popupMenu = new TreeNodePopupMenu(this);
 		
-		removeAll();
-		setLayout(new BorderLayout());
+		getLayout().removeLayoutComponent(progressBarPanel);
 	}
 	
 	public TreeDefinitionIface getTreeDef()
@@ -209,6 +212,7 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		{
 			public void mouseClicked(MouseEvent e){mouseButtonClicked(e);}
 			public void mousePressed(MouseEvent e){mouseButtonPressed(e);}
+			public void mouseReleased(MouseEvent e){mouseButtonReleased(e);}
 		};
 		listModel = new TreeDataListModel(root);
 		Color[] bgs = new Color[2];
@@ -252,19 +256,29 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	
 	public void toggleViewMode()
 	{
-		removeAll();
-
 		if(mode == SINGLE_VIEW_MODE)
 		{
-			// set to dual view mode
-			this.add(new JSplitPane(JSplitPane.VERTICAL_SPLIT,treeListPanels[0],treeListPanels[1]),BorderLayout.CENTER);
-			mode = DUAL_VIEW_MODE;
+			setViewMode(DUAL_VIEW_MODE);
 		}
 		else
 		{
+			setViewMode(SINGLE_VIEW_MODE);
+		}
+	}
+	
+	protected void setViewMode(int newMode)
+	{
+		getLayout().removeLayoutComponent(progressBarPanel);
+		mode = newMode;
+		if(mode == SINGLE_VIEW_MODE)
+		{
 			// set to single view mode
 			this.add(treeListPanels[0],BorderLayout.CENTER);
-			mode = SINGLE_VIEW_MODE;
+		}
+		else
+		{
+			// set to dual view mode
+			this.add(new JSplitPane(JSplitPane.VERTICAL_SPLIT,treeListPanels[0],treeListPanels[1]),BorderLayout.CENTER);
 		}
 		repaint();
 	}
@@ -588,7 +602,7 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	/**
 	 * Display a form for editing the data in the currently selected node.
 	 */
-	protected void editSelectedNode(JList list)
+	public void editSelectedNode(JList list)
 	{
 		Object selection = list.getSelectedValue();
 		if( selection == null )
@@ -657,9 +671,25 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	 */
 	public boolean commitStructureToDb()
 	{
-		Treeable root = listModel.getRoot();
-		dataService.saveTree(root,deletedNodes);
-		return true;
+		int userChoice = JOptionPane.showConfirmDialog(this,"This operation may take a long time","Continue?",JOptionPane.OK_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+		if(userChoice == JOptionPane.OK_OPTION)
+		{
+			Thread t = new Thread(new Runnable()
+			{
+				public void run()
+				{
+					Treeable root = listModel.getRoot();
+					dataService.saveTree(root,deletedNodes);
+				}
+			});
+			
+			removeAll();
+			this.add(progressBarPanel,BorderLayout.CENTER);
+			t.start();
+			setViewMode(mode);
+			return true;
+		}
+		return false;
 	}
 	
 	
@@ -749,6 +779,22 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		}
 	}
 	
+	public void find(String nodeName,JList where,boolean wrap)
+	{
+		if(where == lists[0])
+		{
+			find(nodeName,DualViewSearchable.TOPVIEW,wrap);
+		}
+		else if(where == lists[1])
+		{
+			find(nodeName,DualViewSearchable.BOTTOMVIEW,wrap);
+		}
+		else
+		{
+			// throw new IllegalArgumentException?
+		}
+	}
+	
 	
 	public void findNext(int where,boolean wrap)
 	{
@@ -783,6 +829,21 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		}
 	}
 	
+	public void findNext(JList where,boolean wrap)
+	{
+		if(where == lists[0])
+		{
+			findNext(DualViewSearchable.TOPVIEW,wrap);
+		}
+		else if(where == lists[1])
+		{
+			findNext(DualViewSearchable.BOTTOMVIEW,wrap);
+		}
+		else
+		{
+			// throw new IllegalArgumentException?
+		}
+	}
 	 
 	
 	protected boolean showPathToNode(Treeable node)
@@ -935,9 +996,84 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		return false;
 	}
 
+	public void showPopup(MouseEvent e)
+	{
+		if(clickIsOnText(e))
+		{
+			// select this node and display popup for it
+			final TreeDataGhostDropJList list = (TreeDataGhostDropJList)e.getSource();
+			Point p = e.getPoint();
+			int index = list.locationToIndex(p);
+			if(index==-1)
+			{
+				return;
+			}
+			Treeable t = (Treeable)listModel.getElementAt(index);
+			list.setSelectedIndex(index);
+			System.out.println("Show popup for " + t);
+			popupMenu.setList(list);
+			popupMenu.show(list,e.getX(),e.getY());
+		}
+		else
+		{
+			return;
+		}
+	}
+	
+	
+	protected boolean clickIsOnText(MouseEvent e)
+	{
+		final TreeDataGhostDropJList list = (TreeDataGhostDropJList)e.getSource();
+		Point p = e.getPoint();
+		int index = list.locationToIndex(p);
+		if(index==-1)
+		{
+			return false;
+		}
+		Treeable t = (Treeable)listModel.getElementAt(index);
+		Integer rank = t.getRankId();
+		Pair<Integer,Integer> textBounds = listCellRenderer.getTextBoundsForRank(rank);
+		
+		if( textBounds.first < p.x && p.x < textBounds.second )
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	protected boolean clickIsOnExpansionIcon(MouseEvent e)
+	{
+		TreeDataGhostDropJList list = (TreeDataGhostDropJList)e.getSource();
+		Point p = e.getPoint();
+		int index = list.locationToIndex(p);
+		if(index==-1)
+		{
+			return false;
+		}
+		Treeable t = (Treeable)listModel.getElementAt(index);
+		Integer rank = t.getRankId();
+		Pair<Integer,Integer> anchorBounds = listCellRenderer.getAnchorBoundsForRank(rank);
+		
+		if( anchorBounds.first < p.x && p.x < anchorBounds.second )
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 	
 	public void mouseButtonClicked(MouseEvent e)
 	{
+		if(e.getButton() != MouseEvent.BUTTON1)
+		{
+			return;
+		}
+				
 		TreeDataGhostDropJList list = (TreeDataGhostDropJList)e.getSource();
 		Point p = e.getPoint();
 		int index = list.locationToIndex(p);
@@ -946,17 +1082,14 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 			return;
 		}
 		Treeable t = (Treeable)listModel.getElementAt(index);
-		Integer rank = t.getRankId();
-		Pair<Integer,Integer> anchorBounds = listCellRenderer.getAnchorBoundsForRank(rank);
-		Pair<Integer,Integer> textBounds = listCellRenderer.getTextBoundsForRank(rank);
-		
-		if( anchorBounds.first < p.x && p.x < anchorBounds.second )
+
+		if( clickIsOnExpansionIcon(e) )
 		{
 			// mouse press is on anchor area
 			boolean visible = listModel.allChildrenAreVisible(t);
 			listModel.setChildrenVisible(t, !visible);
 		}
-		else if( textBounds.first < p.x && p.x < textBounds.second )
+		else if( clickIsOnText(e) )
 		{
 			// mouse press is on text area
 			if( e.getClickCount() == 2 )
@@ -970,25 +1103,26 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 			e.consume();
 		}
 	}
-
+	
+	public void mouseButtonReleased(MouseEvent e)
+	{
+		if(e.isPopupTrigger())
+		{
+			showPopup(e);
+		}
+	}
 	
 	public void mouseButtonPressed(MouseEvent e)
 	{
-		final TreeDataGhostDropJList list = (TreeDataGhostDropJList)e.getSource();
-		Point p = e.getPoint();
-		int index = list.locationToIndex(p);
-		if(index==-1)
+		if(e.getButton() != MouseEvent.BUTTON1)
 		{
 			return;
 		}
-		Treeable t = (Treeable)listModel.getElementAt(index);
-		Integer rank = t.getRankId();
-		Pair<Integer,Integer> textBounds = listCellRenderer.getTextBoundsForRank(rank);
 		
-		if( textBounds.first < p.x && p.x < textBounds.second )
+		TreeDataGhostDropJList list = (TreeDataGhostDropJList)e.getSource();
+		if( clickIsOnText(e) )
 		{
 			list.setClickOnText(true);
-			// mouse press is on text area
 		}
 		else
 		{

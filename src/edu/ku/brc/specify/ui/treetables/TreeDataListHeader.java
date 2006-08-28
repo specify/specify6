@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.specify.ui.treetables;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -50,6 +51,8 @@ public class TreeDataListHeader extends JPanel implements ListDataListener
 	/** The label's text color. */
 	protected Color textColor;
 	
+	protected Color bgs[];
+	
 	/**
 	 * Creates a header appropriate for labelling the columns of the given
 	 * list (which represents the given data model).
@@ -62,6 +65,8 @@ public class TreeDataListHeader extends JPanel implements ListDataListener
 		this.list = list;
 		this.model = tdlm;
 		this.listCellRenderer = listCellRenderer;
+		
+		bgs = listCellRenderer.getBackgroundsColors();
 		
 		model.addListDataListener(this);
 		
@@ -84,14 +89,28 @@ public class TreeDataListHeader extends JPanel implements ListDataListener
         int h = this.getHeight();
         g2.fillRect(0,0,w,h);
 
+        int i = 0;
         for( Integer rank: model.getVisibleRanks() )
 		{
 			TreeDefinitionItemIface defItem = model.getTreeDef().getDefItemByRank(rank);
-			g.setColor(textColor);
 			TreeDataListCellRenderer rend = (TreeDataListCellRenderer)list.getCellRenderer();
+
+			// draw column background color
+			Pair<Integer,Integer> colBounds = rend.getColumnBoundsForRank(rank);
+			g.setColor(bgs[i%2]);
+			g.fillRect(colBounds.first,0,colBounds.second,this.getHeight());
+			System.out.println(colBounds.first + " : " + colBounds.second);
+			++i;
+
+			// draw text
 			Pair<Integer,Integer> textBounds = rend.getTextBoundsForRank(rank); 
+			g.setColor(textColor);
 			g.drawString(defItem.getName(),textBounds.first,getHeight()/2);
 		}
+        
+        g2.setColor(this.getBackground());
+        g2.setStroke(new BasicStroke(4));
+        g2.drawLine(0,h,w,h);
 	}
 
 	/**

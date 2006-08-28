@@ -4,7 +4,8 @@
 package edu.ku.brc.ui;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -21,6 +22,7 @@ import javax.swing.JPopupMenu;
 public class MemoryDropDownButton extends DropDownButton
 {
 	protected JMenuItem lastChosen;
+	protected PropertyChangeListener changeListener;
 	
     /**
      *
@@ -51,6 +53,16 @@ public class MemoryDropDownButton extends DropDownButton
         {
         	throw new IllegalArgumentException("Menus list must contain at least one JMenuItem");
         }
+        
+        changeListener = new PropertyChangeListener()
+        {
+    		public void propertyChange(PropertyChangeEvent evt)
+    		{
+    			fixMainButtonState();
+    		}
+        };
+        
+        lastChosen.addPropertyChangeListener(changeListener);
     }
 
 	@Override
@@ -66,18 +78,19 @@ public class MemoryDropDownButton extends DropDownButton
         }
         else if( source instanceof JMenuItem )
         {
+        	lastChosen.removePropertyChangeListener("enabled",changeListener);
             lastChosen = (JMenuItem)source;
+            lastChosen.addPropertyChangeListener("enabled",changeListener);
         }
         else
         {
-        	System.out.println("Dispatching event to the last item chosen");
-        	for( ActionListener listener: lastChosen.getListeners(ActionListener.class))
-        	{
-        		if(listener != this)
-        		{
-            		listener.actionPerformed(ae);
-        		}
-        	}
+        	lastChosen.doClick();
         }
+	}
+	
+	protected void fixMainButtonState()
+	{
+		System.out.println("Fixing button state");
+		mainBtn.setEnabled(lastChosen.isEnabled());
 	}
 }

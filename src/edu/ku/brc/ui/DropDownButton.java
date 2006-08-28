@@ -219,14 +219,18 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
      */
     public void propertyChange(PropertyChangeEvent evt)
     {
-        arrowBtn.setEnabled(mainBtn.isEnabled());
-        if (!arrowBtn.isVisible())
-        {
-            arrowBtn.setVisible(getPopMenuSize() > 0);
-            invalidate();
-            doLayout();
-            repaint();
-        }
+    	Object source = evt.getSource();
+    	if(source == mainBtn.getModel() || source == arrowBtn.getModel())
+    	{
+    		arrowBtn.setEnabled(mainBtn.isEnabled());
+	        if (!arrowBtn.isVisible())
+	        {
+	            arrowBtn.setVisible(getPopMenuSize() > 0);
+	            invalidate();
+	            doLayout();
+	            repaint();
+	        }
+    	}
     }
 
     /*------------------------------[ ChangeListener ]---------------------------------------------------*/
@@ -397,5 +401,11 @@ public abstract class DropDownButton extends JPanel implements ChangeListener, P
     public void setStatusBarHintText(String statusBarHintText)
     {
         this.statusBarHintText = statusBarHintText;
+    }
+    
+    public void setEnabled(boolean value)
+    {
+    	mainBtn.setEnabled(value);
+    	arrowBtn.setEnabled(value);
     }
 }

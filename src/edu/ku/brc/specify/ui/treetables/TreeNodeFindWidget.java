@@ -45,6 +45,12 @@ public class TreeNodeFindWidget extends JPanel implements NavBoxItemIFace, Actio
 	
 	public TreeNodeFindWidget(DualViewSearchable finderService)
 	{
+		init();
+		this.finderService = finderService;
+	}
+	
+	protected void init()
+	{
 		String findStr = getResourceString("find");
 		String findNextStr = getResourceString("find_next");
 		String topOnlyStr = getResourceString("top");
@@ -53,7 +59,6 @@ public class TreeNodeFindWidget extends JPanel implements NavBoxItemIFace, Actio
 		String wrapStr = getResourceString("wrap");
 		
 		setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
-		this.finderService = finderService;
 		
 		inputField = new JTextField(16);
 		inputField.addActionListener(this);
@@ -94,7 +99,7 @@ public class TreeNodeFindWidget extends JPanel implements NavBoxItemIFace, Actio
 		add(findWhereCb);
 		add(wrapFind);
 	}
-	
+
 	public void actionPerformed(ActionEvent ae)
 	{
 		Object source = ae.getSource();
