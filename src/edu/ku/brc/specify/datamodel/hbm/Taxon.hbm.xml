@@ -213,11 +213,9 @@
 
 		<set name="children"
 			inverse="true"
-			cascade="none"
-			fetch="join"
-			sort="edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator">
+			cascade="none">
 			<key>
-				<column name="ParentId" />
+				<column name="ParentID" />
 			</key>
 			<one-to-many class="edu.ku.brc.specify.datamodel.Taxon" />
 		</set>
