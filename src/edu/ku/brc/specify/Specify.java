@@ -60,6 +60,7 @@ import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.plugins.PluginMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PrefMainPanel;
 import edu.ku.brc.af.tasks.StartUpTask;
 import edu.ku.brc.helpers.UIHelper;
@@ -84,13 +85,15 @@ import edu.ku.brc.util.FileCache;
 @SuppressWarnings("serial")
 public class Specify extends JPanel implements DatabaseLoginListener
 {
-    private static final Logger log = Logger.getLogger(Specify.class);
+    private static final Logger log                = Logger.getLogger(Specify.class);
+    public static final boolean IS_DEVELOPMENT     = true;
+    
 
     // The preferred size of the demo
-    private static final int    PREFERRED_WIDTH  = 900;
-    private static final int    PREFERRED_HEIGHT = 800;
+    private static final int    PREFERRED_WIDTH    = 900;
+    private static final int    PREFERRED_HEIGHT   = 800;
 
-    private static Specify      specifyApp       = null; // needed for ActionListeners etc.
+    private static Specify      specifyApp         = null; // needed for ActionListeners etc.
 
     // Status Bar
     private JStatusBar          statusField        = null;
@@ -540,6 +543,35 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         SubPaneMgr.getInstance().closeAll();
                     }
                 });
+        
+
+        menu = UIHelper.createMenu(mb, "DebugMenu", "DebugMneu");
+        mi = UIHelper.createMenuItem(menu, "Show Local Prefs", "L", "Show Local Prefs", false, null);
+        mi.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        final JDialog dialog = new JDialog(frame, "Local Prefs", true);
+                        dialog.setContentPane(new AppPrefsEditor(false));
+                        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                        dialog.pack();
+                        UIHelper.centerAndShow(dialog);
+                    }
+                });
+
+        mi = UIHelper.createMenuItem(menu, "Show Remote Prefs", "R", "Show Remote Prefs", false, null);
+        mi.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        final JDialog dialog = new JDialog(frame, "Remote Prefs", true);
+                        dialog.setContentPane(new AppPrefsEditor(false));
+                        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                        dialog.pack();
+                        UIHelper.centerAndShow(dialog);
+                    }
+                });
+
 
 
          return mb;
