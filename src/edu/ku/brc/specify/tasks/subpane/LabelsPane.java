@@ -19,7 +19,9 @@ import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.BorderLayout;
 import java.io.File;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 
 import javax.swing.JLabel;
@@ -36,11 +38,13 @@ import net.sf.jasperreports.view.JRViewer;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.specify.config.AppContextMgr;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.UICacheManager;
 
@@ -66,6 +70,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     protected JasperCompilerRunnable compiler         = null;
 
     protected RecordSet              recordSet        = null;
+    protected File                   cachePath        = null;
 
     /**
      * Constructor.
@@ -76,13 +81,17 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                       final Taskable task)
     {
         super(name, task);
+        
+        cachePath = checkAndCreateReportsCache();
+        
+        refreshCacheFromDatabase();
     }
 
     /**
      * Set the text to the label (create the label if it doesn't exist)
      * @param msg the message to be displayed
      */
-    protected void setLabelText(final String msg)
+    public void setLabelText(final String msg)
     {
         if (label == null)
         {
@@ -102,27 +111,93 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
           });
 
     }
+    
+    /**
+     * Returns whether the LabelsPane contains a "label".
+     * @return  whether the LabelsPane contains a "label".
+     */
+    public boolean isEmpty()
+    {
+        return label != null;
+    }
 
+    /**
+     * Checks to see if any files in the database need to be copied to the database. A file may not
+     * exist or be out of date.
+     */
+    protected void refreshCacheFromDatabase()
+    {
+        Hashtable<String, File> hash = new Hashtable<String, File>();
+        for (File f : cachePath.listFiles())
+        {
+            log.info(f.getName());
+            hash.put(f.getName(), f);  
+        }
+        
+        for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType("jrxml/label"))
+        {
+            
+            boolean updateCache = false;
+            File file = hash.get(ap.getName());
+            if (file == null)
+            {
+                updateCache = true;
+                
+            } else
+            {
+                Date fileDate = new Date(file.lastModified());
+                updateCache = fileDate.getTime() < ap.getTimestampModified().getTime();
+            }
+            
+            log.info(ap.getName()+"  "+updateCache);
+            if (updateCache)
+            {
+                File localFilePath = new File(cachePath.getAbsoluteFile() + File.separator + ap.getName());
+                try
+                {
+                    XMLHelper.setContents(localFilePath, ap.getDataAsString());
+                    
+                } catch (Exception ex)
+                {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+    }
+    
     /**
      * Starts the report creation process
      * @param fileName the XML file name of the report definition
+     * @param recordSet the recordset to use to fill the labels
      */
     public void createReport(final String fileName, final RecordSet recordSet)
     {
         this.recordSet = recordSet;
+     
+        refreshCacheFromDatabase();
 
         String compiledName = getFileNameWithoutExt(fileName) + ".jasper";
-        File compiledPath = null;
+        File   compiledPath = new File(cachePath.getAbsoluteFile() + File.separator + compiledName);
 
-        File reportPath = AppContextMgr.getInstance().getCurrentContext(fileName);
-        File cachePath  = checkAndCreateReportsCache();
-        if (cachePath != null)
+        AppResourceIFace appRes = AppContextMgr.getInstance().getResource(fileName);
+
+        File reportPath = new File(cachePath.getAbsoluteFile() + File.separator + fileName);
+        try
         {
-            compiledPath = new File(cachePath.getAbsoluteFile() + File.separator + compiledName);
+            XMLHelper.setContents(reportPath, appRes.getDataAsString());
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            throw new RuntimeException(ex);
         }
+       
 
-        // check to see if it needs to be recompiled
-        if (compiledPath != null && compiledPath.exists() && reportPath.lastModified() < compiledPath.lastModified())
+        // Check to see if it needs to be recompiled, if it doesn't need compiling then
+        // call "compileComplete" directly to have it start filling the labels
+        // otherswise create the compiler runnable and have it be compiled 
+        // asynchronously
+        if (compiledPath != null && compiledPath.exists() && appRes.getTimestampModified().getTime() < compiledPath.lastModified())
         {
             this.compileComplete(compiledPath);
 
@@ -201,7 +276,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     {
         try
         {
-            File path = new File(UICacheManager.getDefaultWorkingPath()+File.separator+"reportsCache");
+            File path = new File(UICacheManager.getDefaultWorkingPath() + File.separator + "reportsCache"); 
             if (!path.exists())
             {
                 if (!path.mkdir())

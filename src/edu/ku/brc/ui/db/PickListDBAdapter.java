@@ -22,6 +22,7 @@ import java.util.Vector;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Expression;
 
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -109,7 +110,10 @@ public class PickListDBAdapter
             
         } finally 
         {
-             session.close();
+            if (session != null)
+            {
+                session.close();
+            }
         }
         
         return pkList;
@@ -209,23 +213,28 @@ public class PickListDBAdapter
      */
     public void save()
     {
-        Session session = HibernateUtil.getCurrentSession();
+        Session     session = null;
+        Transaction trans   = null;
         
-        try {
-            HibernateUtil.beginTransaction();
+        try 
+        {
+            session = HibernateUtil.getSessionFactory().openSession();
+            trans = session.beginTransaction();
             
             session.saveOrUpdate(pickList);
             
-            HibernateUtil.commitTransaction();
+            trans.commit();
+            
 
         } catch (Exception e) 
         {
-            HibernateUtil.rollbackTransaction();
+            trans.rollback();
+            
             e.printStackTrace();
             
         } finally 
         {
-            HibernateUtil.closeSession();
+            session.close();
         } 
     }
     

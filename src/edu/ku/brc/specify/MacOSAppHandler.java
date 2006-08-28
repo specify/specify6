@@ -50,7 +50,7 @@ public class MacOSAppHandler extends Application
             event.setHandled(true);
         }
 
-        public void handleAppPrefsIFace(ApplicationEvent event)
+        public void handleAppPrefsMgr(ApplicationEvent event)
         {
             ((Specify)app.get()).preferences();
             event.setHandled(true);

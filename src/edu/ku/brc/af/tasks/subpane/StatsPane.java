@@ -34,8 +34,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.specify.config.AppContextMgr;
 import edu.ku.brc.stats.BarChartPanel;
 import edu.ku.brc.stats.StatDataItem;
 import edu.ku.brc.stats.StatGroupTable;
@@ -57,7 +57,7 @@ public class StatsPane extends BaseSubPane
     private static final Logger log = Logger.getLogger(StatsPane.class);
 
     // Data Members
-    protected String  fileName           = null;
+    protected String  resourceName           = null;
     protected Color   bgColor            = Color.WHITE;
     protected boolean useSeparatorTitles = false;
 
@@ -68,19 +68,19 @@ public class StatsPane extends BaseSubPane
      * Creates a StatsPane.
      * @param name name of pane
      * @param task the owning task
-     * @param fileName the name of the file that contains the configration
+     * @param resourceName the name of the resource that contains the configration
      * @param useSeparatorTitles indicates the group panels should use separator titles instead of boxes
      * @param bgColor the background color
     */
     public StatsPane(final String   name,
                      final Taskable task,
-                     final String   fileName,
+                     final String   resourceName,
                      final boolean  useSeparatorTitles,
                      final Color    bgColor)
     {
         super(name, task);
 
-        this.fileName = fileName;
+        this.resourceName = resourceName;
         this.useSeparatorTitles = useSeparatorTitles;
 
         if (bgColor != null)
@@ -105,7 +105,7 @@ public class StatsPane extends BaseSubPane
         Element rootElement = null;
         try
         {
-            rootElement = AppContextMgr.getInstance().readFileToDOM4J(fileName);
+            rootElement = AppContextMgr.getInstance().getResourceAsDOM(resourceName);
 
             // count up rows and column
             StringBuilder rowsDef = new StringBuilder(128);

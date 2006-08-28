@@ -48,6 +48,11 @@ public interface AttributeIFace
         private short ord;
         public short getType() { return ord; }
         public void set(final short  ord) { this.ord = ord; }
+        public static String getString(final short ord)
+        {
+            String[] names = {"Integer", "Float", "Double", "Boolean", "String"};
+            return names[ord];
+        }
     }
 
 

@@ -39,7 +39,10 @@ public class DeterminationStatus implements Serializable
 	{
 		determinationStatusId = null;
 		name = null;
-		remarks = null;
+        remarks = null;
+        timestampCreated = new Date();
+        timestampModified = new Date();
+        lastEditedBy = null;
 		determinations = new HashSet<Determination>();
 	}
 

@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.tasks.StatsTask;
@@ -21,11 +22,9 @@ import edu.ku.brc.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.dbsupport.QueryResultsProcessable;
-import edu.ku.brc.specify.config.AppContextMgr;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.forms.ViewSetMgrManager;
 import edu.ku.brc.ui.forms.persist.View;
 
 /**
@@ -61,7 +60,7 @@ public class StatsMgr
     {
         try
         {
-            statDOM  = AppContextMgr.getInstance().readFileToDOM4J("statistics.xml"); // Describes each Statistic, its SQL and how it is to be displayed
+            statDOM  = AppContextMgr.getInstance().getResourceAsDOM("Statistics"); // Describes each Statistic, its SQL and how it is to be displayed
             
         } catch (Exception ex)
         {
@@ -248,7 +247,7 @@ public class StatsMgr
         String viewName    = domElement.attributeValue("view");
         String mode        = domElement.attributeValue("mode");
 
-        View view = ViewSetMgrManager.getView(viewSetName, viewName);
+        View view = AppContextMgr.getInstance().getView(viewSetName, viewName);
         if (view != null)
         {
             CommandDispatcher.dispatch(new CommandAction("Data_Entry", "ShowView", new Object[] {view, mode, idStr}));

@@ -14,7 +14,6 @@
  */
 package edu.ku.brc.af.prefs;
 
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.DataObjectGettable;
 
 /**
@@ -45,13 +44,7 @@ public class PrefsGettableImpl implements DataObjectGettable
      */
     public Object getFieldValue(Object dataObj, String fieldName)
     {
-        //if (!(dataObj instanceof AppPrefsIFace))
-        //{
-        //    throw new RuntimeException("dataObj is not a Preference in call getFieldValue fieldName["+fieldName+"] data["+dataObj+"]");
-        //}
-
-        //System.out.println("getFieldValue["+dataObj+"]  ["+fieldName+"]  ["+ ((AppPrefsIFace)dataObj).get(fieldName, "")+"]");
-        return UICacheManager.getAppPrefs().get(fieldName, "");
+        return AppPreferences.getInstance().get(fieldName, "");
     }
     
     /* (non-Javadoc)

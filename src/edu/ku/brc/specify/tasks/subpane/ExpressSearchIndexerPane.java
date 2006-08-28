@@ -66,6 +66,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -75,7 +76,6 @@ import edu.ku.brc.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.helpers.DiskFileFilter;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.config.AppContextMgr;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.ui.IconManager;
@@ -177,7 +177,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         {
             if (esDOM == null)
             {
-                esDOM = AppContextMgr.getInstance().readFileToDOM4J("search_config.xml");         // Describes the definitions of the full text search
+                esDOM = AppContextMgr.getInstance().getResourceAsDOM("SearchConfig"); // Describes the definitions of the full text search
             }
 
             Hashtable<String, String> namesHash = new Hashtable<String, String>();
@@ -793,7 +793,9 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
      */
     protected long indexLabels(final IndexWriter writer)
     {
-        File resourceDir = AppContextMgr.getInstance().getCurrentContext();
+        // TODO FIX ME! Indexing labels
+        
+        File resourceDir = null;//AppContextMgr.getInstance().getCurrentContext();
         File[] files = resourceDir.listFiles(new DiskFileFilter("jrxml"));
 
         indvLabel.setVisible(true);

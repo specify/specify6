@@ -28,7 +28,7 @@ public class CollectionObjDef  implements java.io.Serializable
      protected LocationTreeDef locationTreeDef;
      protected TaxonTreeDef taxonTreeDef;
      protected Set<Locality> localities;
-
+     protected Set<AppResourceDefault> appResourceDefaults;
 
     // Constructors
 
@@ -66,6 +66,7 @@ public class CollectionObjDef  implements java.io.Serializable
         locationTreeDef = null;
         taxonTreeDef = null;
         localities = new HashSet<Locality>();
+        appResourceDefaults = new HashSet<AppResourceDefault>();
     }
     // End Initializer
 
@@ -203,9 +204,19 @@ public class CollectionObjDef  implements java.io.Serializable
 
     public void setLocalities(Set<Locality> localities) {
         this.localities = localities;
+    } 
+
+    public Set<AppResourceDefault> getAppResourceDefaults()
+    {
+        return appResourceDefaults;
     }
 
-  /**
+    public void setAppResourceDefaults(Set<AppResourceDefault> appResourceDefaults)
+    {
+        this.appResourceDefaults = appResourceDefaults;
+    }
+
+/**
 	 * toString
 	 * @return String
 	 */

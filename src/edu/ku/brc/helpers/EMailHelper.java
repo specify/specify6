@@ -44,6 +44,7 @@ import org.apache.log4j.Logger;
 
 import com.sun.mail.smtp.SMTPTransport;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.ui.UICacheManager;
 
 /**
@@ -271,13 +272,13 @@ public class EMailHelper
      */
     public static boolean hasEMailSettings()
     {
-        String usernameStr     = UICacheManager.getAppPrefs().get("settings.email.username", null);
-        String passwordStr     = Encryption.decrypt(UICacheManager.getAppPrefs().get("settings.email.password", null));
-        String emailStr        = UICacheManager.getAppPrefs().get("settings.email.email", null);
-        String smtpStr         = UICacheManager.getAppPrefs().get("settings.email.smtp", null);
-        String serverNameStr   = UICacheManager.getAppPrefs().get("settings.email.servername", null);
-        String acctTypeStr     = UICacheManager.getAppPrefs().get("settings.email.accounttype", null);
-        String localMailBoxStr = UICacheManager.getAppPrefs().get("settings.email.localmailbox", null);
+        String usernameStr     = AppPreferences.getInstance().get("settings.email.username", null);
+        String passwordStr     = Encryption.decrypt(AppPreferences.getInstance().get("settings.email.password", null));
+        String emailStr        = AppPreferences.getInstance().get("settings.email.email", null);
+        String smtpStr         = AppPreferences.getInstance().get("settings.email.smtp", null);
+        String serverNameStr   = AppPreferences.getInstance().get("settings.email.servername", null);
+        String acctTypeStr     = AppPreferences.getInstance().get("settings.email.accounttype", null);
+        String localMailBoxStr = AppPreferences.getInstance().get("settings.email.localmailbox", null);
 
         return hasEMailSettings(usernameStr, passwordStr, emailStr, smtpStr, serverNameStr, acctTypeStr, localMailBoxStr);
     }
@@ -327,13 +328,13 @@ public class EMailHelper
 
         try
         {
-            String usernameStr     = UICacheManager.getAppPrefs().get("settings.email.username", null);
-            String passwordStr     = Encryption.decrypt(UICacheManager.getAppPrefs().get("settings.email.password", null));
-            String emailStr        = UICacheManager.getAppPrefs().get("settings.email.email", null);
-            String smtpStr         = UICacheManager.getAppPrefs().get("settings.email.smtp", null);
-            String serverNameStr   = UICacheManager.getAppPrefs().get("settings.email.servername", null);
-            String acctTypeStr     = UICacheManager.getAppPrefs().get("settings.email.accounttype", null);
-            String localMailBoxStr = UICacheManager.getAppPrefs().get("settings.email.localmailbox", null);
+            String usernameStr     = AppPreferences.getInstance().get("settings.email.username", null);
+            String passwordStr     = Encryption.decrypt(AppPreferences.getInstance().get("settings.email.password", null));
+            String emailStr        = AppPreferences.getInstance().get("settings.email.email", null);
+            String smtpStr         = AppPreferences.getInstance().get("settings.email.smtp", null);
+            String serverNameStr   = AppPreferences.getInstance().get("settings.email.servername", null);
+            String acctTypeStr     = AppPreferences.getInstance().get("settings.email.accounttype", null);
+            String localMailBoxStr = AppPreferences.getInstance().get("settings.email.localmailbox", null);
 
             EMailHelper.AccountType acctType = EMailHelper.getAccountType(acctTypeStr);
 

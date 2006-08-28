@@ -38,6 +38,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
      protected DatabaseLoginPanel    dbPanel;
      protected DatabaseLoginListener listener;
      protected boolean               doAutoLogin = false;
+     protected boolean               doAutoClose = true;
 
     /**
      * Constructor that has the form created from the view system.
@@ -88,6 +89,28 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
     public void setDoAutoLogin(final boolean doAutoLogin)
     {
         this.doAutoLogin = doAutoLogin;
+    }
+
+    /**
+     * Sets whether the dialog should automatically close when it logs in successfully.
+     * @param doAutoClose the value
+     */
+    public void setDoAutoClose(boolean doAutoClose)
+    {
+        this.doAutoClose = doAutoClose;
+        if (dbPanel != null)
+        {
+            dbPanel.setAutoClose(doAutoClose);
+        }
+    }
+    
+    /**
+     * Returns the DatabaseLoginPanel.
+     * @return the DatabaseLoginPanel
+     */
+    public DatabaseLoginPanel getDatabaseLoginPanel()
+    {
+        return dbPanel;
     }
 
     /* (non-Javadoc)

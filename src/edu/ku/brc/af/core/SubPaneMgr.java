@@ -115,10 +115,32 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
 
         return pane;
     }
+    
+    /**
+     * Renames the pane, internally and the tab.
+     * @param pane the pane to be renamed
+     * @param newName the new name for the tab
+     * @return the same pane as the one renamed
+     */
+    public SubPaneIFace renamePane(final SubPaneIFace pane, final String newName)
+    {
+        SubPaneIFace fndPane = panes.get(pane.getName());
+        if (pane != fndPane)
+        {
+            throw new RuntimeException("Panes don't match on rename.");
+        }
+        panes.remove(pane.getName());
+        pane.setName(newName);
+        this.setTitleAt(indexOfComponent(pane.getUIComponent()), newName);
+        panes.put(newName, fndPane);
+        
+        return pane;
+    }
+
 
     /**
      * Removes a pane and calls shutdown on it.
-     * @param pane the pane to be remoped
+     * @param pane the pane to be removed
      * @return the same pane as the one removed
      */
     public SubPaneIFace removePane(final SubPaneIFace pane)

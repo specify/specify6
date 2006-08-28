@@ -27,7 +27,6 @@ import org.dom4j.io.SAXReader;
 import org.hibernate.Query;
 
 import edu.ku.brc.helpers.DatamodelHelper;
-import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
 
@@ -364,6 +363,6 @@ public class DBTableIdMgr
 	 */
 	public static void main(String[] args)
 	{
-		DBTableIdMgr manager;
+		@SuppressWarnings("unused") DBTableIdMgr manager;
 	}
 }

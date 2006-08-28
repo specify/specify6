@@ -50,9 +50,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.db.DatabaseLoginDlg;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.db.DatabaseLoginPanel;
@@ -944,19 +944,25 @@ public final class UIHelper
      * Tries to do the login, if doAutoLogin is set to true it will try without displaying a dialog
      * and if the login fails then it will display the dialog
      * @param doAutoLogin whether to try to utomatically log the user in
+     * @param doAutoClose hwther it should automatically close the window when it is logged in successfully
+     * @param useDialog use a Dialog or a Frame
+     * @param listener a listener for when it is logged in or fails
      */
-    public static void doLogin(final boolean doAutoLogin,
-                               final boolean useDialog,
-                               final DatabaseLoginListener listener)
+    public static DatabaseLoginPanel doLogin(final boolean doAutoLogin,
+                                             final boolean doAutoClose,
+                                             final boolean useDialog,
+                                             final DatabaseLoginListener listener)
     {
-        boolean doLogin = true;
-        boolean doAutoLoginNow = doAutoLogin && UICacheManager.getAppPrefs().getBoolean("login.autologin", false);
+        boolean doAutoLoginNow = doAutoLogin && AppPreferences.getLocalPrefs().getBoolean("login.autologin", false);
 
         if (useDialog)
         {
             DatabaseLoginDlg dlg = new DatabaseLoginDlg(listener);
             dlg.setDoAutoLogin(doAutoLoginNow);
+            dlg.setDoAutoClose(doAutoClose);
             UIHelper.centerAndShow(dlg);
+            
+            return dlg.getDatabaseLoginPanel();
 
         } else
         {
@@ -964,15 +970,18 @@ public final class UIHelper
             {
                 protected JFrame                frame;
                 protected DatabaseLoginListener frameDBListener;
+                protected boolean               doAutoClose;
 
-                public DBListener(JFrame frame, DatabaseLoginListener frameDBListener)
+                public DBListener(JFrame frame, DatabaseLoginListener frameDBListener, boolean doAutoClose)
                 {
                     this.frame = frame;
                     this.frameDBListener = frameDBListener;
+                    this.doAutoClose = doAutoClose;
                 }
                 public void loggedIn(final String databaseName, final String userName)
                 {
-                    frame.setVisible(false);
+                    if (doAutoClose)
+                        frame.setVisible(false);
                     frameDBListener.loggedIn(databaseName, userName);
                 }
 
@@ -985,7 +994,8 @@ public final class UIHelper
             JFrame.setDefaultLookAndFeelDecorated(false);
 
             JFrame frame = new JFrame(getResourceString("logintitle"));
-            DatabaseLoginPanel panel = new DatabaseLoginPanel(new DBListener(frame, listener), false);
+            DatabaseLoginPanel panel = new DatabaseLoginPanel(new DBListener(frame, listener, doAutoClose), false);
+            panel.setAutoClose(doAutoClose);
             panel.setWindow(frame);
             frame.setContentPane(panel);
             frame.setIconImage(IconManager.getIcon("AppIcon", IconManager.IconSize.Std16).getImage());
@@ -998,6 +1008,8 @@ public final class UIHelper
                 panel.doLogin();
             }
             UIHelper.centerAndShow(frame);
+            
+            return panel;
         }
 
     }

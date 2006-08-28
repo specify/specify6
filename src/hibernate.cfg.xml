@@ -12,19 +12,27 @@
 	    <property name="hibernate.connection.url">jdbc:mysql://localhost/fish</property> 
 		<property name="hibernate.connection.username">rods</property>
 	    <property name="hibernate.connection.password">rods</property>-->
+	    
+	    <!--
 	    <property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
 	    <property name="c3p0.minPoolSize">5</property>
 	    <property name="c3p0.timeout">1000</property>
+	    -->
+	    
 		<!-- Use the Hibernate built-in pool for tests. -->
 		<property name="hibernate.connection.pool_size">5</property>
+		
         <!-- Use JTA for Transactions -->
         <!--
         <property name="transaction.factory_class">org.hibernate.transaction.JTATransactionFactory</property>
         <property name="jta.UserTransaction">java:comp/UserTransaction</property>
         -->
+        
 		<!-- Use EHCache -->
+		<!--
 		<property name="cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
 		<property name="cache.use_query_cache">true</property>
+		-->
 
 		<!-- Specify mapping files. -->
 		<mapping resource="edu/ku/brc/ui/db/PickList.hbm.xml"/>
@@ -34,8 +42,11 @@
 	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AccessionAgents.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/AccessionAuthorizations.hbm.xml"/>
 	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Address.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Agent.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/AttributeDef.hbm.xml"/>
+	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Agent.hbm.xml"/>
+	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AppResourceDefault.hbm.xml"/>
+	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AppResource.hbm.xml"/>
+	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AppResourceData.hbm.xml"/>
+	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AttributeDef.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Authors.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/BorrowAgents.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Borrow.hbm.xml"/>
@@ -97,7 +108,8 @@
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/TaxonTreeDef.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/TaxonTreeDefItem.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/UserGroup.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Workbench.hbm.xml"/>
+	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/ViewSetObj.hbm.xml"/>
+	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Workbench.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/WorkbenchDataItem.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/WorkbenchTemplate.hbm.xml"/>
 		<mapping resource="edu/ku/brc/specify/datamodel/hbm/WorkbenchTemplateMappingItem.hbm.xml"/>

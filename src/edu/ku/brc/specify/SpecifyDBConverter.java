@@ -56,105 +56,6 @@ public class SpecifyDBConverter
 
     }
 
-    protected void testPaging()
-    {
-        boolean testPaging = false;
-        if (testPaging)
-        {
-            /*
-            long start;
-            List list;
-            ResultSet rs;
-            java.sql.Statement stmt;
-
-            start = System.currentTimeMillis();
-            stmt = DBConnection.getConnection().createStatement();
-            rs  = stmt.executeQuery("SELECT * FROM collectionobject c LIMIT 31000,32000");
-            log.info("JDBC ******************** "+(System.currentTimeMillis() - start));
-
-            Session session = HibernateUtil.getCurrentSession();
-            //start = System.currentTimeMillis();
-            //list = session.createQuery("from catalogseries in class CatalogSeries").setFirstResult(1).setMaxResults(1000).list();
-            //log.info("HIBR ******************** "+(System.currentTimeMillis() - start));
-
-
-            start = System.currentTimeMillis();
-            stmt = DBConnection.getConnection().createStatement();
-            rs  = stmt.executeQuery("SELECT * FROM collectionobject c LIMIT 31000,32000");
-            log.info("JDBC ******************** "+(System.currentTimeMillis() - start));
-
-            start = System.currentTimeMillis();
-            list = session.createQuery("from collectionobject in class CollectionObject").setFirstResult(30000).setMaxResults(1000).list();
-            log.info("HIBR ******************** "+(System.currentTimeMillis() - start));
-
-            start = System.currentTimeMillis();
-            list = session.createQuery("from collectionobject in class CollectionObject").setFirstResult(10000).setMaxResults(1000).list();
-            log.info("HIBR ******************** "+(System.currentTimeMillis() - start));
-
-            start = System.currentTimeMillis();
-            list = session.createQuery("from collectionobject in class CollectionObject").setFirstResult(1000).setMaxResults(1000).list();
-            log.info("HIBR ******************** "+(System.currentTimeMillis() - start));
-
-            start = System.currentTimeMillis();
-            stmt = DBConnection.getConnection().createStatement();
-            rs  = stmt.executeQuery("SELECT * FROM collectionobject c LIMIT 1000,2000");
-            ResultSetMetaData rsmd = rs.getMetaData();
-            rs.first();
-            while (rs.next())
-            {
-                for (int i=1;i<=rsmd.getColumnCount();i++)
-                {
-                    Object o = rs.getObject(i);
-                }
-            }
-            log.info("JDBC ******************** "+(System.currentTimeMillis() - start));
-
-           */
-
-            /*
-            HibernatePage.setDriverName("com.mysql.jdbc.Driver");
-
-            int pageNo = 1;
-            Pagable page = HibernatePage.getHibernatePageInstance(HibernateUtil.getCurrentSession().createQuery("from collectionobject in class CollectionObject"), 0, 100);
-            log.info("Number Pages: "+page.getLastPageNumber());
-            int cnt = 0;
-            for (Object list : page.getThisPageElements())
-            {
-                //cnt += list.size();
-
-                log.info("******************** Page "+pageNo++);
-            }
-            */
-
-            ResultsPager pager = new ResultsPager(HibernateUtil.getCurrentSession().createQuery("from collectionobject in class CollectionObject"), 0, 10);
-            //ResultsPager pager = new ResultsPager(HibernateUtil.getCurrentSession().createCriteria(CollectionObject.class), 0, 100);
-            int pageNo = 1;
-            do
-            {
-                long start = System.currentTimeMillis();
-                List list = pager.getList();
-                if (pageNo % 100 == 0)
-                {
-                    log.info("******************** Page "+pageNo+" "+(System.currentTimeMillis() - start) / 1000.0);
-                }
-                pageNo++;
-
-                for (Object co : list)
-                {
-                    if (pageNo % 1000 == 0)
-                    {
-                        log.info(((CollectionObject)co).getCatalogNumber());
-                    }
-                }
-                list.clear();
-                System.gc();
-            } while (pager.isNextPage());
-
-        }
-
-    }
-
-
     /**
      * Utility method to associate an artist with a catObj
      */
@@ -168,11 +69,15 @@ public class SpecifyDBConverter
         String userHome = System.getProperty("user.home");
         if (userHome.indexOf("rods") > -1)
         {
-            oldDatabaseName = "demo_fish2";  // Fish
-            databaseName = "fish";
+            oldDatabaseName = "demo_fish4";  // Accessions
+            databaseName = "accessions";
             
             oldDatabaseName = "demo_fish5";
             databaseName = "cranbrook";
+            
+            oldDatabaseName = "demo_fish2";  // Fish
+            databaseName = "fish";
+            
         }
         
         if (userHome.indexOf("stewart") > -1)
@@ -187,11 +92,17 @@ public class SpecifyDBConverter
 //        	databaseName = "fish";
         }
         
+        System.out.println("************************************************************");
+        System.out.println("From "+oldDatabaseName+" to "+databaseName);
+        System.out.println("************************************************************");
+        
         // This will log us in and return true/false
         if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", databaseName, "jdbc:mysql://localhost/"+databaseName, "rods", "rods"))
         {
             throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
         }
+
+        HibernateUtil.getCurrentSession();
 
         IdMapperMgr idMapperMgr = null;
         try
@@ -332,7 +243,7 @@ public class SpecifyDBConverter
 
                     DataType          dataType  = ObjCreatorHelper.createDataType("Animal");
                     UserGroup         userGroup = ObjCreatorHelper.createUserGroup("Fish");
-                    SpecifyUser       user      = ObjCreatorHelper.createSpecifyUser("rods", "rods@ku.edu", (short)0, userGroup);
+                    SpecifyUser       user      = ObjCreatorHelper.createSpecifyUser("rods", "rods@ku.edu", (short)0, userGroup, "CollectionManager");
 
 
 
@@ -421,4 +332,105 @@ public class SpecifyDBConverter
 
         }
     }
+    
+    protected void testPaging()
+    {
+        boolean testPaging = false;
+        if (testPaging)
+        {
+            /*
+            long start;
+            List list;
+            ResultSet rs;
+            java.sql.Statement stmt;
+
+            start = System.currentTimeMillis();
+            stmt = DBConnection.getConnection().createStatement();
+            rs  = stmt.executeQuery("SELECT * FROM collectionobject c LIMIT 31000,32000");
+            log.info("JDBC ******************** "+(System.currentTimeMillis() - start));
+
+            Session session = HibernateUtil.getCurrentSession();
+            //start = System.currentTimeMillis();
+            //list = session.createQuery("from catalogseries in class CatalogSeries").setFirstResult(1).setMaxResults(1000).list();
+            //log.info("HIBR ******************** "+(System.currentTimeMillis() - start));
+
+
+            start = System.currentTimeMillis();
+            stmt = DBConnection.getConnection().createStatement();
+            rs  = stmt.executeQuery("SELECT * FROM collectionobject c LIMIT 31000,32000");
+            log.info("JDBC ******************** "+(System.currentTimeMillis() - start));
+
+            start = System.currentTimeMillis();
+            list = session.createQuery("from collectionobject in class CollectionObject").setFirstResult(30000).setMaxResults(1000).list();
+            log.info("HIBR ******************** "+(System.currentTimeMillis() - start));
+
+            start = System.currentTimeMillis();
+            list = session.createQuery("from collectionobject in class CollectionObject").setFirstResult(10000).setMaxResults(1000).list();
+            log.info("HIBR ******************** "+(System.currentTimeMillis() - start));
+
+            start = System.currentTimeMillis();
+            list = session.createQuery("from collectionobject in class CollectionObject").setFirstResult(1000).setMaxResults(1000).list();
+            log.info("HIBR ******************** "+(System.currentTimeMillis() - start));
+
+            start = System.currentTimeMillis();
+            stmt = DBConnection.getConnection().createStatement();
+            rs  = stmt.executeQuery("SELECT * FROM collectionobject c LIMIT 1000,2000");
+            ResultSetMetaData rsmd = rs.getMetaData();
+            rs.first();
+            while (rs.next())
+            {
+                for (int i=1;i<=rsmd.getColumnCount();i++)
+                {
+                    Object o = rs.getObject(i);
+                }
+            }
+            log.info("JDBC ******************** "+(System.currentTimeMillis() - start));
+
+           */
+
+            /*
+            HibernatePage.setDriverName("com.mysql.jdbc.Driver");
+
+            int pageNo = 1;
+            Pagable page = HibernatePage.getHibernatePageInstance(HibernateUtil.getCurrentSession().createQuery("from collectionobject in class CollectionObject"), 0, 100);
+            log.info("Number Pages: "+page.getLastPageNumber());
+            int cnt = 0;
+            for (Object list : page.getThisPageElements())
+            {
+                //cnt += list.size();
+
+                log.info("******************** Page "+pageNo++);
+            }
+            */
+
+            ResultsPager pager = new ResultsPager(HibernateUtil.getCurrentSession().createQuery("from collectionobject in class CollectionObject"), 0, 10);
+            //ResultsPager pager = new ResultsPager(HibernateUtil.getCurrentSession().createCriteria(CollectionObject.class), 0, 100);
+            int pageNo = 1;
+            do
+            {
+                long start = System.currentTimeMillis();
+                List list = pager.getList();
+                if (pageNo % 100 == 0)
+                {
+                    log.info("******************** Page "+pageNo+" "+(System.currentTimeMillis() - start) / 1000.0);
+                }
+                pageNo++;
+
+                for (Object co : list)
+                {
+                    if (pageNo % 1000 == 0)
+                    {
+                        log.info(((CollectionObject)co).getCatalogNumber());
+                    }
+                }
+                list.clear();
+                System.gc();
+            } while (pager.isNextPage());
+
+        }
+
+    }
+
+
+
 }

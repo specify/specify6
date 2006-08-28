@@ -32,9 +32,10 @@ import edu.ku.brc.helpers.XMLHelper;
 
 /**
  * Hold information about the subset of returns results. Each Express Search can return results from several different
- * DB tables of information. This information is constructed from an XML descrptio
- * @code_status Unknown (auto-generated)
- *n
+ * DB tables of information. This information is constructed from an XML descrption
+ *
+ * @code_status Complete
+ *
  * @author rods
  *
  */
@@ -87,7 +88,7 @@ public class ExpressResultsTableInfo
     }
 
     /**
-     * PRase comma separated r,g,b string
+     * Parse comma separated r,g,b string
      * @param rgb the string with comma separated color values
      * @return the Color object
      */
@@ -182,7 +183,7 @@ public class ExpressResultsTableInfo
     }
 
     /**
-     * Returns the number of indexes
+     * Returns the number of indexes.
      * @return the number of indexes
      */
     public int getNumIndexes()
@@ -191,7 +192,7 @@ public class ExpressResultsTableInfo
     }
 
     /**
-     * Adds an index
+     * Adds an index.
      * @param index the index to add
      */
     public void addIndex(int index)
@@ -200,7 +201,7 @@ public class ExpressResultsTableInfo
     }
 
     /**
-     * Returns the array of indexes
+     * Returns the array of indexes.
      * @return the array of indexes
      */
     public int[] getIndexes()
@@ -216,7 +217,7 @@ public class ExpressResultsTableInfo
     }
 
     /**
-     * Cleanup any memory
+     * Cleanup any memory.
      */
     public void cleanUp()
     {
@@ -237,7 +238,7 @@ public class ExpressResultsTableInfo
     }
 
     /**
-     * Returns an array with the column name mappined, return null if all columns are to be shown
+     * Returns an array with the column name mappined, return null if all columns are to be shown.
      * @return Returns an array with the column name mappined, return null if all columns are to be shown
      */
     public String[] getColNames()
@@ -261,7 +262,7 @@ public class ExpressResultsTableInfo
     }
 
     /**
-     * Returns an array with the column name mappined, return null if all columns are to be shown
+     * Returns an array with the column name mappined, return null if all columns are to be shown.
      * @return Returns an array with the column name mappined, return null if all columns are to be shown
      */
     public String[] getColLabels()
@@ -285,7 +286,7 @@ public class ExpressResultsTableInfo
     }
 
     /**
-     * Returns an array with the column mappings, return null if all columns are to be shown
+     * Returns an array with the column mappings, return null if all columns are to be shown.
      * @return Returns an array with the column mappings, return null if all columns are to be shown
      */
     public int[] getDisplayColIndexes()
@@ -307,7 +308,7 @@ public class ExpressResultsTableInfo
     }
 
     /**
-     * Returns an array of the columns that are to be indexes
+     * Returns an array of the columns that are to be indexes.
      * @return an array of the columns that are to be indexes
      */
     public int[] getCols()
@@ -326,7 +327,7 @@ public class ExpressResultsTableInfo
 
 
     /**
-     * Returns the current LoadType: this object's internal contents were parsed for indexing or search processing
+     * Returns the current LoadType: this object's internal contents were parsed for indexing or search processing.
      * @return the current LoadType
      */
     public LOAD_TYPE getLoadType()
@@ -335,6 +336,10 @@ public class ExpressResultsTableInfo
     }
 
 
+    /**
+     * Returns out of date hash.
+     * @return out of date hash.
+     */
     public Hashtable<String, String> getOutOfDate()
     {
         return outOfDate;

@@ -33,6 +33,7 @@ import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
@@ -374,7 +375,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             if (inx < list.size())
             {
                 AltView altView = list.get(inx);
-                View view = ViewSetMgrManager.getView(currentView.getView().getViewSetName(), altView.getView().getName());
+                View view = AppContextMgr.getInstance().getView(currentView.getView().getViewSetName(), altView.getView().getName());
                 if (view != null)
                 {
                     log.debug("--------------------------");

@@ -91,7 +91,7 @@ public class SearchFormPane extends FormPane
         for (int i=0;i<nameMap.length;i++)
         {
             String name    = nameMap[i++];
-            String objName = nameMap[i];
+            //String objName = nameMap[i];
 
             Hashtable<String, String> formData = hashTables.get(name);
 

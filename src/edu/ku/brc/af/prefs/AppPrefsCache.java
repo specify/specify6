@@ -20,7 +20,6 @@ import java.util.Hashtable;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.ui.ColorWrapper;
-import edu.ku.brc.ui.UICacheManager;
 
 /**
  * Creates and maintains a cache of preference entries that listen for changes to the preferences so they can always be up-to-date
@@ -40,7 +39,7 @@ public class AppPrefsCache
     
     protected static final AppPrefsCache instance = new AppPrefsCache();
     
-    protected AppPrefsIFace                         appPrefs = UICacheManager.getAppPrefs();
+    protected AppPreferences                           appPrefs = null;
     protected Hashtable<String, AppPrefsCacheEntry> hash     = new Hashtable<String, AppPrefsCacheEntry>();
     
     
@@ -97,15 +96,18 @@ public class AppPrefsCache
     {
         if (appPrefs == null)
         {
-            throw new RuntimeException(NOT_INIT);
+            appPrefs = AppPreferences.getInstance();
         }
         checkName(section, pref, attrName);
         
-        String name = makeKey(section, pref, attrName);
-        
-        AppPrefsCacheEntry prefsCacheEntry = new AppPrefsCacheEntry(attrName, appPrefs.get(name, defValue), defValue);
-        appPrefs.addChangeListener(name, prefsCacheEntry);
-        hash.put(makeKey(section, pref, attrName), prefsCacheEntry);
+        String             name            = makeKey(section, pref, attrName);
+        AppPrefsCacheEntry prefsCacheEntry = hash.get(name);
+        if (prefsCacheEntry == null)
+        {
+            prefsCacheEntry = new AppPrefsCacheEntry(attrName, appPrefs.get(name, defValue), defValue);
+            appPrefs.addChangeListener(name, prefsCacheEntry);
+            hash.put(makeKey(section, pref, attrName), prefsCacheEntry);
+        }
         return prefsCacheEntry;
     }
     
@@ -131,7 +133,7 @@ public class AppPrefsCache
     {
         if (getInstance().appPrefs == null)
         {
-            throw new RuntimeException(NOT_INIT);
+            getInstance().appPrefs = AppPreferences.getInstance();
         }
         checkName(section, pref, attrName);
         
@@ -155,6 +157,7 @@ public class AppPrefsCache
     public static String getValue(final String section, final String pref, final String attrName)
     {
         checkName(section, pref, attrName);
+        
         AppPrefsCacheEntry prefsCacheEntry = getInstance().hash.get(makeKey(section, pref, attrName));
         return prefsCacheEntry != null ? prefsCacheEntry.getValue() : "";
     }
@@ -170,7 +173,7 @@ public class AppPrefsCache
     {
         if (appPrefs == null)
         {
-            throw new RuntimeException(NOT_INIT);
+            appPrefs = AppPreferences.getInstance();
         } 
         
         String prefVal;
@@ -208,20 +211,22 @@ public class AppPrefsCache
     {
         if (getInstance().appPrefs == null)
         {
-            throw new RuntimeException(NOT_INIT);
+            appPrefs = AppPreferences.getInstance();
         }    
         checkName(section, pref, attrName);
         
         String fullName = makeKey(section, pref, attrName);
-        
-        String defValue = colorWrapper.toString();
-        String prefVal  = checkForPref(fullName, attrName, defValue);
-        colorWrapper.setRGB(prefVal);
-        
-        ColorCacheEntry colorEntry = new ColorCacheEntry(colorWrapper, fullName, prefVal, defValue);
-        
-        appPrefs.addChangeListener(fullName, colorEntry);
-        hash.put(fullName, colorEntry);
+        if (hash.get(fullName) == null)
+        {
+            String defValue = colorWrapper.toString();
+            String prefVal  = checkForPref(fullName, attrName, defValue);
+            colorWrapper.setRGB(prefVal);
+            
+            ColorCacheEntry colorEntry = new ColorCacheEntry(colorWrapper, fullName, prefVal, defValue);
+            
+            appPrefs.addChangeListener(fullName, colorEntry);
+            hash.put(fullName, colorEntry);
+        }
 
     }
     
@@ -284,17 +289,20 @@ public class AppPrefsCache
     {
         if (appPrefs == null)
         {
-            throw new RuntimeException(NOT_INIT);
+            appPrefs = AppPreferences.getInstance();
         }
         checkName(section, pref, attrName);
         
         String fullName = makeKey(section, pref, attrName);
-        String defValue = simpleFormat.toPattern();
-        String prefVal  = checkForPref(fullName, attrName, defValue);
-        simpleFormat.applyPattern(prefVal);
-        DateFormatCacheEntry dateEntry = new DateFormatCacheEntry(simpleFormat, fullName, prefVal, defValue);
-        appPrefs.addChangeListener(fullName, dateEntry);
-        hash.put(fullName, dateEntry);
+        if (hash.get(fullName) == null)
+        {
+            String defValue = simpleFormat.toPattern();
+            String prefVal  = checkForPref(fullName, attrName, defValue);
+            simpleFormat.applyPattern(prefVal);
+            DateFormatCacheEntry dateEntry = new DateFormatCacheEntry(simpleFormat, fullName, prefVal, defValue);
+            appPrefs.addChangeListener(fullName, dateEntry);
+            hash.put(fullName, dateEntry);
+        }
     }
     
     /**
@@ -333,7 +341,8 @@ public class AppPrefsCache
             
         } else
         {
-            throw new RuntimeException("Couldn't find Date Entry ["+makeKey(section, pref, attrName)+"]");
+            //throw new RuntimeException("Couldn't find Date Entry ["+makeKey(section, pref, attrName)+"]");
+            return new SimpleDateFormat("mm/dd/yy");
         }
     }
 

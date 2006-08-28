@@ -144,6 +144,7 @@ public class ObjCreatorHelper
     }
 
     public static CollectionObjDef createCollectionObjDef(final String name,
+                                                          final String disciplineName,
                                                           final DataType dataType,
                                                           final SpecifyUser user,
                                                           final TaxonTreeDef taxonTreeDef)
@@ -151,6 +152,7 @@ public class ObjCreatorHelper
         CollectionObjDef colObjDef = new CollectionObjDef();
         colObjDef.initialize();
         colObjDef.setName(name);
+        colObjDef.setDiscipline(disciplineName);
         colObjDef.setDataType(dataType);
         colObjDef.setSpecifyUser(user);
         colObjDef.setTaxonTreeDef(taxonTreeDef);
@@ -165,7 +167,7 @@ public class ObjCreatorHelper
         return colObjDef;
     }
 
-    public static CatalogSeries createCatalogSeries(final String prefix, final String name)
+    public static CatalogSeries createCatalogSeries(final String prefix, final String name, final CollectionObjDef[] colObjDefs)
     {
         CatalogSeries catalogSeries = new CatalogSeries();
         catalogSeries.initialize();
@@ -173,13 +175,22 @@ public class ObjCreatorHelper
         catalogSeries.setLastEditedBy(null);
         catalogSeries.setRemarks("These are the remarks");
         catalogSeries.setSeriesName(name);
-        catalogSeries.setTimestampCreated(new Date());
-        catalogSeries.setTimestampModified(new Date());
+        
+        for (CollectionObjDef cod : colObjDefs)
+        {
+            catalogSeries.addCollectionObjDefItems(cod);
+        }
+        
         if (session != null)
         {
             session.saveOrUpdate(catalogSeries);
         }
         return catalogSeries;
+    }
+
+    public static CatalogSeries createCatalogSeries(final String prefix, final String name, final CollectionObjDef colObjDef)
+    {
+        return createCatalogSeries(prefix, name, new CollectionObjDef[] {colObjDef});
     }
 
     public static CollectingEvent createCollectingEvent(final Locality locality,
@@ -371,11 +382,11 @@ public class ObjCreatorHelper
         return status;
     }
     
-    public static Determination createDetermination(final CollectionObject       collectionObject,
-                                                       final Agent               determiner,
-                                                       final Taxon               taxon,
-                                                       final DeterminationStatus status,
-                                                       final Calendar            calendar)
+    public static Determination createDetermination(final CollectionObject    collectionObject,
+                                                    final Agent               determiner,
+                                                    final Taxon               taxon,
+                                                    final DeterminationStatus status,
+                                                    final Calendar            calendar)
     {
         startCal.clear();
         startCal.set(2006, 0, 2);
@@ -389,15 +400,17 @@ public class ObjCreatorHelper
         determination.setDeterminedDate(calendar == null ? startCal : calendar);
         determination.setDeterminer(determiner);
         determination.setTaxon(taxon);
-        determination.setTimestampCreated(new Date());
-        determination.setTimestampModified(new Date());
-
+        
+        status.getDeterminations().add(determination);
         collectionObject.getDeterminations().add(determination);
-
+        taxon.getDeterminations().add(determination);
+        
         if (session != null)
         {
             session.saveOrUpdate(collectionObject);
             session.saveOrUpdate(determination);
+            session.saveOrUpdate(status);
+            session.saveOrUpdate(taxon);
         }
         return determination;
 
@@ -801,11 +814,11 @@ public class ObjCreatorHelper
 
         prepAttr.setDefinition(attrDef);
         prepAttr.setPreparation(prep);
-         if (strVal != null)
+        if (strVal != null)
         {
              prepAttr.setStrValue(strVal);
-        }
-        if (dblVal != null)
+             
+        } else if (dblVal != null)
         {
             prepAttr.setDblValue(dblVal);
         }
@@ -2053,7 +2066,8 @@ public class ObjCreatorHelper
     public static SpecifyUser createSpecifyUser(final String name,
                                                 final String email,
                                                 final Short privLevel,
-                                                final UserGroup userGroup)
+                                                final UserGroup userGroup,
+                                                final String userType)
     {
         SpecifyUser specifyuser = new SpecifyUser();
         specifyuser.initialize();
@@ -2061,6 +2075,7 @@ public class ObjCreatorHelper
         specifyuser.setPrivLevel(privLevel);
         specifyuser.setUserGroup(userGroup);
         specifyuser.setName(name);
+        specifyuser.setUserType(userType);
         if (session != null)
         {
           session.saveOrUpdate(specifyuser);

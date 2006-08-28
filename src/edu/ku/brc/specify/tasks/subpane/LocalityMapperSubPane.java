@@ -58,6 +58,7 @@ import javax.swing.event.ListSelectionListener;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.animation.timing.TimingTarget;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
@@ -79,7 +80,6 @@ import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ResultSetController;
 import edu.ku.brc.ui.forms.ResultSetControllerListener;
-import edu.ku.brc.ui.forms.ViewSetMgrManager;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
 
@@ -292,7 +292,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
 
         // XXX DEMO  (Hard Coded 'null' means everyone would have one which may not be true)
         // "null" ViewSet name means it should use the default
-        View view = ViewSetMgrManager.getView(null, "LocalityMapper");
+        View view = AppContextMgr.getInstance().getView(null, "LocalityMapper");
         
         // WHERE's the ERROR checking !
         multiView = new MultiView(null, view, AltView.CreationMode.View, false, false);

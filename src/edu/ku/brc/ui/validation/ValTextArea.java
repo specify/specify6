@@ -34,9 +34,9 @@ import org.apache.commons.lang.StringUtils;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
-import edu.ku.brc.ui.UICacheManager;
 
 /**
  * A JTextArea that implements UIValidatable for participating in validation
@@ -119,7 +119,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
             valtextcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
             requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
-        UICacheManager.getAppPrefs().addChangeListener("ui.formatting.requiredfieldcolor", this);
+        AppPreferences.getInstance().addChangeListener("ui.formatting.requiredfieldcolor", this);
 
         getDocument().addDocumentListener(this);
 
@@ -271,7 +271,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
      */
     public void cleanUp()
     {
-        UICacheManager.getAppPrefs().removeChangeListener("ui.formatting.requiredfieldcolor", this);
+        AppPreferences.getInstance().removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
 
     //--------------------------------------------------------

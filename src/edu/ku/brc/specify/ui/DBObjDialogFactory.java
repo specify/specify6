@@ -22,8 +22,8 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.exceptions.ConfigurationException;
-import edu.ku.brc.specify.config.AppContextMgr;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.ui.db.ViewBasedDisplayFrame;
@@ -87,11 +87,9 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
      */
     protected void init()
     {
-        final String fileName = "dialog_defs.xml";
-        
         try
         {
-            Element root = AppContextMgr.getInstance().readFileToDOM4J(fileName);
+            Element root = AppContextMgr.getInstance().getResourceAsDOM("DialogDefs");
             if (root != null)
             {
                 for ( Iterator i = root.elementIterator( "dialog" ); i.hasNext(); )
@@ -125,7 +123,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
         {
             log.error(ex);
             ex.printStackTrace();
-            throw new RuntimeException("Couldn't load "+ fileName);
+            throw new RuntimeException("Couldn't load DialogDefs");
         }
     }
 

@@ -53,16 +53,16 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MainPanel;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.plugins.PluginMgr;
-import edu.ku.brc.af.prefs.AppPrefsMgr;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PrefMainPanel;
 import edu.ku.brc.af.tasks.StartUpTask;
 import edu.ku.brc.helpers.UIHelper;
-import edu.ku.brc.specify.config.AppContextMgr;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
@@ -71,6 +71,7 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToolbarLayoutManager;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
+import edu.ku.brc.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.util.FileCache;
 /**
@@ -101,6 +102,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
     protected Configuration     hibernateConfig    = null;
     protected String            currentDatabaseName = null;
+    protected DatabaseLoginPanel dbLoginPanel       = null;
 
     protected GhostGlassPane    glassPane;
 
@@ -114,43 +116,30 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
 
      /**
-     * Constructor with GraphicsConfiguration
-     * @param gc the GraphicsConfiguration
+     * Constructor.
      */
-    public Specify(GraphicsConfiguration gc)
+    public Specify()
     {
     	// we simply need to create this class, not use it
         @SuppressWarnings("unused") MacOSAppHandler macoshandler = new MacOSAppHandler(this);
 
+        // Name factories
+        System.setProperty("edu.ku.brc.af.core.AppContextMgrFactory", "edu.ku.brc.specify.config.SpecifyAppContextMgr");
+        System.setProperty("AppPrefsIOClassName", "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");
+        
+        IconManager.setApplicationClass(Specify.class);
         UICacheManager.getInstance(); // initializes it first thing
         UICacheManager.setAppName("Specify");
 
-        UICacheManager.setAppPrefs(AppPrefsMgr.getInstance().load(UICacheManager.getDefaultWorkingPath()));
-        SpecifyAppPrefs.initialPrefs();
-
+        // Load Local Prefs
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
+        localPrefs.load();
+        
         FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath());
 
         UICacheManager.register(UICacheManager.MAINPANE, this); // important to be done immediately
-        //UICacheManager.setViewbasedFactory(DBObjDialogFactory.getInstance());
-
-        initPrefs();
-
-        // Create and throw the splash screen up. Since this will
-        // physically throw bits on the screen, we need to do this
-        // on the GUI thread using invokeLater.
-
-        if (false)
-        {
-            createSplashScreen();
-            // do the following on the gui thread
-            SwingUtilities.invokeLater(new Runnable() {
-                  public void run()
-                  {
-                      showSplashScreen();
-                  }
-            });
-        }
-
+ 
         specifyApp = this;
 
         try
@@ -172,22 +161,16 @@ public class Specify extends JPanel implements DatabaseLoginListener
             log.error("Can't change L&F: ", e);
         }
 
-        initialize(gc);
-
-        frame = new JFrame(gc);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        UICacheManager.register(UICacheManager.FRAME, frame);
-
         log.info("Creating Database configuration ");
 
-        UIHelper.doLogin(true, false, this); // true means do auto login if it can, second bool means use dialog instead of frame
-
+        dbLoginPanel = UIHelper.doLogin(true, false, false, this); // true means do auto login if it can, second bool means use dialog instead of frame
 
     }
 
     /**
-     *
+     * Creates the initial panels that will be shown at start up and sets up the Application Context
+     * @param databaseName the database name
+     * @param userName the user name
      */
     protected void initStartUpPanels(final String databaseName, final String userName)
     {
@@ -215,7 +198,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
             PluginMgr.initializePlugins();
 
             validate();
-            hideSplash();
 
             add(mainPanel, BorderLayout.CENTER);
             doLayout();
@@ -231,6 +213,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             }
 
             showApp();
+            
         } else
         {
 
@@ -244,78 +227,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
         }
 
         
-    }
-
-    /**
-     *
-     */
-    protected void initPrefs()
-    {
-/*
-        boolean skip = false;
-        if (skip)
-        {
-            return;
-        }
-
-        AppPrefsIFace appPrefs = UICacheManager.getAppPrefs();
-
-        try
-        {
-            Element root = XMLHelper.readDOMFromConfigDir("prefsInit.xml");
-            if (root == null)
-            {
-                return; // XXX FIXME
-            }
-
-            List sections = root.selectNodes("/prefs/section");
-            for ( Iterator iter = sections.iterator(); iter.hasNext(); )
-            {
-                org.dom4j.Element section = (org.dom4j.Element)iter.next();
-
-                String      title       = section.attributeValue("title");
-                AppPrefsIFace sectionNode = appPrefs.node(title);
-                if (!sectionNode.getBoolean("isApp", false))
-                {
-                    sectionNode.put("title", title);
-                    sectionNode.putBoolean("isApp", true);
-                }
-
-                List prefs = section.selectNodes("pref");
-                for ( Iterator iterPrefs = prefs.iterator(); iterPrefs.hasNext(); )
-                {
-                    org.dom4j.Element pref = (org.dom4j.Element)iterPrefs.next();
-
-                    String prefTitle  = pref.attributeValue("title");
-                    String iconName   = pref.attributeValue("icon");
-                    String panelClass = pref.attributeValue("panelClass");
-
-                    AppPrefsIFace prefNode     = sectionNode.node(prefTitle);
-                    String      prefTitleStr = prefNode.get("title", null);
-                    if (prefTitleStr == null)
-                    {
-                        prefNode.put("title", prefTitle);
-                        prefNode.put("panelClass", panelClass);
-
-                        URL url = IconManager.getImagePath(iconName);
-                        if (url != null)
-                        {
-                            prefNode.put("iconPath", url.toString());
-
-                        } else
-                        {
-                            log.error("Image name["+iconName+"] not found.");
-                        }
-                    }
-                }
-            }
-
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            // XXX FIXME
-        }
-*/
     }
 
     /**
@@ -398,6 +309,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
             if (splashWindow != null)
             {
                 splashWindow.setVisible(true);
+                splashWindow.validate();
+                splashWindow.repaint();
             }
             //splashScreen.getFrame().setVisible(true);
         } else
@@ -505,7 +418,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
         dlg.setContentPane(pane);
         dlg.pack();
         dlg.doLayout();
-        System.out.println(dlg.getPreferredSize());
         dlg.setPreferredSize(dlg.getPreferredSize());
         dlg.setSize(dlg.getPreferredSize());
         UIHelper.centerAndShow(dlg);
@@ -539,7 +451,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             }
                         }
 
-                        UIHelper.doLogin(false, true, new DBListener()); // true means do auto login if it can, second bool means use dialog instead of frame
+                        UIHelper.doLogin(false, true, true, new DBListener()); // true means do auto login if it can, second bool means use dialog instead of frame
                     }
                 });
         menu.addSeparator();
@@ -703,6 +615,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
         			}
         		});
         UIHelper.centerAndShow(f);
+        
+        //hideSplash();
     }
 
     /**
@@ -745,9 +659,52 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     public void loggedIn(final String databaseName, final String userName)
     {
-        //HibernateUtil.shutdown();
+        
+        dbLoginPanel.getStatusBar().setText(getResourceString("InitializingApp"));
+        
+        SpecifyAppPrefs.initialPrefs();
 
-        initStartUpPanels(databaseName, userName);
+        // Create and throw the splash screen up. Since this will
+        // physically throw bits on the screen, we need to do this
+        // on the GUI thread using invokeLater.
+
+        if (false)
+        {
+            createSplashScreen();
+            
+            // do the following on the gui thread
+            //SwingUtilities.invokeLater(new Runnable() {
+            //      public void run()
+            //      {
+                      showSplashScreen();
+            //      }
+            //});
+        }
+
+        // do the following on the gui thread
+        //SwingUtilities.invokeLater(new SpecifyRunnable(this, null)
+        //{
+        //  public void run()
+        //  {
+        //      try
+        //      {
+        //          Thread.sleep(100);
+        //      } catch (Exception ex) {}
+              
+              GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+              
+              initialize(gc);
+
+              frame = new JFrame(gc);
+              frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+              UICacheManager.register(UICacheManager.FRAME, frame);
+              
+              initStartUpPanels(databaseName, userName);
+          //}
+        //});
+        dbLoginPanel.getWindow().setVisible(false);
+        dbLoginPanel = null;
     }
 
     /* (non-Javadoc)
@@ -817,7 +774,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
       SwingUtilities.invokeLater(new Runnable() {
           public void run()
           {
-              @SuppressWarnings("unused") Specify specify = new Specify(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration());
+              @SuppressWarnings("unused") Specify specify = new Specify();
           }
     });
 

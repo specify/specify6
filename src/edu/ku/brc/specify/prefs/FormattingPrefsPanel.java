@@ -6,11 +6,11 @@ import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.ViewFactory;
-import edu.ku.brc.ui.forms.ViewSetMgrManager;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.validation.FormValidator;
@@ -48,11 +48,11 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
         String viewName = "Formatting";
         String name = "Preferences";
 
-        formView = ViewSetMgrManager.getView(name, viewName);
+        formView = AppContextMgr.getInstance().getView(name, viewName);
 
         if (formView != null)
         {
-            form = ViewFactory.createFormView(null, formView, null, UICacheManager.getAppPrefs());
+            form = ViewFactory.createFormView(null, formView, null, AppPreferences.getInstance());
             add(form.getUIComponent(), BorderLayout.CENTER);
 
         } else
@@ -60,7 +60,7 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
             log.error("Couldn't load form with name ["+name+"] Id ["+viewName+"]");
         }
 
-        form.setDataObj(UICacheManager.getAppPrefs());
+        form.setDataObj(AppPreferences.getInstance());
 
         form.getValidator().validateForm();
 

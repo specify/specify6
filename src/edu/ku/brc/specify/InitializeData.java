@@ -51,7 +51,7 @@ public class InitializeData
             prefGroup.setName("Formatting");
             prefGroup.setCreated(new Date());
             HashSet<Preference> set = new HashSet<Preference>();
-            prefGroup.setAppPrefsIFace(set);
+            prefGroup.setAppPrefsMgr(set);
             
             for (int i=0;i<formattingPrefs.length;i++)
             {

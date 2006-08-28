@@ -51,6 +51,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.store.FSDirectory;
 import org.dom4j.Element;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
@@ -59,7 +60,6 @@ import edu.ku.brc.af.plugins.MenuItemDesc;
 import edu.ku.brc.af.plugins.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
-import edu.ku.brc.specify.config.AppContextMgr;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchIndexerPane;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPane;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
@@ -143,7 +143,7 @@ public class ExpressSearchTask extends BaseTask
         try
         {
             tables = new Hashtable<String, ExpressResultsTableInfo>();
-            Element esDOM = AppContextMgr.getInstance().readFileToDOM4J("search_config.xml");         // Describes the definitions of the full text search
+            Element esDOM = AppContextMgr.getInstance().getResourceAsDOM("SearchConfig");         // Describes the definitions of the full text search
             List tableItems = esDOM.selectNodes("/tables/table");
             for ( Iterator iter = tableItems.iterator(); iter.hasNext(); )
             {

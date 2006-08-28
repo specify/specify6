@@ -28,7 +28,7 @@ import edu.ku.brc.helpers.XMLHelper;
 
 /**
  * Class that manages all the forms for a given view set (which is read from a single file)
- 
+
  * @code_status Unknown (auto-generated)
  **
  * @author rods
@@ -40,16 +40,17 @@ public class ViewSet implements Comparable<ViewSet>
     private static boolean ALWAYS_LOAD = true; // XXX PREF
 
     public enum Type {System, User}
-    
+
+
     protected Type             type      = Type.User;
     protected String           name      = null;
     protected String           title     = null;
     protected String           fileName  = null;
     protected File             dirPath   = null;
-    
+
     protected Hashtable<String, View>    views    = null;
     protected Hashtable<String, ViewDef> viewDefs = new Hashtable<String, ViewDef>();
-    
+
     /**
      * Default Constructor.
      *
@@ -58,19 +59,28 @@ public class ViewSet implements Comparable<ViewSet>
     {
     }
 
+    /**
+     * Constructor from a DOM element.
+     * @param rootDOM the DOM element
+     */
+    public ViewSet(final Element rootDOM) throws Exception
+    {
+        loadDOM(rootDOM, true);
+    }
+
 
     /**
-     * Constructor. 
-     * @param type indicates that is contains the core set of forms that 
+     * Constructor.
+     * @param type indicates that is contains the core set of forms that
      *             can be referred in other places with specifying the viewset name
      * @param name name of view set
      * @param title human readable title (short description)
      * @param fileName the filename of the ViewSet
      * @param dirPath the directory path to the viewset
       */
-    public ViewSet(final Type type, 
-                   final String name, 
-                   final String title, 
+    public ViewSet(final Type type,
+                   final String name,
+                   final String title,
                    final String fileName,
                    final File   dirPath)
     {
@@ -80,7 +90,7 @@ public class ViewSet implements Comparable<ViewSet>
         this.fileName = fileName;
         this.dirPath  = dirPath;
     }
-    
+
     /**
      * Parse for the type and converts it to the Enum.
      * @param typeStr the type
@@ -92,7 +102,7 @@ public class ViewSet implements Comparable<ViewSet>
         {
             return Type.User;
         }
-                
+
         return Type.System;
     }
 
@@ -111,18 +121,18 @@ public class ViewSet implements Comparable<ViewSet>
             views = null; // will force it to be reloaded.
         }
     }
-    
+
     /**
      * Loads the view from the file.
      */
     protected void loadViews()
     {
-        if ( ALWAYS_LOAD || views == null)
+        if ( (ALWAYS_LOAD || views == null) && dirPath != null && fileName != null)
         {
             try
             {
                 loadViewFile(new FileInputStream(new File(dirPath + File.separator + fileName)));
-                
+
             } catch (FileNotFoundException ex)
             {
                 log.error(ex);
@@ -133,11 +143,11 @@ public class ViewSet implements Comparable<ViewSet>
             }
         }
     }
-    
+
     /**
      * Gets a view by name.
      * @param name name of view to be retrieved
-     * @return the view or null if it isn't found 
+     * @return the view or null if it isn't found
      */
     public View getView(final String name)
     {
@@ -185,7 +195,7 @@ public class ViewSet implements Comparable<ViewSet>
 
     /**
      * Returns the type of ViewSet it is.
-     * @return the type of ViewSet it is 
+     * @return the type of ViewSet it is
      */
     public Type getType()
     {
@@ -203,7 +213,7 @@ public class ViewSet implements Comparable<ViewSet>
 
     /**
      * Returns the title.
-     * @return the title 
+     * @return the title
      */
     public String getTitle()
     {
@@ -229,32 +239,34 @@ public class ViewSet implements Comparable<ViewSet>
     }
 
     /**
-     * Load an XML View File from a stream if the ViewSet is not unique than it throws and exception.
-     * @param fileInputStream a file input stream to read the DOM4J from
-     * @throws Exception on various errors
+     * Loads the ViewSet from a DOM element.
+     * @param rootDOM the root
      */
-    protected void loadViewFile(final FileInputStream fileInputStream) throws Exception
+    protected void loadDOM(final Element rootDOM, final boolean doSetName) throws Exception
     {
-        Element root = XMLHelper.readFileToDOM4J(fileInputStream);
-        if (root != null)
+        if (rootDOM != null)
         {
             // Do these first so the view can check their altViews against them
             Hashtable<String, ViewDef> newViewDefs = new Hashtable<String, ViewDef>(); // will eventually be moved to where it can be reused
-            ViewLoader.getViewDefs(root, newViewDefs);
+            ViewLoader.getViewDefs(rootDOM, newViewDefs);
             setViewDefs(newViewDefs);
-                
+
 
             Hashtable<String, View> newViews = new Hashtable<String, View>(); // will eventually be moved to where it can be reused
-            
-            String viewsName = ViewLoader.getViews(root, newViews, newViewDefs);
-            if (!viewsName.equals(name))
+
+            String viewsName = ViewLoader.getViews(rootDOM, newViews, newViewDefs);
+            if (doSetName)
+            {
+                name = viewsName;
+
+            } else if (!viewsName.equals(name))
             {
                 String msg = "The name in the registry doesn't match the name in the file!["+name+"]["+viewsName+"]";
                 log.error(msg);
                 throw new ConfigurationException(msg);
             }
             setViews(newViews);
-            
+
         } else
         {
             String msg = "The root element for the document was null!";
@@ -262,7 +274,17 @@ public class ViewSet implements Comparable<ViewSet>
             throw new ConfigurationException(msg);
         }
     }
-    
+
+    /**
+     * Load an XML View File from a stream if the ViewSet is not unique than it throws and exception.
+     * @param fileInputStream a file input stream to read the DOM4J from
+     * @throws Exception on various errors
+     */
+    protected void loadViewFile(final FileInputStream fileInputStream) throws Exception
+    {
+        loadDOM(XMLHelper.readFileToDOM4J(fileInputStream), false);
+    }
+
     /**
      * Comparator.
      * @param obj the obj to compare

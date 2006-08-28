@@ -27,13 +27,13 @@ import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.plugins.MenuItemDesc;
 import edu.ku.brc.af.plugins.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.tasks.subpane.StatsPane;
-import edu.ku.brc.specify.config.AppContextMgr;
 import edu.ku.brc.stats.StatsMgr;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
@@ -73,7 +73,7 @@ public class StatsTask extends BaseTask
 
         try
         {
-            panelDOM = AppContextMgr.getInstance().readFileToDOM4J("statistics_panel.xml");   // contains a description of the NavBoxes
+            panelDOM = AppContextMgr.getInstance().getResourceAsDOM("StatisticsPanel");   // contains a description of the NavBoxes
 
         } catch (Exception ex)
         {
@@ -119,7 +119,7 @@ public class StatsTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        return new StatsPane(name, this, "stats_summary_panel.xml", true, null);
+        return new StatsPane(name, this, "StatsSummaryPanel", true, null);
     }
 
     /**

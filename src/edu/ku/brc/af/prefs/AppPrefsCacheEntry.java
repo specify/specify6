@@ -14,7 +14,6 @@
  */
 package edu.ku.brc.af.prefs;
 
-import edu.ku.brc.ui.UICacheManager;
 
 
 /**
@@ -50,7 +49,7 @@ public class AppPrefsCacheEntry implements AppPrefsChangeListener
      */
     public void preferenceChange(AppPrefsChangeEvent evt)
     {
-        value = UICacheManager.getAppPrefs().get(evt.getKey(), defValue);
+        value = AppPreferences.getInstance().get(evt.getKey(), defValue);
     }
 
     /**

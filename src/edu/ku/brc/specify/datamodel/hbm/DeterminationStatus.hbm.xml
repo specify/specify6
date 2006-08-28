@@ -18,7 +18,7 @@
     <!-- bi-directional one-to-many association to DeterminationCitation -->
     <set name="determinations" lazy="true" inverse="true" cascade="none">
         <key>
-            <column name="DeterminationID"/>
+            <column name="DeterminationStatusID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.Determination"/>
     </set>

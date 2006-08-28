@@ -10,17 +10,22 @@
       <generator class="native"/>
     </id>
 
-    <property name="name" type="java.lang.String" column="Name" length="64">
+    <property name="name" type="java.lang.String" column="Name" length="64" not-null="true">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
     </property>
 
-    <property name="email" type="java.lang.String" column="email" length="64">
+    <property name="email" type="java.lang.String" column="EMail" length="64">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
     </property>
-
-    <property name="privLevel" type="short" column="PrivLevel">
+    
+    <property name="userType" type="java.lang.String" column="UserType" length="32" not-null="true">
+        <meta attribute="scope-field">protected</meta>
+        <meta attribute="field-description"></meta>
+    </property>
+    
+    <property name="privLevel" type="short" column="PrivLevel" not-null="true">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
     </property>
@@ -38,19 +43,28 @@
 
     <!-- bi-directional one-to-many association to RecordSet -->
     <set name="recordSets" lazy="true" inverse="true" cascade="delete">
-	<meta attribute="scope-field">protected</meta>
+        <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description"></meta>
         <key>
-            <column name="CollectionObjectID"/>
+            <column name="SpecifyUserID"/>
         </key>
         <one-to-many class="edu.ku.brc.specify.datamodel.RecordSet"/>
     </set>
-
+    
     <!-- bi-directional many-to-one association to UserGroup -->
     <many-to-one name="userGroup" class="edu.ku.brc.specify.datamodel.UserGroup" not-null="true" outer-join="true">
         <meta attribute="field-description"></meta>
         <column name="UserGroupID"/>
     </many-to-one>
+    
+    <!-- bi-directional one-to-many association to AppResourceDefault -->
+    <set name="appResourceDefaults" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="SpecifyUserID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.AppResourceDefault"/>
+    </set>
 
 </class>
 </hibernate-mapping>

@@ -5,7 +5,7 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 
 /**
- * Preference Panel for setting the UI AppPrefsIFace. 
+ * Preference Panel for setting the UI AppPreferences.getInstance(). 
  * (Currently not used)
  *
  * @code_status Complete

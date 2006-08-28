@@ -17,7 +17,6 @@ package edu.ku.brc.af.prefs;
 import java.awt.Color;
 
 import edu.ku.brc.ui.ColorWrapper;
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.DataObjectSettable;
 
 /**
@@ -49,7 +48,7 @@ public class PrefsSettableImpl implements DataObjectSettable
                 data = ColorWrapper.toString((Color)data);
             }
             System.out.println("setFieldValue["+dataObj+"]  ["+fieldName+"]  ["+ data+"]");
-            UICacheManager.getAppPrefs().put(fieldName, data == null ? "" : data.toString());
+            AppPreferences.getInstance().put(fieldName, data == null ? "" : data.toString());
     }
     
     /* (non-Javadoc)

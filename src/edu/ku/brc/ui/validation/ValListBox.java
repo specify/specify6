@@ -36,9 +36,9 @@ import javax.swing.event.ListSelectionListener;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
-import edu.ku.brc.ui.UICacheManager;
 
 /**
  * A JList that implements UIValidatable for participating in validation
@@ -99,7 +99,7 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
             valtextcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
             requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
-        UICacheManager.getAppPrefs().addChangeListener("ui.formatting.requiredfieldcolor", this);
+        AppPreferences.getInstance().addChangeListener("ui.formatting.requiredfieldcolor", this);
         
         addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e)
@@ -229,7 +229,7 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
      */
     public void cleanUp()
     {
-        UICacheManager.getAppPrefs().removeChangeListener("ui.formatting.requiredfieldcolor", this);
+        AppPreferences.getInstance().removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
     
     //--------------------------------------------------------

@@ -49,7 +49,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.validation.DataChangeListener;
 import edu.ku.brc.ui.validation.DataChangeNotifier;
 
@@ -143,7 +142,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
                 dialog.setVisible(false);
                 try
                 {
-                    UICacheManager.getAppPrefs().flush();
+                    AppPreferences.getInstance().flush();
                 } catch (BackingStoreException ex)
                 {
                     log.error(ex);
@@ -192,7 +191,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
 
         try
         {
-            UICacheManager.getAppPrefs().flush();
+            AppPreferences.getInstance().flush();
 
         } catch (BackingStoreException ex)
         {

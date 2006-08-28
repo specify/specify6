@@ -54,6 +54,7 @@ import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -63,7 +64,6 @@ import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.JStatusBar;
-import edu.ku.brc.ui.UICacheManager;
 
 /**
  * This panel enables the user to configure all the params necessary to log into a JDBC database.<BR><BR>
@@ -113,6 +113,7 @@ public class DatabaseLoginPanel extends JPanel
     protected JDialog          thisDlg;
     protected boolean          isCancelled = true;
     protected boolean          isLoggingIn = false;
+    protected boolean          isAutoClose = false;
 
     protected DatabaseLoginListener dbListener;
     protected Window                window;
@@ -148,11 +149,29 @@ public class DatabaseLoginPanel extends JPanel
     }
 
     /**
+     * Returns the owning window.
+     * @return the owning window.
+     */
+    public Window getWindow()
+    {
+        return window;
+    }
+
+    /**
      * @return the login btn
      */
     public JButton getLoginBtn()
     {
         return loginBtn;
+    }
+
+    /**
+     * Returns the statusbar.
+     * @return the statusbar.
+     */
+    public JStatusBar getStatusBar()
+    {
+        return statusBar;
     }
 
     /**
@@ -211,7 +230,7 @@ public class DatabaseLoginPanel extends JPanel
         dbDriverCBX  = new JComboBox(dbDrivers);
         if (dbDrivers.size() > 0)
         {
-            String selectedStr = UICacheManager.getAppPrefs().get("login.dbdriver_selected", "MySQL");
+            String selectedStr = AppPreferences.getLocalPrefs().get("login.dbdriver_selected", "MySQL");
             int inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(selectedStr, null, null, null));
             dbDriverCBX.setSelectedIndex(inx > -1 ? inx : -1);
 
@@ -243,21 +262,21 @@ public class DatabaseLoginPanel extends JPanel
             addKeyListenerFor(loginBtn, true);
         }
 
-        autoLoginCBX.setSelected(UICacheManager.getAppPrefs().getBoolean("login.autologin", false));
-        rememberUsernameCBX.setSelected(UICacheManager.getAppPrefs().getBoolean("login.rememberuser", false));
-        rememberPasswordCBX.setSelected(UICacheManager.getAppPrefs().getBoolean("login.rememberpassword", false));
+        autoLoginCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean("login.autologin", false));
+        rememberUsernameCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean("login.rememberuser", false));
+        rememberPasswordCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean("login.rememberpassword", false));
 
         if (autoLoginCBX.isSelected())
         {
-            username.setText(UICacheManager.getAppPrefs().get("login.username", ""));
-            password.setText(Encryption.decrypt(UICacheManager.getAppPrefs().get("login.password", "")));
+            username.setText(AppPreferences.getLocalPrefs().get("login.username", ""));
+            password.setText(Encryption.decrypt(AppPreferences.getLocalPrefs().get("login.password", "")));
             username.requestFocus();
 
         } else
         {
             if (rememberUsernameCBX.isSelected())
             {
-                username.setText(UICacheManager.getAppPrefs().get("login.username", ""));
+                username.setText(AppPreferences.getLocalPrefs().get("login.username", ""));
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run()
                     {
@@ -269,7 +288,7 @@ public class DatabaseLoginPanel extends JPanel
 
             if (rememberPasswordCBX.isSelected())
             {
-                password.setText(Encryption.decrypt(UICacheManager.getAppPrefs().get("login.password", "")));
+                password.setText(Encryption.decrypt(AppPreferences.getLocalPrefs().get("login.password", "")));
                  SwingUtilities.invokeLater(new Runnable() {
                     public void run()
                     {
@@ -526,36 +545,36 @@ public class DatabaseLoginPanel extends JPanel
         databases.getDBAdapter().save();
         servers.getDBAdapter().save();
 
-        UICacheManager.getAppPrefs().putBoolean("login.rememberuser", rememberUsernameCBX.isSelected());
-        UICacheManager.getAppPrefs().putBoolean("login.rememberpassword", rememberPasswordCBX.isSelected());
-        UICacheManager.getAppPrefs().putBoolean("login.autologin", autoLoginCBX.isSelected());
+        AppPreferences.getLocalPrefs().putBoolean("login.rememberuser", rememberUsernameCBX.isSelected());
+        AppPreferences.getLocalPrefs().putBoolean("login.rememberpassword", rememberPasswordCBX.isSelected());
+        AppPreferences.getLocalPrefs().putBoolean("login.autologin", autoLoginCBX.isSelected());
 
         if (autoLoginCBX.isSelected())
         {
-            UICacheManager.getAppPrefs().put("login.username", username.getText());
-            UICacheManager.getAppPrefs().put("login.password", Encryption.encrypt(new String(password.getPassword())));
+            AppPreferences.getLocalPrefs().put("login.username", username.getText());
+            AppPreferences.getLocalPrefs().put("login.password", Encryption.encrypt(new String(password.getPassword())));
 
         } else
         {
             if (rememberUsernameCBX.isSelected())
             {
-                UICacheManager.getAppPrefs().put("login.username", username.getText());
+                AppPreferences.getLocalPrefs().put("login.username", username.getText());
 
-            } else if (UICacheManager.getAppPrefs().exists("login.username"))
+            } else if (AppPreferences.getLocalPrefs().exists("login.username"))
             {
-                UICacheManager.getAppPrefs().remove("login.username");
+                AppPreferences.getLocalPrefs().remove("login.username");
             }
 
             if (rememberPasswordCBX.isSelected())
             {
-                UICacheManager.getAppPrefs().put("login.password", Encryption.encrypt(new String(password.getPassword())));
+                AppPreferences.getLocalPrefs().put("login.password", Encryption.encrypt(new String(password.getPassword())));
 
-            } else if (UICacheManager.getAppPrefs().exists("login.password"))
+            } else if (AppPreferences.getLocalPrefs().exists("login.password"))
             {
-                UICacheManager.getAppPrefs().remove("login.password");
+                AppPreferences.getLocalPrefs().remove("login.password");
             }
         }
-        UICacheManager.getAppPrefs().put("login.dbdriver_selected", dbDrivers.get(dbDriverCBX.getSelectedIndex()).getName());
+        AppPreferences.getLocalPrefs().put("login.dbdriver_selected", dbDrivers.get(dbDriverCBX.getSelectedIndex()).getName());
 
     }
 
@@ -580,6 +599,15 @@ public class DatabaseLoginPanel extends JPanel
         progressWorker = pw;
     }
 
+    /**
+     * Tells it whether the parent (frame or dialog) should be auto closed when
+     * it is logged in successfully.
+     * @param isAutoClose true / false
+     */
+    public void setAutoClose(boolean isAutoClose)
+    {
+        this.isAutoClose = isAutoClose;
+    }
 
     /**
      * Performs a login on a separate thread and then notifies the dialog if it was successful.
@@ -609,8 +637,8 @@ public class DatabaseLoginPanel extends JPanel
 
         String basePrefName = getDatabaseName() + "." + getUserName() + ".";
 
-        loginCount     = UICacheManager.getAppPrefs().getLong(basePrefName+"logincount", -1L);
-        loginAccumTime = UICacheManager.getAppPrefs().getLong(basePrefName+"loginaccumtime", -1L);
+        loginCount     = AppPreferences.getLocalPrefs().getLong(basePrefName+"logincount", -1L);
+        loginAccumTime = AppPreferences.getLocalPrefs().getLong(basePrefName+"loginaccumtime", -1L);
 
         if (loginCount != -1 && loginAccumTime != -1)
         {
@@ -661,19 +689,24 @@ public class DatabaseLoginPanel extends JPanel
 
                 isLoggingIn = false;
                 statusBar.setIndeterminate(false);
-                cancelBtn.setEnabled(true);
-                loginBtn.setEnabled(true);
-                helpBtn.setEnabled(true);
-
-                username.setEnabled(true);
-                password.setEnabled(true);
-                databases.setEnabled(true);
-                servers.setEnabled(true);
-                rememberUsernameCBX.setEnabled(true);
-                rememberPasswordCBX.setEnabled(true);
-                autoLoginCBX.setEnabled(true);
-                moreBtn.setEnabled(true);
-                updateUIControls();
+                
+                if (isAutoClose)
+                {
+                    cancelBtn.setEnabled(true);
+                    loginBtn.setEnabled(true);
+                    helpBtn.setEnabled(true);
+    
+                    username.setEnabled(true);
+                    password.setEnabled(true);
+                    databases.setEnabled(true);
+                    servers.setEnabled(true);
+                    rememberUsernameCBX.setEnabled(true);
+                    rememberPasswordCBX.setEnabled(true);
+                    autoLoginCBX.setEnabled(true);
+                    moreBtn.setEnabled(true);
+                    
+                    updateUIControls();
+                }
 
                 if (timeOK)
                 {
@@ -683,8 +716,8 @@ public class DatabaseLoginPanel extends JPanel
                     if (loginCount < 1000)
                     {
                         String basePrefName = getDatabaseName() + "." + getUserName() + ".";
-                        UICacheManager.getAppPrefs().putLong(basePrefName+"logincount", ++loginCount);
-                        UICacheManager.getAppPrefs().putLong(basePrefName+"loginaccumtime", loginAccumTime);
+                        AppPreferences.getLocalPrefs().putLong(basePrefName+"logincount", ++loginCount);
+                        AppPreferences.getLocalPrefs().putLong(basePrefName+"loginaccumtime", loginAccumTime);
                     }
                 }
 
@@ -787,7 +820,7 @@ public class DatabaseLoginPanel extends JPanel
      */
     public boolean doingAutoLogin()
     {
-        return UICacheManager.getAppPrefs().getBoolean("autologin", false);
+        return AppPreferences.getLocalPrefs().getBoolean("autologin", false);
     }
 
     /**
@@ -852,7 +885,7 @@ public class DatabaseLoginPanel extends JPanel
          */
         protected void readData()
         {
-            String valuesStr = UICacheManager.getAppPrefs().get(prefName, "");
+            String valuesStr = AppPreferences.getLocalPrefs().get(prefName, "");
             //log.debug("["+prefName+"]["+valuesStr+"]");
 
             if (StringUtils.isNotEmpty(valuesStr))
@@ -877,7 +910,7 @@ public class DatabaseLoginPanel extends JPanel
          */
         public void setSelectedIndex()
         {
-            String selectStr = UICacheManager.getAppPrefs().get(prefSelectedName, "");
+            String selectStr = AppPreferences.getLocalPrefs().get(prefSelectedName, "");
             //log.debug("["+prefSelectedName+"]["+selectStr+"]");
 
             int selectedIndex = -1;
@@ -917,7 +950,7 @@ public class DatabaseLoginPanel extends JPanel
             log.debug("Saving PickList");
             if (savePickList)
             {
-                UICacheManager.getAppPrefs().put(prefName, convertModelToStr(pickList));
+                AppPreferences.getLocalPrefs().put(prefName, convertModelToStr(pickList));
                 log.debug("["+prefName+"]["+convertModelToStr(pickList)+"]");
             }
 
@@ -929,7 +962,7 @@ public class DatabaseLoginPanel extends JPanel
 
             if (selectedItem != null)
             {
-                UICacheManager.getAppPrefs().put(prefSelectedName, selectedItem.toString());
+                AppPreferences.getLocalPrefs().put(prefSelectedName, selectedItem.toString());
                 log.debug("["+prefSelectedName+"]["+selectedItem.toString()+"]");
             }
         }

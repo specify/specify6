@@ -22,8 +22,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.config.AppContextMgr;
 
 /*
  * @code_status Unknown (auto-generated)
@@ -63,10 +63,9 @@ public class DataObjFieldFormatMgr
      */
     public void load()
     {
-        String fileName = "dataobj_formatters.xml";
         try
         {
-            Element root  = AppContextMgr.getInstance().readFileToDOM4J(fileName);
+            Element root  = AppContextMgr.getInstance().getResourceAsDOM("DataObjFormatters");
             if (root != null)
             {
                 List formatters = root.selectNodes("/formatters/format");
@@ -108,7 +107,7 @@ public class DataObjFieldFormatMgr
                 }
             } else
             {
-                log.debug("Couldn't open ["+fileName+"]");
+                log.debug("Couldn't get resource [DataObjFormatters]");
             }
         } catch (Exception ex)
         {

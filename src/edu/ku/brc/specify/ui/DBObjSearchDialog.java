@@ -57,6 +57,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
@@ -67,7 +68,6 @@ import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.forms.ViewFactory;
-import edu.ku.brc.ui.forms.ViewSetMgrManager;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.View;
 
@@ -225,7 +225,7 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
             }
         });
 
-        formView = ViewSetMgrManager.getView(viewSetName, viewName);
+        formView = AppContextMgr.getInstance().getView(viewSetName, viewName);
         if (formView != null)
         {
             form = ViewFactory.createFormView(null, formView, null, dataMap);

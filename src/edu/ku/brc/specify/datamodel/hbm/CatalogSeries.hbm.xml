@@ -60,6 +60,16 @@
         <meta attribute="field-description"></meta>
         <column name="TissueID"/>
     </many-to-one>
+    
+    <!-- bi-directional one-to-many association to AppResourceDefault -->
+    <set name="appResourceDefaults" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="CatalogSeriesID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.AppResourceDefault"/>
+    </set>
+    
     <!--
     <set name="vouchers" table="catalogseries" inverse="true">
 		<meta attribute="scope-field">protected</meta>

@@ -74,7 +74,9 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
-import edu.ku.brc.af.prefs.AppPrefsMgr;
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PrefMainPanel;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -82,7 +84,6 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.config.AppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
@@ -106,11 +107,12 @@ import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.tests.CreateTestDatabases;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.specify.tests.forms.TestDataSubObj;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.db.DatabaseLoginDlg;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
+import edu.ku.brc.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.ViewSetMgrManager;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
@@ -152,20 +154,86 @@ public class FormEditor implements DatabaseLoginListener
         //ViewSetMgr.setAsDefaultViewSet("Fish Views");
 
     }
+    
+    /**
+     * Create the GUI and show it.  For thread safety,
+     * this method should be invoked from the
+     * event-dispatching thread.
+     */
+    private void initialize()
+    {
+        System.setProperty("edu.ku.brc.af.core.AppContextMgrFactory", "edu.ku.brc.specify.config.SpecifyAppContextMgr");
+        System.setProperty("AppPrefsIOClassName", "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");
+        
+        UICacheManager.getInstance(); // initializes it first thing
+        UICacheManager.setAppName("Specify");
+        IconManager.setApplicationClass(Specify.class);
+        
+        // Load Local Prefs
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
+        localPrefs.load();
+        
+        FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath());
+
+        try
+        {
+            //System.out.println(System.getProperty("os.name"));
+
+            if (!System.getProperty("os.name").equals("Mac OS X"))
+            {
+                UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
+                 PlasticLookAndFeel.setCurrentTheme(new ExperienceBlue());
+             }
+
+            // Note: This is asynchronous
+            //UIHelper.doLogin(true, true, false, this); // true means do auto login if it can, second true means use dialog
+            
+            if (true)
+            {
+                showAppPrefsEditor(false);
+            }
+
+
+
+        }
+        catch (Exception e)
+        {
+            log.error("Can't change L&F: ", e);
+        }
+    }
+    
+    /**
+     * Shows App Prefs Editor
+     */
+    public void showAppPrefsEditor(final boolean doRemote)
+    {
+        JFrame.setDefaultLookAndFeelDecorated(false);
+
+        JFrame frame = new JFrame("Application Prefs Editor");
+        frame.setContentPane(new AppPrefsEditor(doRemote));
+        frame.setIconImage(IconManager.getIcon("AppIcon", IconManager.IconSize.Std16).getImage());
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        frame.pack();
+
+        UIHelper.centerAndShow(frame);
+    }
+
 
     /**
      * @param disciplineName fish, birds, bees etc
      * @return true on success
      */
-    public CollectionObject[] createSingleDiscipline(final String disciplineName)
+    public CollectionObject[] createSingleDiscipline(final String colObjDefName, final String disciplineName)
     {
         UserGroup        userGroup        = createUserGroup(disciplineName);
-        SpecifyUser      user             = createSpecifyUser("John Doe", "jd@email.com", (short)0, userGroup);
+        SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short)0, userGroup, "CollectionManager");
         DataType         dataType         = createDataType(disciplineName);
 
 
         TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("TreeDef");
-        CollectionObjDef collectionObjDef = createCollectionObjDef(disciplineName, dataType, user, taxonTreeDef);
+        CollectionObjDef collectionObjDef = createCollectionObjDef(colObjDefName, disciplineName, dataType, user, taxonTreeDef);
 
         Geography[] geographies = createGeographies(collectionObjDef, "GeoTree");
 
@@ -178,7 +246,7 @@ public class FormEditor implements DatabaseLoginListener
 
         Agent[] agents = createAgentsInMemory();
 
-        CatalogSeries catalogSeries = createCatalogSeries("KUFSH", "Fish");
+        CatalogSeries catalogSeries = createCatalogSeries("KUFSH", "Fish", collectionObjDef);
 
 
         // Create Collecting Event
@@ -487,7 +555,7 @@ public class FormEditor implements DatabaseLoginListener
                 boolean doMemoryCollection = false;
                 if (doMemoryCollection)
                 {
-                    CollectionObject[] colObjs = createSingleDiscipline("Fish");
+                    CollectionObject[] colObjs = createSingleDiscipline("Fish", "fish");
 
                     Set<CollectionObject> set = new HashSet<CollectionObject>();
                     for (int i=0;i<colObjs.length;i++)
@@ -566,52 +634,6 @@ public class FormEditor implements DatabaseLoginListener
         */
     }
 
-    /**
-    * Create the GUI and show it.  For thread safety,
-    * this method should be invoked from the
-    * event-dispatching thread.
-    */
-   private void initialize()
-   {
-       UICacheManager.getInstance(); // initializes it first thing
-       UICacheManager.setAppName("Specify");
-
-       UICacheManager.setAppPrefs(AppPrefsMgr.getInstance().load(UICacheManager.getDefaultWorkingPath()));
-       SpecifyAppPrefs.initialPrefs();
-
-       FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath());
-
-       try
-       {
-           //System.out.println(System.getProperty("os.name"));
-
-           if (!System.getProperty("os.name").equals("Mac OS X"))
-           {
-               UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
-               //PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
-               //UIManager.setLookAndFeel(new WindowsLookAndFeel());
-               //UIManager.setLookAndFeel(new com.jgoodies.looks.windows.WindowsLookAndFeel());
-               PlasticLookAndFeel.setCurrentTheme(new ExperienceBlue());
-               //PlasticLookAndFeel.setPlasticTheme(new ConfigurableTheme());
-               //PlasticLookAndFeel.setMyCurrentTheme(new ConfigurableTheme());
-           }
-
-           //UIManager.setLookAndFeel(new PlasticLookAndFeel());
-           //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-           //UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-
-
-           // Note: This is asynchronous
-           UIHelper.doLogin(true, false, this); // true means do auto login if it can, second true means use dialog
-           //preferences();
-
-       }
-       catch (Exception e)
-       {
-           log.error("Can't change L&F: ", e);
-       }
-   }
-
    /**
    * Create the GUI and show it.  For thread safety,
    * this method should be invoked from the
@@ -683,7 +705,7 @@ public class FormEditor implements DatabaseLoginListener
         currViewName      = "CollectionObject";
         currViewSetName =   "Fish Views";
 
-        View view = ViewSetMgrManager.getView(currViewSetName, currViewName);
+        View view =  AppContextMgr.getInstance().getView(currViewSetName, currViewName);
 
         if (view != null)
         {
@@ -813,7 +835,7 @@ public class FormEditor implements DatabaseLoginListener
      *
      *
      * TODO To change the template for this generated type comment go to
-     * Window - AppPrefsIFace - Java - Code Generation - Code and Comments
+     * Window - AppPreferences - Java - Code Generation - Code and Comments
      */
     private class ActionChangedListener implements PropertyChangeListener
     {
@@ -877,17 +899,31 @@ public class FormEditor implements DatabaseLoginListener
     // DatabaseLoginListener Interface
     //---------------------------------------------------------
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.DatabaseLoginListener#loggedIn(java.lang.String, java.lang.String)
+     */
     public void loggedIn(final String databaseName, final String userName)
     {
+        SpecifyAppPrefs.initialPrefs();
 
         if (!AppContextMgr.getInstance().setContext(databaseName, userName))
         {
-            log.error("Problems setting AppContext!");
+            log.error("Problems setting AppResourceDefault!");
             System.exit(0);
         }
-        startup(databaseName, userName);
+        //startup(databaseName, userName);
+        
+        if (false)
+        {
+            showAppPrefsEditor(true);
+        }
+
+        //preferences();  
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.DatabaseLoginListener#cancelled()
+     */
     public void cancelled()
     {
         System.exit(0);

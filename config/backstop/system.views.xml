@@ -14,15 +14,6 @@
             
         </view>
         
-        <view name="DatabaseLogin"
-            class="java.util.Hashtable"
-            resourcelabels="false">
-            <desc><![CDATA[Database Login]]></desc>
-            <altviews>
-                <altview name="DatabaseLogin" viewdef="DatabaseLogin" label="Edit" mode="edit" validated="true" default="true"/>
-            </altviews>
-        </view>
-        
     </views>
   
     <viewdefs>

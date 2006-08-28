@@ -87,6 +87,16 @@
         <many-to-many class="edu.ku.brc.specify.datamodel.Locality" column="LocalityID"/>
     </set>
     
+    <!-- bi-directional one-to-many association to AppResourceDefault -->
+    <set name="appResourceDefaults" lazy="true" inverse="true" cascade="none">
+        <meta attribute="field-description"></meta>
+        <key>
+            <column name="CollectionObjDefID"/>
+        </key>
+        <one-to-many class="edu.ku.brc.specify.datamodel.AppResourceDefault"/>
+    </set>
+    
+    
     <!-- bi-directional one-to-many association to CollectionObject -->
     <!-- Currently we don't to bring all the CollectionObjects when accessing the CollectionObjDef -->
     <!--

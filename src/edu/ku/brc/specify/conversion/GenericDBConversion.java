@@ -50,10 +50,9 @@ import org.hibernate.criterion.Expression;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.UIHelper;
-import edu.ku.brc.specify.config.AppContextMgr;
 import edu.ku.brc.specify.config.Discipline;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
@@ -135,6 +134,7 @@ public class GenericDBConversion
     protected static boolean shouldCreateMapTables = true;
     protected static boolean shouldDeleteMapTables = false;
 
+    protected SpecifyAppContextMgr appContextMgr = new SpecifyAppContextMgr();
 
     /**
      * "Old" means the database you want to copy "from"
@@ -699,7 +699,7 @@ public class GenericDBConversion
      */
     public String getStandardDisciplineName(final String name)
     {
-        Discipline discipline = AppContextMgr.getInstance().get(name.toLowerCase());
+        Discipline discipline = appContextMgr.getDiscipline(name.toLowerCase());
         if (discipline != null)
         {
             return discipline.getName();
@@ -893,9 +893,10 @@ public class GenericDBConversion
             | Field         | Type        | Null | Key | Default | Extra          |
             +---------------+-------------+------+-----+---------+----------------+
             | SpecifyUserID | int(11)     | NO   | PRI |         | auto_increment |
-            | Name          | varchar(64) | YES  |     |         |                |
-            | Password      | varchar(64) | YES  |     |         |                |
-            | PrivLevel     | smallint(6) | YES  |     |         |                |
+            | Name          | varchar(64) | NO   |     |         |                |
+            | EMail         | varchar(64) | YES  |     |         |                |
+            | UserType      | varchar(32) | NO   |     |         |                |
+            | PrivLevel     | smallint(6) | NO   |     |         |                |
             | UserGroupID   | int(11)     | YES  | MUL |         |                |
             +---------------+-------------+------+-----+---------+----------------+
 
@@ -920,7 +921,8 @@ public class GenericDBConversion
             strBuf.append("INSERT INTO specifyuser VALUES (");
             strBuf.append("NULL,");
             strBuf.append("'"+userName+"',");
-            strBuf.append("'"+Encryption.encrypt(userName)+"',");
+            strBuf.append("'',");
+            strBuf.append("'Collection Manager',"); // Should be a PickList
             strBuf.append("0,");
             strBuf.append(userGroupId+")");
 
@@ -1029,14 +1031,14 @@ public class GenericDBConversion
                 String disciplineName = getStandardDisciplineName(taxonomyTypeName);
                 if (disciplineName == null)
                 {
-                    log.error("**** Had to Skip record because taxonomyTypeName couldn't be found in our Discipline lookup in AppContextMgr["+taxonomyTypeName+"]");
+                    log.error("**** Had to Skip record because taxonomyTypeName couldn't be found in our Discipline lookup in SpecifyAppContextMgr["+taxonomyTypeName+"]");
                     continue;
                 }
                 
-                Discipline discipline = AppContextMgr.getInstance().get(disciplineName);
+                Discipline discipline = appContextMgr.getDiscipline(disciplineName);
                 if (discipline == null)
                 {
-                    log.error("**** discipline couldn't be found in our Discipline lookup in AppContextMgr["+disciplineName+"]");
+                    log.error("**** discipline couldn't be found in our Discipline lookup in SpecifyAppContextMgr["+disciplineName+"]");
                     continue;
                 }
                 log.info("Creating a new CollectionObjDef for taxonomyTypeName["+taxonomyTypeName+"] discipline["+disciplineName+"]");

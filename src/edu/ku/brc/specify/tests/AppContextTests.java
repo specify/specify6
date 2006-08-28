@@ -15,31 +15,23 @@
 
 package edu.ku.brc.specify.tests;
 
-import java.util.Hashtable;
+import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Expression;
 
-import edu.ku.brc.af.prefs.AppPrefsMgr;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.helpers.UIHelper;
-import edu.ku.brc.specify.SpecifyAppPrefs;
-import edu.ku.brc.specify.config.AppContextMgr;
-import edu.ku.brc.specify.config.Discipline;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
-import edu.ku.brc.specify.datamodel.CollectionObjDef;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.ui.DBObjDialogFactory;
 import edu.ku.brc.ui.UICacheManager;
-import edu.ku.brc.util.FileCache;
 
 public class AppContextTests extends TestCase
 {
-    private static final Logger log = Logger.getLogger(AppContextTests.class);
+    //private static final Logger log = Logger.getLogger(AppContextTests.class);
     
     /* (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
@@ -52,19 +44,47 @@ public class AppContextTests extends TestCase
         UICacheManager.getInstance(); // initializes it first thing
         if (UICacheManager.getAppName() == null) // this is needed because the setUp gets run separately for each test
         {
+            System.setProperty("edu.ku.brc.af.core.AppContextMgrFactory", "edu.ku.brc.specify.config.SpecifyAppContextMgr");
+            System.setProperty("AppPrefsIOClassName", "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");
+            
+            UICacheManager.getInstance(); // initializes it first thing
             UICacheManager.setAppName("Specify");
-    
-            UICacheManager.setAppPrefs(AppPrefsMgr.getInstance().load(UICacheManager.getDefaultWorkingPath()));
-            SpecifyAppPrefs.initialPrefs();
-    
-            FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath());
-    
-            UICacheManager.setViewbasedFactory(DBObjDialogFactory.getInstance());
+
+            // Load Local Prefs
+            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+            localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
+            localPrefs.load();
         }
+        
     }
+
     
-    public void testAppContext()
+    public void testAppContextSnigleCatalogSeries()
     {
+        String databaseName  = "fish";
+        String userName      = "rods";
+        String catSeriesName = "Bees";
+        
+        List<CatalogSeries> catalogSeriesList = new ArrayList<CatalogSeries>();
+        
+        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CatalogSeries.class);
+        criteria.add(Expression.eq("seriesName", catSeriesName));
+        List list = criteria.list();
+        if (list.size() == 1)
+        {
+            catalogSeriesList.add((CatalogSeries)list.get(0));
+            
+        } else
+        {
+            throw new RuntimeException("Problems with CatalogSeries["+catSeriesName+"] for user["+userName+"]");
+        }
+        
+        CatalogSeries.setCurrentCatalogSeries(catalogSeriesList);
+        
+        assertTrue(SpecifyAppContextMgr.getInstance().setContext(databaseName, userName));
+        
+
+        /*
         // These are taken from the disciplines.xml file
         Hashtable<Integer, String> hash = new Hashtable<Integer, String>();
         hash.put(0, "Collection");
@@ -116,6 +136,6 @@ public class AppContextTests extends TestCase
         assertNotNull(cod);
         
         log.info("Selected CollectionObjDef: ["+cod.getName()+"]");
-        
+        */
     }
 }

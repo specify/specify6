@@ -21,8 +21,8 @@ import java.text.SimpleDateFormat;
 import org.apache.commons.lang.time.FastDateFormat;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.ui.ColorWrapper;
-import edu.ku.brc.ui.IconManager;
 
 /**
  * One stop shopping for prefs, this is the one place that initializes all the prefs for any Specify application
@@ -49,7 +49,7 @@ public class SpecifyAppPrefs
      */
     public static void initialPrefs()
     {
-        IconManager.setApplicationClass(Specify.class);
+        AppPreferences.getInstance().load(); // Loads prefs from the database
         
         FastDateFormat fastDateFormat = FastDateFormat.getDateInstance(FastDateFormat.SHORT);      
         SimpleDateFormat screenDateFormat = new SimpleDateFormat(fastDateFormat.getPattern());

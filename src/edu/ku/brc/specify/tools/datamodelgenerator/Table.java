@@ -2,9 +2,6 @@ package edu.ku.brc.specify.tools.datamodelgenerator;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
-
-import edu.ku.brc.specify.tools.datamodelgenerator.Field;
 
 /**
  * Create table data.

@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.helpers.DatamodelHelper;
 
 /*

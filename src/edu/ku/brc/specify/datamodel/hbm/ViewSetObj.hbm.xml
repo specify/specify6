@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
+    
+    <class name="edu.ku.brc.specify.datamodel.ViewSetObj" table="viewsetobj" lazy="true">
+        <meta attribute="class-description" inherit="false"/>
+        <meta attribute="implements">AppResourceIFace</meta>
+        
+        <id name="viewSetObjId" type="java.lang.Integer" column="ViewSetObjID">
+            <meta attribute="field-description"></meta>
+            <meta attribute="scope-field">protected</meta>
+            <generator class="native"/>
+        </id>
+        
+        <property name="level" type="short" column="Level" not-null="true">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"></meta>    
+        </property>
+        
+        <property name="name" type="java.lang.String" column="Name" length="64" not-null="true">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"></meta>    
+        </property>
+        
+        <property name="description" type="java.lang.String" column="Description" length="255">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"></meta>    
+        </property>
+        
+        <property name="metaData" type="java.lang.String" column="MetaData" length="255" not-null="false">
+            <meta attribute="scope-field">protected</meta>                
+        </property>
+        
+        <!-- This is blob because not all databases support CLOB -->
+        <!--
+        <property name="data" type="blob" column="data" length="1073741823" not-null="true">
+            <meta attribute="scope-field">protected</meta>
+        </property>
+        -->
+        
+        <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"></meta>    
+        </property>
+        
+        <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"></meta>    
+        </property>
+        
+        <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"></meta>
+        </property>
+        
+        <!-- Associations -->
+        
+        <!-- bi-directional many-to-many association to AppResourceDefault -->
+        
+        <set name="appResourceDefaults" table="appresdef_viewsetobj" lazy="true" cascade="save-update">
+            <key>
+                <column name="ViewSetObjID"/>
+            </key>
+            <many-to-many class="edu.ku.brc.specify.datamodel.AppResourceDefault" column="AppResourceDefaultID"/>
+        </set>
+         
+        <!-- bi-directional one-to-many association to AppResourceData -->
+        <!-- Although this is specified as a one-to-many it is really just a one-to-one but we do it
+            way so there is lazy loading of the XML Blob in the AppResourceData object 
+        -->
+        <set name="appResourceDatas" lazy="true" inverse="true" cascade="all">
+            <meta attribute="field-description"></meta>
+            <key>
+                <column name="ViewSetObjID"/>
+            </key>
+            <one-to-many class="edu.ku.brc.specify.datamodel.AppResourceData"/>
+        </set>
+
+
+                
+    </class>
+</hibernate-mapping>

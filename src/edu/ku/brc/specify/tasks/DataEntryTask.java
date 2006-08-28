@@ -24,6 +24,7 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxIFace;
@@ -46,7 +47,6 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.forms.ViewSetMgrManager;
 import edu.ku.brc.ui.forms.persist.View;
 
 /**
@@ -125,7 +125,7 @@ public class DataEntryTask extends BaseTask
                                 final Object   data,
                                 final boolean isNewForm)
     {
-        View view = ViewSetMgrManager.getView(viewSetName, viewName);
+        View view = AppContextMgr.getInstance().getView(viewSetName, viewName);
         FormPane formPane = new FormPane(view.getName(), task, viewSetName, viewName, mode, data, isNewForm);
         SubPaneMgr.getInstance().addPane(formPane);
     }
@@ -179,6 +179,7 @@ public class DataEntryTask extends BaseTask
         Query query = DBTableIdMgr.getQueryForTable(recordSet);
         
         // "null" ViewSet name means it should use the default
+        
         return new FormPane(name, task, null, defaultFormName, null, query.list(), false);
 
     }
@@ -247,7 +248,7 @@ public class DataEntryTask extends BaseTask
      */
     public void installPrefs()
     {
-       /*AppPrefsIFace appPrefs = UICacheManager.getAppPrefs();
+       /*AppPreferences appPrefs = AppPreferences;
 
        String sectionName = appendChildPrefName("UserInterface", "Formatting", "name");
        String sectionName = appPrefs.get("", null);

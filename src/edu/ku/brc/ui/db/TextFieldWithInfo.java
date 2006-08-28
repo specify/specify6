@@ -43,6 +43,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
@@ -227,7 +228,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
             valtextcolor       = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
             requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
-        UICacheManager.getAppPrefs().addChangeListener("ui.formatting.requiredfieldcolor", this);
+        AppPreferences.getInstance().addChangeListener("ui.formatting.requiredfieldcolor", this);
 
 
         infoBtn.addActionListener(new ActionListener()

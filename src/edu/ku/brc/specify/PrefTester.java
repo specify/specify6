@@ -173,7 +173,7 @@ public class PrefTester
         {
             // First delete everything
             // TODO appPrefs.removeNode(); // maybe add a method on the manager to clear all the prefs
-            UICacheManager.getAppPrefs().flush();
+            AppPreferences.getInstance().flush();
 
             Element root = XMLHelper.readDOMFromConfigDir("prefsInit.xml");
             if (root == null)
@@ -187,7 +187,7 @@ public class PrefTester
                 org.dom4j.Element section = (org.dom4j.Element)iter.next();
 
                 String      title       = section.attributeValue("title");
-                AppPrefsIFace sectionNode = appPrefs.node(title);
+                AppPreferences sectionNode = appPrefs.node(title);
                 if (!sectionNode.getBoolean("isApp", false))
                 {
                     sectionNode.put("title", title);
@@ -203,7 +203,7 @@ public class PrefTester
                     String iconName   = pref.attributeValue("icon");
                     String panelClass = pref.attributeValue("panelClass");
 
-                    AppPrefsIFace prefNode     = sectionNode.node(prefTitle);
+                    AppPreferences prefNode     = sectionNode.node(prefTitle);
                     String      prefTitleStr = prefNode.get("title", null);
                     if (prefTitleStr == null)
                     {

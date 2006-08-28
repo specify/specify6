@@ -35,6 +35,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
 import edu.ku.brc.helpers.UIHelper;
@@ -42,9 +44,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.ViewFactory;
-import edu.ku.brc.ui.forms.ViewSetMgrManager;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.validation.FormValidator;
@@ -106,11 +106,11 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
         String viewName = "EMail";
         String name     = "Preferences";
 
-        formView = ViewSetMgrManager.getView(name, viewName);
+        formView = AppContextMgr.getInstance().getView(name, viewName);
 
         if (formView != null)
         {
-            form = ViewFactory.createFormView(null, formView, null, UICacheManager.getAppPrefs());
+            form = ViewFactory.createFormView(null, formView, null, AppPreferences.getInstance());
             add(form.getUIComponent(), BorderLayout.CENTER);
 
         } else
@@ -118,7 +118,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
             log.error("Couldn't load form with name ["+name+"] Id ["+viewName+"]");
         }
 
-        form.setDataObj(UICacheManager.getAppPrefs());
+        form.setDataObj(AppPreferences.getInstance());
 
         form.getValidator().validateForm();
 

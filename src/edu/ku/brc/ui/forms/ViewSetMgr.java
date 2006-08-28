@@ -70,6 +70,16 @@ public class ViewSetMgr
     }
     
     /**
+     * Constructor with DOM.
+     *
+     * @param rootDOM the root of the DOM
+     */
+    public ViewSetMgr(Element rootDOM)
+    {
+        init(rootDOM);
+    }
+    
+    /**
      * Constructor with File as a dir point to ViewSet.
      * @param contextDir the path to the viewset
      */
@@ -257,6 +267,64 @@ public class ViewSetMgr
      * 
      * @param contextDir the directory in which load the view sets
      */
+    protected void init(final Element rootDOM)
+    {
+        if (rootDOM != null)
+        {
+            for ( Iterator i = rootDOM.elementIterator( "file" ); i.hasNext(); ) 
+            {
+                Element fileElement = (Element) i.next();
+                String  name        = getAttr(fileElement, "name", null);
+                if (!isViewSetNameInUse(name))
+                {
+                    String typeStr   = getAttr(fileElement, "type", "system");
+                    String title     = getAttr(fileElement, "title", null);
+                    String fileName  = getAttr(fileElement, "file", null);
+                    
+                    // these can go away once we validate the XML
+                    if (StringUtils.isEmpty(typeStr))
+                    {
+                        throw new RuntimeException("ViewSet type cannot be null!");
+                    }
+                    if (StringUtils.isEmpty(title))
+                    {
+                        throw new RuntimeException("ViewSet title cannot be null!");
+                    }                       
+                    if (StringUtils.isEmpty(fileName))
+                    {
+                        throw new RuntimeException("ViewSet file cannot be null!");
+                    } else
+                    {
+                        File viewSetFile = new File(contextDir.getAbsoluteFile() + File.separator + fileName);
+                        if (viewSetFile == null || !viewSetFile.exists())
+                        {
+                            throw new RuntimeException("ViewSet file cannot be found at["+viewSetFile.getAbsolutePath()+"]");
+                        }
+                    }
+                    
+                    ViewSet viewSet = new ViewSet(ViewSet.parseType(typeStr), name, title, fileName, contextDir);
+                    viewsHash.put(viewSet.getName(), viewSet);
+                    
+                } else
+                {
+                    log.error("ViewSet Name["+name+"] is in use.");
+                }
+            }
+        } else
+        {
+            String msg = "The root element for the document was null!";
+            log.error(msg);
+            throw new ConfigurationException(msg);
+        } 
+
+    }
+
+    /**
+     * Reads the Form Registry. The forms are loaded when needed and onlu one ViewSet can be the "core" ViewSet which is where most of the forms
+     * reside. This could also be thought of as the "default" set of forms.
+     * 
+     * @param contextDir the directory in which load the view sets
+     */
     protected void init(final File contextDir, final boolean emptyIsOK)
     {
         this.contextDir = contextDir;
@@ -273,53 +341,9 @@ public class ViewSetMgr
                 {
                     org.dom4j.Document document = readFileToDOM4J(new FileInputStream(vsRegFile));
                     Element            root     = document.getRootElement();
-                    if (root != null)
-                    {
-                        for ( Iterator i = root.elementIterator( "file" ); i.hasNext(); ) 
-                        {
-                            Element fileElement = (Element) i.next();
-                            String  name        = getAttr(fileElement, "name", null);
-                            if (!isViewSetNameInUse(name))
-                            {
-                                String typeStr   = getAttr(fileElement, "type", "system");
-                                String title     = getAttr(fileElement, "title", null);
-                                String fileName  = getAttr(fileElement, "file", null);
-                                
-                                // these can go away once we validate the XML
-                                if (StringUtils.isEmpty(typeStr))
-                                {
-                                    throw new RuntimeException("ViewSet type cannot be null!");
-                                }
-                                if (StringUtils.isEmpty(title))
-                                {
-                                    throw new RuntimeException("ViewSet title cannot be null!");
-                                }                       
-                                if (StringUtils.isEmpty(fileName))
-                                {
-                                    throw new RuntimeException("ViewSet file cannot be null!");
-                                } else
-                                {
-                                    File viewSetFile = new File(contextDir.getAbsoluteFile() + File.separator + fileName);
-                                    if (viewSetFile == null || !viewSetFile.exists())
-                                    {
-                                        throw new RuntimeException("ViewSet file cannot be found at["+viewSetFile.getAbsolutePath()+"]");
-                                    }
-                                }
-                                
-                                ViewSet viewSet = new ViewSet(ViewSet.parseType(typeStr), name, title, fileName, contextDir);
-                                viewsHash.put(viewSet.getName(), viewSet);
-                                
-                            } else
-                            {
-                                log.error("ViewSet Name["+name+"] is in use.");
-                            }
-                        }
-                    } else
-                    {
-                        String msg = "The root element for the document was null!";
-                        log.error(msg);
-                        throw new ConfigurationException(msg);
-                    } 
+                    
+                    init(root);
+                    
                 } catch (Exception ex)
                 {
                     ex.printStackTrace();

@@ -1,7 +1,9 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -9,7 +11,7 @@ import java.util.Set;
  */
 public class CatalogSeries  implements java.io.Serializable, Comparable<CatalogSeries>
 {
-    protected static CatalogSeries currentCatalogSeries = null;
+    protected static List<CatalogSeries> currentCatalogSeries = new ArrayList<CatalogSeries>();
     
     // Fields
 
@@ -23,7 +25,8 @@ public class CatalogSeries  implements java.io.Serializable, Comparable<CatalogS
      protected String lastEditedBy;
      protected Set<CollectionObjDef> collectionObjDefItems;
      protected CatalogSeries tissue;
-
+     protected Set<AppResourceDefault> appResourceDefaults;
+     
 
     // Constructors
 
@@ -36,14 +39,19 @@ public class CatalogSeries  implements java.io.Serializable, Comparable<CatalogS
         this.catalogSeriesId = catalogSeriesId;
     }
 
-    public static CatalogSeries getCurrentCatalogSeries()
+    public static List<CatalogSeries> getCurrentCatalogSeries()
     {
         return currentCatalogSeries;
     }
 
-    public static void setCurrentCatalogSeries(CatalogSeries currentCatalogSeries)
+    public static void setCurrentCatalogSeries(List<CatalogSeries> currentCatalogSeries)
     {
-        CatalogSeries.currentCatalogSeries = currentCatalogSeries;
+        CatalogSeries.currentCatalogSeries.clear();
+        
+        if (currentCatalogSeries != null)
+        {
+            CatalogSeries.currentCatalogSeries.addAll(currentCatalogSeries);
+        }
     }
 
     // Initializer
@@ -59,6 +67,7 @@ public class CatalogSeries  implements java.io.Serializable, Comparable<CatalogS
         lastEditedBy = null;
         collectionObjDefItems = new HashSet<CollectionObjDef>();
         tissue = null;
+        appResourceDefaults = new HashSet<AppResourceDefault>();
     }
     // End Initializer
 
@@ -173,9 +182,17 @@ public class CatalogSeries  implements java.io.Serializable, Comparable<CatalogS
     public void setTissue(CatalogSeries tissue) {
         this.tissue = tissue;
     }
-
-
     
+    public Set<AppResourceDefault> getAppResourceDefaults()
+    {
+        return appResourceDefaults;
+    }
+
+    public void setAppResourceDefaults(Set<AppResourceDefault> appResourceDefaults)
+    {
+        this.appResourceDefaults = appResourceDefaults;
+    }
+
     public String toString()
     {
         return seriesName;

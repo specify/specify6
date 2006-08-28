@@ -76,8 +76,8 @@ public class PreparationAttr implements AttributeIFace, java.io.Serializable
             throw new RuntimeException("Attribute being accessed without a definition.");
         }
         if (definition.getDataType() != type.getType())
-        {
-            throw new RuntimeException("Attribute being accessed as ["+definition.getDataType()+"] when it is of type["+type.getType()+"]");
+        {           
+            throw new RuntimeException("Attribute being accessed as ["+AttributeIFace.FieldType.getString(type.getType())+"] when it is of type["+AttributeIFace.FieldType.getString(definition.getDataType())+"]");
         }
     }
 
@@ -86,7 +86,7 @@ public class PreparationAttr implements AttributeIFace, java.io.Serializable
      */
     public String getStrValue()
     {
-        verifyType(AttributeIFace.FieldType.StringType);
+        //verifyType(AttributeIFace.FieldType.StringType);
         
         return this.strValue;
     }
@@ -96,7 +96,7 @@ public class PreparationAttr implements AttributeIFace, java.io.Serializable
      */
     public void setStrValue(String strValue)
     {
-        verifyType(AttributeIFace.FieldType.StringType);
+        //verifyType(AttributeIFace.FieldType.StringType);
         this.strValue = strValue;
     }
 
@@ -105,7 +105,7 @@ public class PreparationAttr implements AttributeIFace, java.io.Serializable
      */
     public Double getDblValue()
     {
-        verifyType(AttributeIFace.FieldType.DoubleType);
+        //verifyType(AttributeIFace.FieldType.DoubleType);
         return dblValue;
     }
 
@@ -114,7 +114,7 @@ public class PreparationAttr implements AttributeIFace, java.io.Serializable
      */
     public void setDblValue(Double value)
     {
-        verifyType(AttributeIFace.FieldType.DoubleType);
+        //verifyType(AttributeIFace.FieldType.DoubleType);
         dblValue = value;
     }
 
@@ -123,7 +123,7 @@ public class PreparationAttr implements AttributeIFace, java.io.Serializable
      */
     public Float getFloatValue()
     {
-        verifyType(AttributeIFace.FieldType.FloatType);
+        //verifyType(AttributeIFace.FieldType.FloatType);
         return new Float(dblValue);
     }
 
@@ -132,7 +132,7 @@ public class PreparationAttr implements AttributeIFace, java.io.Serializable
      */
     public void setFloatValue(Float value)
     {
-        verifyType(AttributeIFace.FieldType.FloatType);
+        //verifyType(AttributeIFace.FieldType.FloatType);
         dblValue = new Double(value);
     }
 
@@ -141,7 +141,7 @@ public class PreparationAttr implements AttributeIFace, java.io.Serializable
      */
     public Integer getIntValue()
     {
-        verifyType(AttributeIFace.FieldType.IntegerType);
+        //verifyType(AttributeIFace.FieldType.IntegerType);
         return new Integer(dblValue.intValue());
     }
 
@@ -150,7 +150,7 @@ public class PreparationAttr implements AttributeIFace, java.io.Serializable
      */
     public void setIntValue(Integer value)
     {
-        verifyType(AttributeIFace.FieldType.IntegerType);
+        //verifyType(AttributeIFace.FieldType.IntegerType);
         dblValue = new Double(value);
     }
 
@@ -159,7 +159,7 @@ public class PreparationAttr implements AttributeIFace, java.io.Serializable
      */
     public Boolean getBoolValue()
     {
-        verifyType(AttributeIFace.FieldType.BooleanType);
+        //verifyType(AttributeIFace.FieldType.BooleanType);
         return new Boolean(dblValue.intValue() == 1);
     }
 
@@ -168,7 +168,7 @@ public class PreparationAttr implements AttributeIFace, java.io.Serializable
      */
     public void setBoolValue(Boolean value)
     {
-        verifyType(AttributeIFace.FieldType.BooleanType);
+        //verifyType(AttributeIFace.FieldType.BooleanType);
         dblValue = new Double(value ? 1.0 : 0.0);
     }
 
@@ -185,7 +185,6 @@ public class PreparationAttr implements AttributeIFace, java.io.Serializable
      */
     public void setTimestampCreated(Date timestampCreated)
     {
-        verifyType(AttributeIFace.FieldType.FloatType);
         this.timestampCreated = timestampCreated;
     }
 

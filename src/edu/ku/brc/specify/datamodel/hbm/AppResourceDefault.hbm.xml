@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"><hibernate-mapping>
+    
+    <class name="edu.ku.brc.specify.datamodel.AppResourceDefault" table="appresourcedefault" lazy="true">
+        <meta attribute="class-description" inherit="false"/>
+        
+        <id name="appResourceDefaultId" type="java.lang.Integer" column="AppResourceDefaultID">
+            <meta attribute="field-description"></meta>
+            <meta attribute="scope-field">protected</meta>
+            <generator class="native"/>
+        </id>
+        
+        <property name="userType" type="java.lang.String" column="UserType" length="64">
+            <meta attribute="scope-field">protected</meta>                
+        </property>
+        
+        <property name="disciplineType" type="java.lang.String" column="DisciplineType" length="64">
+            <meta attribute="scope-field">protected</meta>                
+        </property>        
+        
+        <property name="timestampCreated" type="java.sql.Timestamp" column="TimestampCreated" length="23" not-null="true" update="false">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"></meta>    
+        </property>
+        
+        <property name="timestampModified" type="java.sql.Timestamp" column="TimestampModified" length="23" index="IX_Accession_1">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description"></meta>    
+        </property>
+        
+        <property name="lastEditedBy" type="java.lang.String" column="LastEditedBy" length="50" index="IX_Accession_2">
+            <meta attribute="scope-field">protected</meta>
+            <meta attribute="field-description">Login name of user who last edited the record</meta>
+        </property>
+        
+        <!-- Associations -->
+        
+        <!-- bi-directional many-to-one association to CatalogSeries -->
+        <many-to-one name="catalogSeries" class="edu.ku.brc.specify.datamodel.CatalogSeries" cascade="save-update" not-null="false" outer-join="true">
+            <meta attribute="field-description"></meta>
+            <column name="CatalogSeriesID"/>
+        </many-to-one>
+        
+        <!-- bi-directional many-to-one association to CollectionObjDef -->
+        <many-to-one name="collectionObjDef" class="edu.ku.brc.specify.datamodel.CollectionObjDef" cascade="save-update" not-null="false" outer-join="true">
+            <meta attribute="field-description"></meta>
+            <column name="CollectionObjDefID"/>
+        </many-to-one>
+        
+        <!-- bi-directional many-to-one association to specifyUser -->
+        <many-to-one name="specifyUser" class="edu.ku.brc.specify.datamodel.SpecifyUser" cascade="save-update" not-null="false" outer-join="true">
+            <meta attribute="field-description"></meta>
+            <column name="SpecifyUserID"/>
+        </many-to-one> 
+        
+        <!-- bi-directional many-to-many association to AppResource -->
+        <set name="appResources" table="appresdef_appres" lazy="true" inverse="true" cascade="save-update">
+            <key>
+                <column name="AppResourceDefaultID"/>
+            </key>
+            <many-to-many class="edu.ku.brc.specify.datamodel.AppResource" column="AppResourceID"/>
+        </set>
+        
+        <!-- bi-directional many-to-many association to ViewSetObj -->
+        <set name="viewSets" table="appresdef_viewsetobj" lazy="true" inverse="true" cascade="save-update">
+            <key>
+                <column name="AppResourceDefaultID"/>
+            </key>
+            <many-to-many class="edu.ku.brc.specify.datamodel.ViewSetObj" column="ViewSetObjID"/>
+        </set>
+        
+        
+    </class>
+</hibernate-mapping>

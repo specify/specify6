@@ -9,17 +9,18 @@ import junit.framework.TestCase;
 
 import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.log4j.Logger;
+import org.hibernate.Hibernate;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
-import edu.ku.brc.af.prefs.AppPrefsIFace;
-import edu.ku.brc.af.prefs.AppPrefsMgr;
-import edu.ku.brc.specify.Specify;
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.ColorWrapper;
-import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 
 /**
- * Tests the AppPrefsIFace and AppPrefsIFace cache
+ * Tests the AppPreferences and AppPreferences cache
  *
  * @code_status Unknown (auto-generated)
  *
@@ -30,17 +31,66 @@ public class PreferenceTest extends TestCase
 {
     private static final Logger log = Logger.getLogger(PreferenceTest.class);
     
-    protected AppPrefsIFace appPrefs = null;
+    private static final String databaseName = "fish";
+    
+    protected AppPreferences appPrefs = null;
 
     /* (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
      */
-    public void setUp()
+    protected void setUp()
     {
-        IconManager.setApplicationClass(Specify.class);
-        AppPrefsMgr.getInstance().load(System.getProperty("user.home"));
-        appPrefs = AppPrefsMgr.getInstance();
-        UICacheManager.setAppPrefs(appPrefs);
+        //-----------------------------------------------------
+        // This is needed for loading views
+        //-----------------------------------------------------
+        UICacheManager.getInstance(); // initializes it first thing
+        if (UICacheManager.getAppName() == null) // this is needed because the setUp gets run separately for each test
+        {
+            System.setProperty("edu.ku.brc.af.core.AppContextMgrFactory", "edu.ku.brc.specify.config.SpecifyAppContextMgr");
+            System.setProperty("AppPrefsIOClassName", "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");
+            
+            UICacheManager.getInstance(); // initializes it first thing
+            UICacheManager.setAppName("Specify");
+
+            // Load Local Prefs
+            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+            localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
+            localPrefs.load();
+            
+            // This will log us in and return true/false
+            if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", 
+                                   "org.hibernate.dialect.MySQLDialect", 
+                                   databaseName, 
+                                   "jdbc:mysql://localhost/"+databaseName, 
+                                   "rods", 
+                                   "rods"))
+            {
+                throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
+            } else
+            {
+                HibernateUtil.getCurrentSession();
+                AppPreferences.getInstance().load(); // Loads prefs from the database
+            }
+        }
+    }
+    
+    public void testLocalPrefs()
+    {
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        localPrefs.put("test", "test");
+        
+        try
+        {
+            localPrefs.flush();
+            
+        } catch (Exception ex)
+        {
+            assertTrue(false);
+        }
+        
+        String test = localPrefs.get("test", null);
+        assertNotNull(test);
+        assertTrue(test.equals("test"));
     }
 
     /**
@@ -53,9 +103,9 @@ public class PreferenceTest extends TestCase
     protected void updatePref(final String section, final String pref, final String attr, final String value)
     {
 
-        UICacheManager.getAppPrefs().put(section+"."+pref+"."+attr, value);
+        AppPreferences.getInstance().put(section+"."+pref+"."+attr, value);
         //try {
-        //    UICacheManager.getAppPrefs().flush();
+        //    AppPreferences.getInstance().flush();
         //} catch (BackingStoreException ex) {}
 
     }
@@ -65,11 +115,12 @@ public class PreferenceTest extends TestCase
      */
     public void testStrings()
     {
-        UICacheManager.getAppPrefs().put("text.ui.str", "string value");
-        UICacheManager.getAppPrefs().put("text.ui.formatting.str", "string value");
-        UICacheManager.getAppPrefs().put("text.ui.formatting.xxx.str", "string value");
+        AppPreferences appPrefsMgr = AppPreferences.getInstance();
+        appPrefsMgr.put("text.ui.str", "string value");
+        appPrefsMgr.put("text.ui.formatting.str", "string value");
+        appPrefsMgr.put("text.ui.formatting.xxx.str", "string value");
 
-        String[] keys = UICacheManager.getAppPrefs().keys("text.ui");
+        String[] keys = appPrefsMgr.keys("text.ui");
         log.info("Keys:");
         for (String s : keys)
         {
@@ -77,7 +128,7 @@ public class PreferenceTest extends TestCase
         }
         assert(keys.length != 1);
 
-        String[] names = UICacheManager.getAppPrefs().childrenNames("text.ui");
+        String[] names = appPrefsMgr.childrenNames("text.ui");
         log.info("Child Names:");
         for (String s : names)
         {
@@ -88,7 +139,8 @@ public class PreferenceTest extends TestCase
 
         try
         {
-            UICacheManager.getAppPrefs().flush();
+            appPrefsMgr.flush();
+            
         } catch (Exception ex)
         {
             assert(false);
@@ -223,10 +275,10 @@ public class PreferenceTest extends TestCase
 
         String newFormat = "yyyy/MM/DD";
 
-        UICacheManager.getAppPrefs().put("ui.formatting.dateTest", newFormat);
+        AppPreferences.getInstance().put("ui.formatting.dateTest", newFormat);
         
         //try {
-        //    UICacheManager.getAppPrefs().flush();
+        //    AppPreferences.getInstance().flush();
         //} catch (BackingStoreException ex) {}
 
         log.info("New Date Format: "+format.toPattern());
@@ -258,9 +310,9 @@ public class PreferenceTest extends TestCase
         String newColorStr = "64, 255, 128";
         Color newColor = new Color(64, 255, 128);
 
-        UICacheManager.getAppPrefs().put("ui.formatting."+attrName, newColorStr);
+        AppPreferences.getInstance().put("ui.formatting."+attrName, newColorStr);
         //try {
-        //    UICacheManager.getAppPrefs().flush();
+        //    AppPreferences.getInstance().flush();
         //} catch (BackingStoreException ex) {}
 
         log.info("New Color: "+ colorWrapper.toString()+" ["+newColorStr+"]");

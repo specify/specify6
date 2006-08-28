@@ -28,7 +28,7 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.prefs.AppPrefsIFace;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.exceptions.UIException;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.util.FileCache;
@@ -73,7 +73,7 @@ public class UICacheManager
 
     protected ResourceBundle resourceBundle     = null;
     protected String         resourceName       = "resources";
-    protected AppPrefsIFace  appPrefs           = null;
+    protected AppPreferences  appPrefs           = null;
 
     protected FileCache      longTermCache      = null;
     protected FileCache      shortTermCache     = null;
@@ -519,7 +519,7 @@ public class UICacheManager
      * Return the SpecifyAppPrefs.
      * @return the SpecifyAppPrefs.
      */
-    public static AppPrefsIFace getAppPrefs()
+    public static AppPreferences getAppPrefs()
     {
         return instance.appPrefs;
     }
@@ -528,7 +528,7 @@ public class UICacheManager
      * Sets the SpecifyAppPrefs.
      * @param appPrefs the appPrefs
      */
-    public static void setAppPrefs(AppPrefsIFace appPrefs)
+    public static void setAppPrefs(AppPreferences appPrefs)
     {
         instance.appPrefs = appPrefs;
     }

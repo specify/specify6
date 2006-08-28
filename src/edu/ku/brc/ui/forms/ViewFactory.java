@@ -53,6 +53,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.helpers.BrowserLauncher;
 import edu.ku.brc.ui.BrowseBtnPanel;
@@ -857,7 +858,7 @@ public class ViewFactory
 
                     String subViewName = cellSubView.getViewName();
 
-                    View subView = ViewSetMgrManager.getView(cellSubView.getViewSetName(), subViewName);
+                    View subView = AppContextMgr.getInstance().getView(cellSubView.getViewSetName(), subViewName);
                     if (subView != null)
                     {
                         if (parent != null)

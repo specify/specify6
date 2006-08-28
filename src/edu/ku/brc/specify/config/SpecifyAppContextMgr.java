@@ -1,0 +1,896 @@
+/* This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+package edu.ku.brc.specify.config;
+
+import static edu.ku.brc.helpers.XMLHelper.getAttr;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.dom4j.Element;
+import org.hibernate.Criteria;
+import org.hibernate.Query;
+import org.hibernate.criterion.Expression;
+
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.AppResourceIFace;
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.exceptions.ConfigurationException;
+import edu.ku.brc.helpers.UIHelper;
+import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.datamodel.AppResource;
+import edu.ku.brc.specify.datamodel.AppResourceDefault;
+import edu.ku.brc.specify.datamodel.CatalogSeries;
+import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.ViewSetObj;
+import edu.ku.brc.ui.CheckboxChooserDlg;
+import edu.ku.brc.ui.ChooseFromListDlg;
+import edu.ku.brc.ui.forms.ViewSetMgr;
+import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.ViewSet;
+
+/**
+ * This class provides the current context of the Specify application. The context consists of the following:<br>
+ * <ol>
+ * <li>The User Name
+ * <li>The Database Name (database connection)
+ * <li>The Specify User Object
+ * <li>The CatalogSeries
+ * <li>The CollectionObjDef
+ * <li>The Discipline Name
+ * </ol>
+ * <p>The SpecifyAppResourceDefaultMgr will place data in a <i>username</i>/<i>databaseName</i> directory in the "application data" directory of the user.
+ * On Windows this is <code>\Documents and Settings\&lt;User Name&gt;\Application Data\Specify</code>.
+ * On Unix platforms it is <code>/<i>user home</i>/.Specify</code> (Note: the app data dir is created by UICacheManager)</p>
+ * <p>
+ * The ViewSetMgrManager needs to load the "backstop" ViewSetMgr and the "user" ViewSetMgr in order for the application to work correctly.
+ * So this class uses the "discipline name" to initialize the APPDATA dir with the appropriate data, which includes a "standard" set of
+ * Views for that discipline. The APPDATA dir is really the "working space" of the application for a particular username/database.
+ * </p>
+ *
+ * @code_status Complete
+ *
+ * @author rods
+ */
+public class SpecifyAppContextMgr extends AppContextMgr
+{
+    private static final Logger  log      = Logger.getLogger(SpecifyAppContextMgr.class);
+    //protected static SpecifyAppContextMgr instance = null;
+
+    protected Hashtable<String, Discipline> hash = new Hashtable<String, Discipline>();
+
+    protected List<AppResourceDefault> appResourceList    = new ArrayList<AppResourceDefault>();
+
+    protected Hashtable<String, List<ViewSet>> viewSetHash = new Hashtable<String, List<ViewSet>>();
+    //protected Stack<List<ViewSet>>             viewSetListStack = new Stack<List<ViewSet>>();
+
+    protected String      databaseName          = null;
+    protected String      userName              = null;
+    protected SpecifyUser user                  = null;
+
+    protected ViewSetMgr     backStopViewSetMgr = null;
+    protected AppResourceMgr backStopAppResMgr  = null;
+
+
+    /**
+     * Singleton Constructor.
+     */
+    public SpecifyAppContextMgr()
+    {
+        init();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppContextMgr#getInstance()
+     */
+    public static SpecifyAppContextMgr getInstance()
+    {
+        return (SpecifyAppContextMgr)AppContextMgr.getInstance();
+    }
+
+
+    /**
+     * Reads in the disciplines file (is loaded when the class is loaded).
+     */
+    protected void init()
+    {
+        try
+        {
+            Element root = XMLHelper.readFileToDOM4J(new FileInputStream(XMLHelper.getConfigDirPath("disciplines.xml")));
+            if (root != null)
+            {
+                for ( Iterator i = root.elementIterator( "discipline" ); i.hasNext(); )
+                {
+                    Element disciplineNode = (Element) i.next();
+
+                    String name   = getAttr(disciplineNode, "name", null);
+                    String title  = getAttr(disciplineNode, "title", null);
+                    int    type   = getAttr(disciplineNode, "type", 0);
+
+                    Discipline discipline = new Discipline(name, title, type);
+                    hash.put(discipline.getName(), discipline);
+                }
+            } else
+            {
+                String msg = "The root element for the document was null!";
+                log.error(msg);
+                throw new ConfigurationException(msg);
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            log.error(ex);
+        }
+
+    }
+
+
+    /**
+     * Returns the list of Discipline objects.
+     * @return the list of Discipline objects
+     */
+    public List<Discipline> getDisciplines()
+    {
+        List<Discipline> list = new ArrayList<Discipline>();
+        for (Enumeration<Discipline> e=hash.elements();e.hasMoreElements();)
+        {
+            list.add(e.nextElement());
+        }
+        return list;
+    }
+
+    /**
+     * Returns a Discipline by name.
+     * @param name the name of the discipline
+     * @return a Discipline by name.
+     */
+    public Discipline getDiscipline(final String name)
+    {
+        return hash.get(name);
+    }
+
+    /**
+     * Returns a Discipline by title.
+     * @param title the title of the discipline
+     * @return a Discipline by title.
+     */
+    public Discipline getByTitle(final String title)
+    {
+        for (Enumeration<Discipline> e=hash.elements();e.hasMoreElements();)
+        {
+            Discipline dis = e.nextElement();
+            if (title.equals(dis.getTitle()))
+            {
+                return dis;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Sets up the "current" Catalog Series by first checking prefs for the most recent primary key,
+     * if it can't get it then it asks the user to select one. (Note: if there is only one it automatically chooses it)
+     * @param user the user object of the current object
+     * @param alwaysAsk indicates the User should always be asked which Catalog Series to use
+     * @return the current Catalog Series or null
+     */
+    @SuppressWarnings("unchecked")
+    public List<CatalogSeries> setupCurrentCatalogSeries(final SpecifyUser user, final boolean alwaysAsk)
+    {
+        final String prefName = mkUserDBPrefName("recent_catalogseries_id");
+
+        List<CatalogSeries> catSeries = CatalogSeries.getCurrentCatalogSeries();
+
+        if (catSeries.size() == 0 || alwaysAsk)
+        {
+            AppPreferences appPrefs    = AppPreferences.getInstance();
+            boolean        askToSelect = true;
+            if (!alwaysAsk)
+            {
+                String recentIds = appPrefs.get(prefName, null);
+                if (recentIds != null)
+                {
+                    Query query = HibernateUtil.getCurrentSession().createQuery( "From CatalogSeries where catalogSeriesId in ("+recentIds + ")");
+                    List list = query.list();
+                    for (Object obj : list)
+                    {
+                        catSeries.add((CatalogSeries)obj);
+                    }
+                    askToSelect = false;
+                }
+            }
+
+            if (askToSelect)
+            {
+                String queryStr = "select cs From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.catalogSeries as cs where user.specifyUserId = "+user.getSpecifyUserId();
+                Query query = HibernateUtil.getCurrentSession().createQuery(queryStr);
+                List list = query.list();
+
+                if (list.size() == 1)
+                {
+                    catSeries.add((CatalogSeries)list.get(0));
+                    CatalogSeries.setCurrentCatalogSeries(catSeries);
+
+                } else if (list.size() > 0)
+                {
+                    //Collections.sort(list); // Why doesn't this work?
+
+                    CheckboxChooserDlg<CatalogSeries> dlg = new CheckboxChooserDlg<CatalogSeries>("Choose a Catalog Series", list); // TODO I18N
+                    //dlg.setSelectedObjects(catSeries);
+                    dlg.setAlwaysOnTop(true);
+                    dlg.setModal(true);
+
+                    UIHelper.centerAndShow(dlg);
+
+                    if (!dlg.isCancelled())
+                    {
+                        catSeries.addAll(dlg.getSelectedObjects());
+                    }
+                } else
+                {
+                    // TODO error dialog
+
+                }
+
+                if (catSeries.size() > 0)
+                {
+                    StringBuilder strBuf = new StringBuilder();
+                    for (CatalogSeries cs : catSeries)
+                    {
+                        if (strBuf.length() > 0) strBuf.append(", ");
+                        strBuf.append(Integer.toString(cs.getCatalogSeriesId()));
+                    }
+                    appPrefs.put(prefName, strBuf.toString());
+                } else
+                {
+                    appPrefs.remove(prefName);
+                }
+            }
+        }
+
+        return catSeries;
+    }
+
+    /**
+     * Sets up the "current" CollectionObjDef by first checking prefs for the most recent primary key,
+     * if it can't get it then it asks the user to select one. (Note: if there is only one it automatically chooses it)
+     * @param catalogSeries the current XatalogSeries
+     * @param alwaysAsk true means always ask which CollectionObjDef
+     * @return the current CollectionObjDef or null
+     */
+    @SuppressWarnings("unchecked")
+    public CollectionObjDef setupCurrentColObjDef(final CatalogSeries catalogSeries, final boolean alwaysAsk)
+    {
+        if (catalogSeries == null)
+        {
+            return null;
+        }
+        final String prefName = mkUserDBPrefName("recent_colobjdef_id");
+
+        CollectionObjDef colObjDef = CollectionObjDef.getCurrentCollectionObjDef();
+
+        if (colObjDef == null || alwaysAsk)
+        {
+            AppPreferences appPrefs    = AppPreferences.getInstance();
+            boolean       askToSelect = true;
+            if (!alwaysAsk)
+            {
+                Integer recentId = appPrefs.getInt(prefName, null);
+                if (recentId != null)
+                {
+                    Query query = HibernateUtil.getCurrentSession().createQuery( "From CollectionObjDef where collectionObjDefId = "+recentId.toString());
+                    List list = query.list();
+                    if (list.size() == 1)
+                    {
+                        colObjDef = (CollectionObjDef)list.get(0);
+                        askToSelect = false;
+                    }
+                }
+            }
+
+            if (askToSelect)
+            {
+                String queryStr = "select cod From CatalogSeries as cs Inner Join cs.collectionObjDefItems as cod where cs.catalogSeriesId = "+catalogSeries.getCatalogSeriesId();
+                Query query = HibernateUtil.getCurrentSession().createQuery(queryStr);
+                List list = query.list();
+
+                if (list.size() == 1)
+                {
+                    colObjDef = (CollectionObjDef)list.get(0);
+                    CollectionObjDef.setCurrentCollectionObjDef(colObjDef);
+
+                } else if (list.size() > 1)
+                {
+                    Collections.sort(list);
+
+                    ChooseFromListDlg dlg = new ChooseFromListDlg("Choose a Collection Object Def", list); // TODO I18N
+                    dlg.setAlwaysOnTop(true);
+                    dlg.setModal(true);
+
+                    UIHelper.centerAndShow(dlg);
+                    if (!dlg.isCancelled())
+                    {
+                        colObjDef = (CollectionObjDef)dlg.getSelectedObject();
+                        CollectionObjDef.setCurrentCollectionObjDef(colObjDef);
+                    }
+                } else
+                {
+                    // TODO error dialog
+
+                }
+
+                if (colObjDef != null)
+                {
+                    appPrefs.putInt(prefName, colObjDef.getCollectionObjDefId());
+                } else
+                {
+                    appPrefs.remove(prefName);
+                }
+            }
+        }
+
+        return colObjDef;
+    }
+
+    /**
+     * Helper function to create a user and database centric pref name
+     * @param prefName the pref names
+     * @return  a user and database centric pref name
+     */
+    protected String mkUserDBPrefName(final String prefName)
+    {
+        return prefName + "." + userName+ "." + databaseName;
+    }
+
+    /**
+     * Finds a AppResourceDefault from an "object" list where it matches the user, CatSeries and ColObjdef
+     * @param appResDefList the list to search
+     * @param user the Specify user
+     * @param catSeries the CatalogSeries
+     * @param colObjDef the CollectionObjDef
+     * @return the AppResourceDefault object or null
+     */
+    protected AppResourceDefault find(final List appResDefList,
+                                      final SpecifyUser user,
+                                      final CatalogSeries catSeries,
+                                      final CollectionObjDef colObjDef)
+    {
+        for (Object obj : appResDefList)
+        {
+            AppResourceDefault ard = (AppResourceDefault)obj;
+
+            SpecifyUser      spUser = ard.getSpecifyUser();
+            CatalogSeries    cs   = ard.getCatalogSeries();
+            CollectionObjDef cod  = ard.getCollectionObjDef();
+
+            if (spUser != null && spUser.getSpecifyUserId() == user.getSpecifyUserId() &&
+                cs != null && cs.getCatalogSeriesId() == catSeries.getCatalogSeriesId() &&
+                cod != null && cod.getCollectionObjDefId() == colObjDef.getCollectionObjDefId())
+            {
+                return ard;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Creates an AppResourceDefault object from a directory (note the Id will be null).
+     * @param dir the directory in question)
+     * @return a new AppResourceDefault object
+     */
+    protected AppResourceDefault createAppResourceDefFromDir(final File dir)
+    {
+        AppResourceDefault appResDef = new AppResourceDefault();
+        appResDef.initialize();
+
+
+        ViewSetMgr viewSetMgr = new ViewSetMgr(dir);
+        for (ViewSet vs : viewSetMgr.getViewSets())
+        {
+            ViewSetObj vso = new ViewSetObj();
+            vso.initialize();
+
+            // Set up File Name to load the ViewSet
+            vso.setFileName(dir.getAbsoluteFile() + File.separator + vs.getFileName());
+
+            if (false)
+            {
+                String dataStr = vso.getDataAsString(); // causes the file to be loaded and returned into this string
+
+                // now clear the file names o it thinks it is a database object,
+                // and not created from disk
+                vso.setFileName(null);
+
+                // Now set the Blob from the string
+                vso.setDataAsString(dataStr);
+            }
+
+            vso.setLevel((short)0);
+            vso.setName(vs.getFileName());
+
+            vso.getAppResourceDefaults().add(appResDef);
+            appResDef.getViewSets().add(vso);
+
+        }
+
+        AppResourceMgr appResMgr = new AppResourceMgr(dir);
+        for (AppResource appRes : appResMgr.getAppResources())
+        {
+            appResDef.getAppResources().add(appRes);
+        }
+        return appResDef;
+    }
+
+    /**
+     * For debug purposes, display the contents of a AppResourceDefault
+     * @param appResDef AppResourceDefault
+     * @return string of info
+     */
+    protected String getAppResDefAsString(final AppResourceDefault appResDef)
+    {
+        SpecifyUser      spUser = appResDef.getSpecifyUser();
+        CatalogSeries    cs   = appResDef.getCatalogSeries();
+        CollectionObjDef cod  = appResDef.getCollectionObjDef();
+
+        StringBuilder strBuf = new StringBuilder();
+        strBuf.append("CS["+(cs != null ? cs.getSeriesName() : "null") + "]");
+        strBuf.append(" SU["+(spUser != null ? spUser.getName() : "null") + "]");
+        strBuf.append(" COD["+(cod != null ? cod.getName() : "null") + "]");
+        strBuf.append(" DSP["+appResDef.getDisciplineType() + "]");
+        strBuf.append(" UTYP["+appResDef.getUserType() + "]");
+        return strBuf.toString();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppResourceDefaultIFace#setContext(java.lang.String, java.lang.String)
+     */
+    public boolean setContext(final String databaseName,
+                              final String userName)
+    {
+        // This is where we will read it in from the Database
+        // but for now we don't need to do that.
+        //
+        // We need to search for User, CatalogSeries, CollectionObjDef and UserType
+        // Then
+
+        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(SpecifyUser.class);
+        criteria.add(Expression.eq("name", userName));
+        List list = criteria.list();
+
+        if (list.size() == 1)
+        {
+            user = (SpecifyUser)list.get(0);
+            SpecifyUser.setCurrentUser(user);
+
+        } else
+        {
+            throw new RuntimeException("The user ["+userName+"] could  not be located as a Specify user.");
+        }
+
+        this.databaseName = databaseName;
+        this.userName     = userName;
+
+        // First we start by getting all the CatalogSeries that the User want to
+        // work with for this "Context" then we need to go get all the Default View and
+        // additional XML Resources.
+
+        Query query = HibernateUtil.getCurrentSession().createQuery( "From AppResourceDefault where specifyUserId = "+user.getSpecifyUserId());
+        List appResDefList = query.list();
+
+        List<CatalogSeries> catalogSeries = setupCurrentCatalogSeries(user, false);
+        
+        // Set up the CollectionObjectDef for the most common case of one CatalogSeries with one CollecionObjDef
+        CollectionObjDef.setCurrentCollectionObjDef(null);
+        if (catalogSeries.size() == 1)
+        {
+            if (catalogSeries.get(0).getCollectionObjDefItems().size() == 0)
+            {
+                CollectionObjDef.setCurrentCollectionObjDef(catalogSeries.get(0).getCollectionObjDefItems().iterator().next());
+            }
+        }
+
+        String userType = user.getUserType();
+        log.info("User["+user.getName()+"] Type["+userType+"]");
+
+        userType = StringUtils.replace(userType, " ", "").toLowerCase();
+        log.info("Def Type["+userType+"]");
+
+        appResourceList.clear();
+        viewSetHash.clear();
+        //appResHash.clear();
+
+        Hashtable<String, String> disciplineHash = new Hashtable<String, String>();
+
+        log.info("Adding AppResourceDefs");
+        for (CatalogSeries cs : catalogSeries)
+        {
+            log.info("CS["+cs.getSeriesName()+"]");
+            for (CollectionObjDef cod : cs.getCollectionObjDefItems())
+            {
+                log.info("COD["+cod.getName()+"]");
+
+                disciplineHash.put(cod.getDiscipline(), cod.getDiscipline());
+
+                AppResourceDefault appResource = find(appResDefList, user, cs, cod);
+                if (appResource != null)
+                {
+                    log.info("Adding1 "+getAppResDefAsString(appResource));
+                    appResourceList.add(appResource);
+                }
+            }
+        }
+
+        // Add Backstop for Discipline and User Type
+        for (String discipline : disciplineHash.keySet())
+        {
+            log.info("****** Adding Backstop for ["+discipline+"]["+userType+"]");
+            
+            File dir = XMLHelper.getConfigDir(discipline + File.separator + userType);
+            if (dir.exists())
+            {
+                AppResourceDefault appResource = createAppResourceDefFromDir(dir);
+                appResource.setDisciplineType(discipline);
+                appResource.setUserType(userType);
+                log.info("Adding2 "+getAppResDefAsString(appResource));
+                appResourceList.add(appResource);
+            }
+        }
+
+        // Add Backstop for just the Discipline
+        for (String discipline : disciplineHash.keySet())
+        {
+            log.info("***** Adding Backstop for ["+discipline+"]");
+            File dir = XMLHelper.getConfigDir(discipline);
+            if (dir.exists())
+            {
+                AppResourceDefault appResource = createAppResourceDefFromDir(dir);
+                appResource.setDisciplineType(discipline);
+                log.info("Adding3 "+getAppResDefAsString(appResource));
+                appResourceList.add(appResource);
+            }
+        }
+
+        backStopViewSetMgr = new ViewSetMgr(XMLHelper.getConfigDir("backstop"));
+        backStopAppResMgr  = new AppResourceMgr(XMLHelper.getConfigDir("backstop"));
+
+        return true;
+    }
+
+    /**
+     * Returns a list of ViewSets from a AppResourceDefault, The ViewSets are created from the ViewSetObj.
+     * @param appResDef the AppResourceDefault
+     * @return list of ViewSet objects
+     */
+    protected List<ViewSet> getViewSetList(final AppResourceDefault appResDef)
+    {
+        log.info("Looking up["+appResDef.getUniqueIdentifer()+"]["+appResDef.getVerboseUniqueIdentifer()+"]");
+        List<ViewSet> viewSetList = viewSetHash.get(appResDef.getUniqueIdentifer());
+        if (viewSetList == null)
+        {
+            viewSetList = new ArrayList<ViewSet>();
+            for (ViewSetObj vso : appResDef.getViewSets())
+            {
+                try
+                {
+                    Element root = XMLHelper.readStrToDOM4J(vso.getDataAsString());
+                    viewSetList.add(new ViewSet(root));
+
+                } catch (Exception ex)
+                {
+                    log.error(vso.getName());
+                    log.error(ex);
+                    throw new RuntimeException(ex);
+                }
+            }
+            viewSetHash.put(appResDef.getUniqueIdentifer(), viewSetList);
+        }
+        return viewSetList;
+    }
+
+    /**
+     * Finds a View by name using a CollectionObjDef.
+     * @param viewName the name of the view
+     * @param colObjDef the CollectionObjDef
+     * @return the view or null
+     */
+    public View getView(final String viewName, final CollectionObjDef colObjDef)
+    {
+        boolean fndColObjDef = false;
+        for (AppResourceDefault appResDef : appResourceList)
+        {
+            if (appResDef.getCollectionObjDef() != null && appResDef.getCollectionObjDef() == colObjDef)
+            {
+                fndColObjDef = true;
+                for (ViewSet vs : getViewSetList(appResDef))
+                {
+                    View view = vs.getView(viewName);
+                    if (view != null)
+                    {
+                        return view;
+                    }
+                }
+            }
+        }
+
+        // This is searching the BackStops by Discipline and User Type
+        // which were created dynamically
+        if (!fndColObjDef)
+        {
+            String disciplineName = colObjDef.getDiscipline();
+            String userType       = SpecifyUser.getCurrentUser().getUserType();
+            userType = StringUtils.replace(userType, " ", "").toLowerCase();
+
+            // Search Using the colObjectDef's discipline
+            for (AppResourceDefault appResDef : appResourceList)
+            {
+                String dType = appResDef.getDisciplineType();
+                String uType = appResDef.getUserType();
+
+                if (dType != null && dType.equals(disciplineName) &&  (uType == null || uType.equals(userType)))
+                {
+                    for (ViewSet vs : getViewSetList(appResDef))
+                    {
+                        View view = vs.getView(viewName);
+                        if (view != null)
+                        {
+                            return view;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppResourceDefaultIFace#getView(java.lang.String, java.lang.String)
+     */
+    public View getView(final String viewSetName, final String viewName)
+    {
+
+        if (StringUtils.isEmpty(viewName))
+        {
+            throw new RuntimeException("Sorry the View Name cannot be empty.");
+        }
+
+        if (StringUtils.isEmpty(viewSetName))
+        {
+            throw new RuntimeException("Sorry not empty or null ViewSetNames use the call with CollectionObjDef instead.");
+        }
+
+        for (AppResourceDefault appResDef : appResourceList)
+        {
+            log.info("getView "+getAppResDefAsString(appResDef)+"  ["+appResDef.getUniqueIdentifer()+"]");
+
+            for (ViewSet vs : getViewSetList(appResDef))
+            {
+                log.info("VS  ["+vs.getName()+"]["+viewSetName+"]");
+
+                if (vs.getName().equals(viewSetName))
+                {
+                    View view = vs.getView(viewName);
+                    if (view != null)
+                    {
+                        return view;
+                    }
+                }
+            }
+        }
+        
+        return backStopViewSetMgr.getView(viewSetName, viewName);
+
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppResourceDefaultIFace#getResource(java.lang.String)
+     */
+    public AppResourceIFace getResource(final String name)
+    {
+        for (AppResourceDefault appResDef : appResourceList)
+        {
+            for (AppResourceIFace appRes : appResDef.getAppResources())
+            {
+                if (appRes.getName().equals(name))
+                {
+                    return appRes;
+                }
+            }
+        }
+        return backStopAppResMgr.getAppResource(name);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppResourceDefaultMgr#getResourceAsDOM(java.lang.String)
+     */
+    public Element getResourceAsDOM(final String name)
+    {
+        AppResourceIFace appRes = getResource(name);
+        if (appRes != null)
+        {
+            if (appRes.getMimeType().equals("text/xml"))
+            {
+                try
+                {
+                    return XMLHelper.readStrToDOM4J(appRes.getDataAsString());
+
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    throw new RuntimeException(ex);
+                }
+            } else
+            {
+                throw new RuntimeException("MimeType was not 'text/xml'");
+            }
+        } else
+        {
+            throw new RuntimeException("Couldn't find ["+name+"]");
+        }
+        //return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppResourceDefaultMgr#getResourceByMimeType(java.lang.String)
+     */
+    public List<AppResourceIFace> getResourceByMimeType(final String mimeType)
+    {
+        List<AppResourceIFace> list = new ArrayList<AppResourceIFace>();
+        for (AppResourceDefault appResDef : appResourceList)
+        {
+            for (AppResourceIFace appRes : appResDef.getAppResources())
+            {
+                log.info("["+appRes.getMimeType()+"]["+mimeType+"]");
+                if (appRes.getMimeType().equals(mimeType))
+                {
+                    list.add(appRes);
+                }
+            }
+        }
+        return list;
+    }
+
+
+
+    //----------------------------------------------------------------
+    //-- Inner Classes
+    //----------------------------------------------------------------
+    class AppResourceMgr
+    {
+        protected File locationDir;
+        protected Hashtable<String, AppResource> appResources = null;
+
+        public AppResourceMgr(final File file)
+        {
+            locationDir = file;
+            appResources = new Hashtable<String, AppResource>();
+            init(locationDir);
+
+        }
+
+        public AppResource getAppResource(final String name)
+        {
+
+            return appResources.get(name);
+        }
+
+        /**
+         * @param appRes
+         */
+        public void addAppRes(final AppResource appRes)
+        {
+            appResources.put(appRes.getName(), appRes);
+        }
+
+        /**
+         * Reads in the App Resource for a discipline
+         */
+        protected void init(final File file)
+        {
+            if (file.exists())
+            {
+                try
+                {
+                    Element root = XMLHelper.readFileToDOM4J(new FileInputStream(new File(file.getAbsoluteFile() + File.separator + "app_resources.xml")));
+                    if (root != null)
+                    {
+                        for ( Iterator i = root.elementIterator( "file" ); i.hasNext(); )
+                        {
+                            Element fileElement = (Element) i.next();
+                            String  name        = getAttr(fileElement, "name", null);
+                            if (appResources.get(name) == null)
+                            {
+                                Integer level    = getAttr(fileElement, "level", 0);
+                                String mimeType  = getAttr(fileElement, "mimetype", null);
+                                String desc      = getAttr(fileElement, "description", null);
+                                String fileName  = getAttr(fileElement, "file", null);
+                                String metaData  = getAttr(fileElement, "metadata", null);
+
+                                // these can go away once we validate the XML
+                                if (level == null)
+                                {
+                                    throw new RuntimeException("AppResource level cannot be null!");
+                                }
+                                if (StringUtils.isEmpty(mimeType))
+                                {
+                                    throw new RuntimeException("AppResource mimeType cannot be null!");
+                                }
+                                if (StringUtils.isEmpty(fileName))
+                                {
+                                    throw new RuntimeException("AppResource file cannot be null!");
+                                }
+
+                                File resFile = new File(file.getAbsoluteFile() + File.separator + fileName);
+                                if (resFile == null || !resFile.exists())
+                                {
+                                    throw new RuntimeException("AppResource file cannot be found at["+resFile.getAbsolutePath()+"]");
+
+                                }
+
+                                AppResource appRes = new AppResource();
+                                appRes.initialize();
+                                appRes.setLevel(level.shortValue());
+                                appRes.setName(name);
+                                appRes.setMimeType(mimeType);
+                                appRes.setDescription(desc);
+                                appRes.setMetaData(metaData);
+
+                                appRes.setFileName(resFile.getAbsolutePath());
+
+
+                                appResources.put(name, appRes);
+
+                            } else
+                            {
+                                log.error("AppResource Name["+name+"] is in use.");
+                            }
+                        }
+                    } else
+                    {
+                        String msg = "The root element for the document was null!";
+                        log.error(msg);
+                        throw new ConfigurationException(msg);
+                    }
+
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    log.error(ex);
+                }
+            }
+        }
+
+        /**
+         * Returns a list of all the AppResources
+         * @return a list of all the AppResources
+         */
+        public List<AppResource> getAppResources()
+        {
+            return Collections.list(appResources.elements());
+        }
+
+    }
+
+
+}

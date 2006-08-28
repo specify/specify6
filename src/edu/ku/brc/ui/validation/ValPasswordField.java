@@ -33,10 +33,10 @@ import org.apache.commons.lang.StringUtils;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
-import edu.ku.brc.ui.UICacheManager;
 
 /**
  * A JTextControl that implements UIValidatable for participating in validation
@@ -101,7 +101,7 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
             valtextcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
             requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
-        UICacheManager.getAppPrefs().addChangeListener("ui.formatting.requiredfieldcolor", this);
+        AppPreferences.getInstance().addChangeListener("ui.formatting.requiredfieldcolor", this);
 
         addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e)
@@ -190,7 +190,7 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
      */
     public void cleanUp()
     {
-        UICacheManager.getAppPrefs().removeChangeListener("ui.formatting.requiredfieldcolor", this);
+        AppPreferences.getInstance().removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
 
     //--------------------------------------------------------

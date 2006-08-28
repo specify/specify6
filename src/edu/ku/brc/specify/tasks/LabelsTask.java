@@ -24,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -40,10 +41,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListModel;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.opensymphony.oscache.util.StringUtil;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxIFace;
@@ -54,7 +59,6 @@ import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.plugins.MenuItemDesc;
 import edu.ku.brc.af.plugins.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
-import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.subpane.LabelsPane;
 import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
@@ -138,14 +142,37 @@ public class LabelsTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#initialize()
      */
-    public void initialize()//List<TaskCommandDef> commands)
+    public void initialize()
     {
         if (!isInitialized)
         {
             super.initialize(); // sets isInitialized to false
 
             NavBox navBox = new NavBox(name);
-
+            
+            for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType("jrxml/label"))
+            {
+                Map<String, String> params = new HashMap<String, String>();
+                
+                String metaData = ap.getMetaData();
+                for (Object arg : StringUtil.split(metaData, ';'))
+                {
+                    if (StringUtils.isNotEmpty((String)arg))
+                    {
+                        List pair = StringUtil.split((String)arg, '=');
+                        if (pair.size() == 2)
+                        {
+                            params.put((String)pair.get(0), (String)pair.get(1));
+                            log.info("["+(String)pair.get(0)+"]["+(String)pair.get(1)+"]");
+                        }
+                    }
+                }
+                params.put("title", ap.getDescription());
+                params.put("file", ap.getName());
+                
+                commands.add(new TaskCommandDef(ap.getDescription(), name, params));
+            }
+            
             // Then add
             if (commands != null)
             {
@@ -162,6 +189,7 @@ public class LabelsTask extends BaseTask
                     }
                 }
             }
+
             //addToNavBoxAndRegisterAsDroppable(list, navBox, NavBox.createBtn("Fish Label Example", name, IconManager.IconSize.Std16, new DisplayAction("fish_label.jrxml", "Fish Label Example")), null);
             //addToNavBoxAndRegisterAsDroppable(list, navBox, NavBox.createBtn("Lichens Label Example", name, IconManager.IconSize.Std16, new DisplayAction("lichens_label.jrxml", "Lichens Label Example")), "lichens_label.jrxml");
 
@@ -175,7 +203,6 @@ public class LabelsTask extends BaseTask
 
     }
 
-
     /**
      * Performs a command (to create a label)
      * @param labelName the name of lable (the file name)
@@ -184,8 +211,18 @@ public class LabelsTask extends BaseTask
      */
     public void doLabels(final String labelName, final String labelTitle, final RecordSet recordSet)
     {
-        LabelsPane labelsPane = new LabelsPane(labelTitle, this);
-        SubPaneMgr.getInstance().addPane(labelsPane);
+        LabelsPane labelsPane;
+        if (starterPane == null)
+        {
+            labelsPane = new LabelsPane(labelTitle, this);
+            SubPaneMgr.getInstance().addPane(labelsPane);
+            
+        } else
+        {
+            labelsPane  = (LabelsPane)starterPane;
+            SubPaneMgr.getInstance().renamePane(labelsPane, labelTitle);
+            starterPane = null;
+        }
         labelsPane.createReport(labelName, recordSet);
 
     }
@@ -221,7 +258,10 @@ public class LabelsTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        starterPane = new SimpleDescPane(name, this, "Welcome to Specify's Label Maker");
+        //starterPane = new SimpleDescPane(name, this, "Welcome to Specify's Label Maker");
+        LabelsPane labelsPane = new LabelsPane(name, this);
+        labelsPane.setLabelText("Welcome to Specify's Label Maker");
+        starterPane = labelsPane;
         return starterPane;
     }
 

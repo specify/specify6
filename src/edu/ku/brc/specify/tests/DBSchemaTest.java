@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Set;
 
 import junit.framework.TestCase;
@@ -185,7 +186,7 @@ public class DBSchemaTest extends TestCase
             UserGroup userGroup = ObjCreatorHelper.createUserGroup("Fish");
             assertNotNull(userGroup);
     
-            SpecifyUser user = ObjCreatorHelper.createSpecifyUser("rods", "rods@ku.edu", (short)0, userGroup);
+            SpecifyUser user = ObjCreatorHelper.createSpecifyUser("rods", "rods@ku.edu", (short)0, userGroup, "CollectionManager");
             assertNotNull(user);
             
             HibernateUtil.commitTransaction();
@@ -226,7 +227,7 @@ public class DBSchemaTest extends TestCase
         assertNotNull(dataType);
 
         // This call auto creates a TaxonTreeDef and attaches it to the ColObjDef
-        assertTrue(CreateTestDatabases.createCollectionObjDef(dataType, user, "Fish"));
+        assertNotNull(CreateTestDatabases.createCollectionObjDef(dataType, user, "Fish", "fish"));
     }
 
 
@@ -326,7 +327,8 @@ public class DBSchemaTest extends TestCase
     public void testLocality()
     {
         log.info("Create Locality");
-        assertTrue(createMultipleLocalities());
+        List<Locality> localities = createMultipleLocalities();
+        assertTrue(localities.size() > 0);
     }
 
     /**
@@ -344,7 +346,7 @@ public class DBSchemaTest extends TestCase
             CollectionObjDef collectionObjDef = (CollectionObjDef)getDBObject(CollectionObjDef.class);
             assertNotNull(collectionObjDef);
 
-            CatalogSeries catalogSeries = createCatalogSeries("KUFSH", "Fish");
+            CatalogSeries catalogSeries = createCatalogSeries("KUFSH", "Fish", collectionObjDef);
             
 
             catalogSeries.getCollectionObjDefItems().add(collectionObjDef);

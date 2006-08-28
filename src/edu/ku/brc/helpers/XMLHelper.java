@@ -16,8 +16,16 @@ package edu.ku.brc.helpers;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.Writer;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -78,7 +86,7 @@ public class XMLHelper
        //saxReader.setProperty("http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation",
        //                   (FormViewFactory.class.getResource("../form.xsd")).getPath());
 
-       org.dom4j.Document document = saxReader.read( data );
+       org.dom4j.Document document = saxReader.read( new StringReader(data) );
        return document.getRootElement();
    }
 
@@ -169,5 +177,84 @@ public class XMLHelper
        return isNotEmpty(str) ? Boolean.parseBoolean(str.toLowerCase()) : defValue;
    }
    
+   /**
+    * Returns the contents of a file as a string
+    * @param file the file to be read
+    * @return the contents as a string
+    */
+   public static String getContents(final File file) 
+   {
+       StringBuilder   contents = new StringBuilder();
+       BufferedReader input    = null;
+       try 
+       {
+           String eol = System.getProperty("line.separator");
+           input = new BufferedReader(new FileReader(file));
+           
+           String line = null;
+           while (( line = input.readLine()) != null)
+           {
+               contents.append(line);
+               contents.append(eol);
+           }
+       } catch (FileNotFoundException ex) 
+       {
+           ex.printStackTrace();
+         
+       } catch (IOException ex)
+       {
+           ex.printStackTrace();
+         
+       } finally 
+       {
+           try 
+           {
+               if (input!= null) 
+               {
+                   input.close();
+               }
+           } catch (IOException ex) 
+           {
+               ex.printStackTrace();
+           }
+       }
+       return contents.toString();
+   }
+   
+   /**
+    * Writes out the contents.
+    * @param outFile outFile
+    * @param contents contents
+    * @throws FileNotFoundException FileNotFoundException
+    * @throws IOException IOException
+    */
+   public static void setContents(final File outFile, final String contents) throws FileNotFoundException, IOException
+   {
+       if (outFile == null) { throw new IllegalArgumentException("File should not be null."); }
+       if (outFile.exists())
+       {
+           if (!outFile.isFile()) 
+           { 
+               throw new IllegalArgumentException("Should not be a directory: "+ outFile); 
+           }
+           if (!outFile.canWrite()) 
+           { 
+               throw new IllegalArgumentException("File cannot be written: "+ outFile); 
+           }
+       }
 
+       Writer output = null;
+       try
+       {
+           output = new BufferedWriter(new FileWriter(outFile));
+           output.write(contents);
+           
+       } finally
+       {
+           if (output != null)
+           {
+               output.close();
+           }
+       }
+   }
 }

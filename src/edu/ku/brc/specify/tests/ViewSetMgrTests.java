@@ -22,9 +22,9 @@ import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.prefs.AppPrefsMgr;
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.SpecifyAppPrefs;
 import edu.ku.brc.specify.ui.DBObjDialogFactory;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.ViewSetMgr;
@@ -57,10 +57,16 @@ public class ViewSetMgrTests extends TestCase
         UICacheManager.getInstance(); // initializes it first thing
         if (UICacheManager.getAppName() == null) // this is needed because the setUp gets run separately for each test
         {
+            System.setProperty("edu.ku.brc.af.core.AppContextMgrFactory", "edu.ku.brc.specify.config.SpecifyAppContextMgr");
+            System.setProperty("AppPrefsIOClassName", "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");
+            
+            UICacheManager.getInstance(); // initializes it first thing
             UICacheManager.setAppName("Specify");
-    
-            UICacheManager.setAppPrefs(AppPrefsMgr.getInstance().load(UICacheManager.getDefaultWorkingPath()));
-            SpecifyAppPrefs.initialPrefs();
+
+            // Load Local Prefs
+            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+            localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
+            localPrefs.load();
     
             FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath());
     
@@ -75,6 +81,7 @@ public class ViewSetMgrTests extends TestCase
             try
             {
                 FileUtils.deleteDirectory(srcDir);
+                
             } catch (IOException ex) {}
         }
         
@@ -224,10 +231,10 @@ public class ViewSetMgrTests extends TestCase
         ViewSetMgrManager.pushViewMgr(new ViewSetMgr(new File(srcDirName)));
         
         // Check a Fish View
-        assertNotNull(ViewSetMgrManager.getView("Fish Views", "CollectionObject"));
+        assertNotNull(AppContextMgr.getInstance().getView("Fish Views", "CollectionObject"));
         
         // Now Check a backstop view
-        assertNotNull(ViewSetMgrManager.getView("Search", "AgentSearch"));
+        assertNotNull(AppContextMgr.getInstance().getView("Search", "AgentSearch"));
     }
 
 }

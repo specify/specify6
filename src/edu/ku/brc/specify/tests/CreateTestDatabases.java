@@ -1,3 +1,17 @@
+/* This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package edu.ku.brc.specify.tests;
 
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createAccession;
@@ -36,25 +50,36 @@ import static edu.ku.brc.specify.tests.ObjCreatorHelper.createTaxonTreeDefItem;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.createUserGroup;
 import static edu.ku.brc.specify.tests.ObjCreatorHelper.setSession;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.helpers.UIHelper;
+import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.Specify;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgents;
 import edu.ku.brc.specify.datamodel.AccessionAuthorizations;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.AppResourceDefault;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
@@ -86,6 +111,9 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.UserGroup;
+import edu.ku.brc.specify.datamodel.ViewSetObj;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UICacheManager;
 
 public class CreateTestDatabases
 {
@@ -160,7 +188,7 @@ public class CreateTestDatabases
             // That seems like a big task for 5 lines of code.
             Geography earth        = createGeography(geoTreeDef, null, "Earth", planet.getRankId());
             Geography northAmerica = createGeography(geoTreeDef, earth, "North America", cont.getRankId());
-            @SuppressWarnings("unused") 
+            @SuppressWarnings("unused")
             Geography us           = createGeography(geoTreeDef, northAmerica, "United States", country.getRankId());
 
             Geography[] states = addGeographyKids(geoTreeDef, northAmerica, new String[] {"Kansas", "Iowa", "Nebraska"}, state.getRankId());
@@ -260,7 +288,7 @@ public class CreateTestDatabases
             GeologicTimePeriod level1 = ObjCreatorHelper.createGeologicTimePeriod(treeDef, level0, "Some Really Big Time Period", defItemLevel0.getRankId());
             GeologicTimePeriod level2 = ObjCreatorHelper.createGeologicTimePeriod(treeDef, level1, "A Slightly Smaller Time Period", defItemLevel0.getRankId());
             GeologicTimePeriod level3 = ObjCreatorHelper.createGeologicTimePeriod(treeDef, level2, "Yesterday", defItemLevel0.getRankId());
-            
+
             colObjDef.setGeologicTimePeriodTreeDef(treeDef);
             session.saveOrUpdate(colObjDef);
 
@@ -463,8 +491,10 @@ public class CreateTestDatabases
     /**
      * @return true on success
      */
-    public static boolean createMultipleLocalities()
+    public static List<Locality> createMultipleLocalities()
     {
+        List<Locality> list = new ArrayList<Locality>();
+
         log.info("Creating Multiple Localities");
         try
         {
@@ -472,12 +502,15 @@ public class CreateTestDatabases
             setSession(session);
             HibernateUtil.beginTransaction();
 
-            session.save(createLocality("This is the place", (Geography)getDBObject(Geography.class, 6)));
-            session.save(createLocality("My Private Forest", (Geography)getDBObject(Geography.class, 10)));
+            Locality locality = createLocality("This is the place", (Geography)getDBObject(Geography.class, 6));
+            list.add(locality);
+            session.save(locality);
+
+            locality = createLocality("My Private Forest", (Geography)getDBObject(Geography.class, 10));
+            list.add(locality);
+            session.save(locality);
 
             HibernateUtil.commitTransaction();
-
-            return true;
 
         } catch (Exception ex)
         {
@@ -485,7 +518,7 @@ public class CreateTestDatabases
             ex.printStackTrace();
             HibernateUtil.rollbackTransaction();
         }
-        return false;
+        return list;
     }
 
     /**
@@ -505,8 +538,8 @@ public class CreateTestDatabases
                 "156 Inverness",      "Lawrence",    "KS",   "USA",         "66045",
                 "100 Main Street",    "Topeka",      "KS",   "USA",         "66099",
         };
-        
-        
+
+
 
         Address[] addrs = new Address[addresses.length / 5];
         for (int i = 0; i < agents.length; i += 5)
@@ -669,9 +702,16 @@ public class CreateTestDatabases
     }
 
 
-    public static boolean createCollectionObjDef(final DataType    dataType,
-                                                 final SpecifyUser user,
-                                                 final String      name)
+    /**
+     * @param dataType
+     * @param user
+     * @param name
+     * @return
+     */
+    public static CollectionObjDef createCollectionObjDef(final DataType    dataType,
+                                                          final SpecifyUser user,
+                                                          final String      name,
+                                                          final String      disciplineName)
     {
         try
         {
@@ -687,7 +727,7 @@ public class CreateTestDatabases
             HibernateUtil.beginTransaction();
 
             // Create Collection Object Definition
-            CollectionObjDef colObjDef = ObjCreatorHelper.createCollectionObjDef(name, dataType, user, taxonTreeDef);
+            CollectionObjDef colObjDef = ObjCreatorHelper.createCollectionObjDef(name, disciplineName, dataType, user, taxonTreeDef);
             session.save(colObjDef);
 
             // Update the SpecifyUser to own the ColObjDef
@@ -696,7 +736,7 @@ public class CreateTestDatabases
 
             HibernateUtil.commitTransaction();
 
-            return true;
+            return colObjDef;
 
         } catch (Exception ex)
         {
@@ -704,7 +744,7 @@ public class CreateTestDatabases
             ex.printStackTrace();
             HibernateUtil.rollbackTransaction();
         }
-        return false;
+        return null;
     }
 
 
@@ -712,7 +752,7 @@ public class CreateTestDatabases
      * @param disciplineName fish, birds, bees etc
      * @return true on success
      */
-    public static boolean createSingleDiscipline(final String disciplineName)
+    public static boolean createSingleDiscipline(final String colObjDefName, final String disciplineName)
     {
         BasicSQLUtils.cleanAllTables();
 
@@ -723,15 +763,15 @@ public class CreateTestDatabases
             HibernateUtil.beginTransaction();
 
             UserGroup        userGroup        = createUserGroup(disciplineName);
-            SpecifyUser      user             = createSpecifyUser("John Doe", "jd@email.com", (short)0, userGroup);
+            SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short)0, userGroup, "CollectionManager");
             DataType         dataType         = createDataType(disciplineName);
 
             createMultipleLocalities();
 
             HibernateUtil.commitTransaction();
 
-            createCollectionObjDef(dataType, user, disciplineName); // creates TaxonTreeDef
-            CollectionObjDef collectionObjDef = (CollectionObjDef)getDBObject(CollectionObjDef.class);
+
+            CollectionObjDef collectionObjDef = createCollectionObjDef(dataType, user, colObjDefName, disciplineName); // creates TaxonTreeDef
 
             createSimpleGeography(collectionObjDef, "Geography");
             createSimpleTaxon(collectionObjDef.getTaxonTreeDef());
@@ -740,7 +780,7 @@ public class CreateTestDatabases
             createMultipleAgents();
 
             HibernateUtil.beginTransaction();
-            CatalogSeries catalogSeries = createCatalogSeries("KUFSH", "Fish");
+            CatalogSeries catalogSeries = createCatalogSeries("KUFSH", "Fish", collectionObjDef);
 
             CollectionObjDef colObjDef = (CollectionObjDef)getDBObject(CollectionObjDef.class);
             Locality locality = (Locality)getDBObject(Locality.class);
@@ -859,6 +899,205 @@ public class CreateTestDatabases
     }
 
     /**
+     * @param disciplineName fish, birds, bees etc
+     * @return true on success
+     */
+    public static boolean createMultiDiscipline(final String[] colObjDefNames,
+                                                final String[] disciplineNames,
+                                                final String[] catalogSeriesPrefix,
+                                                final String[] catalogSeriesNames,
+                                                final int[]    userSwitch,
+                                                final String   dataTypeStr)
+    {
+        BasicSQLUtils.cleanAllTables();
+
+         try
+         {
+             Session session = HibernateUtil.getCurrentSession();
+             setSession(session);
+             UserGroup        userGroup  = createUserGroup("NHM");
+             SpecifyUser      rods       = createSpecifyUser("rods", "rods@ku.edu", (short)0, userGroup, "Collection Manager");
+             SpecifyUser      josh       = createSpecifyUser("josh", "jds@ku.edu",  (short)0, userGroup, "Collection Manager");
+             DataType         dataType   = createDataType(dataTypeStr);
+
+             List<CatalogSeries>                 catalogSeriesList = new ArrayList<CatalogSeries>();
+             Hashtable<String, CollectionObjDef> colObjDefHash     = new Hashtable<String, CollectionObjDef>();
+             //Hashtable<String, CatalogSeries>    catSeriesHash     = new Hashtable<String, CatalogSeries>();
+
+             int inx = 0;
+             for (String colObjName : colObjDefNames)
+             {
+                 HibernateUtil.beginTransaction();
+
+                 List<Locality> localities = createMultipleLocalities();
+
+                 HibernateUtil.commitTransaction();
+
+                 CollectionObjDef colObjDef = colObjDefHash.get(colObjName);
+                 if (colObjDef == null)
+                 {
+                     colObjDef = createCollectionObjDef(dataType, userSwitch[inx] == 1 ? josh : rods, colObjName, disciplineNames[inx]); // creates TaxonTreeDef
+                     colObjDefHash.put(colObjDef.getName(), colObjDef);
+                 }
+
+                 createSimpleGeography(colObjDef, "Geography");
+                 createSimpleTaxon(colObjDef.getTaxonTreeDef());
+                 createSimpleLocation(colObjDef, "Location");
+
+                 createMultipleAgents();
+
+                 HibernateUtil.beginTransaction();
+                 CatalogSeries catalogSeries = createCatalogSeries(catalogSeriesPrefix[inx], catalogSeriesNames[inx], colObjDef);
+
+                 catalogSeriesList.add(catalogSeries);
+
+                 String[] agentNames = { "Darwin", "Agassiz", "Bentley", "Stewart", "Kumin", "Beach" };
+                 Agent[] agents = new Agent[agentNames.length];
+                 for (int i = 0; i < agents.length; i++)
+                 {
+                     agents[i] = getAgentByLastName(agentNames[i]);
+                 }
+
+                 // Create Collecting Event
+                 CollectingEvent colEv = createCollectingEvent(localities.get(0),
+                         new Collectors[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
+
+                 // Create AttributeDef for Collecting Event
+                 AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", null);
+
+                 // Create CollectingEventAttr
+                 CollectingEventAttr cevAttr = createCollectingEventAttr(colEv, cevAttrDef, "Clinton Park", null);
+
+                 // Create Collection Object
+                 Object[]  values = {1001010.1f, "RCS101", agents[0], 5,
+                                     1101011.1f, "RCS102", agents[1], 20,
+                                     1201012.1f, "RCS103", agents[2], 15,
+                                     1301013.1f, "RCS104", agents[3], 25,
+                                     1401014.1f, "RCS105", agents[4], 35,
+                                     1501015.1f, "RCS106", agents[5], 45,
+                                     1601016.1f, "RCS107", agents[0], 55,
+                                     1701017.1f, "RCS108", agents[1], 65};
+                 CollectionObject[] colObjs = new CollectionObject[values.length/4];
+                 for (int i=0;i<values.length;i+=4)
+                 {
+                     colObjs[i/4] = createCollectionObject((Float)values[i],
+                                                           (String)values[i+1],
+                                                           null,
+                                                           (Agent)values[i+2],
+                                                           catalogSeries,
+                                                           colObjDef,
+                                                           (Integer)values[+3],
+                                                           colEv);
+                 }
+
+                 // Create AttributeDef for Collection Object
+                 AttributeDef colObjAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "MoonPhase", null);
+
+                 // Create CollectionObjectAttr
+                 CollectionObjectAttr colObjAttr = createCollectionObjectAttr(colObjs[0], colObjAttrDef, "Full", null);
+
+                 String[] speciesNames = {"asprella", "beanii", "bifascia", "clara", "meridiana", "pellucida", "vivax",
+                                          "bartholomaei", "caballus", "caninus", "crysos", "dentex", "hippos", "latus"};
+                 Taxon[] t = new Taxon[speciesNames.length];
+                 for (int i = 0; i < t.length; i++)
+                 {
+                     t[i] = getTaxonByName(speciesNames[i]);
+                 }
+
+                 HibernateUtil.commitTransaction();
+
+                 HibernateUtil.beginTransaction();
+
+                 int agentInx = 0;
+                 int taxonInx = 0;
+                 // Create DeterminationStatus
+                 DeterminationStatus current    = createDeterminationStatus("Current",    "Test Status");
+                 DeterminationStatus notCurrent = createDeterminationStatus("Not current", "Test Status");
+
+                 HibernateUtil.commitTransaction();
+
+                 HibernateUtil.beginTransaction();
+
+                 // Create Determination
+                 for (int i=0;i<colObjs.length;i++)
+                 {
+                     for (int j=0;j<i+2;j++)
+                     {
+                         Calendar cal = Calendar.getInstance();
+                         cal.clear();
+                         cal.set(1990-i, 11-i, 28-(i+j));
+                         DeterminationStatus status = (j == 0) ? current : notCurrent;
+                         createDetermination(colObjs[i], agents[agentInx % agents.length], t[taxonInx % t.length], status, cal);
+                         agentInx++;
+                         taxonInx++;
+                     }
+                 }
+                 HibernateUtil.commitTransaction();
+
+                 HibernateUtil.beginTransaction();
+
+                 // Create Preparation Type
+                 PrepType prepType  = createPrepType("Skeleton");
+                 PrepType prepType2 = createPrepType("C&S");
+
+                 Location location = (Location)getDBObject(Location.class, 6); // Shelf 2
+
+                 // Create Preparation for each CollectionObject
+                 agentInx = 3; // arbitrary
+                 Preparation[] preps = new Preparation[colObjs.length];
+                 for (int i=0;i<preps.length;i++)
+                 {
+                     preps[i] = createPreparation(prepType,  agents[agentInx % agents.length], colObjs[i], location, 10+i);
+                     agentInx++;
+                 }
+
+                 // Create AttributeDef for Preparation
+                 AttributeDef prepAttrDefSize = createAttributeDef(AttributeIFace.FieldType.DoubleType, "size", prepType);
+                 AttributeDef prepAttrDefSex  = createAttributeDef(AttributeIFace.FieldType.StringType, "sex", prepType);
+
+                 // Create PreparationAttr
+                 for (int i=0;i<preps.length;i++)
+                 {
+                     createPreparationAttr(prepAttrDefSize, preps[i], null, 100.0);
+                     createPreparationAttr(prepAttrDefSex,  preps[i], i % 2 == 0 ? "Male" : "Female", null);
+                 }
+
+                 HibernateUtil.commitTransaction();
+
+                 log.info("For CatalogSeries "+catalogSeries.getSeriesName()+"  ColObjDefs:");
+                 for (CollectionObjDef cod : catalogSeries.getCollectionObjDefItems())
+                 {
+                     log.info("    "+cod.getName());
+                 }
+
+                 log.info("List all the Catalog Series for any ColObjDefs attahced to the current Catalog Series:");
+                 for (CollectionObjDef cod : catalogSeries.getCollectionObjDefItems())
+                 {
+                     log.info("For ColObjDefs "+cod.getName()+"  CatalogSeries:");
+                     for (CatalogSeries cs : cod.getCatalogSeries())
+                     {
+                         log.info("    "+cs.getSeriesName());
+                     }
+                 }
+                 log.info("---- Done ----");
+                 log.info(" ");
+                 inx++;
+             }
+
+             log.info("Done creating all Disciplines");
+
+        } catch (Exception ex)
+        {
+            log.error("******* " + ex);
+            ex.printStackTrace();
+            HibernateUtil.rollbackTransaction();
+        }
+
+        return true;
+    }
+
+
+    /**
      * Return a taxon by name
      * @param name the name
      * @return the taxon object
@@ -896,6 +1135,9 @@ public class CreateTestDatabases
         return (Agent)list.get(0);
     }
 
+    /**
+     * @return
+     */
     public static boolean createTwoColObjDefOneCatSeries()
     {
         BasicSQLUtils.cleanAllTables();
@@ -907,17 +1149,15 @@ public class CreateTestDatabases
             HibernateUtil.beginTransaction();
 
             UserGroup        userGroup        = createUserGroup("MyGroup");
-            SpecifyUser      user             = createSpecifyUser("John Doe", "jd@email.com", (short)0, userGroup);
+            SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short)0, userGroup, "CollectionManager");
             DataType         dataType         = createDataType("Animal");
 
             createMultipleLocalities();
 
             HibernateUtil.commitTransaction();
 
-            createCollectionObjDef(dataType, user, "Birds"); // creates TaxonTreeDef
-            createCollectionObjDef(dataType, user, "Bees");  // creates TaxonTreeDef
-            CollectionObjDef colObjDefBirds = (CollectionObjDef)getDBObject(CollectionObjDef.class, 0);
-            CollectionObjDef colObjDefBees  = (CollectionObjDef)getDBObject(CollectionObjDef.class, 1);
+            CollectionObjDef colObjDefBirds = createCollectionObjDef(dataType, user, "Birds", "birds"); // creates TaxonTreeDef
+            CollectionObjDef colObjDefBees  = createCollectionObjDef(dataType, user, "Bees", "ento");  // creates TaxonTreeDef
 
             createSimpleGeography(colObjDefBirds, "Geography");
             createSimpleTaxon(colObjDefBirds.getTaxonTreeDef());
@@ -930,7 +1170,7 @@ public class CreateTestDatabases
             createMultipleAgents();
 
             HibernateUtil.beginTransaction();
-            CatalogSeries catalogSeries = createCatalogSeries("KUBB", "BirdsBees");
+            CatalogSeries catalogSeries = createCatalogSeries("KUBB", "BirdsBees", new CollectionObjDef[] {colObjDefBirds, colObjDefBees});
 
             Locality locality = (Locality)getDBObject(Locality.class);
 
@@ -1043,7 +1283,7 @@ public class CreateTestDatabases
             HibernateUtil.beginTransaction();
 
             UserGroup        userGroup        = createUserGroup(name);
-            SpecifyUser      user             = createSpecifyUser("John Doe", "jd@email.com", (short)0, userGroup);
+            SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short)0, userGroup, "CollectionManager");
 
             createMultipleAgents();
 
@@ -1080,7 +1320,7 @@ public class CreateTestDatabases
      * @param disciplineName fish, birds, bees etc
      * @return true on success
      */
-    public static boolean createPlantDatabaseWithContainers(final String disciplineName)
+    public static boolean createPlantDatabaseWithContainers(final String colObjDefName, final String disciplineName)
     {
         BasicSQLUtils.cleanAllTables();
 
@@ -1091,16 +1331,15 @@ public class CreateTestDatabases
             HibernateUtil.beginTransaction();
 
             UserGroup        userGroup        = createUserGroup(disciplineName);
-            SpecifyUser      user             = createSpecifyUser("John Doe", "jd@email.com", (short)0, userGroup);
+            SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short)0, userGroup, "CollectionManager");
             DataType         dataType         = createDataType(disciplineName);
 
-            createMultipleLocalities();
+            List<Locality> localities = createMultipleLocalities();
 
             HibernateUtil.commitTransaction();
 
             // These do there own Transaction
-            createCollectionObjDef(dataType, user, disciplineName); // creates TaxonTreeDef
-            CollectionObjDef collectionObjDef = (CollectionObjDef)getDBObject(CollectionObjDef.class);
+            CollectionObjDef collectionObjDef = createCollectionObjDef(dataType, user, colObjDefName, disciplineName); // creates TaxonTreeDef
 
             createSimpleGeography(collectionObjDef, "Geography");
             createSimpleTaxon(collectionObjDef.getTaxonTreeDef());
@@ -1112,10 +1351,9 @@ public class CreateTestDatabases
             session = HibernateUtil.getCurrentSession();
             setSession(session);
             HibernateUtil.beginTransaction();
-            CatalogSeries catalogSeries = createCatalogSeries("KUFSH", "Fish");
+            CatalogSeries catalogSeries = createCatalogSeries("KUFSH", "Fish", collectionObjDef);
 
             CollectionObjDef colObjDef = (CollectionObjDef)getDBObject(CollectionObjDef.class);
-            Locality locality = (Locality)getDBObject(Locality.class);
 
             String[] agentNames = { "Darwin", "Agassiz", "Bentley", "Stewart", "Kumin", "Beach" };
             Agent[] agents = new Agent[agentNames.length];
@@ -1125,7 +1363,7 @@ public class CreateTestDatabases
             }
 
             // Create Collecting Event
-            CollectingEvent colEv = createCollectingEvent(locality,
+            CollectingEvent colEv = createCollectingEvent(localities.get(0),
                     new Collectors[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
 
             // Create AttributeDef for Collecting Event
@@ -1253,17 +1491,257 @@ public class CreateTestDatabases
     }
 
 
+    public static void copyAppResources(final String databaseName,
+                                        final String userName,
+                                        final String catSeriesName)
+    {
+        SpecifyUser user = null;
+        if (userName != null)
+        {
+            Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(SpecifyUser.class);
+            criteria.add(Expression.eq("name", userName));
+            List list = criteria.list();
+
+            if (list.size() == 1)
+            {
+                user = (SpecifyUser)list.get(0);
+            }
+        }
+
+        String userType = user.getUserType();
+        log.info("User["+user.getName()+"] Type["+userType+"]");
+
+        userType = StringUtils.replace(userType, " ", "").toLowerCase();
+        log.info("Def Type["+userType+"]");
+
+        CatalogSeries catalogSeries;
+        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CatalogSeries.class);
+        criteria.add(Expression.eq("seriesName", catSeriesName));
+        List list = criteria.list();
+        if (list.size() == 1)
+        {
+            catalogSeries = (CatalogSeries)list.get(0);
+
+        } else
+        {
+            throw new RuntimeException("Problems with CatalogSeries["+catSeriesName+"] for user["+user.getName()+"]");
+        }
+
+        // Right now this only deals with one ColObjDef per CatalogSeries
+
+        CollectionObjDef colObjDef = catalogSeries.getCollectionObjDefItems().iterator().next();
+        String disciplineName = colObjDef.getDiscipline();
+        log.info("ColObjDef Name["+colObjDef.getName()+"] ["+disciplineName+"]");
+
+        try
+        {
+
+            Session session = HibernateUtil.getCurrentSession();
+
+            HibernateUtil.beginTransaction();
+
+            AppResourceDefault appResDef = new AppResourceDefault();
+            appResDef.initialize();
+            appResDef.setCatalogSeries(catalogSeries);
+            appResDef.setCollectionObjDef(colObjDef);
+            appResDef.setSpecifyUser(user);
+
+            log.info("Adding AppResDef ["+user.getName()+"]["+colObjDef.getName()+"]["+catalogSeries.getSeriesName()+"]");
+
+            ViewSetObj vso = new ViewSetObj();
+            vso.initialize();
+
+            String fileName = disciplineName + ".views.xml";
+            String defPath = XMLHelper.getConfigDirPath(disciplineName + File.separator +
+                                                        userType + File.separator +
+                                                        fileName);
+            log.info("Path["+defPath+"]");
+
+            vso.setFileName(defPath);
+            String dataStr = vso.getDataAsString();
+            vso.setFileName(null);
+            vso.setDataAsString(dataStr);
+            vso.setLevel((short)0);
+            vso.setName(fileName);
+            vso.getAppResourceDefaults().add(appResDef);
+            appResDef.getViewSets().add(vso);
+
+            log.info("Adding ViewSetObj ["+vso.getName()+"]");
+
+            //session.saveOrUpdate(vso.getData());
+            session.persist(vso);
+            session.saveOrUpdate(appResDef);
+
+            HibernateUtil.commitTransaction();
+
+            log.info("Done ");
+
+        } catch (Exception ex)
+        {
+            log.error("******* " + ex);
+            ex.printStackTrace();
+            HibernateUtil.rollbackTransaction();
+        }
+
+    }
+
+
 
     public static void main(String args[]) throws Exception
     {
-        DBConnection dbConn = DBConnection.getInstance();
-        dbConn.setUsernamePassword("rods", "rods");
-        dbConn.setDriver("com.mysql.jdbc.Driver");
-        dbConn.setConnectionStr("jdbc:mysql://localhost/");
-        dbConn.setDatabaseName("fish");
+        String databaseName = "fish";
+        String userName = "rods";
+        String password = "rods";
 
-        createSingleDiscipline("Fish");
-        
+        if (UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", databaseName, "jdbc:mysql://localhost/"+databaseName, userName, password))
+        {
+            //createSingleDiscipline("Fish");
+
+            boolean build = false;
+            if (build)
+            {
+                createMultiDiscipline(new String[] {"fish", "fish",        "Birds", "Bees"},  // ColObjDef Names
+                                      new String[] {"fish", "fish",        "birds", "ento"},  // Discipline Names
+                                      new String[] {"FSH",  "FTIS",        "BRD",   "BEE"},   // CatalogSeries Prefix
+                                      new String[] {"Fish", "Fish Tissue", "Birds", "Bees"},  // CatalogSeries Series
+                                      new int[]    {1,       1,            0,        0},
+                                      "Animal");
+            }
+
+            // Copy Records Over as if they have editted them
+            if (build)
+            {
+                BasicSQLUtils.deleteAllRecordsFromTable("viewsetobj");
+                BasicSQLUtils.deleteAllRecordsFromTable("appresource");
+                BasicSQLUtils.deleteAllRecordsFromTable("appresourcedefault");
+                BasicSQLUtils.deleteAllRecordsFromTable("appresourcedata");
+
+                //                DB      User   CatSeries
+                copyAppResources("fish", userName, "Birds");
+                copyAppResources("fish", userName, "Bees");
+            }
+
+            // Test Setting the Context
+            if (!build)
+            {
+
+                // Name factories
+                System.setProperty("edu.ku.brc.af.core.AppContextMgrFactory", "edu.ku.brc.specify.config.SpecifyAppContextMgr");
+                System.setProperty("AppPrefsIOClassName", "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");
+
+                IconManager.setApplicationClass(Specify.class);
+                UICacheManager.getInstance(); // initializes it first thing
+                UICacheManager.setAppName("Specify");
+
+                // Load Local Prefs
+                AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+                localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
+                localPrefs.load();
+
+                SpecifyAppContextMgr contextMgr = SpecifyAppContextMgr.getInstance();
+
+                // First get the Specify Object
+
+                Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(SpecifyUser.class);
+                criteria.add(Expression.eq("name", userName));
+                List list = criteria.list();
+                SpecifyUser user = (SpecifyUser)list.get(0); // assumes user is already there
+
+                // Now get the List of CatalogSeries owned by this user
+                String queryStr = "select cs From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.catalogSeries as cs where user.specifyUserId = "+user.getSpecifyUserId();
+                Query query = HibernateUtil.getCurrentSession().createQuery(queryStr);
+                list = query.list();
+                log.info("Found "+list.size()+" CatalogSeries for User");
+
+                // Add them into a "real" list
+                List<CatalogSeries> catSeries = new ArrayList<CatalogSeries>();
+                for (Object obj : list)
+                {
+                    catSeries.add((CatalogSeries)obj);
+                }
+
+                // Set up the CatalogSeries "context" manually
+                CatalogSeries.setCurrentCatalogSeries(catSeries);
+
+
+                contextMgr.setContext("fish", userName);
+
+                log.info(contextMgr.getView("Birds Views", "CollectionObject") != null ? "Found View OK" : "NOT FOUND");
+
+                log.info(contextMgr.getView("Ento Views", "CollectionObject") != null ? "Found View OK" : "NOT FOUND");
+
+                // Now find the CollectionObjDef for Bees (which should be owned by the user in question)
+                Criteria criteria2 = HibernateUtil.getCurrentSession().createCriteria(CollectionObjDef.class);
+                criteria2.add(Expression.eq("name", "Bees"));
+                List list2 = criteria2.list();
+
+                // Search by CollectionObjDef
+                log.info(contextMgr.getView("CollectionObject", (CollectionObjDef)list2.get(0)) != null ? "Found View OK" : "NOT FOUND");
+
+                // Now Test For the other user "Josh"
+                // this should to backstops
+
+
+                log.info("-------------------------------");
+                userName = "josh";
+
+                // First get the Specify Object
+                criteria = HibernateUtil.getCurrentSession().createCriteria(SpecifyUser.class);
+                criteria.add(Expression.eq("name", userName));
+                list = criteria.list();
+                user = (SpecifyUser)list.get(0); // assumes user is already there
+
+                SpecifyUser.setCurrentUser(user);
+
+                // Now get the List of CatalogSeries owned by this user
+                queryStr = "select cs From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.catalogSeries as cs where user.specifyUserId = "+user.getSpecifyUserId();
+                query = HibernateUtil.getCurrentSession().createQuery(queryStr);
+                list = query.list();
+                log.info("Found "+list.size()+" CatalogSeries for User");
+
+                // Add them into a "real" list
+                catSeries = new ArrayList<CatalogSeries>();
+                for (Object obj : list)
+                {
+                    catSeries.add((CatalogSeries)obj);
+                }
+
+                // Set up the CatalogSeries "context" manually
+                CatalogSeries.setCurrentCatalogSeries(catSeries);
+
+
+                contextMgr.setContext("fish", userName);
+
+                log.info(contextMgr.getView("Fish Views", "CollectionObject") != null ? "Found View OK" : "NOT FOUND");
+
+                log.info(contextMgr.getView("Ento Views", "CollectionObject") != null ? "Found View OK" : "NOT FOUND (correct)");
+
+                // Now find the CollectionObjDef for Bees (which should be owned by the user in question)
+                criteria2 = HibernateUtil.getCurrentSession().createCriteria(CollectionObjDef.class);
+                criteria2.add(Expression.eq("name", "fish"));
+                list2 = criteria2.list();
+
+                // Search by CollectionObjDef
+                log.info(contextMgr.getView("CollectionObject", (CollectionObjDef)list2.get(0)) != null ? "Found View OK" : "NOT FOUND");
+                
+                log.info("Looking up StartUpPanel for user");
+                log.info(contextMgr.getResource("StartUpPanel") != null ? "Found View OK" : "NOT FOUND");;
+
+                log.info("************* System Views *********************");
+                log.info(contextMgr.getView("Preferences", "Formatting") != null ? "Found View OK" : "NOT FOUND");
+                
+                log.info("Looking up DialogDefs");
+                log.info(contextMgr.getResource("DialogDefs") != null ? "Found View OK" : "NOT FOUND");
+
+            }
+
+        } else
+        {
+            throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
+        }
+
+
+
         //createTwoColObjDefOneCatSeries();
         //createPlantDatabaseWithContainers("Plant");
 

@@ -46,7 +46,7 @@ import com.jgoodies.forms.builder.ButtonBarBuilder;
 /**
  * Choose an object from a list of Objects using their "toString"
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *

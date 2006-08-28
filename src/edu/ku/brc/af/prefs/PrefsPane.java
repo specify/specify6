@@ -21,7 +21,7 @@ import javax.swing.JPanel;
 
 /**
  *
- * This class creates a grid of AppPrefsIFace icon (commands) where each icon will dispay a panel.
+ * This class creates a grid of AppPreferences icon (commands) where each icon will dispay a panel.
  * It creates a row (or section) for each grouping of preferences and then makes sure all the columns and rows are aligned.
  * (Currently not in use)
  *
@@ -81,7 +81,7 @@ public class PrefsPane extends JPanel
             int row = 0;
             for (String sectionName : childrenNames)
             {
-                AppPrefsIFace section = appPrefs.node(sectionName);
+                AppPreferences section = appPrefs.node(sectionName);
                 String  title = sectionName;
                 if (title != null)
                 {
@@ -125,7 +125,7 @@ public class PrefsPane extends JPanel
             String[] childrenNames = parentPref.childrenNames();
             for (String childName : childrenNames)
             {
-                AppPrefsIFace pref  = parentPref.node(childName);
+                AppPreferences pref  = parentPref.node(childName);
 
                 String title      = pref.get(TITLE, null);
                 String panelClass = pref.get(PANEL_CLASS, null);

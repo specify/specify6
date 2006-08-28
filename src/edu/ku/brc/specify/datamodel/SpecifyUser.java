@@ -18,11 +18,12 @@ public class SpecifyUser  implements java.io.Serializable {
      protected Integer specifyUserId;
      protected String name;
      protected String email;
+     protected String userType;
      protected Short privLevel;
      protected Set<CollectionObjDef> collectionObjDef;
      protected Set<RecordSet> recordSets;
      protected UserGroup userGroup;
-
+     protected Set<AppResourceDefault> appResourceDefaults;
      
     // Constructors
 
@@ -64,6 +65,7 @@ public class SpecifyUser  implements java.io.Serializable {
         collectionObjDef = new HashSet<CollectionObjDef>();
         recordSets = new HashSet<RecordSet>();
         userGroup = null;
+        appResourceDefaults = new HashSet<AppResourceDefault>();
     }
     // End Initializer
 
@@ -100,6 +102,19 @@ public class SpecifyUser  implements java.io.Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    /**
+    *
+    */
+    public String getUserType()
+    {
+        return userType;
+    }
+
+    public void setUserType(String userType)
+    {
+        this.userType = userType;
     }
 
     /**
@@ -148,9 +163,19 @@ public class SpecifyUser  implements java.io.Serializable {
 
 
 
+    public Set<AppResourceDefault> getAppResourceDefaults()
+    {
+        return appResourceDefaults;
+    }
+
+    public void setAppResourceDefaults(Set<AppResourceDefault> appResourceDefaults)
+    {
+        this.appResourceDefaults = appResourceDefaults;
+    }
 
 
     // Add Methods
+
 
     public void addCollectionObjDefs(final CollectionObjDef collectionObjDef)
     {
@@ -163,6 +188,13 @@ public class SpecifyUser  implements java.io.Serializable {
         this.recordSets.add(recordSet);
         recordSet.setOwner(this);
     }
+
+    public void addAppResourceDefaults(final AppResourceDefault appResourceDefault)
+    {
+        this.appResourceDefaults.add(appResourceDefault);
+        appResourceDefault.setSpecifyUser(this);
+    }
+
 
     // Done Add Methods
 
@@ -179,6 +211,13 @@ public class SpecifyUser  implements java.io.Serializable {
         this.recordSets.remove(recordSet);
         recordSet.setOwner(null);
     }
+    
+    public void removeAppResourceDefaults(final AppResourceDefault appResourceDefault)
+    {
+        this.appResourceDefaults.remove(appResourceDefault);
+        appResourceDefault.setSpecifyUser(null);
+    }
+
 
     // Delete Add Methods
 }
