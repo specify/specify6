@@ -147,7 +147,7 @@
 
 		<!-- Associations -->
 
-		<set name="determinations" lazy="false" inverse="true"
+		<set name="determinations" inverse="true"
 			cascade="none">
 			<key>
 				<column name="TaxonID" />
@@ -156,7 +156,7 @@
 		</set>
 
 		<!-- bi-directional one-to-many association to Taxon -->
-		<set name="acceptedChildren" inverse="true"	cascade="none" lazy="false">
+		<set name="acceptedChildren" inverse="true"	cascade="none">
 			<key>
 				<column name="AcceptedID" />
 			</key>
@@ -166,7 +166,7 @@
 		<!-- bi-directional many-to-one association to Taxon -->
 		<many-to-one name="acceptedTaxon"
 			class="edu.ku.brc.specify.datamodel.Taxon" not-null="true"
-			outer-join="true" lazy="false">
+			outer-join="true">
 			<column name="AcceptedID" />
 		</many-to-one>
 
@@ -181,14 +181,14 @@
 
 		<!-- bi-directional many-to-one association to TaxonTreeDef -->
 		<many-to-one name="definition"
-			class="edu.ku.brc.specify.datamodel.TaxonTreeDef" lazy="false"
+			class="edu.ku.brc.specify.datamodel.TaxonTreeDef"
 			not-null="true" outer-join="true">
 			<column name="TaxonTreeDefID" />
 		</many-to-one>
 
 		<!-- bi-directional many-to-one association to TaxonTreeDefItem -->
 		<many-to-one name="definitionItem"
-			class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" lazy="false"
+			class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"
 			not-null="true" outer-join="true">
 			<column name="TaxonTreeDefItemID" />
 		</many-to-one>
@@ -196,7 +196,7 @@
 		<!-- bi-directional many-to-one association to Taxon -->
 		<many-to-one name="parent"
 			class="edu.ku.brc.specify.datamodel.Taxon" not-null="true"
-			outer-join="true" lazy="false">
+			outer-join="true">
 			<column name="ParentID" />
 		</many-to-one>
 
@@ -213,7 +213,8 @@
 
 		<set name="children"
 			inverse="true"
-			cascade="none">
+			cascade="none"
+			fetch="join">
 			<key>
 				<column name="ParentID" />
 			</key>
