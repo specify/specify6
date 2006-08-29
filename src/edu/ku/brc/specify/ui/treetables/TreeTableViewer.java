@@ -101,6 +101,8 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	/** Collection of all nodes deleted by user that have not yet been deleted from the DB. */
 	protected SortedSet<Treeable> deletedNodes;
 	
+	protected SortedSet<Treeable> addedNodes;
+	
 	protected String nameBeforeEditDialogShown;
 	
     /** Logger for all messages emitted. */
@@ -117,6 +119,8 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
     
     protected TreeNodePopupMenu popupMenu;
     
+    protected boolean busy;
+    
 	/**
 	 * Build a TreeTableViewer to view/edit the data found.
 	 * 
@@ -132,10 +136,13 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		this.treeDef = treeDef;
 		dataService = TreeDataServiceFactory.createService();
 		deletedNodes = new TreeSet<Treeable>(new ReverseRankBasedComparator());
+		addedNodes = new TreeSet<Treeable>(new ReverseRankBasedComparator());
 		statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
 		popupMenu = new TreeNodePopupMenu(this);
 		
 		getLayout().removeLayoutComponent(progressBarPanel);
+		
+		setBusy(false);
 	}
 	
 	public TreeDefinitionIface getTreeDef()
@@ -254,8 +261,19 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		repaint();
 	}
 	
+	protected void setBusy(boolean busy)
+	{
+		this.busy = busy;
+		statusBar.setIndeterminate(busy);
+	}
+	
 	public void toggleViewMode()
 	{
+		if(busy)
+		{
+			return;
+		}
+		
 		if(mode == SINGLE_VIEW_MODE)
 		{
 			setViewMode(DUAL_VIEW_MODE);
@@ -268,7 +286,7 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	
 	protected void setViewMode(int newMode)
 	{
-		getLayout().removeLayoutComponent(progressBarPanel);
+		removeAll();
 		mode = newMode;
 		if(mode == SINGLE_VIEW_MODE)
 		{
@@ -313,6 +331,7 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		Icon icon_newChild   = IconManager.getIcon("TTV_NewChild",  IconManager.IconSize.Std16);
 		Icon icon_editNode   = IconManager.getIcon("TTV_EditNode",  IconManager.IconSize.Std16);
 		Icon icon_delNode    = IconManager.getIcon("TTV_DelNode",   IconManager.IconSize.Std16);
+		Icon icon_toParent   = IconManager.getIcon("TTV_ToParent",  IconManager.IconSize.Std16);
 		
 		JButton subtree = new JButton(icon_subtree);
 		subtree.setSize(20,20);
@@ -335,7 +354,18 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 				showWholeTree(list);
 			}
 		});
-		
+
+		JButton toParent = new JButton(icon_toParent);
+		toParent.setSize(20,20);
+		toParent.setToolTipText("Go To Parent");
+		toParent.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent ae)
+			{
+				selectParentOfSelection(list);
+			}
+		});
+
 		JButton showDescend = new JButton(icon_allDescend);
 		showDescend.setSize(20,20);
 		showDescend.setToolTipText("Show All Descendants");
@@ -400,6 +430,8 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		subtree.setAlignmentX(Component.CENTER_ALIGNMENT);
 		buttonPanel.add(wholeTree);
 		wholeTree.setAlignmentX(Component.CENTER_ALIGNMENT);
+		buttonPanel.add(toParent);
+		toParent.setAlignmentX(Component.CENTER_ALIGNMENT);
 		buttonPanel.add(showDescend);
 		showDescend.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -444,6 +476,11 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	 */
 	public void addChildToSelectedNode(JList list)
 	{
+		if(busy)
+		{
+			return;
+		}
+
 		Object selection = list.getSelectedValue();
 		if( selection == null )
 		{
@@ -555,6 +592,11 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	 */
 	public void deleteSelectedNode(JList list)
 	{
+		if(busy)
+		{
+			return;
+		}
+
 		Object selection = list.getSelectedValue();
 		if( selection == null )
 		{
@@ -564,13 +606,18 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		Treeable node = (Treeable)selection;
 		if( node.canBeDeleted() )
 		{
-			Treeable parent = node.getParentNode();
-			listModel.hideChildren(parent);
-			parent.removeChild(node);
-			listModel.showChildren(parent);
-			deletedNodes.add(node);
-			deleteAllDescendants(node);
-			log.info("Deleted node");
+			int numNodesToDelete = node.getHighestChildNodeNumber() - node.getNodeNumber() + 1;
+			int userChoice = JOptionPane.showConfirmDialog(this,"This operation will delete " + numNodesToDelete + " nodes","Continue?",JOptionPane.OK_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+			if(userChoice == JOptionPane.OK_OPTION)
+			{
+				Treeable parent = node.getParentNode();
+				listModel.hideChildren(parent);
+				parent.removeChild(node);
+				listModel.showChildren(parent);
+				deletedNodes.add(node);
+				deleteAllDescendants(node);
+				log.info("Deleted node");
+			}
 		}
 		else
 		{
@@ -604,6 +651,11 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	 */
 	public void editSelectedNode(JList list)
 	{
+		if(busy)
+		{
+			return;
+		}
+
 		Object selection = list.getSelectedValue();
 		if( selection == null )
 		{
@@ -669,29 +721,43 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	 * 
 	 * @return true on success, false on failure
 	 */
-	public boolean commitStructureToDb()
+	public void commitStructureToDb()
 	{
+		if(busy)
+		{
+			return;
+		}
+
 		int userChoice = JOptionPane.showConfirmDialog(this,"This operation may take a long time","Continue?",JOptionPane.OK_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
 		if(userChoice == JOptionPane.OK_OPTION)
 		{
+			setBusy(true);
 			Thread t = new Thread(new Runnable()
 			{
 				public void run()
 				{
 					Treeable root = listModel.getRoot();
 					dataService.saveTree(root,deletedNodes);
+					setBusy(false);
+					
+					SwingUtilities.invokeLater(new Runnable()
+					{
+						public void run()
+						{
+							setViewMode(mode);
+						}
+					});
 				}
 			});
 			
 			removeAll();
-			this.add(progressBarPanel,BorderLayout.CENTER);
+			setLayout(new BorderLayout());
+			add(progressBarPanel,BorderLayout.CENTER);
+			invalidate();
+			progressBarPanel.repaint();
 			t.start();
-			setViewMode(mode);
-			return true;
 		}
-		return false;
 	}
-	
 	
 	/**
 	 * Sets the visibleRoot property of the tree to the currently selected node.  This provides
@@ -699,6 +765,11 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	 */
 	public void showSubtreeOfSelection(JList list)
 	{
+		if(busy)
+		{
+			return;
+		}
+
 		Object selection = list.getSelectedValue();
 		if( selection == null )
 		{
@@ -722,6 +793,11 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	 */
 	public void showWholeTree(JList list)
 	{
+		if(busy)
+		{
+			return;
+		}
+
 		Object selection = list.getSelectedValue();		
 
 		listModel.setVisibleRoot(listModel.getRoot());
@@ -732,25 +808,81 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		}
 	}
 
+	public void selectParentOfSelection(JList list)
+	{
+		if(busy)
+		{
+			return;
+		}
+
+		Object selection = list.getSelectedValue();
+		if( selection == null )
+		{
+			return;
+		}
+		Treeable node = (Treeable)selection;
+		Treeable parent = node.getParentNode();
+		list.setSelectedValue(parent,true);
+	}
 	
 	/** 
 	 * Expands all of the nodes below the currently selected node.
 	 */
 	public void expandAllDescendantsOfSelection(JList list)
 	{
-		Object selection = list.getSelectedValue();
+		if(busy)
+		{
+			return;
+		}
+
+		final Object selection = list.getSelectedValue();
 		if( selection == null )
 		{
 			return;
 		}
+		final Treeable node = (Treeable)selection;
+
+		int userChoice = JOptionPane.OK_OPTION;
 		
-		Treeable node = (Treeable)selection;
-		listModel.showDescendants(node);
+		if(node.getHighestChildNodeNumber() - node.getNodeNumber() > 10 )
+		{
+			userChoice = JOptionPane.showConfirmDialog(this,"This operation may take a long time","Continue?",JOptionPane.OK_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+		}
+		if(userChoice == JOptionPane.OK_OPTION)
+		{
+			setBusy(true);
+			Thread t = new Thread(new Runnable()
+			{
+				public void run()
+				{
+					System.out.println("Loading descendants");
+					dataService.loadAllDescendants(node);
+					System.out.println("Done loading descendants");
+					setBusy(false);
+					
+					SwingUtilities.invokeLater(new Runnable()
+					{
+						public void run()
+						{
+							System.out.println("Showing descendants");
+							listModel.showDescendants(node);
+						}
+					});
+				}
+			});
+			
+			t.start();
+		}
 	}
 	
 	
 	public void find(String nodeName,int where,boolean wrap)
 	{
+		if(busy)
+		{
+			return;
+		}
+
 		findName = nodeName;
 		findResults = dataService.findByName(treeDef,findName);
 		if(findResults.isEmpty())
@@ -781,6 +913,11 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	
 	public void find(String nodeName,JList where,boolean wrap)
 	{
+		if(busy)
+		{
+			return;
+		}
+
 		if(where == lists[0])
 		{
 			find(nodeName,DualViewSearchable.TOPVIEW,wrap);
@@ -798,6 +935,11 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	
 	public void findNext(int where,boolean wrap)
 	{
+		if(busy)
+		{
+			return;
+		}
+
 		if(findResults != null && findName != null)
 		{
 			log.error("Searching for next node from previous search: " + findName);
@@ -831,6 +973,11 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	
 	public void findNext(JList where,boolean wrap)
 	{
+		if(busy)
+		{
+			return;
+		}
+
 		if(where == lists[0])
 		{
 			findNext(DualViewSearchable.TOPVIEW,wrap);
@@ -925,6 +1072,11 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	 */
 	public boolean dropOccurred( Object dragged, Object droppedOn, int dropAction )
 	{
+		if(busy)
+		{
+			return false;
+		}
+
 		if( !(dragged instanceof Treeable && droppedOn instanceof Treeable) )
 		{
 			log.warn("Ignoring drag and drop of unhandled types of objects");
@@ -966,6 +1118,11 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	
 	public boolean dropAcceptable( Object dragged, Object droppedOn, int dropAction )
 	{
+		if(busy)
+		{
+			return false;
+		}
+
 		// TODO: fully implement this
 		// XXX
 		if(dropAction == DnDConstants.ACTION_COPY  || dropAction == DnDConstants.ACTION_NONE)
@@ -998,6 +1155,11 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 
 	public void showPopup(MouseEvent e)
 	{
+		if(busy)
+		{
+			return;
+		}
+
 		if(clickIsOnText(e))
 		{
 			// select this node and display popup for it
@@ -1069,6 +1231,11 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	
 	public void mouseButtonClicked(MouseEvent e)
 	{
+		if(busy)
+		{
+			return;
+		}
+
 		if(e.getButton() != MouseEvent.BUTTON1)
 		{
 			return;
@@ -1106,6 +1273,11 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	
 	public void mouseButtonReleased(MouseEvent e)
 	{
+		if(busy)
+		{
+			return;
+		}
+
 		if(e.isPopupTrigger())
 		{
 			showPopup(e);
@@ -1114,6 +1286,11 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	
 	public void mouseButtonPressed(MouseEvent e)
 	{
+		if(busy)
+		{
+			return;
+		}
+
 		if(e.getButton() != MouseEvent.BUTTON1)
 		{
 			return;
@@ -1135,6 +1312,7 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	public void shutdown()
 	{
 		super.shutdown();
+		
 		System.out.println("Shutting down TTV");
 		dataService.fini();
 	}

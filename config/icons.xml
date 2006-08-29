@@ -104,6 +104,6 @@
     <icon name="TTV_NewChild"   file="add.png"        sizes="16"/>
     <icon name="TTV_EditNode"   file="edit.png"       sizes="16"/>
     <icon name="TTV_DelNode"    file="delete.png"     sizes="16"/>
-    
+    <icon name="TTV_ToParent"   file="undo.png"       sizes="16"/>
 
 </icons>

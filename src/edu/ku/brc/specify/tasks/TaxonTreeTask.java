@@ -159,15 +159,8 @@ public class TaxonTreeTask extends BaseTask implements DualViewSearchable
 		String tabName = getResourceString(name) + ": " + treeDef.getName();
     	TreeTableViewer ttv = new TreeTableViewer(treeDef,tabName,this);
     	visibleTTVs.add(ttv);
-//    	setMenuItemEnabled(treeDef,false);
     	SubPaneMgr.getInstance().addPane(ttv);
 	}
-	
-//	protected void setMenuItemEnabled(TreeDefinitionIface treeDef, boolean enabled)
-//	{
-//    	JMenuItem defMenuItem = defToMenuItem.get(treeDef);    	
-//    	defMenuItem.setEnabled(enabled);
-//	}
 	
 	protected void createMenus()
 	{
@@ -243,7 +236,6 @@ public class TaxonTreeTask extends BaseTask implements DualViewSearchable
     	{
     		TreeTableViewer ttv = (TreeTableViewer)subPane;
     		visibleTTVs.remove(ttv);
-//    		setMenuItemEnabled(ttv.getTreeDef(),true);
     	}
 	}
 

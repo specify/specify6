@@ -251,4 +251,23 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 		}
 		return defs;
 	}
+	
+	public void loadAllDescendants(Treeable node)
+	{
+//		for(Treeable child: node.getChildNodes())
+//		{
+//			loadAllDescendants(child);
+//		}
+		
+		String className = node.getClass().getSimpleName();
+		int nodeNum = node.getNodeNumber();
+		int highChild = node.getHighestChildNodeNumber();
+		Query descend = session.createQuery("FROM " + className + " WHERE nodeNumber > " + nodeNum + " AND nodeNumber < " + highChild );
+		int i = 0;
+		for(Object o: descend.list())
+		{
+			i++;
+		}
+		System.out.println("Found " + i + " descendants");
+	}
 }

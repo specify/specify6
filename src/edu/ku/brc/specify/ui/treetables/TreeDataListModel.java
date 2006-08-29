@@ -135,7 +135,7 @@ public class TreeDataListModel extends AbstractListModel
 		{
 			return;
 		}
-		
+
 		for( Treeable child: t.getChildNodes() )
 		{
 			setNodeVisible(child,true);
