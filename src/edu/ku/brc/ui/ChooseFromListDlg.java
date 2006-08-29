@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
@@ -36,6 +37,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -47,31 +49,31 @@ import com.jgoodies.forms.builder.ButtonBarBuilder;
  * Choose an object from a list of Objects using their "toString"
  *
  * @code_status Complete
- * 
+ *
  * @author rods
  *
  */
 @SuppressWarnings("serial")
-public class ChooseFromListDlg extends JDialog implements ActionListener 
+public class ChooseFromListDlg<T> extends JDialog implements ActionListener
 {
     // Static Data Members
     private static final Logger log = Logger.getLogger(ChooseFromListDlg.class);
-    
+
     // Data Members
     protected JButton        cancelBtn;
     protected JButton        okBtn;
     protected JList          list;
-    protected List           items;
+    protected List<T>        items;
     protected ImageIcon      icon        = null;
     protected boolean        isCancelled = false;
-    
+
     /**
      * Constructor.
      * @param title the title of the dialog
      * @param items the list to be selected from
      * @throws HeadlessException
      */
-    public ChooseFromListDlg(final String title, final List items) throws HeadlessException
+    public ChooseFromListDlg(final String title, final List<T> items) throws HeadlessException
     {
         super((Frame)UICacheManager.get(UICacheManager.FRAME), true);
         this.items = items;
@@ -88,12 +90,12 @@ public class ChooseFromListDlg extends JDialog implements ActionListener
      * @param icon the icon to be displayed in front of each entry in the list
      * @throws HeadlessException
      */
-    public ChooseFromListDlg(final String title, final List items, final ImageIcon icon) throws HeadlessException
+    public ChooseFromListDlg(final String title, final List<T> items, final ImageIcon icon) throws HeadlessException
     {
         super((Frame)UICacheManager.get(UICacheManager.FRAME), true);
         this.items = items;
         this.icon = icon;
-        
+
         createUI(title);
         setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -108,18 +110,18 @@ public class ChooseFromListDlg extends JDialog implements ActionListener
     {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
-        
+
         panel.add(new JLabel(title, JLabel.CENTER), BorderLayout.NORTH);
 
         try
         {
-            
-            ListModel listModel = new AbstractListModel() 
+
+            ListModel listModel = new AbstractListModel()
             {
                 public int getSize() { return items.size(); }
                 public Object getElementAt(int index) { return items.get(index).toString(); }
             };
-            
+
             list = new JList(listModel);
             if (icon != null)
             {
@@ -144,36 +146,44 @@ public class ChooseFromListDlg extends JDialog implements ActionListener
             });
             JScrollPane listScroller = new JScrollPane(list);
             panel.add(listScroller, BorderLayout.CENTER);
-            
+
             // Bottom Button UI
             cancelBtn         = new JButton(getResourceString("Cancel"));
             okBtn             = new JButton(getResourceString("OK"));
 
             okBtn.addActionListener(this);
             getRootPane().setDefaultButton(okBtn);
-            
+
             ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
             //btnBuilder.addGlue();
-             btnBuilder.addGriddedButtons(new JButton[] {cancelBtn, okBtn}); 
- 
+             btnBuilder.addGriddedButtons(new JButton[] {cancelBtn, okBtn});
+
             cancelBtn.addActionListener(new ActionListener()
                     {  public void actionPerformed(ActionEvent ae) { setVisible(false); isCancelled = true;} });
-            
+
             panel.add(btnBuilder.getPanel(), BorderLayout.SOUTH);
-            
+
             updateUIState();
 
         } catch (Exception ex)
         {
             log.error(ex);
         }
-        
+
         setContentPane(panel);
         pack();
         //setLocationRelativeTo(locationComp);
-        
+
     }
     
+    /**
+     * Allows the list to be configured for multi-item selection 
+     */
+    public void setMultiSelect(boolean val)
+    {
+        list.setSelectionMode(val ? ListSelectionModel.MULTIPLE_INTERVAL_SELECTION : ListSelectionModel.SINGLE_SELECTION);
+    }
+
     /**
      * Update the button UI given the state of the list.
      */
@@ -181,20 +191,20 @@ public class ChooseFromListDlg extends JDialog implements ActionListener
     {
         okBtn.setEnabled(list.getSelectedIndex() != -1);
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
      */
-    public void actionPerformed(ActionEvent e) 
+    public void actionPerformed(ActionEvent e)
     {
         setVisible(false);
     }
-    
+
     /**
      * Returns the selected Object or null if nothing was selected.
      * @return the selected Object or null if nothing was selected
      */
-    public Object getSelectedObject()
+    public T getSelectedObject()
     {
         int inx = list.getSelectedIndex();
         if (inx != -1)
@@ -202,6 +212,39 @@ public class ChooseFromListDlg extends JDialog implements ActionListener
             return items.get(inx);
         }
         return null;
+    }
+    
+    /**
+     * Returns the selected Object or null if nothing was selected.
+     * @return the selected Object or null if nothing was selected
+     */
+    @SuppressWarnings("unchecked")
+    public List<T> getSelectedObjects()
+    {
+        List<T> selectedItems = new ArrayList<T>(5);
+        for (Object obj : list.getSelectedValues())
+        {
+            selectedItems.add((T)obj);
+        }
+        return selectedItems;
+    }
+    
+    /**
+     * Returns the indices that were selected.
+     * @return the indices that were selected 
+     */
+    public int[] getSelectedIndices()
+    {
+        return list.getSelectedIndices();
+    }
+    
+    /**
+     * Set the selcted indices.
+     * @param indices the array of indices
+     */
+    public void setIndices(final int[] indices)
+    {
+        list.setSelectedIndices(indices);
     }
 
     /**
@@ -212,7 +255,7 @@ public class ChooseFromListDlg extends JDialog implements ActionListener
     {
         return isCancelled;
     }
-    
-    
-    
+
+
+
 }

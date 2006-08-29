@@ -325,14 +325,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 {
                     Collections.sort(list);
 
-                    ChooseFromListDlg dlg = new ChooseFromListDlg("Choose a Collection Object Def", list); // TODO I18N
+                    ChooseFromListDlg<CollectionObjDef> dlg = new ChooseFromListDlg<CollectionObjDef>("Choose a Collection Object Def", list); // TODO I18N
                     dlg.setAlwaysOnTop(true);
                     dlg.setModal(true);
 
                     UIHelper.centerAndShow(dlg);
                     if (!dlg.isCancelled())
                     {
-                        colObjDef = (CollectionObjDef)dlg.getSelectedObject();
+                        colObjDef = dlg.getSelectedObject();
                         CollectionObjDef.setCurrentCollectionObjDef(colObjDef);
                     }
                 } else
@@ -500,7 +500,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         List appResDefList = query.list();
 
         List<CatalogSeries> catalogSeries = setupCurrentCatalogSeries(user, false);
-        
+
         // Set up the CollectionObjectDef for the most common case of one CatalogSeries with one CollecionObjDef
         CollectionObjDef.setCurrentCollectionObjDef(null);
         if (catalogSeries.size() == 1)
@@ -546,7 +546,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         for (String discipline : disciplineHash.keySet())
         {
             log.info("****** Adding Backstop for ["+discipline+"]["+userType+"]");
-            
+
             File dir = XMLHelper.getConfigDir(discipline + File.separator + userType);
             if (dir.exists())
             {
@@ -698,7 +698,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
             }
         }
-        
+
         return backStopViewSetMgr.getView(viewSetName, viewName);
 
     }

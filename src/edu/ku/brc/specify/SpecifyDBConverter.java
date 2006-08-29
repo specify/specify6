@@ -2,23 +2,50 @@ package edu.ku.brc.specify;
 
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.deleteAllRecordsFromTable;
 
+import java.awt.Frame;
+import java.awt.HeadlessException;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.ProjectHelper;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 
+import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
+import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+import com.jgoodies.looks.plastic.theme.DesertBlue;
+
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.ResultsPager;
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.UIHelper;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.GenericDBConversion;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
@@ -32,12 +59,14 @@ import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.tests.ObjCreatorHelper;
+import edu.ku.brc.ui.ChooseFromListDlg;
+import edu.ku.brc.ui.UICacheManager;
 
 /**
  * Create more sample data, letting Hibernate persist it for us.
  *
- * @code_status Unknown (auto-generated)
- * 
+ * @code_status Beta
+ *
  * @author rods
  *
  */
@@ -51,6 +80,9 @@ public class SpecifyDBConverter
     protected static StringBuffer               strBuf            = new StringBuffer("");
     protected static Calendar                   calendar          = Calendar.getInstance();
 
+    /**
+     * Constructor.
+     */
     public SpecifyDBConverter()
     {
 
@@ -61,40 +93,106 @@ public class SpecifyDBConverter
      */
     public static void main(String args[]) throws Exception
     {
-        String oldDatabaseName = "demo_fish2";  // Fish
-        //String oldDatabaseName = "demo_fish4";  // Accessions
-        //String oldDatabaseName = "demo_fish5";  // Cranbrook
+        // Create Specify Application
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
         
-        String databaseName = "fish";
-        String userHome = System.getProperty("user.home");
-        if (userHome.indexOf("rods") > -1)
-        {
-            oldDatabaseName = "demo_fish4";  // Accessions
-            databaseName = "accessions";
-            
-            oldDatabaseName = "demo_fish5";
-            databaseName = "cranbrook";
-            
-            oldDatabaseName = "demo_fish2";  // Fish
-            databaseName = "fish";
-            
-        }
-        
-        if (userHome.indexOf("stewart") > -1)
-        {
-//        	oldDatabaseName = "sp5_cranbrook";
-//        	databaseName = "cranbrook";
-//        	
-        	oldDatabaseName = "sp5_accessions";
-        	databaseName = "accessions";
-//        	
-//        	oldDatabaseName = "sp5_fish";
-//        	databaseName = "fish";
-        }
-        
+                try
+                {
+                    if (!System.getProperty("os.name").equals("Mac OS X"))
+                    {
+                        UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
+                        PlasticLookAndFeel.setMyCurrentTheme(new DesertBlue());
+                    }
+                }
+                catch (Exception e)
+                {
+                    log.error("Can't change L&F: ", e);
+                }
+                
+                Hashtable<String, String> old2NewDBNames = new Hashtable<String, String>();
+                String[] names = {"Fish", "sp4_fish", "Accessions", "sp4_accessions", "Cranbrook", "sp4_cranbrook", "Ento", "sp4_ento"};
+                for (int i=0;i<names.length;i++)
+                {
+                    old2NewDBNames.put(names[i], names[++i]);
+                }
+                UICacheManager.setAppName("SpecifyDBConverter");
+                
+                for (String name : selectedDBsToConvert(names))
+                {
+                    try
+                    {
+                        convertDB(old2NewDBNames.get(name), name.toLowerCase());
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                        return;
+                    }
+                }
+            }
+        });
+    }
+    
+    /**
+     * Convert old Database to New 
+     * @param oldDatabaseName name of an old database
+     * @param databaseName name of new DB
+     * @throws Exception xx
+     */
+    protected static void convertDB(final String oldDatabaseName, final String databaseName) throws Exception
+    {
+
         System.out.println("************************************************************");
         System.out.println("From "+oldDatabaseName+" to "+databaseName);
         System.out.println("************************************************************");
+      
+
+        HibernateUtil.shutdown();
+        
+        // This will log us in and return true/false
+        if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", databaseName, "jdbc:mysql://localhost/", "rods", "rods"))
+        {
+            throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
+        }
+
+        // NOTE: You must have already created the database to use this
+        // but the database can be empty
+        boolean restartFromScratch = true;
+        if (restartFromScratch)
+        {
+            Connection connection = DBConnection.getConnection();
+            Statement stmt = connection.createStatement();
+            try
+            {
+                log.info("Dropping database "+databaseName);
+                boolean rv = stmt.execute("drop database "+ databaseName);
+                if (!rv)
+                {
+                    //throw new RuntimeException("Couldn't drop database "+databaseName);
+                }
+                log.info("Dropped database "+databaseName);
+                
+            } catch (SQLException ex)
+            {
+                log.info("Database ["+databaseName+"] didn't exist.");
+            }
+
+            stmt = connection.createStatement();
+            boolean rv = stmt.execute("create database "+ databaseName);
+            if (!rv)
+            {
+                //throw new RuntimeException("Couldn't create database "+databaseName);
+            }
+            log.info("Created database "+databaseName);
+            
+            stmt.close();
+            connection.close();
+            
+            writeHibPropFile(databaseName);
+            doGenSchema();
+        }
         
         // This will log us in and return true/false
         if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", databaseName, "jdbc:mysql://localhost/"+databaseName, "rods", "rods"))
@@ -120,18 +218,18 @@ public class SpecifyDBConverter
             boolean doConvert = true;
             if (doConvert)
             {
-                GenericDBConversion conversion = new GenericDBConversion("com.mysql.jdbc.Driver", 
-                                                                         oldDatabaseName, 
-                                                                         "jdbc:mysql://localhost/"+oldDatabaseName, 
-                                                                         "rods", 
+                GenericDBConversion conversion = new GenericDBConversion("com.mysql.jdbc.Driver",
+                                                                         oldDatabaseName,
+                                                                         "jdbc:mysql://localhost/"+oldDatabaseName,
+                                                                         "rods",
                                                                          "rods");
-                
+
                 idMapperMgr = IdMapperMgr.getInstance();
                 idMapperMgr.setDBs(conversion.getOldDBConnection(), conversion.getNewDBConnection());
-                
+
                 // NOTE: Within BasicSQLUtils the connection is for removing tables and records
                 BasicSQLUtils.setDBConnection(conversion.getNewDBConnection());
-                
+
                 // This MUST be done before any of the table copies because it
                 // creates the IdMappers for Agent, Address and mor eimportantly AgentAddress
                 // NOTE: AgentAddress is actually mapping from the old AgentAddress table to the new Agent table
@@ -140,14 +238,14 @@ public class SpecifyDBConverter
                 //if (copyAgentAddressTables)
                 {
                     conversion.convertAgents();
-                    
+
                 } else
                 {
                     idMapperMgr.addTableMapper("agent", "AgentID");
                     idMapperMgr.addTableMapper("address", "AddressID");
                     idMapperMgr.addTableMapper("agentaddress", "AgentAddressID");
                 }
-                
+
                 // GTP needs to be converted here so the stratigraphy conversion can use
                 // the IDs
                 boolean doGTP = false;
@@ -175,13 +273,13 @@ public class SpecifyDBConverter
                 {
                     int specifyUserId = conversion.createDefaultUser("rods");
                     conversion.convertCollectionObjectDefs(specifyUserId);
-                    
+
                 } else
                 {
                     idMapperMgr.addTableMapper("CatalogSeriesDefinition", "CatalogSeriesDefinitionID");
                     idMapperMgr.addTableMapper("CollectionObjectType", "CollectionObjectTypeID");
                 }
-                
+
 
                 boolean copyUSYSTables = false;
                 if (copyUSYSTables || doAll)
@@ -205,11 +303,11 @@ public class SpecifyDBConverter
                         conversion.createPreparationRecords(prepTypeMap);
                     }
                     conversion.createCollectionRecords();
-                    
+
                     conversion.createDefaultDeterminationStatusRecords();
                     conversion.fixDeterminationStatus();
                 }
-                
+
                 boolean doTaxonomy = false;
                 if( doTaxonomy || doAll )
                 {
@@ -217,7 +315,7 @@ public class SpecifyDBConverter
                 	conversion.convertTaxonTreeDefItems();
                 	conversion.copyTaxonRecords();
                 }
-                
+
                 boolean doGeography = false;
                 if (doGeography || doAll)
                 {
@@ -225,13 +323,13 @@ public class SpecifyDBConverter
                 	conversion.convertGeography(treeDef);
                 	conversion.convertLocality();
                 }
-                
+
                 boolean doLocation = false;
                 if( doLocation || doAll )
                 {
                 	conversion.buildSampleLocationTreeDef();
                 }
-                
+
                 boolean doFurtherTesting = false;
                 if (doFurtherTesting)
                 {
@@ -320,11 +418,11 @@ public class SpecifyDBConverter
 
 
             log.info("Done.");
-            
+
         } catch (Exception ex)
         {
             ex.printStackTrace();
-            
+
             if (idMapperMgr != null && GenericDBConversion.shouldDeleteMapTables())
             {
                 idMapperMgr.cleanup();
@@ -332,7 +430,7 @@ public class SpecifyDBConverter
 
         }
     }
-    
+
     protected void testPaging()
     {
         boolean testPaging = false;
@@ -430,7 +528,179 @@ public class SpecifyDBConverter
         }
 
     }
+    
+    /**
+     * Loads the dialog
+     * @param hashNames every other one is the new name
+     * @return the list of selected DBs
+     */
+    protected static List<String> selectedDBsToConvert(final String[] hashNames)
+    {
+        String initStr = "";
+        String selKey  = "Database_Selected";
+        
+        for (int i=0;i<hashNames.length;i++)
+        {
+            initStr += hashNames[i++];
+        }
+        
+        boolean isNew = false;
+        Properties props = new Properties();
+        File propsFile = new File(UICacheManager.getDefaultWorkingPath() + File.separator + "convert.properties");
+        if (!propsFile.exists())
+        {
+             isNew = true;
+            
+        } else
+        {
+            try
+            {
+                props.loadFromXML(new FileInputStream(propsFile));
+
+            } catch (Exception ex)
+            {
+                log.error(ex);
+            }
+        } 
+        
+        List<String> list = new ArrayList<String>();
+        for (int i=0;i<hashNames.length;i++)
+        {
+            list.add(hashNames[i++]);
+        }
+        
+        int[] indices = null;
+        if (isNew)
+        {
+            indices = new int[] {0};
+            
+        } else
+        {
+            String[] indicesStr = props.getProperty(selKey).split(",");
+            indices = new int[indicesStr.length];
+            for (int i=0;i<indicesStr.length;i++)
+            {
+                indices[i] = Integer.parseInt(indicesStr[i]);
+            }
+        }
+        
+        
+         
+        class ChooseDBs<T> extends ChooseFromListDlg<T>
+        {
+            public ChooseDBs(final String title, final List<T> items) throws HeadlessException
+            {
+                super(title, items);
+                
+                final SwingWorker worker = new SwingWorker()
+                {
+                    public Object construct()
+                    {
+                        try
+                        {
+                            Thread.sleep(10000); // 10 seconds
+                            
+                        } catch (Exception ex) {}
+                        return null;
+                    }
+
+                    //Runs on the event-dispatching thread.
+                    public void finished()
+                    {
+                        if (list.getSelectedIndex() != -1)
+                        {
+                            okBtn.doClick();
+                        }
+                    }
+                };
+                worker.start();
+            }
+
+        }
+        
+        ChooseDBs<String> dlg = new ChooseDBs<String>("Choose Database(s) to Convert", list);
+        dlg.setMultiSelect(true);
+        dlg.setIndices(indices);
+        UIHelper.centerAndShow(dlg);
+        
+        dlg.dispose();
+        if (dlg.isCancelled())
+        {
+            return new ArrayList<String>();
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        for (int inx : dlg.getSelectedIndices())
+        {
+            if (sb.length() > 0) sb.append(",");
+            sb.append(Integer.toString(inx));
+        }
+        props.put(selKey, sb.toString());
+        //log.info("["+selKey+"]["+sb.toString()+"]");
+        
+        try
+        {
+            props.storeToXML(new FileOutputStream(propsFile), "Databases to Convert");
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+        }
+        
+        return dlg.getSelectedObjects();
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected static void doGenSchema() throws Exception
+    {
+        log.info("Starting up ANT for genschema task.");
+
+        // Create a new project, and perform some default initialization
+        Project project = new Project();
+        try
+        {
+            project.init();
+            project.setBasedir(".");
+
+            ProjectHelper.getProjectHelper().parse(project, new File("build.xml"));
+
+            project.executeTarget("genschema");
+
+        } catch (BuildException e)
+        {
+            throw new Exception(e);
+        }
+    }
 
 
+    /**
+     * @param databaseName
+     */
+    protected static void writeHibPropFile(final String databaseName)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("hibernate.dialect=org.hibernate.dialect.MySQLDialect\n");
+        sb.append("hibernate.connection.driver_class=com.mysql.jdbc.Driver\n");
+        sb.append("hibernate.connection.url=jdbc:mysql://localhost/"+databaseName+"\n");
+        sb.append("hibernate.connection.username=rods\n");
+        sb.append("hibernate.connection.password=rods\n");
+        sb.append("hibernate.max_fetch_depth=3\n");
+        sb.append("hibernate.connection.pool_size=5\n");
+        sb.append("hibernate.cglib.use_reflection_optimizer=true\n");
+
+        try
+        {
+            XMLHelper.setContents(new File("src" + File.separator + "hibernate.properties"), sb.toString());
+
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    
+    
+    
 
 }
