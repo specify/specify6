@@ -99,7 +99,6 @@ public class TreeDataListHeader extends JPanel implements ListDataListener
 			Pair<Integer,Integer> colBounds = rend.getColumnBoundsForRank(rank);
 			g.setColor(bgs[i%2]);
 			g.fillRect(colBounds.first,0,colBounds.second,this.getHeight());
-			System.out.println(colBounds.first + " : " + colBounds.second);
 			++i;
 
 			// draw text
