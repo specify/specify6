@@ -106,6 +106,37 @@
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.ExchangeOut" relationshipname="exchangeOutSentToOrganizations" columnname="SentToOrganizationID"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="organization" columnname="ParentOrganizationID"/>
     </table>
+    <table classname="edu.ku.brc.specify.datamodel.AppResource" table="appresource" tableid="83" lazy="true">
+      <field column="Level" name="level" type="short"/>
+      <field column="Name" name="name" type="java.lang.String" length="64"/>
+      <field column="Description" name="description" type="java.lang.String" length="255"/>
+      <field column="MetaData" name="metaData" type="java.lang.String" length="255"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="AppResourceID" name="appResourceId" type="java.lang.Integer"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.AppResourceDefault" relationshipname="appResourceDefaults" columnname="AppResourceID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.AppResourceData" relationshipname="appResourceDatas" columnname="AppResourceID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.AppResourceData" table="appresourcedata" tableid="84" lazy="true">
+      <field column="data" name="data" type="blob" length="1073741823"/>
+      <id column="AppResourceDataID" name="appResourceDataId" type="java.lang.Integer"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.AppResource" relationshipname="appResource" columnname="AppResourceID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.ViewSetObj" relationshipname="viewSetObj" columnname="ViewSetObjID"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.AppResourceDefault" table="appresourcedefault" tableid="85" lazy="true">
+      <field column="UserType" name="userType" type="java.lang.String" length="64"/>
+      <field column="DisciplineType" name="disciplineType" type="java.lang.String" length="64"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="AppResourceDefaultID" name="appResourceDefaultId" type="java.lang.Integer"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.AppResource" relationshipname="appResources" columnname="AppResourceDefaultID"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.ViewSetObj" relationshipname="viewSets" columnname="AppResourceDefaultID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CatalogSeries" relationshipname="catalogSeries" columnname="CatalogSeriesID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectionObjDef" relationshipname="collectionObjDef" columnname="CollectionObjDefID"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.SpecifyUser" relationshipname="specifyUser" columnname="SpecifyUserID"/>
+    </table>
     <table classname="edu.ku.brc.specify.datamodel.AttributeDef" table="attributedef" tableid="16" lazy="true">
       <field column="TableType" name="tableType" type="short"/>
       <field column="FieldName" name="fieldName" type="java.lang.String" length="32"/>
@@ -205,6 +236,7 @@
       <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
       <id column="CatalogSeriesID" name="catalogSeriesId" type="java.lang.Integer"/>
       <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObjDef" relationshipname="collectionObjDefItems" columnname="CatalogSeriesID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.AppResourceDefault" relationshipname="appResourceDefaults" columnname="CatalogSeriesID"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CatalogSeries" relationshipname="tissue" columnname="TissueID"/>
     </table>
     <table classname="edu.ku.brc.specify.datamodel.CollectingEvent" table="collectingevent" tableid="10" lazy="true" view="CollectingEvent">
@@ -249,6 +281,7 @@
       <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.CatalogSeries" relationshipname="catalogSeries" columnname="CollectionObjDefID"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.AttributeDef" relationshipname="attributeDefs" columnname="CollectioObjDefID"/>
       <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.Locality" relationshipname="localities" columnname="CollectionObjDefID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.AppResourceDefault" relationshipname="appResourceDefaults" columnname="CollectionObjDefID"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.DataType" relationshipname="dataType" columnname="DataTypeID"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.SpecifyUser" relationshipname="specifyUser" columnname="SpecifyUserID"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.GeographyTreeDef" relationshipname="geographyTreeDef" columnname="GeographyTreeDefID"/>
@@ -428,7 +461,7 @@
       <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
       <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
       <id column="DeterminationStatusID" name="determinationStatusId" type="java.lang.Integer"/>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Determination" relationshipname="determinations" columnname="DeterminationID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Determination" relationshipname="determinations" columnname="DeterminationStatusID"/>
     </table>
     <table classname="edu.ku.brc.specify.datamodel.ExchangeIn" table="exchangein" tableid="39" lazy="true">
       <field column="ExchangeDate" name="exchangeDate" type="calendar_date"/>
@@ -970,11 +1003,13 @@
     </table>
     <table classname="edu.ku.brc.specify.datamodel.SpecifyUser" table="specifyuser" tableid="72" lazy="true">
       <field column="Name" name="name" type="java.lang.String" length="64"/>
-      <field column="email" name="email" type="java.lang.String" length="64"/>
+      <field column="EMail" name="email" type="java.lang.String" length="64"/>
+      <field column="UserType" name="userType" type="java.lang.String" length="32"/>
       <field column="PrivLevel" name="privLevel" type="short"/>
       <id column="SpecifyUserID" name="specifyUserId" type="java.lang.Integer"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObjDef" relationshipname="collectionObjDef" columnname="SpecifyUserID"/>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.RecordSet" relationshipname="recordSets" columnname="CollectionObjectID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.RecordSet" relationshipname="recordSets" columnname="SpecifyUserID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.AppResourceDefault" relationshipname="appResourceDefaults" columnname="SpecifyUserID"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.UserGroup" relationshipname="userGroup" columnname="UserGroupID"/>
     </table>
     <table classname="edu.ku.brc.specify.datamodel.Stratigraphy" table="stratigraphy" tableid="73">
@@ -1029,7 +1064,7 @@
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Taxon" relationshipname="acceptedChildren" columnname="AcceptedID"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.TaxonCitation" relationshipname="taxonCitations" columnname="TaxonID"/>
       <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.ExternalResource" relationshipname="externalResources" columnname="TaxonID"/>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Taxon" relationshipname="children" columnname="ParentId"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Taxon" relationshipname="children" columnname="ParentID"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Taxon" relationshipname="acceptedTaxon" columnname="AcceptedID"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.TaxonTreeDef" relationshipname="definition" columnname="TaxonTreeDefID"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" relationshipname="definitionItem" columnname="TaxonTreeDefItemID"/>
@@ -1076,6 +1111,18 @@
       <id column="UserGroupID" name="userGroupId" type="java.lang.Integer"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.SpecifyUser" relationshipname="specifyUsers" columnname="UserGroupID"/>
     </table>
+    <table classname="edu.ku.brc.specify.datamodel.ViewSetObj" table="viewsetobj" tableid="86" lazy="true">
+      <field column="Level" name="level" type="short"/>
+      <field column="Name" name="name" type="java.lang.String" length="64"/>
+      <field column="Description" name="description" type="java.lang.String" length="255"/>
+      <field column="MetaData" name="metaData" type="java.lang.String" length="255"/>
+      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
+      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" length="23"/>
+      <field column="LastEditedBy" name="lastEditedBy" type="java.lang.String" length="50"/>
+      <id column="ViewSetObjID" name="viewSetObjId" type="java.lang.Integer"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.AppResourceDefault" relationshipname="appResourceDefaults" columnname="ViewSetObjID"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.AppResourceData" relationshipname="appResourceDatas" columnname="ViewSetObjID"/>
+    </table>
     <table classname="edu.ku.brc.specify.datamodel.Workbench" table="workbench" tableid="79" lazy="false">
       <field column="Name" name="name" type="java.lang.String" length="64"/>
       <field column="TableID" name="tableId" type="int"/>
@@ -1117,5 +1164,12 @@
       <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" length="23"/>
       <id column="WorkbenchTemplateMappingItemID" name="workbenchTemplateMappingItemID" type="java.lang.Integer"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.WorkbenchTemplate" relationshipname="workbenchTemplates" columnname="WorkbenchTemplateID"/>
+    </table>
+    <table classname="edu.ku.brc.ui.db.PickList" table="picklist" tableid="500" view="PickList">
+      <field column="name" name="name" type="java.lang.String" length="64"/>
+      <field column="readOnly" name="readOnly" type="boolean"/>
+      <field column="sizeLimit" name="sizeLimit" type="java.lang.Integer" length="10"/>
+      <field column="created" name="created" type="java.util.Date"/>
+      <id column="PickListID" name="pickListId" type="int"/>
     </table>
   </database>

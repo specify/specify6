@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <tableIdMapping>
+
 <database>
     <table name="edu.ku.brc.specify.datamodel.Accession" id="7" view="Accession"/>
     <table name="edu.ku.brc.specify.datamodel.AccessionAgents" id="12"/>
@@ -74,6 +76,12 @@
     <table name="edu.ku.brc.specify.datamodel.WorkbenchDataItem" id="80"/>
     <table name="edu.ku.brc.specify.datamodel.WorkbenchTemplate" id="81"/>
     <table name="edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem" id="82"/>
-    <table name="edu.ku.brc.specify.datamodel.PickList" id="500" view="PickList"/>
+    <table name="edu.ku.brc.ui.db.PickList" id="500" view="PickList"/>
+    <table name="edu.ku.brc.specify.datamodel.AppResource" id="83" view=""/>
+    <table name="edu.ku.brc.specify.datamodel.AppResourceData" id="84" view=""/>
+    <table name="edu.ku.brc.specify.datamodel.AppResourceDefault" id="85" view=""/>    
+    <table name="edu.ku.brc.specify.datamodel.ViewSetObj" id="86" view=""/>   
 </database>
+
 </tableIdMapping>
+

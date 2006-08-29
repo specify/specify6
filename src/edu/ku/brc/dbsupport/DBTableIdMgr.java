@@ -312,6 +312,7 @@ public class DBTableIdMgr
 			try
 			{
 				this.classObj = Class.forName(className);
+				//Class.
 			} catch (ClassNotFoundException e)
 			{
 				log.error("Trying to find class: " + className + " but class was not found");

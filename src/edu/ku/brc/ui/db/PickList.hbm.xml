@@ -7,7 +7,7 @@
 
   <import class="PickListItem"/>
   
-  <class name="PickList" table="picklist">
+  <class name="edu.ku.brc.ui.db.PickList" table="picklist">
     <meta attribute="class-description">
       Represents a PickList
       @author Rod Spears (with help from Hibernate)
