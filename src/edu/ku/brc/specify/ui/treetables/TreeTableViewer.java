@@ -90,6 +90,8 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	protected TreeDataListModel listModel;
 	/** The tree display widget. */
 	protected TreeDataGhostDropJList[] lists;
+	/** The scroll panes that contains the lists. */
+	protected JScrollPane[] scrollers;
 	/** Cell renderer for displaying individual nodes in the tree. */
 	protected TreeDataListCellRenderer listCellRenderer;
 	/** A header for the tree, displaying the names of the visible levels. */
@@ -245,6 +247,7 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 
 		// setup both views
 		lists = new TreeDataGhostDropJList[2];
+		scrollers = new JScrollPane[2];
 		listHeaders = new TreeDataListHeader[2];
 		treeListPanels = new JPanel[2];
 		
@@ -263,11 +266,27 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		listHeaders[0] = new TreeDataListHeader(lists[0],listModel,listCellRenderer);
 		listHeaders[1] = new TreeDataListHeader(lists[0],listModel,listCellRenderer);
 
-		treeListPanels[0] = buildTreeListPanel(lists[0],listHeaders[0]);
-		treeListPanels[1] = buildTreeListPanel(lists[1],listHeaders[1]);
-
-		this.add(treeListPanels[0],BorderLayout.CENTER);
-		repaint();
+		scrollers[0] = new JScrollPane(lists[0]);
+		scrollers[0].setBackground(Color.WHITE);
+		scrollers[0].setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollers[0].setColumnHeaderView(listHeaders[0]);
+		
+		scrollers[1] = new JScrollPane(lists[1]);
+		scrollers[1].setBackground(Color.WHITE);
+		scrollers[1].setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollers[1].setColumnHeaderView(listHeaders[1]);
+		
+		treeListPanels[0] = new JPanel();
+		treeListPanels[0].setLayout(new BoxLayout(treeListPanels[0],BoxLayout.LINE_AXIS));
+		treeListPanels[0].add(scrollers[0], BorderLayout.CENTER);
+		treeListPanels[0].add(setupButtonPanel(lists[0]),BorderLayout.EAST);
+		
+		treeListPanels[1] = new JPanel();
+		treeListPanels[1].setLayout(new BoxLayout(treeListPanels[1],BoxLayout.LINE_AXIS));
+		treeListPanels[1].add(scrollers[1], BorderLayout.CENTER);
+		treeListPanels[1].add(setupButtonPanel(lists[1]),BorderLayout.EAST);
+		
+		setViewMode(SINGLE_VIEW_MODE);
 	}
 	
 	protected void setBusy(boolean busy)
@@ -308,24 +327,6 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 			this.add(new JSplitPane(JSplitPane.VERTICAL_SPLIT,treeListPanels[0],treeListPanels[1]),BorderLayout.CENTER);
 		}
 		repaint();
-	}
-	
-	protected JPanel buildTreeListPanel(final TreeDataGhostDropJList treeList,TreeDataListHeader header)
-	{
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel,BoxLayout.LINE_AXIS));
-		
-		JScrollPane listScroll = new JScrollPane(treeList);
-		listScroll.setBackground(Color.WHITE);
-		listScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		listScroll.setColumnHeaderView(header);
-		
-		JPanel buttonPanel = setupButtonPanel(treeList);
-		
-		panel.add(listScroll, BorderLayout.CENTER);
-		panel.add(buttonPanel,BorderLayout.EAST);
-
-		return panel;
 	}
 	
 	protected JPanel setupButtonPanel(final JList list)
@@ -470,11 +471,17 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		log.error("Not yet implemented");
 		if(list == lists[0])
 		{
-			// change the top list view to look like the bottom one
+			// get the info from scrollers[1]
+			// and set it into scrollers[0]
+			Point p = scrollers[1].getViewport().getViewPosition();
+			scrollers[0].getViewport().setViewPosition(p);
 		}
 		else
 		{
-			// change the bottom list view to look like the top one
+			// get the info from scrollers[0]
+			// and set it into scrollers[1]
+			Point p = scrollers[0].getViewport().getViewPosition();
+			scrollers[1].getViewport().setViewPosition(p);
 		}
 	}
 
