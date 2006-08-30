@@ -434,7 +434,10 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             }
                         }
 
-                        UIHelper.doLogin(false, true, true, new DBListener()); // true means do auto login if it can, second bool means use dialog instead of frame
+                        if (SubPaneMgr.getInstance().aboutToShutdown())
+                        {
+                            UIHelper.doLogin(false, true, true, new DBListener()); // true means do auto login if it can, second bool means use dialog instead of frame
+                        }
                     }
                 });
 
@@ -444,11 +447,14 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 {
                     public void actionPerformed(ActionEvent ae)
                     {
-                        
-                        // Actually we really need to start over
-                        // "true" means that it should NOT use any cached values it can find to automatically initialize itself
-                        // instead it should ask the user any questions as if it were starting over
-                        restartApp(databaseName, userName, true, false);
+                        if (SubPaneMgr.getInstance().aboutToShutdown())
+                        {
+                           
+                            // Actually we really need to start over
+                            // "true" means that it should NOT use any cached values it can find to automatically initialize itself
+                            // instead it should ask the user any questions as if it were starting over
+                            restartApp(databaseName, userName, true, false);
+                        }
                     }
                 });
 
@@ -609,20 +615,23 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     protected void doExit()
     {
-		log.info("Application shutdown");
-
-		// save the long term cache mapping info
-		try
-		{
-			UICacheManager.getLongTermFileCache().saveCacheMapping();
-			log.info("Successfully saved long term cache mapping");
-		}
-		catch( IOException e1 )
-		{
-			log.warn("Error while saving long term cache mapping.",e1);
-		}
-
-        System.exit(0);
+        if (SubPaneMgr.getInstance().aboutToShutdown())
+        {
+    		log.info("Application shutdown");
+    
+    		// save the long term cache mapping info
+    		try
+    		{
+    			UICacheManager.getLongTermFileCache().saveCacheMapping();
+    			log.info("Successfully saved long term cache mapping");
+    		}
+    		catch( IOException e1 )
+    		{
+    			log.warn("Error while saving long term cache mapping.",e1);
+    		}
+    
+            System.exit(0);
+        }
     }
 
     /**

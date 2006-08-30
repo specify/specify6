@@ -308,10 +308,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         // OK, at this point the user selected more than one CatalogSeries and each of the CatalogSeries
         // Could have more than one ColObjDef, so the User needs to select a "default ColObjDef. 
-        AppPreferences appPrefs          = AppPreferences.getInstance();
-        String         recentColObjDefId = mkUserDBPrefName("recent_colobjdef_id");
-        Integer        colObjDefId       = appPrefs.getInt(recentColObjDefId, null);
+        AppPreferences   appPrefs          = AppPreferences.getInstance();
+        String           recentColObjDefId = mkUserDBPrefName("recent_colobjdef_id");
+        Integer          colObjDefId       = appPrefs.getInt(recentColObjDefId, null);
+        CollectionObjDef colObjDef         = null;
         
+
         boolean askForColObjDef   = true;
         if (!alwaysAsk)
         {
@@ -326,6 +328,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         if (cod.getCollectionObjDefId().equals(colObjDefId))
                         {
                             askForColObjDef = false;
+                            colObjDef = cod;
                             break;
                         }
                     }
@@ -336,8 +339,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
             }
         }
-        
-        CollectionObjDef colObjDef = null;
         
         // Either one wasn't selected before OR the ID we got back wasn't in any of the CatalogSeries
         // So we need to ask for a new one
@@ -380,11 +381,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 CatSeriesColObjDefItem item = dlg.getSelectedObject();
                 colObjDef = item.colObjDef;
-                CollectionObjDef.setCurrentCollectionObjDef(colObjDef);
-                appPrefs.putInt(recentColObjDefId, colObjDef.getCollectionObjDefId());
-            }
+             }
         }
 
+        if (colObjDef != null)
+        {
+            CollectionObjDef.setCurrentCollectionObjDef(colObjDef);
+            appPrefs.putInt(recentColObjDefId, colObjDef.getCollectionObjDefId());
+
+        }
         return colObjDef;
     }
 
@@ -544,10 +549,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
         Hashtable<String, String> disciplineHash = new Hashtable<String, String>();
         
         String userType = user.getUserType();
-        log.info("User["+user.getName()+"] Type["+userType+"]");
+        log.debug("User["+user.getName()+"] Type["+userType+"]");
 
         userType = StringUtils.replace(userType, " ", "").toLowerCase();
-        log.info("Def Type["+userType+"]");
+        log.debug("Def Type["+userType+"]");
 
         appResourceList.clear();
         viewSetHash.clear();
@@ -691,7 +696,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         boolean fndColObjDef = false;
         for (AppResourceDefault appResDef : appResourceList)
         {
-            log.info("["+(appResDef.getCollectionObjDef() != null ? appResDef.getCollectionObjDef().getName() : "null")+"]["+colObjDef.getName()+"]");
+            log.info("["+(appResDef.getCollectionObjDef() != null ? appResDef.getCollectionObjDef().getName() : "null")+"]["+(colObjDef != null ? colObjDef.getName() : "null")+"]");
             if (appResDef.getCollectionObjDef() != null && appResDef.getCollectionObjDef() == colObjDef)
             {
                 fndColObjDef = true;

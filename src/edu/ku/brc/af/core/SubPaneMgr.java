@@ -174,6 +174,22 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     }
 
     /**
+     * Remove all the SubPanes
+     */
+    public boolean aboutToShutdown()
+    {
+        for (Enumeration<SubPaneIFace> e=panes.elements();e.hasMoreElements();)
+        {
+            boolean ok = e.nextElement().aboutToShutdown();
+            if (!ok)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Show (makes visible) the pane by name.
      * @param name the name of the pane to be shown
      * @return the pane that is now shown

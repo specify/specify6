@@ -161,6 +161,14 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     {
         //log.info("showingPane "+name+"  "+show);
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.SubPaneIFace#aboutToShutdown()
+     */
+    public boolean aboutToShutdown()
+    {
+        return true;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.SubPaneIFace#shutdown()

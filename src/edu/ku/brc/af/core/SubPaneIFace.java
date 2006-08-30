@@ -74,6 +74,12 @@ public interface SubPaneIFace
     public void showingPane(boolean show);
 
     /**
+     * Tells the panel it is about to be closed and destroyed and it can return "false" if it wats the processed stopped.
+     * @return true means it was shutdwon correctly, false means the shutdown process stop if it can
+     */
+    public boolean aboutToShutdown();
+
+    /**
      * Tells the panel it is being closed and destroyed
      */
     public void shutdown();
