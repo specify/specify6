@@ -128,10 +128,13 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 	 * @param root the root of the subtree to save
 	 * @param deletedNodes the <code>Set</code> of nodes to delete
 	 */
-	public void saveTree(Treeable rootNode, Set<Treeable> deletedNodes)
+	public void saveTree(Treeable rootNode, boolean fixNodeNumbers, Set<Treeable> addedNodes, Set<Treeable> deletedNodes)
 	{
-		rootNode.setNodeNumber(1);
-		fixNodeNumbersFromRoot(rootNode);
+		if(fixNodeNumbers)
+		{
+			rootNode.setNodeNumber(1);
+			fixNodeNumbersFromRoot(rootNode);
+		}
 		Transaction tx = session.beginTransaction();
 		saveOrUpdateTree(rootNode);
 		for( Treeable node: deletedNodes )
@@ -230,9 +233,12 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 	protected void saveOrUpdateTree( Treeable root )
 	{
 		session.saveOrUpdate(root);
-		for( Treeable child: root.getChildNodes() )
+		if( Hibernate.isInitialized(root.getChildNodes()) )
 		{
-			saveOrUpdateTree(child);
+			for( Treeable child: root.getChildNodes() )
+			{
+				saveOrUpdateTree(child);
+			}
 		}
 	}
 

@@ -198,6 +198,11 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     {
         // Look the the desired pane
         SubPaneIFace pane = panes.get(name);
+        return showPane(pane);
+    }
+    
+    public SubPaneIFace showPane(SubPaneIFace pane)
+    {
         if (pane != null)
         {
             // Notify the current pane it is about to be hidden
@@ -212,7 +217,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             this.setSelectedComponent(pane.getUIComponent());
         } else
         {
-            throw new NullPointerException("Could not find pane["+name+"]");
+            throw new NullPointerException();
         }
         return pane;
     }
@@ -280,7 +285,10 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     public void closeCurrent()
     {
         SubPaneIFace subPane = this.getCurrentSubPane();
-        this.removePane(subPane);
+        if(subPane.aboutToShutdown())
+        {
+        	this.removePane(subPane);
+        }
     }
 
     /**

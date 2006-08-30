@@ -17,14 +17,10 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
-import edu.ku.brc.helpers.UIHelper;
-import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
-import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.ui.renderers.NameableListItemCellRenderer;
 import edu.ku.brc.util.Nameable;
 
@@ -76,7 +72,7 @@ public class TreeDefSelectionDialog extends JDialog
 		cbPanel.add(optionList);
 		add(cbPanel,BorderLayout.CENTER);
 		
-		add(new JLabel("Choose a tree"),BorderLayout.NORTH);
+		this.setTitle("Choose a tree");
 		
 		buttonPanel = new JPanel(new FlowLayout());
 		cancelButton = new JButton("Cancel");
@@ -147,33 +143,5 @@ public class TreeDefSelectionDialog extends JDialog
 		public void defSelected(TreeDefinitionIface def);
 		public void newDefOptionSelected();
 		public void cancelled();
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static void main(String[] args)
-	{
-		TreeSelectionDialogCallback cb = new TreeSelectionDialogCallback()
-		{
-			public void cancelled()
-			{
-				System.out.println("User cancelled");
-			}
-			public void defSelected(TreeDefinitionIface def)
-			{
-				System.out.println("User selected " + def.getName());
-			}
-			public void newDefOptionSelected()
-			{
-				System.out.println("User chose to create a new def");
-			}
-		};
-		Vector<TreeDefinitionIface> options = new Vector<TreeDefinitionIface>();
-		options.add(TreeFactory.createNewTreeDef(TaxonTreeDef.class,"Def1","Rem1"));
-		options.add(TreeFactory.createNewTreeDef(TaxonTreeDef.class,"Def2","Rem2"));
-		options.add(TreeFactory.createNewTreeDef(TaxonTreeDef.class,"Def3","Rem3"));
-		options.add(TreeFactory.createNewTreeDef(TaxonTreeDef.class,"Def4","Rem4"));
-		TreeDefSelectionDialog d = new TreeDefSelectionDialog(null,options,cb,true);
-		d.setSize(300,300);
-		UIHelper.centerAndShow(d);
 	}
 }

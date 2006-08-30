@@ -115,7 +115,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private JLabel splashLabel = null;
 
     // Used only if swingset is an application
-    private JFrame    frame               = null;
+    //private JFrame    frame               = null;
     private JWindow   splashWindow        = null;
     private ImageIcon specifyImageIcon    = null;
     //private ImageIcon userSplashImageIcon = null;
@@ -555,7 +555,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 {
                     public void actionPerformed(ActionEvent ae)
                     {
-                        final JDialog dialog = new JDialog(frame, "Local Prefs", true);
+                        final JDialog dialog = new JDialog(topFrame, "Local Prefs", true);
                         dialog.setContentPane(new AppPrefsEditor(false));
                         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                         dialog.pack();
@@ -568,7 +568,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 {
                     public void actionPerformed(ActionEvent ae)
                     {
-                        final JDialog dialog = new JDialog(frame, "Remote Prefs", true);
+                        final JDialog dialog = new JDialog(topFrame, "Remote Prefs", true);
                         dialog.setContentPane(new AppPrefsEditor(true));
                         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                         dialog.pack();
@@ -594,7 +594,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         builder.add(new JLabel("Specify 6.0"), cc.xy(1,1));
         builder.add(new JLabel(IconManager.getImage("SpecifyLargeIcon")), cc.xy(3,1));
 
-        final JDialog dialog = new JDialog(frame, "About Specify 6.0", true);
+        final JDialog dialog = new JDialog(topFrame, "About Specify 6.0", true);
         //dialog.setContentPane(builder.getPanel());
 
         JPanel panel = new JPanel(new BorderLayout());
@@ -630,6 +630,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     			log.warn("Error while saving long term cache mapping.",e1);
     		}
     
+    		topFrame.setVisible(false);
             System.exit(0);
         }
     }
@@ -723,10 +724,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 
                 initialize(gc);
     
-                frame = new JFrame(gc);
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    
-                UICacheManager.register(UICacheManager.FRAME, frame);
+                topFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                UICacheManager.register(UICacheManager.FRAME, topFrame);
             }
             
             initStartUpPanels(databaseName, userName);

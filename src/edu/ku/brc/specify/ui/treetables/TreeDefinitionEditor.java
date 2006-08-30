@@ -104,6 +104,12 @@ public class TreeDefinitionEditor extends BaseSubPane
 		final List<TreeDefinitionIface> treeDefs = dataService.getAllTreeDefs(treeDefClass);
 		initUI();
 		
+		if(treeDefs.size()==1)
+		{
+			treeDefSelected(treeDefs.get(0));
+			return;
+		}
+		
 		if( showSelectionDialog )
 		{
 			SwingUtilities.invokeLater(new Runnable()
@@ -116,6 +122,14 @@ public class TreeDefinitionEditor extends BaseSubPane
 		}
 	}
 	
+	@Override
+	public boolean aboutToShutdown()
+	{
+		// TODO Auto-generated method stub
+		return super.aboutToShutdown();
+	}
+
+
 	@Override
 	public void shutdown()
 	{

@@ -34,6 +34,7 @@ import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -101,8 +102,10 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	/** Collection of all nodes deleted by user that have not yet been deleted from the DB. */
 	protected SortedSet<Treeable> deletedNodes;
 	
+	/** Collection of all nodes added by user that have not yet been committed to the DB. */
 	protected SortedSet<Treeable> addedNodes;
 	
+	// to track name changes by the user
 	protected String nameBeforeEditDialogShown;
 	
     /** Logger for all messages emitted. */
@@ -120,6 +123,9 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
     protected TreeNodePopupMenu popupMenu;
     
     protected boolean busy;
+    
+    protected boolean unsavedChanges;
+    protected boolean redoNodeNumbers;
     
 	/**
 	 * Build a TreeTableViewer to view/edit the data found.
@@ -139,6 +145,9 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		addedNodes = new TreeSet<Treeable>(new ReverseRankBasedComparator());
 		statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
 		popupMenu = new TreeNodePopupMenu(this);
+		
+		unsavedChanges = false;
+		redoNodeNumbers = false;
 		
 		getLayout().removeLayoutComponent(progressBarPanel);
 		
@@ -547,13 +556,19 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		
 		listModel.hideChildren(node.getParentNode());
 		node.getParentNode().addChild(node);
-		node.getDefItem().getTreeEntries().add(node);
+		
+		// Don't do the following line because it will cause TONS of nodes to get loaded
+		//node.getDefItem().getTreeEntries().add(node);
 		
 		node.setTimestampsToNow();
 		String fullname = node.getFullName();
 		node.setFullName(fullname);
 		
 		listModel.showChildren(node.getParentNode());
+		
+		addedNodes.add(node);
+		unsavedChanges = true;
+		redoNodeNumbers = true;
 	}
 
 	/**
@@ -606,8 +621,23 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		Treeable node = (Treeable)selection;
 		if( node.canBeDeleted() )
 		{
-			int numNodesToDelete = node.getHighestChildNodeNumber() - node.getNodeNumber() + 1;
-			int userChoice = JOptionPane.showConfirmDialog(this,"This operation will delete " + numNodesToDelete + " nodes","Continue?",JOptionPane.OK_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+			Integer nodeNum = node.getNodeNumber();
+			Integer highChild = node.getHighestChildNodeNumber();
+			int numNodesToDelete = 0;
+			if(nodeNum==null || highChild==null)
+			{
+				// this must be a newly created node
+				numNodesToDelete = node.getDescendantCount() + 1;
+			}
+			else
+			{
+				numNodesToDelete = node.getHighestChildNodeNumber() - node.getNodeNumber() + 1;
+			}
+			int userChoice = JOptionPane.OK_OPTION;
+			if( numNodesToDelete > 1 )
+			{
+				userChoice = JOptionPane.showConfirmDialog(this,"This operation will delete " + numNodesToDelete + " nodes","Continue?",JOptionPane.OK_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+			}
 			if(userChoice == JOptionPane.OK_OPTION)
 			{
 				Treeable parent = node.getParentNode();
@@ -616,6 +646,10 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 				listModel.showChildren(parent);
 				deletedNodes.add(node);
 				deleteAllDescendants(node);
+				
+				redoNodeNumbers = true;
+				unsavedChanges = true;
+				
 				log.info("Deleted node");
 				statusBar.setText("Node deleted");
 			}
@@ -695,13 +729,18 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	{
 		log.info("User selected 'OK' from edit node dialog: ");
 		
-        if( !node.getName().equals(nameBeforeEditDialogShown) )
+		boolean nameChanged = !node.getName().equals(nameBeforeEditDialogShown);
+		Boolean levelIsInFullName = node.getDefItem().getIsInFullName();
+		
+        if( nameChanged && levelIsInFullName != null && levelIsInFullName.booleanValue() )
         {
         	node.fixFullNameForAllDescendants();
         }
 
         node.updateModifiedTimeAndUser();
 		listModel.nodeValuesChanged(node);
+		
+		unsavedChanges = true;
 	}
 
 	
@@ -733,19 +772,32 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		int userChoice = JOptionPane.showConfirmDialog(this,"This operation may take a long time","Continue?",JOptionPane.OK_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
 		if(userChoice == JOptionPane.OK_OPTION)
 		{
-			setBusy(true);
 			Thread t = new Thread(new Runnable()
 			{
 				public void run()
 				{
-					Treeable root = listModel.getRoot();
-					dataService.saveTree(root,deletedNodes);
-					setBusy(false);
+					doCommitToDb();
 				}
 			});
 			
 			t.start();
 		}
+	}
+	
+	protected void doCommitToDb()
+	{
+		setBusy(true);
+		Treeable root = listModel.getRoot();
+		if(unsavedChanges)
+		{
+			dataService.saveTree(root,redoNodeNumbers,addedNodes,deletedNodes);
+		}
+		setBusy(false);
+		statusBar.setText("Tree saved to DB");
+		unsavedChanges = false;
+		redoNodeNumbers = false;
+		deletedNodes.clear();
+		addedNodes.clear();
 	}
 	
 	/**
@@ -824,7 +876,7 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 			return;
 		}
 
-		final Object selection = list.getSelectedValue();
+		Object selection = list.getSelectedValue();
 		if( selection == null )
 		{
 			return;
@@ -839,29 +891,34 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		}
 		if(userChoice == JOptionPane.OK_OPTION)
 		{
-			setBusy(true);
 			Thread t = new Thread(new Runnable()
 			{
 				public void run()
 				{
-					System.out.println("Loading descendants");
-					dataService.loadAllDescendants(node);
-					System.out.println("Done loading descendants");
-					setBusy(false);
-					
-					SwingUtilities.invokeLater(new Runnable()
-					{
-						public void run()
-						{
-							System.out.println("Showing descendants");
-							listModel.showDescendants(node);
-						}
-					});
+					doExpandAllDescendants(node);
 				}
 			});
 			
 			t.start();
 		}
+	}
+	
+	protected void doExpandAllDescendants(final Treeable node)
+	{
+		setBusy(true);
+		System.out.println("Loading descendants");
+		dataService.loadAllDescendants(node);
+		System.out.println("Done loading descendants");
+		setBusy(false);
+		
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				System.out.println("Showing descendants");
+				listModel.showDescendants(node);
+			}
+		});
 	}
 	
 	
@@ -1347,12 +1404,40 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		}
 	}
 
-	
 	@Override
 	public boolean aboutToShutdown()
 	{
+		if(busy)
+		{
+			return false;
+		}
+		
+		if(!unsavedChanges)
+		{
+			return true;
+		}
+		
 		//TODO: implement a popup to ask the user to save any changes
 		// requires me to track unsaved changes with some sort of boolean flag
+		
+		String save = "Save";
+		String discard = "Discard";
+		String cancel = "Cancel";
+		JOptionPane popup = new JOptionPane("Save changes before closing?",JOptionPane.QUESTION_MESSAGE,JOptionPane.YES_NO_CANCEL_OPTION,null,new String[] {cancel,discard,save});
+		JDialog dialog = popup.createDialog(this,"Unsaved Changes");
+		SubPaneMgr.getInstance().showPane(this);
+		dialog.setVisible(true);
+		Object userOpt = popup.getValue();
+		if(userOpt == save)
+		{
+			doCommitToDb();
+			return true;
+		}
+		else if(userOpt == cancel)
+		{
+			return false;
+		}
+
 		return true;
 	}
 
