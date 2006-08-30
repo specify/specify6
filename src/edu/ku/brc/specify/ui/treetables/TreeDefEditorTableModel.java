@@ -155,7 +155,7 @@ public class TreeDefEditorTableModel extends AbstractTableModel
 			}
 			case FULLNAME_COL:
 			{
-				return "In Fullname";
+				return "In Full Name";
 			}
 			case ENFORCED_COL:
 			{

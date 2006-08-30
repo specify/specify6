@@ -352,22 +352,22 @@ public class TreeFactory
 	{
 		if( node instanceof Geography )
 		{
-			return new Pair<String,String>("Fish Views","Geography");
+			return new Pair<String,String>("SystemSetup","Geography");
 		}
 
 		if( node instanceof GeologicTimePeriod )
 		{
-			return new Pair<String,String>("Fish Views","GeologicTimePeriod");
+			return new Pair<String,String>("SystemSetup","GeologicTimePeriod");
 		}
 
 		if( node instanceof Location )
 		{
-			return new Pair<String,String>("Fish Views","Location");
+			return new Pair<String,String>("SystemSetup","Location");
 		}
 
 		if( node instanceof Taxon )
 		{
-			return new Pair<String,String>("Fish Views","Taxon");
+			return new Pair<String,String>("SystemSetup","Taxon");
 		}
 		
 		return null;
@@ -385,11 +385,11 @@ public class TreeFactory
 		// if this is the root defItem, make sure they can't edit the isEnforced field
 		if(defItem.getParentItem()==null)
 		{
-			return new Pair<String,String>("Fish Views","RootTreeDefItem");
+			return new Pair<String,String>("SystemSetup","RootTreeDefItem");
 		}
 		else
 		{
-			return new Pair<String,String>("Fish Views","TreeDefItem");
+			return new Pair<String,String>("SystemSetup","TreeDefItem");
 		}
 	}
 	
@@ -401,7 +401,7 @@ public class TreeFactory
 	 */
 	public static Pair<String,String> getAppropriateFormsetAndViewNames( TreeDefinitionIface defItem )
 	{
-		return new Pair<String,String>("Fish Views","TreeDefEditor");
+		return new Pair<String,String>("SystemSetup","TreeDefEditor");
 	}
 	
 	/**

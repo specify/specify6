@@ -3,6 +3,7 @@
  */
 package edu.ku.brc.specify.treeutils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -78,6 +79,9 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 			Treeable t = (Treeable)o;
 			results.add(t);
 		}
+		
+		Collections.sort(results,new TreePathComparator(true));
+		
 		return results;
 	}
 	

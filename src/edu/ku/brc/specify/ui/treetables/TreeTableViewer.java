@@ -617,10 +617,12 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 				deletedNodes.add(node);
 				deleteAllDescendants(node);
 				log.info("Deleted node");
+				statusBar.setText("Node deleted");
 			}
 		}
 		else
 		{
+			statusBar.setText("Selected node cannot be deleted");
 			log.info("Selected node cannot be deleted");
 		}
 	}
@@ -739,22 +741,9 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 					Treeable root = listModel.getRoot();
 					dataService.saveTree(root,deletedNodes);
 					setBusy(false);
-					
-					SwingUtilities.invokeLater(new Runnable()
-					{
-						public void run()
-						{
-							setViewMode(mode);
-						}
-					});
 				}
 			});
 			
-			removeAll();
-			setLayout(new BorderLayout());
-			add(progressBarPanel,BorderLayout.CENTER);
-			invalidate();
-			progressBarPanel.repaint();
 			t.start();
 		}
 	}
@@ -888,7 +877,8 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		if(findResults.isEmpty())
 		{
 			//TODO: notify the user that no results were found
-			log.error("Search returned no results.");
+			log.error("Search returned no results");
+			statusBar.setText("Search returned no results");
 			return;
 		}
 		
@@ -897,7 +887,8 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		if(!showPathToNode(firstMatch))
 		{
 			//TODO: notify the user that no results are below current visible root
-			log.error("No results below current visible root.");
+			log.error("No results below current visible root");
+			statusBar.setText("No results below current visible root");
 			return;
 		}
 		
@@ -948,6 +939,7 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 			{
 				//TODO: notify the user that no more results
 				log.error("No more results");
+				statusBar.setText("No more results");
 				return;
 			}
 			
@@ -956,7 +948,8 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 			if( !showPathToNode(nextNode) )
 			{
 				//TODO: notify the user that no results are below current visible root
-				log.error("No more results below current visible root.");
+				log.error("No more results below current visible root");
+				statusBar.setText("No more results below current visible root");
 				return;
 			}
 
@@ -968,6 +961,33 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 			{
 				lists[1].setSelectedValue(nextNode,true);
 			}
+		}
+	}
+	
+	public void findNext(int where,boolean wrap,Treeable current)
+	{
+		List<Treeable> matches = dataService.findByName(treeDef,current.getName());
+		if(matches.size()==1)
+		{
+			statusBar.setText("No more matches");
+			return;
+		}
+		
+		int curIndex = matches.indexOf(current);
+		if(!wrap && curIndex == matches.size()-1)
+		{
+			statusBar.setText("No more matches");
+			return;
+		}
+		
+		Treeable nextNode = matches.get((curIndex + 1)%matches.size());
+		if((where & DualViewSearchable.TOPVIEW) != 0)
+		{
+			lists[0].setSelectedValue(nextNode,true);
+		}
+		if((where & DualViewSearchable.BOTTOMVIEW) != 0)
+		{
+			lists[1].setSelectedValue(nextNode,true);
 		}
 	}
 	
@@ -991,7 +1011,27 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 			// throw new IllegalArgumentException?
 		}
 	}
-	 
+	
+	public void findNext(JList where,boolean wrap,Treeable currentNode)
+	{
+		if(busy)
+		{
+			return;
+		}
+		
+		if(where == lists[0])
+		{
+			findNext(DualViewSearchable.TOPVIEW,wrap,currentNode);
+		}
+		else if(where == lists[1])
+		{
+			findNext(DualViewSearchable.BOTTOMVIEW,wrap,currentNode);
+		}
+		else
+		{
+			// throw new IllegalArgumentException?
+		}
+	}
 	
 	protected boolean showPathToNode(Treeable node)
 	{
@@ -1308,6 +1348,14 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	}
 
 	
+	@Override
+	public boolean aboutToShutdown()
+	{
+		//TODO: implement a popup to ask the user to save any changes
+		// requires me to track unsaved changes with some sort of boolean flag
+		return true;
+	}
+
 	@Override
 	public void shutdown()
 	{

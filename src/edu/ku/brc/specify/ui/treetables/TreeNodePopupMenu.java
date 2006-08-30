@@ -10,6 +10,8 @@ import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import edu.ku.brc.specify.datamodel.Treeable;
+
 /**
  *
  *
@@ -31,7 +33,7 @@ public class TreeNodePopupMenu extends JPopupMenu
 		
 		JMenuItem subtree = new JMenuItem("Subtree");
 		JMenuItem expand = new JMenuItem("Expand all descendants");
-		JMenuItem find = new JMenuItem("Find...");
+		JMenuItem find = new JMenuItem("Find next");
 		JMenuItem edit = new JMenuItem("Edit...");
 		JMenuItem delete = new JMenuItem("Delete");
 		JMenuItem newChild = new JMenuItem("New child...");
@@ -56,8 +58,13 @@ public class TreeNodePopupMenu extends JPopupMenu
 		{
 			public void actionPerformed(ActionEvent ae)
 			{
-				// show a find dialog
-				System.out.println("Setup some search functionality");
+				Object selection = list.getSelectedValue();
+				if( selection == null )
+				{
+					return;
+				}
+				Treeable node = (Treeable)selection;
+				ttv.findNext(list,true,node);
 			}
 		});
 
