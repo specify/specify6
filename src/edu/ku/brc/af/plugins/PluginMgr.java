@@ -307,9 +307,11 @@ public class PluginMgr
                         Class cls = Class.forName(name);
                         newObj = cls.newInstance();
     
-                    } catch (ClassNotFoundException ex)
+                    } catch (Exception ex)
                     {
                         log.error(ex);
+                        // go to the next plugin
+                        continue;
                         // XXX Do we need a dialog here ???
                     }
     
