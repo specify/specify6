@@ -23,6 +23,7 @@ import junit.framework.TestCase;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Expression;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
@@ -81,7 +82,7 @@ public class AppContextTests extends TestCase
         
         CatalogSeries.setCurrentCatalogSeries(catalogSeriesList);
         
-        assertTrue(SpecifyAppContextMgr.getInstance().setContext(databaseName, userName));
+        assertTrue(SpecifyAppContextMgr.getInstance().setContext(databaseName, userName, false) == AppContextMgr.CONTEXT_STATUS.OK);
         
 
         /*

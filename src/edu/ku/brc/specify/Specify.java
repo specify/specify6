@@ -64,8 +64,8 @@ import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PrefMainPanel;
 import edu.ku.brc.af.tasks.StartUpTask;
 import edu.ku.brc.helpers.UIHelper;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
-import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
@@ -100,12 +100,15 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private JMenuBar            menuBar            = null;
     private JFrame              topFrame           = null;
     private MainPanel           mainPanel          = null;
+    private JMenuItem           changeCatSeriesBtn = null;
 
     protected  boolean          hasChanged         = false;
 
     protected Configuration     hibernateConfig    = null;
     protected String            currentDatabaseName = null;
     protected DatabaseLoginPanel dbLoginPanel       = null;
+    protected String             databaseName       = null;
+    protected String             userName           = null;
 
     protected GhostGlassPane    glassPane;
 
@@ -190,44 +193,29 @@ public class Specify extends JPanel implements DatabaseLoginListener
             return;
         }
         
-        CatalogSeries.setCurrentCatalogSeries(null);
-        CollectionObjDef.setCurrentCollectionObjDef(null);
+ 
+        PluginMgr.readRegistry();
         
-        if (AppContextMgr.getInstance().setContext(databaseName, userName))
+        PluginMgr.initializePlugins();
+
+        validate();
+
+        add(mainPanel, BorderLayout.CENTER);
+        doLayout();
+
+        mainPanel.setBackground(Color.WHITE);
+
+        SubPaneMgr.getInstance().removeAllPanes();
+
+        Taskable startUpTask = ContextMgr.getTaskByClass(StartUpTask.class);
+        if (startUpTask != null)
         {
-
-            PluginMgr.readRegistry();
-            
-            PluginMgr.initializePlugins();
-
-            validate();
-
-            add(mainPanel, BorderLayout.CENTER);
-            doLayout();
-
-            mainPanel.setBackground(Color.WHITE);
-
-            SubPaneMgr.getInstance().removeAllPanes();
-
-            Taskable startUpTask = ContextMgr.getTaskByClass(StartUpTask.class);
-            if (startUpTask != null)
-            {
-                startUpTask.requestContext();
-            }
-
-            showApp();
-            
-        } else
-        {
-
-            // TODO This is really bad because there is a Database Login with no Specify login
-            JOptionPane.showMessageDialog(null, 
-                                          getResourceString("LoginUserMismatch"), 
-                                          getResourceString("LoginUserMismatchTitle"), 
-                                          JOptionPane.ERROR_MESSAGE);
-            System.exit(0);
-        
+            startUpTask.requestContext();
         }
+
+        showApp();
+        
+
 
         
     }
@@ -349,15 +337,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
         // set the preferred size of the demo
         setPreferredSize(new Dimension(PREFERRED_WIDTH, PREFERRED_HEIGHT));
 
-        initializeUI(gc);
-    }
-
-
-    // *******************************************************
-    // *************** Load UI ******************
-    // *******************************************************
-    public void initializeUI(final GraphicsConfiguration gc)
-    {
         topFrame = new JFrame(gc);
         topFrame.setIconImage( IconManager.getImage("Specify16", IconManager.IconSize.Std16).getImage() );
 
@@ -390,7 +369,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
         mainPanel = new MainPanel();
 
-        statusField = new JStatusBar();
+        int[] sections = {30, 50};
+        statusField = new JStatusBar(sections);
         UICacheManager.register(UICacheManager.STATUSBAR, statusField);
 
         add(statusField, BorderLayout.SOUTH);
@@ -457,6 +437,24 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         UIHelper.doLogin(false, true, true, new DBListener()); // true means do auto login if it can, second bool means use dialog instead of frame
                     }
                 });
+
+        // Add Menu for switching CatalogSeries
+        changeCatSeriesBtn = UIHelper.createMenuItem(menu, "Change Catalog Series", "C", "Change Catalog Series", false, null);
+        changeCatSeriesBtn.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        
+                        // Actually we really need to start over
+                        // "true" means that it should NOT use any cached values it can find to automatically initialize itself
+                        // instead it should ask the user any questions as if it were starting over
+                        restartApp(databaseName, userName, true, false);
+                    }
+                });
+
+        changeCatSeriesBtn.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCatalogSeriesForUser() > 1);
+
+
         menu.addSeparator();
         mi = UIHelper.createMenuItem(menu, "Exit", "x", "Exit Appication", false, null);
         mi.addActionListener(new ActionListener()
@@ -565,7 +563,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     public void actionPerformed(ActionEvent ae)
                     {
                         final JDialog dialog = new JDialog(frame, "Remote Prefs", true);
-                        dialog.setContentPane(new AppPrefsEditor(false));
+                        dialog.setContentPane(new AppPrefsEditor(true));
                         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                         dialog.pack();
                         UIHelper.centerAndShow(dialog);
@@ -681,6 +679,80 @@ public class Specify extends JPanel implements DatabaseLoginListener
           }
         });
     }
+    
+    
+    /**
+     * Restarts the app with a new or old database and user name and creates the core app UI.
+     * @param databaseName the database name
+     * @param userName the user name
+     * @param startOver tells the AppContext to start over
+     * @param firstTime indicates this is the first time in the app and it should create all the UI for the core app
+     */
+    public void restartApp(final String databaseName, final String userName, final boolean startOver, final boolean firstTime)
+    {
+        if (dbLoginPanel != null)
+        {
+            dbLoginPanel.getStatusBar().setText(getResourceString("InitializingApp"));
+        }
+        
+        if (firstTime)
+        {
+            SpecifyAppPrefs.initialPrefs();
+        }
+
+        
+        //CatalogSeries.setCurrentCatalogSeries(null);
+        //CollectionObjDef.setCurrentCollectionObjDef(null);
+        
+        // "false" means that it should use any cached values it can find to automatically initialize itself
+        AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseName, userName, startOver);
+        if (status == AppContextMgr.CONTEXT_STATUS.OK)
+        {  
+            if (firstTime)
+            {
+                GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+                
+                initialize(gc);
+    
+                frame = new JFrame(gc);
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    
+                UICacheManager.register(UICacheManager.FRAME, frame);
+            }
+            
+            initStartUpPanels(databaseName, userName);
+            
+            changeCatSeriesBtn.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCatalogSeriesForUser() > 1);
+            
+        } else if (status == AppContextMgr.CONTEXT_STATUS.Error)
+        {
+
+            if (dbLoginPanel != null)
+            {
+                dbLoginPanel.getWindow().setVisible(false);
+            }
+            
+            if (CatalogSeries.getCurrentCatalogSeries().size() == 0)
+            {
+                
+                // TODO This is really bad because there is a Database Login with no Specify login
+                JOptionPane.showMessageDialog(null, 
+                                              getResourceString("LoginUserMismatch"), 
+                                              getResourceString("LoginUserMismatchTitle"), 
+                                              JOptionPane.ERROR_MESSAGE);
+                System.exit(0);
+            }
+        
+        }
+        
+        if (dbLoginPanel != null)
+        {
+            dbLoginPanel.getWindow().setVisible(false);
+            dbLoginPanel = null;
+        }
+
+
+    }
 
     //---------------------------------------------------------
     // DatabaseLoginListener Interface
@@ -691,52 +763,17 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     public void loggedIn(final String databaseName, final String userName)
     {
+        boolean firstTime = this.databaseName == null;
         
-        dbLoginPanel.getStatusBar().setText(getResourceString("InitializingApp"));
+        this.databaseName = databaseName;
+        this.userName     = userName;
         
-        SpecifyAppPrefs.initialPrefs();
+        
+        restartApp(databaseName, userName, false, firstTime);
+        
+        statusField.setSectionText(0, userName);
+        statusField.setSectionText(1, databaseName);
 
-        // Create and throw the splash screen up. Since this will
-        // physically throw bits on the screen, we need to do this
-        // on the GUI thread using invokeLater.
-
-        if (false)
-        {
-            createSplashScreen();
-            
-            // do the following on the gui thread
-            //SwingUtilities.invokeLater(new Runnable() {
-            //      public void run()
-            //      {
-                      showSplashScreen();
-            //      }
-            //});
-        }
-
-        // do the following on the gui thread
-        //SwingUtilities.invokeLater(new SpecifyRunnable(this, null)
-        //{
-        //  public void run()
-        //  {
-        //      try
-        //      {
-        //          Thread.sleep(100);
-        //      } catch (Exception ex) {}
-              
-              GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
-              
-              initialize(gc);
-
-              frame = new JFrame(gc);
-              frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-              UICacheManager.register(UICacheManager.FRAME, frame);
-              
-              initStartUpPanels(databaseName, userName);
-          //}
-        //});
-        dbLoginPanel.getWindow().setVisible(false);
-        dbLoginPanel = null;
     }
 
     /* (non-Javadoc)
@@ -767,28 +804,28 @@ public class Specify extends JPanel implements DatabaseLoginListener
   // *******************************************************
 
   /**
-   * Generic PPApp runnable. This is intended to run on the
+   * Generic Specify runnable. This is intended to run on the
    * AWT gui event thread so as not to muck things up by doing
-   * gui work off the gui thread. Accepts a PPApp and an Object
+   * gui work off the gui thread. Accepts a Specify and an Object
    * as arguments, which gives subtypes of this class the two
    * "must haves" needed in most runnables for this demo.
    */
   class SpecifyRunnable implements Runnable
   {
 
-    protected Specify mApp;
+      protected Specify mApp;
 
-    protected Object    obj;
+      protected Object    obj;
 
-    public SpecifyRunnable(Specify aApp, Object obj)
-    {
-      this.mApp = aApp;
-      this.obj = obj;
-    }
+      public SpecifyRunnable(Specify aApp, Object obj)
+      {
+        this.mApp = aApp;
+        this.obj = obj;
+      }
 
-    public void run()
-    {
-    }
+      public void run()
+      {
+      }
   }
 
   //-----------------------------------------------------------------------------
@@ -809,7 +846,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
               @SuppressWarnings("unused") Specify specify = new Specify();
           }
     });
-
 
   }
 }

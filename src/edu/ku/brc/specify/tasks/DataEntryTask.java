@@ -37,6 +37,8 @@ import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
@@ -180,7 +182,11 @@ public class DataEntryTask extends BaseTask
         
         // "null" ViewSet name means it should use the default
         
-        return new FormPane(name, task, null, defaultFormName, null, query.list(), false);
+        SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+        
+        View view = appContextMgr.getView(defaultFormName, CollectionObjDef.getCurrentCollectionObjDef());
+        
+        return new FormPane(name, task, view, null, query.list(), false);
 
     }
 

@@ -107,17 +107,27 @@ public class NavBoxLayoutManager implements LayoutManager, LayoutManager2
         int x = borderPadding;
         int y = borderPadding;
 
+        Trash trash = null;
+        
         for (Component comp : comps)
         {
             Dimension size = comp.getPreferredSize();
             if (comp instanceof Trash)
             {
-                comp.setBounds((parentSize.width - size.width)/2, parentSize.height-size.height-1, size.width, size.height);
+                trash = (Trash)comp;
+                
             } else
             {
                 comp.setBounds(x, y, parentSize.width, size.height);
                 y += size.height + ySeparation;
             }
+        }
+        
+        if (trash != null)
+        {
+            Dimension size = trash.getPreferredSize();
+            int trashY = parentSize.height - size.height-1;
+            trash.setBounds((parentSize.width - size.width)/2, trashY > y ? trashY : y, size.width, size.height);
         }
 
     }

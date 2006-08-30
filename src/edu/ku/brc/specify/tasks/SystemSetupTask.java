@@ -139,7 +139,7 @@ public class SystemSetupTask extends BaseTask
      * @param pickList the pickList to be added
      */
     protected void addPickList(final String title, final PickList pickList, final String delCmd, final int position)
-    {
+    {/*
         // These value should not be hard coded here
         int                 pickListTableId = DBTableIdMgr.lookupIdByShortName("picklist");
         DroppableFormObject dfo = new DroppableFormObject(SYSTEMSETUPTASK, pickListTableId, pickList);
@@ -170,7 +170,7 @@ public class SystemSetupTask extends BaseTask
                 }
             }
         });
-        addDraggableDataFlavors(roc);
+        addDraggableDataFlavors(roc);*/
     }
 
     /**

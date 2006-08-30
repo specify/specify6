@@ -78,6 +78,30 @@ public class FormPane extends DroppableTaskPane
     }
 
     /**
+     * Creates a form pane for a task.
+     * @param name the name of the pane
+     * @param task the owning task
+     * @param view the view to use
+     * @param data the data to fill the form
+     * @param isNewForm indicates that it is a "new" form for entering in new data
+     */
+    public FormPane(final String   name,
+                    final Taskable task,
+                    final View     view,
+                    final String   mode,
+                    final Object   data,
+                    final boolean  isNewForm)
+    {
+        this(name, task, null);
+
+        this.viewSetName = view.getViewSetName();
+        this.viewName    = view.getName();
+        this.data        = data;
+
+        createForm(view, AltView.parseMode(mode, AltView.CreationMode.View), data, isNewForm);
+    }
+
+    /**
      * Returns the processor.
      * @return the processor
      */
@@ -140,7 +164,24 @@ public class FormPane extends DroppableTaskPane
                            final Object  data,
                            final boolean isNewForm)
     {
-        View view = AppContextMgr.getInstance().getView(viewSetName, viewName);
+        this.viewSetName = viewSetName;
+        this.viewName    = viewName;
+
+        createForm(AppContextMgr.getInstance().getView(viewSetName, viewName), mode, data, isNewForm);
+    }
+
+    /**
+     * Creates a form from the view and sets the data in
+     * @param view the view to use (throws RuntimeException if null)
+     * @param mode the creation mode
+     * @param data the data to fill the form
+     * @param isNewForm indicates that it is a "new" form for entering in new data
+     */
+    public void createForm(final View    view,
+                           final AltView.CreationMode mode,
+                           final Object  data,
+                           final boolean isNewForm)
+    {
         if (view != null)
         {
             name = view.getName(); // names the Tab
@@ -149,9 +190,7 @@ public class FormPane extends DroppableTaskPane
             multiView = new MultiView(null, view, mode, isList, true);
             if (multiView != null)
             {
-                this.viewSetName = viewSetName;
-                this.viewName    = viewName;
-                this.data        = data;
+                this.data = data;
 
                 this.removeAll();
 
@@ -181,6 +220,9 @@ public class FormPane extends DroppableTaskPane
                 UICacheManager.forceTopFrameRepaint();
 
             }
+        } else
+        {
+            throw new RuntimeException("The View was null!");
         }
     }
 

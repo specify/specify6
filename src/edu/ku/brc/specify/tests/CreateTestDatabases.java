@@ -1664,7 +1664,7 @@ public class CreateTestDatabases
                 CatalogSeries.setCurrentCatalogSeries(catSeries);
 
 
-                contextMgr.setContext("fish", userName);
+                contextMgr.setContext("fish", userName, false);
 
                 log.info(contextMgr.getView("Birds Views", "CollectionObject") != null ? "Found View OK" : "NOT FOUND");
 
@@ -1710,7 +1710,7 @@ public class CreateTestDatabases
                 CatalogSeries.setCurrentCatalogSeries(catSeries);
 
 
-                contextMgr.setContext("fish", userName);
+                contextMgr.setContext("fish", userName, false);
 
                 log.info(contextMgr.getView("Fish Views", "CollectionObject") != null ? "Found View OK" : "NOT FOUND");
 

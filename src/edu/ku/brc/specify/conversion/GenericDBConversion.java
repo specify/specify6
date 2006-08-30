@@ -876,7 +876,7 @@ public class GenericDBConversion
      * @param userName the user name
      * @return the record id
      */
-    public int createDefaultUser(final String userName)
+    public int createDefaultUser(final String userName, final String userType)
     {
         /*
          describe usergroup;
@@ -922,7 +922,7 @@ public class GenericDBConversion
             strBuf.append("NULL,");
             strBuf.append("'"+userName+"',");
             strBuf.append("'',");
-            strBuf.append("'Collection Manager',"); // Should be a PickList
+            strBuf.append("'"+userType+"',");
             strBuf.append("0,");
             strBuf.append(userGroupId+")");
 

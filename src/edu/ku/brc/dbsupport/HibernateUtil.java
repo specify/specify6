@@ -151,7 +151,7 @@ public class HibernateUtil {
         if (connection.indexOf("inetdae7") == -1)
         {
             config.setProperty("hibernate.connection.url", connection);
-            config.setProperty("hibernate.dialect","org.hibernate.dialect.MySQLDialect");
+            config.setProperty("hibernate.dialect", dbConn.getDialect());
             config.setProperty("hibernate.connection.driver_class", driver);
         }  
         else 

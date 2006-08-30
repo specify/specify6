@@ -70,14 +70,25 @@ public class ChooseFromListDlg<T> extends JDialog implements ActionListener
     /**
      * Constructor.
      * @param title the title of the dialog
-     * @param items the list to be selected from
+     * @param itemList the list to be selected from
      * @throws HeadlessException
      */
-    public ChooseFromListDlg(final String title, final List<T> items) throws HeadlessException
+    public ChooseFromListDlg(final String title, final List<T> itemList) throws HeadlessException
+    {
+        this(title, itemList, true);
+    }
+
+    /**
+     * Constructor.
+     * @param title the title of the dialog
+     * @param itemList the list to be selected from
+     * @throws HeadlessException
+     */
+    public ChooseFromListDlg(final String title, final List<T> itemList, final boolean includeCancelBtn) throws HeadlessException
     {
         super((Frame)UICacheManager.get(UICacheManager.FRAME), true);
-        this.items = items;
-        createUI(title);
+        this.items = itemList;
+        createUI(title, includeCancelBtn);
         setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         this.setAlwaysOnTop(true);
@@ -90,13 +101,13 @@ public class ChooseFromListDlg<T> extends JDialog implements ActionListener
      * @param icon the icon to be displayed in front of each entry in the list
      * @throws HeadlessException
      */
-    public ChooseFromListDlg(final String title, final List<T> items, final ImageIcon icon) throws HeadlessException
+    public ChooseFromListDlg(final String title, final List<T> itemList, final ImageIcon icon) throws HeadlessException
     {
         super((Frame)UICacheManager.get(UICacheManager.FRAME), true);
-        this.items = items;
-        this.icon = icon;
+        this.items = itemList;
+        this.icon  = icon;
 
-        createUI(title);
+        createUI(title, true);
         setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         this.setAlwaysOnTop(true);
@@ -104,9 +115,10 @@ public class ChooseFromListDlg<T> extends JDialog implements ActionListener
 
     /**
      * Create the UI for the dialog.
-     *
+     * @param title title for dialog
+     * @param includeCancelBtn indicates whether to create and displaty a cancel btn
      */
-    protected void createUI(final String title)
+    protected void createUI(final String title, final boolean includeCancelBtn)
     {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
@@ -148,20 +160,24 @@ public class ChooseFromListDlg<T> extends JDialog implements ActionListener
             panel.add(listScroller, BorderLayout.CENTER);
 
             // Bottom Button UI
-            cancelBtn         = new JButton(getResourceString("Cancel"));
             okBtn             = new JButton(getResourceString("OK"));
-
             okBtn.addActionListener(this);
             getRootPane().setDefaultButton(okBtn);
 
-            ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
-            //btnBuilder.addGlue();
-             btnBuilder.addGriddedButtons(new JButton[] {cancelBtn, okBtn});
-
-            cancelBtn.addActionListener(new ActionListener()
-                    {  public void actionPerformed(ActionEvent ae) { setVisible(false); isCancelled = true;} });
-
-            panel.add(btnBuilder.getPanel(), BorderLayout.SOUTH);
+            if (includeCancelBtn)
+            {
+                cancelBtn = new JButton(getResourceString("Cancel"));
+                ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
+                btnBuilder.addGriddedButtons(new JButton[] {cancelBtn, okBtn});
+    
+                cancelBtn.addActionListener(new ActionListener()
+                        {  public void actionPerformed(ActionEvent ae) { setVisible(false); isCancelled = true;} });
+                
+                panel.add(btnBuilder.getPanel(), BorderLayout.SOUTH);
+            } else
+            {
+                panel.add(okBtn, BorderLayout.SOUTH);
+            }
 
             updateUIState();
 

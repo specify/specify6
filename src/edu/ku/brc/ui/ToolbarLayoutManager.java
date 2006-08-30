@@ -111,7 +111,11 @@ public class ToolbarLayoutManager implements LayoutManager, LayoutManager2
             Dimension size = comp.getPreferredSize();
             if (comp == lastComp)
             {
-                x = arg0.getSize().width - (borderPadding + size.width);
+                int lastCompX = arg0.getSize().width - (borderPadding + size.width);
+                if (lastCompX > x)
+                {
+                    x = lastCompX;
+                }
             }
             
             int yc = y;

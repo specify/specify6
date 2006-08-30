@@ -140,8 +140,11 @@ public class TaxonTreeTask extends BaseTask implements DualViewSearchable
 		String label = getResourceString(TAXON);
 		String iconName = TAXON;
 		String hint = getResourceString("taxontree_hint");
-		MemoryDropDownButton btn = createMemoryToolbarButton(label,iconName,hint,toolBarBtnItems);
-        toolBarItems.add(new ToolBarItemDesc(btn));
+        if (toolBarBtnItems.size() > 0)
+        {
+            MemoryDropDownButton btn = createMemoryToolbarButton(label,iconName,hint,toolBarBtnItems);
+            toolBarItems.add(new ToolBarItemDesc(btn));
+        }
 	}
 	
 	protected void showTaxonTree(TreeDefinitionIface treeDef)

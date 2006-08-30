@@ -111,7 +111,6 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.db.DatabaseLoginDlg;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
-import edu.ku.brc.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.AltView;
@@ -906,7 +905,7 @@ public class FormEditor implements DatabaseLoginListener
     {
         SpecifyAppPrefs.initialPrefs();
 
-        if (!AppContextMgr.getInstance().setContext(databaseName, userName))
+        if (AppContextMgr.getInstance().setContext(databaseName, userName, false) == AppContextMgr.CONTEXT_STATUS.Error)
         {
             log.error("Problems setting AppResourceDefault!");
             System.exit(0);

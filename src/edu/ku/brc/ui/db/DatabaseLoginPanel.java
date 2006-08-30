@@ -664,17 +664,10 @@ public class DatabaseLoginPanel extends JPanel
                 isLoggedIn = UIHelper.tryLogin(getDriverClassName(), getDialectClassName(), getDatabaseName(),
                                                getConnectionStr(), getUserName(), getPassword());
 
-                // I am not sure this is the rightplace for this
-                // but this is where I am putting it for now
-                if (isLoggedIn)
-                {
-                    setMessage(getResourceString("LoadingSchema"), false);
-                    HibernateUtil.shutdown();
-                    HibernateUtil.getCurrentSession();
-                }
-                long endTime = System.currentTimeMillis();
-                eTime = (endTime - eTime) / 1000;
-                timeOK = true;
+                // Note: this doesn't happen on the GUI thread
+                HibernateUtil.shutdown();
+                HibernateUtil.getCurrentSession();
+
                 return null;
             }
 
@@ -682,6 +675,20 @@ public class DatabaseLoginPanel extends JPanel
             public void finished()
             {
 
+                // I am not sure this is the rightplace for this
+                // but this is where I am putting it for now
+                if (isLoggedIn)
+                {
+                    setMessage(getResourceString("LoadingSchema"), false);
+                    
+                    // Note: this DOES happen on the GUI thread
+                    HibernateUtil.shutdown();
+                    HibernateUtil.getCurrentSession();
+                }
+                long endTime = System.currentTimeMillis();
+                eTime = (endTime - eTime) / 1000;
+                timeOK = true;
+                
                 if (progressWorker != null)
                 {
                     progressWorker.stop();

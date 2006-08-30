@@ -15,6 +15,7 @@
 package edu.ku.brc.specify.config;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -188,6 +189,18 @@ public class SpecifyAppContextMgr extends AppContextMgr
         }
         return null;
     }
+    
+    /**
+     * Returns the number of CatalogSeries that this user is connected to.
+     * @return the number of CatalogSeries that this user is connected to.
+     */
+    public int getNumOfCatalogSeriesForUser()
+    {
+        String queryStr = "select count(cs) From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.catalogSeries as cs where user.specifyUserId = "+user.getSpecifyUserId();
+        Query query = HibernateUtil.getCurrentSession().createQuery(queryStr);
+        List list = query.list();
+        return list.size() > 0 ? (Integer)list.get(0) : 0;
+    }
 
     /**
      * Sets up the "current" Catalog Series by first checking prefs for the most recent primary key,
@@ -201,7 +214,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     {
         final String prefName = mkUserDBPrefName("recent_catalogseries_id");
 
-        List<CatalogSeries> catSeries = CatalogSeries.getCurrentCatalogSeries();
+        List<CatalogSeries> catSeries = CatalogSeries.getCurrentCatalogSeries(); // always return a List Object (might be empty)
 
         if (catSeries.size() == 0 || alwaysAsk)
         {
@@ -244,14 +257,19 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
                     UIHelper.centerAndShow(dlg);
 
+                    catSeries.clear();
                     if (!dlg.isCancelled())
                     {
                         catSeries.addAll(dlg.getSelectedObjects());
+                    } else
+                    {
+                        return null;
                     }
+                    
                 } else
                 {
-                    // TODO error dialog
-
+                    // Accession / Registrar / Director may not be assigned to any Catalog Series
+                    // Or for a stand alone Accessions Database there may not be any 
                 }
 
                 if (catSeries.size() > 0)
@@ -281,73 +299,89 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @return the current CollectionObjDef or null
      */
     @SuppressWarnings("unchecked")
-    public CollectionObjDef setupCurrentColObjDef(final CatalogSeries catalogSeries, final boolean alwaysAsk)
+    public CollectionObjDef setupCurrentColObjDef(final List<CatalogSeries> catalogSeriesList, final boolean alwaysAsk)
     {
-        if (catalogSeries == null)
+        if (catalogSeriesList == null || catalogSeriesList.size() == 0)
         {
             return null;
         }
-        final String prefName = mkUserDBPrefName("recent_colobjdef_id");
-
-        CollectionObjDef colObjDef = CollectionObjDef.getCurrentCollectionObjDef();
-
-        if (colObjDef == null || alwaysAsk)
+        
+        // OK, at this point the user selected more than one CatalogSeries and each of the CatalogSeries
+        // Could have more than one ColObjDef, so the User needs to select a "default ColObjDef. 
+        AppPreferences appPrefs          = AppPreferences.getInstance();
+        String         recentColObjDefId = mkUserDBPrefName("recent_colobjdef_id");
+        Integer        colObjDefId       = appPrefs.getInt(recentColObjDefId, null);
+        
+        boolean askForColObjDef   = true;
+        if (!alwaysAsk)
         {
-            AppPreferences appPrefs    = AppPreferences.getInstance();
-            boolean       askToSelect = true;
-            if (!alwaysAsk)
+            // At this point if we have an ID then check to make sure it is an ID from one of the currently selected
+            // CatalogSeries, and if not then ask for a new one
+            if (colObjDefId != null)
             {
-                Integer recentId = appPrefs.getInt(prefName, null);
-                if (recentId != null)
+                for (CatalogSeries cs : catalogSeriesList)
                 {
-                    Query query = HibernateUtil.getCurrentSession().createQuery( "From CollectionObjDef where collectionObjDefId = "+recentId.toString());
-                    List list = query.list();
-                    if (list.size() == 1)
+                    for (CollectionObjDef cod : cs.getCollectionObjDefItems())
                     {
-                        colObjDef = (CollectionObjDef)list.get(0);
-                        askToSelect = false;
+                        if (cod.getCollectionObjDefId().equals(colObjDefId))
+                        {
+                            askForColObjDef = false;
+                            break;
+                        }
+                    }
+                    if (!askForColObjDef)
+                    {
+                        break;
                     }
                 }
             }
-
-            if (askToSelect)
+        }
+        
+        CollectionObjDef colObjDef = null;
+        
+        // Either one wasn't selected before OR the ID we got back wasn't in any of the CatalogSeries
+        // So we need to ask for a new one
+        if (askForColObjDef || alwaysAsk)
+        {
+            class CatSeriesColObjDefItem
             {
-                String queryStr = "select cod From CatalogSeries as cs Inner Join cs.collectionObjDefItems as cod where cs.catalogSeriesId = "+catalogSeries.getCatalogSeriesId();
-                Query query = HibernateUtil.getCurrentSession().createQuery(queryStr);
-                List list = query.list();
-
-                if (list.size() == 1)
+                protected String name;
+                public CollectionObjDef colObjDef;
+                
+                public CatSeriesColObjDefItem(CatalogSeries catSeries, CollectionObjDef colObjDef)
                 {
-                    colObjDef = (CollectionObjDef)list.get(0);
-                    CollectionObjDef.setCurrentCollectionObjDef(colObjDef);
-
-                } else if (list.size() > 1)
-                {
-                    Collections.sort(list);
-
-                    ChooseFromListDlg<CollectionObjDef> dlg = new ChooseFromListDlg<CollectionObjDef>("Choose a Collection Object Def", list); // TODO I18N
-                    dlg.setAlwaysOnTop(true);
-                    dlg.setModal(true);
-
-                    UIHelper.centerAndShow(dlg);
-                    if (!dlg.isCancelled())
-                    {
-                        colObjDef = dlg.getSelectedObject();
-                        CollectionObjDef.setCurrentCollectionObjDef(colObjDef);
-                    }
-                } else
-                {
-                    // TODO error dialog
-
+                    name = catSeries.getSeriesName() + " / " + colObjDef.getName();
+                    this.colObjDef = colObjDef;
                 }
-
-                if (colObjDef != null)
+                
+                public String toString()
                 {
-                    appPrefs.putInt(prefName, colObjDef.getCollectionObjDefId());
-                } else
-                {
-                    appPrefs.remove(prefName);
+                    return name;
                 }
+            }
+            
+            List<CatSeriesColObjDefItem> list = new ArrayList<CatSeriesColObjDefItem>(10);
+            for (CatalogSeries cs : catalogSeriesList)
+            {
+                for (CollectionObjDef cod : cs.getCollectionObjDefItems())
+                {
+                    list.add(new CatSeriesColObjDefItem(cs, cod));
+                }
+            }
+
+            // TODO Need to add a Help Btn to this Dialog
+            ChooseFromListDlg<CatSeriesColObjDefItem> dlg = 
+                new ChooseFromListDlg<CatSeriesColObjDefItem>(getResourceString("ChooseCatSeriesColObjDef"), list, false);
+            dlg.setAlwaysOnTop(true);
+            dlg.setModal(true);
+
+            UIHelper.centerAndShow(dlg);
+            if (!dlg.isCancelled() && dlg.getSelectedObject() != null) // shouldn't need to check for null (but just in case)
+            {
+                CatSeriesColObjDefItem item = dlg.getSelectedObject();
+                colObjDef = item.colObjDef;
+                CollectionObjDef.setCurrentCollectionObjDef(colObjDef);
+                appPrefs.putInt(recentColObjDefId, colObjDef.getCollectionObjDefId());
             }
         }
 
@@ -464,11 +498,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.AppResourceDefaultIFace#setContext(java.lang.String, java.lang.String)
+     * @see edu.ku.brc.af.core.AppContextMgr#setContext(java.lang.String, java.lang.String, boolean)
      */
-    public boolean setContext(final String databaseName,
-                              final String userName)
+    public CONTEXT_STATUS setContext(final String databaseName,
+                                     final String userName,
+                                     final boolean startingOver)
     {
+        this.databaseName = databaseName;
+        this.userName     = userName;
+        
         // This is where we will read it in from the Database
         // but for now we don't need to do that.
         //
@@ -489,28 +527,22 @@ public class SpecifyAppContextMgr extends AppContextMgr
             throw new RuntimeException("The user ["+userName+"] could  not be located as a Specify user.");
         }
 
-        this.databaseName = databaseName;
-        this.userName     = userName;
-
         // First we start by getting all the CatalogSeries that the User want to
         // work with for this "Context" then we need to go get all the Default View and
         // additional XML Resources.
-
-        Query query = HibernateUtil.getCurrentSession().createQuery( "From AppResourceDefault where specifyUserId = "+user.getSpecifyUserId());
-        List appResDefList = query.list();
-
-        List<CatalogSeries> catalogSeries = setupCurrentCatalogSeries(user, false);
-
-        // Set up the CollectionObjectDef for the most common case of one CatalogSeries with one CollecionObjDef
-        CollectionObjDef.setCurrentCollectionObjDef(null);
-        if (catalogSeries.size() == 1)
+        
+        // Ask the User to choose which CatalogSeries they will be working with
+        List<CatalogSeries> catalogSeries = setupCurrentCatalogSeries(user, startingOver);
+        if (catalogSeries == null)
         {
-            if (catalogSeries.get(0).getCollectionObjDefItems().size() == 0)
-            {
-                CollectionObjDef.setCurrentCollectionObjDef(catalogSeries.get(0).getCollectionObjDefItems().iterator().next());
-            }
+            //catalogSeries = new ArrayList<CatalogSeries>();
+            //catalogSeries.addAll(CatalogSeries.getCurrentCatalogSeries());
+            // Return false but on't mess with anything that has been set up so far
+            currentStatus  = currentStatus == CONTEXT_STATUS.Initial ? CONTEXT_STATUS.Error : CONTEXT_STATUS.Ignore;
+            return currentStatus;
         }
-
+        Hashtable<String, String> disciplineHash = new Hashtable<String, String>();
+        
         String userType = user.getUserType();
         log.info("User["+user.getName()+"] Type["+userType+"]");
 
@@ -519,25 +551,62 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
         appResourceList.clear();
         viewSetHash.clear();
-        //appResHash.clear();
 
-        Hashtable<String, String> disciplineHash = new Hashtable<String, String>();
 
-        log.info("Adding AppResourceDefs");
-        for (CatalogSeries cs : catalogSeries)
+        Query query = HibernateUtil.getCurrentSession().createQuery( "From AppResourceDefault where specifyUserId = "+user.getSpecifyUserId());
+        List appResDefList = query.list();
+
+
+        if (catalogSeries.size() == 0)
         {
-            log.info("CS["+cs.getSeriesName()+"]");
-            for (CollectionObjDef cod : cs.getCollectionObjDefItems())
+            //throw new RuntimeException("What does it mean if the current user is not assigned to any CatalogSeries?");
+            
+            // Accession / Registrar / Director may not be assigned to any Catalog Series
+            // Or for a stand alone Accessions Database there may not be any 
+
+            CatalogSeries.getCurrentCatalogSeries().clear();
+            CollectionObjDef.setCurrentCollectionObjDef(null);
+            
+            disciplineHash.put(userType, userType);
+            
+        } else
+        {
+    
+            // Set up the CollectionObjectDef for the most common case of one CatalogSeries with one CollecionObjDef
+            CollectionObjDef.setCurrentCollectionObjDef(null);
+            if (catalogSeries.size() == 1)
             {
-                log.info("COD["+cod.getName()+"]");
-
-                disciplineHash.put(cod.getDiscipline(), cod.getDiscipline());
-
-                AppResourceDefault appResource = find(appResDefList, user, cs, cod);
-                if (appResource != null)
+                if (catalogSeries.get(0).getCollectionObjDefItems().size() == 1)
                 {
-                    log.info("Adding1 "+getAppResDefAsString(appResource));
-                    appResourceList.add(appResource);
+                    CollectionObjDef.setCurrentCollectionObjDef(catalogSeries.get(0).getCollectionObjDefItems().iterator().next());
+                }
+                
+            } else
+            {
+                // OK, at this point the user selected more than one CatalogSeries and each of the CatalogSeries
+                // Could have more than one ColObjDef, so the User needs to select a "default ColObjDef. 
+                //
+                // Also note that this set the "default" CollectionObjDef
+                setupCurrentColObjDef(catalogSeries, startingOver);
+            }
+            
+            log.info("Adding AppResourceDefs from Catalog Series and ColObjDefs");
+            for (CatalogSeries cs : catalogSeries)
+            {
+                log.info("CatSeries["+cs.getSeriesName()+"]");
+                for (CollectionObjDef cod : cs.getCollectionObjDefItems())
+                {
+                    log.info("  ColObjDef["+cod.getName()+"]");
+                    
+                    disciplineHash.put(cod.getDiscipline(), cod.getDiscipline());
+                    
+                    AppResourceDefault appResource = find(appResDefList, user, cs, cod);
+                    if (appResource != null)
+                    {
+                        log.info("Adding1 "+getAppResDefAsString(appResource));
+                        appResourceList.add(appResource);
+                        
+                    }
                 }
             }
         }
@@ -545,7 +614,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         // Add Backstop for Discipline and User Type
         for (String discipline : disciplineHash.keySet())
         {
-            log.info("****** Adding Backstop for ["+discipline+"]["+userType+"]");
+            //log.info("****** Adding Backstop for ["+discipline+"]["+userType+"]");
 
             File dir = XMLHelper.getConfigDir(discipline + File.separator + userType);
             if (dir.exists())
@@ -553,7 +622,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 AppResourceDefault appResource = createAppResourceDefFromDir(dir);
                 appResource.setDisciplineType(discipline);
                 appResource.setUserType(userType);
-                log.info("Adding2 "+getAppResDefAsString(appResource));
+                //log.info("Adding2 "+getAppResDefAsString(appResource));
                 appResourceList.add(appResource);
             }
         }
@@ -561,13 +630,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
         // Add Backstop for just the Discipline
         for (String discipline : disciplineHash.keySet())
         {
-            log.info("***** Adding Backstop for ["+discipline+"]");
+            //log.info("***** Adding Backstop for ["+discipline+"]");
             File dir = XMLHelper.getConfigDir(discipline);
             if (dir.exists())
             {
                 AppResourceDefault appResource = createAppResourceDefFromDir(dir);
                 appResource.setDisciplineType(discipline);
-                log.info("Adding3 "+getAppResDefAsString(appResource));
+                //log.info("Adding3 "+getAppResDefAsString(appResource));
                 appResourceList.add(appResource);
             }
         }
@@ -575,7 +644,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
         backStopViewSetMgr = new ViewSetMgr(XMLHelper.getConfigDir("backstop"));
         backStopAppResMgr  = new AppResourceMgr(XMLHelper.getConfigDir("backstop"));
 
-        return true;
+        currentStatus = CONTEXT_STATUS.OK;
+        
+        return currentStatus;
     }
 
     /**
@@ -620,6 +691,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         boolean fndColObjDef = false;
         for (AppResourceDefault appResDef : appResourceList)
         {
+            log.info("["+(appResDef.getCollectionObjDef() != null ? appResDef.getCollectionObjDef().getName() : "null")+"]["+colObjDef.getName()+"]");
             if (appResDef.getCollectionObjDef() != null && appResDef.getCollectionObjDef() == colObjDef)
             {
                 fndColObjDef = true;

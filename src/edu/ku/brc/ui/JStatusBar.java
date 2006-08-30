@@ -19,6 +19,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Insets;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -33,7 +34,9 @@ import edu.ku.brc.helpers.UIHelper;
 
 /**
  * This is a statusbar component. It currently enables a progressbar to be shown and
- * hidden when "indeterminate" is turned on and off
+ * hidden when "indeterminate" is turned on and off. The status always comes with a "main"
+ * status label area. The numer of sections passed in to the constructor can indicate how many
+ * additional sections are added to the right of the main status label.
  *
  * @code_status Complete
  *
@@ -50,12 +53,23 @@ public class JStatusBar extends JPanel
     private static final Color NORMAL_COLOR = Color.BLACK;
 
     protected JLabel       statusLabel = null;
+    protected JLabel[]     labels      = null;
     protected JProgressBar progressBar = null;
 
     /**
-     * Constructor
-     */
+     * Default Constructor.
+      */
     public JStatusBar()
+    {
+        this(null);
+    }
+    
+    /**
+     * Constructor.
+     * @param sectionSize can be null, otherwise each element of the array indicates a static size in chars 
+     * for the additional section in the statusbar
+     */
+    public JStatusBar(final int[] sectionSize)
     {
         setLayout(new BorderLayout());
 
@@ -69,7 +83,30 @@ public class JStatusBar extends JPanel
 
         PanelBuilder builder = new PanelBuilder(new FormLayout("f:p:g,2px,right:p" + (UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX ? ",15px" : ""), "p"), this);
         CellConstraints cc = new CellConstraints();
-        builder.add(statusLabel, cc.xy(1,1));
+        if (sectionSize == null)
+        {
+            builder.add(statusLabel, cc.xy(1,1));
+            
+        } else
+        {
+            StringBuilder str = new StringBuilder("f:p:g");
+            for (int size : sectionSize)
+            {
+                str.append("," + size + "dlu");
+                str.append(",p");
+            }
+            PanelBuilder sbBldr = new PanelBuilder(new FormLayout(str.toString(), "p"));
+            sbBldr.add(statusLabel, cc.xy(1, 1));
+            
+            labels = new JLabel[sectionSize.length];
+            for (int i=0;i<sectionSize.length;i++)
+            {
+                labels[i] = new JLabel(" ", JLabel.CENTER);
+                labels[i].setBorder(new EndsBorder(i == sectionSize.length-1));
+                sbBldr.add(labels[i], cc.xy(i+2, 1));
+            }
+            builder.add(sbBldr.getPanel(), cc.xy(1,1));
+        }
         builder.add(progressBar, cc.xy(3,1));
         progressBar.setVisible(false);
         progressBar.setValue(0);
@@ -86,6 +123,19 @@ public class JStatusBar extends JPanel
     {
         statusLabel.setForeground(NORMAL_COLOR);
         statusLabel.setText(text);
+    }
+
+    /**
+     * Sets text into the statusbar's section.
+     * @param sectionInxwhich section text to sets
+     * @param text the text of the status bar
+     */
+    public void setSectionText(final int sectionInx, final String text)
+    {
+        if (labels != null && sectionInx > -1 && sectionInx < labels.length)
+        {
+            labels[sectionInx].setText(text);
+        }
     }
 
     /**
@@ -156,34 +206,40 @@ public class JStatusBar extends JPanel
         {
             super(BevelBorder.LOWERED);
         }
-        protected void paintLoweredBevel(Component c, Graphics g, int x, int y,
-                                         int width, int height)  {
-         Color oldColor = g.getColor();
-         int h = height;
-         int w = width;
 
-         g.translate(x, y);
+        protected void paintLoweredBevel(Component c,
+                                         Graphics g,
+                                         int x,
+                                         int y,
+                                         int width,
+                                         int height)
+        {
+            Color oldColor = g.getColor();
+            int h = height;
+            int w = width;
 
-         g.setColor(getShadowInnerColor(c));
-         g.drawLine(0, 0, 0, h-1);
-         g.drawLine(1, 0, w-1, 0);
+            g.translate(x, y);
 
-         //g.setColor(getShadowOuterColor(c));
-         //g.drawLine(1, 1, 1, h-2);
-         //g.drawLine(2, 1, w-2, 1);
+            g.setColor(getShadowInnerColor(c));
+            g.drawLine(0, 0, 0, h - 1);
+            g.drawLine(1, 0, w - 1, 0);
 
-         g.setColor(getHighlightOuterColor(c));
-         g.drawLine(1, h-1, w-1, h-1);
-         g.drawLine(w-1, 1, w-1, h-2);
+            // g.setColor(getShadowOuterColor(c));
+            // g.drawLine(1, 1, 1, h-2);
+            // g.drawLine(2, 1, w-2, 1);
 
-         //g.setColor(getHighlightInnerColor(c));
-        // g.drawLine(2, h-2, w-2, h-2);
-        // g.drawLine(w-2, 2, w-2, h-3);
+            g.setColor(getHighlightOuterColor(c));
+            g.drawLine(1, h - 1, w - 1, h - 1);
+            g.drawLine(w - 1, 1, w - 1, h - 2);
 
-         g.translate(-x, -y);
-         g.setColor(oldColor);
+            //g.setColor(getHighlightInnerColor(c));
+            // g.drawLine(2, h-2, w-2, h-2);
+            // g.drawLine(w-2, 2, w-2, h-3);
 
-     }
+            g.translate(-x, -y);
+            g.setColor(oldColor);
+
+        }
     }
 
     /*
@@ -227,4 +283,58 @@ public class JStatusBar extends JPanel
         }
     }
     */
+    
+    public class EndsBorder extends BevelBorder
+    {
+        protected Insets insets;
+        
+        public EndsBorder(boolean bothEnds)
+        {
+            super(BevelBorder.LOWERED);
+            insets = new Insets(2, 0, 0, bothEnds ? 2 : 0);
+        }
+
+        protected void paintLoweredBevel(Component c,
+                                         Graphics g,
+                                         int x,
+                                         int y,
+                                         int width,
+                                         int height)
+        {
+            Color oldColor = g.getColor();
+            int h = height;
+            int w = width;
+
+            g.translate(x, y);
+
+            g.setColor(getShadowInnerColor(c));
+            g.drawLine(0, 0, 0, h - 1);
+            
+            g.setColor(getHighlightOuterColor(c));
+            g.drawLine(1, 0, 1, h - 1);
+            
+            if (insets.right > 0)
+            {
+                g.setColor(getShadowInnerColor(c));
+                g.drawLine(w - 2, 1, w - 2, h - 2);
+                
+                g.setColor(getHighlightOuterColor(c));
+                g.drawLine(w - 1, 1, w - 1, h - 2);
+ 
+            }
+
+            g.translate(-x, -y);
+            g.setColor(oldColor);
+
+        }
+        
+        /* (non-Javadoc)
+         * @see javax.swing.border.Border#getBorderInsets(java.awt.Component)
+         */
+        public Insets getBorderInsets(Component c)
+        {
+            return insets;
+        }
+    }
+
 }

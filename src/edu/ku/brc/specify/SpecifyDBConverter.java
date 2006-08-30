@@ -271,7 +271,8 @@ public class SpecifyDBConverter
                 boolean convertCatalogSeriesDef = false;
                 if (convertCatalogSeriesDef || doAll)
                 {
-                    int specifyUserId = conversion.createDefaultUser("rods");
+                    String userType =  databaseName.toLowerCase().indexOf("accessions") > -1 ? "Accessions" : "Collection Manager";
+                    int specifyUserId = conversion.createDefaultUser("rods", userType);
                     conversion.convertCollectionObjectDefs(specifyUserId);
 
                 } else

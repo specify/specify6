@@ -108,7 +108,7 @@ public class AppResourceTest extends TestCase
         CatalogSeries.setCurrentCatalogSeries(catSeries);
 
 
-        contextMgr.setContext("fish", userName);
+        contextMgr.setContext("fish", userName, false);
 
         assertNotNull(contextMgr.getView("Birds Views", "CollectionObject"));
 
@@ -154,7 +154,7 @@ public class AppResourceTest extends TestCase
         CatalogSeries.setCurrentCatalogSeries(catSeries);
 
 
-        contextMgr.setContext("fish", userName);
+        contextMgr.setContext("fish", userName, false);
 
         assertNotNull(contextMgr.getView("Fish Views", "CollectionObject"));
 

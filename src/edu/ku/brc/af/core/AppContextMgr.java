@@ -24,13 +24,29 @@ import org.dom4j.Element;
 import edu.ku.brc.ui.forms.persist.View;
 
 /**
- * 
+ * Abstract class for setting application context. It is designed that each application should implement its own.<br>
+ * <br>
+ * CONTEXT_STATUS is passed back and has the following meaning:<br>
+ * <UL>
+ * <LI>OK - The context was set correctly
+ * <LI>Error - there was an error setting the context
+ * <LI>Ignore - The context was not "reset" to a different value and caller should act as if the call didn't happen.
+ * (Basbically a user action caused it to be abort, but it was OK)
+ * <LI>Initial - This should never be passed outside to the caller, it is intended as a start up state for the object.
+ * </UL>
+ *
+ * @code_status Complete
+ *
  * @author rods
  *
  */
 public abstract class AppContextMgr
 {
+    public enum CONTEXT_STATUS {OK, Error, Ignore, Initial}
+    
     protected static AppContextMgr instance = null;
+    
+    protected CONTEXT_STATUS currentStatus = CONTEXT_STATUS.Initial;
     
     /**
      * Returns a View by name, meaning a ViewSet name and a View name inside the ViewSet.
@@ -66,10 +82,13 @@ public abstract class AppContextMgr
      * Sets the current context.
      * @param databaseName the name of the database 
      * @param userName the user name
-     * @return  true if the context was set correctly
+     * @param startingOver indicates that the context should "start over" which means it may want to ask the user for specific things
+     * (this may be ignored by some implementations) it is merely a suggestion.
+     * @return  the status enum for what happened
      */
-    public abstract boolean setContext(final String databaseName, 
-                                       final String userName);
+    public abstract CONTEXT_STATUS setContext(final String databaseName, 
+                                              final String userName,
+                                              final boolean startingOver);
     
     
     /**
