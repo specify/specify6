@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.specify.ui.treetables;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -1426,9 +1428,9 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		//TODO: implement a popup to ask the user to save any changes
 		// requires me to track unsaved changes with some sort of boolean flag
 		
-		String save = "Save";
-		String discard = "Discard";
-		String cancel = "Cancel";
+		String save = getResourceString("Save");
+		String discard = getResourceString("Discard");
+		String cancel = getResourceString("Cancel");
 		JOptionPane popup = new JOptionPane("Save changes before closing?",JOptionPane.QUESTION_MESSAGE,JOptionPane.YES_NO_CANCEL_OPTION,null,new String[] {cancel,discard,save});
 		JDialog dialog = popup.createDialog(this,"Unsaved Changes");
 		SubPaneMgr.getInstance().showPane(this);

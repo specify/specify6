@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <icons>
+	<icon name="Save"       file="filesave.png" sizes="all"/>
+
     <icon name="Configure"  file="configure.gif" sizes="all"/>
     <icon name="Startup"    file="specify_icon.gif" sizes="all"/>
     <icon name="AppIcon"    file="specify_icon.gif" sizes="32"/>
@@ -60,8 +62,10 @@
     <icon name="CreateObj"   file="document-new32.png"  sizes="all"/>
 
     <icon name="NewRec"   file="newrec.gif"  sizes="NonStd"/>
+    <!--
     <icon name="Save"     file="document-save16.png"  sizes="NonStd"/>
-
+	-->
+	
     <icon name="EditIcon" file="edit_icon.gif"  sizes="NonStd"/>
     <icon name="EditForm" file="editicon2_16.png" sizes="16"/>
     <icon name="Spreadsheet" file="spreadsheet.gif" sizes="all"/>
@@ -97,13 +101,14 @@
     <icon name="Browse" file="browse.gif" sizes="all"/>
     
     <!-- TreeTableViewer icons -->
-    <icon name="TTV_Subtree"    file="zoom_in.png"    sizes="16"/>
-    <icon name="TTV_WholeTree"  file="zoom_out.png"   sizes="16"/>
-    <icon name="TTV_AllDescend" file="expand.png"     sizes="16"/>
-    <icon name="TTV_SyncViews"  file="sync.png"       sizes="16"/>
-    <icon name="TTV_NewChild"   file="add.png"        sizes="16"/>
-    <icon name="TTV_EditNode"   file="edit.png"       sizes="16"/>
-    <icon name="TTV_DelNode"    file="delete.png"     sizes="16"/>
-    <icon name="TTV_ToParent"   file="undo.png"       sizes="16"/>
+    <icon name="TTV_Subtree"        file="zoom_in.png"    sizes="16"/>
+    <icon name="TTV_WholeTree"      file="zoom_out.png"   sizes="16"/>
+    <icon name="TTV_AllDescend"     file="expand.png"     sizes="16"/>
+    <icon name="TTV_SyncViews"      file="sync.png"       sizes="16"/>
+    <icon name="TTV_NewChild"       file="add.png"        sizes="16"/>
+    <icon name="TTV_EditNode"       file="edit.png"       sizes="16"/>
+    <icon name="TTV_DelNode"        file="delete.png"     sizes="16"/>
+    <icon name="TTV_ToParent"       file="undo.png"       sizes="16"/>
+    <icon name="TTV_ToggleViewMode" file="split_view.png" sizes="32"/>
 
 </icons>

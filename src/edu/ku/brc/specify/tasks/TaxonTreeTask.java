@@ -100,11 +100,12 @@ public class TaxonTreeTask extends BaseTask implements DualViewSearchable
 
 			NavBox actions = new NavBox(getResourceString("Actions"));
 			String label = getResourceString("ToggleViewMode");
-			String iconName = name;
+			String iconName = "TTV_ToggleViewMode";
 			NavBoxItemIFace toggleViewItem = NavBox.createBtn(label,iconName,IconManager.IconSize.Std16,toggleViewAction); 
 			actions.add(toggleViewItem);
 			
 			label = getResourceString("SaveTree");
+			iconName = "Save";
 			NavBoxItemIFace saveTreeItem = NavBox.createBtn(label,iconName,IconManager.IconSize.Std16,saveTreeAction);
 			actions.add(saveTreeItem);
 			
