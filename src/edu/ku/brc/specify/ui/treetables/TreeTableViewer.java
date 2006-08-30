@@ -468,7 +468,6 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 	
 	protected void syncViewWithOtherView(JList list)
 	{
-		log.error("Not yet implemented");
 		if(list == lists[0])
 		{
 			// get the info from scrollers[1]
