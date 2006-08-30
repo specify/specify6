@@ -162,12 +162,20 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public void removeAllPanes()
     {
+        // Move all the elements to a List so the iterator on the Hashtable works correctly
+        List<SubPaneIFace> list = new ArrayList<SubPaneIFace>(panes.size());
         for (Enumeration<SubPaneIFace> e=panes.elements();e.hasMoreElements();)
         {
-            SubPaneIFace sp = e.nextElement();
+            list.add(e.nextElement());
+        }
+        
+        for (SubPaneIFace sp : list)
+        {
             removePane(sp);
         }
 
+        list.clear(); // not really necessary
+        
         // Make Sure
         removeAll();
         panes.clear();
@@ -178,9 +186,17 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public boolean aboutToShutdown()
     {
+        // Move all the elements to a List so the iterator on the Hashtable works correctly
+        // if the a SubPane wants to remove itself
+        List<SubPaneIFace> list = new ArrayList<SubPaneIFace>(panes.size());
         for (Enumeration<SubPaneIFace> e=panes.elements();e.hasMoreElements();)
         {
-            boolean ok = e.nextElement().aboutToShutdown();
+            list.add(e.nextElement());
+        }
+        
+        for (SubPaneIFace sp : list)
+        {
+            boolean ok = sp.aboutToShutdown();
             if (!ok)
             {
                 return false;
