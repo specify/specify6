@@ -57,6 +57,15 @@
             </altviews>
         </view>
         
+        <view name="RootTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.TreeDefinitionItemIface"
+            resourcelabels="false">
+            <desc><![CDATA[TreeDefItem Node Form]]></desc>
+            <altviews>
+                <altview name="Root Tree Def Item Edit" viewdef="RootTreeDefItem" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
         <view name="TreeDefEditor"
         	class="edu.ku.brc.specify.datamodel.TreeDefinitionIface"
         	resourcelabels="false">
@@ -310,6 +319,33 @@
                 <row>
                     <cell type="label" labelfor="4" label="Is Enforced?"/>
                     <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="RootTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.TreeDefinitionItemIface"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Tree Definition Item Form]]></desc>
+            <columnDef>p,3dlu,p,6dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="In Full Name?"/>
+                    <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
                 </row>
             </rows>
         </viewdef>
