@@ -126,6 +126,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     public Specify()
     {
+        //log.info("CURRENT THREAD: "+Thread.currentThread().hashCode()+"  "+SwingUtilities.isEventDispatchThread());
+        
     	// we simply need to create this class, not use it
         @SuppressWarnings("unused") MacOSAppHandler macoshandler = new MacOSAppHandler(this);
 
@@ -705,10 +707,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
             dbLoginPanel.getStatusBar().setText(getResourceString("InitializingApp"));
         }
         
-        if (firstTime)
-        {
-            SpecifyAppPrefs.initialPrefs();
-        }
+        AppPreferences.shutdownRemotePrefs();
+        SpecifyAppPrefs.initialPrefs();
 
         
         //CatalogSeries.setCurrentCatalogSeries(null);

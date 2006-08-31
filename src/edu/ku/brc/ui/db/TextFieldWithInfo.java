@@ -228,7 +228,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
             valtextcolor       = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
             requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
-        AppPreferences.getInstance().addChangeListener("ui.formatting.requiredfieldcolor", this);
+        AppPreferences.getRemote().addChangeListener("ui.formatting.requiredfieldcolor", this);
 
 
         infoBtn.addActionListener(new ActionListener()

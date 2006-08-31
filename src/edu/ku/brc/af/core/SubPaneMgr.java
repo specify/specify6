@@ -182,7 +182,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     }
 
     /**
-     * Remove all the SubPanes
+     * Tell Each SubPane that it is about to be shutdown, if the SubPane passes back false then the shutdown stops.
      */
     public boolean aboutToShutdown()
     {
@@ -217,6 +217,11 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         return showPane(pane);
     }
     
+    /**
+     * Shows a SubPane
+     * @param pane the SubPane to be shown
+     * @return the SubPane that was passed in
+     */
     public SubPaneIFace showPane(SubPaneIFace pane)
     {
         if (pane != null)

@@ -142,7 +142,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
                 dialog.setVisible(false);
                 try
                 {
-                    AppPreferences.getInstance().flush();
+                    AppPreferences.getRemote().flush();
                 } catch (BackingStoreException ex)
                 {
                     log.error(ex);
@@ -191,7 +191,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
 
         try
         {
-            AppPreferences.getInstance().flush();
+            AppPreferences.getRemote().flush();
 
         } catch (BackingStoreException ex)
         {

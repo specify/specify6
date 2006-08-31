@@ -47,10 +47,10 @@ public class AppPreferences
     
     protected static final Logger log                 = Logger.getLogger(AppPreferences.class);
             
-    protected static AppPreferences instance             = null;
-    protected static AppPreferences instanceLocal        = null;
+    protected static AppPreferences instanceRemote             = null;
+    protected static AppPreferences instanceRemoteLocal        = null;
 
-    // Instance Data Memeber
+    // instanceRemote Data Memeber
     protected Properties         properties           = null;
     protected String             dirPath;
     protected boolean            isChanged            = false;
@@ -106,13 +106,35 @@ public class AppPreferences
      * Returns the singleton.
      * @return the singleton
      */
-    public static AppPreferences getInstance()
+    public static AppPreferences getRemote()
     {
-        if (instance == null)
+        //log.debug("** Creating Remote Prefs.");
+        if (instanceRemote == null)
         {
-            instance = new AppPreferences(true);
+            instanceRemote = new AppPreferences(true);
         }
-        return instance;
+        return instanceRemote;
+    }
+    
+    /**
+     * Flushes the values and then terminates the Prefs so a new one can be created.
+     */
+    public static void shutdownRemotePrefs()
+    {
+        // Flush and shutdown the Local Store
+        try
+        {
+            if (instanceRemote != null)
+            {
+                instanceRemote.flush();
+                instanceRemote.listeners.clear();
+                instanceRemote.appPrefsIO = null;
+                instanceRemote = null;
+            }
+        } catch (BackingStoreException ex)
+        {
+           log.error(ex); 
+        }
     }
 
     /**
@@ -121,12 +143,12 @@ public class AppPreferences
      */
     public static AppPreferences getLocalPrefs()
     {
-        if (instanceLocal == null)
+        if (instanceRemoteLocal == null)
         {
-            instanceLocal = new AppPreferences(false);
+            instanceRemoteLocal = new AppPreferences(false);
         }
         
-        return instanceLocal;
+        return instanceRemoteLocal;
     }
     
     /**
@@ -602,8 +624,8 @@ public class AppPreferences
 
         synchronized(AppPreferences.class)
         {
-            prefsLocal   = instanceLocal;
-            prefsRemote  = instance;
+            prefsLocal   = instanceRemoteLocal;
+            prefsRemote  = instanceRemote;
         }
 
         try 

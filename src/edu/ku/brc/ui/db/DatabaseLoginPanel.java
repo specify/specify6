@@ -667,6 +667,26 @@ public class DatabaseLoginPanel extends JPanel
                 // Note: this doesn't happen on the GUI thread
                 HibernateUtil.shutdown();
                 HibernateUtil.getCurrentSession();
+                
+                /*if( !SwingUtilities.isEventDispatchThread() )
+                {
+                    try
+                    {
+                        SwingUtilities.invokeAndWait(new Runnable()
+                            {
+                                public void run()
+                                {
+                                    log.info("Invoking on Swing Thread? "+Thread.currentThread().hashCode());
+                                    HibernateUtil.shutdown();
+                                    HibernateUtil.getCurrentSession();
+                                }
+                            });
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                    
+                }*/
 
                 return null;
             }
@@ -680,8 +700,10 @@ public class DatabaseLoginPanel extends JPanel
                 if (isLoggedIn)
                 {
                     setMessage(getResourceString("LoadingSchema"), false);
+                    statusBar.repaint();
                     
                     // Note: this DOES happen on the GUI thread
+                    //log.info("Creating New Session "+SwingUtilities.isEventDispatchThread()+"  "+Thread.currentThread().hashCode());
                     HibernateUtil.shutdown();
                     HibernateUtil.getCurrentSession();
                 }

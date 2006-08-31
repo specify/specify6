@@ -110,7 +110,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
 
         if (formView != null)
         {
-            form = ViewFactory.createFormView(null, formView, null, AppPreferences.getInstance());
+            form = ViewFactory.createFormView(null, formView, null, AppPreferences.getRemote());
             add(form.getUIComponent(), BorderLayout.CENTER);
 
         } else
@@ -118,7 +118,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
             log.error("Couldn't load form with name ["+name+"] Id ["+viewName+"]");
         }
 
-        form.setDataObj(AppPreferences.getInstance());
+        form.setDataObj(AppPreferences.getRemote());
 
         form.getValidator().validateForm();
 

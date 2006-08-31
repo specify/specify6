@@ -138,7 +138,6 @@ public class HibernateUtil {
         
         String userName     = dbConn.getUserName();
         String password     = dbConn.getPassword();
-        String databaseName = dbConn.getDatabaseName();
         String driver       = dbConn.getDriver();
 
         String connection   = dbConn.getConnectionStr();
@@ -236,6 +235,9 @@ public class HibernateUtil {
         }
         if (sf == null)
             throw new IllegalStateException("SessionFactory not available.");
+        
+        //log.info("** getSessionFactory ["+Thread.currentThread().hashCode()+"]["+sf.hashCode()+"]");
+        
         return sf;
     }
 
@@ -249,6 +251,8 @@ public class HibernateUtil {
     {
         if (configuration != null)
         {
+            //log.info("************************** Shutdown ["+Thread.currentThread().hashCode()+"]");
+            
             log.debug("Shutting down Hibernate.");
             
             // Close caches and connection pools
@@ -331,10 +335,13 @@ public class HibernateUtil {
                 s = getSessionFactory().openSession();
                 threadSession.set(s);
             }
+            //log.info("getSession ["+Thread.currentThread().hashCode()+"]["+s.hashCode()+"]");
             return s;
         } else
         {
-            return getSessionFactory().getCurrentSession();
+            Session s = getSessionFactory().getCurrentSession();
+            //log.info("getSession ["+Thread.currentThread().hashCode()+"]["+s.hashCode()+"]");
+            return s;
         }
     }
 
@@ -350,10 +357,16 @@ public class HibernateUtil {
         if (useThreadLocal)
         {
             Session s = (Session) threadSession.get();
+            
+            //log.info("closeSession ["+Thread.currentThread().hashCode()+"]["+s.hashCode()+"]");
+            
             threadSession.set(null);
             Transaction tx = (Transaction) threadTransaction.get();
             if (tx != null && (!tx.wasCommitted() || !tx.wasRolledBack()))
+            {
                 throw new IllegalStateException("Closing Session but Transaction still open!");
+            }
+            
             if (s != null && s.isOpen())
             {
                 log.debug("Closing Session of this thread.");

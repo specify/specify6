@@ -49,7 +49,9 @@ public class SpecifyAppPrefs
      */
     public static void initialPrefs()
     {
-        AppPreferences.getInstance().load(); // Loads prefs from the database
+        AppPrefsCache.reset();
+        
+        AppPreferences.getRemote().load(); // Loads prefs from the database
         
         FastDateFormat fastDateFormat = FastDateFormat.getDateInstance(FastDateFormat.SHORT);      
         SimpleDateFormat screenDateFormat = new SimpleDateFormat(fastDateFormat.getPattern());

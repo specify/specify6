@@ -73,7 +73,6 @@ public class UICacheManager
 
     protected ResourceBundle resourceBundle     = null;
     protected String         resourceName       = "resources";
-    protected AppPreferences  appPrefs           = null;
 
     protected FileCache      longTermCache      = null;
     protected FileCache      shortTermCache     = null;
@@ -515,23 +514,6 @@ public class UICacheManager
 		instance.shortTermCache = shortTermCache;
 	}
 
-    /**
-     * Return the SpecifyAppPrefs.
-     * @return the SpecifyAppPrefs.
-     */
-    public static AppPreferences getAppPrefs()
-    {
-        return instance.appPrefs;
-    }
-
-    /**
-     * Sets the SpecifyAppPrefs.
-     * @param appPrefs the appPrefs
-     */
-    public static void setAppPrefs(AppPreferences appPrefs)
-    {
-        instance.appPrefs = appPrefs;
-    }
     
     
 }

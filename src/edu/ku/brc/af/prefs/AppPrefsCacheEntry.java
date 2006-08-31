@@ -49,7 +49,7 @@ public class AppPrefsCacheEntry implements AppPrefsChangeListener
      */
     public void preferenceChange(AppPrefsChangeEvent evt)
     {
-        value = AppPreferences.getInstance().get(evt.getKey(), defValue);
+        value = AppPreferences.getRemote().get(evt.getKey(), defValue);
     }
 
     /**

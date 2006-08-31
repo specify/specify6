@@ -101,7 +101,7 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
             valtextcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
             requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
-        AppPreferences.getInstance().addChangeListener("ui.formatting.requiredfieldcolor", this);
+        AppPreferences.getRemote().addChangeListener("ui.formatting.requiredfieldcolor", this);
 
         addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e)
@@ -190,7 +190,7 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
      */
     public void cleanUp()
     {
-        AppPreferences.getInstance().removeChangeListener("ui.formatting.requiredfieldcolor", this);
+        AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
 
     //--------------------------------------------------------

@@ -48,7 +48,7 @@ public class PrefsSettableImpl implements DataObjectSettable
                 data = ColorWrapper.toString((Color)data);
             }
             System.out.println("setFieldValue["+dataObj+"]  ["+fieldName+"]  ["+ data+"]");
-            AppPreferences.getInstance().put(fieldName, data == null ? "" : data.toString());
+            AppPreferences.getRemote().put(fieldName, data == null ? "" : data.toString());
     }
     
     /* (non-Javadoc)

@@ -69,7 +69,7 @@ public class PreferenceTest extends TestCase
             } else
             {
                 HibernateUtil.getCurrentSession();
-                AppPreferences.getInstance().load(); // Loads prefs from the database
+                AppPreferences.getRemote().load(); // Loads prefs from the database
             }
         }
     }
@@ -103,7 +103,7 @@ public class PreferenceTest extends TestCase
     protected void updatePref(final String section, final String pref, final String attr, final String value)
     {
 
-        AppPreferences.getInstance().put(section+"."+pref+"."+attr, value);
+        AppPreferences.getRemote().put(section+"."+pref+"."+attr, value);
         //try {
         //    AppPreferences.getInstance().flush();
         //} catch (BackingStoreException ex) {}
@@ -115,7 +115,7 @@ public class PreferenceTest extends TestCase
      */
     public void testStrings()
     {
-        AppPreferences appPrefsMgr = AppPreferences.getInstance();
+        AppPreferences appPrefsMgr = AppPreferences.getRemote();
         appPrefsMgr.put("text.ui.str", "string value");
         appPrefsMgr.put("text.ui.formatting.str", "string value");
         appPrefsMgr.put("text.ui.formatting.xxx.str", "string value");
@@ -275,7 +275,7 @@ public class PreferenceTest extends TestCase
 
         String newFormat = "yyyy/MM/DD";
 
-        AppPreferences.getInstance().put("ui.formatting.dateTest", newFormat);
+        AppPreferences.getRemote().put("ui.formatting.dateTest", newFormat);
         
         //try {
         //    AppPreferences.getInstance().flush();
@@ -310,7 +310,7 @@ public class PreferenceTest extends TestCase
         String newColorStr = "64, 255, 128";
         Color newColor = new Color(64, 255, 128);
 
-        AppPreferences.getInstance().put("ui.formatting."+attrName, newColorStr);
+        AppPreferences.getRemote().put("ui.formatting."+attrName, newColorStr);
         //try {
         //    AppPreferences.getInstance().flush();
         //} catch (BackingStoreException ex) {}

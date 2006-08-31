@@ -37,9 +37,8 @@ public class AppPrefsCache
     protected static final String NOT_INIT = "AppPrefs have not been initialized.";
     protected static final String BAD_ARGS = "Empty fully qualified pref name.";
     
-    protected static final AppPrefsCache instance = new AppPrefsCache();
+    protected static AppPrefsCache instance = new AppPrefsCache();
     
-    protected AppPreferences                           appPrefs = null;
     protected Hashtable<String, AppPrefsCacheEntry> hash     = new Hashtable<String, AppPrefsCacheEntry>();
     
     
@@ -52,9 +51,21 @@ public class AppPrefsCache
     }
     
     
+    /**
+     * Gets the singleton.
+     * @return the singleton
+     */
     public static AppPrefsCache getInstance()
     {
          return instance;
+    }
+    
+    /**
+     * Resets the internal state of the cache.
+     */
+    public static void reset()
+    {
+        AppPrefsCache.instance.hash.clear();
     }
     
     /**
@@ -94,18 +105,14 @@ public class AppPrefsCache
      */
     protected AppPrefsCacheEntry registerInternal(final String section, final String pref, final String attrName, final String defValue)
     {
-        if (appPrefs == null)
-        {
-            appPrefs = AppPreferences.getInstance();
-        }
         checkName(section, pref, attrName);
         
         String             name            = makeKey(section, pref, attrName);
         AppPrefsCacheEntry prefsCacheEntry = hash.get(name);
         if (prefsCacheEntry == null)
         {
-            prefsCacheEntry = new AppPrefsCacheEntry(attrName, appPrefs.get(name, defValue), defValue);
-            appPrefs.addChangeListener(name, prefsCacheEntry);
+            prefsCacheEntry = new AppPrefsCacheEntry(attrName, AppPreferences.getRemote().get(name, defValue), defValue);
+            AppPreferences.getRemote().addChangeListener(name, prefsCacheEntry);
             hash.put(makeKey(section, pref, attrName), prefsCacheEntry);
         }
         return prefsCacheEntry;
@@ -131,15 +138,11 @@ public class AppPrefsCache
      */
     public static boolean remove(final String section, final String pref, final String attrName)
     {
-        if (getInstance().appPrefs == null)
-        {
-            getInstance().appPrefs = AppPreferences.getInstance();
-        }
         checkName(section, pref, attrName);
         
         // TODO error checking
         String name = makeKey(section, pref, attrName);
-        getInstance().appPrefs.remove(name);
+        AppPreferences.getRemote().remove(name);
         getInstance().hash.remove(name);
         return true;
     }
@@ -171,10 +174,7 @@ public class AppPrefsCache
      */
     protected String checkForPref(final String fullName, final String attrName, final String defValue)
     {
-        if (appPrefs == null)
-        {
-            appPrefs = AppPreferences.getInstance();
-        } 
+        AppPreferences appPrefs = AppPreferences.getRemote();
         
         String prefVal;
 
@@ -209,10 +209,8 @@ public class AppPrefsCache
                                  final String       pref, 
                                  final String       attrName)
     {
-        if (getInstance().appPrefs == null)
-        {
-            appPrefs = AppPreferences.getInstance();
-        }    
+        AppPreferences appPrefs = AppPreferences.getRemote();
+        
         checkName(section, pref, attrName);
         
         String fullName = makeKey(section, pref, attrName);
@@ -287,10 +285,6 @@ public class AppPrefsCache
                                  final String           pref, 
                                  final String           attrName)
     {
-        if (appPrefs == null)
-        {
-            appPrefs = AppPreferences.getInstance();
-        }
         checkName(section, pref, attrName);
         
         String fullName = makeKey(section, pref, attrName);
@@ -300,7 +294,7 @@ public class AppPrefsCache
             String prefVal  = checkForPref(fullName, attrName, defValue);
             simpleFormat.applyPattern(prefVal);
             DateFormatCacheEntry dateEntry = new DateFormatCacheEntry(simpleFormat, fullName, prefVal, defValue);
-            appPrefs.addChangeListener(fullName, dateEntry);
+            AppPreferences.getRemote().addChangeListener(fullName, dateEntry);
             hash.put(fullName, dateEntry);
         }
     }

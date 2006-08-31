@@ -50,8 +50,8 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
     protected static final String PREF_NAME = "preferences";
     
     protected AppPreferences appPrefsMgr = null;
-    protected AppResource appResource = null;
-    protected boolean     found       = false;
+    protected AppResource    appResource = null;
+    protected boolean        found       = false;
     
     /**
      * Constructor.

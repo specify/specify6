@@ -174,7 +174,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
             scrDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
         }
 
-        AppPreferences.getInstance().addChangeListener("ui.formatting.viewfieldcolor", this);
+        AppPreferences.getRemote().addChangeListener("ui.formatting.viewfieldcolor", this);
 
         boolean addController = mvParent != null && view.getAltViews().size() > 1;
 

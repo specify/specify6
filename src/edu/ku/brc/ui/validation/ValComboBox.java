@@ -158,8 +158,8 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
             valtextcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
             requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
-        AppPreferences.getInstance().addChangeListener("ui.formatting.valtextcolor", this);
-        AppPreferences.getInstance().addChangeListener("ui.formatting.requiredfieldcolor", this);
+        AppPreferences.getRemote().addChangeListener("ui.formatting.valtextcolor", this);
+        AppPreferences.getRemote().addChangeListener("ui.formatting.requiredfieldcolor", this);
 
         FocusAdapter focusAdapter = new FocusAdapter() {
             public void focusLost(FocusEvent e)
@@ -385,7 +385,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     public void cleanUp()
     {
         comboBox  = null;
-        AppPreferences.getInstance().removeChangeListener("ui.formatting.requiredfieldcolor", this);
+        AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
 
     //--------------------------------------------------------

@@ -119,7 +119,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
             valtextcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
             requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
-        AppPreferences.getInstance().addChangeListener("ui.formatting.requiredfieldcolor", this);
+        AppPreferences.getRemote().addChangeListener("ui.formatting.requiredfieldcolor", this);
 
         getDocument().addDocumentListener(this);
 
@@ -271,7 +271,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
      */
     public void cleanUp()
     {
-        AppPreferences.getInstance().removeChangeListener("ui.formatting.requiredfieldcolor", this);
+        AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
 
     //--------------------------------------------------------

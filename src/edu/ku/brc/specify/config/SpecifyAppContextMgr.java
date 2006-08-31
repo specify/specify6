@@ -218,7 +218,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
         if (catSeries.size() == 0 || alwaysAsk)
         {
-            AppPreferences appPrefs    = AppPreferences.getInstance();
+            AppPreferences appPrefs    = AppPreferences.getRemote();
             boolean        askToSelect = true;
             if (!alwaysAsk)
             {
@@ -308,7 +308,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         // OK, at this point the user selected more than one CatalogSeries and each of the CatalogSeries
         // Could have more than one ColObjDef, so the User needs to select a "default ColObjDef. 
-        AppPreferences   appPrefs          = AppPreferences.getInstance();
+        AppPreferences   appPrefs          = AppPreferences.getRemote();
         String           recentColObjDefId = mkUserDBPrefName("recent_colobjdef_id");
         Integer          colObjDefId       = appPrefs.getInt(recentColObjDefId, null);
         CollectionObjDef colObjDef         = null;
@@ -537,6 +537,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
         // additional XML Resources.
         
         // Ask the User to choose which CatalogSeries they will be working with
+        CatalogSeries.getCurrentCatalogSeries().clear();
+        
         List<CatalogSeries> catalogSeries = setupCurrentCatalogSeries(user, startingOver);
         if (catalogSeries == null)
         {
@@ -581,6 +583,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             CollectionObjDef.setCurrentCollectionObjDef(null);
             if (catalogSeries.size() == 1)
             {
+                log.debug("Choosing CatSeries["+catalogSeries.get(0).getSeriesName()+"]");
                 if (catalogSeries.get(0).getCollectionObjDefItems().size() == 1)
                 {
                     CollectionObjDef.setCurrentCollectionObjDef(catalogSeries.get(0).getCollectionObjDefItems().iterator().next());
@@ -838,7 +841,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             for (AppResourceIFace appRes : appResDef.getAppResources())
             {
-                log.info("["+appRes.getMimeType()+"]["+mimeType+"]");
+                //log.info("["+appRes.getMimeType()+"]["+mimeType+"]");
                 if (appRes.getMimeType().equals(mimeType))
                 {
                     list.add(appRes);

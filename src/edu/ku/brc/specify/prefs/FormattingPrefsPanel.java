@@ -52,7 +52,7 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
 
         if (formView != null)
         {
-            form = ViewFactory.createFormView(null, formView, null, AppPreferences.getInstance());
+            form = ViewFactory.createFormView(null, formView, null, AppPreferences.getRemote());
             add(form.getUIComponent(), BorderLayout.CENTER);
 
         } else
@@ -60,7 +60,7 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
             log.error("Couldn't load form with name ["+name+"] Id ["+viewName+"]");
         }
 
-        form.setDataObj(AppPreferences.getInstance());
+        form.setDataObj(AppPreferences.getRemote());
 
         form.getValidator().validateForm();
 
