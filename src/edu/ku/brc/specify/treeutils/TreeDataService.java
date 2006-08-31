@@ -26,5 +26,6 @@ public interface TreeDataService
 	public Set<Treeable> getTreeNodes(TreeDefinitionItemIface defItem);
 	public Treeable getRootNode(TreeDefinitionIface treeDef);
 	public List<TreeDefinitionIface> getAllTreeDefs(Class treeDefClass);
+	public TreeDefinitionIface getTreeDef(Class defClass, int defId);
 	public void loadAllDescendants(Treeable node);
 }

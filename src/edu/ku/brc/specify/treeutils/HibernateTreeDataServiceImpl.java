@@ -158,15 +158,6 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 	
 	public void saveTreeDef(TreeDefinitionIface treeDef, List<TreeDefinitionItemIface> deletedItems)
 	{
-//		// get the root node of the tree
-//		Treeable rootNode = (Treeable)treeDef.getTreeEntries().iterator().next();
-//		while(rootNode.getParentNode()!=null)
-//		{
-//			rootNode = rootNode.getParentNode();
-//		}
-//		
-//		rootNode.setNodeNumber(1);
-//		fixNodeNumbersFromRoot(rootNode);
 		Transaction tx = session.beginTransaction();
 		
 		// save the TreeDefinitionIface object itself
@@ -262,6 +253,16 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 		return defs;
 	}
 	
+	public TreeDefinitionIface getTreeDef(Class defClass, int defId)
+	{
+		String className = defClass.getSimpleName();
+		String idFieldName = className.toLowerCase().substring(0,1) + className.substring(1) + "Id";
+		Query query = session.createQuery("FROM " + className + " WHERE " + idFieldName + "=:defId");
+		query.setParameter("defId",defId);
+		TreeDefinitionIface def = (TreeDefinitionIface)query.uniqueResult();
+		return def;
+	}
+
 	public void loadAllDescendants(Treeable node)
 	{
 //		for(Treeable child: node.getChildNodes())
@@ -270,14 +271,23 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 //		}
 		
 		String className = node.getClass().getSimpleName();
-		int nodeNum = node.getNodeNumber();
-		int highChild = node.getHighestChildNodeNumber();
+		Integer nodeNum = node.getNodeNumber();
+		Integer highChild = node.getHighestChildNodeNumber();
+		if( nodeNum == null || highChild == null )
+		{
+			// have to do this the inefficient way
+			for(Treeable child: node.getChildNodes())
+			{
+				loadAllDescendants(child);
+			}
+			return;
+		}
+		
 		Query descend = session.createQuery("FROM " + className + " WHERE nodeNumber > " + nodeNum + " AND nodeNumber < " + highChild );
 		int i = 0;
 		for(Object o: descend.list())
 		{
 			i++;
 		}
-		System.out.println("Found " + i + " descendants");
 	}
 }
