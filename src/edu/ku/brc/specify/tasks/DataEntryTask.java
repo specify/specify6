@@ -16,8 +16,6 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
 
@@ -101,13 +99,6 @@ public class DataEntryTask extends BaseTask
             navBox.add(NavBox.createBtn("Agent", "Agent", IconManager.IconSize.Std16));
             navBox.add(NavBox.createBtn("Address", "Address", IconManager.IconSize.Std16));
             navBoxes.addElement(navBox);
-
-            navBox = new NavBox(getResourceString("AdministrationTasks"));
-            navBox.add(NavBox.createBtn("Taxon Tree Def Editor","Taxon", IconManager.IconSize.Std16,new ShowTreeDefinitionEditorAction(TaxonTreeDef.class,"Taxonomy Tree Def Editor")));
-            navBox.add(NavBox.createBtn("Geography Tree Def Editor","Geography", IconManager.IconSize.Std16,new ShowTreeDefinitionEditorAction(GeographyTreeDef.class,"Geography Tree Def Editor")));
-            navBox.add(NavBox.createBtn("Location Tree Def Editor","Location", IconManager.IconSize.Std16,new ShowTreeDefinitionEditorAction(LocationTreeDef.class,"Location Tree Def Editor")));
-            navBox.add(NavBox.createBtn("GTP Tree Def Editor","Geologic Time Period", IconManager.IconSize.Std16,new ShowTreeDefinitionEditorAction(GeologicTimePeriodTreeDef.class,"GTP Tree Def Editor")));
-            navBoxes.addElement(navBox);
         }
     }
 
@@ -160,12 +151,6 @@ public class DataEntryTask extends BaseTask
             log.error(ex);
             ex.printStackTrace();
         }
-    }
-
-    public void openTreeDefEditor(final Class treeDefClass, final String editorName)
-    {
-    	TreeDefinitionEditor defEditor = new TreeDefinitionEditor(treeDefClass,editorName,this,true);
-    	SubPaneMgr.getInstance().addPane(defEditor);
     }
 
     /**
@@ -326,29 +311,4 @@ public class DataEntryTask extends BaseTask
             }
         }
     }
-
-    //--------------------------------------------------------------
-    // Inner Classes
-    //--------------------------------------------------------------
-
-    /**
-     * @author jds
-     */
-    class ShowTreeDefinitionEditorAction implements ActionListener
-    {
-    	protected Class treeDefClass;
-    	protected String name;
-
-    	public ShowTreeDefinitionEditorAction(final Class treeDefClass, final String name)
-    	{
-    		this.treeDefClass = treeDefClass;
-    		this.name = name;
-    	}
-    	public void actionPerformed(ActionEvent e)
-    	{
-    		openTreeDefEditor(treeDefClass,name);
-    	}
-    }
-
-
 }
