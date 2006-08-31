@@ -51,12 +51,12 @@ public class TreeNodeFindWidget extends JPanel implements NavBoxItemIFace, Actio
 	
 	protected void init()
 	{
-		String findStr = getResourceString("find");
-		String findNextStr = getResourceString("find_next");
-		String topOnlyStr = getResourceString("top");
-		String bottomOnlyStr = getResourceString("bottom");
-		String bothStr = getResourceString("both");
-		String wrapStr = getResourceString("wrap");
+		String findStr = getResourceString("Find");
+		String findNextStr = getResourceString("FindNext");
+		String topOnlyStr = getResourceString("Top");
+		String bottomOnlyStr = getResourceString("Bottom");
+		String bothStr = getResourceString("Both");
+		String wrapStr = getResourceString("Wrap");
 		
 		setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
 		
