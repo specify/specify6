@@ -17,9 +17,7 @@ import org.apache.log4j.Logger;
  * Provides for a local file cache of <code>File</code>s, binary data
  * in the form of <code>byte[]</code>s, and web resources or URLs.
  *
- * @version %I% %G
- * @code_status Unknown (auto-generated)
- *%
+ * @code_status Complete
  * @author jstewart
  */
 public class FileCache

@@ -8,7 +8,6 @@ package edu.ku.brc.util;
  *
  * @code_status Complete
  * @author jstewart
- * @version %I% %G%
  */
 public interface Nameable
 {

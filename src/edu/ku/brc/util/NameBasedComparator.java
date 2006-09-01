@@ -2,23 +2,30 @@ package edu.ku.brc.util;
 
 import java.util.Comparator;
 
-
 /**
  * A class used to compare Nameable objects for use in sorting.
  *
- * @code_status Unknown (auto-generated)
- * 
+ * @code_status Complete
  * @author jstewart
  */
 public class NameBasedComparator implements Comparator<Nameable>
 {
 	protected boolean ignoreCase;
 	
+	/**
+	 * Constructs a new instance that is case sensative.
+	 */
 	public NameBasedComparator()
 	{
 		ignoreCase = false;
 	}
 	
+	/**
+	 * Constructs a new instance with case-sensativity determined
+	 * by the value of the <code>ignoreCase</code> parameter.
+	 *
+	 * @param ignoreCase
+	 */
 	public NameBasedComparator(boolean ignoreCase)
 	{
 		this.ignoreCase = ignoreCase;

@@ -6,11 +6,9 @@ package edu.ku.brc.util;
  * NOTE: the data members of this class are public for ease of access.
  * This is not a code encapsulation problem.
  *
- * @see Pai
- * @code_status Unknown (auto-generated)
- *r
+ * @see Pair
+ * @code_status Complete
  * @author jstewart
- * @version %I% %G%
  * 
  * @param <F> the first type in the <code>Triple</code>
  * @param <S> the second type in the <code>Triple</code>

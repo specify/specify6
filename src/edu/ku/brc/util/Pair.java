@@ -8,11 +8,9 @@ import java.io.Serializable;
  * NOTE: the data members of this class are public for ease of access.
  * This is not a code encapsulation problem.
  * 
- * @see Tripl
- * @code_status Unknown (auto-generated)
- *e
+ * @see Triple
+ * @code_status Complete
  * @author jstewart
- * @version %I% %G%
  *
  * @param <F> the first item in the pair
  * @param <S> the second item in the pair
