@@ -30,6 +30,7 @@ import java.awt.event.MouseListener;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.Collections;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -68,6 +69,7 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.ReverseRankBasedComparator;
+import edu.ku.brc.util.RankBasedComparator;
 
 /**
  * The TreeTableViewer is a SubPaneIface implementation that provides a
@@ -145,8 +147,9 @@ public class TreeTableViewer extends BaseSubPane implements DragDropCallback, Du
 		super(name,task);
 		this.treeDef = treeDef;
 		dataService = TreeDataServiceFactory.createService();
-		deletedNodes = new TreeSet<Treeable>(new ReverseRankBasedComparator());
-		addedNodes = new TreeSet<Treeable>(new ReverseRankBasedComparator());
+		Comparator<Rankable> reverseComp = Collections.reverseOrder(new RankBasedComparator());
+		deletedNodes = new TreeSet<Treeable>(reverseComp);
+		addedNodes = new TreeSet<Treeable>(reverseComp);
 		statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
 		popupMenu = new TreeNodePopupMenu(this);
 		
