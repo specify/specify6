@@ -26,9 +26,9 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.hibernate.Query;
 
-import edu.ku.brc.helpers.DatamodelHelper;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
+import edu.ku.brc.util.DatamodelHelper;
 
 /**
  * This manages all the tables and maps names to ids and can create queries for

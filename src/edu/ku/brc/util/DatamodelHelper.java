@@ -1,8 +1,10 @@
-package edu.ku.brc.helpers;
+package edu.ku.brc.util;
  
 import java.io.File;
  
 import org.apache.log4j.Logger;
+
+import edu.ku.brc.helpers.XMLHelper;
  
 public class DatamodelHelper
 {
@@ -66,7 +68,7 @@ public class DatamodelHelper
        * Returns full path to file in tableId listing file
        * @return the path to the file
        */
-       public static String getTableIdPath()
+       public static String getTableIdFilePath()
        {
         return  XMLHelper.getConfigDirPath("specify_tableid_listing.xml");
        }       
