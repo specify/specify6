@@ -80,7 +80,7 @@ public class PrefsToolbar extends JPanel
     {
         try
         {
-            Element root = XMLHelper.readDOMFromConfigDir("prefsInit.xml");
+            Element root = XMLHelper.readDOMFromConfigDir("prefs_init.xml");
             if (root == null)
             {
                 return; // XXX FIXME
