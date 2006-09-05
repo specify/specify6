@@ -11,6 +11,7 @@ import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.dnd.GhostActionable;
+import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
@@ -308,5 +309,17 @@ public class FormPane extends DroppableTaskPane
         return multiView.getCurrentView();
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.SubPaneIFace#aboutToShutdown()
+     */
+    public boolean aboutToShutdown()
+    {
+        Viewable viewable = multiView.getCurrentView();
+        if (viewable instanceof FormViewObj)
+        {
+            return ((FormViewObj)viewable).checkForChanges();
+        }
+        return true;
+    }
 
 }

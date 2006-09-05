@@ -18,7 +18,7 @@ package edu.ku.brc.ui;
  * Represents a single command action typically between the UI and a task, sometimes between tasks
  * The "type" of command determines who will be listening for it.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *

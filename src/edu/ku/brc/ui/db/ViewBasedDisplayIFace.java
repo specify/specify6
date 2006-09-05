@@ -52,6 +52,12 @@ public interface ViewBasedDisplayIFace
      * @param dataObj the data object
      */
     public void setData(final Object dataObj);
+    
+    /**
+     * Returns whether the form is in edit mode or not
+     * @return true in edit mode, false it is not
+     */
+    public boolean isEditMode();
 
     /**
      * Tells the Display that it is being shutdown

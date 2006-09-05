@@ -21,6 +21,7 @@ import java.awt.HeadlessException;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
@@ -40,7 +41,10 @@ import edu.ku.brc.ui.forms.persist.View;
 
 /**
  * This is the content panel portion of "display" dialogs/frames that are created by the implemenation of the ViewBasedDialogFactoryIFace
- * interface.
+ * interface.<br>
+ * <br>
+ * Note: The registered PropertyChangeListener will be notified when the user presses "Save/Close" or "Cancel" and the PropertyChangeEvent's propertyName
+ * will contain the value "OK" or "Cancel" depending on which button was pressed.
  *
  * @code_status Complete
  *
@@ -66,11 +70,12 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
 
     // UI
     protected JButton        okBtn;
+    protected JButton        cancelBtn    = null;
     protected JPanel         contentPanel;
     protected Window         parent;
 
     /**
-     * Constructor
+     * Constructor.
      * @param className the name of the class to be created from the selected results
      * @param idFieldName the name of the field in the class that is the primary key which is filled in from the search table id
      */
@@ -82,46 +87,53 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     }
 
     /**
-     * Constructs a search dialog from form infor and from search info
+     * Constructs a search dialog from form infor and from search info.
      * @param viewSetName the viewset name
      * @param viewName the form name from the viewset
      * @param displayName the search name, this is looked up by name in the "search_config.xml" file
+     * @param closeBtnTitle the title of close btn
      * @param className the name of the class to be created from the selected results
      * @param idFieldName the name of the field in the class that is the primary key which is filled in from the search table id
+     * @param showSwitcher whether it should show the "Switch mode" UI combobox
      * @throws HeadlessException an exception
      */
     public ViewBasedDisplayPanel(final Window  parent,
                                  final String  viewSetName,
                                  final String  viewName,
                                  final String  displayName,
+                                 final String  closeBtnTitle,
                                  final String  className,
                                  final String  idFieldName,
-                                 final boolean isEdit) throws HeadlessException
+                                 final boolean isEdit,
+                                 final boolean showSwitcher) throws HeadlessException
     {
         this.parent      = parent;
         this.className   = className;
         this.idFieldName = idFieldName;
         this.displayName = displayName;
 
-        createUI(viewSetName, viewName, isEdit ? AltView.CreationMode.Edit : AltView.CreationMode.View);
+        createUI(viewSetName, viewName, closeBtnTitle, isEdit, showSwitcher);
     }
 
     /**
-     * Creates the Default UI
+     * Creates the Default UI.
      * @param viewSetName the set to to create the form
      * @param viewName the view name to use
-     * @param mode the mode (edit or view)
+     * @param closeBtnTitle the title of close btn
+     * @param isEdit true is in edit mode, false is in view mode
+     * @param showSwitcher whether it should show the "Switch mode" UI combobox
      */
     protected void createUI(final String viewSetName,
                             final String viewName,
-                            final AltView.CreationMode mode)
+                            final String  closeBtnTitle,
+                            final boolean isEdit,
+                            final boolean showSwitcher)
     {
-        boolean isEdit = mode == AltView.CreationMode.Edit;
 
         formView = AppContextMgr.getInstance().getView(viewSetName, viewName);
         if (formView != null)
         {
-            multiView   = new MultiView(null, formView, mode, false, !isEdit);
+            multiView = new MultiView(null, formView, isEdit ? AltView.CreationMode.Edit : AltView.CreationMode.View, false, showSwitcher);
 
         } else
         {
@@ -134,19 +146,40 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
         add(multiView, BorderLayout.NORTH);
         contentPanel = new JPanel(new NavBoxLayoutManager(0,2));
 
-        okBtn = new JButton(getResourceString(isEdit ? "Save" : "Close"));
+
+        okBtn = new JButton(closeBtnTitle);
         okBtn.addActionListener(this);
 
         ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
         btnBuilder.addGlue();
-        btnBuilder.addGriddedButtons(new JButton[] { okBtn });
+
+        if (!isEdit)
+        {
+            btnBuilder.addGriddedButtons(new JButton[] { okBtn });
+            multiView.setExternalOKBtn(okBtn);
+
+        } else
+        {
+            cancelBtn = new JButton(getResourceString("Cancel"));
+            cancelBtn.addActionListener(this);
+            btnBuilder.addGriddedButtons(new JButton[] { okBtn, cancelBtn });
+        }
 
         add(btnBuilder.getPanel(), BorderLayout.SOUTH);
 
     }
 
     /**
-     * Returns the OK button
+     * Returns whether the form is in edit mode or not.
+     * @return true in edit mode, false it is not
+     */
+    public boolean isEditMode()
+    {
+        return multiView.isEditable();
+    }
+
+    /**
+     * Returns the OK button.
      * @return the OK button
      */
     public JButton getOkBtn()
@@ -161,12 +194,12 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     {
         // Handle clicks on the OK and Cancel buttons.
         parent.setVisible(false);
-        propertyChangeListener.propertyChange(null);
+        propertyChangeListener.propertyChange(new PropertyChangeEvent(this, e.getSource() == okBtn ? "OK" : "Cancel", null, null));
         propertyChangeListener = null;
     }
 
     /**
-     * Returns the MultiView
+     * Returns the MultiView.
      * @return the multiview
      */
     public MultiView getMultiView()
@@ -175,7 +208,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     }
 
     /**
-     * Set a listener to know when the dialog is closed
+     * Set a listener to know when the dialog is closed.
      * @param propertyChangeListener the listener
      */
     public void setCloseListener(final PropertyChangeListener propertyChangeListener)
@@ -184,7 +217,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     }
 
     /**
-     * Sets data into the dialog
+     * Sets data into the dialog.
      * @param dataObj the data object
      */
     public void setData(final Object dataObj)

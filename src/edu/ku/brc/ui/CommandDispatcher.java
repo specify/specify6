@@ -25,7 +25,7 @@ import java.util.Vector;
  * it doesn't mean they have to consume them.<br><BR>
  * Note: All primary tasks get first try at consuming the commands.
  *
- * @code_status Unknown (auto-generated)
+ * @code_status UComplete
  * 
  * @author rods
  * 
@@ -41,7 +41,7 @@ public class CommandDispatcher
     protected Hashtable<String, Vector<CommandListener>> listeners = new Hashtable<String, Vector<CommandListener>>();
     
     /**
-     * Protected Constructor of Singleton
+     * Protected Constructor of Singleton.
      *
      */
     protected CommandDispatcher()
@@ -49,7 +49,7 @@ public class CommandDispatcher
     }
     
     /**
-     * Returns singleton
+     * Returns singleton.
      * @return returns singleton of Context Manager
      */ 
     public static CommandDispatcher getInstance()
@@ -58,7 +58,8 @@ public class CommandDispatcher
     }
     
     /**
-     * Registers a listener
+     * Registers a listener.
+     * @param type the type of command
      * @param listener the listener to be register
      */
     public static void register(final String type, final CommandListener listener)
@@ -81,7 +82,8 @@ public class CommandDispatcher
     }
     
     /**
-     *  Unregisters a listener. Checks to see if it is the current listener
+     *  Unregisters a listener. Checks to see if it is the current listener.
+     * @param type the type of command
      * @param listener the listener to be unregistered
      */
     public static void unregister(final String type, final CommandListener listener)
@@ -97,7 +99,7 @@ public class CommandDispatcher
     }
     
     /**
-     * Requests a command to be dispatched
+     * Requests a command to be dispatched.
      * @param cmdAction the command to be dispatched
      * @return true is consumed, false if not
      */

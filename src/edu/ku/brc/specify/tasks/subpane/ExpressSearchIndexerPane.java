@@ -439,6 +439,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     progressBar.setString("0%");
                     progressBar.setStringPainted(true);
                     trigger = (int)(numRows * 0.02);
+                    
                 } else
                 {
                     log.debug("Table["+tableInfo.getTitle()+"] is empty.");
@@ -559,14 +560,19 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 }
                 progressBar.setString("");
 
+                rs.close();
                 dbStatement.close();
                 dbConnection.close();
+            } else
+            {
+                throw new RuntimeException("WHy are new Here?");
             }
 
         } catch (java.sql.SQLException ex)
         {
             //ex.printStackTrace();
             log.error("Error in run["+tableInfo.getBuildSql()+"]", ex);
+            
         } catch (Exception ex)
         {
             //ex.printStackTrace();
@@ -574,7 +580,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         }
         long end = new Date().getTime();
 
-        long delta = end - begin;
+        long delta = begin > 0 ? end - begin : 0;
         log.debug("Time to index (" + delta + " ms)");
         return delta;
     }
@@ -916,7 +922,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     if (id < 10000)
                     {
                        deltaTime += indexQuery(writer, tableInfo);
-                       log.debug(deltaTime);
+                       log.debug("Delta Time from indexQuery: "+deltaTime);
                     }
                     if (isCancelled)
                     {
@@ -975,7 +981,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         } else
         {
 
-            indvLabel.setText(termsIndexed+ " terms indexed in "+(((double)deltaTime) / 1000.0) + " seconds");
+            indvLabel.setText(String.format(getResourceString("TermsIndexedInTime"), new Object[] {termsIndexed, (((double)deltaTime) / 1000.0)}));
             globalLabel.setText(getResourceString("doneIndexing"));
             log.debug(deltaTime);
             log.debug("Time to index all (" + (((double)deltaTime) / 1000.0) + " seconds)");

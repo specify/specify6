@@ -217,9 +217,9 @@ public class DatabaseLoginPanel extends JPanel
 
         statusBar = new JStatusBar();
 
-        cancelBtn = new JButton(getResourceString("cancel"));
-        loginBtn  = new JButton(getResourceString("login"));
-        helpBtn   = new JButton(getResourceString("help"));
+        cancelBtn = new JButton(getResourceString("Cancel"));
+        loginBtn  = new JButton(getResourceString("Login"));
+        helpBtn   = new JButton(getResourceString("Help"));
 
         forwardImgIcon = IconManager.getImage("Forward");
         downImgIcon    = IconManager.getImage("Down");

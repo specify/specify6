@@ -620,28 +620,16 @@ public final class UIHelper
         }
     }
 
-
     /**
-     * Adds new child object to its parent's set and set the parent point in the new obj
-     * @param parentDataObj the parent object
+     * Initializes the Data Obj by calling the "initialize" method
      * @param newDataObj the new object to be added to a Set
      */
-    public static boolean initAndAddToParent(final Object parentDataObj, final Object newDataObj)
+    public static boolean initDataObj(final Object newDataObj)
     {
         try
         {
             Method method = newDataObj.getClass().getMethod("initialize", new Class[] {});
             method.invoke(newDataObj, new Object[] {});
-
-            if (parentDataObj != null)
-            {
-                String methodName = "add" + newDataObj.getClass().getSimpleName();
-                log.debug("Invoking method["+methodName+"] on Object "+parentDataObj.getClass().getSimpleName());
-
-                method = parentDataObj.getClass().getMethod(methodName, new Class[] {newDataObj.getClass()});
-                method.invoke(parentDataObj, new Object[] {newDataObj});
-                log.debug("Adding ["+newDataObj+"] to parent Set["+parentDataObj+"]");
-            }
             return true;
 
         } catch (NoSuchMethodException ex)
@@ -658,6 +646,53 @@ public final class UIHelper
         }
 
         return false;
+    }
+    /**
+     * Adds new child object to its parent's set and set the parent point in the new obj
+     * @param parentDataObj the parent object
+     * @param newDataObj the new object to be added to a Set
+     */
+    public static boolean addToParent(final Object parentDataObj, final Object newDataObj)
+    {
+        try
+        {
+            String methodName = "add" + newDataObj.getClass().getSimpleName();
+            log.debug("Invoking method["+methodName+"] on Object "+parentDataObj.getClass().getSimpleName());
+
+            Method method = parentDataObj.getClass().getMethod(methodName, new Class[] {newDataObj.getClass()});
+            method.invoke(parentDataObj, new Object[] {newDataObj});
+            log.debug("Adding ["+newDataObj+"] to parent Set["+parentDataObj+"]");
+
+            return true;
+
+        } catch (NoSuchMethodException ex)
+        {
+            ex.printStackTrace();
+
+        } catch (IllegalAccessException ex)
+        {
+            ex.printStackTrace();
+
+        } catch (InvocationTargetException ex)
+        {
+            ex.printStackTrace();
+        }
+
+        return false;
+    }
+    /**
+     * Adds new child object to its parent's set and set the parent point in the new obj
+     * @param parentDataObj the parent object
+     * @param newDataObj the new object to be added to a Set
+     */
+    public static boolean initAndAddToParent(final Object parentDataObj, final Object newDataObj)
+    {
+        boolean status = initDataObj(newDataObj);
+        if (status && parentDataObj != null)
+        {
+            status = addToParent(parentDataObj, newDataObj);
+        }
+        return status;
     }
 
      /**
@@ -961,7 +996,7 @@ public final class UIHelper
             dlg.setDoAutoLogin(doAutoLoginNow);
             dlg.setDoAutoClose(doAutoClose);
             UIHelper.centerAndShow(dlg);
-            
+
             return dlg.getDatabaseLoginPanel();
 
         } else
@@ -1008,7 +1043,7 @@ public final class UIHelper
                 panel.doLogin();
             }
             UIHelper.centerAndShow(frame);
-            
+
             return panel;
         }
 

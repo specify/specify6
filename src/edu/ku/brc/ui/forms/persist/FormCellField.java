@@ -350,16 +350,6 @@ public class FormCellField extends FormCell
         this.validationType = validationType;
     }
 
-    public String getUiFieldFormatter()
-    {
-        return uiFieldFormatter;
-    }
-
-    public void setUiFieldFormatter(String uiFieldFormatter)
-    {
-        this.uiFieldFormatter = uiFieldFormatter;
-    }
-
     public Map<String, String> getProperties()
     {
         return properties;

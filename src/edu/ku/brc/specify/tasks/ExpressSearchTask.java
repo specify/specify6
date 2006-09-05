@@ -60,9 +60,14 @@ import edu.ku.brc.af.plugins.MenuItemDesc;
 import edu.ku.brc.af.plugins.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchIndexerPane;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPane;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 /**
@@ -73,7 +78,7 @@ import edu.ku.brc.ui.UICacheManager;
  * @author rods
  *
  */
-public class ExpressSearchTask extends BaseTask
+public class ExpressSearchTask extends BaseTask implements CommandListener
 {
     // Static Data Members
     private static final Logger log = Logger.getLogger(ExpressSearchTask.class);
@@ -99,6 +104,8 @@ public class ExpressSearchTask extends BaseTask
         icon = IconManager.getIcon("Search", IconManager.IconSize.Std16);
 
         lucenePath = getIndexDirPath(); // must be initialized here
+        
+        CommandDispatcher.register("App", this);
     }
 
     /* (non-Javadoc)
@@ -120,7 +127,18 @@ public class ExpressSearchTask extends BaseTask
      */
     public static File getIndexDirPath()
     {
-        File path = new File(UICacheManager.getDefaultWorkingPath()+File.separator+"index-dir");
+        String subName = "";
+        SpecifyAppContextMgr appContext = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+        CollectionObjDef colObjDef = CollectionObjDef.getCurrentCollectionObjDef();
+        if (colObjDef != null)
+        {
+            subName = colObjDef.getName();
+        } else
+        {
+            subName = appContext.getDatabaseName();
+        }
+        
+        File path = new File(UICacheManager.getDefaultWorkingPath()+File.separator+subName+File.separator+"index-dir");
         if (!path.exists())
         {
             if (!path.mkdirs())
@@ -135,7 +153,7 @@ public class ExpressSearchTask extends BaseTask
 
     /**
      * Collects information about all the tables that will be processed for the express search
-     *
+     * @return hash of named ExpressResultsTableInfo
      */
     public static Hashtable<String, ExpressResultsTableInfo> intializeTableInfo()
     {
@@ -173,6 +191,9 @@ public class ExpressSearchTask extends BaseTask
     public void checkForIndexer()
     {
         boolean exists = lucenePath.exists() && lucenePath.list().length > 0;
+        
+        log.debug(lucenePath.getAbsoluteFile() + " has index " + (lucenePath.list().length > 0));
+        
         searchBtn.setEnabled(exists);
         searchText.setEnabled(exists);
     }
@@ -457,7 +478,9 @@ public class ExpressSearchTask extends BaseTask
         searchBtn   = new JButton(getResourceString("Search"));
 
         //searchText  = new JTextField("[19510707 TO 19510711]", 10);//"beanii"
-        searchText  = new JTextField("beanii", 15);
+        //searchText  = new JTextField("beanii", 15);
+        searchText  = new JTextField("2004-IZ-121", 15);
+
         //searchText  = new JTextField(10);
         textBGColor = searchText.getBackground();
 
@@ -521,5 +544,19 @@ public class ExpressSearchTask extends BaseTask
     public Class getTaskClass()
     {
         return this.getClass();
+    }
+    
+    //----------------------------------------------------------------
+    //-- CommandListener Interface
+    //----------------------------------------------------------------
+    public void doCommand(CommandAction cmdAction)
+    {
+        if (cmdAction.getType().equals("App") && cmdAction.getAction().equals("Restart"))
+        {
+            lucenePath = getIndexDirPath(); // must be initialized here (again)
+            
+            checkForIndexer();
+        }
+
     }
 }

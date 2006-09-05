@@ -79,6 +79,7 @@ public class JAutoCompComboBox extends JEditComboBox
     public JAutoCompComboBox(final PickListDBAdapter dbAdapter)
     {
         super(dbAdapter.getList());
+        this.dbAdapter = dbAdapter;
     }
     
     

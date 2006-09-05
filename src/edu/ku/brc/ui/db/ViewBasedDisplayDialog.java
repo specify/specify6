@@ -17,6 +17,7 @@ package edu.ku.brc.ui.db;
 import java.awt.Frame;
 import java.beans.PropertyChangeListener;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 
 import edu.ku.brc.ui.UICacheManager;
@@ -32,7 +33,7 @@ import edu.ku.brc.ui.forms.MultiView;
  *
  */
 @SuppressWarnings("serial")
-public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFace
+public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayIFace
 {
     protected ViewBasedDisplayPanel mainPanel;
 
@@ -47,7 +48,7 @@ public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFa
      * @param idFieldName the name of the field in the clas that is the primary key which is filled in from the search table id
      * @param showSwitcher whether it should show the "Switch mode" UI combobox
      */
-    public ViewBasedDisplayFrame(final String viewSetName,
+    public ViewBasedDisplayDialog(final String viewSetName,
                                  final String viewName,
                                  final String displayName,
                                  final String title,
@@ -66,6 +67,7 @@ public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFa
 
         setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        this.setAlwaysOnTop(true);
     }
 
     //------------------------------------------------------------

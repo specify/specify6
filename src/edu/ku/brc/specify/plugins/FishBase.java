@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.specify.plugins;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
+
 import java.awt.Color;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -51,7 +53,7 @@ import edu.ku.brc.ui.forms.MultiView;
 
 /**
  * FishBase plugin For SPNHC Demo
- 
+
  * @code_status Unknown (auto-generated)
  **
  * @author rods
@@ -86,7 +88,12 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
         String species = taxon.getName();
         String genus   = taxon.getParent().getName();
 
-        frame = UICacheManager.getViewbasedFactory().createDisplay("FishBase", "Fish Base Information", false, ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME); // false means View mode
+        frame = UICacheManager.getViewbasedFactory().createDisplay("FishBase",
+                                                                   "Fish Base Information",
+                                                                   getResourceString("Close"),
+                                                                   false,
+                                                                   false,
+                                                                   ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME); // false means View mode
         frame.setCloseListener(this);
         frame.setData(null);
         frame.showDisplay(true);
@@ -101,7 +108,7 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
             progress.setIndeterminate(true);
             progress.setValue(50);
         }
-        
+
         if (frame instanceof JFrame)
         {
             ((JFrame)frame).setIconImage(IconManager.getIcon("FishBase", IconManager.IconSize.Std16).getImage());

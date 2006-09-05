@@ -40,6 +40,8 @@ import org.apache.log4j.Logger;
  */
 public class AppPreferences
 {
+    public static final String factoryName = "edu.ku.brc.af.prefs.AppPrefsIOIFace";
+
     // Static Data Memebers
     protected final static String LOCALFILENAME  = "user.properties";
     
@@ -68,13 +70,14 @@ public class AppPreferences
      */
     protected AppPreferences(final boolean isRemote)
     {
+        
         if (isRemote)
         {
             // Start by checking to see if we have a Remote IO impl
-            this.remoteSaverClassName = System.getProperty("AppPrefsIOClassName", null);
+            this.remoteSaverClassName = System.getProperty(factoryName, null);
             if (remoteSaverClassName == null)
             {
-                throw new InternalError("System Property 'AppPrefsIOClassName' must be set!");
+                throw new InternalError("System Property '"+factoryName+"' must be set!");
                 
             } else
             {
@@ -87,7 +90,7 @@ public class AppPreferences
                     
                 } catch (Exception e) 
                 {
-                    InternalError error = new InternalError("Can't instantiate AppPrefsIOIFace factory " + remoteSaverClassName);
+                    InternalError error = new InternalError("Can't instantiate "+factoryName+" factory " + remoteSaverClassName);
                     error.initCause(e);
                     throw error;
                 }

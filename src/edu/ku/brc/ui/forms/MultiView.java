@@ -27,6 +27,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -83,6 +84,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected List<MultiView>              kids            = new ArrayList<MultiView>();
 
     protected List<ViewBasedDisplayIFace>  displayFrames   = null;
+    
+    protected JButton                      externalOKBtn = null;
 
     // Temp
     protected MultiView                    thisObj          = null;
@@ -575,6 +578,15 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         }
     }
 
+    /**
+     * Sets an "externa;" that will have its enable state set depending on whether form is valid. 
+     * This is very help for those who want to place an edit for in there own panel, frame or dialog.
+     * @param externalValidationListener the listener
+     */
+    public void setExternalOKBtn(final JButton externalOKBtn)
+    {
+        this.externalOKBtn = externalOKBtn;
+    }
 
     /**
      * Returns the current view.
@@ -595,6 +607,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         data          = null;
         parentDataObj = null;
         currentView   = null;
+        externalOKBtn = null;
 
         for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
         {
@@ -642,6 +655,11 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             Viewable viewable = e.nextElement();
             viewable.validationWasOK(wasOK);
         }
+        
+        if (externalOKBtn != null)
+        {
+            externalOKBtn.setEnabled(wasOK);
+        }
     }
 
     //-----------------------------------------------------
@@ -659,5 +677,10 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             Viewable viewable = e.nextElement();
             viewable.validationWasOK(wasOK);
         }
+        if (externalOKBtn != null)
+        {
+            externalOKBtn.setEnabled(wasOK);
+        }
+
     }
 }

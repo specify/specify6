@@ -15,6 +15,7 @@
 
 package edu.ku.brc.ui.validation;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.split;
@@ -54,10 +55,10 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
-import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.ui.ColorWrapper;
@@ -99,6 +100,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 {
     protected static final Logger log                = Logger.getLogger(ValComboBoxFromQuery.class);
 
+    protected enum MODE {Unknown, Editting, NewAndEmpty, NewAndNotEmpty}
+
     protected static ColorWrapper valtextcolor       = null;
     protected static ColorWrapper requiredfieldcolor = null;
 
@@ -122,7 +125,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected DataGetterForObj   getter   = null;
     protected String             searchDialogName;
     protected String[]           fieldNames;
-    protected Object             dataObj  = null;
+
+    protected Object             dataObj     = null;
+    protected Object             newDataObj  = null;
+    protected MODE               currentMode = MODE.Unknown;
 
     protected String             displayInfoDialogName;
     protected String             frameTitle = null;
@@ -228,7 +234,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         {
             searchBtn.setEnabled(enabled);
         }
-        editBtn.setEnabled(enabled);
+        editBtn.setEnabled(enabled && dataObj != null);
         createBtn.setEnabled(enabled);
 
     }
@@ -336,6 +342,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         editBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
+                currentMode = MODE.Editting;
                 createEditFrame(false);
             }});
 
@@ -343,6 +350,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         createBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
+                currentMode = dataObj != null ? MODE.NewAndNotEmpty : MODE.NewAndEmpty;
                 createEditFrame(true);
             }});
 
@@ -354,21 +362,27 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     protected void createEditFrame(final boolean isNewObject)
     {
-        frame = UICacheManager.getViewbasedFactory().createDisplay(displayInfoDialogName, frameTitle, isNewObject, ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME);
+        String closeBtnTitle = getResourceString(isNewObject ? "Accept" : "Save");
+        frame = UICacheManager.getViewbasedFactory().createDisplay(displayInfoDialogName,
+                                                                   frameTitle,
+                                                                   closeBtnTitle,
+                                                                   true,   // false means View Mode
+                                                                   false,  // false means don't show switcher
+                                                                   ViewBasedDialogFactoryIFace.FRAME_TYPE.DIALOG);
         if (isNewObject)
         {
-            Object object = UIHelper.createAndNewDataObj(classObj);
-            UIHelper.initAndAddToParent(multiView != null ? multiView.getData() : null, object);
-            frame.setData(object);
+            newDataObj = UIHelper.createAndNewDataObj(classObj);
+            UIHelper.initDataObj(newDataObj);
+            frame.setData(newDataObj);
 
             // Now get the setter for an object and set the value they typed into the combobox and place it in
             // the first field name
             DataObjectSettable ds = (DataObjectSettable)DataObjectSettableFactory.get(classObj.getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
             if (ds != null)
             {
-                ds.setFieldValue(object, fieldNames[0], comboBox.getTextField().getText());
+                ds.setFieldValue(newDataObj, fieldNames[0], comboBox.getTextField().getText());
             }
-            frame.setData(object);
+            frame.setData(newDataObj);
 
         } else
         {
@@ -464,6 +478,60 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     {
         focusListeners.remove(l);
     }
+
+    /**
+     * Updates the UI from the data value (assume the data has changed but OK if it hasn't)
+     */
+    public void refreshUIFromData()
+    {
+        List<String> list = comboBox.getList();
+        list.clear();
+
+        if (this.dataObj != null)
+        {
+            if (getter == null)
+            {
+                getter = new DataGetterForObj();
+            }
+
+            // NOTE: If there was a formatName defined for this then the value coming
+            // in will already be correctly formatted.
+            // So just set the cvalue if there is a format name.
+            Object newVal = this.dataObj;
+            if (isEmpty(formatName))
+            {
+                Object[] val = UIHelper.getFieldValues(fieldNames, this.dataObj, getter);
+                if (isNotEmpty(format))
+                {
+                    newVal = UIHelper.getFormattedValue(val, format);
+                } else
+                {
+                    newVal = this.dataObj;
+                }
+            } else
+            {
+                newVal = DataObjFieldFormatMgr.format(this.dataObj, formatName);
+            }
+
+            if (newVal != null)
+            {
+                comboBox.getTextField().setCaretPosition(0);
+                list.add(newVal.toString());
+                comboBox.setSelectedIndex(0);
+                valState = UIValidatable.ErrorType.Valid;
+            } else
+            {
+                comboBox.setSelectedIndex(-1);
+                valState = UIValidatable.ErrorType.Incomplete;
+            }
+        } else
+        {
+            comboBox.setSelectedIndex(-1);
+            valState = UIValidatable.ErrorType.Incomplete;
+        }
+        repaint();
+    }
+
 
     //--------------------------------------------------
     //-- UIValidatable Interface
@@ -620,53 +688,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     public void setValue(Object value, String defaultValue)
     {
         dataObj = value;
-        List<String> list = comboBox.getList();
-        list.clear();
-
-        if (value != null)
-        {
-
-            if (getter == null)
-            {
-                getter = new DataGetterForObj();
-            }
-
-            // NOTE: If there was a formatName defined for this then the value coming
-            // in will already be correctly formatted.
-            // So just set the cvalue if there is a format name.
-            Object newVal = value;
-            if (isEmpty(formatName))
-            {
-                Object[] val = UIHelper.getFieldValues(fieldNames, value, getter);
-                if (isNotEmpty(format))
-                {
-                    newVal = UIHelper.getFormattedValue(val, format);
-                } else
-                {
-                    newVal = value;
-                }
-            } else
-            {
-                newVal = DataObjFieldFormatMgr.format(value, formatName);
-            }
-
-            if (newVal != null)
-            {
-                comboBox.getTextField().setCaretPosition(0);
-                list.add(newVal.toString());
-                comboBox.setSelectedIndex(0);
-                valState = UIValidatable.ErrorType.Valid;
-            } else
-            {
-                comboBox.setSelectedIndex(-1);
-                valState = UIValidatable.ErrorType.Incomplete;
-            }
-        } else
-        {
-            comboBox.setSelectedIndex(-1);
-            valState = UIValidatable.ErrorType.Incomplete;
-        }
-        repaint();
+        refreshUIFromData();
     }
 
     /* (non-Javadoc)
@@ -718,6 +740,26 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
     public void propertyChange(PropertyChangeEvent evt)
     {
+        if (evt.getPropertyName().equals("Cancel"))
+        {
+
+        } else if (frame.isEditMode())
+        {
+            if (currentMode != MODE.Editting)
+            {
+                if (currentMode == MODE.NewAndEmpty)
+                {
+                    UIHelper.addToParent(multiView != null ? multiView.getData() : null, newDataObj);
+                    setValue(newDataObj, null);
+                    newDataObj = null;
+                 }
+            }
+            frame.getMultiView().getDataFromUI();
+            refreshUIFromData();
+        }
+
+        currentMode = MODE.Unknown;
+
         if (multiView != null)
         {
             multiView.unregisterDisplayFrame(frame);

@@ -15,6 +15,7 @@
 
 package edu.ku.brc.ui.db;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.split;
@@ -156,7 +157,12 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
      */
     protected void createInfoFrame()
     {
-        frame = UICacheManager.getViewbasedFactory().createDisplay(displayInfoDialogName, frameTitle, false, ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME); // false means View mode
+        frame = UICacheManager.getViewbasedFactory().createDisplay(displayInfoDialogName,
+                                                                   frameTitle,
+                                                                   getResourceString("Close"),
+                                                                   false,  // false means View mode
+                                                                   false,  // false means don't show switcher
+                                                                   ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME);
         frame.setCloseListener(this);
         frame.setData(dataObj);
         frame.showDisplay(true);

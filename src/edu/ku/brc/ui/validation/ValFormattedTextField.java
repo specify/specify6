@@ -29,6 +29,7 @@ import java.awt.event.FocusEvent;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.JTextField;
@@ -358,6 +359,17 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
             {
                 data = (String)value;
 
+            } else if (value instanceof Date)
+            {
+                SimpleDateFormat simpleDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");                
+                data = simpleDateFormat.format((Date)value);
+                
+            } else if (value instanceof Calendar)
+            {
+                SimpleDateFormat simpleDateFormat = AppPrefsCache.getSimpleDateFormat("ui", "formatting", "scrdateformat");
+
+                data = simpleDateFormat.format(((Calendar)value).getTime());
+                
             } else
             {
                 data = value.toString();

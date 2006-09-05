@@ -173,6 +173,24 @@ public class SpecifyAppContextMgr extends AppContextMgr
     }
 
     /**
+     * Return the DatabaseName
+     * @return the DatabaseName
+     */
+    public String getDatabaseName()
+    {
+        return databaseName;
+    }
+
+    /**
+     * Return the UserName
+     * @return the UaserName
+     */
+    public String getUserName()
+    {
+        return userName;
+    }
+
+    /**
      * Returns a Discipline by title.
      * @param title the title of the discipline
      * @return a Discipline by title.
@@ -718,7 +736,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         // which were created dynamically
         if (!fndColObjDef)
         {
-            String disciplineName = colObjDef.getDiscipline();
+            String disciplineName = colObjDef != null ? colObjDef.getDiscipline() : null;
             String userType       = SpecifyUser.getCurrentUser().getUserType();
             userType = StringUtils.replace(userType, " ", "").toLowerCase();
 
@@ -728,7 +746,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 String dType = appResDef.getDisciplineType();
                 String uType = appResDef.getUserType();
 
-                if (dType != null && dType.equals(disciplineName) &&  (uType == null || uType.equals(userType)))
+                log.info("appResDef["+dType+"]["+uType+"] user["+userType+"]");
+                
+                if ((dType != null && disciplineName != null && dType.equals(disciplineName) || (dType == null || disciplineName == null)) && (uType == null || uType.equals(userType)))
                 {
                     for (ViewSet vs : getViewSetList(appResDef))
                     {
@@ -797,6 +817,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     return appRes;
                 }
             }
+        }
+        
+        if (backStopAppResMgr == null)
+        {
+            throw new RuntimeException("The backStopAppResMgr is null which means somehow a call was made to this method before the backStopAppResMgr was initialized.");
         }
         return backStopAppResMgr.getAppResource(name);
     }

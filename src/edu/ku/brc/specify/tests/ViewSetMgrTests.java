@@ -57,8 +57,9 @@ public class ViewSetMgrTests extends TestCase
         UICacheManager.getInstance(); // initializes it first thing
         if (UICacheManager.getAppName() == null) // this is needed because the setUp gets run separately for each test
         {
-            System.setProperty("edu.ku.brc.af.core.AppContextMgrFactory", "edu.ku.brc.specify.config.SpecifyAppContextMgr");
-            System.setProperty("AppPrefsIOClassName", "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");
+            System.setProperty("edu.ku.brc.af.core.AppContextMgrFactory",   "edu.ku.brc.specify.config.SpecifyAppContextMgr"); // Needed by AppCOntextMgr
+            System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
+            System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");       // Needed By UICacheManager
             
             UICacheManager.getInstance(); // initializes it first thing
             UICacheManager.setAppName("Specify");
@@ -70,7 +71,6 @@ public class ViewSetMgrTests extends TestCase
     
             FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath());
     
-            UICacheManager.setViewbasedFactory(DBObjDialogFactory.getInstance());
         }
         
         

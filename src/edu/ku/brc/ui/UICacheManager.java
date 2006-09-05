@@ -28,7 +28,6 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.exceptions.UIException;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.util.FileCache;
@@ -315,8 +314,26 @@ public class UICacheManager
     {
         if (instance.viewbasedFactory == null)
         {
-            throw new RuntimeException(MISSING_FACTORY_MSG);
+            String className = System.getProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", null);
+            if (StringUtils.isNotEmpty(className))
+            {
+                try 
+                {
+                    instance.viewbasedFactory = (ViewBasedDialogFactoryIFace)Class.forName(className).newInstance();
+                   
+                } catch (Exception e) 
+                {
+                    InternalError error = new InternalError("Can't instantiate ViewBasedDialogFactoryIFace factory " + className);
+                    error.initCause(e);
+                    throw error;
+                }
+                
+            } else
+            {
+                throw new InternalError(MISSING_FACTORY_MSG);
+            }
         }
+
         return instance.viewbasedFactory;
     }
 
@@ -324,10 +341,10 @@ public class UICacheManager
      * Sets the ViewBasedFacory for the application.
      * @param viewbasedFactory the factory
      */
-    public static void setViewbasedFactory(ViewBasedDialogFactoryIFace viewbasedFactory)
+    /*public static void setViewbasedFactory(ViewBasedDialogFactoryIFace viewbasedFactory)
     {
         instance.viewbasedFactory = viewbasedFactory;
-    }
+    }*/
 
     /**
      * Registers a uiComp into the applications.

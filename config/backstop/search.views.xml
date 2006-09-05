@@ -41,30 +41,30 @@
                     <cell type="separator" label="Agent Info" colspan="7"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="LastName" label="Last Name"/>
-                    <cell type="field" name="LastName" uitype="text" cols="20"/>
-                    <cell type="label" labelfor="FirstName" label="First Name"/>
-                    <cell type="field" name="FirstName" uitype="text" cols="20"/>
+                    <cell type="label" labelfor="1" label="Last Name"/>
+                    <cell type="field" id="1" name="LastName" uitype="text" cols="20"/>
+                    <cell type="label" labelfor="2" label="First Name"/>
+                    <cell type="field" id="2" name="FirstName" uitype="text" cols="20"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="Name" label="Organization"/>
-                    <cell type="field" name="Name" uitype="text" cols="20" colspan="5"/>
+                    <cell type="label" labelfor="3" label="Organization"/>
+                    <cell type="field" id="3" name="Name" uitype="text" cols="20" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="Address" label="Address"/>
-                    <cell type="field" name="Address" uitype="text" cols="20"/>
+                    <cell type="label" labelfor="4" label="Address"/>
+                    <cell type="field" id="4" name="Address" uitype="text" cols="20"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="City" label="City"/>
-                    <cell type="field" name="City" uitype="text" cols="20"/>
-                    <cell type="label" labelfor="State" label="State"/>
-                    <cell type="field" name="State" uitype="text" cols="15"/>
+                    <cell type="label" labelfor="5" label="City"/>
+                    <cell type="field" id="5" name="City" uitype="text" cols="20"/>
+                    <cell type="label" labelfor="6" label="State"/>
+                    <cell type="field" id="6" name="State" uitype="text" cols="15"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="Postalcode" label="Postal Code"/>
-                    <cell type="field" name="Postalcode" uitype="text" cols="11"/>
-                    <cell type="label" labelfor="Country" label="Country"/>
-                    <cell type="field" name="Country" uitype="text" cols="20"/>
+                    <cell type="label" labelfor="7" label="Postal Code"/>
+                    <cell type="field" id="7" name="Postalcode" uitype="text" cols="11"/>
+                    <cell type="label" labelfor="8" label="Country"/>
+                    <cell type="field" id="8" name="Country" uitype="text" cols="20"/>
                 </row>
             </rows>
         </viewdef>        
@@ -83,35 +83,35 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="PermitNumber" label="Number"/>
-                    <cell type="field" name="PermitNumber" uitype="text" isrequired="true"/>
+                    <cell type="label" labelfor="1" label="Number"/>
+                    <cell type="field" id="1" name="PermitNumber" uitype="text" isrequired="true"/>
                     
-                    <cell type="label" labelfor="Type" label="Type"/>
-                    <cell type="field" name="Type" uitype="combobox" picklist="PermitType"/>
+                    <cell type="label" labelfor="2" label="Type"/>
+                    <cell type="field" id="2" name="Type" uitype="combobox" picklist="PermitType"/>
                 </row>
                 
                 <row>
-                    <cell type="label" labelfor="LastName" label="Issued By (Last Name)"/>
-                    <cell type="field" name="LastName" uitype="text"/>
+                    <cell type="label" labelfor="3" label="Issued By (Last Name)"/>
+                    <cell type="field" id="3" name="LastName" uitype="text"/>
                     
-                    <cell type="label" labelfor="agentAddressByIssuee" label="Issued To  (Last Name)"/>
-                    <cell type="field" name="agentAddressByIssuee" uitype="text"/>
+                    <cell type="label" labelfor="4" label="Issued To  (Last Name)"/>
+                    <cell type="field" id="4" name="agentAddressByIssuee" uitype="text"/>
                 </row>
                 
                 <row>
-                    <cell type="label" labelfor="issuedDate" label="Date Issued"/>
-                    <cell type="field" name="issuedDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="label" labelfor="5" label="Date Issued"/>
+                    <cell type="field" id="5" name="issuedDate" uitype="formattedtext" uifieldformatter="Date"/>
                     
-                    <cell type="label" labelfor="renewalDate" label="Date Renewed"/>
-                    <cell type="field" name="renewalDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="label" labelfor="6" label="Date Renewed"/>
+                    <cell type="field" id="6" name="renewalDate" uitype="formattedtext" uifieldformatter="Date"/>
                 </row>
                 
                 <row>
-                    <cell type="label" labelfor="startDate" label="Start Date"/>
-                    <cell type="field" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="label" labelfor="7" label="Start Date"/>
+                    <cell type="field" id="7" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
                     
-                    <cell type="label" labelfor="endDate" label="End Date"/>
-                    <cell type="field" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="label" labelfor="8" label="End Date"/>
+                    <cell type="field" id="8" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>
                 </row>
                
             </rows>

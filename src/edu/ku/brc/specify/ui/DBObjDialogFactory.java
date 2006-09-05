@@ -24,8 +24,8 @@ import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.exceptions.ConfigurationException;
-import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
+import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayFrame;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
@@ -40,7 +40,7 @@ import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
  * or to pop up a search dialog for locating (more precisely the object they desire.
  *
  * @code_status Beta
- * 
+ *
  * @author rods
  *
  */
@@ -48,31 +48,28 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
 {
     private static final Logger  log             = Logger.getLogger(DBObjDialogFactory.class);
 
-    protected static DBObjDialogFactory instance = new DBObjDialogFactory();
+    protected static DBObjDialogFactory instance = null;
 
     protected Hashtable<String, DialogInfo> searchDialogs = new Hashtable<String, DialogInfo>();
     protected Hashtable<String, DialogInfo> dialogs       = new Hashtable<String, DialogInfo>();
 
     /**
-     * Protected Constructor
+     * Constructor - enables it to be constructed from its class name, it can only be constructed
+     * one time from the default constructor otherwise it throws a RuntimeException.
      */
-    protected  DBObjDialogFactory()
+    public  DBObjDialogFactory()
     {
-        // These will eventually be defined in an XML file.
-/*
-        dialogs.put("AgentSearch", new DialogInfo("Search", "AgenSearch", "AgentAddressSearch",
-                getResourceString("AgentSearchTitle"),
-                "edu.ku.brc.af.datamodel.Agent",
-                "agentId"));
+        if (DBObjDialogFactory.instance == null)
+        {
+            DBObjDialogFactory.instance = this;
 
-        dialogs.put("PermitSearch", new DialogInfo("Search", "PermitSearch", "PermitSearch",
-                getResourceString("PermitSearchTitle"),
-                "edu.ku.brc.af.datamodel.Permit",
-                "permitId"));
-                */
+        } else
+        {
+            throw new RuntimeException("DBObjDialogFactory cannot be instanitated more than once");
+        }
         init();
     }
-    
+
     /**
      * Returns the singleton instance
      * @return the singleton instance
@@ -112,7 +109,6 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                         dialogs.put(name, di);
                     }
                 }
-                UICacheManager.setViewbasedFactory(this);
             } else
             {
                 String msg = "The root element for the document was null!";
@@ -130,7 +126,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
     //----------------------------------------------------------
     // ViewBasedDialogFactoryIFace interface
     //----------------------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.ViewBasedDialogFactoryIFace#createSearchDialog(java.lang.String)
      */
@@ -152,13 +148,14 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
         }
     }
 
-
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.ViewBasedDialogFactoryIFace#createDisplay(java.lang.String, java.lang.String, boolean, boolean)
+     * @see edu.ku.brc.ui.ViewBasedDialogFactoryIFace#createDisplay(java.lang.String, java.lang.String, java.lang.String, boolean, boolean, edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE)
      */
-    public ViewBasedDisplayIFace createDisplay(final String  name,
-                                           final String  frameTitle,
-                                           final boolean isEdit,
+    public ViewBasedDisplayIFace createDisplay(final String name,
+                                           final String     frameTitle,
+                                           final String     closeBtnTitle,
+                                           final boolean    isEdit,
+                                           final boolean    showSwitcher,
                                            final FRAME_TYPE type)
     {
         DialogInfo info =  instance.dialogs.get(name);
@@ -170,12 +167,22 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                                                 info.getViewName(),
                                                 info.getDialogName(),
                                                 frameTitle,
+                                                closeBtnTitle,
                                                 info.getClassName(),
                                                 info.getIdFieldName(),
-                                                isEdit);
+                                                isEdit,
+                                                showSwitcher);
             } else
             {
-                throw new RuntimeException("Need to implement the Dialog version for the factory.");
+                return new ViewBasedDisplayDialog(info.getViewSetName(),
+                                                  info.getViewName(),
+                                                  info.getDialogName(),
+                                                  frameTitle,
+                                                  closeBtnTitle,
+                                                  info.getClassName(),
+                                                  info.getIdFieldName(),
+                                                  isEdit,
+                                                  showSwitcher);
             }
         } else
         {

@@ -67,6 +67,8 @@ import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToolbarLayoutManager;
@@ -79,7 +81,6 @@ import edu.ku.brc.util.FileCache;
  * Specify Main Application Class
 
  * @code_status Unknown (auto-generated)
- **
  * @author rods
  */
 @SuppressWarnings("serial")
@@ -132,8 +133,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
         @SuppressWarnings("unused") MacOSAppHandler macoshandler = new MacOSAppHandler(this);
 
         // Name factories
-        System.setProperty("edu.ku.brc.af.core.AppContextMgrFactory", "edu.ku.brc.specify.config.SpecifyAppContextMgr");
-        System.setProperty("AppPrefsIOClassName", "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");
+        System.setProperty("edu.ku.brc.af.core.AppContextMgrFactory",   "edu.ku.brc.specify.config.SpecifyAppContextMgr"); // Needed by AppContextMgr
+        System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
+        System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");       // Needed By UICacheManager
         
         IconManager.setApplicationClass(Specify.class);
         UICacheManager.getInstance(); // initializes it first thing
@@ -752,6 +754,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
             }
         
         }
+        
+        CommandDispatcher.dispatch(new CommandAction("App", "Restart", null));
         
         if (dbLoginPanel != null)
         {

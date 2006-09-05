@@ -19,44 +19,49 @@ import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 
 /**
  * Interface to the factory for creating View (Form) Based Dialogs/Frame or Search dialogs.<br>
- * These  dialogs are special in that a single name references a detailed discription of what the dialog is to look like, 
+ * These  dialogs are special in that a single name references a detailed discription of what the dialog is to look like,
  * what form should be used, and whether it can be editable.<BR>BR>
- * 
+ *
  * For the search dialogs, the definition contains information about how tro search both in JDBC (straigh SQL) or
- * by using Hibernate. Note: The applicaiton is currently set upto have just one factory and it must be "set" into 
+ * by using Hibernate. Note: The applicaiton is currently set upto have just one factory and it must be "set" into
  * the UICacheManager before it can be used by everyone.<br><BR>
- * 
+ *
  * There are not rules for who creates the factory or when the factory should created. Currently, the edu.ku.brc.ui.db
  * package contains refernce implementations of Dialogs/Frame created by the "createDisplay" methods and these can be
  * used as is. Anyone creating their own factory must create there own "createSearchDialog" implementation.
- * 
+ *
  *
  * @code_status Complete
- * 
+ *
  * @author rods
  *
  */
 public interface ViewBasedDialogFactoryIFace
 {
     public enum FRAME_TYPE {FRAME, DIALOG} // TODO may want to change this to model/non-model
-    
+
     /**
      * Creates a new DBObjSearchDialog by name
      * @param name the name of the DBObjSearchDialog to return
      * @return a DBObjSearchDialog by name
      */
     public ViewBasedSearchDialogIFace createSearchDialog(String name);
-    
-    /**
+
+   /**
+     * Creates a Frame/Dialog from the Factory by name.
      * @param name the Name of the display to create (the factory uses this name)
      * @param frameTitle the title on the frame or dialog
+     * @param closeBtnTitle the title of close btn
      * @param isEdit whether it is a view or edit form
+     * @param showSwitcher whether it should show the "Switch mode" UI combobox
      * @param type the type of frame (Frame or Dialog) model or non-model
      * @return the object (Frame) displaying the form
      */
-    public ViewBasedDisplayIFace createDisplay(String  name,
+    public ViewBasedDisplayIFace createDisplay(String      name,
                                                String      frameTitle,
+                                               String      closeBtnTitle,
                                                boolean     isEdit,
+                                               boolean     showSwitcher,
                                                FRAME_TYPE  type);
 
 }

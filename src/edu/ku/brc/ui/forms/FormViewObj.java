@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.ui.forms;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Color;
@@ -46,6 +47,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -250,7 +252,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
 
                 if (altView.getMode() == AltView.CreationMode.Edit)
                 {
-                    saveBtn = new JButton(UICacheManager.getResourceString("Save"), IconManager.getImage("Save"));
+                    saveBtn = new JButton(UICacheManager.getResourceString("Save"), IconManager.getIcon("Save", IconManager.IconSize.Std16));
                     saveBtn.setMargin(new Insets(1,1,1,1));
                     saveBtn.setEnabled(false);
                     saveBtn.addActionListener(new ActionListener() {
@@ -726,12 +728,42 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
     }
 
     /**
+     * Checks to see if the current item has changed and asks if it should be saved
+     * @return true to continue false to stop
+     */
+    public boolean checkForChanges()
+    {
+        if (formValidator != null && formValidator.hasChanged())
+        {
+            int rv = JOptionPane.showConfirmDialog(null,
+                        getResourceString("SaveRecord"),
+                        getResourceString("SaveRecordTitle"),
+                        JOptionPane.YES_NO_CANCEL_OPTION);
+
+            if (rv == JOptionPane.YES_OPTION)
+            {
+                saveObject();
+
+            } else if (rv == JOptionPane.CANCEL_OPTION)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Creates a new Record and adds it to the List and dataSet if necessary
      */
-    @SuppressWarnings("unchecked")
     protected void createNewRecord()
     {
         log.debug("createNewRecord " + this.getView().getName());
+
+        if (!checkForChanges())
+        {
+            return;
+        }
+
         try
         {
             Class  classObj = Class.forName(view.getClassName());
@@ -1217,7 +1249,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                     boolean isTextFieldPerMode = cellField.isTextField(altView.getMode());
 
                     boolean useFormatName = isTextFieldPerMode && isNotEmpty(formatName);
-                    //System.out.println("["+cellField.getName()+"] "+useFormatName+"  "+comp.getClass().getSimpleName());
+                    log.debug("["+cellField.getName()+"] useFormatName["+useFormatName+"]  "+comp.getClass().getSimpleName());
 
                     if (useFormatName)
                     {
@@ -1256,6 +1288,9 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
                         		}
 
                         	}
+                        } else
+                        {
+                            setDataIntoUIComp(comp, null, defaultValue);
                         }
                     }
 
