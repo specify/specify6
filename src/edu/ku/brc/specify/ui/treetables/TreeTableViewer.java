@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Collections;
+import java.util.Comparator;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -68,7 +69,6 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.util.Pair;
-import edu.ku.brc.util.ReverseRankBasedComparator;
 import edu.ku.brc.util.RankBasedComparator;
 
 /**
