@@ -13,11 +13,9 @@ import javax.swing.JList;
  * of a list.  If the objects being rendered have a <code>getName()</code> method that
  * returns a <code>String</code>, then that method is used to provide text for the
  * cell components.  Otherwise, the {@link Object#toString()} method is used.
- 
- * @code_status Unknown (auto-generated)
- **
+ *
+ * @code_status Complete
  * @author jstewart
- * @version %I% %G%
  */
 public class NameBasedListCellRenderer extends DefaultListCellRenderer
 {
@@ -46,6 +44,7 @@ public class NameBasedListCellRenderer extends DefaultListCellRenderer
 		}
 		catch( NoSuchMethodException e )
 		{
+			// do nothing, just move on
 		}
 		
 		if( getName!=null )
@@ -59,10 +58,6 @@ public class NameBasedListCellRenderer extends DefaultListCellRenderer
 			{
 				l.setText(value.toString());
 			}
-		}
-		else
-		{
-			l.setText(value.toString());
 		}
 
 		return l;

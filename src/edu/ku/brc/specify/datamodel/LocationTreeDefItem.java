@@ -1,78 +1,91 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
-public class LocationTreeDefItem extends AbstractTreeDefItem implements java.io.Serializable {
+public class LocationTreeDefItem implements Serializable, TreeDefItemIface<Location,LocationTreeDef,LocationTreeDefItem>
+{
 
-    // Fields    
+	// Fields    
 
-     protected Integer locationTreeDefItemId;
-     protected String name;
-     protected String remarks;
-     protected Integer rankId;
-     protected Boolean isEnforced;
-     protected Boolean isInFullName;
-     protected LocationTreeDef treeDef;
-     protected LocationTreeDefItem parent;
-     protected Set<Location> treeEntries;
-     protected Set<LocationTreeDefItem> children;
+	protected Integer				taxonTreeDefItemId;
+	protected String				name;
+	protected String				remarks;
+	protected Integer				rankId;
+	protected Boolean				isEnforced;
+	protected Boolean				isInFullName;
+	protected LocationTreeDef			treeDef;
+	protected LocationTreeDefItem		parent;
+	protected Set<Location>			treeEntries;
+	protected Set<LocationTreeDefItem>	children;
 
-    // Constructors
+	// Constructors
 
-    /** default constructor */
-    public LocationTreeDefItem() {
-    }
-    
-    /** constructor with id */
-    public LocationTreeDefItem(Integer locationTreeDefItemId) {
-        this.locationTreeDefItemId = locationTreeDefItemId;
-    }
-    
-    // Initializer
-    public void initialize()
-    {
-    	locationTreeDefItemId = null;
-        name = null;
-        remarks = null;
-        rankId = null;
-        isEnforced = null;
-        isInFullName = null;
-        treeDef = null;
-        parent = null;
-        treeEntries = new HashSet<Location>();
-        children = new HashSet<LocationTreeDefItem>();
-    }
-    // End Initializer
-
-    // Property accessors
-
-    /**
-     * 
-     */
-    public Integer getLocationTreeDefItemId() {
-        return this.locationTreeDefItemId;
-    }
-    
-    public void setLocationTreeDefItemId(Integer locationTreeDefItemId) {
-        this.locationTreeDefItemId = locationTreeDefItemId;
-    }
-
-    /**
-     * 
-     */
-    public String getName() {
-        return this.name;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getRemarks()
+	/** default constructor */
+	public LocationTreeDefItem()
 	{
-		return remarks;
+		// do nothing
+	}
+
+	/** constructor with id */
+	public LocationTreeDefItem(Integer taxonTreeDefItemId)
+	{
+		this.taxonTreeDefItemId = taxonTreeDefItemId;
+	}
+
+	// Initializer
+	public void initialize()
+	{
+		taxonTreeDefItemId = null;
+		name = null;
+		remarks = null;
+		rankId = null;
+		isEnforced = null;
+		isInFullName = null;
+		treeDef = null;
+		treeEntries = new HashSet<Location>();
+		parent = null;
+		children = new HashSet<LocationTreeDefItem>();
+	}
+
+	// End Initializer
+
+	// Property accessors
+
+	/**
+	 * 
+	 */
+	public Integer getLocationTreeDefItemId()
+	{
+		return this.taxonTreeDefItemId;
+	}
+
+	public void setLocationTreeDefItemId(Integer taxonTreeDefItemId)
+	{
+		this.taxonTreeDefItemId = taxonTreeDefItemId;
+	}
+
+	/**
+	 * 
+	 */
+	public String getName()
+	{
+		return this.name;
+	}
+
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+
+	/**
+	 * 
+	 */
+	public String getRemarks()
+	{
+		return this.remarks;
 	}
 
 	public void setRemarks(String remarks)
@@ -81,28 +94,32 @@ public class LocationTreeDefItem extends AbstractTreeDefItem implements java.io.
 	}
 
 	/**
-     * 
-     */
-    public Integer getRankId() {
-        return this.rankId;
-    }
-    
-    public void setRankId(Integer rankId) {
-        this.rankId = rankId;
-    }
+	 * 
+	 */
+	public Integer getRankId()
+	{
+		return this.rankId;
+	}
 
-    /**
-     * 
-     */
-    public Boolean getIsEnforced() {
-        return this.isEnforced;
-    }
-    
-    public void setIsEnforced(Boolean isEnforced) {
-        this.isEnforced = isEnforced;
-    }
+	public void setRankId(Integer rankId)
+	{
+		this.rankId = rankId;
+	}
 
-    public Boolean getIsInFullName()
+	/**
+	 * 
+	 */
+	public Boolean getIsEnforced()
+	{
+		return this.isEnforced;
+	}
+
+	public void setIsEnforced(Boolean isEnforced)
+	{
+		this.isEnforced = isEnforced;
+	}
+
+	public Boolean getIsInFullName()
 	{
 		return isInFullName;
 	}
@@ -113,52 +130,58 @@ public class LocationTreeDefItem extends AbstractTreeDefItem implements java.io.
 	}
 
 	/**
-     * 
-     */
-    public LocationTreeDef getTreeDef() {
-        return this.treeDef;
-    }
-    
-    public void setTreeDef(LocationTreeDef treeDef) {
-        this.treeDef = treeDef;
-    }
+	 * 
+	 */
+	public LocationTreeDef getTreeDef()
+	{
+		return this.treeDef;
+	}
 
-    /**
-     * 
-     */
-    public LocationTreeDefItem getParent() {
-        return this.parent;
-    }
-    
-    public void setParent(LocationTreeDefItem parent) {
-        this.parent = parent;
-    }
+	public void setTreeDef(LocationTreeDef treeDef)
+	{
+		this.treeDef = treeDef;
+	}
 
-    /**
-     * 
-     */
-    public Set getTreeEntries() {
-        return this.treeEntries;
-    }
-    
-    @SuppressWarnings("unchecked")
-	public void setTreeEntries(Set treeEntries) {
-        this.treeEntries = treeEntries;
-    }
+	/**
+	 * 
+	 */
+	public LocationTreeDefItem getParent()
+	{
+		return this.parent;
+	}
 
-    /**
-     * 
-     */
-    public Set getChildren() {
-        return this.children;
-    }
-    
-    @SuppressWarnings("unchecked")
-	public void setChildren(Set children) {
-        this.children = children;
-    }
+	public void setParent(LocationTreeDefItem parent)
+	{
+		this.parent = parent;
+	}
 
-    // Code added to implement TreeDefinitionItemIface
+	/**
+	 * 
+	 */
+	public Set<Location> getTreeEntries()
+	{
+		return this.treeEntries;
+	}
+
+	public void setTreeEntries(Set<Location> treeEntries)
+	{
+		this.treeEntries = treeEntries;
+	}
+
+	/**
+	 * 
+	 */
+	public Set<LocationTreeDefItem> getChildren()
+	{
+		return this.children;
+	}
+
+	public void setChildren(Set<LocationTreeDefItem> children)
+	{
+		this.children = children;
+	}
+
+	// Code added to implement TreeDefinitionItemIface
 
 	public Integer getTreeDefItemId()
 	{
@@ -170,89 +193,51 @@ public class LocationTreeDefItem extends AbstractTreeDefItem implements java.io.
 		setLocationTreeDefItemId(id);
 	}
 
-    public TreeDefinitionIface getTreeDefinition()
-    {
-        return getTreeDef();
-    }
-    
-    public void setTreeDefinition(TreeDefinitionIface treeDef)
-    {
-        if( treeDef==null || !(treeDef instanceof LocationTreeDef) )
-        {
-            throw new IllegalArgumentException("Argument must be an instance of LocationTreeDef");
-        }
-        setTreeDef((LocationTreeDef)treeDef);
-    }
-    
-    public TreeDefinitionItemIface getParentItem()
-    {
-        return getParent();
-    }
-    
-    public void setParentItem(TreeDefinitionItemIface parent)
-    {
-        if( parent==null || !(parent instanceof LocationTreeDefItem) )
-        {
-            throw new IllegalArgumentException("Argument must be an instance of LocationTreeDefItem");
-        }
-        setParent((LocationTreeDefItem)parent);
-    }
+	public void setChild(LocationTreeDefItem child)
+	{
+		if( child==null )
+		{
+			children = new HashSet<LocationTreeDefItem>();
+			return;
+		}
 
-    public TreeDefinitionItemIface getChildItem()
-    {
-        if( getChildren().isEmpty() )
-        {
-            return null;
-        }
-        
-        return (TreeDefinitionItemIface)getChildren().iterator().next();
-    }
-    
-    @SuppressWarnings("unchecked")
-	public void setChildItem(TreeDefinitionItemIface child)
-    {
-    	if(child==null)
-    	{
-    		Set children = new HashSet<LocationTreeDefItem>();
-    		setChildren(children);
-    		return;
-    	}
-    	
-        if( !(child instanceof LocationTreeDefItem) )
-        {
-            throw new IllegalArgumentException("Argument must be an instance of LocationTreeDefItem");
-        }
-        Set children = new HashSet<LocationTreeDefItem>();
-        children.add(child);
-        setChildren(children);
-    }
+		children = new HashSet<LocationTreeDefItem>();
+		children.add(child);
+	}
+	
+	public LocationTreeDefItem getChild()
+	{
+		if(children.isEmpty())
+		{
+			return null;
+		}
+		return children.iterator().next();
+	}
 
-	public void addTreeEntry( Location entry )
+	public void addTreeEntry(Location entry)
 	{
 		treeEntries.add(entry);
 		entry.setDefinitionItem(this);
 	}
-	
-	public void removeTreeEntry( Location entry )
+
+	public void removeTreeEntry(Location entry)
 	{
 		treeEntries.remove(entry);
 		entry.setDefinitionItem(null);
 	}
-	
-	public void setChild( LocationTreeDefItem child )
-	{
-		for( LocationTreeDefItem item: children )
-		{
-			removeChild( item );
-		}
-		
-		children.add(child);
-		child.setParent(this);
-	}
-	
-	public void removeChild( LocationTreeDefItem child )
+
+	public void removeChild(LocationTreeDefItem child)
 	{
 		children.remove(child);
 		child.setParent(null);
+	}
+	
+	public boolean canBeDeleted()
+	{
+		if(treeEntries.isEmpty())
+		{
+			return true;
+		}
+		return false;
 	}
 }

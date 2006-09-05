@@ -9,31 +9,33 @@ import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
 
-import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
+import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.util.RankBasedComparator;
 
 /**
  *
- *
+ * @code_status Beta
  * @author jstewart
  * @version %I% %G%
  */
-public class TreeDefEditorTableModel extends AbstractTableModel
+@SuppressWarnings("serial")
+public class TreeDefEditorTableModel <I extends TreeDefItemIface<?,?,I>>
+										extends AbstractTableModel
 {
 	public static final int NAME_COL     = 0;
 	public static final int REMARKS_COL  = 1;
 	public static final int FULLNAME_COL = 2;
 	public static final int ENFORCED_COL = 3;
 	
-	protected Vector<TreeDefinitionItemIface> tableData;
+	protected Vector<I> tableData;
 	
 	/**
 	 *
 	 *
 	 */
-	public TreeDefEditorTableModel(Set<TreeDefinitionItemIface> defItems)
+	public TreeDefEditorTableModel(Set<? extends I> defItems)
 	{
-		tableData = new Vector<TreeDefinitionItemIface>(defItems);
+		tableData = new Vector<I>(defItems);
 		Collections.sort(tableData,new RankBasedComparator());
 	}
 	
@@ -69,7 +71,7 @@ public class TreeDefEditorTableModel extends AbstractTableModel
 	 */
 	public Object getValueAt(int rowIndex, int columnIndex)
 	{
-		TreeDefinitionItemIface row = tableData.get(rowIndex);
+		I row = tableData.get(rowIndex);
 		switch(columnIndex)
 		{
 			case NAME_COL:
@@ -95,7 +97,7 @@ public class TreeDefEditorTableModel extends AbstractTableModel
 	@Override
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex)
 	{
-		TreeDefinitionItemIface row = tableData.get(rowIndex);
+		I row = tableData.get(rowIndex);
 		switch(columnIndex)
 		{
 			case NAME_COL:
@@ -168,34 +170,31 @@ public class TreeDefEditorTableModel extends AbstractTableModel
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex)
 	{
-		if( tableData.get(rowIndex).getParentItem() == null )
+		if( tableData.get(rowIndex).getParent() == null )
 		{
 			if( columnIndex == ENFORCED_COL )
 			{
 				return false;
 			}
-			else
-			{
-				return true;
-			}
+			return true;
 		}
 		return true;
 	}
 
-	public void add(int index, TreeDefinitionItemIface element)
+	public void add(int index, I element)
 	{
 		tableData.add(index,element);
 		fireTableRowsInserted(index,index);
 	}
 
-	public void add(TreeDefinitionItemIface o)
+	public void add(I o)
 	{
 		tableData.add(o);
 		int index = tableData.indexOf(o);
 		fireTableRowsInserted(index,index);
 	}
 
-	public TreeDefinitionItemIface get(int index)
+	public I get(int index)
 	{
 		return tableData.get(index);
 	}
@@ -205,9 +204,9 @@ public class TreeDefEditorTableModel extends AbstractTableModel
 		return tableData.indexOf(elem);
 	}
 
-	public TreeDefinitionItemIface remove(int index)
+	public I remove(int index)
 	{
-		TreeDefinitionItemIface deleted = tableData.remove(index);
+		I deleted = tableData.remove(index);
 		fireTableRowsDeleted(index,index);
 		return deleted;
 	}

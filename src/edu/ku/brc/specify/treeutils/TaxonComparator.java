@@ -10,16 +10,22 @@ import edu.ku.brc.util.NameBasedComparator;
 import edu.ku.brc.util.RankBasedComparator;
 
 /**
+ * An implementation of @see {@link Comparator} for use in sorting
+ * instances of Taxon, based first on rank, then on name.
  *
- *
+ * @code_status Complete
  * @author jstewart
- * @version %I% %G%
  */
 public class TaxonComparator implements Comparator<Taxon>
 {
+	/** The primary comparator used to sort Taxons. */
 	protected RankBasedComparator rankComparator;
+	/** The secondary comparator used to sort Taxons when the primary comparator returns 0. */
 	protected NameBasedComparator nameComparator;
 	
+	/**
+	 * Constructs a new TaxonComparator object.
+	 */
 	public TaxonComparator()
 	{
 		rankComparator = new RankBasedComparator();
@@ -27,7 +33,7 @@ public class TaxonComparator implements Comparator<Taxon>
 	}
 	
 	/**
-	 *
+	 * Compares to Taxon objects.
 	 *
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 * @param o1 a {@link Taxon} object
@@ -41,9 +47,6 @@ public class TaxonComparator implements Comparator<Taxon>
 		{
 			return rankResult;
 		}
-		else
-		{
-			return nameComparator.compare(o1,o2);
-		}
+		return nameComparator.compare(o1,o2);
 	}
 }

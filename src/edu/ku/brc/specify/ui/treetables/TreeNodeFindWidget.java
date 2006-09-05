@@ -49,6 +49,24 @@ public class TreeNodeFindWidget extends JPanel implements NavBoxItemIFace, Actio
 		this.finderService = finderService;
 	}
 	
+	@Override
+	public void setEnabled(boolean enabled)
+	{
+		inputField.setEnabled(enabled);
+		if(inputField.getText().length() > 0)
+		{
+			findButton.setEnabled(true);
+			findNextButton.setEnabled(true);
+		}
+		else
+		{
+			findButton.setEnabled(false);
+			findNextButton.setEnabled(false);
+		}
+	}
+
+
+
 	protected void init()
 	{
 		String findStr = getResourceString("Find");
@@ -64,15 +82,18 @@ public class TreeNodeFindWidget extends JPanel implements NavBoxItemIFace, Actio
 		inputField.addActionListener(this);
 		inputField.addKeyListener(new KeyAdapter()
 		{
+			@Override
 			public void keyTyped(KeyEvent e)
 			{
 				if(inputField.getText().length()>0)
 				{
 					findButton.setEnabled(true);
+					findNextButton.setEnabled(true);
 				}
 				else
 				{
 					findButton.setEnabled(false);
+					findNextButton.setEnabled(false);
 				}
 			}
 		});
@@ -123,11 +144,10 @@ public class TreeNodeFindWidget extends JPanel implements NavBoxItemIFace, Actio
 		if(source.equals(findButton) || source.equals(inputField))
 		{
 			finderService.find(findKey,where,wrap);
-			findNextButton.setEnabled(true);
 		}
 		else if(source.equals(findNextButton))
 		{
-			finderService.findNext(where,wrap);
+			finderService.findNext(findKey,where,wrap);
 		}
 	}
 

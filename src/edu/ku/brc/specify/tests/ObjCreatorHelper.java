@@ -489,15 +489,12 @@ public class ObjCreatorHelper
         geography.setName(name);
         geography.setParent(parent);
         geography.setRankId(rankId);
-        GeographyTreeDefItem defItem = (GeographyTreeDefItem)gtd.getDefItemByRank(rankId);
+        GeographyTreeDefItem defItem = gtd.getDefItemByRank(rankId);
         if( defItem != null )
         {
         	geography.setDefinitionItem(defItem);
         }
-        if (gtd != null)
-        {
-            gtd.getTreeEntries().add(geography);
-        }
+        gtd.getTreeEntries().add(geography);
 
         saveOrUpdate(geography);
         return geography;
@@ -575,17 +572,14 @@ public class ObjCreatorHelper
         location.setDefinition(ltd);
         location.setName(name);
         location.setParent(parent);
-        LocationTreeDefItem defItem = (LocationTreeDefItem)ltd.getDefItemByRank(rankId);
+        LocationTreeDefItem defItem = ltd.getDefItemByRank(rankId);
         if( defItem != null )
         {
         	location.setDefinitionItem(defItem);
         }
 
         location.setRankId(rankId);
-        if (ltd != null)
-        {
-            ltd.getTreeEntries().add(location);
-        }
+        ltd.getTreeEntries().add(location);
         
         saveOrUpdate(location);
         return location;
@@ -629,7 +623,7 @@ public class ObjCreatorHelper
         gtdi.setName(name);
         gtdi.setParent(parent);
         gtdi.setRankId(rankId);
-        gtdi.setGeologicTimePeriodTreeDef(gtptd);
+        gtdi.setTreeDef(gtptd);
         if( gtptd != null )
         {
         	gtptd.getTreeDefItems().add(gtdi);
@@ -657,20 +651,17 @@ public class ObjCreatorHelper
    {
         GeologicTimePeriod gtp = new GeologicTimePeriod();
         gtp.initialize();
-        gtp.setTreeDef(gtptd);
+        gtp.setDefinition(gtptd);
         gtp.setDefinition(gtptd);
         gtp.setName(name);
         gtp.setParent(parent);
-        GeologicTimePeriodTreeDefItem defItem = (GeologicTimePeriodTreeDefItem)gtptd.getDefItemByRank(rankId);
+        GeologicTimePeriodTreeDefItem defItem = gtptd.getDefItemByRank(rankId);
         if( defItem != null )
         {
         	gtp.setDefinitionItem(defItem);
         }
         gtp.setRankId(rankId);
-        if (gtptd != null)
-        {
-            gtptd.getTreeEntries().add(gtp);
-        }
+        gtptd.getTreeEntries().add(gtp);
         saveOrUpdate(gtp);
         return gtp;
     }
@@ -742,16 +733,13 @@ public class ObjCreatorHelper
         taxon.setDefinition(ttd);
         taxon.setName(name);
         taxon.setParent(parent);
-        TaxonTreeDefItem defItem = (TaxonTreeDefItem)ttd.getDefItemByRank(rankId);
+        TaxonTreeDefItem defItem = ttd.getDefItemByRank(rankId);
         if( defItem != null )
         {
         	taxon.setDefinitionItem(defItem);
         }
         taxon.setRankId(rankId);
-        if (ttd != null)
-        {
-            ttd.getTreeEntries().add(taxon);
-        }
+        ttd.getTreeEntries().add(taxon);
 
         saveOrUpdate(taxon);
         return taxon;
@@ -2071,7 +2059,7 @@ public class ObjCreatorHelper
     {
         SpecifyUser specifyuser = new SpecifyUser();
         specifyuser.initialize();
-        specifyuser.setEmail(null);
+        specifyuser.setEmail(email);
         specifyuser.setPrivLevel(privLevel);
         specifyuser.setUserGroup(userGroup);
         specifyuser.setName(name);
@@ -2178,7 +2166,7 @@ public class ObjCreatorHelper
     	workbenchdataitem.setOwner(workbench);
     	workbenchdataitem.setTimestampModified(new Date());
     	workbenchdataitem.setTimestampCreated(new Date());    	
-        if (session != null);
+        if (session != null)
         {
           session.saveOrUpdate(workbenchdataitem);
         }

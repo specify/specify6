@@ -9,10 +9,8 @@ import javax.swing.Icon;
 /**
  * A simple icon composed solely of a circle.
  *
- * @code_status Unknown (auto-generated)
- * 
+ * @code_status Complete
  * @author jstewart
- * @version %I% %G%
  */
 public class SimpleCircleIcon implements Icon
 {

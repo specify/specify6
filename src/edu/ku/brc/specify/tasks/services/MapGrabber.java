@@ -324,16 +324,16 @@ public class MapGrabber
      */
 	public Image getMap(Integer width,
 						Integer height,
-						int minLat,
-						int minLong,
-						int maxLat,
-						int maxLong)
+						int minLatitude,
+						int minLongitude,
+						int maxLatitude,
+						int maxLongitude)
 		throws HttpException, IOException
 	{
-		setMinLat(minLat);
-		setMinLong(minLong);
-		setMaxLat(maxLat);
-		setMaxLong(maxLong);
+		setMinLat(minLatitude);
+		setMinLong(minLongitude);
+		setMaxLat(maxLatitude);
+		setMaxLong(maxLongitude);
 		setMaxWidth(width);
 		setMaxHeight(height);
 		return getMap();
@@ -348,7 +348,7 @@ public class MapGrabber
 	{
 		double longRange = maxLong - minLong;
 		double latRange = maxLat - minLat;
-		return (double)(latRange/longRange);
+		return (latRange/longRange);
 	}
 
 	/**
@@ -369,12 +369,10 @@ public class MapGrabber
 			maxHeight = (int)(latSpread/longSpread*maxWidth);
 			return;
 		}
-		else
-		{
-			// calculate the width from the max height
-			maxWidth = (int)(maxHeight*longSpread/latSpread);
-			return;
-		}
+		
+		// calculate the width from the max height
+		maxWidth = (int)(maxHeight*longSpread/latSpread);
+		return;
 	}
 
 	/**
@@ -424,28 +422,28 @@ public class MapGrabber
 		url.append(maxWidth);
 
 		Image image;
+		String urlStr = url.toString();
 		if( imageCache != null )
 		{
 			// check the image cache
-			String key = url.toString();
-			log.info("Asking cache to grab map image: " + url.toString());
-			File imageFile = imageCache.getCacheFile(key);
+			log.info("Asking cache to grab map image: " + urlStr);
+			File imageFile = imageCache.getCacheFile(urlStr);
 			if( imageFile == null )
 			{
 				// the image wasn't in the cache
 				// grab it again
-				imageCache.cacheWebResource(key,url.toString());
-				imageFile = imageCache.getCacheFile(key);
+				imageCache.cacheWebResource(urlStr);
+				imageFile = imageCache.getCacheFile(urlStr);
 			}
 			image = Toolkit.getDefaultToolkit().getImage(imageFile.getAbsolutePath());
 		}
 		else
 		{
 			log.info("No image cache available.  Grabbing map internally.");
-			GetMethod get = new GetMethod(url.toString());
+			GetMethod get = new GetMethod(urlStr);
 			get.setFollowRedirects(true);
 			int resultCode = httpClient.executeMethod(get);
-			log.info("GET " + url.toString() + " returned " + resultCode );
+			log.info("GET " + urlStr + " returned " + resultCode );
 			log.info("Exiting MapGrabber.getMap()");
 			byte[] data = get.getResponseBody();
 			image = Toolkit.getDefaultToolkit().createImage(data);

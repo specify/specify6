@@ -27,27 +27,32 @@ import javax.swing.JPanel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
+import edu.ku.brc.specify.datamodel.TreeDefItemIface;
+import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.util.Pair;
 
 /**
  * A {@link JLabel} for displaying the names of columns of lists displaying data in
  * {@link TreeDataListModel}s.
- 
+ *
  * @code_status Unknown (auto-generated)
- **
+ *
  * @author jstewart
- * @version %I% %G%
  */
 @SuppressWarnings("serial")
-public class TreeDataListHeader extends JPanel implements ListDataListener
+public class TreeDataListHeader<T extends Treeable<T,D,I>,
+								D extends TreeDefIface<T,D,I>,
+								I extends TreeDefItemIface<T,D,I>>
+								extends JPanel
+								implements ListDataListener
 {
 	/** The associated JList. */
 	protected JList list;
 	/** The underlying data model for the list. */
-	protected TreeDataListModel model;
+	protected TreeDataListModel<T,D,I> model;
 	
-	protected TreeDataListCellRenderer listCellRenderer;
+	protected TreeDataListCellRenderer<T,D,I> cellRenderer;
 	/** The label's text color. */
 	protected Color textColor;
 	
@@ -60,11 +65,11 @@ public class TreeDataListHeader extends JPanel implements ListDataListener
 	 * @param list the list
 	 * @param tdlm the list's underlying data model
 	 */
-	public TreeDataListHeader( JList list, TreeDataListModel tdlm, TreeDataListCellRenderer listCellRenderer )
+	public TreeDataListHeader( JList list, TreeDataListModel<T,D,I> tdlm, TreeDataListCellRenderer<T,D,I> listCellRenderer )
 	{
 		this.list = list;
 		this.model = tdlm;
-		this.listCellRenderer = listCellRenderer;
+		this.cellRenderer = listCellRenderer;
 		
 		bgs = listCellRenderer.getBackgroundsColors();
 		
@@ -92,17 +97,16 @@ public class TreeDataListHeader extends JPanel implements ListDataListener
         int i = 0;
         for( Integer rank: model.getVisibleRanks() )
 		{
-			TreeDefinitionItemIface defItem = model.getTreeDef().getDefItemByRank(rank);
-			TreeDataListCellRenderer rend = (TreeDataListCellRenderer)list.getCellRenderer();
+			I defItem = model.getTreeDef().getDefItemByRank(rank);
 
 			// draw column background color
-			Pair<Integer,Integer> colBounds = rend.getColumnBoundsForRank(rank);
+			Pair<Integer,Integer> colBounds = cellRenderer.getColumnBoundsForRank(rank);
 			g.setColor(bgs[i%2]);
 			g.fillRect(colBounds.first,0,colBounds.second,this.getHeight());
 			++i;
 
 			// draw text
-			Pair<Integer,Integer> textBounds = rend.getTextBoundsForRank(rank); 
+			Pair<Integer,Integer> textBounds = cellRenderer.getTextBoundsForRank(rank); 
 			g.setColor(textColor);
 			g.drawString(defItem.getName(),textBounds.first,getHeight()/2);
 		}
@@ -140,6 +144,7 @@ public class TreeDataListHeader extends JPanel implements ListDataListener
 	 * @see javax.swing.Icon#getIconWidth()
 	 * @return the width of the header
 	 */
+	@Override
 	public int getWidth()
 	{
 		return list.getWidth();
@@ -151,6 +156,7 @@ public class TreeDataListHeader extends JPanel implements ListDataListener
 	 * @see javax.swing.Icon#getIconHeight()
 	 * @return the height of the header
 	 */
+	@Override
 	public int getHeight()
 	{
 		return list.getGraphics().getFontMetrics().getHeight()+20;

@@ -36,6 +36,7 @@ import edu.ku.brc.ui.DragDropJList;
  * @author jstewart
  * @version %I% %G%
  */
+@SuppressWarnings("serial")
 public class TreeDataGhostDropJList extends DragDropJList
 {
 	protected boolean clickOnText;

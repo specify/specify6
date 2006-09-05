@@ -3,50 +3,60 @@
  */
 package edu.ku.brc.specify.ui.treetables;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
-import edu.ku.brc.helpers.UIHelper;
-import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
-import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
+import edu.ku.brc.specify.datamodel.TreeDefItemIface;
+import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.ui.treetables.EditFormDialog.EditDialogCallback;
-import edu.ku.brc.specify.ui.treetables.TreeDefSelectionDialog.TreeSelectionDialogCallback;
+import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.util.Pair;
 
 /**
  *
- *
+ * @code_status Beta
  * @author jstewart
- * @version %I% %G%
  */
-public class TreeDefinitionEditor extends BaseSubPane
+@SuppressWarnings("serial")
+public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
+									D extends TreeDefIface<T,D,I>,
+									I extends TreeDefItemIface<T,D,I>>
+									extends BaseSubPane
 {
 	private static final Logger log  = Logger.getLogger(TreeDefinitionEditor.class);
 
@@ -54,10 +64,9 @@ public class TreeDefinitionEditor extends BaseSubPane
 	// Non-GUI members
 	//////////////////
 	
-	protected TreeDataService dataService;
-	protected TreeDefinitionIface displayedDef;
-	protected Vector<TreeDefinitionItemIface> deletedItems;
-	protected Class treeDefClass;
+	protected TreeDataService<T,D,I> dataService;
+	protected D displayedDef;
+	protected Vector<I> deletedItems;
 
 	//////////////
 	// GUI widgets
@@ -71,21 +80,21 @@ public class TreeDefinitionEditor extends BaseSubPane
 	
 	// main user interaction widget
 	protected JTable defItemsTable;
-	protected TreeDefEditorTableModel tableModel;
+	protected TreeDefEditorTableModel<I> tableModel;
 	
 	// north panel widgets
 	protected JLabel defNameLabel;
 	protected JButton editDefButton;
 	
+	protected JStatusBar statusBar;
+	
 	// south panel widgets
-	protected JButton commitToDbButton;
-	protected JLabel  statusLabel;
 	protected JButton deleteItemButton;
 	protected JButton newItemButton;
-	protected JButton editItemButton;
 	
 	protected Color errorColor;
 	
+	protected boolean unsavedChanges;
 	
 	/**
 	 *
@@ -93,42 +102,63 @@ public class TreeDefinitionEditor extends BaseSubPane
 	 * @param name
 	 * @param task
 	 */
-	public TreeDefinitionEditor(Class treeDefClass, String name, Taskable task, boolean showSelectionDialog)
+	@SuppressWarnings("unchecked")
+	public TreeDefinitionEditor(D treeDef, String name, Taskable task)
 	{
 		super(name,task);
-		this.treeDefClass = treeDefClass;
-	
 		dataService = TreeDataServiceFactory.createService();
-		deletedItems = new Vector<TreeDefinitionItemIface>();
+		displayedDef = dataService.getTreeDef((Class<D>)treeDef.getClass(),treeDef.getTreeDefId());
+		if(displayedDef == null)
+		{
+			throw new RuntimeException("Tree data service unable to locate the specified tree defintion in the DB");
+		}
+		deletedItems = new Vector<I>();
 		
-		final List<TreeDefinitionIface> treeDefs = dataService.getAllTreeDefs(treeDefClass);
 		initUI();
+		messageLabel.setText("Please wait while the tree is prepared");
+		messageLabel.setIcon(null);
+		add(messageLabel);
+		repaint();
 		
-		if(treeDefs.size()==1)
-		{
-			treeDefSelected(treeDefs.get(0));
-			return;
-		}
+		unsavedChanges = false;
 		
-		if( showSelectionDialog )
-		{
-			SwingUtilities.invokeLater(new Runnable()
-			{
-				public void run()
-				{
-					showTreeDefSelectionDialog(treeDefs);
-				}
-			});
-		}
+		initTreeDefEditorComponent(displayedDef);
+	}
+	
+	public D getDisplayedTreeDef()
+	{
+		return displayedDef;
 	}
 	
 	@Override
 	public boolean aboutToShutdown()
 	{
-		// TODO Auto-generated method stub
-		return super.aboutToShutdown();
-	}
+		if(!unsavedChanges)
+		{
+			return true;
+		}
+		
+		// show a popup to ask user about unsaved changes
+		String save = getResourceString("Save");
+		String discard = getResourceString("Discard");
+		String cancel = getResourceString("Cancel");
+		JOptionPane popup = new JOptionPane("Save changes before closing?",JOptionPane.QUESTION_MESSAGE,JOptionPane.YES_NO_CANCEL_OPTION,null,new String[] {cancel,discard,save});
+		JDialog dialog = popup.createDialog(this,"Unsaved Changes");
+		SubPaneMgr.getInstance().showPane(this);
+		dialog.setVisible(true);
+		Object userOpt = popup.getValue();
+		if(userOpt == save)
+		{
+			saveToDb();
+			return true;
+		}
+		else if(userOpt == cancel)
+		{
+			return false;
+		}
 
+		return true;
+	}
 
 	@Override
 	public void shutdown()
@@ -142,6 +172,8 @@ public class TreeDefinitionEditor extends BaseSubPane
 		this.setLayout(new BorderLayout());
 		
 		Dimension horizSpacer = new Dimension(5,0);
+		
+		statusBar = (JStatusBar)UICacheManager.get(UICacheManager.STATUSBAR);
 		
 		errorColor = Color.RED;
 		
@@ -158,7 +190,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 		{
 			public void actionPerformed(ActionEvent ae)
 			{
-				showDefEditForm(displayedDef);	
+				showDefEditDialog(displayedDef);	
 			}
 		});
 
@@ -173,24 +205,6 @@ public class TreeDefinitionEditor extends BaseSubPane
 		southPanel = new JPanel();
 		southPanel.setLayout(new BoxLayout(southPanel,BoxLayout.LINE_AXIS));
 		
-		// create south panel widgets
-		commitToDbButton = new JButton("Save");
-		commitToDbButton.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
-				saveToDb();
-			}
-		});
-		statusLabel = new JLabel();
-		editItemButton = new JButton("Edit");
-		editItemButton.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
-				editItem(defItemsTable.getSelectedRow());
-			}
-		});
 		deleteItemButton = new JButton("Delete");
 		deleteItemButton.addActionListener(new ActionListener()
 		{
@@ -209,12 +223,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 		});
 		
 		// add south panel widgets
-		southPanel.add(commitToDbButton);
-		southPanel.add(Box.createRigidArea(horizSpacer));
-		southPanel.add(statusLabel);
 		southPanel.add(Box.createHorizontalGlue());
-		southPanel.add(editItemButton);
-		southPanel.add(Box.createRigidArea(horizSpacer));
 		southPanel.add(deleteItemButton);
 		southPanel.add(Box.createRigidArea(horizSpacer));
 		southPanel.add(newItemButton);
@@ -222,58 +231,10 @@ public class TreeDefinitionEditor extends BaseSubPane
 		enableSelectionSensativeButtons(false);
 	}
 	
-	protected void showTreeDefSelectionDialog(List<TreeDefinitionIface> treeDefs)
+	protected void initTreeDefEditorComponent(D treeDef)
 	{
-		// show the dialog with all trees listed
-		// if the user hits "Cancel", close this copy of the TDE
-		// if the user hits "OK", either create a new def or edit the chosen def (depending on selection)
-
-		TreeSelectionDialogCallback callback = new TreeSelectionDialogCallback()
-		{
-			public void cancelled()
-			{
-				SubPaneMgr.getInstance().removePane(TreeDefinitionEditor.this);
-			}
-			public void defSelected(TreeDefinitionIface def)
-			{
-				treeDefSelected(def);
-			}
-			public void newDefOptionSelected()
-			{
-				TreeDefinitionIface newDef = TreeFactory.createNewTreeDef(treeDefClass,"New Def",null);
-				showNewDefForm(newDef);				
-			}
-		};
-		TreeDefSelectionDialog d = new TreeDefSelectionDialog(null,treeDefs,callback,false);
-		d.setModal(true);
-		d.setSize(300,150);
-		UIHelper.centerAndShow(d);
-	}
-	
-	protected void treeDefSelected(Object selection)
-	{
-		if(selection == null)
-		{
-			messageLabel.setText("You must select a valid tree defintion.\nClose this panel and start over.");
-			return;
-		}
-		
-		TreeDefinitionIface treeDef = (TreeDefinitionIface)selection;
-		displayedDef = treeDef;
-		
-		messageLabel.setText("Please wait while the tree is prepared");
-		messageLabel.setIcon(null);
-		add(messageLabel);
-		repaint();
-		
-		initTreeDefEditorComponent(treeDef);
-	}
-	
-	@SuppressWarnings("unchecked")
-	protected void initTreeDefEditorComponent(TreeDefinitionIface treeDef)
-	{
-		Set<TreeDefinitionItemIface> defItems = treeDef.getTreeDefItems();
-		tableModel = new TreeDefEditorTableModel(defItems);
+		Set<I> defItems = treeDef.getTreeDefItems();
+		tableModel = new TreeDefEditorTableModel<I>(defItems);
 		defItemsTable = new JTable(tableModel);
 		defItemsTable.setRowHeight(24);
 		addSelectionListener();
@@ -320,56 +281,29 @@ public class TreeDefinitionEditor extends BaseSubPane
 	{
 		deleteItemButton.setEnabled(enable);
 		newItemButton.setEnabled(enable);
-		editItemButton.setEnabled(enable);
 	}
 	
-	/**
-	 * Display the form for editing the given object.  This is a generic method for displaying
-	 * a form for editing values in any object where TreeFactory.getAppropriateFormsetAndViewNames
-	 * returns non-null.
-	 *
-	 * @param obj the obj being edited
-	 * @param title the title of the dialog window
-	 * @param callback the 'complete' and 'cancel' callbacks for the 'OK' and 'Cancel' buttons
-	 */
-	protected void showObjectEditDialog(Object obj,String title,EditDialogCallback callback)
-	{
-		String shortClassName = obj.getClass().getSimpleName();
-		String idFieldName = shortClassName.substring(0,1).toLowerCase() + shortClassName.substring(1) + "Id";
-		Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(obj);
-		if(formsNames==null)
-		{
-			log.error("Unable to locate appropriate forms for editing");
-			showError("Cannot locate forms for editing object");
-			return;
-		}
-		EditFormDialog editDialog = new EditFormDialog(formsNames.first,formsNames.second,title,shortClassName,idFieldName,callback);
-		editDialog.setModal(true);
-		editDialog.setData(obj);
-		editDialog.setVisible(true);
-	}
-
 	public void clearStatus()
 	{
-		statusLabel.setText(null);
+		statusBar.setText(null);
 	}
 	
 	public void showError(String error)
 	{
-		statusLabel.setText(error);
-		statusLabel.setForeground(errorColor);
+		statusBar.setText(error);
+		statusBar.setAsError();
 	}
 	
 	public void showMessage(String message)
 	{
-		statusLabel.setText(message);
-		statusLabel.setForeground(this.getForeground());
+		statusBar.setText(message);
 	}
 	
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Methods to handle the creation and editing of a new TreeDefinitionItemIface object.
 	/////////////////////////////////////////////////////////////////////////////////////////
 	
+	@SuppressWarnings("unchecked")
 	protected void newItem(int index)
 	{
 		if(index==-1)
@@ -377,165 +311,78 @@ public class TreeDefinitionEditor extends BaseSubPane
 			return;
 		}
 		
-		TreeDefinitionItemIface parent = tableModel.get(index);
-		TreeDefinitionItemIface newItem = 
-			TreeFactory.createNewTreeDefinitionItem(parent.getClass(),"New Level");
+		I parent = tableModel.get(index);
+		I newItem = TreeFactory.createNewTreeDefItem(parent.getClass(),null,"New Level");
 
 		// just set the parent item to have it available after the edit form is gone
-		newItem.setParentItem(parent);
+		newItem.setParent(parent);
 
-		showNewItemForm(newItem);
-	}
-	
-	/**
-	 * Display the data entry form for creating a new node.
-	 *
-	 * @param newNode the new node for which the user must enter data
-	 */
-	protected void showNewItemForm(TreeDefinitionItemIface newItem)
-	{
-		EditDialogCallback callback = new EditDialogCallback()
-		{
-			public void editCompleted(Object dataObj)
-			{
-				TreeDefinitionItemIface item = (TreeDefinitionItemIface)dataObj;
-				newDefItemEditComplete(item);
-			}
-			public void editCancelled(Object dataObj)
-			{
-				TreeDefinitionItemIface item = (TreeDefinitionItemIface)dataObj;
-				newDefItemEditCancelled(item);
-			}
-		};
-
-		showObjectEditDialog(newItem, "New Definition Item Form", callback);
-	}
-	
-	@SuppressWarnings("unchecked")
-	protected void newDefItemEditComplete(TreeDefinitionItemIface newItem)
-	{
-		TreeDefinitionItemIface parent = newItem.getParentItem();
-		TreeDefinitionItemIface child = parent.getChildItem();
+		I child = parent.getChild();
 		
 		// fix up the rest of the parent/child pointers
 		if( child != null )
 		{
-			child.setParentItem(newItem);
-			newItem.setChildItem(child);
+			child.setParent(newItem);
+			newItem.setChild(child);
 			newItem.setRankId( (int)(.5 * (child.getRankId() + parent.getRankId())) );
 		}
 		else
 		{
 			newItem.setRankId( parent.getRankId() + 200 );
 		}
-		parent.setChildItem(newItem);
+		parent.setChild(newItem);
 		
 		displayedDef.getTreeDefItems().add(newItem);
-		newItem.setTreeDefinition(displayedDef);
+		newItem.setTreeDef(displayedDef);
 		
 		int insertIndex = tableModel.indexOf(parent)+1;
 		tableModel.add(insertIndex,newItem);
 		
-		clearStatus();
-	}
-	
-	protected void newDefItemEditCancelled(TreeDefinitionItemIface defItem)
-	{
-		log.info("newDefItemEditCancelled called");
+		showMessage("New def item added");
+		defItemsTable.getSelectionModel().setSelectionInterval(insertIndex,insertIndex);
+		unsavedChanges = true;
 	}
 	
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Methods to handle the creation and editing of a new TreeDefinitionIface object.
 	/////////////////////////////////////////////////////////////////////////////////////////
-	
+
 	/**
-	 * Display the data entry form for creating a new tree definition.
+	 * Display the form for editing the given tree definition. 
 	 *
-	 * @param newNode the new node for which the user must enter data
+	 * @param treeDef the tree definition being edited
 	 */
-	public void showNewDefForm(TreeDefinitionIface newDef)
+	protected void showDefEditDialog(D treeDef)
 	{
-		EditDialogCallback callback = new EditDialogCallback()
+		EditDialogCallback<D> callback = new EditDialogCallback<D>()
 		{
-			public void editCompleted(Object dataObj)
+			public void editCompleted(D dataObj)
 			{
-				TreeDefinitionIface def = (TreeDefinitionIface)dataObj;
-				newDefEditComplete(def);
+				defNameLabel.setText(dataObj.getName());
+				unsavedChanges = true;
 			}
-			public void editCancelled(Object dataObj)
-			{
-				SubPaneMgr.getInstance().removePane(TreeDefinitionEditor.this);
-			}
-		};
-
-		showObjectEditDialog(newDef, "New Definition Form", callback);
-	}
-
-	protected void newDefEditComplete(TreeDefinitionIface def)
-	{
-//		TreeDefinitionIface newDef = TreeFactory.setupNewTreeDef(def);
-		TreeDefinitionIface newDef = TreeFactory.setupNewStdTreeDef(def);
-		treeDefSelected(newDef);
-	}
-	
-	/////////////////////////////////////////////////////////////////////////////////////////
-	// Methods to handle the creation and editing of a new TreeDefinitionIface object.
-	/////////////////////////////////////////////////////////////////////////////////////////
-
-	protected void showDefEditForm(TreeDefinitionIface treeDef)
-	{
-		EditDialogCallback callback = new EditDialogCallback()
-		{
-			public void editCompleted(Object dataObj)
-			{
-				TreeDefinitionIface def = (TreeDefinitionIface)dataObj;
-				defNameLabel.setText(def.getName());
-			}
-			public void editCancelled(Object dataObj)
+			public void editCancelled(D dataObj)
 			{
 				// nothing to do here
 			}
 		};
-		showObjectEditDialog(treeDef,"Tree Definition Data Entry",callback);
+		Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(treeDef);
+		if(formsNames==null)
+		{
+			log.error("Unable to locate appropriate forms for editing");
+			showError("Cannot locate forms for editing object");
+			return;
+		}
+		String defEditDialogTitle = getResourceString("TreeDefEditDialogTitle");
+		EditFormDialog<D> editDialog = new EditFormDialog<D>(formsNames.first,formsNames.second,defEditDialogTitle,callback);
+		editDialog.setModal(true);
+		editDialog.setData(treeDef);
+		editDialog.setVisible(true);
 	}
 	
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Methods to handle the editing of an existing TreeDefinitionItemIface object.
 	/////////////////////////////////////////////////////////////////////////////////////////
-	
-	protected void editItem(int index)
-	{
-		if(index==-1)
-		{
-			return;
-		}
-		
-		TreeDefinitionItemIface defItem = tableModel.get(index);
-		EditDialogCallback callback = new EditDialogCallback()
-		{
-			public void editCompleted(Object dataObj)
-			{
-				TreeDefinitionItemIface item = (TreeDefinitionItemIface)dataObj;
-				itemEditComplete(item);
-			}
-			public void editCancelled(Object dataObj)
-			{
-				TreeDefinitionItemIface item = (TreeDefinitionItemIface)dataObj;
-				itemEditCancelled(item);
-			}
-		};
-		showObjectEditDialog(defItem,"Edit Definition Item",callback);
-	}
-	
-	protected void itemEditComplete(TreeDefinitionItemIface defItem)
-	{
-		repaint();
-	}
-	
-	protected void itemEditCancelled(TreeDefinitionItemIface defItem)
-	{
-		repaint();
-	}
 	
 	protected void deleteItem(int index)
 	{
@@ -545,7 +392,7 @@ public class TreeDefinitionEditor extends BaseSubPane
 		}
 		
 		
-		TreeDefinitionItemIface item = tableModel.get(index);
+		I item = tableModel.get(index);
 
 		if(!item.canBeDeleted())
 		{
@@ -555,43 +402,46 @@ public class TreeDefinitionEditor extends BaseSubPane
 			return;
 		}
 		
-		TreeDefinitionItemIface parent = item.getParentItem();
-		TreeDefinitionItemIface child = item.getChildItem();
+		I parent = item.getParent();
+		I child = item.getChild();
 
 		// detach this object from the rest of the def items
-		item.setParentItem(null);
-		item.setChildItem(null);
+		item.setParent(null);
+		item.setChild(null);
 		if(parent!=null)
 		{
-			parent.setChildItem(null);
+			parent.setChild(null);
 		}
 		if(child!=null)
 		{
-			child.setParentItem(null);
+			child.setParent(null);
 		}
 		
 		// if both parent and child existed, tie them together.
 		if(parent!=null && child!=null)
 		{
-			parent.setChildItem(child);
-			child.setParentItem(parent);
+			parent.setChild(child);
+			child.setParent(parent);
 		}
 		
-		item.setTreeDefinition(null);
+		item.setTreeDef(null);
 		displayedDef.getTreeDefItems().remove(item);
 		deletedItems.add(item);
 		
 		tableModel.remove(item);
 		showMessage("Item deleted");
+		
+		unsavedChanges = true;
 	}
 	
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Methods to handle saving to DB
 	/////////////////////////////////////////////////////////////////////////////////////////
 	
-	protected void saveToDb()
+	public void saveToDb()
 	{
 		dataService.saveTreeDef(displayedDef,deletedItems);
 		showMessage("Tree Definition Saved");
+		unsavedChanges = false;
 	}
 }

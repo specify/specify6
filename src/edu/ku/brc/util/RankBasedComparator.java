@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 
 /**
- * A compartor to be used in sorting <code>Rankable</code> objects
+ * A compartor to be used in sorting {@link Rankable} objects
  * based on their ranks.
  *
  * @code_status Complete
@@ -13,7 +13,7 @@ import java.util.Comparator;
 public class RankBasedComparator implements Comparator<Rankable>
 {
 	/**
-	 * Compares two <code>Rankable</code> objects based on the values
+	 * Compares two {@link Rankable} objects based on the values
 	 * returned by {@link Rankable#getRankId()}.  Lower rank objects
 	 * are considered less than higher rank objects.  A <code>null</code>
 	 * value for rank is considered to be less than any non-<code>null</code>

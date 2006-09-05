@@ -72,7 +72,7 @@ import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
-import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
+import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.ui.db.PickList;
@@ -3098,9 +3098,9 @@ public class GenericDBConversion
     	newGeo.setName(name);
     	newGeo.setParent(parent);
     	parent.addChild(newGeo);
-    	newGeo.setTreeDef(parent.getTreeDef());
+    	newGeo.setDefinition(parent.getDefinition());
     	int newGeoRank = parent.getRankId()+100;
-    	GeographyTreeDefItem defItem = (GeographyTreeDefItem)parent.getTreeDef().getDefItemByRank(newGeoRank);
+    	GeographyTreeDefItem defItem = parent.getDefinition().getDefItemByRank(newGeoRank);
     	newGeo.setDefinitionItem(defItem);
     	newGeo.setRankId(newGeoRank);
     	session.save(newGeo);
@@ -3119,15 +3119,15 @@ public class GenericDBConversion
     	Session session = HibernateUtil.getCurrentSession();
     	HibernateUtil.beginTransaction();
     	
-    	LocationTreeDef locDef = (LocationTreeDef)TreeFactory.setupNewTreeDef(Location.class, "Sample location tree", null);
+    	LocationTreeDef locDef = TreeFactory.createStdLocationTreeDef("Sample location tree", null);
     	locDef.setRemarks("This definition is merely for demonstration purposes.  Consult documentation or support staff for instructions on creating one tailored for an institutions specific needs.");
     	session.save(locDef);
     	
     	// get the root def item
-    	LocationTreeDefItem rootItem = (LocationTreeDefItem)locDef.getTreeDefItems().iterator().next();
+    	LocationTreeDefItem rootItem = locDef.getTreeDefItems().iterator().next();
     	session.save(rootItem);
     	
-    	Location rootNode = (Location)rootItem.getTreeEntries().iterator().next();
+    	Location rootNode = rootItem.getTreeEntries().iterator().next();
     	session.save(rootNode);
     	
     	LocationTreeDefItem building = new LocationTreeDefItem();
@@ -3303,8 +3303,8 @@ public class GenericDBConversion
     	GeologicTimePeriod allTime = new GeologicTimePeriod();
     	allTime.initialize();
     	allTime.setDefinition(treeDef);
-    	TreeDefinitionItemIface rootDefItem = treeDef.getDefItemByRank(0);
-		allTime.setDefItem(rootDefItem);
+    	GeologicTimePeriodTreeDefItem rootDefItem = treeDef.getDefItemByRank(0);
+		allTime.setDefinitionItem(rootDefItem);
     	allTime.setRankId(0);
     	allTime.setName("All Time");
     	allTime.setStart(100000f);
@@ -3334,8 +3334,8 @@ public class GenericDBConversion
     		GeologicTimePeriod gtp = new GeologicTimePeriod();
     		gtp.initialize();
     		gtp.setName(name);
-    		TreeDefinitionItemIface defItem = treeDef.getDefItemByRank(rank);
-    		gtp.setDefItem(defItem);
+    		GeologicTimePeriodTreeDefItem defItem = treeDef.getDefItemByRank(rank);
+    		gtp.setDefinitionItem(defItem);
     		gtp.setRankId(rank);
     		gtp.setDefinition(treeDef);
     		gtp.setStart(lower);
@@ -3392,10 +3392,10 @@ public class GenericDBConversion
 	 * @param root the top of the tree to be renumbered
 	 * @return the highest node number value present in the subtree rooted at <code>root</code>
 	 */
-	public static int fixNodeNumbersFromRoot( Treeable root )
+	public static <T extends Treeable<T,?,?>> int fixNodeNumbersFromRoot( T root )
 	{
 		int nextNodeNumber = root.getNodeNumber();
-		for( Treeable child: root.getChildNodes() )
+		for( T child: root.getChildren() )
 		{
 			child.setNodeNumber(++nextNodeNumber);
 			nextNodeNumber = fixNodeNumbersFromRoot(child);

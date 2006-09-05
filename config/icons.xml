@@ -110,5 +110,12 @@
     <icon name="TTV_DelNode"        file="delete.png"     sizes="16"/>
     <icon name="TTV_ToParent"       file="undo.png"       sizes="16"/>
     <icon name="TTV_ToggleViewMode" file="split_view.png" sizes="32"/>
+    
+    <!-- Tree Task icons -->
+    <icon name="Geography_Tree"     file="earth.png"    sizes="all"/>
+    <icon name="Location_Tree"      file="location.jpg" sizes="all"/>
+    <icon name="GeoTimePeriod_Tree" file="clock.png"    sizes="all"/>
+    <icon name="Taxon_Tree"         file="taxon.gif"    sizes="all"/>
 
+	<icon name="TreeDefEditor"		file="taxon.gif"	sizes="all"/>
 </icons>

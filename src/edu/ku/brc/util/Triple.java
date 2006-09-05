@@ -72,6 +72,7 @@ public class Triple<F,S,T> extends Pair<F,S>
 	 * @see edu.ku.brc.util.Pair#toString()
 	 * @return the string representation
 	 */
+	@Override
 	public String toString()
 	{
 		return "{" + first.toString() + "," + second.toString() + "," + third.toString() + "}";

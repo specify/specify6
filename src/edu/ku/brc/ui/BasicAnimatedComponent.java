@@ -6,19 +6,13 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-
-import org.jdesktop.animation.timing.Envelope;
-import org.jdesktop.animation.timing.TimingController;
 import org.jdesktop.animation.timing.Envelope.EndBehavior;
 import org.jdesktop.animation.timing.Envelope.RepeatBehavior;
 
-/*
- * @code_status Unknown (auto-generated)
- **
+/**
+ * 
+ * @code_status Beta
  * @author jstewart
- *
  */
 @SuppressWarnings("serial")
 public class BasicAnimatedComponent extends AnimationComponent
@@ -67,29 +61,7 @@ public class BasicAnimatedComponent extends AnimationComponent
 	
 	protected double degreesToRadians( int degrees )
 	{
-		double rad = (double)(degrees * (Math.PI / 180));
+		double rad = degrees * (Math.PI / 180);
 		return rad;
-	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args)
-	{
-		SwingUtilities.invokeLater(new Runnable()
-				{
-					public void run()
-					{
-						BasicAnimatedComponent bac = new BasicAnimatedComponent(TimingController.INFINITE,0,Envelope.RepeatBehavior.FORWARD,Envelope.EndBehavior.HOLD,2000,30);
-						
-						JFrame f = new JFrame();
-						f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-						f.setSize(300,330);
-						f.add(bac);
-						f.setVisible(true);
-						
-						bac.start();
-					}
-				});
 	}
 }

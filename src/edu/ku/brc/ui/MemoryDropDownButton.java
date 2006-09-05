@@ -15,9 +15,8 @@ import javax.swing.JPopupMenu;
 
 /**
  *
- *
+ * @code_status Beta
  * @author jstewart
- * @version %I% %G%
  */
 public class MemoryDropDownButton extends DropDownButton
 {

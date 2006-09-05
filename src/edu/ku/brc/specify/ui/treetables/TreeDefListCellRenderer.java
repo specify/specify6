@@ -11,7 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.SwingConstants;
 
-import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
+import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 
 /**
  *
@@ -35,9 +35,9 @@ public class TreeDefListCellRenderer extends DefaultListCellRenderer
 	{
 		JLabel l = (JLabel) super.getListCellRendererComponent(list,value,index,isSelected,cellHasFocus);
 		
-		if(value instanceof TreeDefinitionItemIface)
+		if(value instanceof TreeDefItemIface)
 		{
-			TreeDefinitionItemIface defItem = (TreeDefinitionItemIface)value;
+			TreeDefItemIface defItem = (TreeDefItemIface)value;
 			l.setText(defItem.getName());
 			if(defItem.getIsEnforced()!=null && defItem.getIsEnforced().booleanValue()==true)
 			{

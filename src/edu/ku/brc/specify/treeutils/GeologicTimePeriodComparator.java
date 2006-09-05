@@ -7,8 +7,7 @@ import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 /**
  * A class used to compare GeologicTimePeriod objects for use in sorting sibling nodes.
  *
- * @code_status Unknown (auto-generated)
- * 
+ * @code_status Complete
  * @author jstewart
  */
 public class GeologicTimePeriodComparator implements Comparator<GeologicTimePeriod>
@@ -22,12 +21,33 @@ public class GeologicTimePeriodComparator implements Comparator<GeologicTimePeri
 	 */
 	public int compare(GeologicTimePeriod o1, GeologicTimePeriod o2)
 	{
-		int start =  o1.getStart().compareTo(o2.getStart());
+		Float start1 = o1.getStart();
+		Float start2 = o2.getStart();
+		if(start1 == null)
+		{
+			return -1;
+		}
+		else if(start2 == null)
+		{
+			return 1;
+		}
+		
+		int start =  start1.compareTo(start2);
 		if( start != 0 )
 		{
 			return start;
 		}
 		
-		return o1.getEnd().compareTo(o2.getEnd());
+		Float end1 = o1.getEnd();
+		Float end2 = o2.getEnd();
+		if(end1 == null)
+		{
+			return 1;
+		}
+		else if(end2 == null)
+		{
+			return -1;
+		}
+		return end1.compareTo(end2);
 	}
 }

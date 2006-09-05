@@ -6,26 +6,27 @@ package edu.ku.brc.specify.treeutils;
 import java.util.List;
 import java.util.Set;
 
-import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
-import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
+import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 
 /**
  *
- *
+ * @code_status Beta
  * @author jstewart
- * @version %I% %G%
  */
-public interface TreeDataService
+public interface TreeDataService <T extends Treeable<T,D,I>,
+									D extends TreeDefIface<T,D,I>,
+									I extends TreeDefItemIface<T,D,I>>
 {
 	public void init();
 	public void fini();
-	public List<Treeable> findByName(TreeDefinitionIface treeDef, String name);
-	public void saveTree(Treeable rootNode, boolean fixNodeNumbers, Set<Treeable> addedNodes, Set<Treeable> deletedNodes);
-	public void saveTreeDef(TreeDefinitionIface treeDef,List<TreeDefinitionItemIface> deletedItems);
-	public Set<Treeable> getTreeNodes(TreeDefinitionItemIface defItem);
-	public Treeable getRootNode(TreeDefinitionIface treeDef);
-	public List<TreeDefinitionIface> getAllTreeDefs(Class treeDefClass);
-	public TreeDefinitionIface getTreeDef(Class defClass, int defId);
-	public void loadAllDescendants(Treeable node);
+	public List<T> findByName(D treeDef, String name);
+	public void saveTree(T rootNode, boolean fixNodeNumbers, Set<T> addedNodes, Set<T> deletedNodes);
+	public void saveTreeDef(D treeDef,List<I> deletedItems);
+	public Set<T> getTreeNodes(I defItem);
+	public T getRootNode(D treeDef);
+	public List<D> getAllTreeDefs(Class<D> treeDefClass);
+	public D getTreeDef(Class<D> defClass, int defId);
+	public void loadAllDescendants(T node);
 }

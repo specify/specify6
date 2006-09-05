@@ -11,11 +11,10 @@ import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.Envelope.EndBehavior;
 import org.jdesktop.animation.timing.Envelope.RepeatBehavior;
 
-/*
+/**
+ * 
  * @code_status Unknown (auto-generated)
- **
  * @author jstewart
- *
  */
 public abstract class AnimationComponent extends JComponent implements TimingTarget
 {
@@ -208,11 +207,11 @@ public abstract class AnimationComponent extends JComponent implements TimingTar
 		return timingController.isRunning();
 	}
 
-	public void timingEvent(long cycleElapsedTime, long totalElapsedTime, float percent)
+	public void timingEvent(long cycElapsedTime, long totElapsedTime, float percentage)
 	{
-		this.cycleElapsedTime = cycleElapsedTime;
-		this.totalElapsedTime = totalElapsedTime;
-		this.percent = percent;
+		this.cycleElapsedTime = cycElapsedTime;
+		this.totalElapsedTime = totElapsedTime;
+		this.percent = percentage;
 		this.repaint();
 	}
 

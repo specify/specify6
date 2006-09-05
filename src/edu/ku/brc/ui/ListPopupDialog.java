@@ -21,14 +21,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
-import edu.ku.brc.helpers.UIHelper;
-
 /**
  *
- *
+ * @code_status Beta
  * @author jstewart
- * @version %I% %G%
  */
+@SuppressWarnings("serial")
 public class ListPopupDialog extends JDialog
 {
 	protected ListPopupCallback callback;
@@ -85,6 +83,7 @@ public class ListPopupDialog extends JDialog
 		
 		addWindowListener(new WindowAdapter()
 		{
+			@Override
 			public void windowClosing(WindowEvent we)
 			{
 				callback.cancelled();
@@ -97,6 +96,7 @@ public class ListPopupDialog extends JDialog
 		optionList.setRenderer(renderer);
 	}
 	
+	@Override
 	public void setVisible(boolean visible)
 	{
 		super.setVisible(visible);
@@ -120,26 +120,26 @@ public class ListPopupDialog extends JDialog
 		public void cancelled();
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static void main(String[] args)
-	{
-		ListPopupCallback cb = new ListPopupCallback()
-		{
-			public void cancelled()
-			{
-				System.out.println("User cancelled");
-			}
-			public void completed(Object userSelection)
-			{
-				System.out.println("User selected " + userSelection);
-			}
-		};
-		Vector options = new Vector();
-		options.add("Hello");
-		options.add(new Object());
-		options.add(new WindowAdapter(){});
-		ListPopupDialog d = new ListPopupDialog(null,"Make a selection",options,cb);
-		d.setSize(300,300);
-		UIHelper.centerAndShow(d);
-	}
+//	@SuppressWarnings("unchecked")
+//	public static void main(String[] args)
+//	{
+//		ListPopupCallback cb = new ListPopupCallback()
+//		{
+//			public void cancelled()
+//			{
+//				System.out.println("User cancelled");
+//			}
+//			public void completed(Object userSelection)
+//			{
+//				System.out.println("User selected " + userSelection);
+//			}
+//		};
+//		Vector options = new Vector();
+//		options.add("Hello");
+//		options.add(new Object());
+//		options.add(new WindowAdapter(){/* do nothing */});
+//		ListPopupDialog d = new ListPopupDialog(null,"Make a selection",options,cb);
+//		d.setSize(300,300);
+//		UIHelper.centerAndShow(d);
+//	}
 }

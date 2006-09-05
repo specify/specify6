@@ -20,7 +20,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
-import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.ui.renderers.NameableListItemCellRenderer;
 import edu.ku.brc.util.Nameable;
 
@@ -45,7 +45,7 @@ public class TreeDefSelectionDialog extends JDialog
 	protected JButton okButton;
 	protected JButton cancelButton;
 	
-	public TreeDefSelectionDialog(Frame owner,List<TreeDefinitionIface> defs,TreeSelectionDialogCallback dialogCallback,boolean includeNewOption)
+	public TreeDefSelectionDialog(Frame owner,List<TreeDefIface> defs,TreeSelectionDialogCallback dialogCallback,boolean includeNewOption)
 	{
 		super(owner);
 		this.setLayout(new BorderLayout());
@@ -97,7 +97,7 @@ public class TreeDefSelectionDialog extends JDialog
 				}
 				else
 				{
-					callback.defSelected((TreeDefinitionIface)o);
+					callback.defSelected((TreeDefIface)o);
 				}
 			}
 		});
@@ -128,19 +128,19 @@ public class TreeDefSelectionDialog extends JDialog
 		okButton.requestFocus();
 	}
 	
-	public void addOption(TreeDefinitionIface option)
+	public void addOption(TreeDefIface option)
 	{
 		options.add(option);
 	}
 	
-	public void removeOption(TreeDefinitionIface option)
+	public void removeOption(TreeDefIface option)
 	{
 		options.remove(option);
 	}
 	
 	public interface TreeSelectionDialogCallback
 	{
-		public void defSelected(TreeDefinitionIface def);
+		public void defSelected(TreeDefIface def);
 		public void newDefOptionSelected();
 		public void cancelled();
 	}

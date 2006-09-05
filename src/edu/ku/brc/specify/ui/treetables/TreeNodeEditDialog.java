@@ -18,7 +18,8 @@ import java.awt.HeadlessException;
 
 import javax.swing.DefaultComboBoxModel;
 
-import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
+import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.ui.validation.ValComboBox;
 
@@ -28,20 +29,22 @@ import edu.ku.brc.ui.validation.ValComboBox;
  * This is a "generic" or more specifically "configurable" search dialog class. This enables you to specify a form to be used to enter the search criteria
  * and then the search definition it is to use to do the search and display the results as a table in the dialog. The resulting class is to be passed in
  * on construction so the results of the search can actually yield a Hibernate object.
- 
- * @code_status Unknown (auto-generated)
- **
+
+ * @code_status Code Freeze
  * @author rods, jstewart
  *
  */
 @SuppressWarnings("serial")
-public class TreeNodeEditDialog extends EditFormDialog
+public class TreeNodeEditDialog <T extends Treeable<T,D,I>,
+									D extends TreeDefIface<T,D,I>,
+									I extends TreeDefItemIface<T,D,I>>
+									extends EditFormDialog<T>
 {
     private static final String DEF_ITEM_CB_ID = "defItemComboBox";
     
-    public TreeNodeEditDialog(String viewSetName, String viewName, String title, String className, String idFieldName, EditDialogCallback callback) throws HeadlessException
+    public TreeNodeEditDialog(String viewSetName, String viewName, String title, EditDialogCallback<T> callback) throws HeadlessException
 	{
-		super(viewSetName,viewName,title,className,idFieldName,callback);
+		super(viewSetName,viewName,title,callback);
 		// TODO Auto-generated constructor stub
 	}
     
@@ -50,38 +53,34 @@ public class TreeNodeEditDialog extends EditFormDialog
      * 
      * @param dataObj the data object
      */
-    public void setData(final Object dataObj)
+    @Override
+	public void setData(final T dataObj)
     {
-    	if(!(dataObj instanceof Treeable))
-    	{
-    		return;
-    	}
-    	
-    	Treeable node = (Treeable)dataObj;
+    	T node = dataObj;
     	ValComboBox cb = (ValComboBox)form.getCompById(DEF_ITEM_CB_ID);
     	DefaultComboBoxModel model = (DefaultComboBoxModel)cb.getModel();
-    	Treeable parent = node.getParentNode();
+    	T parent = node.getParent();
     	
     	// if we are editing the root node, just put one def item in
     	// the item selection box
     	if( parent == null )
     	{
-    		model.addElement(node.getDefItem().getName());
+    		model.addElement(node.getDefinitionItem().getName());
     		cb.setEnabled(false);
     		form.setDataObj(node);
     		return;
     	}
     	
-    	TreeDefinitionItemIface parentDefItem = parent.getDefItem();
-    	TreeDefinitionItemIface defaultItem = null;
+    	I parentDefItem = parent.getDefinitionItem();
+    	I defaultItem = null;
     	boolean done = false;
     	while( !done )
     	{
-    		TreeDefinitionItemIface item = parentDefItem.getChildItem();
+    		I item = parentDefItem.getChild();
     		if( item != null )
     		{
     			model.addElement(item.getName());
-    			if( node.getDefItem() == item )
+    			if( node.getDefinitionItem() == item )
     			{
     				cb.setValue(item.getName(), null);
     			}
@@ -97,27 +96,29 @@ public class TreeNodeEditDialog extends EditFormDialog
     			done = true;
     		}
     	}
-    	if(node.getDefItem()==null && defaultItem!=null)
+    	if(node.getDefinitionItem()==null && defaultItem!=null)
     	{
     		cb.setValue(defaultItem.getName(),null);
     	}
         form.setDataObj(node);
     }
 
-    protected void setDefItemByName( Treeable node, String defItemName )
+    protected void setDefItemByName( T node, String defItemName )
     {
-    	TreeDefinitionItemIface item = node.getTreeDef().getDefItemByName(defItemName);
-    	node.setDefItem(item);
+    	I item = node.getDefinition().getDefItemByName(defItemName);
+    	node.setDefinitionItem(item);
     	node.setRankId(item.getRankId());
     }
 
-    protected void getData()
+    @SuppressWarnings("unchecked")
+	@Override
+	protected void getData()
     {
     	super.getData();
     	
         ValComboBox cb = (ValComboBox)form.getCompById(DEF_ITEM_CB_ID);
         String defItemName = (String)cb.getValue();
-        Treeable node = (Treeable)form.getDataObj();
+        T node = (T)form.getDataObj();
         
         setDefItemByName(node, defItemName);
     }

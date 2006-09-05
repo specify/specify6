@@ -11,23 +11,27 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
-import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
-import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
+import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 
 /**
+ * An implementation of @see {@link TreeDataService} that uses Hibernate
+ * capabilities.
  *
- *
+ * @code_status Beta
  * @author jstewart
  * @version %I% %G%
  */
-public class HibernateTreeDataServiceImpl implements TreeDataService
+public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
+											D extends TreeDefIface<T,D,I>,
+											I extends TreeDefItemIface<T,D,I>>
+											implements TreeDataService<T,D,I>
 {
     /**
      * A <code>Logger</code> object used for all log messages eminating from
@@ -39,6 +43,7 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 	
 	public HibernateTreeDataServiceImpl()
 	{
+		// do nothing
 	}
 	
 	public void setSession(Session session)
@@ -68,15 +73,16 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 		}
 	}
 	
-	public List<Treeable> findByName(TreeDefinitionIface treeDef, String name)
+	@SuppressWarnings("unchecked")
+	public List<T> findByName(D treeDef, String name)
 	{
-		Vector<Treeable> results = new Vector<Treeable>();
-		Class nodeClass = treeDef.getNodeClass();
+		Vector<T> results = new Vector<T>();
+		Class<T> nodeClass = treeDef.getNodeClass();
 		Query q = session.createQuery("FROM "+nodeClass.getSimpleName()+" as node WHERE node.name = :name");
 		q.setParameter("name",name);
 		for( Object o: q.list() )
 		{
-			Treeable t = (Treeable)o;
+			T t = (T)o;
 			results.add(t);
 		}
 		
@@ -88,35 +94,32 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 	/**
 	 *
 	 *
-	 * @see edu.ku.brc.specify.treeutils.TreeDataService#getRootNode(edu.ku.brc.specify.datamodel.TreeDefinitionIface)
+	 * @see edu.ku.brc.specify.treeutils.TreeDataService#getRootNode(edu.ku.brc.specify.datamodel.TreeDefIface)
 	 * @param treeDef
 	 * @return
 	 */
-	public Treeable getRootNode(TreeDefinitionIface treeDef)
+	@SuppressWarnings("unchecked")
+	public T getRootNode(D treeDef)
 	{
-		Class nodeClass = treeDef.getNodeClass();
-		Treeable root = null;
+		Class<T> nodeClass = treeDef.getNodeClass();
+		T root = null;
 		
 		Query q = session.createQuery("FROM "+nodeClass.getSimpleName()+" as node WHERE node.parent IS NULL AND node.definition = :def");
 		q.setParameter("def",treeDef);
-		root = (Treeable)q.uniqueResult();
+		root = (T)q.uniqueResult();
 		return root;
 	}
 
 	/**
 	 *
 	 *
-	 * @see edu.ku.brc.specify.treeutils.TreeDataService#getTreeNodes(edu.ku.brc.specify.datamodel.TreeDefinitionItemIface)
+	 * @see edu.ku.brc.specify.treeutils.TreeDataService#getTreeNodes(edu.ku.brc.specify.datamodel.TreeDefItemIface)
 	 * @param defItem
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public Set<Treeable> getTreeNodes(TreeDefinitionItemIface defItem)
+	public Set<T> getTreeNodes(I defItem)
 	{
-		if( !session.contains(defItem) )
-		{
-			session.lock(defItem,LockMode.NONE);
-		}
 		Hibernate.initialize(defItem.getTreeEntries());
 		return defItem.getTreeEntries();
 	}
@@ -128,7 +131,7 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 	 * @param root the root of the subtree to save
 	 * @param deletedNodes the <code>Set</code> of nodes to delete
 	 */
-	public void saveTree(Treeable rootNode, boolean fixNodeNumbers, Set<Treeable> addedNodes, Set<Treeable> deletedNodes)
+	public void saveTree(T rootNode, boolean fixNodeNumbers, Set<T> addedNodes, Set<T> deletedNodes)
 	{
 		if(fixNodeNumbers)
 		{
@@ -137,11 +140,11 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 		}
 		Transaction tx = session.beginTransaction();
 		saveOrUpdateTree(rootNode);
-		for( Treeable node: deletedNodes )
+		for( T node: deletedNodes )
 		{
-			if( node.getParentNode() != null )
+			if( node.getParent() != null )
 			{
-				node.setParentNode(null);
+				node.setParent(null);
 			}
 			session.delete(node);
 		}
@@ -156,7 +159,7 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 		}
 	}
 	
-	public void saveTreeDef(TreeDefinitionIface treeDef, List<TreeDefinitionItemIface> deletedItems)
+	public void saveTreeDef(D treeDef, List<I> deletedItems)
 	{
 		Transaction tx = session.beginTransaction();
 		
@@ -164,7 +167,7 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 		session.saveOrUpdate(treeDef);
 		
 		// save all of the TreeDefinitionItemIface objects
-		for(Object o: treeDef.getTreeDefItems())
+		for(I o: treeDef.getTreeDefItems())
 		{
 			session.saveOrUpdate(o);
 		}
@@ -173,7 +176,7 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 //		saveOrUpdateTree(rootNode);
 
 		// delete all of the tree def items that were deleted by the user
-		for(TreeDefinitionItemIface item: deletedItems)
+		for(I item: deletedItems)
 		{
 			// ignore the items with null ID
 			// they were probably created, then deleted, before ever being persisted
@@ -202,10 +205,10 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 	 * @param root the top of the tree to be renumbered
 	 * @return the highest node number value present in the subtree rooted at <code>root</code>
 	 */
-	protected int fixNodeNumbersFromRoot( Treeable root )
+	protected int fixNodeNumbersFromRoot( T root )
 	{
 		int nextNodeNumber = root.getNodeNumber();
-		for( Treeable child: root.getChildNodes() )
+		for( T child: root.getChildren() )
 		{
 			child.setNodeNumber(++nextNodeNumber);
 			nextNodeNumber = fixNodeNumbersFromRoot(child);
@@ -221,12 +224,12 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 	 * @param root the root of the subtree to save
 	 * @param session the {@link Session} to use when persisting
 	 */
-	protected void saveOrUpdateTree( Treeable root )
+	protected void saveOrUpdateTree( T root )
 	{
 		session.saveOrUpdate(root);
-		if( Hibernate.isInitialized(root.getChildNodes()) )
+		if( Hibernate.isInitialized(root.getChildren()) )
 		{
-			for( Treeable child: root.getChildNodes() )
+			for( T child: root.getChildren() )
 			{
 				saveOrUpdateTree(child);
 			}
@@ -240,43 +243,47 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 	 * @param treeDefClass
 	 * @return
 	 */
-	public List<TreeDefinitionIface> getAllTreeDefs(Class treeDefClass)
+	@SuppressWarnings("unchecked")
+	public List<D> getAllTreeDefs(Class<D> treeDefClass)
 	{
 		Criteria crit = session.createCriteria(treeDefClass);
-		List results = crit.list();
-		Vector<TreeDefinitionIface> defs = new Vector<TreeDefinitionIface>(results.size());
+		List<?> results = crit.list();
+		Vector<D> defs = new Vector<D>(results.size());
 		for( Object o: results )
 		{
-			TreeDefinitionIface def = (TreeDefinitionIface)o;
+			D def = (D)o;
 			defs.add(def);
 		}
 		return defs;
 	}
 	
-	public TreeDefinitionIface getTreeDef(Class defClass, int defId)
+	@SuppressWarnings("unchecked")
+	public D getTreeDef(Class<D> defClass, int defId)
 	{
 		String className = defClass.getSimpleName();
 		String idFieldName = className.toLowerCase().substring(0,1) + className.substring(1) + "Id";
 		Query query = session.createQuery("FROM " + className + " WHERE " + idFieldName + "=:defId");
 		query.setParameter("defId",defId);
-		TreeDefinitionIface def = (TreeDefinitionIface)query.uniqueResult();
+		D def = (D)query.uniqueResult();
 		return def;
 	}
 
-	public void loadAllDescendants(Treeable node)
+	public void loadAllDescendants(T node)
 	{
+		// This was the old, 'dumb' implementation
 //		for(Treeable child: node.getChildNodes())
 //		{
 //			loadAllDescendants(child);
 //		}
 		
+		// This impl loads more efficiently, I think
 		String className = node.getClass().getSimpleName();
 		Integer nodeNum = node.getNodeNumber();
 		Integer highChild = node.getHighestChildNodeNumber();
 		if( nodeNum == null || highChild == null )
 		{
 			// have to do this the inefficient way
-			for(Treeable child: node.getChildNodes())
+			for(T child: node.getChildren())
 			{
 				loadAllDescendants(child);
 			}
@@ -285,7 +292,7 @@ public class HibernateTreeDataServiceImpl implements TreeDataService
 		
 		Query descend = session.createQuery("FROM " + className + " WHERE nodeNumber > " + nodeNum + " AND nodeNumber < " + highChild );
 		int i = 0;
-		for(Object o: descend.list())
+		for(@SuppressWarnings("unused")	Object o: descend.list())
 		{
 			i++;
 		}

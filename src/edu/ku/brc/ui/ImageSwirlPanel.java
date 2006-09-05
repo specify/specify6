@@ -7,9 +7,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import org.jdesktop.animation.timing.Cycle;
 import org.jdesktop.animation.timing.Envelope;
@@ -21,14 +19,13 @@ import org.jdesktop.animation.timing.TimingTarget;
 
 /**
  * Creates a JPanel to display an animated swirling of an image.
- 
- * @code_status Unknown (auto-generated)
- **
+ *  
+ * @code_status Complete
  * @author jstewart
- * @version %I% %G%
  */
 @SuppressWarnings("serial")
-public class ImageSwirlPanel extends JPanel implements TimingTarget {
+public class ImageSwirlPanel extends JPanel implements TimingTarget
+{
     /** The original image. */
     protected BufferedImage original;
     /** The original image's width. */
@@ -52,7 +49,8 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
      * @param frameCount the number of frames to render
      * @param duration the duration of the animation (in ms)
      */
-    public ImageSwirlPanel( String imageFilename, int frameCount, int duration ) {
+    public ImageSwirlPanel( String imageFilename, int frameCount, int duration )
+    {
         ImageIcon imageIcon = new ImageIcon(imageFilename);
         init(imageIcon,frameCount,duration);
     }
@@ -65,7 +63,8 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
      * @param frameCount the number of frames to render
      * @param duration the duration of the animation (in ms)
      */
-    public ImageSwirlPanel( Image image, int frameCount, int duration ) {
+    public ImageSwirlPanel( Image image, int frameCount, int duration )
+    {
         ImageIcon imageIcon = new ImageIcon(image);
         init(imageIcon,frameCount,duration);
     }
@@ -78,10 +77,11 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
      * @param frameCount the number of frames
      * @param duration the duration of the animation
      */
-    private void init(ImageIcon icon, int frameCount, int duration) {
+    private void init(ImageIcon icon, int frameCount, int dur)
+    {
         frame = 0;//frameCount - 1;
         frames = new BufferedImage[frameCount];
-        this.duration = duration;
+        this.duration = dur;
 
         origWidth = icon.getIconWidth();
         origHeight = icon.getIconHeight();
@@ -133,7 +133,8 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
      * 
      * @see TimingController#start()
      */
-    public void startAnimation() {
+    public void startAnimation()
+    {
         timingController.start();
     }
 
@@ -166,7 +167,8 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
      * @param g the graphics context
      */
     @Override
-    protected void paintComponent(Graphics g) {
+    protected void paintComponent(Graphics g)
+    {
         super.paintComponent(g);
         int i = frames.length - 1 - frame;
         g.drawImage(frames[i], 0,0, getBackground(), this);
@@ -178,7 +180,9 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
      *
      * @see org.jdesktop.animation.timing.TimingTarget#begin()
      */
-    public void begin() {
+    public void begin()
+    {
+    	// do nothing
     }
 
     /**
@@ -187,7 +191,9 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
      *
      * @see org.jdesktop.animation.timing.TimingTarget#end()
      */
-    public void end() {
+    public void end() 
+    {
+    	// do nothing
     }
 
     /**
@@ -199,7 +205,8 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
      * @param totalElapsedTime total elapsed animation time
      * @param percent the percentage of the current cycle that has elapsed
      */
-    public void timingEvent(long cycleElapsedTime, long totalElapsedTime, float percent) {
+    public void timingEvent(long cycleElapsedTime, long totalElapsedTime, float percent)
+    {
         frame = Math.min((int)(frames.length * percent),frames.length-1);
         repaint();
     }
@@ -211,30 +218,9 @@ public class ImageSwirlPanel extends JPanel implements TimingTarget {
      * @see javax.swing.JComponent#getPreferredSize()
      * @return the size of <code>original</code>
      */
-    public Dimension getPreferredSize()
+    @Override
+	public Dimension getPreferredSize()
     {
         return new Dimension(origWidth, origHeight);
-    }
-
-    /**
-     * A <code>main</code> method for testing the panel.  Always uses a file named
-     * <code><i>$USERHOME</i>/Desktop/splashfish.png</code>, 20 frames, and 1500 ms duration.
-     *
-     * @param args the argument string (unused)
-     * @throws InterruptedException if the animation controller is interrupted
-     */
-    public static void main(String[] args) throws InterruptedException {
-    	String homedir = System.getProperty("user.home");
-        final ImageSwirlPanel isp = new ImageSwirlPanel(homedir+"/Desktop/splashfish.png",20,1500);
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                JFrame f = new JFrame();
-                f.setSize(600,600);
-                f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                f.add(isp);
-                f.setVisible(true);
-                isp.startAnimation();
-            }
-        });
     }
 }

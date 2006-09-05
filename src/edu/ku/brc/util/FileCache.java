@@ -553,20 +553,6 @@ public class FileCache
 	}
 
 	/**
-	 * Retrieve and cache the web resource located at the given URL.
-	 * 
-	 * @param url the URL to the web resource to cache
-	 * @throws HttpException a network error occurred while grabbing the web resource
-	 * @throws IOException an error occurred while writing the resource to a cache file
-	 * @return a handle to the cached resource
-	 */
-	public String cacheWebResource( String url ) throws HttpException, IOException
-	{
-		cacheWebResource(url, url);
-		return url;
-	}
-
-	/**
 	 * Retrieve and cache the web resource located at the given URL using the given key as the
 	 * retrieval handle.
 	 * 
@@ -575,7 +561,7 @@ public class FileCache
 	 * @throws HttpException a network error occurred while grabbing the web resource
 	 * @throws IOException an error occurred while writing the resource to a cache file
 	 */
-	public void cacheWebResource( String key, String url ) throws HttpException, IOException
+	public String cacheWebResource( String url ) throws HttpException, IOException
 	{
 		GetMethod get = new GetMethod(url);
 		get.setFollowRedirects(true);
@@ -589,6 +575,7 @@ public class FileCache
 		byte[] response = get.getResponseBody();
 
 		cacheData(url, response);
+		return url;
 	}
 
 	/**
@@ -616,24 +603,19 @@ public class FileCache
 		{
 			return null;
 		}
-
-		else
+		
+		File f = new File(filename);
+		if( f.exists() )
 		{
-			File f = new File(filename);
-			if( f.exists() )
-			{
-				handleToAccessTimeHash.setProperty(key, Long.toString(System.currentTimeMillis()));
-				return f;
-			}
-			else
-			{
-				// the resource was previously cached, but the cache file is missing
-				// cleanup the cache mapping
-				log.info("Previously cached file '"+filename+"' is missing.  Cleaning up cache map data.");
-				handleToFilenameHash.remove(key);
-				return null;
-			}
+			handleToAccessTimeHash.setProperty(key, Long.toString(System.currentTimeMillis()));
+			return f;
 		}
+		
+		// the resource was previously cached, but the cache file is missing
+		// cleanup the cache mapping
+		log.info("Previously cached file '"+filename+"' is missing.  Cleaning up cache map data.");
+		handleToFilenameHash.remove(key);
+		return null;
 	}
 
 	/**

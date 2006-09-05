@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -31,8 +32,21 @@ import edu.ku.brc.util.Rankable;
  * 
  * @author jstewart
  */
-public interface Treeable extends Rankable, Nameable
+public interface Treeable<N,D,I> extends Rankable, Nameable
 {
+	/**
+	 * An indicator that node full names should start with highest order
+	 * nodes and continue to the lowest order nodes.
+	 * @see #REVERSE
+	 */
+	public static final int FORWARD = 1;
+	/**
+	 * An indicator that node full names should start with lowest order
+	 * nodes and continue to the highest order nodes.
+	 * @see #FORWARD
+	 */
+	public static final int REVERSE = -1;
+
 	public void initialize();
 	
 	/**
@@ -53,22 +67,22 @@ public interface Treeable extends Rankable, Nameable
 	 * 
 	 * @return the parent node object
 	 */
-	public Treeable getParentNode();
+	public N getParent();
 	
 	/**
 	 * Re-parents the node by setting its parent to <code>node</code>.
 	 * 
 	 * @param node the new parent
 	 */
-	public void setParentNode(Treeable node);
+	public void setParent(N parent);
 	
-	public Set<Treeable> getChildNodes();
+	public Set<N> getChildren();
 	
-	public void setChildNodes( Set<Treeable> children );
+	public void setChildren( Set<N> children );
 	
-	public void addChild( Treeable child );
+	public void addChild( N child );
 
-	public void removeChild( Treeable child );
+	public void removeChild( N child );
 	/**
 	 * @return the node number as determined by a depth-first traversal of the containing tree
 	 */
@@ -104,26 +118,26 @@ public interface Treeable extends Rankable, Nameable
 	/**
 	 * @return the series ID of the tree containing this node
 	 */
-	public TreeDefinitionIface getTreeDef();
+	public D getDefinition();
 	
 	/**
 	 * @param id the new series ID of the tree that this node is contained in
 	 * 
 	 * @throws IllegalArgumentException if treeDef isn't an object of the correct type to represent this Treeable's tree definition item
 	 */
-	public void setTreeDef(TreeDefinitionIface treeDef);
+	public void setDefinition(D treeDef);
 	
 	/**
 	 * @return the TreeDefinitionItemIface object representing this Treeable's location in the tree
 	 */
-	public TreeDefinitionItemIface getDefItem();
+	public I getDefinitionItem();
 	
 	/**
 	 * @param defItem the new TreeDefinitionItemIface object representing this Treeable's location in the tree
 	 * 
 	 * @throws IllegalArgumentException if defItem isn't an object of the correct type to represent this Treeable's tree definition
 	 */
-	public void setDefItem(TreeDefinitionItemIface defItem);
+	public void setDefinitionItem(I defItem);
 
 	public String getFullName();
 	public void setFullName(String fullName);
@@ -143,11 +157,13 @@ public interface Treeable extends Rankable, Nameable
 	public int getDescendantCount();
 	public boolean childrenAllowed();
 	public boolean canBeDeleted();
-	public List<Treeable> getAllDescendants();
-	public List<Treeable> getAllAncestors();
+	public List<N> getAllDescendants();
+	public List<N> getAllAncestors();
 	public void fixFullNameForAllDescendants();
 	
 	public void setTimestampsToNow();
 	public void updateModifiedTimeAndUser();
-	public boolean isDescendantOf(Treeable node);
+	public boolean isDescendantOf(N node);
+	
+	public Comparator<? super N> getComparator();
 }

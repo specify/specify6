@@ -17,17 +17,22 @@ import javax.swing.ListCellRenderer;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
+import edu.ku.brc.specify.datamodel.TreeDefIface;
+import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.util.Pair;
 
 @SuppressWarnings("serial")
-public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListener
+public class TreeDataListCellRenderer <T extends Treeable<T,D,I>,
+										D extends TreeDefIface<T,D,I>,
+										I extends TreeDefItemIface<T,D,I>>
+										implements ListCellRenderer, ListDataListener
 {
-	protected TreeDataListModel model;
+	protected TreeDataListModel<T,D,I> model;
 	protected JList list;
-	protected TreeNodeUI nodeUI;
+	protected TreeNodeUI<T> nodeUI;
 	protected boolean lengthsValid;
 	protected SortedMap<Integer,Pair<Integer,Integer>> rankBoundsMap;
 	protected int leadTextOffset;
@@ -39,11 +44,11 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 	protected Icon open;
 	protected Icon closed;
 	
-	protected Treeable currentTreeable;
+	protected T currentTreeable;
 	
 	protected Color bgs[];
 	
-	public TreeDataListCellRenderer(TreeDataListModel listModel, Color[] backgroundColors )
+	public TreeDataListCellRenderer(TreeDataListModel<T,D,I> listModel, Color[] backgroundColors )
 	{
 		bgs = new Color[2];
 		bgs[0] = backgroundColors[0];
@@ -52,7 +57,7 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 		leadTextOffset = 24;
 		tailTextOffset = 8;
 		
-		nodeUI = new TreeNodeUI(listModel);
+		nodeUI = new TreeNodeUI<T>(listModel);
 		
 		this.whitespace = 5;
 		model = listModel;
@@ -70,10 +75,11 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 		return bgs;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Component getListCellRendererComponent(JList l, Object value, int index, boolean isSelected, boolean cellHasFocus)
 	{
 		nodeUI.setList(l);
-		nodeUI.setTreeable((Treeable)value);
+		nodeUI.setTreeable((T)value);
 		nodeUI.setSelected(isSelected);
 		nodeUI.setIndex(index);
 		nodeUI.setHasFocus(cellHasFocus);
@@ -176,16 +182,18 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 		return longest;
 	}
 
-	public class TreeNodeUI extends JPanel
+	public class TreeNodeUI<N extends Treeable<N,?,?>> extends JPanel
 	{
+		@SuppressWarnings("hiding")
 		protected JList list;
-		protected TreeDataListModel model;
-		protected Treeable treeable;
+		@SuppressWarnings("hiding")
+		protected TreeDataListModel<N,?,?> model;
+		protected N treeable;
 		protected int index;
 		protected boolean selected;
 		protected boolean hasFocus;
 
-		public TreeNodeUI(TreeDataListModel model)
+		public TreeNodeUI(TreeDataListModel<N,?,?> model)
 		{
 			this.model = model;
 			setOpaque(true);
@@ -212,10 +220,8 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 					System.out.println("Recovery attempt failed.");
 					return new Dimension(getWidestRankWidth(),list.getFirstVisibleIndex());
 				}
-				else
-				{
-					System.out.println("Recovery attempt succeeded.");
-				}
+				
+				System.out.println("Recovery attempt succeeded.");
 			}
 			int width = rankBounds.second;
 			return new Dimension(width,list.getFixedCellHeight());
@@ -256,7 +262,7 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 		 *
 		 * @param treeable the treeable
 		 */
-		public void setTreeable(Treeable treeable)
+		public void setTreeable(N treeable)
 		{
 			this.treeable = treeable;
 			this.setToolTipText(treeable.getFullName());
@@ -323,8 +329,8 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 		
 		private void drawNodeAnchors(Graphics g)
 		{
-			Treeable node = treeable;
-			Treeable parent = treeable.getParentNode();
+			N node = treeable;
+			N parent = node.getParent();
 			int cellHeight = list.getFixedCellHeight();
 			int midCell = cellHeight/2;
 
@@ -356,8 +362,8 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 			// if not, draw an L-shape
 			// if so, draw a T-shape
 
-			Treeable node = treeable;
-			Treeable parent = treeable.getParentNode();
+			N node = treeable;
+			N parent = node.getParent();
 			int cellHeight = list.getFixedCellHeight();
 
 			while( node != model.getVisibleRoot() && parent != null )
@@ -370,7 +376,7 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 				}
 				
 				node = parent;
-				parent = node.getParentNode();
+				parent = node.getParent();
 			}
 		}
 		
@@ -381,7 +387,7 @@ public class TreeDataListCellRenderer implements ListCellRenderer, ListDataListe
 			int anchorStartX = anchorBounds.getFirst();
 
 			// don't do anything for leaf nodes
-			if( treeable.getChildNodes().isEmpty() )
+			if( treeable.getChildren().isEmpty() )
 			{
 				return;
 			}

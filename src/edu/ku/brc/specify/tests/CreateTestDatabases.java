@@ -719,8 +719,8 @@ public class CreateTestDatabases
 
             TaxonTreeDef taxonTreeDef = new TaxonTreeDef();
             taxonTreeDef.setName("Taxon for "+name);
-            taxonTreeDef.setTreeDefItems(new HashSet<Object>());
-            taxonTreeDef.setTreeEntries(new HashSet<Object>());
+            taxonTreeDef.setTreeDefItems(new HashSet<TaxonTreeDefItem>());
+            taxonTreeDef.setTreeEntries(new HashSet<Taxon>());
 
             setSession(session);
 

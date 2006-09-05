@@ -14,8 +14,7 @@ import java.awt.Stroke;
  * of the code included here was taken from 
  * http://forum.java.sun.com/thread.jspa?threadID=378460&tstart=135.
  *
- * @code_status Unknown (auto-generated)
- * 
+ * @code_status Complete
  * @author jstewart
  */
 public class GraphicsUtils
@@ -126,8 +125,8 @@ public class GraphicsUtils
 	 */
 	public static Point getPointAlongLine( Point start, Point end, float percent )
 	{
-		int x = start.x + (int)(percent * (float)(end.x-start.x));
-		int y = start.y + (int)(percent * (float)(end.y-start.y));
+		int x = start.x + (int)(percent * (end.x-start.x));
+		int y = start.y + (int)(percent * (end.y-start.y));
 		return new Point(x,y);
 	}
 
@@ -169,6 +168,12 @@ public class GraphicsUtils
 		return (int) (len * Math.sin(dir));
 	}
 
+	/**
+	 * Modifes the given {@link Graphics} object to enable anti-aliased
+	 * drawing.
+	 *
+	 * @param g a {@link Graphics} object
+	 */
 	public static void turnOnAntialiasedDrawing(Graphics g)
 	{
 		if(g instanceof Graphics2D)

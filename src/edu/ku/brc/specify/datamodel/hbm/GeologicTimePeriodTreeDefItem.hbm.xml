@@ -44,7 +44,7 @@
 		<!-- Associations -->
 
 		<!-- bi-directional many-to-one association to GeologicTimePeriodTreeDef -->
-		<many-to-one name="geologicTimePeriodTreeDef"
+		<many-to-one name="treeDef"
 			column="GeologicTimePeriodTreeDefID"
 			class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"
 			lazy="false">

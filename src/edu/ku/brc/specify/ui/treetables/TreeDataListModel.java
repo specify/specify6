@@ -25,10 +25,9 @@ import javax.swing.AbstractListModel;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.specify.datamodel.TreeDefinitionIface;
-import edu.ku.brc.specify.datamodel.TreeDefinitionItemIface;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
+import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.util.Pair;
 
 /*
@@ -38,53 +37,57 @@ import edu.ku.brc.util.Pair;
  *
  */
 @SuppressWarnings("serial")
-public class TreeDataListModel extends AbstractListModel
+public class TreeDataListModel<T extends Treeable<T,D,I>,
+								D extends TreeDefIface<T,D,I>,
+								I extends TreeDefItemIface<T,D,I>>
+								extends AbstractListModel
 {
-	protected Vector<Treeable> visibleNodes;
-	protected Hashtable<Treeable,Boolean> childrenWereShowing;
-	protected TreeDefinitionIface treeDef;
     private static final Logger log = Logger.getLogger(TreeDataListModel.class);
-    protected Treeable root;
-    protected Treeable visibleRoot;
-    protected Comparator comparator;
 
-	public TreeDataListModel( Treeable root )
+    protected Vector<T> visibleNodes;
+	protected Hashtable<T,Boolean> childrenWereShowing;
+	protected D treeDef;
+    protected T root;
+    protected T visibleRoot;
+    protected Comparator<? super T> comparator;
+
+	public TreeDataListModel( T root )
 	{
-		visibleNodes = new Vector<Treeable>();
-		childrenWereShowing = new Hashtable<Treeable, Boolean>();
+		visibleNodes = new Vector<T>();
+		childrenWereShowing = new Hashtable<T, Boolean>();
 		this.root = root;
 		this.visibleRoot = root;
-		comparator = TreeFactory.getAppropriateComparator(root);
+		comparator = root.getComparator();
 		
-		treeDef = root.getTreeDef();
+		treeDef = root.getDefinition();
 		
 		makeNodeVisible(root);
 		showChildren(root);
 	}
 	
-	public Treeable getRoot()
+	public T getRoot()
 	{
 		return root;
 	}
 
-	public Treeable getVisibleRoot()
+	public T getVisibleRoot()
 	{
 		return visibleRoot;
 	}
 	
-	public TreeDefinitionIface getTreeDef()
+	public D getTreeDef()
 	{
 		return this.treeDef;
 	}
 	
-	public boolean allChildrenAreVisible(Treeable t)
+	public boolean allChildrenAreVisible(T t)
 	{
 		if( t == null )
 		{
 			return false;
 		}
 		
-		for(Treeable child: t.getChildNodes())
+		for(T child: t.getChildren())
 		{
 			if(!visibleNodes.contains(child))
 			{
@@ -94,13 +97,13 @@ public class TreeDataListModel extends AbstractListModel
 		return true;
 	}
 	
-	protected boolean childrenWereShowing(Treeable t)
+	protected boolean childrenWereShowing(T t)
 	{
 		Boolean showing = childrenWereShowing.get(t);
 		return (showing != null) ? showing : false;
 	}
 	
-	public void setChildrenVisible( Treeable t, boolean visible )
+	public void setChildrenVisible( T t, boolean visible )
 	{
 		// if the node is currently invisible, change the status of the children nodes
 		// for when the node becomes visible in the future
@@ -120,42 +123,42 @@ public class TreeDataListModel extends AbstractListModel
 		}
 	}
 	
-	public void showDescendants( Treeable t )
+	public void showDescendants( T t )
 	{
 		showChildren(t);
-		for( Treeable child: t.getChildNodes() )
+		for( T child: t.getChildren() )
 		{
 			showDescendants(child);
 		}
 	}
 	
-	protected void showChildren(Treeable t)
+	protected void showChildren(T t)
 	{
 		if( allChildrenAreVisible(t) )
 		{
 			return;
 		}
 
-		for( Treeable child: t.getChildNodes() )
+		for( T child: t.getChildren() )
 		{
 			setNodeVisible(child,true);
 		}
 	}
 	
-	protected void hideChildren(Treeable t)
+	protected void hideChildren(T t)
 	{
 		if( !allChildrenAreVisible(t) )
 		{
 			return;
 		}
 		
-		for( Treeable child: t.getChildNodes() )
+		for( T child: t.getChildren() )
 		{
 			setNodeVisible(child, false);
 		}
 	}
 	
-	protected void setNodeVisible( Treeable t, boolean visible )
+	protected void setNodeVisible( T t, boolean visible )
 	{
 		if(visible)
 		{
@@ -195,8 +198,7 @@ public class TreeDataListModel extends AbstractListModel
 	 * @return the new index of t in the visible node collection
 	 * @throws RuntimeException if the parent of t isn't currently visible
 	 */
-	@SuppressWarnings("unchecked")
-	protected int makeNodeVisible( Treeable t )
+	protected int makeNodeVisible( T t )
 	{
 		// if this is the first node to ever be made visible...
 		if( visibleNodes.isEmpty() )
@@ -210,7 +212,7 @@ public class TreeDataListModel extends AbstractListModel
 			return 0;
 		}
 		
-		Treeable parent = t.getParentNode();
+		T parent = t.getParent();
 
 		// if the parent node isn't currently visible, throw an Exception
 		int indexOfParent = visibleNodes.indexOf(parent);
@@ -235,7 +237,7 @@ public class TreeDataListModel extends AbstractListModel
 		// parent is visible and not the last node
 		
 		int currentIndex = indexOfParent+1;
-		Treeable node = visibleNodes.get(currentIndex);
+		T node = visibleNodes.get(currentIndex);
 		while( true )
 		{
 			// if we've moved past the last descendant of 'parent',
@@ -251,7 +253,7 @@ public class TreeDataListModel extends AbstractListModel
 				}
 				return currentIndex;
 			}
-			else if( (node.getParentNode() == parent) && (comparator.compare(t, node) < 0) )
+			else if( (node.getParent() == parent) && (comparator.compare(t, node) < 0) )
 			{
 				//else if 'node' is a direct child of 'parent' and is after 't' according to the comparator,
 				// the new node ('t') should be inserted before 'node'
@@ -278,7 +280,7 @@ public class TreeDataListModel extends AbstractListModel
 		}
 	}
 	
-	protected void makeNodeInvisible( Treeable t )
+	protected void makeNodeInvisible( T t )
 	{
 		if( !visibleNodes.contains(t) )
 		{
@@ -289,7 +291,7 @@ public class TreeDataListModel extends AbstractListModel
 		{
 			childrenWereShowing.put(t, true);
 			
-			for( Treeable child: t.getChildNodes() )
+			for( T child: t.getChildren() )
 			{
 				makeNodeInvisible(child);
 			}
@@ -301,7 +303,7 @@ public class TreeDataListModel extends AbstractListModel
 		visibleNodes.remove(t);
 	}
 	
-	protected void removeNode( Treeable node )
+	protected void removeNode( T node )
 	{
 		if( node == root )
 		{
@@ -313,7 +315,7 @@ public class TreeDataListModel extends AbstractListModel
 		// 2. remove the child node
 		// 3. reshow the children IF they were previously visible
 		
-		Treeable parent = node.getParentNode();
+		T parent = node.getParent();
 		boolean prevVisible = allChildrenAreVisible(parent);
 		hideChildren(parent);
 		parent.removeChild(node);
@@ -323,7 +325,7 @@ public class TreeDataListModel extends AbstractListModel
 		}
 	}
 	
-	protected void insertNode( Treeable node, Treeable parent )
+	protected void insertNode( T node, T parent )
 	{
 		// basic algorithm here...
 		// 1. hide children of new parent
@@ -338,7 +340,7 @@ public class TreeDataListModel extends AbstractListModel
 	public SortedSet<Integer> getVisibleRanks()
 	{
 		TreeSet<Integer> usedRanks = new TreeSet<Integer>();
-		for( Treeable node: visibleNodes )
+		for( T node: visibleNodes )
 		{
 			Integer rank = node.getRankId();
 			usedRanks.add(rank);
@@ -354,7 +356,7 @@ public class TreeDataListModel extends AbstractListModel
 		}
 		
 		int count = 0;
-		for( Treeable node: visibleNodes )
+		for( T node: visibleNodes )
 		{
 			if( node.getRankId().equals(rankId) )
 			{
@@ -382,7 +384,7 @@ public class TreeDataListModel extends AbstractListModel
 			return null;
 		}
 		
-		TreeDefinitionItemIface defItem = treeDef.getDefItemByRank(rank);
+		I defItem = treeDef.getDefItemByRank(rank);
 
 		// start with the rank name being the longest item
 		// this way, it's length gets factored in
@@ -393,7 +395,7 @@ public class TreeDataListModel extends AbstractListModel
 			longestName = defItem.getName();
 		}
 		int nodesFound = 0;
-		for( Treeable node: visibleNodes )
+		for( T node: visibleNodes )
 		{
 			if( node.getRankId().equals(rank) )
 			{
@@ -413,18 +415,6 @@ public class TreeDataListModel extends AbstractListModel
 	
 	public Object getElementAt(int arg0)
 	{
-//		int index = 0;
-//		for( Treeable t: visibleNodes )
-//		{
-//			if( index == arg0 )
-//			{
-//				return t;
-//			}
-//			++index;
-//		}
-//		
-//		throw new ArrayIndexOutOfBoundsException();
-		
 		return visibleNodes.elementAt(arg0);
 	}
 	
@@ -433,14 +423,14 @@ public class TreeDataListModel extends AbstractListModel
 		return visibleNodes.indexOf(o);
 	}
 	
-	public boolean parentHasChildrenAfterNode( Treeable parent, Treeable child )
+	public boolean parentHasChildrenAfterNode( T parent, T child )
 	{
 		if( !visibleNodes.contains(child) )
 		{
 			throw new IllegalArgumentException("Must provide a child node that is visible");
 		}
 		
-		if( child.getParentNode() != parent )
+		if( child.getParent() != parent )
 		{
 			throw new IllegalArgumentException("Given nodes are not a parent/child pair");
 		}
@@ -448,8 +438,8 @@ public class TreeDataListModel extends AbstractListModel
 		int indexOfChild = visibleNodes.indexOf(child);
 		for( int i = indexOfChild+1; i < visibleNodes.size(); ++i )
 		{
-			Treeable node = visibleNodes.get(i);
-			if( node.getParentNode() == parent )
+			T node = visibleNodes.get(i);
+			if( node.getParent() == parent )
 			{
 				return true;
 			}
@@ -463,9 +453,9 @@ public class TreeDataListModel extends AbstractListModel
 		return visibleNodes.size();
 	}
 	
-	public boolean reparent( Treeable node, Treeable newParent )
+	public boolean reparent( T node, T newParent )
 	{
-		if( node.getParentNode() == newParent )
+		if( node.getParent() == newParent )
 		{
 			return false;
 		}
@@ -476,14 +466,14 @@ public class TreeDataListModel extends AbstractListModel
 		return true;
 	}
 
-	public void addChild( Treeable child, Treeable parent )
+	public void addChild( T child, T parent )
 	{
 		parent.addChild(child);
-		child.setParentNode(parent);
+		child.setParent(parent);
 		showChildren(parent);
 	}
 
-	public void nodeValuesChanged(Treeable node)
+	public void nodeValuesChanged(T node)
 	{
 		if( visibleNodes.contains(node) )
 		{
@@ -492,7 +482,7 @@ public class TreeDataListModel extends AbstractListModel
 		}
 	}
 
-	public void setVisibleRoot(Treeable node)
+	public void setVisibleRoot(T node)
 	{
 		setNodeVisible(visibleRoot,false);
 		visibleRoot = node;

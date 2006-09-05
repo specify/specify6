@@ -21,21 +21,17 @@ import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.NavBoxLayoutManager;
-import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
@@ -43,36 +39,31 @@ import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
 
 /**
- * Comments must be updated.  Most of this code, including comments, was taken from DBObjDisplayDialog.java
+ * A simple dialog for displaying a form appropriate for editing objects
+ * of a specified class.  The user registers an instance of {@link EditDialogCallback}
+ * used in signalling when the displayed dialog has been closed by user interaction.
  * 
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * @author jstewart
  */
 @SuppressWarnings("serial")
-public class EditFormDialog extends JDialog implements ActionListener
+public class EditFormDialog<T> extends JDialog implements ActionListener
 {
+    /** The logger to use when emitting any messages. */
     private static final Logger log  = Logger.getLogger(EditFormDialog.class);
-
-    // Form Stuff
-    protected MultiView      multiView;
-    protected View           formView;
+    /** The displayed form. */
     protected Viewable       form;
-    protected List<String>   fieldNames;
-    
-    // Members needed for creating results
-    protected String         className;
-    protected String         idFieldName;
-
-    // UI
+    /** The JButton signalling the 'OK' user action. */
     protected JButton        okBtn;
+    /** The JButton signalling the 'Cancel' user action. */
     protected JButton		 cancelBtn;
-
-    protected JPanel         contentPanel;
-    
-    protected EditDialogCallback callback;
+    /** The registered callback to notify after user action occurs. */
+    protected EditDialogCallback<T> callback;
     
     /**
-     * Constructs a {@link Treeable} node edit dialog from form info
+     * Constructs a node edit dialog using the given view to represent objects
+     * of the given class.
+     * 
      * @param viewSetName the viewset name
      * @param viewName the form name from the viewset
      * @param title the title (should be already localized before passing in)
@@ -83,32 +74,35 @@ public class EditFormDialog extends JDialog implements ActionListener
     public EditFormDialog(final String viewSetName,
                                 final String viewName,
                                 final String title,
-                                final String className,
-                                final String idFieldName,
-                                final EditDialogCallback callback) throws HeadlessException
+                                final EditDialogCallback<T> callback) throws HeadlessException
     {
         super((Frame)UICacheManager.get(UICacheManager.FRAME), title, true);
         
         this.callback = callback;
         
-        this.className   = className;
-        this.idFieldName = idFieldName;
-
         createUI(viewSetName, viewName, title);
 
-        setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
+        setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setModal(false);
     }
 
+    /**
+     * Do all of the real work in building the UI.
+     *
+     * @param viewSetName the viewset name
+     * @param viewName the name of the presented view
+     * @param title the title of the dialog
+     */
     protected void createUI(final String viewSetName,
                             final String viewName,
                             final String title)
     {
-        formView = AppContextMgr.getInstance().getView(viewSetName, viewName);
-        if (formView != null)
+    	View formView = AppContextMgr.getInstance().getView(viewSetName, viewName);
+    	MultiView multiView = null;
+    	if (formView != null)
         {
-            multiView   = new MultiView(null, formView, AltView.CreationMode.Edit, false, false);
+        	multiView = new MultiView(null, formView, AltView.CreationMode.Edit, false, false);
             form = multiView.getCurrentView();
 
         } else
@@ -119,8 +113,7 @@ public class EditFormDialog extends JDialog implements ActionListener
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
 
-        panel.add(multiView, BorderLayout.NORTH);
-        contentPanel = new JPanel(new NavBoxLayoutManager(0,2));
+        panel.add(multiView, BorderLayout.CENTER);
 
         okBtn = new JButton(getResourceString("OK"));
         okBtn.addActionListener(this);
@@ -129,29 +122,40 @@ public class EditFormDialog extends JDialog implements ActionListener
         cancelBtn = new JButton(getResourceString("Cancel"));
         cancelBtn.addActionListener(this);
 
-        ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
-        btnBuilder.addGlue();
-        btnBuilder.addGriddedButtons(new JButton[] { cancelBtn, okBtn });
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel,BoxLayout.LINE_AXIS));
+        buttonPanel.add(Box.createHorizontalGlue());
+        buttonPanel.add(cancelBtn);
+        buttonPanel.add(okBtn);
 
-        panel.add(btnBuilder.getPanel(), BorderLayout.SOUTH);
+        panel.add(buttonPanel, BorderLayout.SOUTH);
 
         setContentPane(panel);
+        setTitle(title);
         pack();
+        setResizable(false);
     }
     
     /**
-     * Sets data into the dialog.
+     * Sets data from the given object into the dialog.
      * 
      * @param dataObj the data object
      */
-    public void setData(final Object dataObj)
+    public void setData(final T dataObj)
     {
         form.setDataObj(dataObj);
     }
 
+    /**
+     * Receives the signal that the user has pressed either the 'OK' or 'Cancel'
+     * button.  Based on the button pressed, the {@link ActionEvent} is passed on
+     * to <code>okAction(ActionEvent)</code> or <code>cancelAction(ActionEvent)</code>.
+     *
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     * @param e the action data
+     */
     public void actionPerformed(ActionEvent e)
     {
-        // Handle clicks on the OK buttons.
     	if( e.getSource().equals(okBtn) )
     	{
     		okAction(e);
@@ -163,31 +167,65 @@ public class EditFormDialog extends JDialog implements ActionListener
     	return;
     }
     
+    /**
+     * Gathers the values from the form and modifies the data object appropriately.
+     */
     protected void getData()
     {
     	form.getDataFromUI();
     }
     
-    protected void okAction(ActionEvent e)
+    /**
+     * Hides the form, gathers values from it into the data object and
+     * notifies the registered callback provider.
+     *
+     * @param e the action data (ignored)
+     */
+    @SuppressWarnings("unchecked")
+	protected void okAction(@SuppressWarnings("unused")	ActionEvent e)
     {
-        // Handle clicks on the OK buttons.
         setVisible(false);
         
         getData();
         
-        callback.editCompleted(form.getDataObj());
+        callback.editCompleted((T)form.getDataObj());
     }
     
-    protected void cancelAction(ActionEvent e)
+    /**
+     * Hides the form and notifies the registered callback provider.
+     *
+     * @param e
+     */
+    @SuppressWarnings("unchecked")
+	protected void cancelAction(@SuppressWarnings("unused")	ActionEvent e)
     {
         setVisible(false);
 
-    	callback.editCancelled(form.getDataObj());
+    	callback.editCancelled((T)form.getDataObj());
     }
     
-    public interface EditDialogCallback
+    /**
+     * The interface that must be implemented to register a callback
+     * on an {@link EditFormDialog}.
+     *
+     * @code_status Complete
+     * @author jstewart
+     */
+    public interface EditDialogCallback<U>
     {
-    	public void editCompleted(Object dataObj);
-    	public void editCancelled(Object dataObj);
+    	/**
+    	 * The {@link EditFormDialog} was closed by the user pressing the
+    	 * 'OK' button.
+    	 *
+    	 * @param dataObj the data object represented by the form
+    	 */
+    	public void editCompleted(U dataObj);
+    	/**
+    	 * The {@link EditFormDialog} was closed by the user pressing the
+    	 * 'Cancel' button.
+    	 *
+    	 * @param dataObj the data object represented by the form
+    	 */
+    	public void editCancelled(U dataObj);
     }
 }
