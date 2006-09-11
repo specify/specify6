@@ -10,9 +10,6 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.AbstractAction;
-import javax.swing.JMenuItem;
-
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxItemIFace;
@@ -22,7 +19,6 @@ import edu.ku.brc.af.plugins.MenuItemDesc;
 import edu.ku.brc.af.plugins.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
-import edu.ku.brc.helpers.UIHelper;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -130,19 +126,7 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 	@SuppressWarnings({ "serial", "serial" })
 	protected void createMenus(@SuppressWarnings("unused") List<D> defs)
 	{
-		String label    = getResourceString("TaxonMenuItem");
-		String mnemonic = getResourceString("TaxonMnemonic");
-		String accDescr = getResourceString("TaxonAccesDesc");
-		AbstractAction action = new AbstractAction()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				// do nothing
-			}
-		};
-		JMenuItem sampleMenuItem = UIHelper.createMenuItem(null,label,mnemonic,accDescr,true,action);
-		MenuItemDesc mid = new MenuItemDesc(sampleMenuItem,"AdvMenu");
-		menuItems.add(mid);		
+		// do nothing
 	}
 	
 	protected void showTree(D treeDef)
