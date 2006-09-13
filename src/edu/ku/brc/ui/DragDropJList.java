@@ -114,6 +114,7 @@ public class DragDropJList extends JList implements DragSourceListener,
 	 */
 	public void dragDropEnd(DragSourceDropEvent dsde)
 	{
+		// do nothing
 	}
 
 	/**
@@ -124,6 +125,7 @@ public class DragDropJList extends JList implements DragSourceListener,
 	 */
 	public void dragEnter(DragSourceDragEvent dsde)
 	{
+		// do nothing
 	}
 
 	/**
@@ -134,6 +136,7 @@ public class DragDropJList extends JList implements DragSourceListener,
 	 */
 	public void dragExit(DragSourceEvent dse)
 	{
+		// do nothing
 	}
 
 	/**
@@ -144,6 +147,7 @@ public class DragDropJList extends JList implements DragSourceListener,
 	 */
 	public void dragOver(DragSourceDragEvent dsde)
 	{
+		// do nothing
 	}
 
 	/**
@@ -154,6 +158,7 @@ public class DragDropJList extends JList implements DragSourceListener,
 	 */
 	public void dropActionChanged(DragSourceDragEvent dsde)
 	{
+		// do nothing
 	}
 
 	/**
@@ -182,6 +187,7 @@ public class DragDropJList extends JList implements DragSourceListener,
 	 */
 	public void dragExit(DropTargetEvent dte)
 	{
+		// do nothing
 	}
 
 	/**
@@ -221,10 +227,7 @@ public class DragDropJList extends JList implements DragSourceListener,
 		{
 			return true;
 		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
 
 	/**
@@ -269,6 +272,7 @@ public class DragDropJList extends JList implements DragSourceListener,
 	 */
 	public void dropActionChanged(DropTargetDragEvent dtde)
 	{
+		// do nothing
 	}
 
 	
@@ -303,12 +307,11 @@ public class DragDropJList extends JList implements DragSourceListener,
 		 * @throws IOException
 		 */
 		public Object getTransferData(DataFlavor df)
-				throws UnsupportedFlavorException, IOException
+				throws UnsupportedFlavorException
 		{
 			if( isDataFlavorSupported(df) )
 				return object;
-			else
-				throw new UnsupportedFlavorException(df);
+			throw new UnsupportedFlavorException(df);
 		}
 
 		/**
