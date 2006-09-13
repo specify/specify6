@@ -156,7 +156,6 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
         if (!isEdit)
         {
             btnBuilder.addGriddedButtons(new JButton[] { okBtn });
-            multiView.setExternalOKBtn(okBtn);
 
         } else
         {
@@ -164,7 +163,8 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
             cancelBtn.addActionListener(this);
             btnBuilder.addGriddedButtons(new JButton[] { okBtn, cancelBtn });
         }
-
+        multiView.setExternalOKBtn(okBtn);
+        
         add(btnBuilder.getPanel(), BorderLayout.SOUTH);
 
     }
@@ -185,6 +185,15 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     public JButton getOkBtn()
     {
         return okBtn;
+    }
+
+    /**
+     * Returns the Cancel button or null if there isn't one.
+     * @return the Canel button or null if there isn't one.
+     */
+    public JButton getCancelBtn()
+    {
+        return cancelBtn;
     }
 
     /* (non-Javadoc)

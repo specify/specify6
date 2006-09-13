@@ -77,7 +77,7 @@ public class StatsTask extends BaseTask
 
         } catch (Exception ex)
         {
-            log.error(ex);
+            log.error("Couldn't load `StatisticsPanel` " +ex);
         }
 
         // Process the NavBox Panel and create all the commands

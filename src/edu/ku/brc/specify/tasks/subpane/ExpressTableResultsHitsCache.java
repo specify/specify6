@@ -266,8 +266,7 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
                     for (int i=0;i<hits.length();i++)
                     {
                         Document doc  = hits.doc(i);
-                        RecordSetItem rsi = new RecordSetItem();
-                        rsi.setRecordId(doc.get("id"));
+                        RecordSetItem rsi = new RecordSetItem(Long.parseLong(doc.get("id")));
                         items.add(rsi);
                     }
                 } else
@@ -276,8 +275,7 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
                     {
                         Document doc  = hits.doc(indexes[rows[i]]);
                         //log.debug("["+doc.get("id")+"]["+doc.get("table")+"]["+doc.get("data")+"]");
-                        RecordSetItem rsi = new RecordSetItem();
-                        rsi.setRecordId(doc.get("id"));
+                        RecordSetItem rsi = new RecordSetItem(Long.parseLong(doc.get("id")));
                         items.add(rsi);
                     }
                 }

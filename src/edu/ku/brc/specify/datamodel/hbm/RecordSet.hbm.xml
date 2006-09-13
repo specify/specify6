@@ -6,7 +6,7 @@
 <class name="edu.ku.brc.specify.datamodel.RecordSet" table="recordset" lazy="false">
 
 	<!-- Common id property. -->
-	<id name="recordSetID" type="long" column="RecordSetID" unsaved-value="null">
+	<id name="recordSetID" type="java.lang.Long" column="RecordSetID" unsaved-value="null">
 		<generator class="native"/>
 	</id>
 

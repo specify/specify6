@@ -2,20 +2,16 @@ package edu.ku.brc.specify;
 
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.deleteAllRecordsFromTable;
 
-import java.awt.Frame;
 import java.awt.HeadlessException;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
@@ -23,11 +19,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -143,6 +137,7 @@ public class SpecifyDBConverter
      */
     protected static void convertDB(final String oldDatabaseName, final String databaseName) throws Exception
     {
+        boolean doAll = true; // when converting
 
         System.out.println("************************************************************");
         System.out.println("From "+oldDatabaseName+" to "+databaseName);
@@ -159,7 +154,7 @@ public class SpecifyDBConverter
 
         // NOTE: You must have already created the database to use this
         // but the database can be empty
-        boolean restartFromScratch = true;
+        boolean restartFromScratch = doAll;
         if (restartFromScratch)
         {
             Connection connection = DBConnection.getConnection();
@@ -213,7 +208,6 @@ public class SpecifyDBConverter
 //        	GenericDBConversion.setShouldCreateMapTables(false);
 //            GenericDBConversion.setShouldDeleteMapTables(false);
 
-            boolean doAll = true; // when converting
 
             boolean doConvert = true;
             if (doConvert)

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<viewset name="Fish Views" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<viewset name="Accession Views" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <views>
         <view name="Accession"
               class="edu.ku.brc.specify.datamodel.Accession"
+              busrules="edu.ku.brc.specify.datamodel.busrules.AccessionBusRule"
               resourcelabels="false">
             <desc><![CDATA[The Accession form.]]></desc>
             <altviews>
@@ -22,23 +23,23 @@
             </altviews>
         </view>
 
-        <view name="AgentForAccessions"
+        <view name="Agent"
              class="edu.ku.brc.specify.datamodel.Agent"
              resourcelabels="false">
             <desc><![CDATA[Agent subform within the AccessionAgent form.]]></desc>
             <altviews>
-                <altview name="AgentForAccessions View" viewdef="AgentForAccessions" label="View" mode="view" validated="false" default="true"/>
-                <altview name="AgentForAccessions Edit" viewdef="AgentForAccessions" label="Edit" mode="edit" validated="true"/>
+                <altview name="Agent View" viewdef="Agent" label="View" mode="view" validated="false" default="true"/>
+                <altview name="Agent Edit" viewdef="Agent" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
 
-        <view name="PermitForAccessions"
+        <view name="Permit"
             class="edu.ku.brc.specify.datamodel.Permit"
             resourcelabels="false">
             <desc><![CDATA[Permit subform within the Accession form.]]></desc>
             <altviews>
-                <altview name="PermitForAccessions View" viewdef="PermitForAccessions" label="View" mode="view" validated="false" default="true"/>
-                <altview name="PermitForAccessions Edit" viewdef="PermitForAccessions" label="Edit" mode="edit" validated="true"/>
+                <altview name="Permit View" viewdef="Permit" label="View" mode="view" validated="false" default="true"/>
+                <altview name="Permit Edit" viewdef="Permit" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
 
@@ -165,7 +166,7 @@
 
         <viewdef
             type="form"
-            name="AgentForAccessions"
+            name="Agent"
             class="edu.ku.brc.specify.datamodel.Agent"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
@@ -214,7 +215,7 @@
 
         <viewdef
             type="form"
-            name="PermitForAccessions"
+            name="Permit"
             class="edu.ku.brc.specify.datamodel.Permit"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
@@ -231,7 +232,7 @@
                     <cell type="field" id="2" name="permitNumber" uitype="text" isrequired="true"/>
 
                     <cell type="label" labelfor="3" label="Type"/>
-                    <cell type="field" id="3" name="type" uitype="combobox" initialize="data=N/A, CITES, State, Federal, International"/>
+                    <cell type="field" id="3" name="type" uitype="combobox" picklist="PermitType"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4" label="Issued By"/>

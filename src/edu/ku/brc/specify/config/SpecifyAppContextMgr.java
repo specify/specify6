@@ -241,7 +241,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             if (!alwaysAsk)
             {
                 String recentIds = appPrefs.get(prefName, null);
-                if (recentIds != null)
+                if (StringUtils.isNotEmpty(recentIds))
                 {
                     Query query = HibernateUtil.getCurrentSession().createQuery( "From CatalogSeries where catalogSeriesId in ("+recentIds + ")");
                     List list = query.list();
@@ -255,7 +255,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
             if (askToSelect)
             {
-                String queryStr = "select cs From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.catalogSeries as cs where user.specifyUserId = "+user.getSpecifyUserId();
+                String queryStr = "select distinct cs From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.catalogSeries as cs where user.specifyUserId = "+user.getSpecifyUserId();
                 Query query = HibernateUtil.getCurrentSession().createQuery(queryStr);
                 List list = query.list();
 
@@ -640,7 +640,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         // Add Backstop for Discipline and User Type
         for (String discipline : disciplineHash.keySet())
         {
-            //log.info("****** Adding Backstop for ["+discipline+"]["+userType+"]");
+            log.info("****** Trying add Backstop for ["+discipline+"]["+userType+"]");
 
             File dir = XMLHelper.getConfigDir(discipline + File.separator + userType);
             if (dir.exists())
@@ -650,13 +650,16 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 appResource.setUserType(userType);
                 //log.info("Adding2 "+getAppResDefAsString(appResource));
                 appResourceList.add(appResource);
+            } else
+            {
+                log.info("***** Couldn't add Backstop for ["+discipline+"]["+userType+"]");
             }
         }
 
         // Add Backstop for just the Discipline
         for (String discipline : disciplineHash.keySet())
         {
-            //log.info("***** Adding Backstop for ["+discipline+"]");
+            log.info("***** Trying add Backstop for ["+discipline+"]");
             File dir = XMLHelper.getConfigDir(discipline);
             if (dir.exists())
             {
@@ -664,6 +667,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 appResource.setDisciplineType(discipline);
                 //log.info("Adding3 "+getAppResDefAsString(appResource));
                 appResourceList.add(appResource);
+            } else
+            {
+                log.info("***** Couldn't add Backstop for ["+discipline+"]");
             }
         }
 
@@ -683,6 +689,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     protected List<ViewSet> getViewSetList(final AppResourceDefault appResDef)
     {
         log.info("Looking up["+appResDef.getUniqueIdentifer()+"]["+appResDef.getVerboseUniqueIdentifer()+"]");
+        
         List<ViewSet> viewSetList = viewSetHash.get(appResDef.getUniqueIdentifer());
         if (viewSetList == null)
         {
@@ -714,10 +721,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public View getView(final String viewName, final CollectionObjDef colObjDef)
     {
+        log.debug("Looking Up View ["+viewName+"] colObjDef["+(colObjDef != null ? colObjDef.getName() : "null")+"]");
+        
         boolean fndColObjDef = false;
         for (AppResourceDefault appResDef : appResourceList)
         {
-            log.info("["+(appResDef.getCollectionObjDef() != null ? appResDef.getCollectionObjDef().getName() : "null")+"]["+(colObjDef != null ? colObjDef.getName() : "null")+"]");
+            log.info("Looking["+(appResDef.getCollectionObjDef() != null ? appResDef.getCollectionObjDef().getName() : "null")+"]["+(colObjDef != null ? colObjDef.getName() : "null")+"]");
+            
             if (appResDef.getCollectionObjDef() != null && appResDef.getCollectionObjDef() == colObjDef)
             {
                 fndColObjDef = true;
@@ -746,9 +756,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 String dType = appResDef.getDisciplineType();
                 String uType = appResDef.getUserType();
 
-                log.info("appResDef["+dType+"]["+uType+"] user["+userType+"]");
+                log.info("appResDef's DisciplineType["+dType+"] appResDef's UserType["+uType+"] User's userType["+userType+"]");
                 
-                if ((dType != null && disciplineName != null && dType.equals(disciplineName) || (dType == null || disciplineName == null)) && (uType == null || uType.equals(userType)))
+                if ((dType != null && disciplineName != null && dType.equals(disciplineName) || 
+                    (dType == null || disciplineName == null)) && (uType == null || uType.equals(userType)) ||
+                    (userType != null && dType != null && dType.equals(userType)))
                 {
                     for (ViewSet vs : getViewSetList(appResDef))
                     {
@@ -761,7 +773,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
             }
         }
-        return null;
+        throw new RuntimeException("Can't find View ["+viewName+"] colObjDef["+(colObjDef != null ? colObjDef.getName() : "null")+"] ["+fndColObjDef+"]");
     }
 
     /* (non-Javadoc)

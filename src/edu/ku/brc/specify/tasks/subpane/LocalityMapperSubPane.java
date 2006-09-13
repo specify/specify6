@@ -493,6 +493,9 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
     //-- ResultSetControllerListener
     //------------------------------------------------------------------------
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ResultSetControllerListener#indexChanged(int)
+     */
     public void indexChanged(int newIndex)
     {
         Hashtable<String, Object> map = valueList.get(newIndex);
@@ -501,10 +504,22 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         repaint();
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ResultSetControllerListener#indexAboutToChange(int, int)
+     */
     public boolean indexAboutToChange(int oldIndex, int newIndex)
     {
         return true;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ResultSetControllerListener#newRecordAdded()
+     */
+    public void newRecordAdded()
+    {
+        
+    }
+
 
     //------------------------------------------------------------------------
     //-- Inner Classes

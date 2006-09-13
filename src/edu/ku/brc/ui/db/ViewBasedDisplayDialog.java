@@ -15,6 +15,8 @@
 package edu.ku.brc.ui.db;
 
 import java.awt.Frame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.JDialog;
@@ -66,8 +68,28 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
         pack();
 
         setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setAlwaysOnTop(true);
+        
+        if (mainPanel.getCancelBtn() != null)
+        {
+            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            
+            addWindowListener(new WindowAdapter()
+                    {
+                        public void windowClosing(WindowEvent e)
+                        {
+                            mainPanel.getCancelBtn().doClick();
+                        }
+                    });
+        } else
+        {
+            setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        }
+        
+        /*if (mainPanel.getMultiView().getCurrentView().getValidator() != null)
+        {
+            mainPanel.getMultiView().getCurrentView().getValidator().validateForm();
+        }*/
     }
 
     //------------------------------------------------------------
@@ -104,6 +126,10 @@ public class ViewBasedDisplayDialog extends JDialog implements ViewBasedDisplayI
     public void setData(final Object dataObj)
     {
         mainPanel.setData(dataObj);
+        /*if (mainPanel.getMultiView().getCurrentView().getValidator() != null)
+        {
+            mainPanel.getMultiView().getCurrentView().getValidator().validateForm();
+        }*/
     }
 
     /* (non-Javadoc)

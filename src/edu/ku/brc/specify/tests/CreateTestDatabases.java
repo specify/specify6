@@ -579,6 +579,7 @@ public class CreateTestDatabases
                 agents[i/5] = createAgent(values[i], values[i+1], values[i+2], values[i+3], values[i+4]);
             }
 
+            /*
             String[] addresses = {"101 High Street.",  "St. Charles",  "Kent", "Great Britain", "AE00939",
                                   "Harvard Square",     "Cambridge",   "MA",   "USA",           "009391",
                                   "99 East Street.",    "Lawrence",    "KS",   "USA",         "66045",
@@ -587,9 +588,9 @@ public class CreateTestDatabases
                                   "12 Mississippi",     "Lawrence",    "KS",   "USA",         "66045",
                                   "156 Inverness",      "Lawrence",    "KS",   "USA",         "66045",
                                   "100 Main Street",    "Topeka",      "KS",   "USA",         "66099",
-            };
+            };*/
 
-            Address[] addrs = createAddresses(agents);
+            //Address[] addrs = createAddresses(agents);
 
             // Add an extra address for one of them
             //Address addr = createAddress(agents[0], "34 Vintage Drive", "", "San Diego", "CA",   "USA", "92129");
@@ -647,6 +648,8 @@ public class CreateTestDatabases
         setSession(null);
 
         Agent[]   agents    = createAgentsInMemory();
+        
+        @SuppressWarnings("unused")
         Address[] addresses = createAddresses(agents); // created AgentAddress also
 
         String[] roles    = {"Reviewer", "Submitter", "Accepter"};

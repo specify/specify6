@@ -46,11 +46,14 @@ public class CatalogSeries  implements java.io.Serializable, Comparable<CatalogS
 
     public static void setCurrentCatalogSeries(List<CatalogSeries> currentCatalogSeries)
     {
-        CatalogSeries.currentCatalogSeries.clear();
-        
-        if (currentCatalogSeries != null)
+        if (currentCatalogSeries != CatalogSeries.currentCatalogSeries)
         {
-            CatalogSeries.currentCatalogSeries.addAll(currentCatalogSeries);
+            CatalogSeries.currentCatalogSeries.clear();
+        
+            if (currentCatalogSeries != null)
+            {
+                CatalogSeries.currentCatalogSeries.addAll(currentCatalogSeries);
+            }
         }
     }
 

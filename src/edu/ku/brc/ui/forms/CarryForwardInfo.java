@@ -53,6 +53,10 @@ public class CarryForwardInfo
         setter  = DataObjectSettableFactory.get(classObj.getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
     }
     
+    /**
+     * Adds an ID
+     * @param id the ID to be added
+     */
     public void add(final String id)
     {
         FormCell cellField = formViewDef.getFormCellById(id);

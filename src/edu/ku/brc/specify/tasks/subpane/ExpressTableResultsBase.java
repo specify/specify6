@@ -376,15 +376,15 @@ public abstract class ExpressTableResultsBase extends JPanel
      * @param returnAll indicates whether all the records should be returned if nothing was selected
      * @return a list of recordIds
      */
-    public List<Integer> getListOfIds(final boolean returnAll)
+    public List<Long> getListOfIds(final boolean returnAll)
     {
-        List<Integer> list = new ArrayList<Integer>();
+        List<Long> list = new ArrayList<Long>();
         RecordSet rs = getRecordSet(returnAll);
         if (rs != null)
         {
             for (RecordSetItem rsi : rs.getItems())
             {
-                list.add(Integer.parseInt(rsi.getRecordId()));
+                list.add(rsi.getRecordId());
             }
         }
         return list;

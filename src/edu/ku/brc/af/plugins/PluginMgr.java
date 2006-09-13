@@ -310,6 +310,8 @@ public class PluginMgr
                     } catch (Exception ex)
                     {
                         log.error(ex);
+                        ex.printStackTrace();
+                        
                         // go to the next plugin
                         continue;
                         // XXX Do we need a dialog here ???

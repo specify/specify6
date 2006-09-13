@@ -115,7 +115,7 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
     protected ExpressResultsTableInfo  tableInfo;
     protected ExpressTableResultsBase  etrb;
 
-    protected List<Integer>  idList      = null;
+    protected List<Long>     idList      = null;
     protected String         sqlStr;
 
     protected Hashtable<String, Object> dataMap = new Hashtable<String, Object>();
@@ -414,7 +414,7 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
     {
         if (!isCancelled && idList != null && idList.size() > 0)
         {
-            Integer id = idList.get(0);
+            Long id = idList.get(0);
             try
             {
                 log.debug("getSelectedObject class["+className+"] idFieldName["+idFieldName+"] id["+id+"]");
@@ -424,7 +424,7 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
                 Session session = sessionFactory.openSession();
                
                 Criteria criteria = session.createCriteria(classObj);
-                criteria.add(Expression.eq(idFieldName, id));
+                criteria.add(Expression.eq(idFieldName, id.intValue())); // FIX ME BUG XXXXX
                 java.util.List list = criteria.list();
                 session.close();
                 

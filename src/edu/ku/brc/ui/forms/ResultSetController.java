@@ -126,7 +126,18 @@ public class ResultSetController implements ValidationListener
             newRecBtn.setMargin(insets);
             rowBuilder.add(newRecBtn, cc.xy(row,1));
             row += 2;
+            
+            newRecBtn.addActionListener(new ActionListener() {
+               public void actionPerformed(ActionEvent ae)
+               {
+                   for (ResultSetControllerListener rscl : listeners)
+                   {
+                       rscl.newRecordAdded();
+                   }
+               }
+            });
         }
+        
         if (addDelBtn)
         {
             delRecBtn = new JButton(IconManager.getImage("SmallTrash"));
@@ -269,7 +280,7 @@ public class ResultSetController implements ValidationListener
     }
     
     /**
-     * Returns the JButton that is used to create new records
+     * Returns the JButton that is used to create new records.
      * @return the JButton that is used to create new records
      */
     public JButton getNewRecBtn()
@@ -278,7 +289,7 @@ public class ResultSetController implements ValidationListener
     }
 
     /**
-     * Returns the JBUtton that is used to create new records
+     * Returns the JBUtton that is used to create new records.
      * @return the JBUtton that is used to create new records
      */
     public JButton getDelRecBtn()

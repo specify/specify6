@@ -86,7 +86,7 @@ import edu.ku.brc.ui.forms.MultiView;
  * The search looks like this:<br>
  * select distinct lastName,firstName,AgentID from agent where lower(lastName) like 's%' order by lastName asc
 
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  **
  * @author rods
  *
@@ -316,6 +316,16 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                         isNew = false;
                         validateState();
                         repaint();
+                        
+                        /*
+                         * CODE FOR SETTING THE CURRENT OBJECT INTO the COMBOXBOX
+                         */
+                        //Object data = comboBox.getSelectedItem();
+                        //if (data != null && data != dataObj)
+                        //{
+                        //    setValue(data, null);
+                        //}
+                        
                         for (FocusListener l : focusListeners)
                         {
                             l.focusLost(e);
@@ -373,7 +383,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         {
             newDataObj = UIHelper.createAndNewDataObj(classObj);
             UIHelper.initDataObj(newDataObj);
-            frame.setData(newDataObj);
+            //frame.setData(newDataObj);
 
             // Now get the setter for an object and set the value they typed into the combobox and place it in
             // the first field name
@@ -742,7 +752,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     {
         if (evt.getPropertyName().equals("Cancel"))
         {
-
+            // Do nothing for now
+            
         } else if (frame.isEditMode())
         {
             if (currentMode != MODE.Editting)

@@ -75,6 +75,7 @@ import edu.ku.brc.dbsupport.QueryResultsContainer;
 import edu.ku.brc.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.helpers.DiskFileFilter;
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.tasks.ExpressResultsTableInfo;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
@@ -132,6 +133,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
     protected boolean                   doIndexForms  = false; // XXX Pref
     protected boolean                   doIndexLabels = false; // XXX Pref
+    
+    protected IndexWriter               optWriter     = null;
 
     /**
      * Default Constructor
@@ -325,11 +328,6 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     {
         String value = null;
 
-        if (fieldName.equals("DateAccessioned"))
-        {
-            int x = 0;
-            x++;
-        }
         // There may be a better way to express this,
         // but this is very explicit as to whether it is indexed as a Keyword or not
         if (secondaryKey == null)
@@ -419,7 +417,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         {
             if (dbConnection != null)
             {
-                dbStatement = dbConnection.createStatement();
+                dbStatement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 
                 log.debug("SQL ["+tableInfo.getBuildSql()+"]");
 
@@ -486,9 +484,9 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                             strBuf.setLength(0);
                             for (int i=0;i<fields.length;i++)
                             {
-                                Object valObj = rs.getObject(fields[i]);
-                                if (valObj != null)
-                                {
+                                //Object valObj = rs.getObject(fields[i]);
+                                //if (valObj != null)
+                                //{
                                     if (i > 0)
                                     {
                                         int inx = fields[i];
@@ -519,10 +517,10 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                                     {
                                         strBuf.append(" \t");
                                     }
-                                } else
-                                {
-                                    strBuf.append(" \t");
-                                }
+                                //} else
+                                //{
+                                //    strBuf.append(" \t");
+                                //}
                             }
 
                             doc.add(Field.UnIndexed("data", strBuf.toString()));
@@ -532,9 +530,9 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                             for (int i=1;i<fields.length;i++)
                             {
                                 int inx = fields[i];
-                                Object valObj = rs.getObject(inx);
-                                if (valObj != null)
-                                {
+                                //Object valObj = rs.getObject(inx);
+                                //if (valObj != null)
+                                //{
                                     if (indexValue(doc, rs, inx, rsmd.getColumnName(inx), secondaryKeys[i],
                                                classes[inx], formatter) != null)
                                     {
@@ -548,7 +546,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                                         dbConnection.close();
                                         return 0;
                                     }
-                                }
+                                //}
                             }
                         }
                         if (cnt > 0)
@@ -980,13 +978,40 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
         } else
         {
-
-            indvLabel.setText(String.format(getResourceString("TermsIndexedInTime"), new Object[] {termsIndexed, (((double)deltaTime) / 1000.0)}));
-            globalLabel.setText(getResourceString("doneIndexing"));
+            long minutes = deltaTime / 60000L;
+            long seconds = (deltaTime / 1000L) % 60L;
+            indvLabel.setText(String.format(getResourceString("TermsIndexedInTime"), new Object[] {termsIndexed, minutes, seconds}));
+            globalLabel.setText(getResourceString("OptimizingIndex"));
             log.debug(deltaTime);
             log.debug("Time to index all (" + (((double)deltaTime) / 1000.0) + " seconds)");
-            writer.optimize();
-            writer.close();
+            
+            optWriter = writer;
+            
+            final SwingWorker worker = new SwingWorker()
+            {
+                public Object construct()
+                {
+                    try
+                    {
+                        optWriter.optimize();
+                        optWriter.close();
+                        
+                    } catch (Exception ex)
+                    {
+                        log.error(ex);
+                    }
+                    return null;
+                }
+
+                //Runs on the event-dispatching thread.
+                public void finished()
+                {
+                    globalLabel.setText(getResourceString("doneIndexing"));
+                    optWriter = null;
+                }
+            };
+            worker.start();
+
         }
         closeBtn.setVisible(true);
 

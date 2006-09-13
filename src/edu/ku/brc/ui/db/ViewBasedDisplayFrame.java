@@ -15,6 +15,8 @@
 package edu.ku.brc.ui.db;
 
 import java.awt.Frame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.JFrame;
@@ -65,7 +67,25 @@ public class ViewBasedDisplayFrame extends JFrame implements ViewBasedDisplayIFa
         pack();
 
         setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
+        
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            
+        if (mainPanel.getCancelBtn() != null)
+        {
+            addWindowListener(new WindowAdapter()
+                    {
+                        public void windowClosing(WindowEvent e)
+                        {
+                            mainPanel.getCancelBtn().doClick();
+                        }
+                    });
+        }
+        
+        /*if (mainPanel.getMultiView().getCurrentView().getValidator() != null)
+        {
+            mainPanel.getMultiView().getCurrentView().getValidator().validateForm();
+        }*/
+
     }
 
     //------------------------------------------------------------

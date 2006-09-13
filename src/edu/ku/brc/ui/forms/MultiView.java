@@ -41,6 +41,7 @@ import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.validation.DataChangeListener;
 import edu.ku.brc.ui.validation.DataChangeNotifier;
 import edu.ku.brc.ui.validation.FormValidator;
+import edu.ku.brc.ui.validation.UIValidatable;
 import edu.ku.brc.ui.validation.UIValidator;
 import edu.ku.brc.ui.validation.ValidationListener;
 
@@ -85,10 +86,10 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
     protected List<ViewBasedDisplayIFace>  displayFrames   = null;
     
-    protected JButton                      externalOKBtn = null;
+    protected JButton                      externalOKBtn   = null;
 
     // Temp
-    protected MultiView                    thisObj          = null;
+    protected MultiView                    thisObj           = null;
     protected CarryForwardSetUp            carryForwardSetup = null;
 
     /**
@@ -469,6 +470,16 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         this.data = data;
         currentView.setDataObj(data);
+        
+        // CurrentView will Validate the Form if it has a Validator so the Validator's state will be correct, 
+        // but it will not call any of the listeners when validating on a "setData" method call.
+        // 
+        // So we need to manually check here
+        FormValidator fv = currentView.getValidator();
+        if (fv != null && externalOKBtn != null)
+        {
+            externalOKBtn.setEnabled(fv.getState() == UIValidatable.ErrorType.Valid);
+        }
     }
 
     /**

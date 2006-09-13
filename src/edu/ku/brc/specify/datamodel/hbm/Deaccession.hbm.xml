@@ -10,7 +10,7 @@
         <generator class="native"/>
     </id>
 
-    <property name="type" type="java.lang.String" column="Type" length="32">
+    <property name="type" type="java.lang.String" column="Type" length="64">
         <meta attribute="scope-field">protected</meta>
         <meta attribute="field-description">Description of the Type of deaccession; i.e. Gift, disposal, lost</meta>
     </property>

@@ -93,8 +93,9 @@ public class ViewLoader
         String   className         = element.attributeValue(CLASSNAME);
         String   resLabels         = element.attributeValue(RESOURCELABELS);
         String   desc              = getDesc(element);
+        String   businessRules     = getAttr(element, "busrules", null);
 
-        View view = new View(instance.viewSetName, name, className, desc, resLabels);
+        View view = new View(instance.viewSetName, name, className, businessRules != null ? businessRules.trim() : null, desc, resLabels);
 
         Element altviews = (Element)element.selectSingleNode("altviews");
         if (altviews != null)
@@ -580,6 +581,7 @@ public class ViewLoader
                                                    vsName,
                                                    cellElement.attributeValue("viewname"),
                                                    cellElement.attributeValue("class"),
+                                                   getAttr(cellElement, "desc", ""),
                                                    colspan,
                                                    rowspan,
                                                    getAttr(cellElement, "single", false)));

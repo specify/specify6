@@ -142,7 +142,7 @@ public class RecordSet  implements java.io.Serializable {
 
     // Add Methods
 
-    public void addItem(final int recordId)
+    public void addItem(final Long recordId)
     {
         this.items.add(new RecordSetItem(recordId));
     }

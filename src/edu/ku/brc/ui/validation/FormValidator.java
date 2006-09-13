@@ -161,6 +161,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void setAllUIValidatorsToNew(boolean isNew)
     {
+        this.hasChanged = false;
         for (UIValidator uiv : validators)
         {
             uiv.setAsNew(isNew);
@@ -522,10 +523,12 @@ public class FormValidator implements ValidationListener, DataChangeListener
         // because the user will need the visual feed back on the form for which fields are in error
         for (DataChangeNotifier dcn : dcNotifiers.values())
         {
+            dcn.manualCheckForDataChanged();
+            
             UIValidator uiv = dcn.getUIV();
             if (uiv != null)
             {
-                dcn.manualCheckForDataChanged();
+                
 
                 // Make sure we validate the fields that only get validated the type matches
                 if (uiv != null && (validateAll || uiv.getType() == valType))

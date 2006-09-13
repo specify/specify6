@@ -292,8 +292,7 @@ public class ResultSetTableModel extends AbstractTableModel
             {
                 do
                 {
-                    RecordSetItem rsi = new RecordSetItem();
-                    rsi.setRecordId(resultSet.getObject(column+1).toString());
+                    RecordSetItem rsi = new RecordSetItem(resultSet.getLong(column+1));
                     items.add(rsi);
                 } while (resultSet.next());
 
@@ -305,8 +304,7 @@ public class ResultSetTableModel extends AbstractTableModel
                 {
                     if (resultSet.absolute(rows[i]))
                     {
-                        RecordSetItem rsi = new RecordSetItem();
-                        rsi.setRecordId(resultSet.getObject(column+1).toString());
+                        RecordSetItem rsi = new RecordSetItem(resultSet.getLong(column+1));
                         items.add(rsi);
                     }
                 }

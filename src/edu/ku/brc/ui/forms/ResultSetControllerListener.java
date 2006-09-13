@@ -17,7 +17,7 @@ package edu.ku.brc.ui.forms;
 /**
  * Interface that enables objects to listen for changes to the current record of a record set
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  * 
  * @author rods
  *
@@ -31,6 +31,17 @@ public interface ResultSetControllerListener
     public void indexChanged(int newIndex);
     
     
+    /**
+     * Notifies the listener that the index is about to change
+     * @param oldIndex the previous index 
+     * @param newIndex the new index
+     * @return (this is unused at the moment but it could tell the caller whether it should change the index)
+     */
     public boolean indexAboutToChange(int oldIndex, int newIndex);
+    
+    /**
+     * Notifies the listener that a new record was added.
+     */
+    public void newRecordAdded();
     
 }

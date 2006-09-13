@@ -17,8 +17,6 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
 import java.awt.datatransfer.DataFlavor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -43,7 +41,6 @@ import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.UIHelper;
-import edu.ku.brc.specify.tasks.subpane.PickListProcessor;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.RolloverCommand;

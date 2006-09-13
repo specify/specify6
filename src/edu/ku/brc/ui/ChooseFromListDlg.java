@@ -75,7 +75,19 @@ public class ChooseFromListDlg<T> extends JDialog implements ActionListener
      */
     public ChooseFromListDlg(final String title, final List<T> itemList) throws HeadlessException
     {
-        this(title, itemList, true);
+        this(title, null, itemList, true);
+    }
+
+    /**
+     * Constructor.
+     * @param title the title of the dialog
+     * @param desc the list to be selected from
+     * @param itemList the list to be selected from
+     * @throws HeadlessException
+     */
+    public ChooseFromListDlg(final String title, final String desc, final List<T> itemList) throws HeadlessException
+    {
+        this(title, desc, itemList, true);
     }
 
     /**
@@ -86,9 +98,23 @@ public class ChooseFromListDlg<T> extends JDialog implements ActionListener
      */
     public ChooseFromListDlg(final String title, final List<T> itemList, final boolean includeCancelBtn) throws HeadlessException
     {
+        this(title, null, itemList, includeCancelBtn);
+    }
+
+    /**
+     * Constructor.
+     * @param title the title of the dialog
+     * @param desc the list to be selected from
+     * @param itemList the list to be selected from
+     * @throws HeadlessException
+     */
+    public ChooseFromListDlg(final String title, final String desc, final List<T> itemList, final boolean includeCancelBtn) throws HeadlessException
+    {
         super((Frame)UICacheManager.get(UICacheManager.FRAME), true);
+        
         this.items = itemList;
-        createUI(title, includeCancelBtn);
+        createUI(title, desc, includeCancelBtn);
+        
         setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         this.setAlwaysOnTop(true);
@@ -107,7 +133,7 @@ public class ChooseFromListDlg<T> extends JDialog implements ActionListener
         this.items = itemList;
         this.icon  = icon;
 
-        createUI(title, true);
+        createUI(title, null, true);
         setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         this.setAlwaysOnTop(true);
@@ -116,14 +142,20 @@ public class ChooseFromListDlg<T> extends JDialog implements ActionListener
     /**
      * Create the UI for the dialog.
      * @param title title for dialog
+     * @param desc the list to be selected from
      * @param includeCancelBtn indicates whether to create and displaty a cancel btn
      */
-    protected void createUI(final String title, final boolean includeCancelBtn)
+    protected void createUI(final String title, final String desc, final boolean includeCancelBtn)
     {
+        this.setTitle(title);
+
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
-
-        panel.add(new JLabel(title, JLabel.CENTER), BorderLayout.NORTH);
+        
+        if (desc != null)
+        {
+            panel.add(new JLabel(desc, JLabel.CENTER), BorderLayout.NORTH);
+        }
 
         try
         {

@@ -37,12 +37,7 @@ import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
-import edu.ku.brc.specify.datamodel.GeographyTreeDef;
-import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
-import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.TaxonTreeDef;
-import edu.ku.brc.specify.ui.treetables.TreeDefinitionEditor;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
@@ -52,7 +47,7 @@ import edu.ku.brc.ui.forms.persist.View;
 /**
  * This task controls the data entry forms
  
- * @code_status Unknown (auto-generated)
+ * @code_status Alpha
  **
  * @author rods
  *

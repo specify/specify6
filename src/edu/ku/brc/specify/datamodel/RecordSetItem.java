@@ -12,7 +12,7 @@ public class RecordSetItem  implements java.io.Serializable {
 
     // Fields    
 
-     protected String recordId;
+     protected Long recordId;
 
 
     // Constructors
@@ -21,14 +21,14 @@ public class RecordSetItem  implements java.io.Serializable {
      public RecordSetItem() {
      }
      
-     public RecordSetItem(final int recordId) 
+     public RecordSetItem(final Long recordId) 
      {
-    	 this.recordId = Integer.toString(recordId);
+    	 this.recordId = recordId;
      }
      
      public RecordSetItem(final String recordId) 
      {
-    	 this.recordId = recordId;
+    	 this.recordId = Long.parseLong(recordId);
      }
      
    
@@ -47,11 +47,11 @@ public class RecordSetItem  implements java.io.Serializable {
     /**
      * 
      */
-    public String getRecordId() {
+    public Long getRecordId() {
         return this.recordId;
     }
     
-    public void setRecordId(String recordId) {
+    public void setRecordId(final Long recordId) {
         this.recordId = recordId;
     }
 

@@ -27,9 +27,10 @@ public class FormCellSubView extends FormCell
     protected String viewName;
     protected String classDesc;
     protected boolean singleValueFromSet;
+    protected String description;
     
     /**
-     * Constructor
+     * Constructor.
      *
      */
     public FormCellSubView()
@@ -38,12 +39,13 @@ public class FormCellSubView extends FormCell
     }
     
     /**
-     * Constructor
+     * Constructor.
      * @param id unique id
      * @param name name of field for this view
      * @param viewSetName name of view set that this subview is referencing
      * @param viewName the name of the view within the view set
      * @param classDesc the class name of the field
+     * @param description text descrption of the sub form (typically already localized)
      * @param colspan column span
      * @param rowspan row span
      * @param singleValueFromSet althught the data might be a "Set" pass in only the first data obj from the set
@@ -53,6 +55,7 @@ public class FormCellSubView extends FormCell
                            final String viewSetName, 
                            final String viewName, 
                            final String classDesc, 
+                           final String description, 
                            final int    colspan, 
                            final int    rowspan,
                            final boolean singleValueFromSet)
@@ -61,6 +64,7 @@ public class FormCellSubView extends FormCell
         this.viewName    = viewName;
         this.classDesc   = classDesc;
         this.viewSetName = viewSetName;
+        this.description = description;
     }
     
     public String getClassDesc()
@@ -96,6 +100,11 @@ public class FormCellSubView extends FormCell
     public boolean isSingleValueFromSet()
     {
         return singleValueFromSet;
+    }
+
+    public String getDescription()
+    {
+        return description;
     }
     
 }

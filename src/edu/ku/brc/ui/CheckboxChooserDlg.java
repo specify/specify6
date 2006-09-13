@@ -62,34 +62,43 @@ public class CheckboxChooserDlg<T> extends JDialog implements ChangeListener, Ac
 
     /**
      * Constructor.
-     * @param title the title of the dialog
+     * @param title dialog title
+     * @param desc description label above list (optional)
      * @param items the list to be selected from
      * @throws HeadlessException
      */
-    public CheckboxChooserDlg(final String title, final List<T> items) throws HeadlessException
+    public CheckboxChooserDlg(final String title, final List<T> listItems) throws HeadlessException
     {
-        super((Frame)UICacheManager.get(UICacheManager.FRAME), true);
-        this.items = items;
-        createUI(title);
-        setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        this.setAlwaysOnTop(true);
+        this(title, null, listItems);
     }
 
     /**
      * Constructor.
-     * @param title the title of the dialog
+     * @param title dialog title
+     * @param desc description label above list (optional)
+     * @param items the list to be selected from
+     * @throws HeadlessException
+     */
+    public CheckboxChooserDlg(final String title, final String desc, final List<T> listItems) throws HeadlessException
+    {
+        this(title, desc, listItems, null);
+    }
+
+    /**
+     * Constructor.
+     * @param title dialog title
+     * @param desc description label above list (optional)
      * @param items the list to be selected from
      * @param icon the icon to be displayed in front of each entry in the list
      * @throws HeadlessException
      */
-    public CheckboxChooserDlg(final String title, final List<T> items, final ImageIcon icon) throws HeadlessException
+    public CheckboxChooserDlg(final String title, final String desc, final List<T> listItems, final ImageIcon icon) throws HeadlessException
     {
         super((Frame)UICacheManager.get(UICacheManager.FRAME), true);
-        this.items = items;
-        this.icon = icon;
+        this.items = listItems;
+        this.icon  = icon;
 
-        createUI(title);
+        createUI(title, desc);
         setLocationRelativeTo((JFrame)(Frame)UICacheManager.get(UICacheManager.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         this.setAlwaysOnTop(true);
@@ -97,12 +106,18 @@ public class CheckboxChooserDlg<T> extends JDialog implements ChangeListener, Ac
 
     /**
      * Create the UI for the dialog.
-     *
+     * @param title dialog title
+     * @param desc description label above list (optional)
      */
-    protected void createUI(final String title)
+    protected void createUI(final String title, final String desc)
     {
+        setTitle(title);
+        
         JPanel panel = new JPanel(new BorderLayout());
-        panel.add(new JLabel(title, JLabel.CENTER), BorderLayout.NORTH);
+        if (desc != null)
+        {
+            panel.add(new JLabel(desc, JLabel.CENTER), BorderLayout.NORTH);
+        }
 
         JPanel listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));

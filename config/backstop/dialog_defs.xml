@@ -3,8 +3,8 @@
 	<dialog type="search" viewset="Search" view="AgentSearch" name="AgentSearch" title="AgentSearch" class="edu.ku.brc.specify.datamodel.Agent" idfield="agentId"/>
     <dialog type="search" viewset="Search" view="PermitSearch" name="PermitSearch" title="PermitSearchTitle" class="edu.ku.brc.specify.datamodel.Permit" idfield="permitId"/>
     
-    <dialog type="display" viewset="Fish Views" view="AgentForAccessions" name="AgentDisplay" title="AgentTitle" class="edu.ku.brc.specify.datamodel.Agent"/>
-    <dialog type="display" viewset="Fish Views" view="PermitForAccessions" name="PermitDisplay" title="PermitTitle" class="edu.ku.brc.specify.datamodel.Agent"/>
+    <dialog type="display" viewset="Accession Views" view="Agent" name="AgentDisplay" title="AgentTitle" class="edu.ku.brc.specify.datamodel.Agent"/>
+    <dialog type="display" viewset="Accession Views" view="Permit" name="PermitDisplay" title="PermitTitle" class="edu.ku.brc.specify.datamodel.Agent"/>
     
     <dialog type="display" viewset="Fish Views" view="FishBase" name="FishBase" title="FishBase" class="org.dom4j.Element"/>
     

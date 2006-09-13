@@ -61,12 +61,13 @@ import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
-import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.UIHelper;
+import edu.ku.brc.ui.CheckboxChooserDlg;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DropDownButtonStateful;
@@ -141,6 +142,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
     protected DropDownButtonStateful        altViewUI;
 
     protected PanelBuilder                  mainBuilder;
+    protected BusinessRulesIFace            businessRules   = null; 
 
     // Carry Forward
     protected CarryForwardInfo              carryFwdInfo    = null;
@@ -166,6 +168,8 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         this.view        = view;
         this.altView     = altView;
         this.mvParent    = mvParent;
+        
+        businessRules = view.getBusinessRule();
 
         this.formViewDef = (FormViewDef)altView.getViewDef();
 
@@ -291,9 +295,6 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
             controlPanel.addComponents(comps, false); // false -> right side
             mainBuilder.add(controlPanel, cc.xy(1, 3));
         }
-
-
-
 
         if (createRecordSetController)
         {
@@ -611,19 +612,24 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
     }
 
     /**
-     * Se the form formValidator
+     * Set the form formValidator and hooks up the root form to listen also.
      * @param formValidator the formValidator
      */
     protected void setValidator(final FormValidator formValidator)
     {
         this.formValidator = formValidator;
 
+        // If there is a form validator and this is not the "root" form 
+        // then add this form as a listener to the validator AND
+        // make the root form a listener to this validator.
         if (formValidator != null && mvParent != null)
         {
             formValidator.addValidationListener(this);
 
             //log.debug(formViewDef.getName()+ " formValidator: "+formValidator);
 
+            // if this isn't the root form then find the root form
+            // and make it listen to this validator for changes.
             if (mvParent != null)
             {
                 MultiView root = mvParent;
@@ -747,6 +753,91 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
             } else if (rv == JOptionPane.CANCEL_OPTION)
             {
                 return false;
+                
+            } else if (rv == JOptionPane.NO_OPTION)
+            {
+                // Check to see if we are cancelling a new object or a previously saved object
+                // if the object is part of this Session then anychanges were already saved.
+                // If it is NOT part of this session then some of the object may not have been save.
+                if (!HibernateUtil.getCurrentSession().contains(dataObj))
+                {
+                    if (businessRules != null)
+                    {
+                        List<BusinessRulesDataItem> dataToSaveList = businessRules.getStandAloneDataItems(dataObj);
+                        if (dataToSaveList.size() > 0)
+                        {
+                            CheckboxChooserDlg<BusinessRulesDataItem> dlg = new CheckboxChooserDlg<BusinessRulesDataItem>("Save", "Check the items you would like to have saved.", dataToSaveList);
+                            UIHelper.centerAndShow(dlg);
+                            dataToSaveList = dlg.getSelectedObjects();
+                            for (BusinessRulesDataItem item : dataToSaveList)
+                            {
+                                item.setChecked(true);
+                            }
+                            businessRules.saveStandAloneData(dataObj, dataToSaveList);
+                        }
+                    }
+                    
+                    /*
+                    List<String> needToSaveList = new ArrayList<String>(2);
+                    PropertyDescriptor[] props = PropertyUtils.getPropertyDescriptors(dataObj);
+                    for (PropertyDescriptor prop : props)
+                    {
+                        Class cls  = prop.getPropertyType();
+                        if (cls != Integer.class && 
+                            cls != Long.class && 
+                            cls != String.class && 
+                            cls != Double.class && 
+                            cls != Float.class &&
+                            cls != Date.class &&
+                            cls != Boolean.class &&
+                            cls != Calendar.class &&
+                            cls != Class.class)
+                        {
+                            boolean addToList;
+                            if (cls == Set.class)
+                            {
+                                addToList = false;
+                                try
+                                {
+                                    Method getter = prop.getReadMethod();
+                                    Set set = (Set)getter.invoke(dataObj, new Object[] {});
+                                    if (set != null && set.size() > 0)
+                                    {
+                                        addToList = true;
+                                    }
+                                } catch (Exception ex)
+                                {
+                                    ex.printStackTrace();
+                                }
+                            } else
+                            {
+                                addToList = true;
+                            }
+                            
+                            if (addToList)
+                            {
+                                String   name = prop.getDisplayName();
+                                FormCell cell = formViewDef.getFormCellByName(name);
+                                String   desc = name;
+                                if (cell instanceof FormCellSubView)
+                                {
+                                    FormCellSubView cellSubView = (FormCellSubView)cell;
+                                    desc = StringUtils.isNotEmpty(cellSubView.getDescription()) ? cellSubView.getDescription() : name;
+                                }
+                                log.info(cls.getName()+"  "+name+ "  "+ desc);
+                                needToSaveList.add(desc);      
+                            }
+                        }
+                   }
+                    
+                    if (needToSaveList.size() > 0)
+                    {
+                        CheckboxChooserDlg<String> dlg = new CheckboxChooserDlg<String>("Save", "Check the items you would like to have saved.", needToSaveList);
+                        UIHelper.centerAndShow(dlg);
+                    }*/
+                    
+                }
+
             }
         }
         return true;
@@ -902,6 +993,9 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
         return kids;
     }
 
+    /**
+     * Debug method - lists the fields that have changed
+     */
     public void listFieldChanges()
     {
         if (formValidator != null)
@@ -910,10 +1004,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
             for (DataChangeNotifier dcn : formValidator.getDCNs().values())
             {
                 FieldInfo fieldInfo = controlsById.get(dcn.getId());
-                if (dcn.isDataChanged())
-                {
-                    log.debug("Changed Field["+fieldInfo.getName()+"]");
-                }
+                log.debug("Changed Field["+fieldInfo.getName()+"]\t["+(dcn.isDataChanged() ? "CHANGED" : "not changed")+"]");
             }
             log.debug("===================================");
         }
@@ -972,6 +1063,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
 
 
     /**
+     * Returns the "Save" Button
      * @return the Save Button
      */
     public JButton getSaveBtn()
@@ -1004,7 +1096,7 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
      */
     public boolean isSubform()
     {
-        return mvParent != null;
+        return mvParent != null && mvParent.getMultiViewParent() != null;
     }
 
     /* (non-Javadoc)
@@ -1741,12 +1833,26 @@ public class FormViewObj implements Viewable, ValidationListener, ResultSetContr
      */
     public boolean indexAboutToChange(int oldIndex, int newIndex)
     {
-        if (formValidator != null && formValidator.hasChanged())
+        return checkForChanges();
+        /*if (formValidator != null && formValidator.hasChanged())
         {
             getDataFromUI();
         }
         return true;
+        */
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ResultSetControllerListener#newRecordAdded()
+     */
+    public void newRecordAdded()
+    {
+        if (mvParent.getMultiViewParent() != null)
+        {
+            formValidator.setHasChanged(true);
+        }
+    }
+
 
     //-------------------------------------------------
     // AppPrefsChangeListener

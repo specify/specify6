@@ -252,8 +252,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
                     }                   
                     do
                     {                   
-                        RecordSetItem rsi = new RecordSetItem();
-                        rsi.setRecordId(resultSet.getObject(column).toString());
+                        RecordSetItem rsi = new RecordSetItem(resultSet.getLong(column));
                         items.add(rsi);
                     } while (resultSet.next());
                 }    
@@ -267,8 +266,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
                     int rowInx = displayIndexes != null ? displayIndexes[rows[i]] : rows[i];
                     if (resultSet.absolute(rowInx+1))
                     {
-                        RecordSetItem rsi = new RecordSetItem();
-                        rsi.setRecordId(resultSet.getObject(column).toString());
+                        RecordSetItem rsi = new RecordSetItem(resultSet.getLong(column));
                         items.add(rsi);
                     }
                 }
