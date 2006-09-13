@@ -1,6 +1,3 @@
-/**
- * 
- */
 package edu.ku.brc.specify.ui.treetables;
 
 import java.awt.event.ActionEvent;
@@ -13,20 +10,23 @@ import javax.swing.JPopupMenu;
 import edu.ku.brc.specify.datamodel.Treeable;
 
 /**
+ * A JPopupMenu customized for use within a TreeTableViewer for displaying
+ * actions that can be performed on nodes.
  *
- *
+ * @code_status Beta
  * @author jstewart
- * @version %I% %G%
  */
 public class TreeNodePopupMenu extends JPopupMenu
 {
 	protected JList list;
+	@SuppressWarnings("unchecked")
 	protected TreeTableViewer ttv;
 	
 	/**
 	 *
 	 *
 	 */
+	@SuppressWarnings("unchecked")
 	public TreeNodePopupMenu(TreeTableViewer owner)
 	{
 		this.ttv = owner;
@@ -63,7 +63,7 @@ public class TreeNodePopupMenu extends JPopupMenu
 				{
 					return;
 				}
-				Treeable node = (Treeable)selection;
+				Treeable<?, ?, ?> node = (Treeable<?, ?, ?>)selection;
 				ttv.findNext(list,true,node);
 			}
 		});
@@ -103,5 +103,10 @@ public class TreeNodePopupMenu extends JPopupMenu
 	public void setList(JList list)
 	{
 		this.list = list;
+	}
+	
+	public JList getList()
+	{
+		return list;
 	}
 }

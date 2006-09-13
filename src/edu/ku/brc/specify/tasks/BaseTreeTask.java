@@ -129,14 +129,14 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 		// do nothing
 	}
 	
-	protected void showTree(D treeDef)
+	protected TreeTableViewer<T,D,I> showTree(D treeDef)
 	{
 		for(TreeTableViewer<T,D,I> ttv: visibleTTVs)
 		{
 			if(ttv.getTreeDef() == treeDef)
 			{
 				SubPaneMgr.getInstance().setSelectedComponent(ttv);
-				return;
+				return null;
 			}
 		}
 		
@@ -145,7 +145,7 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 			if(defEd.getDisplayedTreeDef().getTreeDefId().equals(treeDef.getTreeDefId()))
 			{
 				SubPaneMgr.getInstance().setSelectedComponent(defEd);
-				return;
+				return null;
 			}
 		}
 		
@@ -154,6 +154,7 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
     	TreeTableViewer<T,D,I> ttv = new TreeTableViewer<T,D,I>(treeDef,tabName,this);
     	visibleTTVs.add(ttv);
     	SubPaneMgr.getInstance().addPane(ttv);
+    	return ttv;
 	}
 	
 	public TreeNodeFindWidget getFinderWidget()

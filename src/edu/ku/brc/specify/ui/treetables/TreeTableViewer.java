@@ -506,6 +506,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * a child of the selected node.  A new child is only permanently
 	 * created if the user chooses to procede with the data entry.
 	 */
+	@SuppressWarnings("unchecked")
 	public void addChildToSelectedNode(JList list)
 	{
 		if(busy)
@@ -1455,5 +1456,20 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	{
 		super.shutdown();
 		dataService.fini();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public T getSelectedNode(JList list)
+	{
+		if(lists[0] == list || lists[1] == list )
+		{
+			return (T)list.getSelectedValue();			
+		}
+		throw new IllegalArgumentException("Provided JList must be one of the TTV display lists");
+	}
+	
+	public TreeNodePopupMenu getPopupMenu()
+	{
+		return popupMenu;
 	}
 }
