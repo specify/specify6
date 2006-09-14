@@ -7,7 +7,6 @@ Jasper Reports                                         1.2.5
 Hibernate                                              3.1.3
 Commons HttpClient                                     3.0.1
 Lucene                                                 2.0.0
-JavaBeans Activation Framework                         1.1
 JavaMail (dsn, imap, mailapi, pop3, smtp JARs)         1.4
 iText                                                  1.4.3
 Commons Collections                                    3.2
